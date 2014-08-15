@@ -1,0 +1,63 @@
+{
+   "abstract" : "It's a core module of bounceHammer version 4",
+   "author" : [
+      "azumakuniyuki"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Minilla/v0.5.3, CPAN::Meta::Converter version 2.131560",
+   "license" : [
+      "bsd"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Sisimai",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author"
+      ]
+   },
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "CPAN::Meta" : "0",
+            "CPAN::Meta::Prereqs" : "0",
+            "Module::Build" : "0.38"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion" : "0.10108",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7",
+            "Test::UsedModules" : "0.03"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Class::Accessor::Lite" : "0.05",
+            "JSON" : "2.90",
+            "Try::Tiny" : "0.16",
+            "perl" : "5.010"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Test::More" : "0.98"
+         }
+      }
+   },
+   "release_status" : "unstable",
+   "version" : "4.0.0",
+   "x_contributors" : [
+      "azumakuniyuki <perl.org@azumakuniyuki.org>"
+   ]
+}
