@@ -1,0 +1,32 @@
+/.build/
+/_build/
+/Build
+/blib
+
+# Carton releated files
+/carton.lock
+/.carton/
+/local/
+
+# Devel::NYTProf related files
+nytprof.out
+nytprof/
+
+# Devel::Cover related files
+cover_db/
+
+*.bak
+*.old
+*~
+*.swp
+*.o
+*.obj
+/tmp
+
+!LICENSE
+
+MYMETA.*
+
+/Sisimai-*
+
+# Under the development
