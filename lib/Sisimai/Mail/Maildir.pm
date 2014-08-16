@@ -58,6 +58,7 @@ sub read {
         $seekhandle = IO::Dir->new( $self->{'data'} ) unless $seekhandle;
 
         while( my $r = $seekhandle->read ) {
+            # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
 
             $emailindir =  sprintf( "%s/%s", $self->{'data'}, $r );
@@ -67,12 +68,14 @@ sub read {
             next unless -T $emailindir;
             next unless -r $emailindir;
 
+            # Get inode number of the file
             $emailinode = [ stat $emailindir ]->[1];
             next if grep { $emailinode == $_ } @{ $self->{'files'} };
 
-            $filehandle =  IO::File->new( $emailindir, 'r' );
+            $filehandle = IO::File->new( $emailindir, 'r' );
             while( my $f = <$filehandle> ) {
-                $readbuffer .= $r;
+                # Concatenate the contents of each file
+                $readbuffer .= $f;
             }
             $filehandle->close;
 
