@@ -31,7 +31,6 @@ my $rwaccessors = [
     'frequency',        # (Integer) Bounce frequency
     'smtpagent',        # (String) MTA name
     'smtpcommand',      # (String) The last SMTP command
-    'description',      # (Ref->Hash) Description
     'destination',      # (String) A domain part of the "recipinet"
     'senderdomain',     # (String) A domain part of the "addresser"
     'feedbacktype',     # (String) Feedback Type
@@ -90,7 +89,7 @@ sub new {
         my $v = [ 
             'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
             'diagnostictype', 'deliverystatus', 'reason', 'category', 'provider',
-            'lhost', 'rhost', 'smtpcommand', 'description', 'feedbacktype',
+            'lhost', 'rhost', 'smtpcommand', 'feedbacktype',
         ];
         $thing->{ $_ } = $argvs->{ $_ } // '' for @$v;
         $thing->{'frequency'} = 1;
@@ -279,7 +278,7 @@ sub damn {
         my $v = {};
         my $stringdata = [ qw|
             token lhost rhost listid alias reason subject provider category 
-            messageid smtpagent smtpcommand description destination 
+            messageid smtpagent smtpcommand destination diagnosticcode
             senderdomain deliverystatus timezoneoffset feedbacktype|
         ];
         
@@ -287,11 +286,10 @@ sub damn {
             # Copy string data
             $v->{ $e } = $self->$e // '';
         }
-        $v->{'description'} = $self->diagnosticcode // '';
-        $v->{'frequency'}   = $self->frequency // 0;
-        $v->{'addresser'}   = $self->addresser->address;
-        $v->{'recipient'}   = $self->recipient->address;
-        $v->{'date'}        = $self->date->epoch;
+        $v->{'frequency'} = $self->frequency // 0;
+        $v->{'addresser'} = $self->addresser->address;
+        $v->{'recipient'} = $self->recipient->address;
+        $v->{'date'}      = $self->date->epoch;
         $data = $v;
 
     } catch {
