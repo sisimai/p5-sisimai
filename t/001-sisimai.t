@@ -5,7 +5,7 @@ use Sisimai;
 
 my $PackageName = 'Sisimai';
 my $MethodNames = {
-    'class' => [ 'sysname', 'libname', 'version', 'parse' ],
+    'class' => [ 'sysname', 'libname', 'version' ],
     'object' => [],
 };
 my $SampleEmail = {
@@ -21,7 +21,6 @@ MAKE_TEST: {
     is $PackageName->sysname, 'bouncehammer', '->sysname = bouncehammer';
     is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
     is $PackageName->version, $Sisimai::VERSION, '->version = '.$Sisimai::VERsiON;
-    is $PackageName->parse(undef), undef;
 }
 
 done_testing;
