@@ -64,7 +64,6 @@ MAKE_TEST: {
             is $e->smtpagent, 'Sendmail', 'smtpagent = '.$e->smtpagent;
             is $e->smtpcommand, 'DATA', 'smtpcommand = '.$e->smtpcommand;
 
-            ok defined $e->description, 'description = '.$e->description;
             ok length $e->diagnosticcode, 'diagnosticcode = '.$e->diagnosticcode;
             ok length $e->diagnostictype, 'diagnostictype = '.$e->diagnostictype;
             like $e->deliverystatus, qr/\A\d+[.]\d+[.]\d\z/, 'deliverystatus = '.$e->deliverystatus;
