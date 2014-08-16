@@ -4,9 +4,9 @@ use strict;
 use warnings;
 
 our $VERSION = '4.0.0';
-
-sub sysname { 'bouncehammer' }
-sub libname { 'Sisimai'      }
+sub version { return $VERSION }
+sub sysname { 'bouncehammer'  }
+sub libname { 'Sisimai'       }
 
 1;
 __END__
@@ -25,6 +25,10 @@ Sisimai - It's a core module of bounceHammer version 4
 
 Sisimai is a core module of bounceHammer version. 3, is a Perl module for 
 analyzing email bounce. "Sisimai" stands for SISI "Mail Analyzing Interface".
+
+=head1 BASIC USAGE
+
+
 
 =head1 AUTHOR
 
