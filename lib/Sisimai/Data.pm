@@ -204,6 +204,12 @@ sub make {
                     $v = $rfc822data->{ $f };
                     last;
                 }
+
+                unless( $v ) {
+                    # Set "date" getting from the value of "Date" in the bounce
+                    # message
+                    $v= $messageobj->{'header'}->{'date'}; 
+                }
             }
 
             my $datestring = Sisimai::Time->parse( $v );
