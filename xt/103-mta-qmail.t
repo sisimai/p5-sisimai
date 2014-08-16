@@ -53,7 +53,6 @@ if( -d $d ) {
                 ok length $f->category, sprintf( "(%s) cateogry = %s", $e, $f->category );
                 ok defined $f->messageid, sprintf( "(%s) messageid = %s", $e, $f->messageid );
                 ok defined $f->smtpcommand, sprintf( "(%s) smtpcommand = %s", $e, $f->smtpcommand );
-                ok defined $f->description, sprintf( "(%s) description = %s", $e, $f->description );
                 ok defined $f->diagnosticcode, sprintf( "(%s) diagnosticcode = %s", $e, $f->diagnosticcode );
 
                 isa_ok $f->addresser, 'Sisimai::Address';
