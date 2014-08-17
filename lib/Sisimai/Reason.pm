@@ -148,6 +148,92 @@ C<get()> detects the bounce reason.
 C<anotherone()> is a method for detecting the bounce reason, it works as a fall
 back method of get() and called only from get() method.
 
+=head1 LIST OF BOUNCE REASONS
+
+C<Sisimai::Reason->get()> detects the reason of bounce with parsing the bounced
+messages. The following reasons will be set in the value of C<reason> property
+of Sisimai::Data instance.
+
+=head2 B<blocked>
+
+Clienet hostname: the argument of C<HELO/EHLO>, is rejected.
+
+=head2 B<contenterror>
+
+The value of C<Status> header or the value of C<deliverystatus> is 5.6.X or the
+original message is invalid format message and so on.
+
+=head2 B<exceedlimit>
+
+The value of C<Status> header or the value of C<deliverystatus> is X.2.3 or the
+message size exceeded the limit of recipient's mailbox size limit.
+
+=head2 B<expired>
+
+Delivery time has expired.
+
+=head2 B<filtered>
+
+The recipient address rejected at the end of DATA command.
+
+=head2 B<hostunknown>
+
+The host part of the recipient address does not exist or the value of C<Status>
+header or the value of C<deliverystatus> is 5.1.2.
+
+=head2 B<mailboxfull>
+
+The recipient's mailbox is full or the value of C<Status> header or the value of
+C<deliverystatus> is X.2.2
+
+=head2 B<mailererror>
+
+Mailer program at the remote host exit with the status code except 0 and 75.
+
+=head2 B<mesgtoobig>
+
+SMTP session rejected due to the message size exceeded server limit or the value
+of C<Status> header or the value of C<deliverystatus> is X.3.4.
+
+=head2 B<notaccept>
+
+Remote server does not accept email.
+
+=head2 B<onhold>
+
+Could not detect the reason of bounce.
+
+=head2 B<rejected>
+
+The sender email address rejected or the value of C<Status> header or the value
+of C<deliverystatus> is X.1.8.
+
+=head2 B<norelaying>
+
+Relaying denied.
+
+=head2 B<securityerror>
+
+Message rejected due to spam content or virus or other security reason. The value
+of C<Status> header or the value of C<deliverystatus> is X.7.Y.
+
+=head2 B<suspend>
+
+The recipient's mailbox temporaly disabled.
+
+=head2 B<systemerror>
+
+Configuration error on the remote host or network error.
+
+=head2 B<systemfull>
+
+Disk full or other similar status on the remote server.
+
+=head2 B<userunknown>
+
+Recipient address does not exist or the value of C<Status> header or the value
+of C<deliverystatus> is 5.1.1.
+
 =head1 AUTHOR
 
 azumakuniyuki
