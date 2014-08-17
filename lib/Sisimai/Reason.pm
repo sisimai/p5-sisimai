@@ -154,82 +154,82 @@ C<Sisimai::Reason->get()> detects the reason of bounce with parsing the bounced
 messages. The following reasons will be set in the value of C<reason> property
 of Sisimai::Data instance.
 
-=head2 B<blocked>
+=head2 C<blocked>
 
 Clienet hostname: the argument of C<HELO/EHLO>, is rejected.
 
-=head2 B<contenterror>
+=head2 C<contenterror>
 
 The value of C<Status> header or the value of C<deliverystatus> is 5.6.X or the
 original message is invalid format message and so on.
 
-=head2 B<exceedlimit>
+=head2 C<exceedlimit>
 
 The value of C<Status> header or the value of C<deliverystatus> is X.2.3 or the
 message size exceeded the limit of recipient's mailbox size limit.
 
-=head2 B<expired>
+=head2 C<expired>
 
 Delivery time has expired.
 
-=head2 B<filtered>
+=head2 C<filtered>
 
 The recipient address rejected at the end of DATA command.
 
-=head2 B<hostunknown>
+=head2 C<hostunknown>
 
 The host part of the recipient address does not exist or the value of C<Status>
 header or the value of C<deliverystatus> is 5.1.2.
 
-=head2 B<mailboxfull>
+=head2 C<mailboxfull>
 
 The recipient's mailbox is full or the value of C<Status> header or the value of
 C<deliverystatus> is X.2.2
 
-=head2 B<mailererror>
+=head2 C<mailererror>
 
 Mailer program at the remote host exit with the status code except 0 and 75.
 
-=head2 B<mesgtoobig>
+=head2 C<mesgtoobig>
 
 SMTP session rejected due to the message size exceeded server limit or the value
 of C<Status> header or the value of C<deliverystatus> is X.3.4.
 
-=head2 B<notaccept>
+=head2 C<notaccept>
 
 Remote server does not accept email.
 
-=head2 B<onhold>
+=head2 C<onhold>
 
 Could not detect the reason of bounce.
 
-=head2 B<rejected>
+=head2 C<rejected>
 
 The sender email address rejected or the value of C<Status> header or the value
 of C<deliverystatus> is X.1.8.
 
-=head2 B<norelaying>
+=head2 C<norelaying>
 
 Relaying denied.
 
-=head2 B<securityerror>
+=head2 C<securityerror>
 
-Message rejected due to spam content or virus or other security reason. The value
+Message rejected due to SPAM content or virus or other security reason. The value
 of C<Status> header or the value of C<deliverystatus> is X.7.Y.
 
-=head2 B<suspend>
+=head2 C<suspend>
 
-The recipient's mailbox temporaly disabled.
+The recipient's mailbox temporary disabled.
 
-=head2 B<systemerror>
+=head2 C<systemerror>
 
 Configuration error on the remote host or network error.
 
-=head2 B<systemfull>
+=head2 C<systemfull>
 
 Disk full or other similar status on the remote server.
 
-=head2 B<userunknown>
+=head2 C<userunknown>
 
 Recipient address does not exist or the value of C<Status> header or the value
 of C<deliverystatus> is 5.1.1.
