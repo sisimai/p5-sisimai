@@ -24,7 +24,20 @@ Sisimai relies on:
 * __Try::Tiny__
 * __JSON__
 
-BASIC USAGE
+Install
+-------
+
+    % sudo cpanm Sisimai
+
+OR
+    
+    % cd /usr/local/src
+    % git clone https://github.com/azumakuniyuki/Sisimai.git
+    % cd ./Sisimai
+    % sudo cpanm .
+
+
+Basic usage
 -----------
 make() method provides feature for getting parsed data from bounced email 
 messages like following.
@@ -40,6 +53,7 @@ messages like following.
 
             my $h = $e->damn();             # Convert to HASH reference
             my $j = $e->dump('json');       # Convert to JSON string
+            print $e->dump('json');         # JSON formatted bounce data
         }
     }
 
