@@ -412,11 +412,12 @@ The value of C<Subject> header of the original message encoded in UTF-8.
 
 =head2 C<provider>(I<String>)
 
-Provider name. See C<perldoc Sisimai::Group>
+Provider name of the recipient address. See C<perldoc Sisimai::Group>
 
 =head2 C<category>(I<category>)
 
-Cateogry name such as pc, webmail, and phone. See C<perldoc Sisimai::Group>
+Cateogry name of the recipient address such as C<pc>, C<webmail>, and C<phone>. 
+See C<perldoc Sisimai::Group>.
 
 =head2 C<addresser>(I<Sisimai::Address)>
 
