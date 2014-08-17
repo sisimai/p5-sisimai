@@ -10,7 +10,7 @@ sub match {
     my $regex = [
         qr/message too large/,  # Postfix
     ];
-    # return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;
 }
 
