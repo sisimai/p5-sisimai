@@ -53,6 +53,8 @@ sub new {
     }
 
     $parameters = __PACKAGE__->resolve( %$methodargv );
+    return undef unless $parameters->{'ds'};
+
     $messageobj = {
         'from'   => $parameters->{'from'},
         'header' => $parameters->{'header'},
@@ -212,11 +214,12 @@ sub resolve {
             $bodystring .= Sisimai::MTA->EOM;
             $methodargv  = { 'mail' => $processing, 'body' => \$bodystring };
             $bouncedata  = __PACKAGE__->rewrite( %$methodargv );
-            $processing->{'ds'} = $bouncedata->{'ds'};
         }
 
+        return undef unless $bouncedata;
+        return undef unless keys %$bouncedata;
         return undef unless $bodystring;
-        return undef unless scalar @{ $processing->{'ds'} };
+        $processing->{'ds'} = $bouncedata->{'ds'};
 
         REWRITE_RFC822_PART: {
             # Rewrite headers of the original message in the body part
