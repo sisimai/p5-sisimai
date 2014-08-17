@@ -25,9 +25,7 @@ sub scan {
     my $rfc822head = {};
     my $dscontents = __PACKAGE__->DELIVERYSTATUS;
     my $softbounce = 0;
-    my $recipients = 0;
-
-    my $v = $dscontents;
+    my $v          = $dscontents;
 
     if( $scannedset && $scannedset->{'reason'} ) {
         # Make bounce data by the values returned from Sisimai::MDA->scan()
@@ -73,6 +71,7 @@ sub scan {
         # Final-Recipient: RFC822; userunknown@example.jp
         $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
     } 
+    return undef unless $v->{'recipient'};
 
     if( $$mbody =~ m/^X-Actual-Recipient:[ ]*rfc822;[ ]*([^ ]+)$/im ) {
         # X-Actual-Recipient: RFC822; kijitora@example.co.jp
@@ -98,7 +97,6 @@ sub scan {
         # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
         $v->{'date'} = $1;
     }
-
     $v->{'agent'} ||= __PACKAGE__->smtpagent;
 
     return { 'ds' => [ $v ], 'rfc822' => '' };
