@@ -360,7 +360,7 @@ including Sisimai::Data objects.
         for my $e ( @$data ) {
             print $e->reason;               # userunknown, mailboxfull, and so on.
             print $e->recipient->address;   # (Sisimai::Address) envelope recipient address
-            print $e->bonced->ymd           # (Time::Piece) Date of bounce
+            print $e->date->ymd             # (Time::Piece) Date of the email bounce
         }
     }
 
@@ -373,6 +373,104 @@ C<damn> convert the object to a hash reference.
     my $hash = $self->damn;
     print $hash->{'recipient'}; # user@example.jp
     print $hash->{'date'};      # 1393940000
+
+=head1 PROPERTIES
+
+Sisimai::Data have the following properties:
+
+=head2 C<date>(I<Time::Piece>)
+
+The value of Date: header of the original message or the bounce message.
+
+=head2 C<token>(I<String>)
+
+C<token> is a MD5 string generated from the sender address(C<addresser>) and the
+recipient address.
+
+=head2 C<lhost>(I<String>)
+
+Local host name of the email bounce.
+
+=head2 C<rhost>(I<String>)
+
+Remote MTA name of the email bounce.
+
+=head2 C<alias>(I<String>)
+
+Expanded address of the recipient address.
+
+=head2 C<listid>(I<String>)
+
+The value of C<List-Id> header of the original message. If the original message
+have no such header, this value will be set "".
+
+=head2 C<reason>(I<String>)
+
+The reason name of email bounce. The list of all reasons are available at 
+C<perldoc Sisimai::Reason>.
+
+=head2 C<subject>(I<String>)
+
+The value of C<Subject> header of the original message encoded in UTF-8.
+
+=head2 C<provider>(I<String>)
+
+Provider name. See C<perldoc Sisimai::Group>
+
+=head2 C<category>(I<category>)
+
+Cateogry name such as pc, webmail, and phone. See C<perldoc Sisimai::Group>
+
+=head2 C<addresser>(I<Sisimai::Address)>
+
+Sender address of the original message. See C<perldoc Sisimai::Address>.
+
+=head2 C<recipienet>(I<Sisimai::Address)>
+
+Recipient address of the original message. See C<perldoc Sisimai::Address>.
+
+=head2 C<messageid>(I<String>)
+
+The value of C<Message-Id> header of the original message. When the header does
+not exist in the message, this value will be set "".
+
+=head2 C<smtpagent>(I<String>)
+
+MTA or MSP module name which is used to get bounce reason such as C<Sendmail>,
+C<US::Google>, and so on. See C<perldoc Sisimai::MTA> or C<perldoc Sisimai::MSP>.
+
+=head2 C<smtpcommand>(I<String>)
+
+The last SMTP command name of the session email bounce has occurred.
+
+=head2 C<destination>(I<String>)
+
+the domain part of the c<recipient>.
+
+=head2 C<senderdomain>(I<String>)
+
+the domain part of the c<addresser>.
+
+=head2 C<feedbacktype>(I<String>)
+
+The value of C<Feedback-Type> header of ARF: Abuse Reporting Formatted message.
+
+=head2 C<diagnosticcode>(I<String>)
+
+The value of C<Diagnostic-Code> header or error message string in the bounced email.
+
+=head2 C<diagnostictype>(I<String>)
+
+C<SMTP> or C<X-Unix>.
+
+=head2 C<deliverystatus>(I<String>)
+
+The value of C<Status> header or pseudo D.S.N. value generated from bounce reason
+or error message string and so on.
+
+=head2 C<timezoneoffset>(I<Integer>)
+
+Time zone offset value(seconds).
 
 =head1 AUTHOR
 
