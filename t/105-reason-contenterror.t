@@ -14,7 +14,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     is $PackageName->text, 'contenterror', '->text = contenterror';
-    ok $PackageName->match('550 5.6.0 Message Filtered');
+    ok $PackageName->match('550 5.6.0 the headers in this message contain improperly-formatted binary content');
     is $PackageName->true, undef, '->true = undef';
 }
 
