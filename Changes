@@ -1,5 +1,11 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.0.1   Sun, 17 Aug 2014 23:00:00 +0900 (JST)
+    - Fixed bug for reading each email file in the Maildir/ given as an argument
+      of Sisimai::Mail::Maildir->read method.
+    - Refactoring around codes to return the parsed data.
+    - Implement "make" method to get bounce data at Sisimai.pm.
+
 4.0.0   Sat, 16 Aug 2014 20:00:00 +0900 (JST)
 
     - Sisimai 4.0.0 release.
