@@ -70,7 +70,6 @@ if( -d $d ) {
                 is $t->host, $f->destination, sprintf( "(%s) destination = %s", $e, $f->destination );
 
                 like $f->timezoneoffset, qr/\A[+-]\d+\z/, sprintf( "(%s) timezoneoffset = %s", $e, $f->timezoneoffset );
-                like $f->frequency, qr/\A\d+\z/, sprintf( "(%s) frequency = %d", $e, $f->frequency );
                 is $f->smtpagent, [ split( '::', $c ) ]->[-1], sprintf( "(%s) smtpagent = %s", $e, $f->smtpagent );
 
                 ok defined $f->feedbacktype, sprintf( "(%s) feedbacktype = ''", $e );
