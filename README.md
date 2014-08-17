@@ -37,7 +37,9 @@ messages like following.
             print ref $e;                   # Sisimai::Data
             print $e->recipient->address;   # kijitora@example.jp
             print $e->reason;               # userunknown
-            print $e->dump('json');         # JSON formatted bounce data
+
+            my $h = $e->damn();             # Convert to HASH reference
+            my $j = $e->dump('json');       # Convert to JSON string
         }
     }
 
