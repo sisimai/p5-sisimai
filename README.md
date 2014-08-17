@@ -24,6 +24,23 @@ Sisimai relies on:
 * __Try::Tiny__
 * __JSON__
 
+BASIC USAGE
+-----------
+make() method provides feature for getting parsed data from bounced email 
+messages like following.
+
+    use Sisimai;
+    my $v = Sisimai->make( '/path/to/mbox' );   # or Path to Maildir
+
+    if( defined $v ) {
+        for my $e ( @$v ) {
+            print ref $e;                   # Sisimai::Data
+            print $e->recipient->address;   # kijitora@example.jp
+            print $e->reason;               # userunknown
+            print $e->dump('json');         # JSON formatted bounce data
+        }
+    }
+
 REPOSITORY
 ----------
 [github.com/azumakuniyuki/Sisimai](https://github.com/azumakuniyuki/Sisimai)
