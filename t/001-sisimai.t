@@ -41,6 +41,14 @@ MAKE_TEST: {
             my $h = $r->damn;
             isa_ok $h, 'HASH';
             ok scalar keys %$h;
+            is $h->{'recipient'}, $r->recipient->address, '->recipient = '.$h->{'recipient'};
+            is $h->{'addresser'}, $r->addresser->address, '->addresser = '.$h->{'addresser'};
+
+            for my $p ( keys %$h ) {
+                next if ref $r->$p;
+                next if $p eq 'subject';
+                is $h->{ $p }, $r->$p, '->'.$p.' = '.$h->{ $p };
+            }
 
             my $j = $r->dump('json');
             ok length $j, 'length( dump("json") ) = '.length $j;
