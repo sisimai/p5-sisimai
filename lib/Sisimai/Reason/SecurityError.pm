@@ -9,11 +9,34 @@ sub match {
     my $argvs = shift // return undef;
     my $regex = [
         qr/authentication failed; server .+ said:/,     # Postfix
-
         qr/authentication turned on in your email client/,
+
+        # Rejected due to message contents: spam, virus or header.
+        qr/\d+ denied \[[a-z]+\] .+[(]Mode: .+[)]/,
+        qr/because the recipient is not accepting mail with attachments/,   # AOL Phoenix
+        qr/because the recipient is not accepting mail with embedded images/,   # AOL Phoenix
+        qr/blocked by policy: no spam please/,
+        qr/blocked by spamAssassin/,        # rejected by SpamAssassin
+        qr/domain .+ is a dead domain/,
         qr/email not accepted for policy reasons/,
+
+        qr/mail appears to be unsolicited/, # rejected due to spam
+        qr/message filtered/,
+        qr/message filtered[.] please see the faqs section on spam/,
+        qr/message rejected due to suspected spam content/,
+
+        qr/message refused by mailmarshal spamprofiler/,
+        qr/our filters rate at and above .+ percent probability of being spam/,
+        qr/rejected: spamassassin score /,
+        qr/rejected due to spam content/,
         qr/sorry, that domain isn'?t in my list of allowed rcpthosts/,
         qr/sorry, your don'?t authenticate or the domain isn'?t in my list of allowed rcpthosts/,
+        qr/spam not accepted/,
+        qr/spambouncer identified spam/,    # SpamBouncer identified SPAM
+
+        qr/the message was rejected because it contains prohibited virus or spam content/,
+        qr/we dont accept spam/,
+        qr/your message has been temporarily blocked by our filter/,
         qr/your network is temporary blacklisted/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;

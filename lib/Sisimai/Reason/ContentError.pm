@@ -8,33 +8,13 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = [
-        # Rejected due to message contents: spam, virus or header.
-        qr/\d+ denied \[[a-z]+\] .+[(]Mode: .+[)]/,
-        qr/because the recipient is not accepting mail with attachments/,   # AOL Phoenix
-        qr/because the recipient is not accepting mail with embedded images/,   # AOL Phoenix
-        qr/blocked by policy: no spam please/,
-        qr/blocked by spamAssassin/,        # rejected by SpamAssassin
-        qr/domain .+ is a dead domain/,
-        qr/mail appears to be unsolicited/, # rejected due to spam
-        qr/message filtered/,
-        qr/message filtered[.] please see the faqs section on spam/,
-        qr/message rejected due to suspected spam content/,
         qr/message header size, or recipient list, exceeds policy limit/,
         qr/message mime complexity exceeds the policy maximum/,
-        qr/message refused by mailmarshal spamprofiler/,
-        qr/our filters rate at and above .+ percent probability of being spam/,
-        qr/rejected: spamassassin score /,
-        qr/rejected due to spam content/,   # rejected due to spam
         qr/routing loop detected -- too many received: headers/,
-        qr/spam not accepted/,
-        qr/spambouncer identified spam/,    # SpamBouncer identified SPAM
         qr/the headers in this message contain improperly-formatted binary content/,
-        qr/the message was rejected because it contains prohibited virus or spam content/,
         qr/this message contains invalid MIME headers/,
         qr/this message contains improperly-formatted binary content/,
         qr/this message contains text that uses unnecessary base64 encoding/,
-        qr/we dont accept spam/,
-        qr/your message has been temporarily blocked by our filter/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;
