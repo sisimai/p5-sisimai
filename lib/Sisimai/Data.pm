@@ -28,7 +28,6 @@ my $rwaccessors = [
     'addresser',        # (Sisimai::Address) From: header in the original message
     'recipient',        # (Sisimai::Address) Final-Recipient: or To: in the original message
     'messageid',        # (String) Message-Id: header
-    'frequency',        # (Integer) Bounce frequency
     'smtpagent',        # (String) MTA name
     'smtpcommand',      # (String) The last SMTP command
     'destination',      # (String) A domain part of the "recipinet"
@@ -92,7 +91,6 @@ sub new {
             'lhost', 'rhost', 'smtpcommand', 'feedbacktype',
         ];
         $thing->{ $_ } = $argvs->{ $_ } // '' for @$v;
-        $thing->{'frequency'} = 1;
     }
     return bless( $thing, __PACKAGE__ );
 }
@@ -286,7 +284,6 @@ sub damn {
             # Copy string data
             $v->{ $e } = $self->$e // '';
         }
-        $v->{'frequency'} = $self->frequency // 0;
         $v->{'addresser'} = $self->addresser->address;
         $v->{'recipient'} = $self->recipient->address;
         $v->{'date'}      = $self->date->epoch;
