@@ -31,6 +31,7 @@ my $DefaultMSP = [
     'US::Facebook',
     'JP::KDDI',
     'JP::Biglobe',
+    'US::AmazonSES',
 ];
 
 sub ENDOFEMAIL { '__END_OF_EMAIL_MESSAGE__' };
