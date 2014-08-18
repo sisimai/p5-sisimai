@@ -94,7 +94,7 @@ C<is_8bit()> checks the argument include any 8bit character or not.
 
 =head2 C<B<sweep( I<String> )>>
 
-C<sweep()> clean the argument string up: remove trailng spaces, squeeze spaces.
+C<sweep()> clean the argument string up: remove trailing spaces, squeeze spaces.
 
     print Sisimai::String->sweep( ' cat neko ' );  # 'cat neko';
     print Sisimai::String->sweep( ' nyaa   !!' );  # 'nyaa !!';

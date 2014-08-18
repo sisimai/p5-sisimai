@@ -260,10 +260,9 @@ Sisimai::ARF is a parser for email returned as a FeedBack Loop report message.
 
 Unsolicited email or some other kind of email abuse.
 
-
 =head2 B<fraud>
 
-Indicates some kind of fraud or phishing activity.
+Indicates some kind of C<fraud> or C<phishing> activity.
 
 =head2 B<other>
 
