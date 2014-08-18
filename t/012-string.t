@@ -5,7 +5,7 @@ use Sisimai::String;
 
 my $PackageName = 'Sisimai::String';
 my $MethodNames = {
-    'class' => [ 'token', 'is_8bit' ],
+    'class' => [ 'token', 'is_8bit', 'sweep' ],
     'object' => [],
 };
 
@@ -23,6 +23,10 @@ MAKE_TEST: {
 
     is( Sisimai::String->is_8bit( \$s ), 0, '->is_8bit = 0' );
     is( Sisimai::String->is_8bit( \'日本語' ), 1, '->is_8bit = 1' );
+
+    is( Sisimai::String->sweep( undef ), undef, '->sweep = ""' );
+    is( Sisimai::String->sweep( ' neko cat '), 'neko cat', '->sweep = "neko cat"' );
+    is( Sisimai::String->sweep( ' nyaa   !!'), 'nyaa !!', '->sweep = "nyaa !!"' );
 }
 
 done_testing;
