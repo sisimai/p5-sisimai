@@ -254,6 +254,29 @@ Do not use this class directly, use Sisimai::ARF.
 
 Sisimai::ARF is a parser for email returned as a FeedBack Loop report message.
 
+=head1 FEEDBACK TYPES
+
+=head2 B<abuse>
+
+Unsolicited email or some other kind of email abuse.
+
+
+=head2 B<fraud>
+
+Indicates some kind of fraud or phishing activity.
+
+=head2 B<other>
+
+Any other feedback that does not fit into other registered types.
+
+=head2 B<virus>
+
+Report of a virus found in the originating message.
+
+=head1 SEE ALSO
+
+L<http://tools.ietf.org/html/rfc5965>
+
 =head1 AUTHOR
 
 azumakuniyuki
