@@ -56,7 +56,6 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     require Sisimai::RFC5322;
-    require Sisimai::Address;
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
