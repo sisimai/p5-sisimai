@@ -35,6 +35,22 @@ sub is_8bit {
     return 0;
 }
 
+sub sweep {
+    # @Description  Clean the string out
+    # @Param <ref>  (Scalar) String
+    # @Return       (Scalar) String cleaned out
+    my $class = shift;
+    my $argvs = shift // return undef;
+
+    chomp $argvs;
+    $argvs =~ y{ }{}s;
+    $argvs =~ s{\A }{}g;
+    $argvs =~ s{ \z}{}g;
+    $argvs =~ s{ [-]{2,}.+\z}{};
+
+    return $argvs;
+}
+
 1;
 __END__
 =encoding utf-8
@@ -51,6 +67,7 @@ Sisimai::String - String related class
 
     print Sisimai::String->token( $s, $r );    # 2d635de42a44c54b291dda00a93ac27b
     print Sisimai::String->is_8bit( \'猫');    # 1
+    print Sisimai::String->sweep(' neko cat ');# 'neko cat'
 
 =head1 DESCRIPTION
 
@@ -74,6 +91,13 @@ C<is_8bit()> checks the argument include any 8bit character or not.
 
     print Sisimai::String->is_8bit( \'cat' );  # 0;
     print Sisimai::String->is_8bit( \'ねこ' ); # 1;
+
+=head2 C<B<sweep( I<String> )>>
+
+C<sweep()> clean the argument string up: remove trailng spaces, squeeze spaces.
+
+    print Sisimai::String->sweep( ' cat neko ' );  # 'cat neko';
+    print Sisimai::String->sweep( ' nyaa   !!' );  # 'nyaa !!';
 
 =head1 AUTHOR
 
