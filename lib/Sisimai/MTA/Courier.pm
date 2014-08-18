@@ -23,7 +23,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 
@@ -192,6 +192,7 @@ sub scan {
     }
 
     return undef unless $recipients;
+    require Sisimai::String;
     require Sisimai::RFC3463;
     require Sisimai::RFC5322;
 
@@ -200,6 +201,7 @@ sub scan {
         for my $f ( 'date', 'lhost', 'rhost' ) {
             $e->{ $f }  ||= $connheader->{ $f } || '';
         }
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.

@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -183,6 +183,7 @@ sub scan {
     }
 
     return undef unless $recipients;
+    require Sisimai::String;
     require Sisimai::RFC5322;
 
     for my $e ( @$dscontents ) {
@@ -201,6 +202,7 @@ sub scan {
         $e->{'spec'}    ||= 'SMTP';
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || 'CONN';
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

@@ -26,7 +26,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -202,6 +202,7 @@ sub scan {
     }
 
     return undef unless $recipients;
+    require Sisimai::String;
     require Sisimai::RFC3463;
     require Sisimai::RFC5322;
 
@@ -212,6 +213,7 @@ sub scan {
         }
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'}   = shift @$commandset // 'CONN';
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.

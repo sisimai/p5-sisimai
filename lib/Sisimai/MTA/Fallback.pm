@@ -3,9 +3,8 @@ use parent 'Sisimai::MTA';
 use feature ':5.10';
 use strict;
 use warnings;
-use Sisimai::Address;
 
-sub version     { '4.0.0' };
+sub version     { '4.0.1' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'Fallback' };
 
@@ -19,6 +18,8 @@ sub scan {
     my $mbody = shift // return undef;
 
     require Sisimai::MDA;
+    require Sisimai::String;
+    require Sisimai::Address;
     require Sisimai::RFC3463;
 
     my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
@@ -32,7 +33,7 @@ sub scan {
         $v->{'agent'}     = $scannedset->{'mda'} || __PACKAGE__->smtpagent;
         $v->{'reason'}    = $scannedset->{'reason'};
         $v->{'command'}   = '';
-        $v->{'diagnosis'} = $scannedset->{'message'};
+        $v->{'diagnosis'} = Sisimai::String->sweep( $scannedset->{'message'} );
 
         $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $v->{'diagnosis'} );
         my $s = $softbounce ? 't' : 'p';
@@ -46,6 +47,7 @@ sub scan {
             $v->{'diagnosis'} = $1;
             $v->{'command'}   = 'DATA';
         }
+        $v->{'diagnosis'} = Sisimai::String->sweep( $v->{'diagnosis'} );
 
         if( $$mbody =~ m/^Status:[ ]*(\d[.]\d+[.]\d+)$/im ) {
             # Sisimai::MDA->scan did not return valid data

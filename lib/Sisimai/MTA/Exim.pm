@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -215,6 +215,7 @@ sub scan {
         $localhost0 = $1 if $mhead->{'received'}->[-1] =~ m/from\s([^ ]+) /;
     }
 
+    require Sisimai::String;
     require Sisimai::RFC3463;
     require Sisimai::RFC5322;
 
@@ -224,12 +225,8 @@ sub scan {
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'lhost'}   ||= $localhost0;
 
-        chomp $e->{'diagnosis'};
-        $e->{'diagnosis'} =~ y{ }{}s;
+        $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'diagnosis'} =~ s{\b__.+\z}{};
-        $e->{'diagnosis'} =~ s{\A }{}g;
-        $e->{'diagnosis'} =~ s{ \z}{}g;
-        $e->{'diagnosis'} =~ s{ [-]{2,}.+\z}{};
 
         if( ! $e->{'rhost'} ) {
             # Get the remote host name
