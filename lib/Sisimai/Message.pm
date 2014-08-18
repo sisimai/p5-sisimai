@@ -32,6 +32,7 @@ my $DefaultMSP = [
     'JP::KDDI',
     'JP::Biglobe',
     'US::AmazonSES',
+    'US::SendGrid',
 ];
 
 sub ENDOFEMAIL { '__END_OF_EMAIL_MESSAGE__' };
