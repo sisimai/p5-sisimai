@@ -234,6 +234,16 @@ Disk full or other similar status on the remote server.
 Recipient address does not exist or the value of C<Status> header or the value
 of C<deliverystatus> is 5.1.1.
 
+=head2 C<feedback>
+
+The message returned from the recipient or his/her provider as a ARF: Abuse 
+Feedback Reporting Format message.
+
+=head1 SEE ALSO
+
+L<Sisimai::ARF>
+L<http://tools.ietf.org/html/rfc5965>
+
 =head1 AUTHOR
 
 azumakuniyuki
