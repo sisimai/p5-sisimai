@@ -233,9 +233,12 @@ sub make {
         next unless $p->{'date'};
 
         OTHER_TEXT_HEADERS: {
+            # Remove square brackets and curly brackets from the host variable
+            map { $p->{ $_ } =~ y/[]()//d } ( 'rhost', 'lhost' );
             $p->{'listid'}    = $rfc822data->{'list-id'}    // '';
             $p->{'subject'}   = $rfc822data->{'subject'}    // '';
             $p->{'messageid'} = $rfc822data->{'message-id'} // '';
+
         }
 
         CLASSIFICATION: {
