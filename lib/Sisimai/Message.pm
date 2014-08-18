@@ -315,6 +315,13 @@ sub rewrite {
     my $mailheader = $mesgentity->{'header'};
     my $scannedset = undef;
 
+    FALLBACK_FOR_EACH_HEADER: {
+        # Set empty string if the value is undefined
+        $mailheader->{'from'}         //= '';
+        $mailheader->{'subject'}      //= '';
+        $mailheader->{'content-type'} //= '';
+    }
+
     EXPAND_FORWARDED_MESSAGE: {
         # Check whether or not the message is a bounce mail.
         # Pre-Process email body if it is a forwarded bounce message.
