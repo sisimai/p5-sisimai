@@ -64,7 +64,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Facebook' }
 sub smtpagent   { 'US::Facebook' }
 
@@ -201,6 +201,7 @@ sub scan {
     }
 
     return undef unless $recipients;
+    require Sisimai::String;
     require Sisimai::RFC3463;
     require Sisimai::RFC5322;
 
@@ -216,14 +217,10 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
-
-        chomp $e->{'diagnosis'};
-        $e->{'diagnosis'} =~ y{ }{}s;
-        $e->{'diagnosis'} =~ s{\A }{}g;
-        $e->{'diagnosis'} =~ s{ \z}{}g;
-        $e->{'diagnosis'} =~ s{ [-]{2,}.+\z}{};
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( $e->{'diagnosis'} =~ m/\b([A-Z]{3})[-]([A-Z])(\d)\b/ ) {
+            # Diagnostic-Code: smtp; 550 5.1.1 RCP-P2 
             my $lhs = $1;
             my $rhs = $2;
             my $num = $3;

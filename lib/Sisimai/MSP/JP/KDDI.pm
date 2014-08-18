@@ -17,7 +17,7 @@ my $RxVia = [
     qr/\Afrom\s+\w+[.]auone[-]net[.]jp\s/,
 ];
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'au by KDDI' }
 sub smtpagent   { 'JP::KDDI' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -274,12 +274,7 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
-
-        chomp $e->{'diagnosis'};
-        $e->{'diagnosis'} =~ y{ }{}s;
-        $e->{'diagnosis'} =~ s{\A }{}g;
-        $e->{'diagnosis'} =~ s{ \z}{}g;
-        $e->{'diagnosis'} =~ s{ [-]{2,}.+\z}{};
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( exists $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by KDDI)

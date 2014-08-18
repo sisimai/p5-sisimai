@@ -15,7 +15,7 @@ my $RxMSP = {
     },
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Verizon Wireless' }
 sub smtpagent   { 'US::Verizon' }
 
@@ -236,6 +236,7 @@ sub scan {
     $rfc822part .= sprintf( "From: %s\n", $senderaddr ) unless $rfc822part =~ m/\bFrom: /;
     $rfc822part .= sprintf( "Subject: %s\n", $subjecttxt ) unless $rfc822part =~ m/\bSubject: /;
 
+    require Sisimai::String;
     require Sisimai::RFC3463;
     require Sisimai::RFC5322;
 
@@ -250,12 +251,7 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
-
-        chomp $e->{'diagnosis'};
-        $e->{'diagnosis'} =~ y{ }{}s;
-        $e->{'diagnosis'} =~ s{\A }{}g;
-        $e->{'diagnosis'} =~ s{ \z}{}g;
-        $e->{'diagnosis'} =~ s{ [-]{2,}.+\z}{};
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         SESSION: for my $r ( keys %$RxErr ) {
             # Verify each regular expression of session errors

@@ -100,7 +100,7 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Google Gmail' }
 sub smtpagent   { 'US::Google' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -270,18 +270,14 @@ sub scan {
     }
 
     return undef unless $recipients;
+    require Sisimai::String;
     require Sisimai::RFC3463;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'date'}    ||= $mhead->{'date'};
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-
-        chomp $e->{'diagnosis'};
-        $e->{'diagnosis'} =~ y{ }{}s;
-        $e->{'diagnosis'} =~ s{\A }{}g;
-        $e->{'diagnosis'} =~ s{ \z}{}g;
-        $e->{'diagnosis'} =~ s{ [-]{2,}.+\z}{};
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         unless( $e->{'rhost'} ) {
             # Get the value of remote host
