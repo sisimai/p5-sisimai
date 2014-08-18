@@ -17,6 +17,7 @@ my $f = [ qw|
     MSP.pm
         MSP/JP/Biglobe.pm
         MSP/JP/KDDI.pm
+        MSP/US/AmazonSES.pm
         MSP/US/Facebook.pm
         MSP/US/Google.pm
         MSP/US/Verizon.pm

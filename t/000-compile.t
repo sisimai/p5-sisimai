@@ -20,6 +20,7 @@ use_ok 'Sisimai::'.$_ for qw(
     MSP
         MSP::JP::Biglobe
         MSP::JP::KDDI
+        MSP::US::AmazonSES
         MSP::US::Facebook
         MSP::US::Google
         MSP::US::Verizon
