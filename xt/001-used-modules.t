@@ -20,6 +20,7 @@ my $f = [ qw|
         MSP/US/AmazonSES.pm
         MSP/US/Facebook.pm
         MSP/US/Google.pm
+        MSP/US/SendGrid.pm
         MSP/US/Verizon.pm
     MTA.pm
         MTA/Courier.pm

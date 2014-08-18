@@ -23,6 +23,7 @@ use_ok 'Sisimai::'.$_ for qw(
         MSP::US::AmazonSES
         MSP::US::Facebook
         MSP::US::Google
+        MSP::US::SendGrid
         MSP::US::Verizon
     MTA
         MTA::Courier
