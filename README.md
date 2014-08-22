@@ -65,6 +65,12 @@ Install | インストール
 ----------------------
 
     % sudo cpanm Sisimai
+    --> Working on Sisimai
+    Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.0.1.tar.gz ... OK
+    ...
+    1 distribution installed
+    % perldoc -l Sisimai
+    /usr/local/lib/perl5/site_perl/5.14.2/Sisimai.pm
 
 OR
     
@@ -72,6 +78,9 @@ OR
     % git clone https://github.com/azumakuniyuki/Sisimai.git
     % cd ./Sisimai
     % sudo cpanm .
+    --> Working on .
+    Configuring Sisimai-4.0.1 ... OK
+    1 distribution installed
 
 
 Basic usage | 基本的な使い方
