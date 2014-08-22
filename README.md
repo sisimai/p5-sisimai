@@ -19,21 +19,31 @@ Differences between ver.2 and ver.4 | 新旧の違い
 The followings are the differences between version 2 (bounceHammer 2.7.X) and
 version 4 (Sisimai).
 
-| Features                                  | ver 2.7.X | Sisimai | Description |
-|-------------------------------------------|-----------|---------|-------------|
-| Command line tools                        | OK        | N/A     |             |
-| Modules for Commercial MTAs               | N/A       | OK      |             |
-| Parse 2 or more bounces in a single email | Only 1st  | ALL     |             |
-| Install using cpan or cpanm command       | N/A       | OK      |             |
+| Features                                       | ver 2.7.X     | Sisimai      |
+|------------------------------------------------|---------------|--------------|
+| Command line tools                             | OK            | N/A          |
+| Modules for Commercial MTAs                    | N/A(1)        | Included     |
+| WebUI/API                                      | OK            | N/A          |
+| Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL          |
+| Install using cpan or cpanm command            | N/A           | OK           |
+| Dependencies                                   | 24 modules    | 3 modules    |
+| License                                        | GPLv2 or Perl | 2 clause BSD |
+| Support Contract provided by Developer         | Available     | Coming soon  |
+
+(1) bounceHammer-nails
 
 公開中のbouncehammer version 2.7.12とversion 4(シシマイ)は上記のような違いがあります。
 
-| 機能                                      | ver 2.7.X | Sisimai | 備考        |
-|-------------------------------------------|-----------|---------|-------------|
-| コマンドラインツール                      | あり      | 無し    |             |
-| 商用MTA解析モジュール                     | 無し      | あり    |             |
-| 2件以上のバウンスがあるメールの解析       | 1件目だけ | 全件対応|             |
-| cpanまたはcpanmコマンドでのインストール   | 非対応    | 対応済  |             |
+| 機能                                           | ver 2.7.X     | Sisimai      |
+|------------------------------------------------|---------------|--------------|
+| コマンドラインツール                           | あり          | 無し         |
+| 商用MTA対応解析モジュール                      | 無し(商用版)  | あり(標準)   |
+| WebUIとAPI                                     | あり          | 無し         |
+| 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応     |
+| cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
+| 依存モジュール数                               | 24モジュール  | 3モジュール  |
+| ライセンス                                     | GPLv2かPerl   | 二条項BSD    |
+| 開発会社によるサポート契約                     | 提供中        | 準備中       |
 
 
 System requirements | 動作環境
