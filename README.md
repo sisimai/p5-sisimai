@@ -25,6 +25,7 @@ version 4 (Sisimai).
 | Modules for Commercial MTAs                    | N/A(1)        | Included     |
 | WebUI/API                                      | OK            | N/A          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL          |
+| Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
 | Install using cpan or cpanm command            | N/A           | OK           |
 | Dependencies                                   | 24 modules    | 3 modules    |
 | License                                        | GPLv2 or Perl | 2 clause BSD |
@@ -40,6 +41,7 @@ version 4 (Sisimai).
 | 商用MTA対応解析モジュール                      | 無し(商用版)  | あり(標準)   |
 | WebUIとAPI                                     | あり          | 無し         |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応     |
+| FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
 | 依存モジュール数                               | 24モジュール  | 3モジュール  |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD    |
