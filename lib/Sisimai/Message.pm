@@ -363,9 +363,9 @@ sub rewrite {
         last(SCANNER) if $scannedset;
 
         # When the all of Sisimai::MTA::* modules did not return bounce data,
-        # call Sisimai::MTA::Fallback
-        require Sisimai::MTA::Fallback;
-        $scannedset = Sisimai::MTA::Fallback->scan( $mailheader, $bodystring );
+        # call Sisimai::RFC3464;
+        require Sisimai::RFC3464;
+        $scannedset = Sisimai::RFC3464->scan( $mailheader, $bodystring );
         last(SCANNER) if $scannedset;
 
         # as of now, we have no sample email for coding this block
