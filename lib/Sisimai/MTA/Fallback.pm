@@ -90,7 +90,7 @@ sub scan {
         $v->{'rhost'} = lc $1;
     }
 
-    if( $$mbody =~ m/^Reporting-MTA:[ ]*dns;[ ]*(.+)$/im ) {
+    if( $$mbody =~ m/^(?:Reporting|Received-From|Original)-MTA:[ ]*dns;[ ]*(.+)$/im ) {
         # Reporting-MTA: dns; mx.example.jp
         $v->{'lhost'} = lc $1;
     }
