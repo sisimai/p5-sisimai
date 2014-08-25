@@ -1,9 +1,9 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::MTA::Fallback;
+use Sisimai::RFC3464;
 
-my $PackageName = 'Sisimai::MTA::Fallback';
+my $PackageName = 'Sisimai::RFC3464';
 my $MethodNames = {
     'class' => [ 
         'version', 'description', 'headerlist', 'scan',
@@ -33,7 +33,7 @@ MAKE_TEST: {
 
     PARSE_EACH_MAIL: for my $n ( 1..10 ) {
 
-        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/fallback-%d.eml", $n );
+        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/rfc3464-%d.eml", $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
         next unless defined $mailbox;
 

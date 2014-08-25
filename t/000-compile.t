@@ -29,7 +29,6 @@ use_ok 'Sisimai::'.$_ for qw(
         MTA::Courier
         MTA::Exchange
         MTA::Exim
-        MTA::Fallback
         MTA::OpenSMTPD
         MTA::Postfix
         MTA::qmail
@@ -56,6 +55,7 @@ use_ok 'Sisimai::'.$_ for qw(
         Rhost::GoogleApps
     RFC2606
     RFC3463
+    RFC3464
     RFC5322
     String
     Time
