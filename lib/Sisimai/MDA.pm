@@ -21,7 +21,7 @@ my $RxFrom = [
     qr/\Apostmaster/i,
 ];
 
-my $RxMesg = {
+my $RxErr = {
     'dovecot' => {
         'userunknown' => [
             qr/\AMailbox doesn't exist: /,
@@ -123,11 +123,11 @@ sub scan {
     return undef unless $agentname0;
     return undef unless scalar @$linebuffer;
 
-    for my $e ( keys %{ $RxMesg->{ $agentname0 } } ) {
+    for my $e ( keys %{ $RxErr->{ $agentname0 } } ) {
         # Detect an error reason from message patterns of the MDA.
         for my $f ( @$linebuffer ) {
 
-            next unless grep { $f =~ $_ } @{ $RxMesg->{ $agentname0 }->{ $e } };
+            next unless grep { $f =~ $_ } @{ $RxErr->{ $agentname0 }->{ $e } };
             $reasonname = $e;
             $bouncemesg = $f;
             last;
