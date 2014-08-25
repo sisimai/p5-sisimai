@@ -330,7 +330,7 @@ C<description()> returns description string of this module.
 
 =head2 C<B<smtpagent()>>
 
-C<smtpagent()> returns MDA name or string 'Fallback'.
+C<smtpagent()> returns MDA name or string 'RFC3464'.
 
     print Sisimai::RFC3464->smtpagent;
 
