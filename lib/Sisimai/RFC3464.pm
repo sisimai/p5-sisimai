@@ -16,13 +16,6 @@ my $RxRFC = {
 sub version     { '4.0.1' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
-sub action      {
-    # The Action field indicates the action performed by the Reporting-MTA
-    # as a result of its attempt to deliver the message to this recipient
-    # address.  This field MUST be present for each recipient named in the
-    # DSN.
-    return [ qw/failed delayed delivered relayed expanded/ ];
-}
 
 sub scan {
     # @Description  Detect an error for RFC3464
@@ -56,7 +49,7 @@ sub scan {
     };
 
     my $v = undef;
-    my $p = undef;
+    my $p = '';
     push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
     $rfc822head = Sisimai::MTA->RFC822HEADERS;
 
@@ -196,7 +189,7 @@ sub scan {
                     $e = 'Diagnostic-Code: '.$e;
 
                 } else {
-                    if( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/ ) {
+                    if( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
                         # 2.2.2 The Reporting-MTA DSN field
                         #
                         #       reporting-mta-field =
@@ -211,7 +204,7 @@ sub scan {
                         #   operation described in the DSN.  This field is required.
                         $connheader->{'rhost'} ||= $1;
 
-                    } elsif( $e =~ m/\AReceived-From-MTA:[ ]*dns;[ ]*(.+)\z/ ) {
+                    } elsif( $e =~ m/\AReceived-From-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
                         # 2.2.4 The Received-From-MTA DSN field
                         #   The optional Received-From-MTA field indicates the name of the MTA
                         #   from which the message was received.
@@ -226,7 +219,7 @@ sub scan {
                         #   parentheses.  (In this case, the MTA-name-type will be "dns".)
                         $connheader->{'lhost'} = $1;
 
-                    } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/ ) {
+                    } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/i ) {
                         # 2.2.5 The Arrival-Date DSN field
                         #   The optional Arrival-Date field indicates the date and time at which
                         #   the message arrived at the Reporting MTA.  If the Last-Attempt-Date
@@ -291,8 +284,9 @@ sub scan {
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
 
-        $e->{'spec'}    ||= 'SMTP';
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
+        $e->{'date'}  ||= $mhead->{'date'};
+        $e->{'spec'}  ||= 'SMTP';
+        $e->{'agent'} ||= __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
