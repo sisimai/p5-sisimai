@@ -26,7 +26,6 @@ my $f = [ qw|
         MTA/Courier.pm
         MTA/Exim.pm
         MTA/Exchange.pm
-        MTA/Fallback.pm
         MTA/OpenSMTPD.pm
         MTA/Postfix.pm
         MTA/qmail.pm
@@ -52,6 +51,7 @@ my $f = [ qw|
         Reason/UserUnknown.pm
     RFC2606.pm
     RFC3463.pm
+    RFC3464.pm
     RFC5322.pm
     Rhost.pm
         Rhost/GoogleApps.pm
