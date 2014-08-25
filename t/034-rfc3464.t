@@ -6,8 +6,7 @@ use Sisimai::RFC3464;
 my $PackageName = 'Sisimai::RFC3464';
 my $MethodNames = {
     'class' => [ 
-        'version', 'description', 'headerlist', 'scan',
-        'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS',
+        'version', 'description', 'smtpagent', 'scan',
     ],
     'object' => [],
 };
@@ -52,7 +51,7 @@ MAKE_TEST: {
                 like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
                 ok defined $e->{'command'}, '->command = '.$e->{'command'};
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
-                ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
+                ok defined $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok defined $e->{'action'}, '->action = '.$e->{'action'};
                 ok defined $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
                 ok defined $e->{'lhost'}, '->lhost = '.$e->{'lhost'};

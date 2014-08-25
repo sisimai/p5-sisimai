@@ -25,7 +25,7 @@ MAKE_TEST: {
         'vdeliver: Delivery failed due to system quota violation',
     ];
 
-    my $emailfn = './eg/maildir-as-a-sample/new/fallback-1.eml';
+    my $emailfn = './eg/maildir-as-a-sample/new/rfc3464-1.eml';
     my $mailbox = Sisimai::Mail->new( $emailfn );
     my $message = undef;
     my $headers = {};
