@@ -26,6 +26,7 @@ version 4 (Sisimai).
 | WebUI/API                                      | OK            | N/A          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL          |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
+| Easy to install                                | No            | Yes          |
 | Install using cpan or cpanm command            | N/A           | OK           |
 | Dependencies                                   | 24 modules    | 3 modules    |
 | License                                        | GPLv2 or Perl | 2 clause BSD |
@@ -42,6 +43,7 @@ version 4 (Sisimai).
 | WebUIとAPI                                     | あり          | 無し         |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応     |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
+| インストール作業が簡単                         | やや面倒      | 簡単で楽     |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
 | 依存モジュール数                               | 24モジュール  | 3モジュール  |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD    |
