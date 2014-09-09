@@ -49,6 +49,7 @@ sub scan {
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $statuspart = 0;     # (Integer) Flag, 1 = have got delivery status part.
+    my $subjecttxt = '';    # (String) The value of Subject:
 
     my $v = undef;
     my $p = undef;
@@ -122,7 +123,7 @@ sub scan {
 
                 } elsif( $e =~ m/\A\s\sSubject: (.+)\z/ ) {
                     #   Subject: Nyaa
-                    $rfc822part .= sprintf( "Subject: %s\n", $1 );
+                    $subjecttxt = $1;
                 }
             }
         } # End of if: rfc822
@@ -163,6 +164,11 @@ sub scan {
 
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
+
+        unless( $rfc822part =~ m/\bSubject:/ ) {
+            # Fallback: Add the value of Subject as a Subject header
+            $rfc822part .= sprintf( "Subject: %s\n", $subjecttxt );
+        }
 
     } # end of for()
 
