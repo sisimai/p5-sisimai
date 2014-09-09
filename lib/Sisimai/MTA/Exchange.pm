@@ -230,7 +230,7 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-		if( $e->{'diagnosis'} =~ m{\AMSEXCH:.+\s*[(]([0-9A-F]{8})[)]\s*(.*)\z} ) {
+        if( $e->{'diagnosis'} =~ m{\AMSEXCH:.+\s*[(]([0-9A-F]{8})[)]\s*(.*)\z} ) {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
             my $c = $1;
             my $d = $2;
