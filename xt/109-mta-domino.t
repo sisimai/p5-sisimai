@@ -39,7 +39,7 @@ if( -d $d ) {
                 ok defined $f->listid, sprintf( "(%s) listid = %s", $e, $f->listid );
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
-                ok length $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
+                ok defined $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
                 ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->date, 'Time::Piece';
