@@ -3,6 +3,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
+use Module::Load;
+use Time::Piece;
+use Try::Tiny;
+
 use Sisimai::Address;
 use Sisimai::RFC5322;
 use Sisimai::String;
@@ -10,9 +14,6 @@ use Sisimai::Reason;
 use Sisimai::Group;
 use Sisimai::Rhost;
 use Sisimai::Time;
-use Module::Load;
-use Time::Piece;
-use Try::Tiny;
 
 my $rwaccessors = [
     'date',             # (Time::Piece) Date: in the original message
@@ -238,9 +239,10 @@ sub make {
             $p->{'listid'} =  $rfc822data->{'list-id'}    // '';
             $p->{'listid'} =~ y/<>//d;
 
-            $p->{'subject'}   = $rfc822data->{'subject'}    // '';
-            $p->{'messageid'} = $rfc822data->{'message-id'} // '';
+            $p->{'subject'} = $rfc822data->{'subject'}    // '';
 
+            $p->{'messageid'} =  $rfc822data->{'message-id'} // '';
+            $p->{'messageid'} =~ y/<>//d;
         }
 
         CLASSIFICATION: {
