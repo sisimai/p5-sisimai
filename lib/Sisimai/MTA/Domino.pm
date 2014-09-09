@@ -48,7 +48,6 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $statuspart = 0;     # (Integer) Flag, 1 = have got delivery status part.
     my $subjecttxt = '';    # (String) The value of Subject:
 
     my $v = undef;
