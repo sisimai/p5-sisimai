@@ -23,6 +23,7 @@ my $DefaultMTA = [
     'Exim',
     'Courier',
     'Exchange',
+    'Domino',
 ];
 
 my $DefaultMSP = [
