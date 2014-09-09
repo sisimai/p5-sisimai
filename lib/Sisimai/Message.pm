@@ -338,7 +338,11 @@ sub rewrite {
     }
 
     SCANNER: while(1) {
-
+        # 1. Sisimai::ARF 
+        # 2. Sisimai::MTA::*
+        # 3. Sisimai::MSP::*
+        # 4. Sisimai::RFc3464
+        #
         if( Sisimai::ARF->is_arf( $mailheader->{'content-type'} ) ) {
             # Feedback Loop message
             $scannedset = Sisimai::ARF->scan( $mailheader, $bodystring );
@@ -365,6 +369,7 @@ sub rewrite {
 
         # When the all of Sisimai::MTA::* modules did not return bounce data,
         # call Sisimai::RFC3464;
+        #
         require Sisimai::RFC3464;
         $scannedset = Sisimai::RFC3464->scan( $mailheader, $bodystring );
         last(SCANNER) if $scannedset;
