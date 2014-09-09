@@ -106,7 +106,7 @@ sub scan {
                 # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\AFinal-Recipient:[ ]*rfc822;[ ]*(.+)\z/i ) {
+                if( $e =~ m/\AFinal-Recipient:[ ]*rfc822;[ ]*(.+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -116,40 +116,40 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\AX-Actual-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ||
-                    $e =~ m/\AOriginal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
+                } elsif( $e =~ m/\AX-Actual-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/ ||
+                    $e =~ m/\AOriginal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/ ) {
                     # X-Actual-Recipient: RFC822; kijitora@example.co.jp
                     # Original-Recipient: rfc822;kijitora@example.co.jp
                     $v->{'alias'} = $1;
 
-                } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\AAction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/i ) {
+                } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.1.1
                     # Status:5.2.0
                     # Status: 5.1.0 (permanent failure)
                     $v->{'status'} = $1;
 
-                } elsif( $e =~ m/Remote-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/Remote-MTA:[ ]*dns;[ ]*(.+)\z/ ) {
                     # Remote-MTA: DNS; mx.example.jp
                     $v->{'rhost'} = lc $1;
 
-                } elsif( $e =~ m/\ALast-Attempt-Date:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
                     # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                     $v->{'date'} = $1;
 
                 } else {
 
-                    if( $e =~ m/\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/i ) {
+                    if( $e =~ m/\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
                         $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
 
-                    } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/i && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                    } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -175,19 +175,19 @@ sub scan {
 
                 } else {
 
-                    if( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+                    if( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/ ) {
                         # Reporting-MTA: dns; mx.example.jp
                         next if $connheader->{'lhost'};
                         $connheader->{'lhost'} = $1;
                         $connvalues++;
 
-                    } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/i ) {
+                    } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/ ) {
                         # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                         next if $connheader->{'date'};
                         $connheader->{'date'} = $1;
                         $connvalues++;
 
-                    } elsif( $e =~ m/\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/i ) {
+                    } elsif( $e =~ m/\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
                         # X-Postfix-Sender: rfc822; shironeko@example.org
                         $rfc822part .= sprintf( "%s: %s\n", $1, $2 );
                     }
