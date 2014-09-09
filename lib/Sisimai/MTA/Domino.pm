@@ -15,6 +15,7 @@ my $RxMTA = {
 my $RxErr = {
     'userunknown' => [
         qr/not listed in Domino Directory/,
+        qr/not listed in public Name & Address Book/,
         qr/Domino ディレクトリには見つかりません/,
     ],
     'filtered' => [
