@@ -240,11 +240,11 @@ sub make {
 
             # The value of "List-Id" header
             $p->{'listid'} =  $rfc822data->{'list-id'} // '';
-            $p->{'listid'} =~ y/<>//d;
+            $p->{'listid'} =~ y/<>//d if length $p->{'listid'};
 
             # The value of "Message-Id" header
             $p->{'messageid'} =  $rfc822data->{'message-id'} // '';
-            $p->{'messageid'} =~ y/<>//d;
+            $p->{'messageid'} =~ y/<>//d if length $p->{'messageid'};
         }
 
         CLASSIFICATION: {
