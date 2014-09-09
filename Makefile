@@ -10,7 +10,6 @@ TIME  = $(shell date '+%s')
 NAME  = Sisimai
 MAKE  = /usr/bin/make
 PERL  = /usr/local/bin/perl
-CURL  = /usr/bin/curl -X POST
 PROVE = /usr/local/bin/prove -Ilib --timer
 MINIL = /usr/local/bin/minil
 CP    = /bin/cp
