@@ -3,7 +3,6 @@ use parent 'Sisimai::MTA';
 use feature ':5.10';
 use strict;
 use warnings;
-use utf8;
 
 my $RxMTA = {
     'begin'     => qr/\AYour message/,
