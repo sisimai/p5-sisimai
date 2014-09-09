@@ -236,11 +236,13 @@ sub make {
         OTHER_TEXT_HEADERS: {
             # Remove square brackets and curly brackets from the host variable
             map { $p->{ $_ } =~ y/[]()//d } ( 'rhost', 'lhost' );
-            $p->{'listid'} =  $rfc822data->{'list-id'}    // '';
+            $p->{'subject'} = $rfc822data->{'subject'} // '';
+
+            # The value of "List-Id" header
+            $p->{'listid'} =  $rfc822data->{'list-id'} // '';
             $p->{'listid'} =~ y/<>//d;
 
-            $p->{'subject'} = $rfc822data->{'subject'}    // '';
-
+            # The value of "Message-Id" header
             $p->{'messageid'} =  $rfc822data->{'message-id'} // '';
             $p->{'messageid'} =~ y/<>//d;
         }
