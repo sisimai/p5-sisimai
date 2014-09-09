@@ -24,6 +24,7 @@ sub list {
             MSP/US/Verizon.pm
         MTA.pm
             MTA/Courier.pm
+            MTA/Domino.pm
             MTA/Exim.pm
             MTA/Exchange.pm
             MTA/OpenSMTPD.pm
