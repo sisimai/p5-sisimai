@@ -27,6 +27,7 @@ version 4 (Sisimai).
 | Database schema for storing parsed bounce data | Available     | N/A(2)       |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL          |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
+| Classification based on recipient domain       | Available     | N/A          |
 | Easy to install                                | No            | Yes          |
 | Install using cpan or cpanm command            | N/A           | OK           |
 | Dependencies                                   | 24 modules    | 3 modules    |
@@ -46,6 +47,7 @@ version 4 (Sisimai).
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(2)      |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応     |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
+| 宛先ドメインによる分類項目                     | あり          | 無し         |
 | インストール作業が簡単                         | やや面倒      | 簡単で楽     |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
 | 依存モジュール数                               | 24モジュール  | 3モジュール  |
