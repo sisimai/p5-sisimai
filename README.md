@@ -24,6 +24,7 @@ version 4 (Sisimai).
 | Command line tools                             | OK            | N/A          |
 | Modules for Commercial MTAs                    | N/A(1)        | Included     |
 | WebUI/API                                      | OK            | N/A          |
+| Database schema for storing parsed bounce data | Available     | N/A(2)       |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL          |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
 | Easy to install                                | No            | Yes          |
@@ -33,14 +34,16 @@ version 4 (Sisimai).
 | Support Contract provided by Developer         | Available     | Coming soon  |
 
 (1) bounceHammer-nails
+(2) Implement yourself with using DBI or any O/R Mapper you like
 
 公開中のbouncehammer version 2.7.12とversion 4(シシマイ)は上記のような違いがあります。
 
 | 機能                                           | ver 2.7.X     | Sisimai      |
 |------------------------------------------------|---------------|--------------|
 | コマンドラインツール                           | あり          | 無し         |
-| 商用MTA対応解析モジュール                      | 無し(商用版)  | あり(標準)   |
+| 商用MTA対応解析モジュール                      | 無し(商用版,1)| あり(標準)   |
 | WebUIとAPI                                     | あり          | 無し         |
+| 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(2)      |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応     |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
 | インストール作業が簡単                         | やや面倒      | 簡単で楽     |
@@ -49,6 +52,8 @@ version 4 (Sisimai).
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD    |
 | 開発会社によるサポート契約                     | 提供中        | 準備中       |
 
+(1) bounceHammer-nails
+(2) DBIまたは好きなORMを使って自由に実装してください
 
 System requirements | 動作環境
 ------------------------------
