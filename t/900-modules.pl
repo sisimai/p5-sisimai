@@ -5,8 +5,6 @@ sub list {
         Address.pm
         ARF.pm
         Data.pm
-            Group/Phone.pm
-            Group/Web.pm
         ISO3166.pm
         MIME.pm
         Mail.pm
@@ -71,12 +69,6 @@ sub list {
     for my $e ( @$f ) {
         push @$v, sprintf( "Sisimai/%s", $e );
     }
-
-    for my $e ( @$c ) {
-        push @$v, sprintf( "Sisimai/Group/%s/Web.pm", $e );
-        push @$v, sprintf( "Sisimai/Group/%s/Phone.pm", $e );
-    }
-
     return $v;
 }
 1;

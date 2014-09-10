@@ -44,9 +44,6 @@ MAKE_TEST: {
             is $e->date->mday, 21, 'date->mday = '.$e->date->mday;
             is $e->date->day, 'Sat', 'date->day = '.$e->date->day;
 
-            ok length $e->provider, 'provider = '.$e->provider;
-            ok length $e->category, 'category = '.$e->category;
-
             isa_ok $e->addresser, 'Sisimai::Address';
             ok length $e->addresser->host, 'addresser->host = '.$e->addresser->host;
             ok length $e->addresser->user, 'addresser->user = '.$e->addresser->user;

@@ -49,8 +49,6 @@ if( -d $d ) {
                 like $t->mday, qr/\A\d+\z/, sprintf( "(%s) date->mday = %s", $e, $t->mday );
                 like $t->day, qr/\A\w+\z/, sprintf( "(%s) date->day = %s", $e, $t->day );
 
-                ok length $f->provider, sprintf( "(%s) provider = %s", $e, $f->provider );
-                ok length $f->category, sprintf( "(%s) cateogry = %s", $e, $f->category );
                 ok defined $f->messageid, sprintf( "(%s) messageid = %s", $e, $f->messageid );
                 ok defined $f->smtpcommand, sprintf( "(%s) smtpcommand = %s", $e, $f->smtpcommand );
                 ok defined $f->diagnosticcode, sprintf( "(%s) diagnosticcode = %s", $e, $f->diagnosticcode );
