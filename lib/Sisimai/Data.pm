@@ -11,7 +11,6 @@ use Sisimai::Address;
 use Sisimai::RFC5322;
 use Sisimai::String;
 use Sisimai::Reason;
-use Sisimai::Group;
 use Sisimai::Rhost;
 use Sisimai::Time;
 
@@ -24,8 +23,6 @@ my $rwaccessors = [
     'listid',           # (String) List-Id header of each ML
     'reason',           # (String) Bounce reason
     'subject',          # (String) UTF-8 Subject text
-    'provider',         # (String) Provider name
-    'category',         # (String) Host group name
     'addresser',        # (Sisimai::Address) From: header in the original message
     'recipient',        # (Sisimai::Address) Final-Recipient: or To: in the original message
     'messageid',        # (String) Message-Id: header
@@ -88,8 +85,8 @@ sub new {
     OTHER_VALUES: {
         my $v = [ 
             'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
-            'diagnostictype', 'deliverystatus', 'reason', 'category', 'provider',
-            'lhost', 'rhost', 'smtpcommand', 'feedbacktype',
+            'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
+            'smtpcommand', 'feedbacktype',
         ];
         $thing->{ $_ } = $argvs->{ $_ } // '' for @$v;
     }
@@ -247,13 +244,6 @@ sub make {
             $p->{'messageid'} =~ y/<>//d if length $p->{'messageid'};
         }
 
-        CLASSIFICATION: {
-            # Set host group and provider name
-            my $v = Sisimai::Group->find( 'email' => $p->{'recipient'} ) // {};
-            $p->{'provider'} = $v->{'provider'} // '';
-            $p->{'category'} = $v->{'category'} // '';
-        }
-
         $o = __PACKAGE__->new( %$p );
         next unless defined $o;
 
@@ -284,9 +274,9 @@ sub damn {
     try {
         my $v = {};
         my $stringdata = [ qw|
-            token lhost rhost listid alias reason subject provider category 
-            messageid smtpagent smtpcommand destination diagnosticcode
-            senderdomain deliverystatus timezoneoffset feedbacktype|
+            token lhost rhost listid alias reason subject messageid smtpagent 
+            smtpcommand destination diagnosticcode senderdomain deliverystatus
+            timezoneoffset feedbacktype|
         ];
         
         for my $e ( @$stringdata ) {
@@ -418,15 +408,6 @@ C<perldoc Sisimai::Reason>.
 =head2 C<subject>(I<String>)
 
 The value of C<Subject> header of the original message encoded in UTF-8.
-
-=head2 C<provider>(I<String>)
-
-Provider name of the recipient address. See C<perldoc Sisimai::Group>
-
-=head2 C<category>(I<category>)
-
-Cateogry name of the recipient address such as C<pc>, C<webmail>, and C<phone>. 
-See C<perldoc Sisimai::Group>.
 
 =head2 C<addresser>(I<Sisimai::Address)>
 
