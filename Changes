@@ -1,10 +1,10 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
-4.0.2
+4.0.2   Wed, 10 Sep 2014 22:45:43 +0900 (JST)
     - Implement Sisimai::MSP::US::AmazonSES, Sisimai::MSP::US::SendGrid modules
       for parsing bounce mail from email cloud services.
     - Implement Sisimai::MTA::Domino module for email bounces from IBM Domino.
-    - Large scale code refactoring at Sisimai::RFC3464,
+    - Large scale code refactoring at Sisimai::RFC3464.
 
 4.0.1   Sun, 17 Aug 2014 23:00:00 +0900 (JST)
     - Fixed bug for reading each email file in the Maildir/ given as an argument
