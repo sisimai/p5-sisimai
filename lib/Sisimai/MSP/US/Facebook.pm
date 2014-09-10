@@ -64,7 +64,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'Facebook' }
 sub smtpagent   { 'US::Facebook' }
 
@@ -269,7 +269,7 @@ sub scan {
 
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-        $e->{'command'} ||= 'CONN';
+
     } # end of for()
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };

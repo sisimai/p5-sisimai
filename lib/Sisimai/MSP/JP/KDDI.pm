@@ -17,7 +17,7 @@ my $RxVia = [
     qr/\Afrom\s+\w+[.]auone[-]net[.]jp\s/,
 ];
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'au by KDDI' }
 sub smtpagent   { 'JP::KDDI' }
 sub headerlist  { return [ 'X-SPASIGN' ] }

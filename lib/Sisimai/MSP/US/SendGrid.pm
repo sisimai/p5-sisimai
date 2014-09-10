@@ -14,7 +14,7 @@ my $RxMSP = {
     'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
 sub headerlist  { return [ 'Return-Path' ] }
@@ -207,9 +207,7 @@ sub scan {
                 my $r = Sisimai::RFC3463->status( 'expired', 'p', 'i' );
                 $e->{'status'} = $r if length $r;
             }
-        } else {
-            # $e->{'reason'} = 'undefined';
-        }
+        } 
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
