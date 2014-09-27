@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/azumakuniyuki/Sisimai.svg?branch=master)](https://travis-ci.org/azumakuniyuki/Sisimai)
+
          ____  _     _                 _ 
         / ___|(_)___(_)_ __ ___   __ _(_)
         \___ \| / __| | '_ ` _ \ / _` | |
