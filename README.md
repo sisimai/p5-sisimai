@@ -60,15 +60,15 @@ version 4 (Sisimai).
 System requirements | 動作環境
 ------------------------------
 
-* Perl 5.10.1 or later
+* [Perl 5.10.1 or later](http://www.perl.org/)
 
 Dependencies | 依存モジュール
 -----------------------------
 Sisimai relies on:
 
-* __Class::Accessor::Lite__
-* __Try::Tiny__
-* __JSON__
+* [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
+* [__JSON__](https://metacpan.org/pod/JSON)
+* [__Try::Tiny__](https://metacpan.org/pod/Try::Tiny)
 
 Sisimaiは上記のモジュールに依存しています。
 
@@ -129,7 +129,7 @@ WEB SITE | サイト
 
 AUTHOR | 作者
 -------------
-azumakuniyuki
+[@azumakuniyuki](https://twitter.com/azumakuniyuki)
 
 COPYRIGHT | 著作権
 ------------------
