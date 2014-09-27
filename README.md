@@ -34,8 +34,8 @@ version 4 (Sisimai).
 | License                                        | GPLv2 or Perl | 2 clause BSD |
 | Support Contract provided by Developer         | Available     | Coming soon  |
 
-(1) bounceHammer-nails
-(2) Implement yourself with using DBI or any O/R Mapper you like
+1. bounceHammer-nails
+2. Implement yourself with using DBI or any O/R Mapper you like
 
 公開中のbouncehammer version 2.7.12とversion 4(シシマイ)は上記のような違いがあります。
 
@@ -54,8 +54,8 @@ version 4 (Sisimai).
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD    |
 | 開発会社によるサポート契約                     | 提供中        | 準備中       |
 
-(1) bounceHammer-nails
-(2) DBIまたは好きなORMを使って自由に実装してください
+1. bounceHammer-nails
+2. DBIまたは好きなORMを使って自由に実装してください
 
 System requirements | 動作環境
 ------------------------------
