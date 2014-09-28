@@ -5,11 +5,13 @@ perl:
   - '5.14'
   - '5.16'
   - '5.18'
-
 before_install:
-    - cpanm Test::UsedModules
-    - cpanm Devel::Cover::Report::Coveralls
-
+  - cpanm Test::UsedModules
+  - cpanm Devel::Cover::Report::Coveralls
+script:
+  perl Build.PL && ./Build build && cover -test -report coveralls
+after_success:
+  - cover -report coveralls
 notifications:
   recipients:
     - travis-ci.org@azumakuniyuki.org
