@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/azumakuniyuki/Sisimai.svg?branch=master)](https://travis-ci.org/azumakuniyuki/Sisimai)
+[![Build Status](https://travis-ci.org/azumakuniyuki/Sisimai.svg?branch=master)](https://travis-ci.org/azumakuniyuki/Sisimai) 
+[![Coverage Status](https://img.shields.io/coveralls/azumakuniyuki/Sisimai.svg)](https://coveralls.io/r/azumakuniyuki/Sisimai)
 
          ____  _     _                 _ 
         / ___|(_)___(_)_ __ ___   __ _(_)
