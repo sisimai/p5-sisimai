@@ -7,7 +7,7 @@ my $PackageName = 'Sisimai::MTA';
 my $MethodNames = {
     'class' => [ 
         'version', 'description', 'headerlist', 'scan',
-        'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS',
+        'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS', 'EOM',
     ],
     'object' => [],
 };
@@ -20,6 +20,7 @@ MAKE_TEST: {
     ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
     is $PackageName->scan, '', '->scan';
+    is $PackageName->EOM, '__END_OF_EMAIL_MESSAGE__';
 
     isa_ok $PackageName->headerlist, 'ARRAY';
     isa_ok $PackageName->SMTPCOMMAND, 'HASH';
