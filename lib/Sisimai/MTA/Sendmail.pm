@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -163,11 +163,11 @@ sub scan {
 
                 } elsif( $e =~ m/\AReceived-From-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
                     # Received-From-MTA: DNS; x1x2x3x4.dhcp.example.ne.jp
-                    if( exists $connheader->{'lhost'} && length $connheader->{'lhost'} ) {
-                        # The value of "lhost" is optional
-                        $connheader->{'lhost'} = $1;
-                        $connvalues++;
-                    }
+                    next if( exists $connheader->{'lhost'} && length $connheader->{'lhost'} );
+
+                    # The value of "lhost" is optional
+                    $connheader->{'lhost'} = $1;
+                    $connvalues++;
 
                 } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/i ) {
                     # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
