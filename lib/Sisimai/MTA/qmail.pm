@@ -28,8 +28,7 @@ my $RxSMTP = {
         qr/(?:Error:)?Connected to .+ but greeting failed[.]/,
     ],
     'ehlo' => [
-        # qmail-remote.c:238|  if (code >= 500) quit("DConnected to "," but sender was rejected");
-        # qmail-remote.c:239|  if (code >= 400) quit("ZConnected to "," but sender was rejected");
+        # qmail-remote.c:231|  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
         qr/(?:Error:)?Connected to .+ but my name was rejected[.]/,
     ],
     'mail'  => [
