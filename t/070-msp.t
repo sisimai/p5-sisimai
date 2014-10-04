@@ -20,6 +20,7 @@ MAKE_TEST: {
     ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
     is $PackageName->scan, '', '->scan';
+    is $PackageName->EOM, '__END_OF_EMAIL_MESSAGE__';
 
     isa_ok $PackageName->headerlist, 'ARRAY';
     isa_ok $PackageName->SMTPCOMMAND, 'HASH';
@@ -27,6 +28,5 @@ MAKE_TEST: {
     isa_ok $PackageName->RFC822HEADERS, 'ARRAY';
     isa_ok $PackageName->RFC822HEADERS('date'), 'ARRAY';
     isa_ok $PackageName->RFC822HEADERS('neko'), 'HASH';
-    is $PackageName->EOM, '__END_OF_EMAIL_MESSAGE__';
 }
 done_testing;
