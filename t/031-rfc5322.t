@@ -24,9 +24,12 @@ MAKE_TEST: {
     ok $PackageName->is_emailaddress( $ismailaddr ), '->is_emailaddress = 1';
     is $PackageName->is_emailaddress( $nomailaddr ), 0, '->is_emailaddress = 0';
 
-    ok $PackageName->is_domainpart( 'example.jp' ), '->is_domainpart = 1';
-    is $PackageName->is_domainpart( $ismailaddr ), 0, '->is_domainpart = 0';
-    is $PackageName->is_domainpart( undef ), 0, '->is_domainpart = 0';
+    ok $PackageName->is_domainpart( 'example.jp' ), '->is_domainpart(example.jp) = 1';
+    is $PackageName->is_domainpart( $ismailaddr ), 0, '->is_domainpart('.$ismailaddr.') = 0';
+    is $PackageName->is_domainpart( undef ), 0, '->is_domainpart(undef) = 0';
+    is $PackageName->is_domainpart( '[' ), 0, '->is_domainpart([) = 0';
+    is $PackageName->is_domainpart( ')' ), 0, '->is_domainpart()) = 0';
+    is $PackageName->is_domainpart( ';' ), 0, '->is_domainpart(;) = 0';
 
     ok $PackageName->is_mailerdaemon( $postmaster), '->is_mailerdaemon = 1';
     is $PackageName->is_mailerdaemon( $ismailaddr), 0, '->is_mailerdaemon = 0';
