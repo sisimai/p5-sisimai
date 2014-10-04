@@ -54,7 +54,7 @@ MAKE_TEST: {
                 is $e->{'feedbacktype'}, '', '->feedbacktype = ""';
                 like $e->{'command'}, qr/[A-Z]{4}/, '->command = '.$e->{'command'};
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
-                ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
+                ok defined $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok length $e->{'action'}, '->action = '.$e->{'action'};
                 ok length $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
