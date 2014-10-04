@@ -7,7 +7,7 @@ my $PackageName = 'Sisimai::MSP';
 my $MethodNames = {
     'class' => [ 
         'version', 'description', 'headerlist', 'scan',
-        'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS',
+        'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS', 'EOM',
     ],
     'object' => [],
 };
@@ -27,5 +27,6 @@ MAKE_TEST: {
     isa_ok $PackageName->RFC822HEADERS, 'ARRAY';
     isa_ok $PackageName->RFC822HEADERS('date'), 'ARRAY';
     isa_ok $PackageName->RFC822HEADERS('neko'), 'HASH';
+    is $PackageName->EOM, '__END_OF_EMAIL_MESSAGE__';
 }
 done_testing;
