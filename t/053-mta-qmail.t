@@ -57,7 +57,7 @@ MAKE_TEST: {
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok length $e->{'action'}, '->action = '.$e->{'action'};
                 ok length $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
-                ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
+                ok defined $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
                 is $e->{'agent'}, 'qmail', '->agent = '.$e->{'agent'};
             }
