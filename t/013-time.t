@@ -97,12 +97,22 @@ MAKE_TEST: {
         my $base = new Time::Piece;
         my $time = undef;
 
-        for my $e ( -2, -1, 0, 1, 2 ) {
+        for my $e ( -65535, -2, -1, 0, 1, 2, 65535 ) {
             $date = $v->o2d( $e );
             $base = Time::Piece->strptime( $base->ymd, "%Y-%m-%d" );
             $time = Time::Piece->strptime( $date, "%Y-%m-%d" );
             like $date, qr/\A\d{4}[-]\d{2}[-]\d{2}\z/, 'offset = '.$e.', date = '.$date;
-            is $time->epoch, $base->epoch - ( $e * 86400 );
+            if( abs $e < 10 ) {
+                is $time->epoch, $base->epoch - ( $e * 86400 );
+            } else {
+                if( $e < 0 ) {
+                    # Future
+                    ok $time->epoch;
+                } else {
+                    # Past
+                    is $time->epoch, 0;
+                }
+            }
         }
 
         for my $e ( 'a', ' ', 'string' ) {
@@ -141,6 +151,8 @@ MAKE_TEST: {
             'Sat, 21 Nov 1998 13:13:04 -0800 (PST)    ',
             'Sat, 21 Nov 1998 13:13:04 -0800 (PST) JST',
             'Sat, 21 Nov 1998 13:13:04 -0800 (PST) Hoge',
+            'Fri, 29 Apr 2013 02:31 +0900',
+            'Sun, 29 May 2014 1:2 +0900',
         ];
 
         my $invaliddates = [
