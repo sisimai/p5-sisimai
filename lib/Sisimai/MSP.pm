@@ -28,73 +28,73 @@ sub scan {
     # @Param <ref>  (Ref->String) Message body
     # @Return       (Ref->Hash) Bounce data list and message/rfc822 part
     return '';
-    my $RxMSP = {};
-
-    my $class = shift;
-    my $mhead = shift // return undef;
-    my $mbody = shift // return undef;
-
-    # return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
-    # return undef unless $mhead->{'from'}    =~ $RxMSP->{'from'};
-
-    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
-    my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
-    my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $previousfn = '';    # (String) Previous field name
-
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
-    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $rcptintext = '';    # (String) Recipient address in the message body
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
-    my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
-    my $connheader = {
-        'date'    => '',    # The value of Arrival-Date header
-        'lhost'   => '',    # The value of Received-From-MSP header
-        'rhost'   => '',    # The value of Reporting-MSP header
-    };
-
-    my $v = undef;
-    my $p = undef;
-    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-    $rfc822head = __PACKAGE__->RFC822HEADERS;
-
-    # 1. Email headers in the bounce mail
-    # 2. Delivery status
-    # 3. message/rfc822 part
-    # 4. Original message
-    for my $e ( @$stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
-        if( ( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
-            # After "message/rfc822"
-
-        } else {
-            # Before "message/rfc822"
-            next unless ( $e =~ $RxMSP->{'begin'} ) .. ( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } );
-            next unless length $e;
-
-            if( $connvalues == scalar( keys %$connheader ) ) {
-                # Parse delivery status
-            } else {
-                # Get headers related the smtp session/connection
-            }
-        } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = undef;
-    }
-
-    return undef unless $recipients;
-    for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        for my $f ( 'date', 'lhost', 'rhost' ) {
-            $e->{ $f }  ||= $connheader->{ $f } || '';
-        }
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'} ||= $commandtxt || 'CONN';
-    }
-    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
+#     my $RxMSP = {};
+# 
+#     my $class = shift;
+#     my $mhead = shift // return undef;
+#     my $mbody = shift // return undef;
+# 
+#     # return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
+#     # return undef unless $mhead->{'from'}    =~ $RxMSP->{'from'};
+# 
+#     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
+#     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
+#     my $rfc822part = '';    # (String) message/rfc822-headers part
+#     my $previousfn = '';    # (String) Previous field name
+# 
+#     my $stripedtxt = [ split( "\n", $$mbody ) ];
+#     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
+#     my $rcptintext = '';    # (String) Recipient address in the message body
+#     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+#     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
+#     my $connheader = {
+#         'date'    => '',    # The value of Arrival-Date header
+#         'lhost'   => '',    # The value of Received-From-MSP header
+#         'rhost'   => '',    # The value of Reporting-MSP header
+#     };
+# 
+#     my $v = undef;
+#     my $p = undef;
+#     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+#     $rfc822head = __PACKAGE__->RFC822HEADERS;
+# 
+#     # 1. Email headers in the bounce mail
+#     # 2. Delivery status
+#     # 3. message/rfc822 part
+#     # 4. Original message
+#     for my $e ( @$stripedtxt ) {
+#         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+#         if( ( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
+#             # After "message/rfc822"
+# 
+#         } else {
+#             # Before "message/rfc822"
+#             next unless ( $e =~ $RxMSP->{'begin'} ) .. ( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } );
+#             next unless length $e;
+# 
+#             if( $connvalues == scalar( keys %$connheader ) ) {
+#                 # Parse delivery status
+#             } else {
+#                 # Get headers related the smtp session/connection
+#             }
+#         } # End of if: rfc822
+# 
+#     } continue {
+#         # Save the current line for the next loop
+#         $p = $e;
+#         $e = undef;
+#     }
+# 
+#     return undef unless $recipients;
+#     for my $e ( @$dscontents ) {
+#         # Set default values if each value is empty.
+#         for my $f ( 'date', 'lhost', 'rhost' ) {
+#             $e->{ $f }  ||= $connheader->{ $f } || '';
+#         }
+#         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
+#         $e->{'command'} ||= $commandtxt || 'CONN';
+#     }
+#     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 
 1;
