@@ -18,16 +18,16 @@ BUILD_REGULAR_EXPRESSIONS: {
     #                     %d33-90 /       ; The rest of the US-ASCII
     #                     %d94-126        ;  characters not including "[",
     #                                     ;  "]", or "\"
-    my $atom = qr{[a-zA-Z0-9_!#\$\%&'*+/=?\^`{}~|\-]+}o;
-    my $quoted_string = qr{"(?:\\[^\r\n]|[^\\"])*"}o;
-    my $domain_literal = qr{\[(?:\\[\x01-\x09\x0B-\x0c\x0e-\x7f]|[\x21-\x5a\x5e-\x7e])*\]}o;
-    my $dot_atom = qr{$atom(?:[.]$atom)*}o;
-    my $local_part = qr{(?:$dot_atom|$quoted_string)}o;
-    my $domain = qr{(?:$dot_atom|$domain_literal)}o;
+    my $atom           = qr;[a-zA-Z0-9_!#\$\%&'*+/=?\^`{}~|\-]+;o;
+    my $quoted_string  = qr/"(?:\\[^\r\n]|[^\\"])*"/o;
+    my $domain_literal = qr/\[(?:\\[\x01-\x09\x0B-\x0c\x0e-\x7f]|[\x21-\x5a\x5e-\x7e])*\]/o;
+    my $dot_atom       = qr/$atom(?:[.]$atom)*/o;
+    my $local_part     = qr/(?:$dot_atom|$quoted_string)/o;
+    my $domain         = qr/(?:$dot_atom|$domain_literal)/o;
 
-    $Rx->{'rfc5322'} = qr{$local_part[@]$domain}o;
-    $Rx->{'ignored'} = qr{$local_part[.]*[@]$domain}o;
-    $Rx->{'domain'} = qr{$domain}o;
+    $Rx->{'rfc5322'} = qr/$local_part[@]$domain/o;
+    $Rx->{'ignored'} = qr/$local_part[.]*[@]$domain/o;
+    $Rx->{'domain'}  = qr/$domain/o;
 }
 
 sub is_emailaddress {
