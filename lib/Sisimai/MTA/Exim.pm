@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -204,7 +204,15 @@ sub scan {
         if( defined $mhead->{'x-failed-recipients'} ) {
             # X-Failed-Recipients: kijitora@example.jp
             $rcptinhead = [ split( ',', $mhead->{'x-failed-recipients'} ) ];
+            map { $_ =~ y/ //d } @$rcptinhead;
             $recipients = scalar @$rcptinhead;
+
+            for my $e ( @$rcptinhead ) {
+                # Insert each recipient address into @$dscontents
+                $dscontents->[-1]->{'recipient'} = $e;
+                next if scalar @$dscontents == $recipients;
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+            }
         }
     }
     return undef unless $recipients;
