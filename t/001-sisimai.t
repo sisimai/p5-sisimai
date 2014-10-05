@@ -20,7 +20,7 @@ MAKE_TEST: {
 
     is $PackageName->sysname, 'bouncehammer', '->sysname = bouncehammer';
     is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
-    is $PackageName->version, $Sisimai::VERSION, '->version = '.$Sisimai::VERsiON;
+    is $PackageName->version, $Sisimai::VERSION, '->version = '.$Sisimai::VERSION;
     is $PackageName->make(undef), undef;
 
     for my $e ( 'mailbox', 'maildir' ) {
