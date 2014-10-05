@@ -22,6 +22,7 @@ MAKE_TEST: {
     ok $v, '->version = '.$v;
     $v = $PackageName->description;
     ok $v, '->description = '.$v;
+    isa_ok $PackageName->headerlist, 'ARRAY';
 
     is $PackageName->scan, undef, '->scan';
     is $PackageName->is_arf( 'multipart/report; report-type=feedback-report;'), 1;
