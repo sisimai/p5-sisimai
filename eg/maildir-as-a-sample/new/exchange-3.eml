@@ -43,7 +43,8 @@ Message-ID: <00000000000.ffffffffffff.ff@example.net>
 From: Neko <shironeko@mx.example.jp>
 Reply-To: postmaster@example.jp
 To: kijitora@example.net
-Subject: Message
+Subject: =?UTF-8?B?IHwg5rGa44KM44Gm54Gw54yr44Gr44Gq44Gj44Gm44KL44GT44Go44GM44GC?=
+ =?UTF-8?B?44KL55m954yr?=
 Date: Thu, 29 Apr 2009 00:00:00 -0400
 MIME-Version: 1.0
 Content-Type: text/plain; charset="ISO-2022-JP"
