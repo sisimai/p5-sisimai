@@ -295,7 +295,7 @@ sub scan {
                         # Check each regular expression
                         next unless $e->{'diagnosis'} =~ $rr;
                         $e->{'reason'} = $r;
-                        last(SESSION);
+                        last(LDAP);
                     }
                 }
             }
