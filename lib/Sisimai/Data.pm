@@ -113,15 +113,16 @@ sub make {
 
     ORDER_OF_HEADERS: {
         # Decide the order of email headers: user specified or system default.
-        if( exists $argvs->{'order'} && ref $argvs->{'order'} eq 'HASH' ) {
+        my $o = exists $argvs->{'order'} ? $argvs->{'order'} : {};
+        if( ref $o eq 'HASH' && scalar keys %$o ) {
             # If the order of headers for searching is specified, use the order
             # for detecting an email address.
             for my $e ( 'recipient', 'addresser' ) {
                 # The order should be "Array Reference".
-                next unless $argvs->{'order'}->{ $e };
-                next unless ref $argvs->{'order'}->{ $e } eq 'ARRAY';
-                next unless scalar @{ $argvs->{'order'}->{ $e } } eq 'ARRAY';
-                push @{ $fieldorder->{ $e } }, @{ $argvs->{'order'}->{ $e } };
+                next unless $o->{ $e };
+                next unless ref $o->{ $e } eq 'ARRAY';
+                next unless scalar @{ $o->{ $e } };
+                push @{ $fieldorder->{ $e } }, @{ $o->{ $e } };
             }
         }
 
