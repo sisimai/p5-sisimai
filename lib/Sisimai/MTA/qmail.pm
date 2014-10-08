@@ -129,7 +129,7 @@ my $RxLDAP = {
     ],
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -198,7 +198,7 @@ sub scan {
                 # This is a permanent error; I've given up. Sorry it didn't work out.
                 $softbounce = 0;
 
-            } elsif( $e =~ m{\A(?:To[ ]*:)?[<](.+[@].+)[>]:\z} ) {
+            } elsif( $e =~ m/\A(?:To[ ]*:)?[<](.+[@].+)[>]:\s*\z/ ) {
                 # <kijitora@example.jp>:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
