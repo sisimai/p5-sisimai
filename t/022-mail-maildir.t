@@ -8,7 +8,7 @@ my $MethodNames = {
     'class' => [ 'new' ],
     'object' => [ 'data', 'name', 'files', 'handle', 'read' ],
 };
-my $SampleEmail = './eg/maildir-as-a-sample/cur';
+my $SampleEmail = './eg/maildir-as-a-sample/new';
 my $NewInstance = $PackageName->new( $SampleEmail );
 
 use_ok $PackageName;
@@ -34,7 +34,8 @@ MAKE_TEST: {
             ok scalar @{ $maildir->files };
             $emindex++;
         }
-        is $emindex, 37;
+        ok $emindex > 1;
+        is $emindex, scalar @{ $maildir->files };
     }
 }
 
