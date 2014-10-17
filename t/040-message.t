@@ -12,6 +12,7 @@ my $SampleEmail = './eg/mbox-as-a-sample';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
+is $PackageName->ENDOFEMAIL, '__END_OF_EMAIL_MESSAGE__';
 
 MAKE_TEST: {
     use IO::File;
@@ -31,6 +32,8 @@ MAKE_TEST: {
     isa_ok $p->ds, 'ARRAY', '->ds';
     isa_ok $p->rfc822, 'HASH', '->rfc822';
     ok length $p->from, $p->from;
+
+    $p = $PackageName->new( 'data' => $mailastext, 'mtalist' => [] );
 
     for my $e ( @{ $p->ds } ) {
         is $e->{'spec'}, 'SMTP', '->spec = SMTP';
