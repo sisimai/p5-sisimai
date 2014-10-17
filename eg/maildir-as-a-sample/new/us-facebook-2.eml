@@ -26,7 +26,8 @@ Content-Type: message/delivery-status
 Reporting-MTA: dns; 10.138.205.200
 Arrival-Date: Thu, 23 Jun 2011 02:29:43 -0700
 
-Diagnostic-Code: SMTP; 550 5.1.1 RCP-P1 http://postmaster.facebook.com/response_codes?ip=192.0.2.54#rcp Recipient address does not exist
+Diagnostic-Code: SMTP; 550 5.1.1 RCP-P1 http://postmaster.facebook.com/response_codes?ip=192.0.2.54#rcp 
+    Recipient address does not exist
 Status: 5.1.1
 Final-Recipient: rfc822; postmaster@facebook.com
 Last-Attempt-Date: Thu, 23 Jun 2011 02:30:13 -0700
