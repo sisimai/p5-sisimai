@@ -50,7 +50,7 @@ sub true {
     } else {
         # Check the value of Diagnostic-Code and the last SMTP command
         my $c = $argvs->smtpcommand;
-        if( $c ne 'RCPT' || $c ne 'MAIL' ) {
+        if( $c ne 'RCPT' && $c ne 'MAIL' ) {
             # Check the last SMTP command of the session. 
             if( __PACKAGE__->match( $diagnostic ) ) {
                 # Matched with a pattern in this class
