@@ -15,6 +15,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     is $PackageName->text, 'systemfull', '->text = systemfull';
     ok $PackageName->match('550 5.0.0 Mail system full');
+    is $PackageName->match('400 4.0.0 Mailbox full'), 0;
     is $PackageName->true, undef, '->true = undef';
 }
 
