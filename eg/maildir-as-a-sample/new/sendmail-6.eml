@@ -25,12 +25,12 @@ with id a000000000000
 
    ----- The following addresses had permanent fatal errors -----
 <kijitora@example.org>
-    (reason: 550 5.6.0 improper use of 8-bit data in message header)
+    (reason: 550 5.6.9 improper use of 8-bit data in message header)
 
    ----- Transcript of session follows -----
 ... while talking to g5.example.net.:
 >>> DATA
-<<< 550 5.6.0 improper use of 8-bit data in message header
+<<< 550 5.6.9 improper use of 8-bit data in message header
 554 5.0.0 Service unavailable
 
 --z00000000012401.00000000/e.example.com
@@ -42,9 +42,9 @@ Arrival-Date: Thu, 29 Apr 2012 23:45:27 +0900
 
 Final-Recipient: RFC822; kijitora@example.org
 Action: failed
-Status: 5.6.0
+Status: 5.6.9
 Remote-MTA: DNS; g5.example.net
-Diagnostic-Code: SMTP; 550 5.6.0 improper use of 8-bit data in message header
+Diagnostic-Code: SMTP; 550 5.6.9 improper use of 8-bit data in message header
 Last-Attempt-Date: Thu, 29 Apr 2012 23:45:28 +0900
 
 --z00000000012401.00000000/e.example.com
