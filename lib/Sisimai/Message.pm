@@ -51,8 +51,12 @@ sub new {
     my $messageobj = undef;
     my $parameters = undef;
 
-    if( ref $argvs->{'mtalist'} eq 'ARRAY' ) {
-        $methodargv->{'mtalist'} = $argvs->{'mtalist'};
+    for my $e ( 'mtalist', 'msplist' ) {
+        # Order of MTA, MSP
+        next unless exists $argvs->{ $e };
+        next unless ref $argvs->{ $e } eq 'ARRAY';
+        next unless scalar @{ $argvs->{ $e } };
+        $methodargv->{ $e } = $argvs->{ $e };
     }
 
     $parameters = __PACKAGE__->resolve( %$methodargv );
@@ -81,10 +85,14 @@ sub resolve {
     my $mtamodules = [];
     my $mspmodules = [];
 
-    if( ref $argvs->{'mtalist'} eq 'ARRAY' && scalar @{ $argvs->{'mtalist'} } ) {
+    for my $e ( 'mtalist', 'msplist' ) {
         # The order of MTA modules specified by user
-        push @$mtamodules, @{ $argvs->{'mtalist'} };
-        push @$mspmodules, @{ $argvs->{'msplist'} };
+        next unless exists $argvs->{ $e };
+        next unless ref $argvs->{ $e } eq 'ARRAY';
+        next unless scalar @{ $argvs->{ $e } };
+
+        push @$mtamodules, @{ $argvs->{'mtalist'} } if $e eq 'mtalist';
+        push @$mspmodules, @{ $argvs->{'msplist'} } if $e eq 'msplist';
     }
 
     # Default order of MTA modules
