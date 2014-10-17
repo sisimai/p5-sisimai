@@ -240,12 +240,17 @@ sub scan {
         }
 
         unless( $e->{'reason'} ) {
-            # Facebook System Resource Issues
-            # These codes indicate a temporary issue internal to Facebook's 
-            # system. Administrators observing these issues are not required to
-            # take any action to correct them.
+            # http://postmaster.facebook.com/response_codes
+            #   Facebook System Resource Issues
+            #   These codes indicate a temporary issue internal to Facebook's 
+            #   system. Administrators observing these issues are not required to
+            #   take any action to correct them.
             if( $fbresponse =~ m/\AINT-T\d+\z/ ) {
                 # * INT-Tx
+                #
+                # https://groups.google.com/forum/#!topic/cdmix/eXfi4ddgYLQ
+                # This block has not been tested because we have no email sample
+                # including "INT-T?" error code.
                 $e->{'reason'} = 'systemerror';
                 $softbounce = 1;
             }
