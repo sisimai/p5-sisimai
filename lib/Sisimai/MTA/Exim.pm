@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -173,7 +173,7 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\bThis is a permanent error[.]\b/ ) {
+            if( $e =~ m/\s*This is a permanent error[.]\s*/ ) {
                 # deliver.c:6811|  "recipients. This is a permanent error. The following address(es) failed:\n");
                 $softbounce = 0;
 
