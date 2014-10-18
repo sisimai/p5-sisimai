@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -48,7 +48,9 @@ sub scan {
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $rcptintext = '';    # (String) Recipient address in the message body
+    my $diagnostic = '';    # (String) Alternative diagnostic message
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
         'date'  => '',      # The value of Arrival-Date header
@@ -174,6 +176,22 @@ sub scan {
                     next if length $connheader->{'date'};
                     $connheader->{'date'} = $1;
                     $connvalues++;
+
+                } else {
+                    # Detect SMTP session error or connection error
+                    next if $sessionerr;
+                    if( $e =~ $RxMTA->{'error'} ) { 
+                        # ----- Transcript of session follows -----
+                        # ... while talking to mta.example.org.:
+                        $sessionerr = 1;
+                        next;
+                    }
+
+                    if( $e =~ m/\A[<](.+)[>][.]+ (.+)\z/ ) {
+                        # <kijitora@example.co.jp>... Deferred: Name server: example.co.jp.: host name lookup failure
+                        $rcptintext = $1;
+                        $diagnostic = $2;
+                    }
                 }
             }
         } # End of if: rfc822
@@ -204,7 +222,7 @@ sub scan {
         $e->{'spec'}    ||= 'SMTP';
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || 'CONN';
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} || $diagnostic );
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
