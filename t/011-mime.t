@@ -51,6 +51,19 @@ MAKE_TEST: {
     $v = Encode::encode_utf8 $v if utf8::is_utf8 $v;
     is $v, $y, '->mimedecode = '.$y;
 
+    # Other encodings
+    my $o = [
+        '=?Shift_JIS?B?keWK24+8jeKJriAxMJackGyCyYKolIOVqIyUscDZDQo=?=',
+        '=?ISO-2022-JP?B?Ym91bmNlSGFtbWVyGyRCJE41IUc9TVdLPhsoQg==?=',
+    ];
+
+    for my $e ( @$o ) {
+        $v = $PackageName->mimedecode( [ $e ] );
+        $v = Encode::encode_utf8 $v if utf8::is_utf8 $v;
+        chomp $v;
+        ok length $v, '->mimedecode = '.$v;
+    }
+
     my $r = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
     my $b = 'Apple-Mail-1-526612466';
     is $PackageName->boundary( $r ), $b, '->boundary() = '.$b;
