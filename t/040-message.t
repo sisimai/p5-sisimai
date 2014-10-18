@@ -33,7 +33,11 @@ MAKE_TEST: {
     isa_ok $p->rfc822, 'HASH', '->rfc822';
     ok length $p->from, $p->from;
 
-    $p = $PackageName->new( 'data' => $mailastext, 'mtalist' => [] );
+    $p = $PackageName->new( 
+            'data' => $mailastext, 
+            'mtalist' => [ 'Sendmail', 'Postfix', 'qmail', 'Exchange' ], 
+            'msplist' => [ 'US::Google', 'US::Verizon' ]
+         );
 
     for my $e ( @{ $p->ds } ) {
         is $e->{'spec'}, 'SMTP', '->spec = SMTP';
