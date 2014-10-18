@@ -16,6 +16,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     my $v = undef;
+    my $c = 0;
 
     $v = $PackageName->version;
     ok $v, '->version = '.$v;
@@ -30,9 +31,9 @@ MAKE_TEST: {
     use Sisimai::Mail;
     use Sisimai::Message;
 
-    PARSE_EACH_MAIL: for my $n ( 1..10 ) {
+    PARSE_EACH_MAIL: for my $n ( 1..20 ) {
 
-        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/rfc3464-%d.eml", $n );
+        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/rfc3464-%02d.eml", $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
         next unless defined $mailbox;
 
@@ -58,8 +59,10 @@ MAKE_TEST: {
                 ok defined $e->{'feedbacktype'}, '->feedbacktype = ""';
                 ok $e->{'agent'}, '->agent = '.$e->{'agent'};
             }
+            $c++;
         }
     }
+    ok $c, 'the number of emails = '.$c;
 }
 done_testing;
 

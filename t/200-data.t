@@ -18,7 +18,7 @@ MAKE_TEST: {
     is $PackageName->make, undef;
     is $PackageName->new, undef;
 
-    my $file = './eg/maildir-as-a-sample/new/sendmail-3.eml';
+    my $file = './eg/maildir-as-a-sample/new/sendmail-03.eml';
     my $mail = Sisimai::Mail->new( $file );
     my $mesg = undef;
     my $data = undef;
@@ -70,7 +70,7 @@ MAKE_TEST: {
         }
     }
 
-    $file = './eg/maildir-as-a-sample/new/sendmail-4.eml';
+    $file = './eg/maildir-as-a-sample/new/sendmail-04.eml';
     $mail = Sisimai::Mail->new( $file );
     $list = { 
         'recipient' => [ 'X-Failed-Recipient', 'From' ],

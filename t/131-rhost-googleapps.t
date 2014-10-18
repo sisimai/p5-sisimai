@@ -18,9 +18,9 @@ MAKE_TEST: {
     use Sisimai::Mail;
     use Sisimai::Message;
 
-    PARSE_EACH_MAIL: for my $n ( 1..10 ) {
+    PARSE_EACH_MAIL: for my $n ( 1..20 ) {
 
-        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/google-apps-%d.eml", $n );
+        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/google-apps-%02d.eml", $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
         my $mtahost = 'aspmx.l.google.com';
         next unless defined $mailbox;
