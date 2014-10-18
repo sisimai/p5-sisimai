@@ -18,6 +18,8 @@ MAKE_TEST: {
     use Sisimai::Mail;
     use Sisimai::Message;
 
+    my $c = 0;
+
     PARSE_EACH_MAIL: for my $n ( 1..20 ) {
 
         my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/google-apps-%02d.eml", $n );
@@ -47,8 +49,10 @@ MAKE_TEST: {
                 ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
                 is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
             }
+            $c++;
         }
     }
+    ok $c, 'the number of emails = '.$c;
 }
 
 done_testing;
