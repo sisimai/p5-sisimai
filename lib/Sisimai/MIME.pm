@@ -66,6 +66,7 @@ sub mimedecode {
     $decodedtext1 = join( '', @$decodedtext0 );
 
     if( $characterset && $encodingname ) {
+        # utf-8 => utf8
         $characterset = 'utf8' if $characterset eq 'utf-8';
 
         if( $characterset ne 'utf8' ) {
