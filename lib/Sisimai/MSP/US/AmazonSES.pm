@@ -6,17 +6,17 @@ use warnings;
 
 # http://aws.amazon.com/ses/
 my $RxMSP = {
-	'from'    => qr/\AMAILER-DAEMON[@]email[-]bounces[.]amazonses[.]com\z/,
-	'begin'   => qr/\AThe following message to [<]/,
-	'rfc822'  => qr|\Acontent-type: message/rfc822\z|,
+    'from'    => qr/\AMAILER-DAEMON[@]email[-]bounces[.]amazonses[.]com\z/,
+    'begin'   => qr/\AThe following message to [<]/,
+    'rfc822'  => qr|\Acontent-type: message/rfc822\z|,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-	'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
+    'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
 };
 
 my $RxErr = {
-	'expired' => [
-		qr/Delivery expired/,
-	],
+    'expired' => [
+        qr/Delivery expired/,
+    ],
 };
 
 sub version     { '4.0.0' }
