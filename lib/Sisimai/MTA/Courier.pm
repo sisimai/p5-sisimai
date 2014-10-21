@@ -23,7 +23,26 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.1' }
+my $RxErr = {
+    'hostunknown' => [
+        # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
+        qr/\ANo such domain[.]\z/,
+    ],
+    'systemerror' => [
+        # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
+        # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
+        qr/\AThis domain's DNS violates RFC 1035[.]\z/,
+    ],
+};
+
+my $RxTmp = {
+    'systemerror' => [
+        # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
+        qr/\ADNS lookup failed[.]\z/,
+    ],
+};
+
+sub version     { '4.0.2' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 
@@ -47,6 +66,7 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
+    my $softbounce = 0;     # (Integer) 1 = Soft bounce
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
@@ -209,12 +229,42 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
+
+        SESSION: while(1) {
+            HARD_E: for my $r ( keys %$RxErr ) {
+                # Verify each regular expression of session errors
+                PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
+                    # Check each regular expression
+                    next unless $e->{'diagnosis'} =~ $rr;
+                    $e->{'reason'} = $r;
+                    last(HARD_E);
+                }
+            }
+            last if $e->{'reason'};
+
+            SOFT_E: for my $r ( keys %$RxTmp ) {
+                # Verify each regular expression of session errors
+                PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
+                    # Check each regular expression
+                    next unless $e->{'diagnosis'} =~ $rr;
+                    $e->{'reason'} = $r;
+                    $softbounce = 1;
+                    last(SOFT_E);
+                }
+            }
+
+            last;
+        }
         
         if( ! $e->{'status'} || $e->{'status'} =~ m/\d[.]0[.]0\z/ ) {
             # Get the status code from the respnse of remote MTA.
             my $f = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+            unless( $f ) {
+                $f = $softbounce ? '4.0.0' : '5.0.0';
+            }
             $e->{'status'} = $f if length $f;
         }
+        $e->{'spec'} = '' unless $e->{'spec'} =~ m/\A(?:SMTP|X-UNIX)\z/;
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || 'CONN';
     }
