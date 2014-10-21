@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
