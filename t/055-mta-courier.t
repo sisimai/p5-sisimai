@@ -48,7 +48,7 @@ MAKE_TEST: {
             ok length $p->from;
 
             for my $e ( @{ $p->ds } ) {
-                is $e->{'spec'}, 'SMTP', '->spec = SMTP';
+                ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
                 ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
