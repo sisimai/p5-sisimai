@@ -70,7 +70,8 @@ sub new {
             }
         }
     }
-    return undef if( ! $thing->{'recipient'} && ! $thing->{'addresser'} );
+    return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
+    return undef unless ref $thing->{'addresser'} eq 'Sisimai::Address';
 
     $thing->{'token'} = Sisimai::String->token( 
                             $thing->{'addresser'}->address,
