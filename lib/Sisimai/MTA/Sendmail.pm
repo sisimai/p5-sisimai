@@ -191,6 +191,13 @@ sub scan {
                         # <kijitora@example.co.jp>... Deferred: Name server: example.co.jp.: host name lookup failure
                         $rcptintext = $1;
                         $diagnostic = $2;
+
+                    } else {
+                        # ----- Transcript of session follows -----
+                        # Message could not be delivered for too long
+                        # Message will be deleted from queue
+                        next if $e =~ m/\A\s*[-]+/;
+                        $diagnostic ||= $e;
                     }
                 }
             }
