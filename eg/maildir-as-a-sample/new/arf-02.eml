@@ -48,7 +48,6 @@ Content-Disposition: inline
 Content-Transfer-Encoding: 7bit
 Content-Type: message/rfc822
 
-From Example.COM Thu Apr 29 23:45:00 2013
 X-Apparently-To: this-local-part-does-not-exist-on-yahoo@yahoo.com via 192.0.2.45; Thu, 29 Apr 2013 23:45:10 -0800
 Return-Path: <shironeko@example.com>
 X-Originating-IP: [192.0.2.8]
