@@ -108,6 +108,7 @@ sub make {
     my $rfc822data = $messageobj->rfc822;
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
+    my $endofemail = '';
 
     return undef unless $messageobj->ds;
     return undef unless $messageobj->rfc822;
@@ -136,6 +137,7 @@ sub make {
             }
         }
     }
+    $endofemail = Sisimai::MTA->EOM();
 
     LOOP_DELIVERY_STATUS: for my $e ( @{ $messageobj->ds } ) {
         # Create parameters for new() constructor.
@@ -244,6 +246,9 @@ sub make {
             # The value of "Message-Id" header
             $p->{'messageid'} =  $rfc822data->{'message-id'} // '';
             $p->{'messageid'} =~ y/<>//d if length $p->{'messageid'};
+
+            # Cleanup the value of "Diagnostic-Code:" header
+            $p->{'diagnosticcode'} =~ s/\s+$endofemail//;
         }
 
         $o = __PACKAGE__->new( %$p );
