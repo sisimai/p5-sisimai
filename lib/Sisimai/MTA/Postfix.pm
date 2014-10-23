@@ -138,6 +138,13 @@ sub scan {
 
                 } elsif( $e =~ m/\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
                     # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
+                    #
+                    # src/bounce/bounce_notify_util.c:
+                    #   681  #if 0
+                    #   682      if (dsn->time > 0)
+                    #   683          post_mail_fprintf(bounce, "Last-Attempt-Date: %s",
+                    #   684                            mail_date(dsn->time));
+                    #   685  #endif
                     $v->{'date'} = $1;
 
                 } else {
