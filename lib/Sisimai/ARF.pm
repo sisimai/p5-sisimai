@@ -14,7 +14,7 @@ my $RxARF = {
     'endof'        => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { return '4.0.0' }
+sub version     { return '4.0.1' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
@@ -228,7 +228,7 @@ sub scan {
         $e->{'spec'}    = 'SMTP';
         $e->{'action'}  = 'failed';
         $e->{'reason'}  = 'feedback';
-        $e->{'command'} = 'CONN';
+        $e->{'command'} = '';
         $e->{'agent'} ||= 'FeedBack-Loop';
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };

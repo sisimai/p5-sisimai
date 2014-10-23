@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub version     { return '4.0.0' }
+sub version     { return '4.0.1' }
 sub description { return '' }
 sub headerlist  { return [] }
 
@@ -146,7 +146,7 @@ sub scan {
 #             $e->{ $f }  ||= $connheader->{ $f } || '';
 #         }
 #         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-#         $e->{'command'} ||= $commandtxt || 'CONN';
+#         $e->{'command'} ||= $commandtxt;
 #     }
 #     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
