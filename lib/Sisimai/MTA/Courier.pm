@@ -266,7 +266,7 @@ sub scan {
         }
         $e->{'spec'} = '' unless $e->{'spec'} =~ m/\A(?:SMTP|X-UNIX)\z/;
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'} ||= $commandtxt;
+        $e->{'command'} ||= $commandtxt || '';
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
