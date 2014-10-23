@@ -48,15 +48,15 @@ MAKE_TEST: {
             ok length $p->from;
 
             for my $e ( @{ $p->ds } ) {
-                is $e->{'spec'}, 'SMTP', '->spec = SMTP';
+                ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
                 ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
                 is $e->{'feedbacktype'}, '', '->feedbacktype = ""';
-                like $e->{'command'}, qr/[A-Z]{4}/, '->command = '.$e->{'command'};
+                ok defined $e->{'command'}, '->command = '.$e->{'command'};
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
-                ok length $e->{'action'}, '->action = '.$e->{'action'};
+                ok defined $e->{'action'}, '->action = '.$e->{'action'};
                 ok length $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
