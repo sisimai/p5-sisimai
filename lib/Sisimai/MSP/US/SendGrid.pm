@@ -14,7 +14,7 @@ my $RxMSP = {
     'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
 sub headerlist  { return [ 'Return-Path' ] }
@@ -218,7 +218,7 @@ sub scan {
 
         $e->{'spec'}    ||= 'SMTP';
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'} ||= $commandtxt || 'CONN';
+        $e->{'command'} ||= $commandtxt;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

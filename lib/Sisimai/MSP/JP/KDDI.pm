@@ -17,7 +17,7 @@ my $RxVia = [
     qr/\Afrom\s+\w+[.]auone[-]net[.]jp\s/,
 ];
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'au by KDDI' }
 sub smtpagent   { 'JP::KDDI' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -324,7 +324,6 @@ sub scan {
 
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-        $e->{'command'} ||= 'CONN';
 
     } # end of for()
 
