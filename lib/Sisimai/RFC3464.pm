@@ -5,15 +5,20 @@ use warnings;
 
 # http://tools.ietf.org/html/rfc3464
 my $RxRFC = {
-    'begin'  => qr|\AContent-Type: message/delivery-status\z|i,
+    'begin'  => [
+        qr|\AContent-Type: message/delivery-status\z|i,
+        qr/\AThe original message was received at /i,
+        qr/\AThis report relates to your message/i,
+    ],
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'rfc822' => [
         qr|\AContent-Type: message/rfc822\z|i,
         qr|\AContent-Type: text/rfc822-headers\z|i,
+        qr|\AReturn-Path: <.+>\z|i,
     ],
 };
 
-sub version     { '4.0.1' };
+sub version     { '4.0.2' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -75,11 +80,13 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( $e =~ $RxRFC->{'begin'} ) .. ( grep { $e =~ $_ } @{ $RxRFC->{'rfc822'} } );
+            next unless 
+                ( grep { $e =~ $_ } @{ $RxRFC->{'begin'} } ) 
+                    .. ( grep { $e =~ $_ } @{ $RxRFC->{'rfc822'} } );
             next unless length $e;
-
+  
             $v = $dscontents->[ -1 ];
-            if( $e =~ m/\AFinal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
+            if( $e =~ m/\A(?:Final|Original)-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
                 # 2.3.2 Final-Recipient field
                 #   The Final-Recipient field indicates the recipient for which this set
                 #   of per-recipient fields applies.  This field MUST be present in each
