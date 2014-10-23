@@ -52,7 +52,7 @@ MAKE_TEST: {
                 # like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
                 is $e->{'reason'}, 'feedback', '->reason = '.$e->{'reason'};
                 is $e->{'feedbacktype'}, 'abuse', '->feedbacktype = '.$e->{'feedbacktype'};
-                like $e->{'command'}, qr/[A-Z]{4}/, '->command = '.$e->{'command'};
+                ok defined $e->{'command'}, '->command = '.$e->{'command'};
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok length $e->{'action'}, '->action = '.$e->{'action'};
