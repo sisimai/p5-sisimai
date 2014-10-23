@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -310,7 +310,6 @@ sub scan {
 
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-        $e->{'command'} ||= 'CONN';
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

@@ -26,7 +26,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -219,7 +219,7 @@ sub scan {
             $e->{ $f }  ||= $connheader->{ $f } || '';
         }
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'}   = shift @$commandset || 'CONN';
+        $e->{'command'}   = shift @$commandset;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( scalar @{ $mhead->{'received'} } ) {

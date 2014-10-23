@@ -42,7 +42,7 @@ my $RxTmp = {
     ],
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 
@@ -266,7 +266,7 @@ sub scan {
         }
         $e->{'spec'} = '' unless $e->{'spec'} =~ m/\A(?:SMTP|X-UNIX)\z/;
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'} ||= $commandtxt || 'CONN';
+        $e->{'command'} ||= $commandtxt;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
