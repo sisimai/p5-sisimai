@@ -50,7 +50,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
@@ -152,8 +152,10 @@ sub scan {
                 #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\A([^ ]+[@][^ ]+) on\s*.*\z/ ) {
+                if( $e =~ m/\A\s*([^ ]+[@][^ ]+) on\s*.*\z/ ||
+                    $e =~ m/\A\s*.+SMTP=([^ ]+[@][^ ]+) on\s*.*\z/i ) {
                     # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
+                    #   kijitora@example.com on 4/29/99 9:19:59 AM
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -197,8 +199,10 @@ sub scan {
                     $connheader->{'subject'} = $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\A\s+Sent:\s+([A-Z][a-z]{2},.+[-+]\d{4})\z/ ) {
+                } elsif( $e =~ m/\A\s+Sent:\s+([A-Z][a-z]{2},.+[-+]\d{4})\z/ ||
+                         $e =~ m|\A\s+Sent:\s+(\d+[/]\d+[/]\d+\s+\d+:\d+:\d+\s.+)|) {
                     #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
+                    #  Sent:	4/29/99 9:19:59 AM
                     next if length $connheader->{'date'};
                     $connheader->{'date'} = $1;
                     $connvalues++;
@@ -258,7 +262,6 @@ sub scan {
         $rfc822part .= sprintf( "Date: %s\n", $connheader->{'date'} );
         $rfc822part .= sprintf( "Subject: %s\n", $connheader->{'subject'} );
     }
-
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 
