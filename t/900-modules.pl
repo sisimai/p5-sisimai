@@ -25,6 +25,7 @@ sub list {
             MTA/Domino.pm
             MTA/Exim.pm
             MTA/Exchange.pm
+            MTA/Notes.pm
             MTA/OpenSMTPD.pm
             MTA/Postfix.pm
             MTA/qmail.pm
