@@ -24,6 +24,7 @@ my $DefaultMTA = [
     'Courier',
     'Exchange',
     'Domino',
+    'Notes',
 ];
 
 my $DefaultMSP = [
