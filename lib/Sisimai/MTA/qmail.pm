@@ -129,7 +129,7 @@ my $RxLDAP = {
     ],
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -304,14 +304,21 @@ sub scan {
 
         $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
         STATUS_CODE: while(1) {
-            last if length $e->{'status'};
+            #last if length $e->{'status'};
 
             if( $e->{'reason'} ) {
                 # Set pseudo status code
-                $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
-                my $s = $softbounce ? 't' : 'p';
-                my $r = Sisimai::RFC3463->status( $e->{'reason'}, $s, 'i' );
-                $e->{'status'} = $r if length $r;
+                if( $e->{'status'} =~ m/\A[45][.][1-7][.][1-9]\z/ ) {
+                    # Override bounce reason 
+                    $e->{'reason'} = Sisimai::RFC3463->reason( $e->{'status'} );
+
+                } else {
+                    # There is no D.S.N. value in the error message
+                    $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
+                    my $s = $softbounce ? 't' : 'p';
+                    my $r = Sisimai::RFC3463->status( $e->{'reason'}, $s, 'i' );
+                    $e->{'status'} = $r if length $r;
+                }
             }
 
             $e->{'status'} ||= $softbounce ? '4.0.0' : '5.0.0';
