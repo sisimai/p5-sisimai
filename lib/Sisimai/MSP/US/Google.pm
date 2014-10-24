@@ -100,7 +100,7 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Google Gmail' }
 sub smtpagent   { 'US::Google' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -247,7 +247,7 @@ sub scan {
                 if( $e =~ m/Technical details of (.+) failure:/ ) {
                     # Technical details of permanent failure: 
                     # Technical details of temporary failure: 
-                    $softbounce = 1 unless $1 eq 'permanenet';
+                    $softbounce = 1 unless $1 eq 'permanent';
                 }
 
                 if( $e =~ m/=\z/ ) {
@@ -310,7 +310,7 @@ sub scan {
             $e->{'command'} = $StateTable->{ $statecode0 }->{'command'};
 
         } else {
-
+            # No state code
             SESSION: for my $r ( keys %$RxErr ) {
                 # Verify each regular expression of session errors
                 PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
@@ -324,14 +324,21 @@ sub scan {
 
         $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
         STATUS_CODE: while(1) {
-            last if length $e->{'status'};
 
             if( $e->{'reason'} ) {
                 # Set pseudo status code
-                $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
-                my $s = $softbounce ? 't' : 'p';
-                my $r = Sisimai::RFC3463->status( $e->{'reason'}, $s, 'i' );
-                $e->{'status'} = $r if length $r;
+                if( $e->{'status'} =~ m/\A[45][.][1-7][.][1-9]\z/ ) {
+                    # Override bounce reason 
+                    $e->{'reason'} = Sisimai::RFC3463->reason( $e->{'status'} );
+
+                } else {
+                    # There is no D.S.N. value in the error message
+                    $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
+                    my $s = $softbounce ? 't' : 'p';
+                    my $r = Sisimai::RFC3463->status( $e->{'reason'}, $s, 'i' );
+
+                    $e->{'status'} = $r if length $r;
+                }
             }
 
             $e->{'status'} ||= $softbounce ? '4.0.0' : '5.0.0';
