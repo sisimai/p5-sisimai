@@ -339,7 +339,6 @@ sub rewrite {
         # Get the original text when the subject begins from 'fwd:' or 'fw:'
         if( $mailheader->{'subject'} =~ m/\A\s*fwd?:/i ) {
             # Delete quoted strings, quote symbols(>)
-            $$bodystring =~ s{\A.+?[>]}{>}s;
             $$bodystring =~ s{^[>]+[ ]}{}gm;
             $$bodystring =~ s{^[>]$}{}gm;
         }
