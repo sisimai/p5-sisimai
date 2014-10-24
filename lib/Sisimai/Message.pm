@@ -309,7 +309,7 @@ sub resolve {
 
     } # End of EMAIL_PROCESSING
 
-    return undef unless keys $processing->{'rfc822'};
+    return undef unless exists $processing->{'rfc822'};
     return $processing;
 }
 
