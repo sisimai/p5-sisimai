@@ -59,13 +59,6 @@ sub list {
         Time.pm
     | ];
 
-    my $c = [ qw|
-        AE AL AR AT AU AW BE BG BM BR BS CA CH CL CN CO CR CZ DE DK DO EC EG ES FR
-        GR GT HK HN HR HU ID IE IL IN IR IS IT JM JP KE KR LB LK LU LV MA MD ME MK
-        MO MU MX MY NG NI NL NO NP NZ OM PA PE PH PK PL PR PT PY RO RS RU SA SE SG
-        SK SR SV TH TR TW UA UG UK US UY VE VN ZA|
-    ];
-
     push @$v, 'Sisimai.pm';
     for my $e ( @$f ) {
         push @$v, sprintf( "Sisimai/%s", $e );
