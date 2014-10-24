@@ -415,7 +415,14 @@ sub is_softbounce {
 
     if( $argvs =~ m/\b([45])\d\d\b/ ) {
         # 4XX or 5XX
-        $value = $1 == 4 ? 1 : 0;
+        my $v = $1;
+        if( $v == 4 ) {
+            # 4xx, soft bounce
+            $value = 1;
+        } else {
+            # 5xx, hard bounce
+            $value = 0;
+        }
     }
     return $value;
 }
