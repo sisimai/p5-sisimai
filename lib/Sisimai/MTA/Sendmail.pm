@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -38,7 +38,11 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
-    return undef unless $mhead->{'from'} =~ $RxMTA->{'from'};
+    unless( $mhead->{'subject'} =~ m/\A\s*Fwd:/i ) {
+        # Fwd: Returned mail: see transcript for details
+        # Do not execute this code if the bounce mail is a forwarded message.
+        return undef unless $mhead->{'from'} =~ $RxMTA->{'from'};
+    }
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
