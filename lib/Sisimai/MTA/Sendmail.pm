@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -38,7 +38,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
-    unless( $mhead->{'subject'} =~ m/\A\s*Fwd:/i ) {
+    unless( $mhead->{'subject'} =~ m/\A\s*Fwd?:/i ) {
         # Fwd: Returned mail: see transcript for details
         # Do not execute this code if the bounce mail is a forwarded message.
         return undef unless $mhead->{'from'} =~ $RxMTA->{'from'};
