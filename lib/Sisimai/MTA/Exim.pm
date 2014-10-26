@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -187,8 +187,15 @@ sub scan {
                 $recipients++;
 
             } elsif( scalar @$dscontents == $recipients ) {
+                # Error message
                 next unless length $e;
                 $v->{'diagnosis'} .= $e.' ';
+
+            } else {
+                # Error message when email address above does not include '@'
+                # and domain part.
+                next unless $e =~ m/\A\s{4}/;
+                $v->{'alterrors'} .= $e.' ';
             }
         } # End of if: rfc822
 
@@ -232,6 +239,11 @@ sub scan {
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'lhost'}   ||= $localhost0;
 
+        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+            # Copy alternative error message
+            $e->{'diagnosis'} ||= $e->{'alterrors'};
+            delete $e->{'alterrors'};
+        }
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'diagnosis'} =~ s{\b__.+\z}{};
 
