@@ -228,13 +228,12 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
-        
+
         if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
             my $r = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
             $e->{'status'} = $r if length $r;
         }
-
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
