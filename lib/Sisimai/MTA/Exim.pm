@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -126,7 +126,6 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $rcptinhead = [];    # (Ref->Array) Contents of X-Failed-Recipients header
     my $localhost0 = '';    # (String) Local MTA
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
         'date'    => '',    # The value of Arrival-Date header
@@ -175,7 +174,7 @@ sub scan {
 
             if( $e =~ m/\s*This is a permanent error[.]\s*/ ) {
                 # deliver.c:6811|  "recipients. This is a permanent error. The following address(es) failed:\n");
-                $softbounce = 0;
+                $v->{'softbounce'} = 0;
 
             } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s\t]+[.][a-zA-Z]+)\z/ ) {
                 #   kijitora@example.jp
@@ -292,22 +291,6 @@ sub scan {
         }
 
         $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-        STATUS_CODE: while(1) {
-            last if length $e->{'status'};
-
-            if( $e->{'reason'} ) {
-                # Set pseudo status code
-                $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
-                $softbounce = 1 if $e->{'reason'} eq 'expired';
-                my $s = $softbounce ? 't' : 'p';
-                my $r = Sisimai::RFC3463->status( $e->{'reason'}, $s, 'i' );
-                $e->{'status'} = $r if length $r;
-            }
-
-            $e->{'status'} ||= $softbounce ? '4.0.0' : '5.0.0';
-            last;
-        }
-
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'command'} ||= '';
