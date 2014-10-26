@@ -26,7 +26,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -234,6 +234,7 @@ sub scan {
             my $r = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
             $e->{'status'} = $r if length $r;
         }
+        $e->{'softbounce'} = Sisimai::RFC3463->is_softbounce( $e->{'status'} );
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
