@@ -19,7 +19,7 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
-        
+
         next unless -f $emailfn;
         $mailbox = Sisimai::Mail->new( $emailfn );
 
