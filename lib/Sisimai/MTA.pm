@@ -18,19 +18,20 @@ sub SMTPCOMMAND {
 sub EOM { '__END_OF_EMAIL_MESSAGE__' };
 sub DELIVERYSTATUS {
     return {
-        'spec'         => '',  # Protocl specification
-        'date'         => '',  # The value of Last-Attempt-Date header
-        'rhost'        => '',  # The value of Remote-MTA header
-        'lhost'        => '',  # The value of Received-From-MTA header
-        'alias'        => '',  # The value of alias entry(RHS)
-        'agent'        => '',  # MTA name
-        'action'       => '',  # The value of Action header
-        'status'       => '',  # The value of Status header
-        'reason'       => '',  # Temporary reason of bounce
-        'command'      => '',  # SMTP command in the message body
-        'diagnosis'    => '',  # The value of Diagnostic-Code header
-        'recipient'    => '',  # The value of Final-Recipient header
-        'feedbacktype' => '',  # FeedBack Type
+        'spec'         => '',   # Protocl specification
+        'date'         => '',   # The value of Last-Attempt-Date header
+        'rhost'        => '',   # The value of Remote-MTA header
+        'lhost'        => '',   # The value of Received-From-MTA header
+        'alias'        => '',   # The value of alias entry(RHS)
+        'agent'        => '',   # MTA name
+        'action'       => '',   # The value of Action header
+        'status'       => '',   # The value of Status header
+        'reason'       => '',   # Temporary reason of bounce
+        'command'      => '',   # SMTP command in the message body
+        'diagnosis'    => '',   # The value of Diagnostic-Code header
+        'recipient'    => '',   # The value of Final-Recipient header
+        'softbounce'   => 0,    # Soft bounce or not
+        'feedbacktype' => '',   # FeedBack Type
     };
 }
 
