@@ -45,9 +45,9 @@ MAKE_TEST: {
 
     is $PackageName->scan, undef, '->scan';
 
+    use Sisimai::Data;
     use Sisimai::Mail;
     use Sisimai::Message;
-    use Sisimai::Data;
 
     PARSE_EACH_MAIL: for my $n ( 1..20 ) {
 
