@@ -412,18 +412,25 @@ sub is_softbounce {
     my $class = shift;
     my $argvs = shift || return -1;
     my $value = -1;
+    my $first = -1;
 
-    if( $argvs =~ m/\b([45])\d\d\b/ ) {
-        # 4XX or 5XX
-        my $v = $1;
-        if( $v == 4 ) {
-            # 4xx, soft bounce
-            $value = 1;
-        } else {
-            # 5xx, hard bounce
-            $value = 0;
-        }
+    if( $argvs =~ m/\b([245])\d\d\b/ ) {
+        $first = $1;
+
+    } elsif( $argvs =~ m/\b([245])[.][0-7][.]\d+\b/ ) {
+        $first = $1;
     }
+
+    if( $first == 4 ) {
+        $value = 1;
+
+    } elsif( $first == 5 ) {
+        $value = 0;
+
+    } else {
+        $value = -1;
+    }
+
     return $value;
 }
 
