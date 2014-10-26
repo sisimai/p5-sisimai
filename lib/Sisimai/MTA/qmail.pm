@@ -153,10 +153,9 @@ sub scan {
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
+    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
-    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
 
     my $v = undef;
     my $p = undef;
@@ -196,7 +195,7 @@ sub scan {
 
             if( $e =~ m/\AThis is a permanent error;/ ) {
                 # This is a permanent error; I've given up. Sorry it didn't work out.
-                $softbounce = 0;
+                $v->{'softbounce'} = 0;
 
             } elsif( $e =~ m/\A(?:To[ ]*:)?[<](.+[@].+)[>]:\s*\z/ ) {
                 # <kijitora@example.jp>:
@@ -278,7 +277,7 @@ sub scan {
                 $e->{'reason'} = 'blocked';
 
             } else {
-
+                # Try to match with each error message in the table
                 SESSION: for my $r ( keys %$RxSess ) {
                     # Verify each regular expression of session errors
                     PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
@@ -303,31 +302,10 @@ sub scan {
         }
 
         $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-        STATUS_CODE: while(1) {
-            #last if length $e->{'status'};
-
-            if( $e->{'reason'} ) {
-                # Set pseudo status code
-                if( $e->{'status'} =~ m/\A[45][.][1-7][.][1-9]\z/ ) {
-                    # Override bounce reason 
-                    $e->{'reason'} = Sisimai::RFC3463->reason( $e->{'status'} );
-
-                } else {
-                    # There is no D.S.N. value in the error message
-                    $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
-                    my $s = $softbounce ? 't' : 'p';
-                    my $r = Sisimai::RFC3463->status( $e->{'reason'}, $s, 'i' );
-                    $e->{'status'} = $r if length $r;
-                }
-            }
-
-            $e->{'status'} ||= $softbounce ? '4.0.0' : '5.0.0';
-            last;
-        }
-
-        $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
+        $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'command'} ||= '';
+
     } # end of for()
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
