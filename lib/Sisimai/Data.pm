@@ -8,6 +8,7 @@ use Time::Piece;
 use Try::Tiny;
 
 use Sisimai::Address;
+use Sisimai::RFC3463;
 use Sisimai::RFC5322;
 use Sisimai::String;
 use Sisimai::Reason;
@@ -150,6 +151,7 @@ sub make {
             'reason'         => $e->{'reason'}       // '',
             'smtpagent'      => $e->{'agent'}        // '',
             'recipient'      => $e->{'recipient'}    // '',
+            'softbounce'     => $e->{'softbounce'}   // -1,
             'smtpcommand'    => $e->{'command'}      // '',
             'feedbacktype'   => $e->{'feedbacktype'} // '',
             'diagnosticcode' => $e->{'diagnosis'}    // '',
@@ -260,9 +262,24 @@ sub make {
                 # Remote host dependent error
                 $r = Sisimai::Rhost->get( $o );
             }
-
             $r ||= Sisimai::Reason->get( $o );
+            $r ||= 'undefined';
             $o->reason( $r );
+        }
+
+        unless( $o->deliverystatus ) {
+            # Set pseudo status code
+            my $s = undef;  # Delivery status
+            my $t = 'p';    # Permanent or Temporary
+
+            if( $p->{'softbounce'} < 0 ) {
+                # Check the bounce is soft bounce or not
+                $p->{'softbounce'} = Sisimai::RFC3463->is_softbounce( $p->{'diagnosticcode'} );
+            }
+
+            $t = 't' if $p->{'softbounce'} == 1;
+            $s = Sisimai::RFC3463->status( $o->reason, $t, 'i' );
+            $o->deliverystatus( $s ) if length $s;
         }
         push @$objectlist, $o;
 
