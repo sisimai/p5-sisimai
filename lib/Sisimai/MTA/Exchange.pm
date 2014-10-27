@@ -50,7 +50,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
@@ -202,7 +202,7 @@ sub scan {
                 } elsif( $e =~ m/\A\s+Sent:\s+([A-Z][a-z]{2},.+[-+]\d{4})\z/ ||
                          $e =~ m|\A\s+Sent:\s+(\d+[/]\d+[/]\d+\s+\d+:\d+:\d+\s.+)|) {
                     #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
-                    #  Sent:	4/29/99 9:19:59 AM
+                    #  Sent:    4/29/99 9:19:59 AM
                     next if length $connheader->{'date'};
                     $connheader->{'date'} = $1;
                     $connvalues++;
