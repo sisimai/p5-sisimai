@@ -74,7 +74,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'OpenSMTPD' }
 sub smtpagent   { 'OpenSMTPD' }
 
@@ -98,7 +98,6 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
 
     my $v = undef;
     my $p = undef;
