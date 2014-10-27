@@ -42,7 +42,7 @@ my $RxTmp = {
     ],
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.5' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 
@@ -66,7 +66,6 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
@@ -140,6 +139,10 @@ sub scan {
                 } elsif( $e =~ m/Remote-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
                     # Remote-MTA: DNS; mx.example.jp
                     $v->{'rhost'} = lc $1;
+                    if( $v->{'rhost'} =~ m/ / ) {
+                        # Get the first element
+                        $v->{'rhost'} = [ split( ' ', $v->{'rhost'} ) ]->[0];
+                    }
 
                 } elsif( $e =~ m/\ALast-Attempt-Date:[ ]*(.+)\z/i ) {
                     # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
@@ -237,6 +240,7 @@ sub scan {
                     # Check each regular expression
                     next unless $e->{'diagnosis'} =~ $rr;
                     $e->{'reason'} = $r;
+                    $e->{'softbounce'} = 0;
                     last(HARD_E);
                 }
             }
@@ -248,23 +252,20 @@ sub scan {
                     # Check each regular expression
                     next unless $e->{'diagnosis'} =~ $rr;
                     $e->{'reason'} = $r;
-                    $softbounce = 1;
+                    $e->{'softbounce'} = 1;
                     last(SOFT_E);
                 }
             }
 
             last;
         }
-        
+
         if( ! $e->{'status'} || $e->{'status'} =~ m/\d[.]0[.]0\z/ ) {
             # Get the status code from the respnse of remote MTA.
             my $f = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-            unless( $f ) {
-                $f = $softbounce ? '4.0.0' : '5.0.0';
-            }
             $e->{'status'} = $f if length $f;
         }
-        $e->{'spec'} = '' unless $e->{'spec'} =~ m/\A(?:SMTP|X-UNIX)\z/;
+        $e->{'spec'}      = '' unless $e->{'spec'} =~ m/\A(?:SMTP|X-UNIX)\z/;
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
     }
