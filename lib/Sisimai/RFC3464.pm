@@ -18,7 +18,7 @@ my $RxRFC = {
     ],
 };
 
-sub version     { '4.0.2' };
+sub version     { '4.0.3' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -42,7 +42,6 @@ sub scan {
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
 
     my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
     my $stripedtxt = [ split( "\n", $$mbody ) ];
@@ -264,25 +263,8 @@ sub scan {
             $e->{'reason'}    = $scannedset->{'reason'} || 'undefined';
             $e->{'diagnosis'} = $scannedset->{'message'} if length $scannedset->{'message'};
             $e->{'command'}   = '';
-
-            $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
-            my $s = $softbounce ? 't' : 'p';
-            my $r = Sisimai::RFC3463->status( $scannedset->{'reason'}, $s, 'i' );
-
-            unless( $e->{'status'} ) {
-                $e->{'status'} = $r || Sisimai::RFC3463->status( 'undefined', $s, 'i' );
-            }
         }
-
-        unless( $e->{'status'} ) {
-            # There is no "Status:" field in the message body
-            $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-            $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
-            my $s = $softbounce ? 't' : 'p';
-
-            # Failed to get the value of Status
-            $e->{'status'} ||= Sisimai::RFC3463->status( 'undefined', $s, 'i' );
-        }
+        $e->{'status'} ||= Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
