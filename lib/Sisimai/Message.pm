@@ -31,9 +31,10 @@ my $DefaultMSP = [
     'US::Google',
     'US::Verizon',
     'US::Facebook',
+    'US::AmazonSES',
+    'JP::EZweb',
     'JP::KDDI',
     'JP::Biglobe',
-    'US::AmazonSES',
     'US::SendGrid',
 ];
 
