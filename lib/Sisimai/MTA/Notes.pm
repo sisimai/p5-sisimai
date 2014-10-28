@@ -20,7 +20,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Lotus Notes' }
 sub smtpagent   { 'Notes' }
 
@@ -162,12 +162,6 @@ sub scan {
             my $s = Sisimai::RFC3463->status( $r, 'p', 'i' );
             $e->{'status'} = $s if length $s;
             last;
-        }
-
-        unless( $e->{'status'} ) {
-            # Set pseudo status code
-            $e->{'reason'} ||= 'undefined';
-            $e->{'status'}   = Sisimai::RFC3463->status( $e->{'reason'}, 'p', 'i' );
         }
 
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
