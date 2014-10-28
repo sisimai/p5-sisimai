@@ -15,7 +15,7 @@ my $RxMSP = {
     },
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Verizon Wireless' }
 sub smtpagent   { 'US::Verizon' }
 
@@ -47,7 +47,6 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $senderaddr = '';    # (String) Sender address in the message body
     my $subjecttxt = '';    # (String) Subject of the original message
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
 
     my $RxMTA      = {};    # (Ref->Hash) Delimiter patterns
     my $RxErr      = {};    # (Ref->Hash) Error message patterns
@@ -264,22 +263,7 @@ sub scan {
         }
 
         $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-        STATUS_CODE: while(1) {
-            last if length $e->{'status'};
-
-            if( $e->{'reason'} ) {
-                # Set pseudo status code
-                $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
-                my $s = $softbounce ? 't' : 'p';
-                my $r = Sisimai::RFC3463->status( $e->{'reason'}, $s, 'i' );
-                $e->{'status'} = $r if length $r;
-            }
-
-            $e->{'status'} ||= $softbounce ? '4.0.0' : '5.0.0';
-            last;
-        }
-
-        $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
+        $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
 
     } # end of for()

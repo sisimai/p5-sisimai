@@ -64,7 +64,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.4' }
 sub description { 'Facebook' }
 sub smtpagent   { 'US::Facebook' }
 
@@ -87,7 +87,6 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
     my $fbresponse = '';    # (String) Response code from Facebook
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
@@ -226,7 +225,7 @@ sub scan {
             my $num = $3;
 
             $fbresponse = sprintf( "%s-%s%d", $lhs, $rhs, $num );
-            $softbounce = $rhs eq 'P' ? 0 : 1;
+            $e->{'softbounce'} = $rhs eq 'P' ? 0 : 1;
         }
 
         SESSION: for my $r ( keys %$RxErr ) {
@@ -252,27 +251,12 @@ sub scan {
                 # This block has not been tested because we have no email sample
                 # including "INT-T?" error code.
                 $e->{'reason'} = 'systemerror';
-                $softbounce = 1;
+                $e->{'softbounce'} = 1;
             }
         }
 
         $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-        STATUS_CODE: while(1) {
-            last if length $e->{'status'};
-
-            if( $e->{'reason'} ) {
-                # Set pseudo status code
-                $softbounce = 1 if Sisimai::RFC3463->is_softbounce( $e->{'diagnosis'} );
-                my $s = $softbounce ? 't' : 'p';
-                my $r = Sisimai::RFC3463->status( $e->{'reason'}, $s, 'i' );
-                $e->{'status'} = $r if length $r;
-            }
-
-            $e->{'status'} ||= $softbounce ? '4.0.0' : '5.0.0';
-            last;
-        }
-
-        $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
+        $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
 
     } # end of for()
