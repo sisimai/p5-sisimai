@@ -14,6 +14,7 @@ sub list {
         MDA.pm
         MSP.pm
             MSP/JP/Biglobe.pm
+            MSP/JP/EZweb.pm
             MSP/JP/KDDI.pm
             MSP/US/AmazonSES.pm
             MSP/US/Facebook.pm
