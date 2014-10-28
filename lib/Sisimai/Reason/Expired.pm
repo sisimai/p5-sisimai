@@ -8,7 +8,7 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = [
-        qr/connection timed out in connect/,
+        qr/connection timed out/,
         qr/delivery time expired/,
         qr/retry time not reached for any host after a long failure period/,
     ];
