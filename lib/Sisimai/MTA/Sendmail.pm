@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -88,7 +88,9 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } );
+            next unless 
+                ( $e =~ $RxMTA->{'begin'} ) ..
+                ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } );
             next unless length $e;
 
             if( $connvalues == scalar( keys %$connheader ) ) {
@@ -201,7 +203,11 @@ sub scan {
                         # Message could not be delivered for too long
                         # Message will be deleted from queue
                         next if $e =~ m/\A\s*[-]+/;
-                        $diagnostic ||= $e;
+                        if( $e =~ m/\A\d\d\d\s\d[.]\d[.]\d\s[<].+[>]/ || $e =~ m/\AMessage / ) {
+                            # Message could not be delivered for too long
+                            # 550 5.1.2 <kijitora@example.org>... Message
+                            $diagnostic ||= $e;
+                        }
                     }
                 }
             }
@@ -234,6 +240,14 @@ sub scan {
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} || $diagnostic );
+
+        unless( $e->{'recipient'} =~ m/\A[^ ]+[@][^ ]+\z/ ) {
+            # @example.jp, no local part
+            if( $e->{'diagnosis'} =~ m/[<]([^ ]+[@][^ ]+)[>]/ ) {
+                # Get email address from the value of Diagnostic-Code header
+                $e->{'recipient'} = $1;
+            }
+        }
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
