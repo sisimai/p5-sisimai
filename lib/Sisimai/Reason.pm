@@ -74,6 +74,7 @@ sub anotherone {
 
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
+    my $commandtxt = $argvs->smtpcommand    // '';
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'SecurityError', 'SystemError', 'Suspend', 'Expired',
@@ -114,6 +115,15 @@ sub anotherone {
                 $reasontext = 'mailererror';
             }
         }
+
+        if( not $reasontext ) {
+            # Check the value of SMTP command
+            if( $commandtxt =~ m/\A(?:EHLO|HELO)\z/ ) {
+                # Rejected at connection or after EHLO|HELO
+                $reasontext = 'blocked';
+            }
+        }
+
     }
     return $reasontext;
 }
