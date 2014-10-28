@@ -83,6 +83,12 @@ sub mimedecode {
 }
 
 sub boundary {
+    # @Description  Get boundary string
+    # @Param <str>  (String) The value of Content-Type header
+    # @Param <flg>  (Integer) -1 = boundary string
+    #                          0 = start of boundary
+    #                          1 = end of boundary
+    # @Return       (String) Boundary string
     my $class = shift;
     my $argvs = shift || return undef;
     my $start = shift // -1;
