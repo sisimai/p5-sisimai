@@ -19,7 +19,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'AmazonSES: http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::AmazonSES' }
 sub headerlist  { return [ 'X-AWS-Outgoing' ] }
@@ -44,7 +44,6 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
         'rhost'   => '',    # The value of Reporting-MTA header
@@ -120,7 +119,7 @@ sub scan {
                     # Status:5.2.0
                     # Status: 5.1.0 (permanent failure)
                     $v->{'status'} = $1;
-                    $softbounce = 0 if $e =~ m/[(]permanent failure[)]/;
+                    $v->{'softbounce'} = 0 if $e =~ m/[(]permanent failure[)]/;
 
                 } elsif( $e =~ m/\ARemote-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
                     # Remote-MTA: DNS; mx.example.jp
@@ -213,9 +212,9 @@ sub scan {
             }
         }
 
-        $e->{'reason'}  ||= Sisimai::RFC3463->reason( $e->{'status'} );
-        $e->{'spec'}    ||= 'SMTP';
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
+        $e->{'reason'} ||= Sisimai::RFC3463->reason( $e->{'status'} );
+        $e->{'spec'}   ||= 'SMTP';
+        $e->{'agent'}  ||= __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
