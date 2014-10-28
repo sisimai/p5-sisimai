@@ -14,7 +14,7 @@ my $RxMSP = {
     'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
 sub headerlist  { return [ 'Return-Path' ] }
@@ -40,7 +40,6 @@ sub scan {
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
         'date'    => '',    # The value of Arrival-Date header
@@ -180,13 +179,13 @@ sub scan {
 
         if( $e->{'status'} ) {
             # Check softbounce or not
-            $softbounce = 1 if $e->{'status'} =~ m/\A4[.]/;
+            $e->{'softbounce'} = 1 if $e->{'status'} =~ m/\A4[.]/;
 
         } else {
             # Get the value of SMTP status code as a pseudo D.S.N.
             if( $e->{'diagnosis'} =~ m/\b([45])\d\d\s*/ ) {
                 # 4xx or 5xx
-                $softbounce = 1 if $1 == 4;
+                $e->{'softbounce'} = 1 if $1 == 4;
                 $e->{'status'} = sprintf( "%d.0.0", $1 );
             }
         }
