@@ -80,7 +80,7 @@ MAKE_TEST: {
             for my $e ( @$o ) {
                 isa_ok $e, 'Sisimai::Data';
                 like $e->deliverystatus, $ReturnValue->{ $emindex }->{'status'}, '->status = '.$e->deliverystatus;
-                like $e->{'reason'}, $ReturnValue->{ $emindex }->{'reason'}, '->reason = '.$e->{'reason'};
+                like $e->reason, $ReturnValue->{ $emindex }->{'reason'}, '->reason = '.$e->reason;
             }
             $c++;
         }
