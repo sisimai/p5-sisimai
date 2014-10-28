@@ -14,6 +14,7 @@ sub match {
         qr/email address does not exist/,
         qr/invalid mailbox path/,
         qr/invalid recipient:/,
+        qr/no account by that name here/,
         qr/no such mailbox/,
         qr/no such recipient/,
         qr/no such user here/,
@@ -55,17 +56,19 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    my $statuscode = $argvs->deliverystatus // '';
-    my $reasontext = __PACKAGE__->text;
-
-    return undef unless length $statuscode;
-    return 1 if $argvs->reason eq $reasontext;
+    return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::RFC3463;
-    my $tempreason = Sisimai::RFC3463->reason( $statuscode );
+    my $statuscode = $argvs->deliverystatus // '';
+    my $reasontext = __PACKAGE__->text;
+    my $tempreason = '';
+    my $diagnostic = '';
+
+    $tempreason = Sisimai::RFC3463->reason( $statuscode ) if $statuscode;
+    $diagnostic = $argvs->diagnosticcode // '';
+
     return 0 if $tempreason eq 'suspend';
 
-    my $diagnostic = $argvs->diagnosticcode // '';
     my $v = 0;
 
     if( $tempreason eq $reasontext ) {
@@ -82,22 +85,11 @@ sub true {
             $v = 1;
         }
     } else {
+        # Check the last SMTP command of the session. 
         if( $argvs->smtpcommand eq 'RCPT' ) {
-            # Check the last SMTP command of the session. When the SMTP command
-            # is not "RCPT", the session rejected by other reason, maybe.
-            my $s = substr( $statuscode, 0, 1 );
-            if( $s == 5 ) {
-                # Permanent error, it's a hard bounce.
-                $v = 1 if __PACKAGE__->match( $diagnostic );
-
-            } elsif( $s == 4 ) {
-                # Temporary error, it's a soft bounce.
-                # Postfix Virtual Mail box
-                # Status: 4.4.7
-                # Diagnostic-Code: SMTP; 450 4.1.1 <***@example.jp>:
-                #   Recipient address rejected: User unknown in virtual mailbox table
-                $v = 1 if __PACKAGE__->match( $diagnostic );
-            }
+            # When the SMTP command is not "RCPT", the session rejected by other
+            # reason, maybe.
+            $v = 1 if __PACKAGE__->match( $diagnostic );
         }
     }
 
