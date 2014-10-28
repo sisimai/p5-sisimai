@@ -11,6 +11,10 @@ my $MethodNames = {
     ],
     'object' => [],
 };
+my $ReturnValue = {
+    '01' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
+    '02' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
+};
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -28,6 +32,7 @@ MAKE_TEST: {
     is $PackageName->scan, undef, '->scan';
     is $PackageName->is_arf( 'multipart/report; report-type=feedback-report;'), 1;
 
+    use Sisimai::Data;
     use Sisimai::Mail;
     use Sisimai::Message;
 
@@ -35,11 +40,14 @@ MAKE_TEST: {
 
         my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/arf-%02d.eml", $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
+        my $emindex = sprintf( "%02d", $n );
         next unless defined $mailbox;
+        ok -f $emailfn, 'email = '.$emailfn;
 
         while( my $r = $mailbox->read ) {
 
             my $p = Sisimai::Message->new( 'data' => $r );
+            my $o = undef;
             isa_ok $p, 'Sisimai::Message';
             isa_ok $p->ds, 'ARRAY';
             isa_ok $p->header, 'HASH';
@@ -47,19 +55,30 @@ MAKE_TEST: {
             ok length $p->from;
 
             for my $e ( @{ $p->ds } ) {
-                is $e->{'spec'}, 'SMTP', '->spec = SMTP';
-                ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
-                # like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
-                is $e->{'reason'}, 'feedback', '->reason = '.$e->{'reason'};
-                is $e->{'feedbacktype'}, 'abuse', '->feedbacktype = '.$e->{'feedbacktype'};
-                ok defined $e->{'command'}, '->command = '.$e->{'command'};
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
+                ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
-                ok length $e->{'action'}, '->action = '.$e->{'action'};
-                ok length $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
-                ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
+                ok length $e->{'agent'}, '->agent = '.$e->{'agent'};
+
+                ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
+                ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
+                ok defined $e->{'status'}, '->status = '.$e->{'status'};
+                ok defined $e->{'command'}, '->command = '.$e->{'command'};
+                ok defined $e->{'action'}, '->action = '.$e->{'action'};
+                ok defined $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
+                ok defined $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
-                ok $e->{'agent'}, '->agent = '.$e->{'agent'};
+                ok defined $e->{'feedbacktype'}, '->feedbacktype = ""';
+                ok defined $e->{'softbounce'}, '->softbounce = '.$e->{'softbounce'};
+            }
+
+            $o = Sisimai::Data->make( 'data' => $p );
+            ok scalar @$o, 'entry = '.scalar @$o;
+            for my $e ( @$o ) {
+                isa_ok $e, 'Sisimai::Data';
+                like $e->deliverystatus, $ReturnValue->{ $emindex }->{'status'}, '->status = '.$e->deliverystatus;
+                like $e->reason, $ReturnValue->{ $emindex }->{'reason'}, '->reason = '.$e->reason;
+                like $e->feedbacktype, $ReturnValue->{ $emindex }->{'feedbacktype'}, '->feedbacktype = '.$e->feedbacktype;
             }
             $c++;
         }
