@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.9' }
+sub version     { '4.0.10' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -54,6 +54,7 @@ sub scan {
     my $rcptintext = '';    # (String) Recipient address in the message body
     my $diagnostic = '';    # (String) Alternative diagnostic message
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
     my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
@@ -163,6 +164,10 @@ sub scan {
                     # >>> DATA
                     $commandtxt = $1;
 
+                } elsif( $e =~ m/\A[<]{3}[ ]+(.+)\z/ ) {
+                    # <<< Response
+                    $esmtpreply = $1;
+
                 } elsif( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
                     # Reporting-MTA: dns; mx.example.jp
                     next if length $connheader->{'rhost'};
@@ -239,6 +244,7 @@ sub scan {
         $e->{'spec'}    ||= 'SMTP';
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
+        $e->{'command'} ||= 'EHLO' if length $esmtpreply;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} || $diagnostic );
 
         unless( $e->{'recipient'} =~ m/\A[^ ]+[@][^ ]+\z/ ) {
