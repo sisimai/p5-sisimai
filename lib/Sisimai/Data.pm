@@ -256,7 +256,7 @@ sub make {
         $o = __PACKAGE__->new( %$p );
         next unless defined $o;
 
-        if( $o->reason eq '' || $o->reason =~ m/\A(?:onhold|undefined)\z/ ) {
+        if( $o->reason eq '' || $o->reason =~ Sisimai::Reason->retry() ) {
             # Decide the reason of email bounce
             if( Sisimai::Rhost->match( $o->rhost ) ) {
                 # Remote host dependent error
