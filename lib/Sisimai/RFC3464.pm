@@ -18,7 +18,7 @@ my $RxRFC = {
     ],
 };
 
-sub version     { '4.0.3' };
+sub version     { '4.0.4' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
