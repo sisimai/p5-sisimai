@@ -53,7 +53,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash' ] }
@@ -167,13 +167,7 @@ sub scan {
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 
-        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
-            # Copy alternative error message
-            $e->{'diagnosis'} ||= $e->{'alterrors'};
-            delete $e->{'alterrors'};
-        }
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
-        #$e->{'diagnosis'} =~ s{\b__.+\z}{};
 
         if( ! $e->{'rhost'} ) {
             # Get the remote host name
