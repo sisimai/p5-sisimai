@@ -26,6 +26,7 @@ my $DefaultMTA = [
     'Domino',
     'Notes',
     'McAfee',
+    'MXLogic',
 ];
 
 my $DefaultMSP = [
