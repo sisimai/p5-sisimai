@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -258,15 +258,11 @@ sub scan {
         }
 
         if( ! $e->{'command'} ) {
-
-            COMMAND: while(1) {
-                # Get the SMTP command name for the session
-                SMTP: for my $r ( @$RxComm ) {
-                    # Verify each regular expression of SMTP commands
-                    next unless $e->{'diagnosis'} =~ $r;
-                    $e->{'command'} = uc $1;
-                    last(COMMAND);
-                }
+            # Get the SMTP command name for the session
+            SMTP: for my $r ( @$RxComm ) {
+                # Verify each regular expression of SMTP commands
+                next unless $e->{'diagnosis'} =~ $r;
+                $e->{'command'} = uc $1;
                 last;
             }
 
