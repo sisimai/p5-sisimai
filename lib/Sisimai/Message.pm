@@ -27,6 +27,7 @@ my $DefaultMTA = [
     'Notes',
     'McAfee',
     'MXLogic',
+    'MailFoundry',
 ];
 
 my $DefaultMSP = [
