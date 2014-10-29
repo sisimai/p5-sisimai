@@ -63,13 +63,12 @@ sub true {
     my $reasontext = __PACKAGE__->text;
     my $tempreason = '';
     my $diagnostic = '';
+    my $v = 0;
 
     $tempreason = Sisimai::RFC3463->reason( $statuscode ) if $statuscode;
     $diagnostic = $argvs->diagnosticcode // '';
 
     return 0 if $tempreason eq 'suspend';
-
-    my $v = 0;
 
     if( $tempreason eq $reasontext ) {
         # *.1.1 = 'Bad destination mailbox address'
