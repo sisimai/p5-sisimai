@@ -27,6 +27,7 @@ sub list {
             MTA/Exim.pm
             MTA/Exchange.pm
             MTA/McAfee.pm
+            MTA/MXLogic.pm
             MTA/Notes.pm
             MTA/OpenSMTPD.pm
             MTA/Postfix.pm
