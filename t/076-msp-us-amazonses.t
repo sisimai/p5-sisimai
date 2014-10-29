@@ -13,6 +13,7 @@ my $MethodNames = {
 };
 my $ReturnValue = {
     '01' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/blocked/ },
+    '02' => { 'status' => qr/\A5[.]3[.]0\z/, 'reason' => qr/filtered/ },
 };
 
 use_ok $PackageName;
