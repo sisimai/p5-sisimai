@@ -5,7 +5,7 @@ use Sisimai::Reason;
 
 my $PackageName = 'Sisimai::Reason';
 my $MethodNames = {
-    'class' => [ 'get' ],
+    'class' => [ 'get', 'retry' ],
     'object' => [],
 };
 
