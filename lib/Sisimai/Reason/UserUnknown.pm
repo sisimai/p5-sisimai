@@ -59,6 +59,8 @@ sub true {
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::RFC3463;
+    my $prematches = [ 'RelayingDenied', 'NotAccept', 'MailboxFull' ];
+    my $matchother = 0;
     my $statuscode = $argvs->deliverystatus // '';
     my $reasontext = __PACKAGE__->text;
     my $tempreason = '';
@@ -67,7 +69,6 @@ sub true {
 
     $tempreason = Sisimai::RFC3463->reason( $statuscode ) if $statuscode;
     $diagnostic = $argvs->diagnosticcode // '';
-
     return 0 if $tempreason eq 'suspend';
 
     if( $tempreason eq $reasontext ) {
@@ -76,13 +77,22 @@ sub true {
         #   Diagnostic-Code: SMTP; 550 5.1.1 <***@example.jp>:
         #     Recipient address rejected: User unknown in local recipient table
         require Module::Load;
-        for my $e ( 'RelayingDenied', 'NotAccept' ) {
+        for my $e ( @$prematches ) {
             # Check the value of "Diagnostic-Code" with other error patterns.
             my $p = 'Sisimai::Reason::'.$e;
             Module::Load::load( $p );
-            last if $p->match( $diagnostic );
-            $v = 1;
+
+            if( $p->match( $diagnostic ) ) {
+                # Match with reason defined in Sisimai::Reason::* Except 
+                # UserUnknown.
+                $matchother = 1;
+                last;
+            }
         }
+
+        # Did not match with other message patterns
+        $v = 1 if $matchother == 0;
+
     } else {
         # Check the last SMTP command of the session. 
         if( $argvs->smtpcommand eq 'RCPT' ) {

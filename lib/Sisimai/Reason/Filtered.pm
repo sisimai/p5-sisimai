@@ -30,18 +30,18 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    my $statuscode = $argvs->deliverystatus // '';
-    my $reasontext = __PACKAGE__->text;
-
-    return undef unless length $statuscode;
-    return 1 if $argvs->reason eq $reasontext;
+    return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::RFC3463;
-    my $tempreason = Sisimai::RFC3463->reason( $statuscode );
-    return 0 if $tempreason eq 'suspend';
-
-    my $diagnostic = $argvs->diagnosticcode // '';
+    my $statuscode = $argvs->deliverystatus // '';
+    my $reasontext = __PACKAGE__->text;
+    my $tempreason = '';
+    my $diagnostic = '';
     my $v = 0;
+
+    $diagnostic = $argvs->diagnosticcode // '';
+    $tempreason = Sisimai::RFC3463->reason( $statuscode );
+    return 0 if $tempreason eq 'suspend';
 
     if( $tempreason eq $reasontext ) {
         # Delivery status code points C<filtered>.

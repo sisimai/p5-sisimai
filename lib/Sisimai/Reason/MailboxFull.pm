@@ -20,6 +20,7 @@ sub match {
         qr/delivery failed: over quota/,
         qr/disc quota exceeded/,
         qr/exceeded storage allocation/,
+        qr/is over quota temporarily/,
         qr/mail file size exceeds the maximum size allowed for mail delivery/,
         qr/mail quota exceeded/,
         qr/mailbox over quota/,
