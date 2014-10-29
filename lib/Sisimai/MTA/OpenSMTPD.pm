@@ -167,8 +167,8 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}    ||= $mhead->{'date'};
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
+        $e->{'date'}  ||= $mhead->{'date'};
+        $e->{'agent'} ||= __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
