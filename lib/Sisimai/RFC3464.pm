@@ -6,15 +6,15 @@ use warnings;
 # http://tools.ietf.org/html/rfc3464
 my $RxRFC = {
     'begin'  => [
-        qr|\AContent-Type: message/delivery-status\z|i,
+        qr|\AContent-Type:\s*message/delivery-status\z|i,
         qr/\AThe original message was received at /i,
         qr/\AThis report relates to your message/i,
     ],
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'rfc822' => [
-        qr|\AContent-Type: message/rfc822\z|i,
-        qr|\AContent-Type: text/rfc822-headers\z|i,
-        qr|\AReturn-Path: <.+>\z|i,
+        qr|\AContent-Type:\s*message/rfc822\z|i,
+        qr|\AContent-Type:\s*text/rfc822-headers\z|i,
+        qr|\AReturn-Path:\s*<.+>\z|i,
     ],
 };
 
