@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -126,12 +126,6 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $rcptinhead = [];    # (Ref->Array) Contents of X-Failed-Recipients header
     my $localhost0 = '';    # (String) Local MTA
-    my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
-    my $connheader = {
-        'date'    => '',    # The value of Arrival-Date header
-        'lhost'   => '',    # The value of Received-From-MTA header
-        'rhost'   => '',    # The value of Reporting-MTA header
-    };
 
     my $v = undef;
     my $p = undef;
@@ -235,9 +229,9 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}    ||= $mhead->{'date'};
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'lhost'}   ||= $localhost0;
+        $e->{'date'}  ||= $mhead->{'date'};
+        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+        $e->{'lhost'} ||= $localhost0;
 
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
