@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.10' }
+sub version     { '4.0.11' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -51,8 +51,6 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $rcptintext = '';    # (String) Recipient address in the message body
-    my $diagnostic = '';    # (String) Alternative diagnostic message
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
     my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
@@ -61,6 +59,7 @@ sub scan {
         'date'  => '',      # The value of Arrival-Date header
         'rhost' => '',      # The value of Reporting-MTA header
     };
+    my $anotherset = {};    # Another error information
 
     my $v = undef;
     my $p = undef;
@@ -200,18 +199,25 @@ sub scan {
 
                     if( $e =~ m/\A[<](.+)[>][.]+ (.+)\z/ ) {
                         # <kijitora@example.co.jp>... Deferred: Name server: example.co.jp.: host name lookup failure
-                        $rcptintext = $1;
-                        $diagnostic = $2;
+                        $anotherset->{'recipient'} = $1;
+                        $anotherset->{'diagnosis'} = $2;
 
                     } else {
                         # ----- Transcript of session follows -----
                         # Message could not be delivered for too long
                         # Message will be deleted from queue
                         next if $e =~ m/\A\s*[-]+/;
-                        if( $e =~ m/\A\d\d\d\s\d[.]\d[.]\d\s[<].+[>]/ || $e =~ m/\AMessage / ) {
-                            # Message could not be delivered for too long
+                        if( $e =~ m/\A\d\d\d\s(\d[.]\d[.]\d)\s.+/ ) {
                             # 550 5.1.2 <kijitora@example.org>... Message
-                            $diagnostic ||= $e;
+                            #
+                            # DBI connect('dbname=...')
+                            # 554 5.3.0 unknown mailer error 255
+                            $anotherset->{'status'} = $1;
+                            $anotherset->{'diagnosis'} .= ' '.$e;
+
+                        } elsif( $e =~ m/\AMessage / ) {
+                            # Message could not be delivered for too long
+                            $anotherset->{'diagnosis'} .= ' '.$e;
                         }
                     }
                 }
@@ -245,7 +251,24 @@ sub scan {
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
         $e->{'command'} ||= 'EHLO' if length $esmtpreply;
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} || $diagnostic );
+
+        if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
+            # Copy alternative error message
+            $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
+            if( $e->{'diagnosis'} =~ m/\A\d+\z/ ) {
+                # Override the value of diagnostic code message
+                $e->{'diagnosis'} = $anotherset->{'diagnosis'};
+            }
+        }
+        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+
+        if( exists $anotherset->{'status'} && length $anotherset->{'status'} ) {
+            # Check alternative status code
+            if( ! $e->{'status'} || $e->{'status'} !~ m/\A[45][.]\d[.]\d\z/ ) {
+                # Override alternative status code
+                $e->{'status'} = $anotherset->{'status'};
+            }
+        }
 
         unless( $e->{'recipient'} =~ m/\A[^ ]+[@][^ ]+\z/ ) {
             # @example.jp, no local part
