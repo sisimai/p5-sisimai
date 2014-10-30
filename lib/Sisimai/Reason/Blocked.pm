@@ -11,6 +11,7 @@ sub match {
         # Blocked due to clent IP address or hostname
         qr/access from ip address .+ blocked/,
         qr/client host rejected: may not be mail exchanger/,
+        qr/hosts with dynamic ip/
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;

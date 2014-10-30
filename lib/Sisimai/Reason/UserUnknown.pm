@@ -29,6 +29,7 @@ sub match {
         qr/recipient address rejected: user unknown in[ ].+[ ]table/,
         qr/recipient address rejected: unknown user/,
         qr/recipient is not local/,
+        qr/recipient not found/,
         qr/Requested action not taken: mailbox unavailable/,
         qr/said: 550[-\s]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]/,
         qr/sorry, user unknown/,
@@ -37,8 +38,10 @@ sub match {
         qr/this user doesn[']?t have a .+ account/, # Yahoo!
         qr/undeliverable address/,
         qr/unknown address/,
+        qr/unknown local[- ]part/,
         qr/unknown recipient/,
         qr/unknown user/,
+        qr/user .+ was not found/,
         qr/user missing home directory/,
         qr/user unknown/,
     ];

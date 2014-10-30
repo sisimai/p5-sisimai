@@ -13,8 +13,12 @@ sub match {
         qr/Command failed: /,
 
         qr/\Aprocmail: /,                   # procmail
+        qr|bin/procmail|,
+        qr|bin/maildrop|,
+        qr/mailer error/,
         qr/x[-]unix[;][ ]\d{1,3}/,          # X-UNIX; 127
         qr/command died with status \d+/,
+        qr/exit \d/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;
