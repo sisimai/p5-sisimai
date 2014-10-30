@@ -37,6 +37,7 @@ sub scan {
     require Sisimai::MTA;
     require Sisimai::MDA;
     require Sisimai::Address;
+    require Sisimai::RFC5322;
 
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -94,15 +95,7 @@ sub scan {
                 #
                 #       final-recipient-field =
                 #           "Final-Recipient" ":" address-type ";" generic-address
-                if( length $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
-                }
-                $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
-                $recipients++;
-
-            } elsif( $e =~ m/\AOriginal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
+                #
                 # 2.3.1 Original-Recipient field
                 #   The Original-Recipient field indicates the original recipient address
                 #   as specified by the sender of the message for which the DSN is being
@@ -112,7 +105,23 @@ sub scan {
                 #           "Original-Recipient" ":" address-type ";" generic-address
                 #
                 #       generic-address = *text
-                $v->{'alias'} = $1;
+                if( length $v->{'recipient'} ) {
+                    # There are multiple recipient addresses in the message body.
+                    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+                    $v = $dscontents->[ -1 ];
+                }
+                $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $recipients++;
+
+            } elsif( $e =~ m/\AX-Actual-Recipient:[ ]*rfc822;[ ]*(.+)\z/i ) {
+                # X-Actual-Recipient: 
+                if( $1 =~ m/\s+/ ) {
+                    # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
+
+                } else {
+                    # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
+                    $v->{'alias'} = $1;
+                }
 
             } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
                 # 2.3.3 Action field
@@ -239,6 +248,12 @@ sub scan {
                         #
                         #       arrival-date-field = "Arrival-Date" ":" date-time
                         $connheader->{'date'} = $1;
+
+                    } else {
+                        # Get error message
+                        next if $e =~ m/\A[ -]+/;
+                        next unless $e =~ m/\A[45]\d\d\s+/;
+                        $v->{'alterrors'} .= ' '.$e;
                     }
                 }
             }
