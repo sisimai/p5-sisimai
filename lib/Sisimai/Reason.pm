@@ -115,7 +115,7 @@ sub anotherone {
                 #  X.7.0   Other or undefined security status
                 $reasontext = 'securityerror';
 
-            } elsif( $argvs->diagnostictype eq 'X-UNIX' ) {
+            } elsif( $argvs->diagnostictype =~ qr/\AX-(?:UNIX|POSTFIX)\z/ ) {
                 # Diagnostic-Code: X-UNIX; ...
                 $reasontext = 'mailererror';
             }
