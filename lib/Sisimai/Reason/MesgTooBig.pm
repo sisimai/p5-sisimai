@@ -8,6 +8,7 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = [
+        qr/exceeded maximum inbound message size/,
         qr/message file too big/,
         qr/message length exceeds administrative limit/,
         qr/message size exceeds fixed limit/,
@@ -29,18 +30,20 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    my $statuscode = $argvs->deliverystatus // '';
-    my $reasontext = __PACKAGE__->text;
-
-    return undef unless length $statuscode;
-    return 1 if $argvs->reason eq $reasontext;
+    return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::RFC3463;
-    my $diagnostic = $argvs->diagnosticcode // '';
+    my $statuscode = $argvs->deliverystatus // '';
+    my $reasontext = __PACKAGE__->text;
+    my $tempreason = '';
+    my $diagnostic = '';
     my $v = 0;
 
-    if( Sisimai::RFC3463->reason( $statuscode ) eq $reasontext ) {
-        # Delivery status code points "mailboxfull".
+    $diagnostic = $argvs->diagnosticcode // '';
+    $tempreason = Sisimai::RFC3463->reason( $statuscode ) if $statuscode;
+
+    if( $tempreason eq $reasontext ) {
+        # Delivery status code points "mesgtoobig".
         # Status: 5.3.4
         # Diagnostic-Code: SMTP; 552 5.3.4 Error: message file too big
         $v = 1;
