@@ -30,7 +30,7 @@ use warnings;
 my $RxMTA = {
     'from'      => qr/\AMail Delivery System/,
     'rfc822'    => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
-    'begin'     => qr/\AThis message was created automatically by mail delivery software[.]\z/,
+    'begin'     => qr/\AThis message was created automatically by mail delivery software[.]/,
     'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject'   => [
         qr/Mail delivery failed(:?: returning message to sender)?/,
