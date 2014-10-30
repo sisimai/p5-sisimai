@@ -26,6 +26,7 @@ sub list {
             MTA/Domino.pm
             MTA/Exim.pm
             MTA/Exchange.pm
+            MTA/IMailServer.pm
             MTA/MailFoundry.pm
             MTA/McAfee.pm
             MTA/MXLogic.pm
