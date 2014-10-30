@@ -239,11 +239,19 @@ sub make {
         OTHER_TEXT_HEADERS: {
             # Remove square brackets and curly brackets from the host variable
             map { $p->{ $_ } =~ y/[]()//d } ( 'rhost', 'lhost' );
+            for my $e ( 'rhost', 'lhost' ) {
+                # Check space character in each value
+                if( $p->{ $e } =~ m/ / ) {
+                    # Get the first element
+                    $p->{ $e } = [ split( ' ', $p->{ $e } ) ]->[0];
+                }
+            }
             $p->{'subject'} = $rfc822data->{'subject'} // '';
 
             # The value of "List-Id" header
             $p->{'listid'} =  $rfc822data->{'list-id'} // '';
             $p->{'listid'} =~ y/<>//d if length $p->{'listid'};
+            $p->{'listid'} =  '' if $p->{'listid'} =~ m/ /;
 
             # The value of "Message-Id" header
             $p->{'messageid'} =  $rfc822data->{'message-id'} // '';
