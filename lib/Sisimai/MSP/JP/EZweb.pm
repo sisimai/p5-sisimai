@@ -45,7 +45,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'EZweb' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -70,7 +70,10 @@ sub scan {
     $match++ if $mhead->{'from'}     =~ $RxMSP->{'from'};
     $match++ if $mhead->{'subject'}  =~ $RxMSP->{'subject'};
     $match++ if $mhead->{'received'} =~ $RxMSP->{'received'};
-    return undef unless $match;
+    if( defined $mhead->{'message-id'} ) {
+        $match++ if $mhead->{'message-id'} =~ $RxMSP->{'message-id'};
+    }
+    return undef if $match < 2;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
