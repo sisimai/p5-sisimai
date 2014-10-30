@@ -15,6 +15,7 @@ use warnings;
 my $RxMTA = {
     'begin'    => qr/\AHi[.] This is the qmail/,
     'rfc822'   => qr/\A--- Below this line is a copy of the message[.]\z/,
+    'error'    => qr/\ARemote host said:/,
     'sorry'    => qr/\A[Ss]orry[,.][ ]/,
     'subject'  => qr/\Afailure notice/,
     'received' => qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+for[ ]+bounce[)]/,
@@ -66,11 +67,13 @@ my $RxHost = [
 ];
 
 my $RxSess = {
+    'onhold' => [
+    ],
     'userunknown' => [
         # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
         qr/no mailbox here by that name/,
         # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
-        qr/does not like recipient/,
+        qr/ does not like recipient[.]/,
     ],
     'mailboxfull' => [
         # error_str.c:192|  X(EDQUOT,"disk quota exceeded")
@@ -83,7 +86,7 @@ my $RxSess = {
     ],
     'expired' => [
         # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
-        qr/this message has been in the queue too long/,
+        qr/this message has been in the queue too long[.]\z/,
     ],
     'hostunknown' => [
         # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie(); }
@@ -129,7 +132,10 @@ my $RxLDAP = {
     ],
 };
 
-sub version     { '4.0.4' }
+# userunknown + expired
+my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
+
+sub version     { '4.0.5' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -208,9 +214,12 @@ sub scan {
                 $recipients++;
 
             } elsif( scalar @$dscontents == $recipients ) {
+                # Append error message
                 next unless length $e;
                 $v->{'diagnosis'} .= $e.' ';
+                $v->{'alterrors'}  = $e if $e =~ $RxMTA->{'error'};
 
+                next if $v->{'rhost'};
                 for my $r ( @$RxHost ) {
                     next unless $e =~ $r;
                     $v->{'rhost'} = $1;
@@ -278,23 +287,31 @@ sub scan {
 
             } else {
                 # Try to match with each error message in the table
-                SESSION: for my $r ( keys %$RxSess ) {
-                    # Verify each regular expression of session errors
-                    PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
-                        # Check each regular expression
-                        next unless $e->{'diagnosis'} =~ $rr;
-                        $e->{'reason'} = $r;
-                        last(SESSION);
-                    }
-                }
+                if( $e->{'diagnosis'} =~ $RxOnHold ) {
+                    # To decide the reason require pattern match with 
+                    # Sisimai::Reason::* modules
+                    $e->{'reason'} = 'onhold';
 
-                LDAP: for my $r ( keys %$RxLDAP ) {
-                    # Verify each regular expression of LDAP errors
-                    PATTERN: for my $rr ( @{ $RxLDAP->{ $r } } ) {
-                        # Check each regular expression
-                        next unless $e->{'diagnosis'} =~ $rr;
-                        $e->{'reason'} = $r;
-                        last(LDAP);
+                } else {
+
+                    SESSION: for my $r ( keys %$RxSess ) {
+                        # Verify each regular expression of session errors
+                        PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
+                            # Check each regular expression
+                            next unless $e->{'diagnosis'} =~ $rr;
+                            $e->{'reason'} = $r;
+                            last(SESSION);
+                        }
+                    }
+
+                    LDAP: for my $r ( keys %$RxLDAP ) {
+                        # Verify each regular expression of LDAP errors
+                        PATTERN: for my $rr ( @{ $RxLDAP->{ $r } } ) {
+                            # Check each regular expression
+                            next unless $e->{'diagnosis'} =~ $rr;
+                            $e->{'reason'} = $r;
+                            last(LDAP);
+                        }
                     }
                 }
             }
