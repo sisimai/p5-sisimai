@@ -177,6 +177,10 @@ sub scan {
                         $v->{'msexch'} = 1;
                         $v->{'diagnosis'} .= ' '.$e;
                         $statuspart = 1;
+
+                    } else {
+                        # Error message in the body part
+                        $v->{'alterrors'} .= ' '.$e;
                     }
                 }
 
@@ -248,6 +252,24 @@ sub scan {
                 last;
             }
             $e->{'diagnosis'} = $d;
+        }
+
+        unless( $e->{'reason'} ) {
+            # Could not detect the reason from the value of "diagnosis".
+            if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+                # Copy alternative error message
+                $e->{'diagnosis'} ||= $e->{'alterrors'};
+                if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
+                    # Override the value of diagnostic code message
+                    $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+
+                } else {
+                    warn 'neko';
+                    $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
+                }
+                $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+                delete $e->{'alterrors'};
+            }
         }
 
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
