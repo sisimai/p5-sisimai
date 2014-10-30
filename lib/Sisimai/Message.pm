@@ -28,6 +28,7 @@ my $DefaultMTA = [
     'McAfee',
     'MXLogic',
     'MailFoundry',
+    'IMailServer',
 ];
 
 my $DefaultMSP = [
