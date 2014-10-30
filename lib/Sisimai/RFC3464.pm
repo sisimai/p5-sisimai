@@ -86,7 +86,8 @@ sub scan {
             next unless length $e;
   
             $v = $dscontents->[ -1 ];
-            if( $e =~ m/\A(?:Final|Original)-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
+            if( $e =~ m/\A(?:Final|Original)-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ||
+                $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
                 # 2.3.2 Final-Recipient field
                 #   The Final-Recipient field indicates the recipient for which this set
                 #   of per-recipient fields applies.  This field MUST be present in each
