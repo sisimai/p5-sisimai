@@ -217,7 +217,7 @@ sub scan {
                 # Append error message
                 next unless length $e;
                 $v->{'diagnosis'} .= $e.' ';
-                $v->{'alterrors'}  = $e if $e =~ $RxMTA->{'error'};
+                # $v->{'alterrors'}  = $e if $e =~ $RxMTA->{'error'};
 
                 next if $v->{'rhost'};
                 for my $r ( @$RxHost ) {
