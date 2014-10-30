@@ -18,7 +18,7 @@ my $RxRFC = {
     ],
 };
 
-sub version     { '4.0.4' };
+sub version     { '4.0.5' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -143,6 +143,10 @@ sub scan {
                 #       status-code = DIGIT "." 1*3DIGIT "." 1*3DIGIT
                 $v->{'status'} = $1;
 
+            } elsif( $e =~ m/\AStatus:[ ]*(\d+[ ]+.+)\z/i ) {
+                # Status: 553 Exceeded maximum inbound message size
+                $v->{'alterrors'} = $1;
+
             } elsif( $e =~ m/\ARemote-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
                 # 2.3.5 Remote-MTA field
                 #   The value associated with the Remote-MTA DSN field is a printable
@@ -254,6 +258,16 @@ sub scan {
         # Set default values if each value is empty.
         for my $f ( 'date', 'lhost', 'rhost' ) {
             $e->{ $f } ||= $connheader->{ $f } || '';
+        }
+
+        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+            # Copy alternative error message
+            $e->{'diagnosis'} ||= $e->{'alterrors'};
+            if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
+                # Override the value of diagnostic code message
+                $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+            }
+            delete $e->{'alterrors'};
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
