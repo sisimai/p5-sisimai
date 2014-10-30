@@ -44,6 +44,7 @@ sub match {
         qr/user .+ was not found/,
         qr/user missing home directory/,
         qr/user unknown/,
+        qr/vdeliver: invalid or unknown virtual user/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;

@@ -10,6 +10,7 @@ sub match {
     my $regex = [
         qr/recipient suspend the service/,
         qr/sorry your message to .+ cannot be delivered[.] this account has been disabled or discontinued/,
+        qr/vdelivermail: account is locked email bounced/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;
