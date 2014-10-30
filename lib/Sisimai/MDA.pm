@@ -24,64 +24,65 @@ my $RxFrom = [
 my $RxErr = {
     'dovecot' => {
         'userunknown' => [
-            qr/\AMailbox doesn't exist: /,
+            qr/\AMailbox doesn't exist: /i,
         ],
         'mailboxfull' => [
-            qr/\AQuota exceeded [(]mailbox for user is full[)]\z/,  # dovecot/src/plugins/quota/quota.c
-            qr/\ANot enough disk space\z/,
+            qr/\AQuota exceeded [(]mailbox for user is full[)]\z/i,  # dovecot/src/plugins/quota/quota.c
+            qr/\ANot enough disk space\z/i,
         ],
     },
     'mail.local' => {
         'userunknown' => [
-            qr/: User unknown/,
-            qr/: Invalid mailbox path/,
-            qr/: User missing home directory/,
+            qr/: unknown user/i,
+            qr/: User unknown/i,
+            qr/: Invalid mailbox path/i,
+            qr/: User missing home directory/i,
         ],
         'mailboxfull' => [
-            qr/Disc quota exceeded\z/,
-            qr/Mailbox full or quota exceeded/,
+            qr/Disc quota exceeded\z/i,
+            qr/Mailbox full or quota exceeded/i,
         ],
         'systemerror' => [
-            qr/Temporary file write error/,
+            qr/Temporary file write error/i,
         ],
     },
     'procmail' => {
         'mailboxfull' => [
-            qr/Quota exceeded while writing/,
+            qr/Quota exceeded while writing/i,
         ],
         'systemfull' => [
-            qr/No space left to finish writing/,
+            qr/No space left to finish writing/i,
         ],
     },
     'maildrop' => {
         'userunknown' => [
-            qr/Invalid user specified[.]\z/,
-            qr/Cannot find system user/,
+            qr/Invalid user specified[.]\z/i,
+            qr/Cannot find system user/i,
         ],
         'mailboxfull' => [
-            qr/maildir over quota[.]\z/,
+            qr/maildir over quota[.]\z/i,
         ],
     },
     'vpopmail' => {
         'userunknown' => [
-            qr/Sorry, no mailbox here by that name[.]/,
+            qr/Sorry, no mailbox here by that name[.]/i,
         ],
         'filtered' => [
             qr/account is locked email bounced/,
-            qr/user does not exist, but will deliver to /,
+            qr/user does not exist, but will deliver to /i,
         ],
         'mailboxfull' => [
-            qr/(?:domain|user) is over quota/,
+            qr/(?:domain|user) is over quota/i,
         ],
     },
     'vmailmgr' => {
         'userunknown' => [
-            qr/Invalid or unknown base user or domain/,
-            qr/Invalid or unknown virtual user/,
-            qr/User name does not refer to a virtual user/,
+            qr/Invalid or unknown base user or domain/i,
+            qr/Invalid or unknown virtual user/i,
+            qr/User name does not refer to a virtual user/i,
         ],
         'mailboxfull' => [
-            qr/Delivery failed due to system quota violation/,
+            qr/Delivery failed due to system quota violation/i,
         ],
     },
 };
