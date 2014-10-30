@@ -1,0 +1,45 @@
+Return-Path: <>
+X-Original-To: shironeko@example.jp
+Delivered-To: shironeko@example.jp
+Received: from mx4.example.net (mx4.example.net [192.0.2.124])
+    by mx.example.jp (Postfix) with ESMTP id 0000000000
+    for <shironeko@example.jp>; Thu, 29 Apr 2011 23:34:45 +0900 (JST)
+Received: from localhost (localhost)
+    by mx4.example.net (8.8.8/8.8.8) with internal id 00000000;
+    Thu, 29 Apr 2011 23:34:45 +0900 (JST)
+Date: Thu, 29 Apr 2011 23:34:45 +0900 (JST)
+From: Mail Delivery Subsystem <MAILER-DAEMON@mx4.example.net>
+Message-Id: <201104292334.00000000@mx4.example.net>
+To: <shironeko@example.jp>
+Subject: Returned mail: Service unavailable
+Auto-Submitted: auto-generated (failure)
+
+The original message was received at Thu, 29 Apr 2011 23:34:45 +0900 (JST)
+from smtp-relay-5.example.net [192.0.2.243]
+
+   ----- The following addresses had permanent fatal errors -----
+<kijitora@mx4.example.net>
+
+   ----- Transcript of session follows -----
+mail.local: /var/spool/mail/kijitora: Disc quota exceeded
+554 <kijitora@mx4.example.net>... Service unavailable
+
+   ----- Original message follows -----
+
+Return-Path: <shironeko@example.jp>
+Received: from smtp-relay-5.example.net (smtp-relay-5.example.net [192.0.2.242])
+        by mx4.example.net (8.8.8/8.8.8) with ESMTP id 00000000
+        for <kijitora@mx4.example.net>; Thu, 29 Apr 2011 23:34:45 +0900 (JST)
+Received: from unknown (HELO mx.example.jp) (192.0.2.123)
+  by 0 with SMTP; 29 Apr 2011 09:18:59 -0000
+Message-ID: <00000000000.000000000000000@example.jp>
+Date: Thu, 29 Apr 2011 23:34:45 +0900 (JST)
+From: Shironeko <shironeko@example.jp>
+To: kijitora@mx4.example.net
+Subject: Nyaaan
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-2022-JP
+Content-Transfer-Encoding: 7bit
+
+Nyaan
+
