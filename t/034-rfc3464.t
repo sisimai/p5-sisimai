@@ -15,6 +15,7 @@ my $ReturnValue = {
     '02' => { 'status' => qr/\A[45][.]0[.]\d+\z/, 'reason' => qr/(?:undefined|filtered)/ },
     '03' => { 'status' => qr/\A[45][.]0[.]\d+\z/, 'reason' => qr/(?:undefined|expired)/ },
     '04' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/mailererror/ },
+    '05' => { 'status' => qr/\A5[.]2[.]1\z/, 'reason' => qr/filtered/ },
 };
 my $RxAgentName = qr/\A(?:RFC3464|dovecot|mail[.]local|procmail|maildrop|vpopmail|vmailmgr)\z/;
 
