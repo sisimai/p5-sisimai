@@ -22,6 +22,9 @@ sub match {
         qr/server configuration error/,
         qr/system config error/,
         qr/too many hops/,
+
+        qr|bin/procmail|,
+        qr|bin/maildrop|,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;
