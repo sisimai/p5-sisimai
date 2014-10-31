@@ -24,7 +24,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.11' }
+sub version     { '4.0.12' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -62,7 +62,7 @@ sub scan {
     my $anotherset = {};    # Another error information
 
     my $v = undef;
-    my $p = undef;
+    my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
@@ -227,7 +227,7 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = undef;
+        $e = '';
     }
 
     return undef unless $recipients;
