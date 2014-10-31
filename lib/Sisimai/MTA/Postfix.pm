@@ -26,7 +26,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -64,9 +64,10 @@ sub scan {
         'date'    => '',    # The value of Arrival-Date header
         'lhost'   => '',    # The value of Received-From-MTA header
     };
+    my $anotherset = {};    # Another error information
 
     my $v = undef;
-    my $p = undef;
+    my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
@@ -197,6 +198,28 @@ sub scan {
                     } elsif( $e =~ m/\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
                         # X-Postfix-Sender: rfc822; shironeko@example.org
                         $rfc822part .= sprintf( "%s: %s\n", $1, $2 );
+
+                    } else {
+                        # Alternative error message and recipient
+                        if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:\s*(.+)\z/ ) {
+                            # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
+                            $anotherset->{'recipient'} = $1;
+                            $anotherset->{'alias'}     = $2;
+                            $anotherset->{'diagnosis'} = $3;
+
+                        } elsif( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]:(.*)\z/ ) {
+                            # <kijitora@exmaple.jp>: ...
+                            $anotherset->{'recipient'} = $1;
+                            $anotherset->{'diagnosis'} = $2;
+
+                        } else {
+                            # Get error message continued from the previous line
+                            next unless $anotherset->{'diagnosis'};
+                            if( $e =~ m/\A\s{4}(.+)\z/ ) {
+                                #    host mx.example.jp said:...
+                                $anotherset->{'diagnosis'} .= ' '.$e;
+                            }
+                        }
                     }
                 }
             }
@@ -205,7 +228,16 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = undef;
+        $e = '';
+    }
+
+    unless( $recipients ) {
+        # Fallback: set recipient address from error message
+        if( defined $anotherset->{'recipient'} && length $anotherset->{'recipient'} ) {
+            # Set recipient address
+            $dscontents->[-1]->{'recipient'} = $anotherset->{'recipient'};
+            $recipients++;
+        }
     }
 
     return undef unless $recipients;
@@ -216,11 +248,30 @@ sub scan {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         for my $f ( 'date', 'lhost', 'rhost' ) {
-            $e->{ $f }  ||= $connheader->{ $f } || '';
+            $e->{ $f } ||= $connheader->{ $f } || '';
         }
+        $e->{'date'}    ||= $mhead->{'date'};
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'command'}   = shift @$commandset || '';
+
+        if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
+            # Copy alternative error message
+            $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
+            if( $e->{'diagnosis'} =~ m/\A\d+\z/ ) {
+                # Override the value of diagnostic code message
+                $e->{'diagnosis'} = $anotherset->{'diagnosis'};
+            }
+        }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'spec'} ||= 'SMTP' if $e->{'diagnosis'} =~ m/host .+ said:/;
+
+        if( exists $anotherset->{'status'} && length $anotherset->{'status'} ) {
+            # Check alternative status code
+            if( ! $e->{'status'} || $e->{'status'} !~ m/\A[45][.]\d[.]\d\z/ ) {
+                # Override alternative status code
+                $e->{'status'} = $anotherset->{'status'};
+            }
+        }
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
