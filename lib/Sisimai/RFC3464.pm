@@ -18,7 +18,7 @@ my $RxRFC = {
     ],
 };
 
-sub version     { '4.0.5' };
+sub version     { '4.0.6' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -39,10 +39,11 @@ sub scan {
     require Sisimai::Address;
     require Sisimai::RFC5322;
 
+    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
     my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
-    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
 
     my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
     my $stripedtxt = [ split( "\n", $$mbody ) ];
@@ -75,7 +76,14 @@ sub scan {
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
+                next if $rfc822next->{ lc $previousfn };
                 $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+
+            } else {
+                # Check the end of headers in rfc822 part
+                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                next unless $e =~ m/\A\z/;
+                $rfc822next->{ lc $previousfn } = 1;
             }
 
         } else {
@@ -262,7 +270,7 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = undef;
+        $e = '';
     }
 
     return undef unless $recipients;
