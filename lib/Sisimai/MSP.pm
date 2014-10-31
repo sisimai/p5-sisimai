@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Sisimai::MTA;
 
-sub version     { return '4.0.1' }
+sub version     { return '4.0.2' }
 sub description { return '' }
 sub headerlist  { return [] }
 
@@ -54,7 +54,7 @@ sub scan {
 #     };
 # 
 #     my $v = undef;
-#     my $p = undef;
+#     my $p = '';
 #     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
 #     $rfc822head = __PACKAGE__->RFC822HEADERS;
 # 
@@ -82,7 +82,7 @@ sub scan {
 #     } continue {
 #         # Save the current line for the next loop
 #         $p = $e;
-#         $e = undef;
+#         $e = '';
 #     }
 # 
 #     return undef unless $recipients;
