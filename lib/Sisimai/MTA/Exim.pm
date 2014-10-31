@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.9' }
+sub version     { '4.0.10' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -120,15 +120,15 @@ sub scan {
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
     my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $rcptinhead = [];    # (Ref->Array) Contents of X-Failed-Recipients header
     my $localhost0 = '';    # (String) Local MTA
 
     my $v = undef;
-    my $p = undef;
+    my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
@@ -149,8 +149,16 @@ sub scan {
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
+                next if $rfc822next->{ lc $previousfn };
                 $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+
+            } else {
+                # Check the end of headers in rfc822 part
+                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                next unless $e =~ m/\A\z/;
+                $rfc822next->{ lc $previousfn } = 1;
             }
+
         } else {
             # Before "message/rfc822"
             next unless ( $e =~ $RxMTA->{'begin'} ) .. ( $e =~ $RxMTA->{'rfc822'} );
@@ -196,14 +204,14 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = undef;
+        $e = '';
     }
 
     unless( $recipients ) {
         # Fallback for getting recipient addresses
         if( defined $mhead->{'x-failed-recipients'} ) {
             # X-Failed-Recipients: kijitora@example.jp
-            $rcptinhead = [ split( ',', $mhead->{'x-failed-recipients'} ) ];
+            my $rcptinhead = [ split( ',', $mhead->{'x-failed-recipients'} ) ];
             map { $_ =~ y/ //d } @$rcptinhead;
             $recipients = scalar @$rcptinhead;
 

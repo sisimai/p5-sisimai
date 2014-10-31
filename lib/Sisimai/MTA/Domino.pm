@@ -25,7 +25,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'IBM Domino' }
 sub smtpagent   { 'Domino' }
 
@@ -43,6 +43,7 @@ sub scan {
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
     my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
@@ -50,7 +51,7 @@ sub scan {
     my $subjecttxt = '';    # (String) The value of Subject:
 
     my $v = undef;
-    my $p = undef;
+    my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
@@ -75,7 +76,14 @@ sub scan {
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
+                next if $rfc822next->{ lc $previousfn };
                 $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+
+            } else {
+                # Check the end of headers in rfc822 part
+                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                next unless $e =~ m/\A\z/;
+                $rfc822next->{ lc $previousfn } = 1;
             }
 
         } else {
@@ -129,7 +137,7 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = undef;
+        $e = '';
     }
     return undef unless $recipients;
 

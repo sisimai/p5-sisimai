@@ -26,7 +26,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -55,6 +55,7 @@ sub scan {
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
     my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
@@ -89,7 +90,14 @@ sub scan {
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
+                next if $rfc822next->{ lc $previousfn };
                 $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+
+            } else {
+                # Check the end of headers in rfc822 part
+                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                next unless $e =~ m/\A\z/;
+                $rfc822next->{ lc $previousfn } = 1;
             }
 
         } else {
