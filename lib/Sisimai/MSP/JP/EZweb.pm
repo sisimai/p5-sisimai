@@ -45,7 +45,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'EZweb' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -181,6 +181,9 @@ sub scan {
                     if( grep { $e =~ $_ } @$rxmessages ) {
                         # Check with regular expressions of each error
                         $v->{'diagnosis'} .= ' '.$e;
+                    } else {
+                        # >>> 550
+                        $v->{'alterrors'} .= ' '.$e;
                     }
                 }
             }
@@ -205,6 +208,16 @@ sub scan {
             my $r = $mhead->{'received'};
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+        }
+
+        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+            # Copy alternative error message
+            $e->{'diagnosis'} ||= $e->{'alterrors'};
+            if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
+                # Override the value of diagnostic code message
+                $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+            }
+            delete $e->{'alterrors'};
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
