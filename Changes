@@ -1,5 +1,18 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.1
+    - Fix tiny bug in Sisimai::MTA::Exim.
+    - Add many sample emails into eg/ directory.
+    - Improved code for detecting connection errors at Sendmail and Courier.
+    - Sisimai::RFC3464 and Sisimai::MTA::Exchange imporved.
+    - Implement Sisimai::MTA::Notes for email bounces from Lotus Notes.
+    - Implement Sisimai::MTA::McAfee and Sisimai::MTA::MXLogic for email bounces
+      from McAfee Products.
+    - Implement Sisimai::MTA::MailFoundry for email bounces from MailFoundry.
+    - Implement Sisimai::MTA::IMailServer for email bounces from IPSWITCHI IMail
+      Server.
+    - Improved code for deciding error reason at Sendmail and qmail.
+
 4.1.0   Sat,  4 Oct 2014 15:09:09 +0900 (JST)
     - Sisimai::Group, child classes, and "provider" and "category" in the parsed
       data have been removed permanently.
