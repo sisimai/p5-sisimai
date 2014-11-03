@@ -26,7 +26,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.7' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -272,14 +272,6 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'spec'} ||= 'SMTP' if $e->{'diagnosis'} =~ m/host .+ said:/;
-
-        if( exists $anotherset->{'status'} && length $anotherset->{'status'} ) {
-            # Check alternative status code
-            if( ! $e->{'status'} || $e->{'status'} !~ m/\A[45][.]\d[.]\d\z/ ) {
-                # Override alternative status code
-                $e->{'status'} = $anotherset->{'status'};
-            }
-        }
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
