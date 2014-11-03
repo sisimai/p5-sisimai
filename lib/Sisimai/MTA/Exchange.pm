@@ -50,7 +50,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
@@ -266,14 +266,7 @@ sub scan {
             # Could not detect the reason from the value of "diagnosis".
             if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
                 # Copy alternative error message
-                $e->{'diagnosis'} ||= $e->{'alterrors'};
-                if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
-                    # Override the value of diagnostic code message
-                    $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
-
-                } else {
-                    $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
-                }
+                $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
                 $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
                 delete $e->{'alterrors'};
             }
