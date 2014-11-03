@@ -30,7 +30,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'au by KDDI' }
 sub smtpagent   { 'JP::KDDI' }
 
@@ -170,12 +170,6 @@ sub scan {
                         last(SESSION);
                     }
                 }
-            }
-        }
-
-        unless( $e->{'reason'} ) {
-            unless( $e->{'recipient'} =~ m/[@]ezweb[.]ne[.]jp\z/ ) {
-                $e->{'reason'} = 'userunknown';
             }
         }
 
