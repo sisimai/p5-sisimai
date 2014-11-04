@@ -12,6 +12,9 @@ my $SampleEmail = {
     'mailbox' => './eg/mbox-as-a-sample',
     'maildir' => './eg/maildir-as-a-sample/cur',
 };
+my $IsNotBounce = {
+    'maildir' => './eg/maildir-as-a-sample/tmp',
+};
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -49,6 +52,23 @@ MAKE_TEST: {
             $emindex++;
         }
         is $emindex, 37;
+    }
+
+    NOTBOUNCE: {
+        my $maildir = $PackageName->new( $IsNotBounce->{'maildir'} );
+        my $emindex = 0;
+
+        isa_ok $maildir, $PackageName;
+        can_ok $maildir, @{ $MethodNames->{'object'} };
+        is $maildir->data, $IsNotBounce->{'maildir'}, '->data = '.$maildir->data;
+        is $maildir->mbox, 0, '->mbox = 0';
+        isa_ok $maildir->mail, $PackageName.'::Maildir';
+
+        while( my $r = $maildir->read ) {
+            ok length $r, 'maildir->read('.( $emindex + 1 ).')';
+            $emindex++;
+        }
+        is $emindex, 1;
     }
 }
 

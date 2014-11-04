@@ -123,5 +123,12 @@ MAKE_TEST: {
         }
     }
 
+    $file = './eg/maildir-as-a-sample/tmp/is-not-bounce-01.eml';
+    $mail = Sisimai::Mail->new( $file );
+
+    NOT_BOUNCE: while( my $r = $mail->read ){ 
+        $mesg = Sisimai::Message->new( 'data' => $r ); 
+        is $mesg, undef;
+    }
 }
 done_testing;

@@ -12,6 +12,9 @@ my $SampleEmail = {
     'mailbox' => './eg/mbox-as-a-sample',
     'maildir' => './eg/maildir-as-a-sample/new',
 };
+my $IsNotBounce = {
+    'maildir' => './eg/maildir-as-a-sample/tmp',
+};
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -28,7 +31,7 @@ MAKE_TEST: {
         my $v = $PackageName->make( $SampleEmail->{ $e } );
         isa_ok $v, 'ARRAY';
         ok scalar @$v, 'entries = '.scalar @$v;
-        
+
         for my $r ( @$v ) {
             isa_ok $r, 'Sisimai::Data';
             isa_ok $r->date, 'Time::Piece';
@@ -54,6 +57,12 @@ MAKE_TEST: {
             ok length $j, 'length( dump("json") ) = '.length $j;
         }
     }
+
+    for my $e ( 'maildir' ) {
+        my $v = $PackageName->make( $IsNotBounce->{ $e } );
+        is $v, undef;
+    }
+
 }
 
 done_testing;
