@@ -67,6 +67,7 @@ MAKE_TEST: {
             like $e->timezoneoffset, qr/\A[+-]\d+\z/, 'timezoneoffset = '.$e->timezoneoffset;
 
             ok defined $e->feedbacktype, 'feedbacktype = '.$e->feedbacktype;
+            ok defined $e->action, 'action = '.$e->action;
         }
     }
 
