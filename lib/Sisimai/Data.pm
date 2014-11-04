@@ -23,6 +23,7 @@ my $rwaccessors = [
     'alias',            # (String) The value of alias(RHS)
     'listid',           # (String) List-Id header of each ML
     'reason',           # (String) Bounce reason
+    'action',           # (String) The value of Action header
     'subject',          # (String) UTF-8 Subject text
     'addresser',        # (Sisimai::Address) From: header in the original message
     'recipient',        # (Sisimai::Address) Final-Recipient: or To: in the original message
@@ -88,7 +89,7 @@ sub new {
         my $v = [ 
             'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
             'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
-            'smtpcommand', 'feedbacktype',
+            'smtpcommand', 'feedbacktype', 'action',
         ];
         $thing->{ $_ } = $argvs->{ $_ } // '' for @$v;
     }
@@ -148,6 +149,7 @@ sub make {
             'lhost'          => $e->{'lhost'}        // '',
             'rhost'          => $e->{'rhost'}        // '',
             'alias'          => $e->{'alias'}        // '',
+            'action'         => $e->{'action'}       // '',
             'reason'         => $e->{'reason'}       // '',
             'smtpagent'      => $e->{'agent'}        // '',
             'recipient'      => $e->{'recipient'}    // '',
@@ -250,8 +252,15 @@ sub make {
 
             # The value of "List-Id" header
             $p->{'listid'} =  $rfc822data->{'list-id'} // '';
-            $p->{'listid'} =~ y/<>//d if length $p->{'listid'};
-            $p->{'listid'} =  '' if $p->{'listid'} =~ m/ /;
+            if( length $p->{'listid'} ) {
+                # Get the value of List-Id header
+                if( $p->{'listid'} =~ m/\A.*([<].+[>]).*\z/ ) {
+                    # List name <list-id@example.org>
+                    $p->{'listid'} =  $1 
+                }
+                $p->{'listid'} =~ y/<>//d;
+                $p->{'listid'} =  '' if $p->{'listid'} =~ m/ /;
+            }
 
             # The value of "Message-Id" header
             $p->{'messageid'} =  $rfc822data->{'message-id'} // '';
