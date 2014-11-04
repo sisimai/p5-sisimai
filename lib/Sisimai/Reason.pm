@@ -61,6 +61,8 @@ sub get {
             $reasontext = $p->text if $p->true( $argvs );
             last;
         }
+
+        $reasontext ||= 'expired' if $argvs->action eq 'delayed';
         $reasontext ||= 'undefined';
     }
 
