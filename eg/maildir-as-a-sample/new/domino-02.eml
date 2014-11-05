@@ -71,13 +71,13 @@ Received: from nyanko ([192.0.2.13])
 	by mx.g1.example.com (8.13.4/8.13.4) with SMTP id 0000000000000000000000000
 	for <kijitora@example.co.jp>; Sat, 07 Jul 2012 00:00:00 -0300 (CDT)
 	(envelope-from kijitora@example.org)
-From: "Neko" <kijitora@example.org>
 To: <kijitora@example.co.jp>
 Subject: Nyaaaaaaaaaaan
 Date: Thu, 08 Jul 2012 00:00:00 +0800
 MIME-Version: 1.0
 Message-ID: <0000000000.00000000-0000000000.00000000-00000000.00000000@example.co.jp>
 Content-Type: text/plain;
+From: "Neko" <kijitora@example.org>
 
 Nyaa
 
