@@ -1,9 +1,9 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::MTA::mFILTER;
+use Sisimai::MTA::Activehunter;
 
-my $PackageName = 'Sisimai::MTA::mFILTER';
+my $PackageName = 'Sisimai::MTA::Activehunter';
 my $MethodNames = {
     'class' => [ 
         'version', 'description', 'headerlist', 'scan',
@@ -12,9 +12,7 @@ my $MethodNames = {
     'object' => [],
 };
 my $ReturnValue = {
-    '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
-    '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-    '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
+    '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
 };
 
 use_ok $PackageName;
@@ -40,7 +38,7 @@ MAKE_TEST: {
 
     PARSE_EACH_MAIL: for my $n ( 1..20 ) {
 
-        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/mfilter-%02d.eml", $n );
+        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/activehunter-%02d.eml", $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
         my $emindex = sprintf( "%02d", $n );
         next unless defined $mailbox;
@@ -60,7 +58,7 @@ MAKE_TEST: {
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
-                is $e->{'agent'}, 'm-FILTER', '->agent = '.$e->{'agent'};
+                is $e->{'agent'}, 'Activehunter', '->agent = '.$e->{'agent'};
 
                 ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
