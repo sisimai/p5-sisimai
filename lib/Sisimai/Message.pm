@@ -29,6 +29,7 @@ my $DefaultMTA = [
     'MXLogic',
     'MailFoundry',
     'IMailServer',
+    'mFILTER',
 ];
 
 my $DefaultMSP = [
