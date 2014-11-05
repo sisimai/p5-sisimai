@@ -178,18 +178,18 @@ sub make {
             # email if the address is not set at loop above.
             $p->{'addresser'} ||= $messageobj->{'header'}->{'to'}; 
 
-            if( length $p->{'recipient'} == 0 ) {
-                # Detect "recipient" address if it is not set yet
-                for my $f ( @{ $fieldorder->{'recipient'} } ) {
-                    # Check each header in message/rfc822 part
-                    my $h = lc $f;
-                    next unless exists $rfc822data->{ $h };
-                    next unless length $rfc822data->{ $h };
-                    next unless Sisimai::RFC5322->is_emailaddress( $rfc822data->{ $h } );
-                    $p->{'recipient'} = $rfc822data->{ $h };
-                    last;
-                }
-            }
+            # if( length $p->{'recipient'} == 0 ) {
+            #    # Detect "recipient" address if it is not set yet
+            #    for my $f ( @{ $fieldorder->{'recipient'} } ) {
+            #        # Check each header in message/rfc822 part
+            #        my $h = lc $f;
+            #        next unless exists $rfc822data->{ $h };
+            #        next unless length $rfc822data->{ $h };
+            #        next unless Sisimai::RFC5322->is_emailaddress( $rfc822data->{ $h } );
+            #        $p->{'recipient'} = $rfc822data->{ $h };
+            #        last;
+            #    }
+            # }
 
         } # End of EMAIL_ADDRESS
         next unless $p->{'addresser'};
