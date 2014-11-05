@@ -74,8 +74,8 @@ MAKE_TEST: {
     $file = './eg/maildir-as-a-sample/new/sendmail-04.eml';
     $mail = Sisimai::Mail->new( $file );
     $list = { 
-        'recipient' => [ 'X-Failed-Recipient', 'From' ],
-        'addresser' => [ 'To', 'X-Envelope-From' ],
+        'recipient' => [ 'X-Failed-Recipient', 'To' ],
+        'addresser' => [ 'Return-Path', 'From', 'X-Envelope-From' ],
     };
 
     WITH_ORDER: while( my $r = $mail->read ){ 
