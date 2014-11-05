@@ -30,6 +30,7 @@ my $DefaultMTA = [
     'MailFoundry',
     'IMailServer',
     'mFILTER',
+    'Activehunter',
 ];
 
 my $DefaultMSP = [
