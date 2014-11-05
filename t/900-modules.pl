@@ -29,6 +29,7 @@ sub list {
             MTA/IMailServer.pm
             MTA/MailFoundry.pm
             MTA/McAfee.pm
+            MTA/mFilter.pm
             MTA/MXLogic.pm
             MTA/Notes.pm
             MTA/OpenSMTPD.pm
