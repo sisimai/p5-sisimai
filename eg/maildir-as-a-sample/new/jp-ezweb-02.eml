@@ -52,8 +52,6 @@ Received-SPF: Neutral (lsean.ezweb.ne.jp: 192.0.2.11 is neither permitted nor de
 Received: from x.example.ne.jp (unknown [192.0.2.45])
 	by lsean.ezweb.ne.jp (EZweb Mail) with SMTP id F000000
 	for <this-local-part-does-not-exist-on-the-server@ezweb.ne.jp>; Thu,  29 Apr 2011 23:45:05 +0900 (JST)
-From: abuse@example.jp
-To: this-local-part-does-not-exist-on-the-server@ezweb.ne.jp
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-2022-JP
 Content-Transfer-Encoding: 7bit
@@ -61,5 +59,7 @@ Subject: Message
 Message-Id: <20110000000000.F000000@lsean.ezweb.ne.jp>
 Date: Thu,  29 Apr 2011 23:45:05 +0900 (JST)
 X-SPF-AUTH: Neutral (lsean.ezweb.ne.jp: 192.0.2.11 is neither permitted nor denied by domain of example.jp) client-ip=192.0.2.45; envelope-from=<abuse@example.jp>; helo=x.example.ne.jp; domain=example.jp; txt=v=spf1 ; auth=v1;
+From: abuse@example.jp
+To: this-local-part-does-not-exist-on-the-server@ezweb.ne.jp
 
 message
