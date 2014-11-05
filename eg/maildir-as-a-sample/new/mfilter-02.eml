@@ -37,12 +37,12 @@ Received: from unknown (HELO mx.example.jp) (192.0.2.4)  by 0 with SMTP;
     29 Apr 2011 23:34:45 -0000
 Message-ID: <000000000000@exmaple.jp>
 Date: Thu, 29 Apr 2011 23:34:45 +0900 (JST)
-From: Shironeko <shironeko@example.jp>
 To: kijitora@example.co.jp
 Subject: Nyaan
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-2022-JP
 Content-Transfer-Encoding: 7bit
+From: Shironeko <shironeko@example.jp>
 
 Nyaan
 
