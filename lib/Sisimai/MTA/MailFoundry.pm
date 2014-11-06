@@ -156,7 +156,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::MailFoundry - bounce mail parser class for v8 MailFoundry.
+Sisimai::MTA::MailFoundry - bounce mail parser class for MailFoundry.
 
 =head1 SYNOPSIS
 
@@ -164,7 +164,7 @@ Sisimai::MTA::MailFoundry - bounce mail parser class for v8 MailFoundry.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::MailFoundry parses a bounce email which created by v8 MailFoundry.
+Sisimai::MTA::MailFoundry parses a bounce email which created by MailFoundry.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
