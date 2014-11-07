@@ -13,7 +13,7 @@ my $RxMTA = {
     'subject'  => qr/\AMessage delivery has failed\z/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'MailFoundry' }
 sub smtpagent   { 'MailFoundry' }
 
@@ -129,7 +129,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}  ||= $mhead->{'date'};
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {

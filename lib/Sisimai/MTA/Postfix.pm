@@ -26,7 +26,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -255,12 +255,10 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        for my $f ( 'date', 'lhost', 'rhost' ) {
-            $e->{ $f } ||= $connheader->{ $f } || '';
-        }
-        $e->{'date'}    ||= $mhead->{'date'};
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'}   = shift @$commandset || '';
+        map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
+
+        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+        $e->{'command'} = shift @$commandset || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message

@@ -50,7 +50,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
@@ -234,9 +234,6 @@ sub scan {
     require Sisimai::RFC5322;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        $e->{'date'}  ||= $mhead->{'date'};
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
@@ -272,8 +269,10 @@ sub scan {
             }
         }
 
-        $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
-        $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
+        $e->{'spec'}    = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
+        $e->{'action'}  = 'failed' if $e->{'status'} =~ m/\A[45]/;
+        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+
         delete $e->{'msexch'};
 
     } # end of for()

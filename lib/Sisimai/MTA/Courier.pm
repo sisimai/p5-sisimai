@@ -42,7 +42,7 @@ my $RxTmp = {
     ],
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 
@@ -229,9 +229,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        for my $f ( 'date', 'lhost', 'rhost' ) {
-            $e->{ $f }  ||= $connheader->{ $f } || '';
-        }
+        map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( scalar @{ $mhead->{'received'} } ) {

@@ -13,7 +13,7 @@ my $RxMTA = {
     'subject' => qr/FAILURE NOTICE :/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'TransWARE Active!hunter' };
 sub smtpagent   { 'Activehunter' }
 sub headerlist  { return [ 'X-AHMAILID' ] }
@@ -116,9 +116,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}  ||= $mhead->{'date'};
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
-
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r = $mhead->{'received'};
@@ -129,6 +126,7 @@ sub scan {
         $e->{'status'}    = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
         $e->{'spec'}      = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
+        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
 
     } # end of for()
 
