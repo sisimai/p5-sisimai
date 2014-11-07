@@ -27,7 +27,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Biglobe' }
 sub smtpagent   { 'JP::Biglobe' }
 
@@ -143,7 +143,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}  ||= $mhead->{'date'};
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
