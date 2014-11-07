@@ -53,7 +53,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash' ] }
@@ -172,7 +172,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}  ||= $mhead->{'date'};
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 

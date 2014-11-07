@@ -135,7 +135,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -247,7 +247,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}  ||= $mhead->{'date'};
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {

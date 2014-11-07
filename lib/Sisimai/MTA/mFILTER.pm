@@ -15,7 +15,7 @@ my $RxMTA = {
     'x-mailer' => qr/\Am-FILTER\z/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'DigitalArts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
 sub headerlist  { return [ 'X-Mailer' ] }
@@ -145,7 +145,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}  ||= $mhead->{'date'};
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
