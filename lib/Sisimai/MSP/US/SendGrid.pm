@@ -123,7 +123,6 @@ sub scan {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
-
                     }
                 }
 
