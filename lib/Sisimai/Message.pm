@@ -52,7 +52,7 @@ sub new {
     # @Return       (Sisimai::Message) Structured email data
     my $class = shift;
     my $argvs = { @_ };
-    my $email = $argvs->{'data'} // q();
+    my $email = $argvs->{'data'} // '';
     return undef unless length $email;
 
     my $methodargv = { 'data' => $email };
