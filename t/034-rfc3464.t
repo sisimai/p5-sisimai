@@ -61,10 +61,10 @@ MAKE_TEST: {
             ok length $p->from;
 
             for my $e ( @{ $p->ds } ) {
-                ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 like $e->{'agent'}, $RxAgentName, '->agent = '.$e->{'agent'};
 
+                ok defined $e->{'date'}, '->date = '.$e->{'date'};
                 ok defined $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};

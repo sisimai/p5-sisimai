@@ -64,7 +64,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'Facebook' }
 sub smtpagent   { 'US::Facebook' }
 
@@ -214,7 +214,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}  ||= $connheader->{'date'} || $mhead->{'date'};
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
         $e->{'rhost'} ||= $connheader->{'rhost'};
 

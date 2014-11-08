@@ -14,7 +14,7 @@ my $RxMSP = {
     'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
 sub headerlist  { return [ 'Return-Path' ] }
@@ -181,7 +181,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}    ||= $mhead->{'date'};
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( $e->{'status'} ) {

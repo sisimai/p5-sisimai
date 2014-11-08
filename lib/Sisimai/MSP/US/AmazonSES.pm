@@ -19,7 +19,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'AmazonSES: http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::AmazonSES' }
 sub headerlist  { return [ 'X-AWS-Outgoing' ] }
@@ -184,7 +184,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'} ||= $mhead->{'date'};
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.

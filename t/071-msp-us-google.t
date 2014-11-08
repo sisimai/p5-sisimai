@@ -61,11 +61,11 @@ MAKE_TEST: {
             ok length $p->from;
 
             for my $e ( @{ $p->ds } ) {
-                ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 is $e->{'agent'}, 'US::Google', '->agent = '.$e->{'agent'};
 
+                ok defined $e->{'date'}, '->date = '.$e->{'date'};
                 ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
                 ok defined $e->{'status'}, '->status = '.$e->{'status'};

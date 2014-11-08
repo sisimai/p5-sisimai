@@ -15,7 +15,7 @@ my $RxMSP = {
     },
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Verizon Wireless' }
 sub smtpagent   { 'US::Verizon' }
 
@@ -258,7 +258,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}  ||= $mhead->{'date'};
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {

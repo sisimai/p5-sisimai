@@ -100,7 +100,7 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'Google Gmail' }
 sub smtpagent   { 'US::Google' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -283,7 +283,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'date'}    ||= $mhead->{'date'};
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
