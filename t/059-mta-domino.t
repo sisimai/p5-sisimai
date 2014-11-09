@@ -71,6 +71,8 @@ MAKE_TEST: {
                 ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
                 ok defined $e->{'feedbacktype'}, '->feedbacktype = ""';
                 ok defined $e->{'softbounce'}, '->softbounce = '.$e->{'softbounce'};
+
+                like $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, '->recipient = '.$e->{'recipient'};
             }
 
             $o = Sisimai::Data->make( 'data' => $p );
