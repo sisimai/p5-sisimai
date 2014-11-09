@@ -292,6 +292,7 @@ sub parse {
     my $datestring = $argvs; $datestring =~ s{[,](\d+)}{, $1};  # Thu,13 -> Thu, 13
     my $timetokens = [ split( ' ', $datestring ) ];
     my $parseddate = '';    # (String) Canonified Date/Time string
+    my $afternoon1 = 0;     # (Integer) After noon flag
     my $v = {
         'Y' => undef,   # (Integer) Year
         'M' => undef,   # (String) Month Abbr.
@@ -326,9 +327,17 @@ sub parse {
                 $v->{'d'} ||= $p;
             }
 
-        } elsif( $p =~ m/\A([0-2]\d):([0-5]\d):([0-5]\d)\z/ ) {
+        } elsif( $p =~ m/\A([0-2]\d):([0-5]\d):([0-5]\d)\z/ ||
+                 $p =~ m/\A(\d{1,2}):(\d{1,2}):(\d{1,2})\z/ ) {
             # Time; 12:34:56, 03:14:15, ...
             if( $1 < 24 && $2 < 60 && $3 < 60 ) {
+                # Valid time format, maybe...
+                $v->{'T'} = sprintf( "%02d:%02d:%02d", $1, $2, $3 );
+            }
+
+        } elsif( $p =~ m/\A(\d{1,2}):(\d{1,2}):(\d{1,2})\z/ ) {
+            # Time: 1:2:3
+            if( int($1) < 24 && $2 < 60 && $3 < 60 ) {
                 # Valid time format, maybe...
                 $v->{'T'} = sprintf( "%02d:%02d:%02d", $1, $2, $3 );
             }
@@ -342,6 +351,10 @@ sub parse {
         } elsif( $p =~ m/\A(\d\d?):(\d\d?)\z/ ) {
             # Time: 1:4 => 01:04:00
             $v->{'T'} = sprintf( "%02d:%02d:00", $1, $2 );
+
+        } elsif( $p =~ m/\A[APap][Mm]\z/ ) {
+            # AM or PM
+            $afternoon1 = 1;
 
         } else {
             # Timezone offset and others
@@ -373,10 +386,25 @@ sub parse {
                     if( $4 < 24 && $5 < 60 && $6 < 60 ) {
                         $v->{'T'} = sprintf( "%02d:%02d:%02d", $4, $5, $6 );
                     }
+
+                } elsif( $p =~ m|\A(\d{1,2})/(\d{1,2})/(\d{1,2})\z| ) {
+                    # 4/29/01 11:34:45 PM
+                    $v->{'M'} = $MonthName->{'abbr'}->[ int( $1 ) - 1 ];
+                    $v->{'d'}  = int $2;
+                    $v->{'Y'}  = int( $3 ) + 2000;
+                    $v->{'Y'} -= 100 if $v->{'Y'} > Time::Piece->new->year() + 1;
                 }
             }
         }
     } # End of while()
+
+    if( $v->{'T'} && $afternoon1 ) {
+        # +12
+        my $t0 = $v->{'T'};
+        my $t1 = [ split( ':', $v->{'T'} ) ];
+        $v->{'T'} = sprintf( "%02d:%02d:%02d", $t1->[0] + 12, $t1->[1], $t1->[2] );
+        $v->{'T'} = $t0 if $t1->[0] > 12;
+    }
 
     $v->{'a'} ||= 'Thu';   # There is no day of week
     if( defined $v->{'Y'} && $v->{'Y'} < 200 ) {
