@@ -153,6 +153,7 @@ MAKE_TEST: {
             'Sat, 21 Nov 1998 13:13:04 -0800 (PST) Hoge',
             'Fri, 29 Apr 2013 02:31 +0900',
             'Sun, 29 May 2014 1:2 +0900',
+            '4/29/01 11:34:45 PM',
         ];
 
         my $invaliddates = [
