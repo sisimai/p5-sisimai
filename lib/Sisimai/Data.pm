@@ -197,14 +197,14 @@ sub make {
 
         TIMESTAMP: {
             # Convert from a time stamp or a date string to a machine time.
-            my $v = $e->{'date'};
+            my $v = $e->{'date'} || '';
 
             unless( $v ) {
                 # Date information did not exist in message/delivery-status part,...
                 for my $f ( @{ Sisimai::MTA->RFC822HEADERS('date') } ) {
                     # Get the value of Date header or other date related header.
-                    next unless $rfc822data->{ $f };
-                    $v = $rfc822data->{ $f };
+                    next unless $rfc822data->{ lc $f };
+                    $v = $rfc822data->{ lc $f };
                     last;
                 }
 
