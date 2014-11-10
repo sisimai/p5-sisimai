@@ -272,7 +272,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::JP::EZweb - bounce mail parser class for EZweb.
+Sisimai::MSP::JP::EZweb - bounce mail parser class for C<EZweb>.
 
 =head1 SYNOPSIS
 
@@ -280,8 +280,8 @@ Sisimai::MSP::JP::EZweb - bounce mail parser class for EZweb.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::JP::EZweb parses a bounce email which created by EZweb.  Methods in
-the module are called from only Sisimai::Message.
+Sisimai::MSP::JP::EZweb parses a bounce email which created by C<EZweb>. Methods
+in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
