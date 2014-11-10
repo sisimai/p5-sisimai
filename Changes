@@ -1,6 +1,6 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
-4.1.1
+4.1.1   Mon, 10 Nov 2014 15:59:03 +0900 (JST)
     - Fix tiny bug in Sisimai::MTA::Exim.
     - Add many sample emails into eg/ directory.
     - Improved code for detecting connection errors at Sendmail and Courier.
@@ -12,6 +12,10 @@ Revision history for Sisimai/Core module of bouncehammer version 4
     - Implement Sisimai::MTA::IMailServer for email bounces from IPSWITCHI IMail
       Server.
     - Improved code for deciding error reason at Sendmail and qmail.
+    - Implement Sisimai::MTA::mFILTER for email bounces from DigitalArts 
+      m-FILTER.
+    - Implement Sisimai::MTA::Activehunter for email bounces from TransWARE
+      Active!hunter.
 
 4.1.0   Sat,  4 Oct 2014 15:09:09 +0900 (JST)
     - Sisimai::Group, child classes, and "provider" and "category" in the parsed
