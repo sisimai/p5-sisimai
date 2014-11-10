@@ -12,7 +12,8 @@ What is Sisimai ? | シシマイ?
 =============================
 
 Sisimai is a core module of bounceHammer version. 4, is a Perl module for 
-analyzing email bounce. "Sisimai" stands for SISI "Mail Analyzing Interface".
+analyzing email bounce. "Sisimai" is a coined word: Sisi (the number 4 is 
+pronounced "Si" in Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
 "シシマイ"はbounceHammer version 4の中核となるエラーメール解析モジュールです。
 Version 4なので"シ"から始まりマイ(MAI: Mail Analyzing Interface)を含む名前になりました。
@@ -32,6 +33,7 @@ version 4 (Sisimai).
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL          |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
 | Classification based on recipient domain       | Available     | N/A          |
+| Output format of parsed data                   | YAML,JSON,CSV | JSON only    |
 | Easy to install                                | No            | Yes          |
 | Install using cpan or cpanm command            | N/A           | OK           |
 | Dependencies                                   | 24 modules    | 3 modules    |
@@ -54,7 +56,8 @@ version 4 (Sisimai).
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応     |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
 | 宛先ドメインによる分類項目                     | あり          | 無し         |
-| インストール作業が簡単                         | やや面倒      | 簡単で楽     |
+| 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ     |
+| インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽     |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
 | 依存モジュール数                               | 24モジュール  | 3モジュール  |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD    |
