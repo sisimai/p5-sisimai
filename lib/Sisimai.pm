@@ -46,7 +46,7 @@ __END__
 
 =head1 NAME
 
-Sisimai - It's a core module of C<bounceHammer> version 4
+Sisimai - It's a core module of bounceHammer version 4
 
 =head1 SYNOPSIS
 
