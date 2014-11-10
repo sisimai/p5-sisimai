@@ -128,7 +128,7 @@ Sisimai::MIME - MIME Utilities
 
 =head1 DESCRIPTION
 
-Sisimai::MIME is MIME Utilities for bouncehammer.
+Sisimai::MIME is MIME Utilities for C<Sisimai>.
 
 =head1 CLASS METHODS
 
