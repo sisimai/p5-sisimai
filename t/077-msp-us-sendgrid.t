@@ -72,8 +72,9 @@ MAKE_TEST: {
                 ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
                 ok defined $e->{'feedbacktype'}, '->feedbacktype = ""';
                 ok defined $e->{'softbounce'}, '->softbounce = '.$e->{'softbounce'};
+
+                like $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, '->recipient = '.$e->{'recipient'};
             }
-            $c++;
 
             $o = Sisimai::Data->make( 'data' => $p );
             ok scalar @$o, 'entry = '.scalar @$o;
@@ -82,6 +83,7 @@ MAKE_TEST: {
                 like $e->deliverystatus, $ReturnValue->{ $emindex }->{'status'}, '->status = '.$e->deliverystatus;
                 like $e->reason, $ReturnValue->{ $emindex }->{'reason'}, '->reason = '.$e->reason;
             }
+            $c++;
         }
     }
     ok $c, 'the number of emails = '.$c;
