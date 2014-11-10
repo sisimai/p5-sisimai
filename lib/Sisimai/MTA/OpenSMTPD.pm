@@ -211,7 +211,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::OpenSMTPD - bounce mail parser class for OpenSMTPD.
+Sisimai::MTA::OpenSMTPD - bounce mail parser class for C<OpenSMTPD>.
 
 =head1 SYNOPSIS
 
@@ -219,7 +219,7 @@ Sisimai::MTA::OpenSMTPD - bounce mail parser class for OpenSMTPD.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::OpenSMTPD parses a bounce email which created by OpenSMTPD.
+Sisimai::MTA::OpenSMTPD parses a bounce email which created by C<OpenSMTPD>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

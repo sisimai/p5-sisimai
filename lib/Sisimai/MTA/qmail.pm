@@ -341,7 +341,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::qmail - bounce mail parser class for qmail.
+Sisimai::MTA::qmail - bounce mail parser class for C<qmail>.
 
 =head1 SYNOPSIS
 
@@ -349,8 +349,8 @@ Sisimai::MTA::qmail - bounce mail parser class for qmail.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::qmail parses a bounce email which created by qmail. Methods in the
-module are called from only Sisimai::Message.
+Sisimai::MTA::qmail parses a bounce email which created by C<qmail>. Methods in
+the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

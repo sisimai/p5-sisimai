@@ -247,7 +247,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::MXLogic - bounce mail parser class for MXLogic.
+Sisimai::MTA::MXLogic - bounce mail parser class for C<MXLogic>.
 
 =head1 SYNOPSIS
 
@@ -255,8 +255,8 @@ Sisimai::MTA::MXLogic - bounce mail parser class for MXLogic.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::MXLogic parses a bounce email which created by MXLogic.  Methods in the
-module are called from only Sisimai::Message.
+Sisimai::MTA::MXLogic parses a bounce email which created by C<MXLogic>. 
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
