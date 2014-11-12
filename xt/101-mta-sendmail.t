@@ -42,12 +42,12 @@ if( -d $d ) {
                 ok length $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
                 ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
 
-                isa_ok $f->date, 'Time::Piece';
-                $t = $f->date;
-                like $t->year, qr/\A\d{4}\z/, sprintf( "(%s) date->year = %s", $e, $t->year );
-                like $t->month, qr/\A\w+\z/, sprintf( "(%s) date->month = %s", $e, $t->month );
-                like $t->mday, qr/\A\d+\z/, sprintf( "(%s) date->mday = %s", $e, $t->mday );
-                like $t->day, qr/\A\w+\z/, sprintf( "(%s) date->day = %s", $e, $t->day );
+                isa_ok $f->timestamp, 'Time::Piece';
+                $t = $f->timestamp;
+                like $t->year, qr/\A\d{4}\z/, sprintf( "(%s) timestamp->year = %s", $e, $t->year );
+                like $t->month, qr/\A\w+\z/, sprintf( "(%s) timestamp->month = %s", $e, $t->month );
+                like $t->mday, qr/\A\d+\z/, sprintf( "(%s) timestamp->mday = %s", $e, $t->mday );
+                like $t->day, qr/\A\w+\z/, sprintf( "(%s) timestamp->day = %s", $e, $t->day );
 
                 ok defined $f->messageid, sprintf( "(%s) messageid = %s", $e, $f->messageid );
                 ok defined $f->smtpcommand, sprintf( "(%s) smtpcommand = %s", $e, $f->smtpcommand );

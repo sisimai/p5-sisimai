@@ -39,11 +39,11 @@ MAKE_TEST: {
             is $e->reason, 'userunknown', 'reason = '.$e->reason;
             ok length $e->subject, 'subject = '.$e->subject;
 
-            isa_ok $e->date, 'Time::Piece';
-            is $e->date->year, 2014, 'date->year = '.$e->date->year;
-            is $e->date->month, 'Jun', 'date->month = '.$e->date->month;
-            is $e->date->mday, 21, 'date->mday = '.$e->date->mday;
-            is $e->date->day, 'Sat', 'date->day = '.$e->date->day;
+            isa_ok $e->timestamp, 'Time::Piece';
+            is $e->timestamp->year, 2014, 'timestamp->year = '.$e->timestamp->year;
+            is $e->timestamp->month, 'Jun', 'timestamp->month = '.$e->timestamp->month;
+            is $e->timestamp->mday, 21, 'timestamp->mday = '.$e->timestamp->mday;
+            is $e->timestamp->day, 'Sat', 'timestamp->day = '.$e->timestamp->day;
 
             isa_ok $e->addresser, 'Sisimai::Address';
             ok length $e->addresser->host, 'addresser->host = '.$e->addresser->host;
@@ -92,11 +92,11 @@ MAKE_TEST: {
             is $e->reason, 'rejected', 'reason = '.$e->reason;
             ok length $e->subject, 'subject = '.$e->subject;
 
-            isa_ok $e->date, 'Time::Piece';
-            is $e->date->year, 2009, 'date->year = '.$e->date->year;
-            is $e->date->month, 'Apr', 'date->month = '.$e->date->month;
-            is $e->date->mday, 29, 'date->mday = '.$e->date->mday;
-            is $e->date->day, 'Wed', 'date->day = '.$e->date->day;
+            isa_ok $e->timestamp, 'Time::Piece';
+            is $e->timestamp->year, 2009, 'timestamp->year = '.$e->timestamp->year;
+            is $e->timestamp->month, 'Apr', 'timestamp->month = '.$e->timestamp->month;
+            is $e->timestamp->mday, 29, 'timestamp->mday = '.$e->timestamp->mday;
+            is $e->timestamp->day, 'Wed', 'timestamp->day = '.$e->timestamp->day;
 
             isa_ok $e->addresser, 'Sisimai::Address';
             ok length $e->addresser->host, 'addresser->host = '.$e->addresser->host;

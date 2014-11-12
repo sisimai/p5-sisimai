@@ -34,7 +34,7 @@ MAKE_TEST: {
 
         for my $r ( @$v ) {
             isa_ok $r, 'Sisimai::Data';
-            isa_ok $r->date, 'Time::Piece';
+            isa_ok $r->timestamp, 'Time::Piece';
             isa_ok $r->addresser, 'Sisimai::Address';
             isa_ok $r->recipient, 'Sisimai::Address';
             ok $r->addresser->address, '->addresser = '.$r->addresser->address;
