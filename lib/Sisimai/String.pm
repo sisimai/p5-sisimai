@@ -2,23 +2,25 @@ package Sisimai::String;
 use feature ':5.10';
 use strict;
 use warnings;
-use Digest::MD5;
+use Digest::SHA;
 
 sub token {
     # @Description  Create message token from addresser and recipient 
     # @Param        (String) Sender address
     # @Param        (String) Recipient address
+    # @Param        (Integer) Machine time of the email bounce
     # @Return       (String) Message token(MD5 hex digest)
     #               (String) Blank/failed to create token
     # @See          http://en.wikipedia.org/wiki/ASCII
     #               http://search.cpan.org/~gaas/Digest-MD5-2.39/MD5.pm
     my $class = shift || return '';
-    my $afrom = shift || return '';
-    my $arcpt = shift || return '';
+    my $addr1 = shift || return '';
+    my $addr2 = shift || return '';
+    my $epoch = shift // return '';
 
-    # Format: STX(0x02) Sender-Address RS(0x1e) Recipient-Address ETC(0x03)
-    return Digest::MD5::md5_hex( 
-        sprintf( "\x02%s\x1e%s\x03", lc $afrom, lc $arcpt ) );
+    # Format: STX(0x02) Sender-Address RS(0x1e) Recipient-Address ETX(0x03)
+    return Digest::SHA::sha1_hex( 
+        sprintf( "\x02%s\x1e%s\x1e%d\x03", lc $addr1, lc $addr2, $epoch ) );
 }
 
 sub is_8bit {
@@ -64,8 +66,9 @@ Sisimai::String - String related class
     use Sisimai::String;
     my $s = 'envelope-sender@example.jp';
     my $r = 'envelope-recipient@example.org';
+    my $t = time();
 
-    print Sisimai::String->token( $s, $r );    # 2d635de42a44c54b291dda00a93ac27b
+    print Sisimai::String->token( $s,$r,$t );  # 2d635de42a44c54b291dda00a93ac27b
     print Sisimai::String->is_8bit( \'猫');    # 1
     print Sisimai::String->sweep(' neko cat ');# 'neko cat'
 
