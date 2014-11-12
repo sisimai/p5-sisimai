@@ -77,7 +77,8 @@ sub new {
 
     $thing->{'token'} = Sisimai::String->token( 
                             $thing->{'addresser'}->address,
-                            $thing->{'recipient'}->address );
+                            $thing->{'recipient'}->address,
+                            $argvs->{'date'} );
 
     TIMESTAMP: {
         # Create Time::Piece object
