@@ -31,6 +31,7 @@ my $DefaultMTA = [
     'IMailServer',
     'mFILTER',
     'Activehunter',
+    'InterScanMSS',
 ];
 
 my $DefaultMSP = [
