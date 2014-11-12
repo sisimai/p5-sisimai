@@ -28,6 +28,7 @@ sub list {
             MTA/Exim.pm
             MTA/Exchange.pm
             MTA/IMailServer.pm
+            MTA/InterScanMSS.pm
             MTA/MailFoundry.pm
             MTA/McAfee.pm
             MTA/mFILTER.pm
