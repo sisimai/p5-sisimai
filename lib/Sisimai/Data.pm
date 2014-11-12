@@ -16,7 +16,6 @@ use Sisimai::Rhost;
 use Sisimai::Time;
 
 my $rwaccessors = [
-    'date',             # (Time::Piece) Date: in the original message
     'token',            # (String) Message token/MD5 Hex digest value
     'lhost',            # (String) local host name
     'rhost',            # (String) Remote host name
@@ -25,6 +24,7 @@ my $rwaccessors = [
     'reason',           # (String) Bounce reason
     'action',           # (String) The value of Action header
     'subject',          # (String) UTF-8 Subject text
+    'timestamp',        # (Time::Piece) Date: in the original message
     'addresser',        # (Sisimai::Address) From: header in the original message
     'recipient',        # (Sisimai::Address) Final-Recipient: or To: in the original message
     'messageid',        # (String) Message-Id: header
@@ -78,11 +78,11 @@ sub new {
     $thing->{'token'} = Sisimai::String->token( 
                             $thing->{'addresser'}->address,
                             $thing->{'recipient'}->address,
-                            $argvs->{'date'} );
+                            $argvs->{'timestamp'} );
 
     TIMESTAMP: {
         # Create Time::Piece object
-        $thing->{'date'} = localtime Time::Piece->new( $argvs->{'date'} );
+        $thing->{'timestamp'} = localtime Time::Piece->new( $argvs->{'timestamp'} );
         $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
     }
 
@@ -230,14 +230,14 @@ sub make {
                 # Convert from the date string to an object then calculate time
                 # zone offset.
                 my $t = Time::Piece->strptime( $datestring, '%a, %d %b %Y %T' );
-                $p->{'date'} = ( $t->epoch - $zoneoffset ) // undef; 
+                $p->{'timestamp'} = ( $t->epoch - $zoneoffset ) // undef; 
 
             } catch {
                 # Failed to parse the date string...
                 warn $_;
             };
         }
-        next unless $p->{'date'};
+        next unless $p->{'timestamp'};
 
         OTHER_TEXT_HEADERS: {
             # Remove square brackets and curly brackets from the host variable
@@ -327,7 +327,7 @@ sub damn {
         }
         $v->{'addresser'} = $self->addresser->address;
         $v->{'recipient'} = $self->recipient->address;
-        $v->{'date'}      = $self->date->epoch;
+        $v->{'timestamp'} = $self->timestamp->epoch;
         $data = $v;
 
     } catch {
@@ -398,7 +398,7 @@ including Sisimai::Data objects.
         for my $e ( @$data ) {
             print $e->reason;               # userunknown, mailboxfull, and so on.
             print $e->recipient->address;   # (Sisimai::Address) envelope recipient address
-            print $e->date->ymd             # (Time::Piece) Date of the email bounce
+            print $e->timestamp->ymd        # (Time::Piece) Date of the email bounce
         }
     }
 
@@ -410,13 +410,13 @@ C<damn> convert the object to a hash reference.
 
     my $hash = $self->damn;
     print $hash->{'recipient'}; # user@example.jp
-    print $hash->{'date'};      # 1393940000
+    print $hash->{'timestamp'}; # 1393940000
 
 =head1 PROPERTIES
 
 Sisimai::Data have the following properties:
 
-=head2 C<date>(I<Time::Piece>)
+=head2 C<timestamp>(I<Time::Piece>)
 
 The value of Date: header of the original message or the bounce message.
 
