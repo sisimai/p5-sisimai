@@ -19,11 +19,11 @@ pronounced "Si" in Japanese) and MAI (acronym of "Mail Analyzing Interface").
 Version 4なので"シ"から始まりマイ(MAI: Mail Analyzing Interface)を含む名前になりました。
 
 Differences between ver.2 and ver.4 | 新旧の違い
------------------------------------------------
-The followings are the differences between version 2 (bounceHammer 2.7.X) and
+------------------------------------------------
+The followings are the differences between version 2 (bounceHammer 2.7.13) and
 version 4 (Sisimai).
 
-| Features                                       | ver 2.7.X     | Sisimai      |
+| Features                                       | ver 2.7.13    | Sisimai      |
 |------------------------------------------------|---------------|--------------|
 | Command line tools                             | OK            | N/A          |
 | Modules for Commercial MTAs                    | N/A(1)        | Included     |
@@ -34,6 +34,7 @@ version 4 (Sisimai).
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
 | Classification based on recipient domain       | Available     | N/A          |
 | Output format of parsed data                   | YAML,JSON,CSV | JSON only    |
+| The speed of parsing email(750 files)          | 5.36s         | 2.95s        |
 | Easy to install                                | No            | Yes          |
 | Install using cpan or cpanm command            | N/A           | OK           |
 | Dependencies                                   | 24 modules    | 3 modules    |
@@ -44,9 +45,9 @@ version 4 (Sisimai).
 2. Implement yourself with using DBI or any O/R Mapper you like
 3. See ./ANALYSIS-ACCURACY
 
-公開中のbouncehammer version 2.7.12とversion 4(シシマイ)は上記のような違いがあります。
+公開中のbouncehammer version 2.7.13とversion 4(シシマイ)は上記のような違いがあります。
 
-| 機能                                           | ver 2.7.X     | Sisimai      |
+| 機能                                           | ver 2.7.13    | Sisimai      |
 |------------------------------------------------|---------------|--------------|
 | コマンドラインツール                           | あり          | 無し         |
 | 商用MTA対応解析モジュール                      | 無し(商用版,1)| あり(標準)   |
@@ -57,6 +58,7 @@ version 4 (Sisimai).
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
 | 宛先ドメインによる分類項目                     | あり          | 無し         |
 | 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ     |
+| メール解析の速度(750通)                        | 5.36秒        | 2.95秒       |
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽     |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
 | 依存モジュール数                               | 24モジュール  | 3モジュール  |
