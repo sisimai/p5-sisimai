@@ -1,5 +1,12 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.2.0
+    - Key name of time stamp has been changed from "date" to "timestamp".
+    - Data sources and hash algorithm of token string in parsed data have been 
+      changed.
+    - Implement Sisimai::MTA::InterScanMSS for email bounces from Trend Micro
+      InterScan Messaging Security Suite.
+
 4.1.1   Mon, 10 Nov 2014 15:59:03 +0900 (JST)
     - Fix tiny bug in Sisimai::MTA::Exim.
     - Add many sample emails into eg/ directory.
