@@ -24,7 +24,7 @@ MSP::US::Facebook               3         3     1.0000
 MSP::US::Google                36        36     1.0000
 MSP::US::SendGrid(*)           12        12     1.0000
 MSP::US::Verizon                4         4     1.0000
-RFC3464(Fallback)              95       105     0.9047
+RFC3464(Fallback)              96       106     0.9056
 ARF(FeedbackLoop)               5        13     0.3846
 -------------------------------------------------------
- ALL MODULES                  783       824     0.9502
+ ALL MODULES                  784       826     0.9502
