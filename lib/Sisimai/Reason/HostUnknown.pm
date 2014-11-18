@@ -30,17 +30,19 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    my $statuscode = $argvs->deliverystatus // '';
-    my $reasontext = __PACKAGE__->text;
-
-    return undef unless length $statuscode;
-    return 1 if $argvs->reason eq $reasontext;
+    return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::RFC3463;
-    my $diagnostic = $argvs->diagnosticcode // '';
+    my $statuscode = $argvs->deliverystatus // '';
+    my $reasontext = __PACKAGE__->text;
+    my $tempreason = '';
+    my $diagnostic = '';
     my $v = 0;
 
-    if( Sisimai::RFC3463->reason( $statuscode ) eq $reasontext ) {
+    $tempreason = Sisimai::RFC3463->reason( $statuscode ) if $statuscode;
+    $diagnostic = $argvs->diagnosticcode // '';
+
+    if( $tempreason eq $reasontext ) {
         # Status: 5.1.2
         # Diagnostic-Code: SMTP; 550 Host unknown
         $v = 1;
