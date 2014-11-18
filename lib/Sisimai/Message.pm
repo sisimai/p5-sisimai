@@ -33,6 +33,7 @@ my $DefaultMTA = [
     'Activehunter',
     'InterScanMSS',
     'SurfControl',
+    'V5sendmail',
 ];
 
 my $DefaultMSP = [
