@@ -32,6 +32,7 @@ my $DefaultMTA = [
     'mFILTER',
     'Activehunter',
     'InterScanMSS',
+    'SurfControl',
 ];
 
 my $DefaultMSP = [
