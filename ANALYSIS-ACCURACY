@@ -1,20 +1,23 @@
- bounceHammer 2.7.13 + bounceHammer nails(*)
+ bounceHammer 2.7.X + bounceHammer nails(*)
  MTA MODULE NAME        CAN PARSE   SAMPLES     RATIO
 -------------------------------------------------------
 MTA::Activehunter(*)            7         7     1.0000
 MTA::Courier                   11        11     1.0000
 MTA::Domino(*)                  9         9     1.0000
 MTA::Exchange(*)               30        32     0.9375
-MTA::Exim                      68        71     0.9577
+MTA::Exim                      66        71     0.9296
 MTA::IMailServer(*)            28        28     1.0000
 MTA::MXLogic(*)                 5         5     1.0000
 MTA::MailFoundry(*)             5         5     1.0000
+MTA::InterScanMSS(*)            5         5     1.0000
 MTA::McAfee(*)                  7         7     1.0000
 MTA::Notes(*)                   5         7     0.7142
-MTA::OpenSMTPD                  7        14     0.5000
-MTA::Postfix                   43        43     1.0000
-MTA::Sendmail                 203       206     0.9854
-MTA::mFILTER(*)                 3         3     1.0000
+MTA::OpenSMTPD                  6        14     0.5000
+MTA::Postfix                   51        51     1.0000
+MTA::Sendmail                 201       204     0.9853
+MTA::SurfControl(*)             5         5     1.0000
+MTA::V5sendmail                 0       146     0.0000
+MTA::mFILTER(*)                 6         6     1.0000
 MTA::qmail                     45        50     0.9000
 MSP::JP::Biglobe                5         5     1.0000
 MSP::JP::EZweb                128       129     0.9922
@@ -27,4 +30,6 @@ MSP::US::Verizon                4         4     1.0000
 RFC3464(Fallback)              96       106     0.9056
 ARF(FeedbackLoop)               5        13     0.3846
 -------------------------------------------------------
- ALL MODULES                  784       826     0.9502
+ bounceHammer 2.7.X           800       990     0.8081
+ Sisimai(bounceHammer 4)      990       990     1.0000
+
