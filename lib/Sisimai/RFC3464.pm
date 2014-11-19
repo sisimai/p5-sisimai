@@ -18,7 +18,7 @@ my $RxRFC = {
     ],
 };
 
-sub version     { '4.0.6' };
+sub version     { '4.0.7' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -113,12 +113,15 @@ sub scan {
                 #           "Original-Recipient" ":" address-type ";" generic-address
                 #
                 #       generic-address = *text
-                if( length $v->{'recipient'} ) {
+                my $x = $v->{'recipienet'} || '';
+                my $y = Sisimai::Address->s3s4( $1 );
+
+                if( length $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
                     $v = $dscontents->[ -1 ];
                 }
-                $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $v->{'recipient'} = $y;
                 $recipients++;
 
             } elsif( $e =~ m/\AX-Actual-Recipient:[ ]*rfc822;[ ]*(.+)\z/i ) {
