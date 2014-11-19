@@ -15,6 +15,7 @@ sub match {
         qr/mail system configuration error/,
         qr/server configuration error/,
 
+        qr/host is unreachable/,
         qr/interrupted system call/,
         qr/local configuration error/,
         qr/local error in processing/,
@@ -22,6 +23,7 @@ sub match {
         qr/maximum forwarding loop count exceeded/,
         qr/server configuration error/,
         qr/system config error/,
+        qr/timeout waiting for input/,
         qr/too many hops/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;

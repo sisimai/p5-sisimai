@@ -19,13 +19,14 @@ sub match {
         qr/blocked by spamAssassin/,        # rejected by SpamAssassin
         qr/domain .+ is a dead domain/,
         qr/email not accepted for policy reasons/,
+        qr/insecure mail relay/,
 
         qr/mail appears to be unsolicited/, # rejected due to spam
         qr/message filtered/,
         qr/message filtered[.] please see the faqs section on spam/,
         qr/message rejected due to suspected spam content/,
-
         qr/message refused by mailmarshal spamprofiler/,
+
         qr/our filters rate at and above .+ percent probability of being spam/,
         qr/rejected: spamassassin score /,
         qr/rejected due to spam content/,
