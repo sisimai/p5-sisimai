@@ -29,7 +29,7 @@ my $RxMTA = {
     'subject' => qr/\AReturned mail: [A-Z]/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'V5sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'V5sendmail' }
 
@@ -53,8 +53,8 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
-    my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
+    my $responding = [];    # (Ref->Array) Responses from remote server
+    my $commandset = [];    # (Ref->Array) SMTP command which is sent to remote server
     my $anotherset = {};    # Another error information
 
     my $v = undef;
@@ -111,25 +111,32 @@ sub scan {
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[ -1 ];
                 }
-                $v->{'recipient'} = $1;
-                $v->{'diagnosis'} = $2;
+                $v->{'recipient'}  = $1;
+                $v->{'diagnosis'}  = $2;
+
+                if( $responding->[ $recipients ] ) {
+                    # Concatenate the response of the server and error message
+                    $v->{'diagnosis'} .= ': '.$responding->[ $recipients ];
+                }
                 $recipients++;
 
             } elsif( $e =~ m/\A[>]{3}\s*([A-Z]{4})\s*/ ) {
                 # >>> RCPT To:<kijitora@example.org>
-                $v->{'command'} = $1;
+                $commandset->[ $recipients ] = $1;
 
             } elsif( $e =~ m/\A[<]{3}[ ]+(.+)\z/ ) {
                 # <<< Response
-                $esmtpreply = $1;
+                # <<< 501 <shironeko@example.co.jp>... no access from mail server [192.0.2.55] which is an open relay.
+                # <<< 550 Requested User Mailbox not found. No such user here.
+                $responding->[ $recipients ] = $1;
 
             } else {
                 # Detect SMTP session error or connection error
-                next if $sessionerr;
+                next if $v->{'sessionerr'};
                 if( $e =~ $RxMTA->{'error'} ) { 
                     # ----- Transcript of session follows -----
                     # ... while talking to mta.example.org.:
-                    $sessionerr = 1;
+                    $v->{'sessionerr'} = 1;
                     next;
                 }
 
@@ -158,8 +165,10 @@ sub scan {
     require Sisimai::String;
     require Sisimai::RFC5322;
 
+    my $n = -1;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
+        $n++;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
@@ -170,16 +179,11 @@ sub scan {
 
         $e->{'spec'}    ||= 'SMTP';
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'} //= '';
-        $e->{'command'} ||= 'EHLO' if length $esmtpreply;
+        $e->{'command'}   = $commandset->[ $n ] || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
-            if( $e->{'diagnosis'} =~ m/\A\d+\z/ ) {
-                # Override the value of diagnostic code message
-                $e->{'diagnosis'} = $anotherset->{'diagnosis'};
-            }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
@@ -190,6 +194,7 @@ sub scan {
                 $e->{'recipient'} = $1;
             }
         }
+        delete $e->{'sessionerr'};
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
