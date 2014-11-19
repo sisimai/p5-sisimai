@@ -135,7 +135,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -147,13 +147,15 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
     # Pre process email headers and the body part of the message which generated
     # by qmail, see http://cr.yp.to/qmail.html
     #   e.g.) Received: (qmail 12345 invoked for bounce); 29 Apr 2009 12:34:56 -0000
     #         Subject: failure notice
-    return undef unless lc( $mhead->{'subject'} ) =~ $RxMTA->{'subject'};
-    return undef unless grep { $_ =~ $RxMTA->{'received'} } @{ $mhead->{'received'} };
+    $match = 1 if lc( $mhead->{'subject'} ) =~ $RxMTA->{'subject'};
+    $match = 1 if grep { $_ =~ $RxMTA->{'received'} } @{ $mhead->{'received'} };
+    return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
