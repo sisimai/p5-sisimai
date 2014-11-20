@@ -24,12 +24,15 @@ my $RxMTA = {
     'from'    => qr/\AMail Delivery Subsystem/,
     'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => qr/\A\s+----- Unsent message follows -----/,
+    'rfc822'  => [
+        qr/\A\s+----- Unsent message follows -----/,
+        qr/\A\s+----- No message was collected -----/,
+    ],
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject' => qr/\AReturned mail: [A-Z]/,
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'V5sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'V5sendmail' }
 
@@ -64,9 +67,9 @@ sub scan {
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        $match = 1 if $e =~ $RxMTA->{'rfc822'};
+        $match = 1 if grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} };
 
-        if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
+        if( ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
@@ -93,7 +96,9 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( $e =~ $RxMTA->{'rfc822'} );
+            next unless 
+                ( $e =~ $RxMTA->{'begin'} ) .. 
+                ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } );
             next unless length $e;
 
             #    ----- Transcript of session follows -----
@@ -104,7 +109,7 @@ sub scan {
             # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A\d{3}\s+[<]([^ ]+[@][^ ]+)[>][.]{3}(.+)\z/i ) {
+            if( $e =~ m/\A\d{3}\s+[<]([^ ]+[@][^ ]+)[>][.]{3}\s*(.+)\z/ ) {
                 # 550 <kijitora@example.org>... User unknown
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -157,8 +162,11 @@ sub scan {
 
     unless( $recipients ) {
         # Get the recipient address from the original message
-        $dscontents->[0]->{'recipient'} = $mhead->{'to'};
-        $recipients = 1;
+        if( $rfc822part =~ m/^To: (.+)$/m ) {
+            # The value of To: header in the original message
+            $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4( $1 );
+            $recipients = 1;
+        }
     }
 
     return undef unless $recipients;
@@ -184,6 +192,10 @@ sub scan {
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
+
+        } else {
+            # Set server response as a error message
+            $e->{'diagnosis'} ||= $responding->[ $n ];
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
