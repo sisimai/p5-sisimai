@@ -15,6 +15,7 @@ sub match {
         qr/connection reset by peer/,
         qr/hosts with dynamic ip/,
         qr/no access from mail server/,
+        qr/unresolvable relay host name/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;
