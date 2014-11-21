@@ -1,11 +1,17 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
-4.2.0
+4.1.2   Sat, 22 Nov 2014 22:22:22 +0900 (JST)
+    - Require Time::Local 1.19 or later for fixing issue #21, #23, and #24.
     - Key name of time stamp has been changed from "date" to "timestamp".
     - Data sources and hash algorithm of token string in parsed data have been 
       changed.
     - Implement Sisimai::MTA::InterScanMSS for email bounces from Trend Micro
       InterScan Messaging Security Suite.
+    - Implement Sisimai::MTA::SurfControl for email bounces from WebSense Surf-
+      Control.
+    - Implement Sisimai::MTA::V5sendmail for email bounces from old version of
+      Sendmail(v5) and other MTAs based on V5 Sendmail.
+    - Fixed bounce reason names in Sisimai::RFC3463.
 
 4.1.1   Mon, 10 Nov 2014 15:59:03 +0900 (JST)
     - Fix tiny bug in Sisimai::MTA::Exim.
