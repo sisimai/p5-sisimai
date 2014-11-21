@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Sisimai::MTA;
 
-sub version     { return '4.0.2' }
+sub version     { return '4.0.3' }
 sub description { return '' }
 sub headerlist  { return [] }
 
