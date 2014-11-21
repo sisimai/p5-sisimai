@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub version     { return '4.0.2' }
+sub version     { return '4.0.3' }
 sub description { return '' }
 sub headerlist  { return [] }
 
@@ -87,6 +87,7 @@ sub index {
         'Exchange', 'MessagingServer', 'V5sendmail', 'McAfee', 'Domino', 'Notes',
         'MXLogic', 'MailFoundry', 'IMailServer', 'mFILTER', 'Activehunter',
         'InterScanMSS', 'SurfControl',
+        'X1',
     ];
 
     return $index;
