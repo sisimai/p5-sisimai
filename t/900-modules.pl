@@ -31,6 +31,7 @@ sub list {
             MTA/InterScanMSS.pm
             MTA/MailFoundry.pm
             MTA/McAfee.pm
+            MTA/MessagingServer.pm
             MTA/mFILTER.pm
             MTA/MXLogic.pm
             MTA/Notes.pm
