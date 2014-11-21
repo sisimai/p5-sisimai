@@ -5,6 +5,8 @@ use warnings;
 use Class::Accessor::Lite;
 use Module::Load;
 use Sisimai::ARF;
+use Sisimai::MTA;
+use Sisimai::MSP;
 use Try::Tiny;
 
 my $rwaccessors = [
@@ -15,38 +17,8 @@ my $rwaccessors = [
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 
-my $DefaultMTA = [
-    'Sendmail',
-    'Postfix',
-    'qmail',
-    'OpenSMTPD',
-    'Exim',
-    'Courier',
-    'Exchange',
-    'MessagingServer',
-    'V5sendmail',
-    'McAfee',
-    'Domino',
-    'Notes',
-    'MXLogic',
-    'MailFoundry',
-    'IMailServer',
-    'mFILTER',
-    'Activehunter',
-    'InterScanMSS',
-    'SurfControl',
-];
-
-my $DefaultMSP = [
-    'US::Google',
-    'US::Verizon',
-    'US::Facebook',
-    'US::AmazonSES',
-    'JP::EZweb',
-    'JP::KDDI',
-    'JP::Biglobe',
-    'US::SendGrid',
-];
+my $DefaultMTA = Sisimai::MTA->index;
+my $DefaultMSP = Sisimai::MSP->index;
 
 sub ENDOFEMAIL { '__END_OF_EMAIL_MESSAGE__' };
 
@@ -232,7 +204,6 @@ sub resolve {
 
         REWRITE_BODY: {
             # 3. Rewrite message body for detecting the bounce reason
-            require Sisimai::MTA;
             $bodystring .= Sisimai::MTA->EOM;
             $methodargv  = { 'mail' => $processing, 'body' => \$bodystring };
             $bouncedata  = __PACKAGE__->rewrite( %$methodargv );
