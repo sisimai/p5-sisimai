@@ -77,6 +77,21 @@ sub smtpagent {
     return shift // 'null';
 }
 
+sub index {
+    # @Description  MTA list
+    # @Param        None
+    # @Return       (Ref->Array) MTA list with order
+    my $class = shift;
+    my $index = [
+        'Sendmail', 'Postfix', 'qmail', 'OpenSMTPD', 'Exim', 'Courier',
+        'Exchange', 'MessagingServer', 'V5sendmail', 'McAfee', 'Domino', 'Notes',
+        'MXLogic', 'MailFoundry', 'IMailServer', 'mFILTER', 'Activehunter',
+        'InterScanMSS', 'SurfControl',
+    ];
+
+    return $index;
+}
+
 sub scan {
     # @Description  Detect an error
     # @Param <ref>  (Ref->Hash) Message header
