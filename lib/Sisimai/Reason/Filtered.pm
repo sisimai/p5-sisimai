@@ -34,6 +34,7 @@ sub true {
 
     require Sisimai::RFC3463;
     my $statuscode = $argvs->deliverystatus // '';
+    my $commandtxt = $argvs->smtpcommand // '';
     my $reasontext = __PACKAGE__->text;
     my $tempreason = '';
     my $diagnostic = '';
@@ -44,7 +45,7 @@ sub true {
     return 0 if $tempreason eq 'suspend';
 
     if( $tempreason eq $reasontext ) {
-        # Delivery status code points C<filtered>.
+        # Delivery status code points "filtered".
         $v = 1;
 
     } else {
