@@ -23,9 +23,11 @@ my $DefaultMTA = [
     'Exim',
     'Courier',
     'Exchange',
+    'MessagingServer',
+    'V5sendmail',
+    'McAfee',
     'Domino',
     'Notes',
-    'McAfee',
     'MXLogic',
     'MailFoundry',
     'IMailServer',
@@ -33,7 +35,6 @@ my $DefaultMTA = [
     'Activehunter',
     'InterScanMSS',
     'SurfControl',
-    'V5sendmail',
 ];
 
 my $DefaultMSP = [
