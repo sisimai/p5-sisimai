@@ -41,6 +41,7 @@ sub list {
             MTA/Sendmail.pm
             MTA/SurfControl.pm
             MTA/V5sendmail.pm
+            MTA/X1.pm
         Reason.pm
             Reason/Blocked.pm
             Reason/ContentError.pm
