@@ -17,9 +17,10 @@ MTA::MessagingServer           15        15     1.0000
 MTA::Postfix                   51        51     1.0000
 MTA::Sendmail                 201       204     0.9853
 MTA::SurfControl(*)             5         5     1.0000
-MTA::V5sendmail                 0       147     0.0000
+MTA::V5sendmail                 0       148     0.0000
 MTA::mFILTER(*)                 6         6     1.0000
 MTA::qmail                     45        51     0.8824
+MTA::X1(Unknown MTA #1)         0         6     0.0000
 MSP::JP::Biglobe                5         5     1.0000
 MSP::JP::EZweb                128       129     0.9922
 MSP::JP::KDDI                   5         5     1.0000
@@ -31,6 +32,6 @@ MSP::US::Verizon                4         4     1.0000
 RFC3464(Fallback)              99       109     0.9083
 ARF(FeedbackLoop)               5        13     0.3846
 -------------------------------------------------------
- bounceHammer 2.7.X           818      1010     0.8099
- Sisimai(bounceHammer 4)     1010      1010     1.0000
+ bounceHammer 2.7.X           818      1017     0.8043
+ Sisimai(bounceHammer 4)     1017      1017     1.0000
 
