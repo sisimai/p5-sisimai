@@ -22,6 +22,20 @@ sub smtpagent {
     return shift // 'null';
 }
 
+sub index {
+    # @Description  MSP list
+    # @Param        None
+    # @Return       (Ref->Array) MSP list with order
+    my $class = shift;
+    my $index = [
+        'US::Google', 'US::Verizon', 'US::Facebook', 'US::AmazonSES',
+        'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
+        'US::SendGrid',
+    ];
+
+    return $index;
+}
+
 sub scan {
     # @Description  Detect an error
     # @Param <ref>  (Ref->Hash) Message header
