@@ -22,7 +22,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Oracle Communications Messaging Server' }
 sub smtpagent   { 'MessagingServer' }
 
@@ -214,7 +214,12 @@ sub scan {
             }
         }
 
-        $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
+            # There is no value of Status header or the value is 5.0.0, 4.0.0
+            my $r = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+            $e->{'status'} = $r if length $r;
+        }
+
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
 
     } # end of for()
