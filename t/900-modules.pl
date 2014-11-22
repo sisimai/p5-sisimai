@@ -21,6 +21,7 @@ sub list {
             MSP/US/Google.pm
             MSP/US/SendGrid.pm
             MSP/US/Verizon.pm
+            MSP/US/Yahoo.pm
         MTA.pm
             MTA/Activehunter.pm
             MTA/Courier.pm
