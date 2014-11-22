@@ -12,7 +12,7 @@ my $RxMSP = {
     'subject' => qr/\AFailure Notice\z/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.2' }
 sub description { 'Yahoo! MAIL' }
 sub smtpagent   { 'US::Yahoo' }
 sub headerlist  { 
@@ -39,17 +39,11 @@ sub scan {
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
-    my $connheader = {
-        'rhost'   => '',    # The value of Reporting-MTA header
-    };
 
     my $v = undef;
     my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
-
-    require Sisimai::RFC5322;
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
