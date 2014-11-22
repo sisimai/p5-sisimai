@@ -28,7 +28,8 @@ sub index {
     # @Return       (Ref->Array) MSP list with order
     my $class = shift;
     my $index = [
-        'US::Google', 'US::Yahoo', 'US::Verizon', 'US::Facebook', 
+        'US::Google', 'US::Yahoo', 'US::Aol',
+        'US::Verizon', 'US::Facebook', 
         'US::AmazonSES', 'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
         'US::SendGrid',
     ];
