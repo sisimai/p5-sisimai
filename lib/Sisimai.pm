@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-our $VERSION = '4.1.2';
+our $VERSION = '4.1.3';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
