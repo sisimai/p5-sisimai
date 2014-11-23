@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Sisimai::MTA;
 
-sub version     { return '4.0.4' }
+sub version     { return '4.0.5' }
 sub description { return '' }
 sub headerlist  { return [] }
 
@@ -28,10 +28,10 @@ sub index {
     # @Return       (Ref->Array) MSP list with order
     my $class = shift;
     my $index = [
-        'US::Google', 'US::Yahoo', 'US::Aol',
+        'US::Google', 'US::Yahoo', 'US::Aol', 'US::Outlook',
+        'US::AmazonSES', 'US::SendGrid',
+        'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
         'US::Verizon', 'US::Facebook', 
-        'US::AmazonSES', 'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
-        'US::SendGrid',
     ];
 
     return $index;
