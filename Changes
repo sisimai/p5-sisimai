@@ -1,5 +1,14 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.3   Sun, 23 Nov 2014 21:22:55 +0900 (JST)
+    - Improved code for detecting error reason in Sisimai::Reason.
+    - Implement Sisimai::MTA::MessagingServer for email bounces from Oracle
+      Communications Messaging Server and Sun Java System Messaging Server.
+    - Implement Sisimai::MTA::X1 for email bounces from Unknown MTA(1).
+    - Implement Sisimai::MSP::US::Yahoo for email bounces from Yahoo! MAIL.
+    - Implement Sisimai::MSP::US::Aol for email bounces from Aol Mail.
+    - Implement Sisimai::MSP::US::Outlook for email bounces from Outlook.com.
+
 4.1.2   Sat, 22 Nov 2014 22:22:22 +0900 (JST)
     - Require Time::Local 1.19 or later for fixing issue #21, #23, and #24.
     - Key name of time stamp has been changed from "date" to "timestamp".
