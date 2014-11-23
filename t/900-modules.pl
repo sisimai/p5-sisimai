@@ -20,6 +20,7 @@ sub list {
             MSP/US/Aol.pm
             MSP/US/Facebook.pm
             MSP/US/Google.pm
+            MSP/US/Outlook.pm
             MSP/US/SendGrid.pm
             MSP/US/Verizon.pm
             MSP/US/Yahoo.pm
