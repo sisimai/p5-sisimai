@@ -101,17 +101,13 @@ MAKE_TEST: {
             $date = $v->o2d( $e );
             $base = Time::Piece->strptime( $base->ymd, "%Y-%m-%d" );
             $time = Time::Piece->strptime( $date, "%Y-%m-%d" );
+
             like $date, qr/\A\d{4}[-]\d{2}[-]\d{2}\z/, 'offset = '.$e.', date = '.$date;
-            if( abs $e < 10 ) {
+            if( abs( $e ) < 10 ) {
                 is $time->epoch, $base->epoch - ( $e * 86400 );
+
             } else {
-                if( $e < 0 ) {
-                    # Future
-                    ok $time->epoch;
-                } else {
-                    # Past
-                    is $time->epoch, 0;
-                }
+                like $time->epoch, qr/\A\d+\z/;
             }
         }
 
