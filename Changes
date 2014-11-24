@@ -1,5 +1,9 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.4
+    - Implement Sisimai::MSP::RU::MailRu for email bounces from @mail.ru.
+
+
 4.1.3   Sun, 23 Nov 2014 21:22:55 +0900 (JST)
     - Improved code for detecting error reason in Sisimai::Reason.
     - Implement Sisimai::MTA::MessagingServer for email bounces from Oracle
