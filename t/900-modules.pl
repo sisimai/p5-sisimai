@@ -16,6 +16,7 @@ sub list {
             MSP/JP/Biglobe.pm
             MSP/JP/EZweb.pm
             MSP/JP/KDDI.pm
+            MSP/RU/MailRu.pm
             MSP/US/AmazonSES.pm
             MSP/US/Aol.pm
             MSP/US/Facebook.pm
