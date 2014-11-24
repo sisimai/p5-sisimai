@@ -107,7 +107,7 @@ MAKE_TEST: {
                 is $time->epoch, $base->epoch - ( $e * 86400 );
 
             } else {
-                like $time->epoch, qr/\A\d+\z/;
+                like $time->epoch, qr/\d+\z/;
             }
         }
 
