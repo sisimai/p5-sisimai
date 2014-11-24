@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Sisimai::MTA;
 
-sub version     { return '4.0.5' }
+sub version     { return '4.0.6' }
 sub description { return '' }
 sub headerlist  { return [] }
 
@@ -31,7 +31,7 @@ sub index {
         'US::Google', 'US::Yahoo', 'US::Aol', 'US::Outlook',
         'US::AmazonSES', 'US::SendGrid',
         'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
-        'US::Verizon', 'US::Facebook', 
+        'US::Verizon', 'RU::MailRu', 'US::Facebook',
     ];
 
     return $index;
