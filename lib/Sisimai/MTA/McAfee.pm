@@ -181,7 +181,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::McAfee - bounce mail parser class for McAfee Email Appliance.
+Sisimai::MTA::McAfee - bounce mail parser class for C<McAfee Email Appliance>.
 
 =head1 SYNOPSIS
 
@@ -189,8 +189,8 @@ Sisimai::MTA::McAfee - bounce mail parser class for McAfee Email Appliance.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::McAfee parses a bounce email which created by McAfee Email Appliance.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::MTA::McAfee parses a bounce email which created by C<McAfee Email
+Appliance>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

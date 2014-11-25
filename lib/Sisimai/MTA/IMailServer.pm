@@ -165,7 +165,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::IMailServer - bounce mail parser class for C<IMailServer>.
+Sisimai::MTA::IMailServer - bounce mail parser class for C<IMail Server>.
 
 =head1 SYNOPSIS
 
@@ -173,8 +173,9 @@ Sisimai::MTA::IMailServer - bounce mail parser class for C<IMailServer>.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::IMailServer parses a bounce email which created by C<IMailServer>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::MTA::IMailServer parses a bounce email which created by 
+C<Ipswitch IMail Server>. Methods in the module are called from only 
+Sisimai::Message.
 
 =head1 CLASS METHODS
 

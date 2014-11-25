@@ -234,8 +234,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::MessagingServer - bounce mail parser class for Sun Java System 
-Messaging Server and Oracle Communications Messaging Server.
+Sisimai::MTA::MessagingServer - bounce mail parser class for C<Sun Java System 
+Messaging Server> and C<Oracle Communications Messaging Server>.
 
 =head1 SYNOPSIS
 
@@ -243,9 +243,9 @@ Messaging Server and Oracle Communications Messaging Server.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::MessagingServer parses a bounce email which created by Oracle 
-Communications Messaging Server and Sun Java System Messaging Server.  Methods 
-in the module are called from only Sisimai::Message.
+Sisimai::MTA::MessagingServer parses a bounce email which created by C<Oracle 
+Communications Messaging Server> and C<Sun Java System Messaging Server>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

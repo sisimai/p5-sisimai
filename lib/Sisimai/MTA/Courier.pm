@@ -285,7 +285,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::Courier - bounce mail parser class for Courier MTA.
+Sisimai::MTA::Courier - bounce mail parser class for C<Courier MTA>.
 
 =head1 SYNOPSIS
 
@@ -293,7 +293,7 @@ Sisimai::MTA::Courier - bounce mail parser class for Courier MTA.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::Courier parses a bounce email which created by Courier MTA.
+Sisimai::MTA::Courier parses a bounce email which created by C<Courier MTA>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

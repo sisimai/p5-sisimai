@@ -295,7 +295,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::Postfix - bounce mail parser class for Postfix.
+Sisimai::MTA::Postfix - bounce mail parser class for C<Postfix>.
 
 =head1 SYNOPSIS
 
@@ -303,7 +303,7 @@ Sisimai::MTA::Postfix - bounce mail parser class for Postfix.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::Postfix parses a bounce email which created by Postfix.  Methods 
+Sisimai::MTA::Postfix parses a bounce email which created by C<Postfix>. Methods 
 in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

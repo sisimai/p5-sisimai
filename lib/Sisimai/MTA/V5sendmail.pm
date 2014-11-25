@@ -33,7 +33,7 @@ my $RxMTA = {
 };
 
 sub version     { '4.0.2' }
-sub description { 'V5sendmail: /usr/sbin/sendmail' }
+sub description { 'Sendmail version 5' }
 sub smtpagent   { 'V5sendmail' }
 
 sub scan {
@@ -218,7 +218,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::V5sendmail - bounce mail parser class for V5 Sendmail.
+Sisimai::MTA::V5sendmail - bounce mail parser class for C<V5 Sendmail>.
 
 =head1 SYNOPSIS
 
@@ -226,8 +226,8 @@ Sisimai::MTA::V5sendmail - bounce mail parser class for V5 Sendmail.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::V5sendmail parses a bounce email which created by V5 Sendmail.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::MTA::V5sendmail parses a bounce email which created by C<Sendmail 
+version 5>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

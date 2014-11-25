@@ -150,8 +150,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::InterScanMSS - bounce mail parser class for Trend Micro InterScan
-Messaging Security Suite
+Sisimai::MTA::InterScanMSS - bounce mail parser class for C<Trend Micro 
+InterScan Messaging Security Suite>.
 
 =head1 SYNOPSIS
 
@@ -159,8 +159,8 @@ Messaging Security Suite
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::InterScanMSS parses a bounce email which created by Trend Micro
-InterScan Messaging Security Suite. Methods in the module are called from only
+Sisimai::MTA::InterScanMSS parses a bounce email which created by C<Trend Micro
+InterScan Messaging Security Suite>. Methods in the module are called from only
 Sisimai::Message.
 
 =head1 CLASS METHODS

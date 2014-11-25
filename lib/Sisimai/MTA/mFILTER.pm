@@ -16,7 +16,7 @@ my $RxMTA = {
 };
 
 sub version     { '4.0.1' }
-sub description { 'DigitalArts m-FILTER' }
+sub description { 'Digital Arts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
 sub headerlist  { return [ 'X-Mailer' ] }
 
@@ -170,7 +170,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::mFILTER - bounce mail parser class for DigitalArts m-FILTER.
+Sisimai::MTA::mFILTER - bounce mail parser class for C<Digital Arts m-FILTER>.
 
 =head1 SYNOPSIS
 
@@ -178,8 +178,8 @@ Sisimai::MTA::mFILTER - bounce mail parser class for DigitalArts m-FILTER.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::mFILTER parses a bounce email which created by DigitalArts 
-m-FILTER. Methods in the module are called from only Sisimai::Message.
+Sisimai::MTA::mFILTER parses a bounce email which created by C<Digital Arts 
+m-FILTER>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

@@ -140,7 +140,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::Activehunter - bounce mail parser class for C<Active!hunter>.
+Sisimai::MTA::Activehunter - bounce mail parser class for Active!hunter.
 
 =head1 SYNOPSIS
 
@@ -148,8 +148,8 @@ Sisimai::MTA::Activehunter - bounce mail parser class for C<Active!hunter>.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::Activehunter parses a bounce email which created by C<TransWARE> 
-C<Active!hunter>. Methods in the module are called from only Sisimai::Message.
+Sisimai::MTA::Activehunter parses a bounce email which created by C<TransWARE
+Active!hunter>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

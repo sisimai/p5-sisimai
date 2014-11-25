@@ -186,7 +186,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::Notes - bounce mail parser class for Lotus Notes Server.
+Sisimai::MTA::Notes - bounce mail parser class for C<Lotus Notes Server>.
 
 =head1 SYNOPSIS
 
@@ -194,8 +194,8 @@ Sisimai::MTA::Notes - bounce mail parser class for Lotus Notes Server.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::Notes parses a bounce email which created by Lotus Notes Server. 
-Methods in the module are called from only Sisimai::Message.
+Sisimai::MTA::Notes parses a bounce email which created by C<Lotus Notes 
+Server>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

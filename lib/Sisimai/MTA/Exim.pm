@@ -318,7 +318,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::Exim - bounce mail parser class for Exim.
+Sisimai::MTA::Exim - bounce mail parser class for C<Exim>.
 
 =head1 SYNOPSIS
 
@@ -326,8 +326,8 @@ Sisimai::MTA::Exim - bounce mail parser class for Exim.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::Exim parses a bounce email which created by Exim.  Methods in the
-module are called from only Sisimai::Message.
+Sisimai::MTA::Exim parses a bounce email which created by C<Exim>. Methods in 
+the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

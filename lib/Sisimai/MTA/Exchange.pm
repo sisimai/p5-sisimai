@@ -293,7 +293,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::Exchange - bounce mail parser class for Microsft Exchange Server.
+Sisimai::MTA::Exchange - bounce mail parser class for C<Microsft Exchange 
+Server>.
 
 =head1 SYNOPSIS
 
@@ -301,8 +302,8 @@ Sisimai::MTA::Exchange - bounce mail parser class for Microsft Exchange Server.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::Exchange parses a bounce email which created by Microsoft Exchange
-Server. Methods in the module are called from only Sisimai::Message.
+Sisimai::MTA::Exchange parses a bounce email which created by C<Microsoft
+Exchange Server>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

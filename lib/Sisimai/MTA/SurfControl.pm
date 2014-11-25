@@ -177,8 +177,8 @@ Sisimai::MTA::SurfControl - bounce mail parser class for C<SurfControl>.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::SurfControl parses a bounce email which created by C<SurfControl>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::MTA::SurfControl parses a bounce email which created by C<WebSense
+SurfControl>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
