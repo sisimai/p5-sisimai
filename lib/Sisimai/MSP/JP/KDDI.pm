@@ -187,7 +187,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::JP::KDDI - bounce mail parser class for KDDI.
+Sisimai::MSP::JP::KDDI - bounce mail parser class for C<au by KDDI>.
 
 =head1 SYNOPSIS
 
@@ -195,8 +195,8 @@ Sisimai::MSP::JP::KDDI - bounce mail parser class for KDDI.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::JP::KDDI parses a bounce email which created by KDDI.  Methods in
-the module are called from only Sisimai::Message.
+Sisimai::MSP::JP::KDDI parses a bounce email which created by C<au by KDDI>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

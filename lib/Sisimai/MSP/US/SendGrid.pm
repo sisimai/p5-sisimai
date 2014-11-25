@@ -235,7 +235,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::SendGrid - bounce mail parser class for SendGrid.
+Sisimai::MSP::US::SendGrid - bounce mail parser class for C<SendGrid>.
 
 =head1 SYNOPSIS
 
@@ -243,7 +243,7 @@ Sisimai::MSP::US::SendGrid - bounce mail parser class for SendGrid.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::US::SendGrid parses a bounce email which created by SendGrid.
+Sisimai::MSP::US::SendGrid parses a bounce email which created by C<SendGrid>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

@@ -355,7 +355,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::Google - bounce mail parser class for Gmail.
+Sisimai::MSP::US::Google - bounce mail parser class for C<Gmail>.
 
 =head1 SYNOPSIS
 
@@ -363,8 +363,8 @@ Sisimai::MSP::US::Google - bounce mail parser class for Gmail.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::US::Google parses a bounce email which created by Gmail.  Methods
-in the module are called from only Sisimai::Message.
+Sisimai::MSP::US::Google parses a bounce email which created by C<Gmail>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

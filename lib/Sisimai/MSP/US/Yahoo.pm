@@ -144,7 +144,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::Yahoo - bounce mail parser class for Yahoo! Mail.
+Sisimai::MSP::US::Yahoo - bounce mail parser class for C<Yahoo! MAIL>.
 
 =head1 SYNOPSIS
 
@@ -152,7 +152,7 @@ Sisimai::MSP::US::Yahoo - bounce mail parser class for Yahoo! Mail.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::US::Yahoo parses a bounce email which created by Yahoo! MAIL.
+Sisimai::MSP::US::Yahoo parses a bounce email which created by C<Yahoo! MAIL>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

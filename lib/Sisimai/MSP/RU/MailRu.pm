@@ -279,7 +279,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::RU::MailRu - bounce mail parser class for Exim.
+Sisimai::MSP::RU::MailRu - bounce mail parser class for C<@mail.ru>.
 
 =head1 SYNOPSIS
 
@@ -287,8 +287,8 @@ Sisimai::MSP::RU::MailRu - bounce mail parser class for Exim.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::RU::MailRu parses a bounce email which created by Exim.  Methods in the
-module are called from only Sisimai::Message.
+Sisimai::MSP::RU::MailRu parses a bounce email which created by C<@mail.ru>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

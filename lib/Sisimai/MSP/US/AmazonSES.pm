@@ -233,7 +233,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::AmazonSES - bounce mail parser class for Amazon SES.
+Sisimai::MSP::US::AmazonSES - bounce mail parser class for C<Amazon SES>.
 
 =head1 SYNOPSIS
 
@@ -241,8 +241,9 @@ Sisimai::MSP::US::AmazonSES - bounce mail parser class for Amazon SES.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::US::AmazonSES parses a bounce email which created by Amazon SES.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::MSP::US::AmazonSES parses a bounce email which created by C<Amazon
+Simple Email Service>. Methods in the module are called from only 
+Sisimai::Message.
 
 =head1 CLASS METHODS
 

@@ -205,7 +205,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::Outlook - bounce mail parser class for Outlook.com.
+Sisimai::MSP::US::Outlook - bounce mail parser class for C<Outlook.com>.
 
 =head1 SYNOPSIS
 
@@ -213,8 +213,8 @@ Sisimai::MSP::US::Outlook - bounce mail parser class for Outlook.com.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::US::Outlook parses a bounce email which created by Microsoft 
-Outlook.com. Methods in the module are called from only Sisimai::Message.
+Sisimai::MSP::US::Outlook parses a bounce email which created by C<Microsoft 
+Outlook.com>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

@@ -278,7 +278,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::Facebook - bounce mail parser class for Facebook.
+Sisimai::MSP::US::Facebook - bounce mail parser class for C<Facebook>.
 
 =head1 SYNOPSIS
 
@@ -286,7 +286,7 @@ Sisimai::MSP::US::Facebook - bounce mail parser class for Facebook.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::US::Facebook parses a bounce email which created by Facebook.
+Sisimai::MSP::US::Facebook parses a bounce email which created by C<Facebook>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

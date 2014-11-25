@@ -46,7 +46,7 @@ my $RxErr = {
 };
 
 sub version     { '4.0.5' }
-sub description { 'EZweb' }
+sub description { 'au EZweb' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
 
@@ -272,7 +272,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::JP::EZweb - bounce mail parser class for C<EZweb>.
+Sisimai::MSP::JP::EZweb - bounce mail parser class for C<au EZweb>.
 
 =head1 SYNOPSIS
 
@@ -280,8 +280,8 @@ Sisimai::MSP::JP::EZweb - bounce mail parser class for C<EZweb>.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::JP::EZweb parses a bounce email which created by C<EZweb>. Methods
-in the module are called from only Sisimai::Message.
+Sisimai::MSP::JP::EZweb parses a bounce email which created by C<au EZweb>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

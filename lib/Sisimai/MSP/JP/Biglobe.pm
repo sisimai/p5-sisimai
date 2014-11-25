@@ -28,7 +28,7 @@ my $RxErr = {
 };
 
 sub version     { '4.0.5' }
-sub description { 'Biglobe' }
+sub description { 'BIGLOBE' }
 sub smtpagent   { 'JP::Biglobe' }
 
 sub scan {
@@ -179,7 +179,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::JP::Biglobe - bounce mail parser class for Biglobe.
+Sisimai::MSP::JP::Biglobe - bounce mail parser class for C<BIGLOBE>.
 
 =head1 SYNOPSIS
 
@@ -187,7 +187,7 @@ Sisimai::MSP::JP::Biglobe - bounce mail parser class for Biglobe.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::JP::Biglobe parses a bounce email which created by Biglobe.
+Sisimai::MSP::JP::Biglobe parses a bounce email which created by C<BIGLOBE>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

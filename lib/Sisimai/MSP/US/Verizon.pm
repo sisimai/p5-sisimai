@@ -294,7 +294,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::Verizon - bounce mail parser class for Verizon.
+Sisimai::MSP::US::Verizon - bounce mail parser class for C<Verizon Wireless>.
 
 =head1 SYNOPSIS
 
@@ -302,8 +302,8 @@ Sisimai::MSP::US::Verizon - bounce mail parser class for Verizon.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::US::Verizon parses a bounce email which created by Verizon.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::MSP::US::Verizon parses a bounce email which created by C<Verizon
+Wireless>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

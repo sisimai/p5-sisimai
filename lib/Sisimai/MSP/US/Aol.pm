@@ -212,7 +212,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::Aol - bounce mail parser class for Aol Mail.
+Sisimai::MSP::US::Aol - bounce mail parser class for C<Aol Mail>.
 
 =head1 SYNOPSIS
 
@@ -220,8 +220,8 @@ Sisimai::MSP::US::Aol - bounce mail parser class for Aol Mail.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::US::Aol parses a bounce email which created by Aol Mail.  Methods
-in the module are called from only Sisimai::Message.
+Sisimai::MSP::US::Aol parses a bounce email which created by C<Aol Mail>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
