@@ -26,9 +26,9 @@ MSP::JP::EZweb                128       129     0.9922  au EZweb
 MSP::JP::KDDI                   5         5     1.0000  au by KDDI
 MSP::RU::MailRu                 0         6     1.0000  @mail.ru
 MSP::US::AmazonSES(*)          14        14     1.0000  Amazon SES
-MSP::US::Aol                    8         8     1.0000  Aol Mail
+MSP::US::Aol                    9         9     1.0000  Aol Mail
 MSP::US::Facebook               3         3     1.0000
-MSP::US::Google                40        40     1.0000  Gmail
+MSP::US::Google                42        42     1.0000  Gmail
 MSP::US::Outlook                4         4     1.0000  Microsoft Outlook.com
 MSP::US::SendGrid(*)           12        12     1.0000
 MSP::US::Verizon                4         4     1.0000  Verizon Wireless
@@ -36,6 +36,6 @@ MSP::US::Yahoo                  0         3     0.0000  Yahoo! MAIL
 RFC3464                        99       109     0.9083  Fallback
 ARF                             5        13     0.3846  Feedback Loop(FBL)
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X           838      1040     0.8057
- Sisimai(bounceHammer 4)     1040      1040     1.0000
+ bounceHammer 2.7.X           841      1048     0.8024
+ Sisimai(bounceHammer 4)     1048      1048     1.0000
 
