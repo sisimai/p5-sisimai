@@ -33,11 +33,11 @@ Received: from c31345.example.org (gw.example.org [192.0.2.1])
 	by rcpt-impgw.biglobe.ne.jp (0000/0000000000) with ESMTP id p0000000000000
 	for <postmaster@mxr.biglobe.ne.jp>; Thu, 11 Feb 2014 00:00:00 +0900
 Message-ID: <000000000000000000000000000000@example.com>
-From: "Kijitora Neko" <kijitora@mx.example.com>
 To: <postmaster@mxr.biglobe.ne.jp>
 Subject: Cats
 Date: Thu, 11 Feb 2014 00:00:00 +0000
 MIME-Version: 1.0
 Content-Type: text/plain;
+From: "Kijitora Neko" <kijitora@mx.example.com>
 
 Nyaa
