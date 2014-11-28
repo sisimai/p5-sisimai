@@ -1242,7 +1242,6 @@ Content-Transfer-Encoding: 7bit
 Subject: Nyaaaan
 Message-Id: <8A6111E4-DE55-49BA-B773-FCB9A9A77AC4example.jp>
 Date: Sat, 22 Nov 2014 07:14:04 +0900
-To: kijitora@example.co.jp
 Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
 X-Mailer: Apple Mail (2.1878.6)
 x-aol-global-disposition: G
@@ -1255,6 +1254,7 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mx.@aol.example.com;
 	 7qgy2U/1mVsn4xDXsezMbWsFwbiH2coz0soE+PTI=
 x-aol-sid: 3039ac1a7e4e546fb9304b04
 X-AOL-IP: 125.174.90.135
+To: kijitora@example.co.jp
 
 Message truncated.
 ------=_Part_933362_1685657572.1416612953379--
