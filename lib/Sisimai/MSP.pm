@@ -31,7 +31,7 @@ sub index {
         'US::Google', 'US::Yahoo', 'US::Aol', 'US::Outlook',
         'US::AmazonSES', 'US::SendGrid',
         'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
-        'US::Verizon', 'RU::MailRu', 'US::Facebook',
+        'US::Verizon', 'RU::MailRu', 'DE::GMX', 'US::Facebook',
     ];
 
     return $index;
