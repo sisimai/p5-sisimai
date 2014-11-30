@@ -13,6 +13,7 @@ sub list {
         Message.pm
         MDA.pm
         MSP.pm
+            MSP/DE/GMX.pm
             MSP/JP/Biglobe.pm
             MSP/JP/EZweb.pm
             MSP/JP/KDDI.pm
