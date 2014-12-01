@@ -30,7 +30,7 @@ use warnings;
 #   bounce.c/338:    "    Your message was relayed to these recipients.\n\n";
 #   bounce.c/339:
 my $RxMTA = {
-    'from'     => qr/\AMailer Daemon [<]MAILER-DAEMON[@]/,
+    'from'     => qr/\AMailer Daemon [<][^ ]+[@]/,
     'begin'    => qr/\A\s*This is the MAILER-DAEMON, please DO NOT REPLY to this e-mail[.]\z/,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'rfc822'   => qr/\A\s*Below is a copy of the original message:\z/,
@@ -74,7 +74,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'OpenSMTPD' }
 sub smtpagent   { 'OpenSMTPD' }
 
