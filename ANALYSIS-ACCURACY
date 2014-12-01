@@ -21,6 +21,7 @@ MTA::qmail                     45        51     0.8824
 MTA::SurfControl(*)             5         5     1.0000  WebSense SurfControl
 MTA::V5sendmail                 0       148     0.0000  Sendmail version 5
 MTA::X1                         0         5     0.0000  Unknown MTA #1
+MSP::DE::GMX                    0         3     0.0000  GMX
 MSP::JP::Biglobe                5         5     1.0000  BIGLOBE
 MSP::JP::EZweb                128       129     0.9922  au EZweb
 MSP::JP::KDDI                   5         5     1.0000  au by KDDI
@@ -36,6 +37,6 @@ MSP::US::Yahoo                  0         3     0.0000  Yahoo! MAIL
 RFC3464                        99       109     0.9083  Fallback
 ARF                             5        13     0.3846  Feedback Loop(FBL)
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X           841      1048     0.8024
- Sisimai(bounceHammer 4)     1048      1048     1.0000
+ bounceHammer 2.7.X           841      1051     0.8002
+ Sisimai(bounceHammer 4)     1051      1051     1.0000
 
