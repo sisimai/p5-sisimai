@@ -12,7 +12,13 @@ my $RxMSP = {
     'subject' => qr/\AMail delivery failed: returning message to sender\z/,
 };
 
-sub version     { '4.0.0' }
+my $RxSess = {
+    'expired' => [
+        qr/delivery retry timeout exceeded/,
+    ],
+};
+
+sub version     { '4.0.1' }
 sub description { 'GMX' }
 sub smtpagent   { 'DE::GMX' }
 sub headerlist  { 
@@ -92,8 +98,14 @@ sub scan {
             # 5.1.1 <shironeko@example.jp>... User Unknown
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A["]([^ ]+[@][^ ]+)["]:\z/ ) {
+            if( $e =~ m/\A["]([^ ]+[@][^ ]+)["]:\z/ ||
+                $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
                 # "shironeko@example.jp":
+                # ---- OR ----
+                # <kijitora@6jo.example.co.jp>
+                #
+                # Reason:
+                # delivery retry timeout exceeded
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -117,6 +129,17 @@ sub scan {
                     $e =~ m/\b[45]\d{2}\b/ ) {
 
                     $v->{'diagnosis'} ||= $e;
+
+                } else {
+                    next if $e =~ m/\A\z/;
+                    if( $e =~ m/\AReason:\z/ ) {
+                        # Reason:
+                        # delivery retry timeout exceeded
+                        $v->{'diagnosis'} = $e;
+
+                    } elsif( $v->{'diagnosis'} =~ m/\AReason:\z/ ) {
+                        $v->{'diagnosis'} = $e;
+                    }
                 }
             }
         } # End of if: rfc822
@@ -144,6 +167,16 @@ sub scan {
 
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
+
+        SESSION: for my $r ( keys %$RxSess ) {
+            # Verify each regular expression of session errors
+            PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
+                # Check each regular expression
+                next unless $e->{'diagnosis'} =~ $rr;
+                $e->{'reason'} = $r;
+                last(SESSION);
+            }
+        }
 
         $e->{'status'}  =  Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
         $e->{'spec'}  ||= 'SMTP';
