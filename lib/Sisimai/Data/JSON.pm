@@ -15,10 +15,11 @@ sub dump {
     return undef unless ref $argvs eq 'Sisimai::Data';
     my $damneddata = undef;
     my $jsonstring = '';
+    my $jsonobject = JSON->new;
 
     try {
         $damneddata = $argvs->damn;
-        $jsonstring = JSON::encode_json $damneddata;
+        $jsonstring = $jsonobject->encode( $damneddata );
 
     } catch {
         warn $_;
