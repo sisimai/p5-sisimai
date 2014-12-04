@@ -339,12 +339,12 @@ sub damn {
 
 sub dump {
     # @Description  Data dumper
-    # @Param <str>  (String) Data format: json, csv
+    # @Param <str>  (String) Data format: json, yaml
     # @Return       (String) Dumped data
     my $self = shift;
     my $argv = shift || 'json';
 
-    return undef unless $argv =~ m/\A(?:json|csv)\z/;
+    return undef unless $argv =~ m/\A(?:json|yaml)\z/;
 
     my $referclass = '';
     my $dumpeddata = '';
