@@ -14,7 +14,7 @@ MTA::Notes(*)                   5         7     0.7142  Lotus Notes Server
 MTA::MessagingServer           16        16     1.0000  Oracle/SJSMS
 MTA::mFILTER(*)                 6         6     1.0000  Digital Arts m-FILTER
 MTA::MXLogic(*)                 5         5     1.0000  McAfee SaaS (MX Logic)
-MTA::OpenSMTPD                  6        14     0.5000
+MTA::OpenSMTPD                  6        15     0.4000
 MTA::Postfix                   51        51     1.0000
 MTA::Sendmail                 204       207     0.9855
 MTA::qmail                     45        51     0.8824
@@ -37,6 +37,6 @@ MSP::US::Yahoo                  0         3     0.0000  Yahoo! MAIL
 RFC3464                        99       109     0.9083  Fallback
 ARF                             5        13     0.3846  Feedback Loop(FBL)
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X           841      1051     0.8002
- Sisimai(bounceHammer 4)     1051      1051     1.0000
+ bounceHammer 2.7.X           841      1052     0.7994
+ Sisimai(bounceHammer 4)     1052      1052     1.0000
 
