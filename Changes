@@ -1,5 +1,8 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.5   Fri,  5 Dec 2014 18:20:22 +0900 (JST)
+    - Fix newline of some sample emalis in eg/ directory.
+
 4.1.4   Thu,  4 Dec 2014 20:40:22 +0900 (JST)
     - Implement Sisimai::MSP::RU::MailRu for email bounces from @mail.ru.
     - Implement Sisimai::MSP::DE::GMX for email bounces from GMX.
