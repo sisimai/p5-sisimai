@@ -21,12 +21,12 @@ my $RxSess = {
 sub version     { '4.0.1' }
 sub description { 'GMX' }
 sub smtpagent   { 'DE::GMX' }
-sub headerlist  { 
+sub headerlist  {
     return [ 'Envelope-To', 'X-GMX-Antispam', 'X-GMX-Antivirus' ]
 }
 
 sub scan {
-    # @Description  Detect an error from GMX
+    # @Description  Detect an error from GMX and mail.com
     # @Param <ref>  (Ref->Hash) Message header
     # @Param <ref>  (Ref->String) Message body
     # @Return       (Ref->Hash) Bounce data list and message/rfc822 part
@@ -192,7 +192,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::DE::GMX - bounce mail parser class for C<GMX>.
+Sisimai::MSP::DE::GMX - bounce mail parser class for C<GMX> and mail.com.
 
 =head1 SYNOPSIS
 
@@ -200,8 +200,8 @@ Sisimai::MSP::DE::GMX - bounce mail parser class for C<GMX>.
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::DE::GMX parses a bounce email which created by C<GMX>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::MSP::DE::GMX parses a bounce email which created by C<GMX>. Methods in
+the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
