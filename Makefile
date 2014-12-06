@@ -56,13 +56,13 @@ push:
 	done
 
 sample:
-	@for v in `$(LS) -1 $(MTAMODULEDIR)/*.pm`; do \
+	for v in `$(LS) -1 $(MTAMODULEDIR)/*.pm`; do \
 		MTA=`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
 		$(MKDIR) $(EMAIL_SAMPLE)/$$MTA ;\
 		$(CP) $(FOR_MAKETEST)/$$MTA-*.eml $(EMAIL_SAMPLE)/$$MTA/ ;\
 		$(CP) $(FOR_EMPARSER)/$$MTA/* $(EMAIL_SAMPLE)/$$MTA/ ;\
 	done
-	@for c in `$(LS) -1 $(MSPMODULEDIR)`; do \
+	for c in `$(LS) -1 $(MSPMODULEDIR)`; do \
 		for v in `$(LS) -1 $(MSPMODULEDIR)/$$c/*.pm`; do \
 			DIR=`echo $$c | tr '[A-Z]' '[a-z]' | tr -d '/'` ;\
 			MSP="`echo $$v | cut -d/ -f6 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
@@ -71,7 +71,7 @@ sample:
 			$(CP) $(FOR_EMPARSER)/$$DIR-$$MSP/* $(EMAIL_SAMPLE)/$$DIR-$$MSP/ ;\
 		done ;\
 	done
-	@for v in arf rfc3464; do \
+	for v in arf rfc3464; do \
 		$(MKDIR) $(EMAIL_SAMPLE)/$$v ;\
 		$(CP) $(FOR_MAKETEST)/$$v*.eml $(EMAIL_SAMPLE)/$$v/ ;\
 		$(CP) $(FOR_EMPARSER)/$$v/* $(EMAIL_SAMPLE)/$$v/ ;\
