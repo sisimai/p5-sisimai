@@ -12,7 +12,7 @@ my $RxMSP = {
     'subject' => qr/\AFailure Notice\z/,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Yahoo! MAIL' }
 sub smtpagent   { 'US::Yahoo' }
 sub headerlist  { 
@@ -95,13 +95,33 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ m/\ARemote host said:/ ) {
-                # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
-                $v->{'diagnosis'} = $e;
+            } else {
 
-                if( $e =~ m/\[([A-Z]{4}).*\]\z/ ) {
-                    # Get SMTP command from the value of "Remote host said:"
-                    $v->{'command'} = $1;
+                if( $e =~ m/\ARemote host said:/ ) {
+                    # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
+                    $v->{'diagnosis'} = $e;
+
+                    if( $e =~ m/\[([A-Z]{4}).*\]\z/ ) {
+                        # Get SMTP command from the value of "Remote host said:"
+                        $v->{'command'} = $1;
+                    }
+                } else {
+                    # <mailboxfull@example.jp>:
+                    # Remote host said:
+                    # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
+                    # [RCPT_TO]
+                    if( $v->{'diagnosis'} =~ m/\ARemote host said:\z/ ) {
+                        # Remote host said:
+                        # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
+                        if( $e =~ m/\[([A-Z]{4}).*\]\z/ ) {
+                            # [RCPT_TO]
+                            $v->{'command'} = $1;
+
+                        } else {
+                            # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
+                            $v->{'diagnosis'} = $e;
+                        }
+                    }
                 }
             }
         } # End of if: rfc822
