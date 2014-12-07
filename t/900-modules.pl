@@ -18,6 +18,7 @@ sub list {
             MSP/JP/EZweb.pm
             MSP/JP/KDDI.pm
             MSP/RU/MailRu.pm
+            MSP/RU/Yandex.pm
             MSP/US/AmazonSES.pm
             MSP/US/Aol.pm
             MSP/US/Facebook.pm
