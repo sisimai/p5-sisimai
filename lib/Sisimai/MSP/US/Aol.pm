@@ -18,7 +18,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Aol Mail' }
 sub smtpagent   { 'US::Aol' }
 sub headerlist  { 
@@ -172,6 +172,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
+        map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
