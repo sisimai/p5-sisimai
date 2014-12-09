@@ -24,17 +24,31 @@ FOR_EMPARSER = ./tmp/data
 FOR_MAKETEST = ./eg/maildir-as-a-sample/new
 MTAMODULEDIR = ./lib/$(NAME)/MTA
 MSPMODULEDIR = ./lib/$(NAME)/MSP
- 
+
 .PHONY: clean
 test: user-test author-test
 user-test:
 	$(PROVE) t/
 
 author-test:
+	for v in `find $(FOR_MAKETEST) -name '*.eml' -type f`; do \
+		n=`basename $$v` ;\
+		l=`echo $$n | wc -c` ;\
+		printf "[%s] %s " `date '+%T'` `basename $$v` ;\
+		while [ $$l -le 30 ]; do \
+			printf "%s" '.' ;\
+			l=`expr $$l + 1` ;\
+		done ;\
+		printf ' ' ;\
+		nkf --guess $$v | grep '(LF)' > /dev/null || exit 1 && echo 'ok';\
+	done
 	$(PROVE) xt/
 
 cover-test:
 	cover -test
+
+update-analysis-accuracy:
+	@grep '^[A-Z]' ./ANALYSIS-ACCURACY | awk '{ x += $$2; y += $$3 } END { print x, y, x / y }'
 
 release-test:
 	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
