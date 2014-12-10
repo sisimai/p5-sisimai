@@ -11,7 +11,7 @@ my $RxMSP = {
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Yandex.Mail' }
 sub smtpagent   { 'RU::Yandex' }
 sub headerlist  { 
@@ -151,6 +151,7 @@ sub scan {
                     next if length $connheader->{'date'};
                     $connheader->{'date'} = $1;
                     $connvalues++;
+
                 } else {
                     # <kijitora@example.jp>: host mx.example.jp[192.0.2.153] said: 550
                     #    5.1.1 <kijitora@example.jp>... User Unknown (in reply to RCPT TO
