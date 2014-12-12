@@ -26,7 +26,7 @@ MSP::JP::Biglobe                5         5     1.0000  BIGLOBE
 MSP::JP::EZweb                128       129     0.9922  au EZweb
 MSP::JP::KDDI                   5         5     1.0000  au by KDDI
 MSP::RU::MailRu                 0         6     1.0000  @mail.ru
-MSP::RU::Yandex                 3         3     1.0000  @yandex.ru
+MSP::RU::Yandex                 4         4     1.0000  @yandex.ru
 MSP::US::AmazonSES(*)          14        14     1.0000  Amazon SES
 MSP::US::Aol                    9         9     1.0000  Aol Mail
 MSP::US::Facebook               3         3     1.0000
@@ -38,6 +38,6 @@ MSP::US::Yahoo                  0         4     0.0000  Yahoo! MAIL
 RFC3464                        99       109     0.9083  Fallback
 ARF                             5        13     0.3846  Feedback Loop(FBL)
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X           844      1058     0.7977
- Sisimai(bounceHammer 4)     1058      1058     1.0000
+ bounceHammer 2.7.X           845      1059     0.7979
+ Sisimai(bounceHammer 4)     1059      1059     1.0000
 
