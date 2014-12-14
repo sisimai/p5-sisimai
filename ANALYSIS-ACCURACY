@@ -35,9 +35,10 @@ MSP::US::Outlook                4         4     1.0000  Microsoft Outlook.com
 MSP::US::SendGrid(*)           12        12     1.0000
 MSP::US::Verizon                4         4     1.0000  Verizon Wireless
 MSP::US::Yahoo                  0         4     0.0000  Yahoo! MAIL
+MSP::US::Zoho                   0         4     0.0000  Zoho Mail
 RFC3464                        99       109     0.9083  Fallback
 ARF                             5        13     0.3846  Feedback Loop(FBL)
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X           845      1059     0.7979
- Sisimai(bounceHammer 4)     1059      1059     1.0000
+ bounceHammer 2.7.X           845      1063     0.7949
+ Sisimai(bounceHammer 4)     1063      1063     1.0000
 
