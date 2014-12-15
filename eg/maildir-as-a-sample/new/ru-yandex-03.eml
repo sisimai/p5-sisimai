@@ -87,7 +87,6 @@ Received: from 192-0-2-25f0.kyt1.example.ne.jp (192-0-2-25f0.kyt1.example.ne.jp 
 	Sat, 06 Dec 2014 20:43:08 +0300
 From: Shironeko <shironeko@yandex.example.com>
 Envelope-From: shironeko@yandex.com
-To: kijitora@6jo.example.jp
 Subject: Nyaaaaaaan
 MIME-Version: 1.0
 Message-Id: <623501417887788@web9g.yandex.example.com>
@@ -95,6 +94,7 @@ X-Mailer: Yamail [ http://yandex.example.com ] 5.0
 Date: Sun, 07 Dec 2014 02:43:08 +0900
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain
+To: kijitora@6jo.example.jp
 
 Nyaaan?
 
