@@ -1,5 +1,9 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.7
+    - Tiny code improvement of Sismai::MSP::RU::Yandex.
+    - Implement Sisimai::MSP::US::Zoho for email bounces from Zoho Mail.
+
 4.1.6   Sun,  7 Dec 2014 22:44:36 +0900 (JST)
     - Improved code for parsing email bounce from @nokiamail.com.
     - Implement Sisimai::MSP::RU::Yandex for email bounces from Yandex.Mail.
