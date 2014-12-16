@@ -53,7 +53,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash' ] }
@@ -66,10 +66,12 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
-	return undef unless defined $mhead->{'x-mxl-notehash'};
-    return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
-    return undef unless $mhead->{'from'} =~ $RxMTA->{'from'};
+    $match = 1 if defined $mhead->{'x-mxl-notehash'};
+    $match = 1 if grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
+    $match = 1 if $mhead->{'from'} =~ $RxMTA->{'from'};
+    return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
