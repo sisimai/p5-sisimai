@@ -10,7 +10,9 @@ sub match {
     my $regex = [
         qr/connection timed out/,
         qr/delivery time expired/,
+        qr/giving up on/,
         qr/retry time not reached for any host after a long failure period/,
+        qr/this message has been in the queue too long/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;
