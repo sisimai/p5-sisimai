@@ -23,7 +23,7 @@ my $RxSess = {
 };
 
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Zoho Mail' }
 sub smtpagent   { 'US::Zoho' }
 sub headerlist  { 
@@ -48,7 +48,7 @@ sub scan {
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
-    my $connerrors = 0;
+    my $qprintable = 0;
 
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -115,12 +115,15 @@ sub scan {
                 $recipients++;
 
                 $v->{'diagnosis'} =  $2;
-                $v->{'diagnosis'} =~ s/=\z//;   # Quoted printable
+                if( $v->{'diagnosis'} =~ m/=\z/ ) {
+                    # Quoted printable
+                    $v->{'diagnosis'} =~ s/=\z//;
+                    $qprintable = 1;
+                }
 
             } elsif( $e =~ m/\A\[Status: .+[<]([^ ]+[@][^ ]+)[>],/ ) {
                 # Expired
                 # [Status: Error, Address: <kijitora@6kaku.example.co.jp>, ResponseCode 421, , Host not reachable.]
-                $connerrors = 1;
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -133,7 +136,7 @@ sub scan {
 
             } else {
                 # Continued line
-                next if $connerrors;
+                next unless $qprintable;
                 $v->{'diagnosis'} .= $e;
             }
         } # End of if: rfc822
