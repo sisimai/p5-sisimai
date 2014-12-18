@@ -49,7 +49,7 @@ MAKE_TEST: {
             ok length $e->addresser->host, 'addresser->host = '.$e->addresser->host;
             ok length $e->addresser->user, 'addresser->user = '.$e->addresser->user;
             ok length $e->addresser->address, 'addresser->address = '.$e->addresser->address;
-            is $e->addresser->host, $e->senderdomain, 'senderdomain = '.$e->destination;
+            is $e->addresser->host, $e->senderdomain, 'senderdomain = '.$e->senderdomain;
 
             isa_ok $e->recipient, 'Sisimai::Address';
             ok length $e->recipient->host, 'recipient->host = '.$e->recipient->host;
