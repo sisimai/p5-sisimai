@@ -1,10 +1,6 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::Data;
-use Sisimai::Mail;
-use Sisimai::Message;
-use JSON;
 
 my $PackageName = 'Sisimai::Data::JSON';
 my $MethodNames = {
@@ -16,6 +12,12 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
+
+    use Sisimai::Data;
+    use Sisimai::Mail;
+    use Sisimai::Message;
+    use JSON;
+
     is $PackageName->dump('json'), undef;
 
     my $file = './eg/maildir-as-a-sample/new/sendmail-02.eml';
