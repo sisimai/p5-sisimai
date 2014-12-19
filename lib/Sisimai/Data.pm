@@ -318,7 +318,7 @@ sub damn {
         my $stringdata = [ qw|
             token lhost rhost listid alias reason subject messageid smtpagent 
             smtpcommand destination diagnosticcode senderdomain deliverystatus
-            timezoneoffset feedbacktype|
+            timezoneoffset feedbacktype diagnostictype action|
         ];
         
         for my $e ( @$stringdata ) {
