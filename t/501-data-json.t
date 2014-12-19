@@ -4,21 +4,19 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Data;
 use Sisimai::Mail;
 use Sisimai::Message;
-use Encode;
 use JSON;
 
-my $PackageName = 'Sisimai::Data';
+my $PackageName = 'Sisimai::Data::JSON';
 my $MethodNames = {
-    'class' => [ 'new', 'make' ],
-    'object' => [ 'damn' ],
+    'class' => [ 'dump' ],
+    'object' => [],
 };
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-    is $PackageName->make, undef;
-    is $PackageName->new, undef;
+    is $PackageName->dump('json'), undef;
 
     my $file = './eg/maildir-as-a-sample/new/sendmail-02.eml';
     my $mail = Sisimai::Mail->new( $file );
