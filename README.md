@@ -33,7 +33,7 @@ version 4 (Sisimai).
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL          |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
 | Classification based on recipient domain       | Available     | N/A          |
-| Output format of parsed data                   | YAML,JSON,CSV | JSON only    |
+| Output format of parsed data                   | YAML,JSON,CSV | JSON only(4) |
 | The speed of parsing email(750 files)          | 5.36s         | 2.95s        |
 | Easy to install                                | No            | Yes          |
 | Install using cpan or cpanm command            | N/A           | OK           |
@@ -44,6 +44,7 @@ version 4 (Sisimai).
 1. bounceHammer-nails
 2. Implement yourself with using DBI or any O/R Mapper you like
 3. See ./ANALYSIS-ACCURACY
+4. YAML format is available if "YAML" module has been installed
 
 公開中のbouncehammer version 2.7.13とversion 4(シシマイ)は上記のような違いがあります。
 
@@ -57,7 +58,7 @@ version 4 (Sisimai).
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応     |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
 | 宛先ドメインによる分類項目                     | あり          | 無し         |
-| 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ     |
+| 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ(4)  |
 | メール解析の速度(750通)                        | 5.36秒        | 2.95秒       |
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽     |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
@@ -68,6 +69,7 @@ version 4 (Sisimai).
 1. bounceHammer-nails
 2. DBIまたは好きなORMを使って自由に実装してください
 3. ./ANALYSIS-ACCURACY を参照
+4. "YAML"モジュールが入っていればYAMLでの出力も可能
 
 System requirements | 動作環境
 ------------------------------
