@@ -13,7 +13,7 @@ MTA::McAfee(*)                  7         7     1.0000  McAfee Email Appliance
 MTA::Notes(*)                   5         7     0.7142  Lotus Notes Server
 MTA::MessagingServer           16        16     1.0000  Oracle/SJSMS
 MTA::mFILTER(*)                 6         6     1.0000  Digital Arts m-FILTER
-MTA::MXLogic(*)                 5         5     1.0000  McAfee SaaS (MX Logic)
+MTA::MXLogic(*)                 0        10     0.0000  McAfee SaaS (MX Logic)
 MTA::OpenSMTPD                  6        15     0.4000
 MTA::Postfix                   51        51     1.0000
 MTA::Sendmail                 204       207     0.9855
@@ -21,6 +21,7 @@ MTA::qmail                     45        51     0.8824
 MTA::SurfControl(*)             5         5     1.0000  WebSense SurfControl
 MTA::V5sendmail                 0       148     0.0000  Sendmail version 5
 MTA::X1                         0         5     0.0000  Unknown MTA #1
+MTA::X2                         0        17     0.0000  Unknown MTA #2
 MSP::DE::GMX                    0         5     0.0000  GMX
 MSP::JP::Biglobe                5         5     1.0000  BIGLOBE
 MSP::JP::EZweb                128       129     0.9922  au EZweb
@@ -35,10 +36,10 @@ MSP::US::Outlook                4         4     1.0000  Microsoft Outlook.com
 MSP::US::SendGrid(*)           12        12     1.0000
 MSP::US::Verizon                4         4     1.0000  Verizon Wireless
 MSP::US::Yahoo                  0         4     0.0000  Yahoo! MAIL
-MSP::US::Zoho                   0         4     0.0000  Zoho Mail
+MSP::US::Zoho                   0         6     0.0000  Zoho Mail
 RFC3464                        99       109     0.9083  Fallback
 ARF                             5        13     0.3846  Feedback Loop(FBL)
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X           845      1063     0.7949
- Sisimai(bounceHammer 4)     1063      1063     1.0000
+ bounceHammer 2.7.X           840      1087     0.7727
+ Sisimai(bounceHammer 4)     1087      1088     1.0000
 
