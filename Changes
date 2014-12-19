@@ -1,6 +1,9 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
-4.1.7   Fri, 18 Dec 2014 23:59:59 +0900 (JST)
+4.1.8   Fri, 19 Dec 2014 17:22:59 +0900 (JST)
+    - Support new data format: YAML(optional, "YAML" module required).
+
+4.1.7   Thu, 18 Dec 2014 23:59:59 +0900 (JST)
     - Tiny code improvement of Sismai::MSP::RU::Yandex.
     - Implement Sisimai::MSP::US::Zoho for email bounces from Zoho Mail.
     - Improved code for detecting email bounce from MXLogic.
