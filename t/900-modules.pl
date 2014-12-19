@@ -5,6 +5,8 @@ sub list {
         Address.pm
         ARF.pm
         Data.pm
+            Data/JSON.pm
+            Data/YAML.pm
         ISO3166.pm
         MIME.pm
         Mail.pm
