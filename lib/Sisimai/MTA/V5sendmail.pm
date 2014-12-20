@@ -168,8 +168,8 @@ sub scan {
             $recipients = 1;
         }
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::RFC5322;
 

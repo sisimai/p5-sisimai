@@ -28,7 +28,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}    =~ $RxMTA->{'from'};
+    return undef unless $mhead->{'from'} =~ $RxMTA->{'from'};
     return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -148,7 +148,7 @@ Sisimai::MTA::X2 - bounce mail parser class for C<X2>.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::X2 parses a bounce email which created by Unknown MTA #2.  Methods
+Sisimai::MTA::X2 parses a bounce email which created by Unknown MTA #2. Methods
 in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
