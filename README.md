@@ -91,11 +91,11 @@ Install | インストール
 
     % sudo cpanm Sisimai
     --> Working on Sisimai
-    Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.1.2.tar.gz ... OK
+    Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.1.8.tar.gz ... OK
     ...
     1 distribution installed
     % perldoc -l Sisimai
-    /usr/local/lib/perl5/site_perl/5.14.2/Sisimai.pm
+    /usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
 
 OR
     
@@ -104,7 +104,7 @@ OR
     % cd ./Sisimai
     % sudo cpanm .
     --> Working on .
-    Configuring Sisimai-4.1.2 ... OK
+    Configuring Sisimai-4.1.8 ... OK
     1 distribution installed
 
 
