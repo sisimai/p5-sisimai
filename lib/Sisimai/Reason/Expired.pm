@@ -9,6 +9,7 @@ sub match {
     my $argvs = shift // return undef;
     my $regex = [
         qr/connection timed out/,
+        qr/could not find a gateway for/,
         qr/delivery time expired/,
         qr/giving up on/,
         qr/retry time not reached for any host after a long failure period/,
