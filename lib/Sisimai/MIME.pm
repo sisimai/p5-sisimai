@@ -15,7 +15,7 @@ sub is_mimeencoded {
     return undef unless ref $argvs;
     return undef unless ref $argvs eq 'SCALAR';
 
-    return 1 if $$argvs =~ m{\A[\s\t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=\s*\z};
+    return 1 if $$argvs =~ m{[\s\t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=\s*\z};
     return 0;
 }
 
