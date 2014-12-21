@@ -29,7 +29,7 @@ sub dump {
 
     } catch {
         # YAML module is not installed
-        $error = '*** ERROR: "YAML" module is not installed';
+        $error = ' ***error: "YAML" module is not installed';
     };
 
     die $error if length $error;
