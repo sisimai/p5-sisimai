@@ -52,6 +52,7 @@ sub list {
             MTA/V5sendmail.pm
             MTA/X1.pm
             MTA/X2.pm
+            MTA/X3.pm
         Reason.pm
             Reason/Blocked.pm
             Reason/ContentError.pm
