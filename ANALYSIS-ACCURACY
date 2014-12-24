@@ -22,6 +22,7 @@ MTA::SurfControl(*)             5         5     1.0000  WebSense SurfControl
 MTA::V5sendmail                 0       148     0.0000  Sendmail version 5
 MTA::X1                         0         5     0.0000  Unknown MTA #1
 MTA::X2                         0        17     0.0000  Unknown MTA #2
+MTA::X3                         0         7     0.0000  Unknown MTA #3
 MSP::DE::GMX                    0         5     0.0000  GMX
 MSP::JP::Biglobe                5         5     1.0000  BIGLOBE
 MSP::JP::EZweb                128       129     0.9922  au EZweb
@@ -31,7 +32,7 @@ MSP::RU::Yandex                 4         4     1.0000  @yandex.ru
 MSP::US::AmazonSES(*)          14        14     1.0000  Amazon SES
 MSP::US::Aol                    9         9     1.0000  Aol Mail
 MSP::US::Facebook               3         3     1.0000
-MSP::US::Google                42        42     1.0000  Gmail
+MSP::US::Google                43        43     1.0000  Gmail
 MSP::US::Outlook                4         4     1.0000  Microsoft Outlook.com
 MSP::US::SendGrid(*)           12        12     1.0000
 MSP::US::Verizon                4         4     1.0000  Verizon Wireless
@@ -40,6 +41,6 @@ MSP::US::Zoho                   0         6     0.0000  Zoho Mail
 RFC3464                        99       109     0.9083  Fallback
 ARF                             5        13     0.3846  Feedback Loop(FBL)
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X           840      1087     0.7727
- Sisimai(bounceHammer 4)     1087      1088     1.0000
+ bounceHammer 2.7.X           840      1094     0.7678
+ Sisimai(bounceHammer 4)     1094      1094     1.0000
 
