@@ -1,5 +1,8 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.9
+    - Implement Sisimai::MTA::X3 for email bounces from Unknown MTA(3).
+
 4.1.8   Fri, 19 Dec 2014 17:22:59 +0900 (JST)
     - Support new data format: YAML(optional, "YAML" module required).
 
