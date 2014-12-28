@@ -53,7 +53,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash' ] }
@@ -177,6 +177,7 @@ sub scan {
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 
+        $e->{'diagnosis'} =~ s/[-]{2}.*\z//g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( ! $e->{'rhost'} ) {
