@@ -30,8 +30,8 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.7' }
-sub description { 'au by KDDI' }
+sub version     { '4.0.8' }
+sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
 
 sub scan {

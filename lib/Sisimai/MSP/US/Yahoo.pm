@@ -12,8 +12,8 @@ my $RxMSP = {
     'subject' => qr/\AFailure Notice\z/,
 };
 
-sub version     { '4.0.3' }
-sub description { 'Yahoo! MAIL' }
+sub version     { '4.0.4' }
+sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 sub smtpagent   { 'US::Yahoo' }
 sub headerlist  { 
     return [ 'X-Originating-IP', 'X-YahooFilteredBulk', 'X-YMailISG' ]

@@ -19,8 +19,8 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
-sub description { 'Microsoft Outlook.com' }
+sub version     { '4.0.1' }
+sub description { 'Microsoft Outlook.com: https://www.outlook.com/' }
 sub smtpagent   { 'US::Outlook' }
 sub headerlist  { return [ 'X-Message-Delivery', 'X-Message-Info' ] }
 

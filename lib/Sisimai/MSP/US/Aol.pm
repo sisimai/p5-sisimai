@@ -18,8 +18,8 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.1' }
-sub description { 'Aol Mail' }
+sub version     { '4.0.2' }
+sub description { 'Aol Mail: http://www.aol.com' }
 sub smtpagent   { 'US::Aol' }
 sub headerlist  { 
     return [ 'X-BounceIO-Id', 'X-AOL-IP' ]

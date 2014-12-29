@@ -18,8 +18,8 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.1' }
-sub description { 'GMX' }
+sub version     { '4.0.2' }
+sub description { 'GMX: http://www.gmx.net' }
 sub smtpagent   { 'DE::GMX' }
 sub headerlist  {
     return [ 'Envelope-To', 'X-GMX-Antispam', 'X-GMX-Antivirus' ]

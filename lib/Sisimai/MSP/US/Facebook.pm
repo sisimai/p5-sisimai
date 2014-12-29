@@ -64,8 +64,8 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.6' }
-sub description { 'Facebook' }
+sub version     { '4.0.7' }
+sub description { 'Facebook: https://www.facebook.com' }
 sub smtpagent   { 'US::Facebook' }
 
 sub scan {

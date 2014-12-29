@@ -11,8 +11,8 @@ my $RxMSP = {
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { '4.0.1' }
-sub description { 'Yandex.Mail' }
+sub version     { '4.0.2' }
+sub description { 'Yandex.Mail: http://www.yandex.ru' }
 sub smtpagent   { 'RU::Yandex' }
 sub headerlist  { 
     return [ 'X-Yandex-Front', 'X-Yandex-TimeMark', 'X-Yandex-Uniq' ]
