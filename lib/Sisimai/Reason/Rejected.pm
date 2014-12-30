@@ -9,6 +9,7 @@ sub match {
     my $argvs = shift // return undef;
     my $regex = [
         # Rejected due to envelope from address
+        qr/sender verify failed/,		# Exim callout
         qr/address rejected/,
         qr/domain of sender address .+ does not exist/,
         qr/sender rejected/,

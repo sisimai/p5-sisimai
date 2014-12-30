@@ -8,6 +8,7 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = [
+        qr/mail server requires authentication when attempting to send to a non-local e-mail address/, # MailEnable 
         qr/relay access denied/,
         qr/relay denied/,
         qr/relay not permitted/,

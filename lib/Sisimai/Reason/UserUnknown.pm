@@ -13,7 +13,7 @@ sub match {
         qr/destination server rejected recipients/,
         qr/email address does not exist/,
         qr/invalid mailbox path/,
-        qr/invalid recipient:/,
+        qr/invalid recipient/,		# Linkedin
         qr/no account by that name here/,
         qr/no such mailbox/,
         qr/no such recipient/,
