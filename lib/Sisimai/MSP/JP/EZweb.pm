@@ -45,8 +45,8 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.5' }
-sub description { 'au EZweb' }
+sub version     { '4.0.6' }
+sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
 

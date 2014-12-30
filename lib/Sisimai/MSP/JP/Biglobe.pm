@@ -27,8 +27,8 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.5' }
-sub description { 'BIGLOBE' }
+sub version     { '4.0.6' }
+sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
 sub smtpagent   { 'JP::Biglobe' }
 
 sub scan {

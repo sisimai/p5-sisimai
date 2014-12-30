@@ -1,53 +1,39 @@
-package Sisimai::MSP::JP::KDDI;
+package Sisimai::MSP::DE::EinsUndEins;
 use parent 'Sisimai::MSP';
 use feature ':5.10';
 use strict;
 use warnings;
 
 my $RxMSP = {
-    'from'       => qr/no-reply[@].+[.]dion[.]ne[.]jp/,
-    'reply-to'   => qr/\Afrom\s+\w+[.]auone[-]net[.]jp\s/,
-    'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
-    'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    'begin'      => [
-        qr/\AYour mail sent on:? [A-Z][a-z]{2}[,]/,
-        qr/\AYour mail attempted to be delivered on:? [A-Z][a-z]{2}[,]/,
-    ],
-    'rfc822'     => qr|\AContent-Type: message/rfc822\z|,
-    'error'      => qr/Could not be delivered to:? /,
-    'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'from'    => qr/\A["]Mail Delivery System["]/,
+    'begin'   => qr/\AThis message was created automatically by mail delivery software/,
+    'error'   => qr/\AFor the following reason:/,
+    'rfc822'  => qr/\A--- The header of the original message is following/,
+    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'subject' => qr/\AMail delivery failed: returning message to sender\z/,
 };
 
-my $RxErr = {
-    'mailboxfull' => [
-        qr/As their mailbox is full/,
-    ],
-    'norelaying' => [
-        qr/Due to the following SMTP relay error/,
-    ],
-    'hostunknown' => [
-        qr/As the remote domain doesnt exist/,
+my $RxSess = {
+    'mesgtoobig' => [
+        qr/Mail size limit exceeded/,
     ],
 };
 
-sub version     { '4.0.8' }
-sub description { 'au by KDDI: http://www.au.kddi.com' }
-sub smtpagent   { 'JP::KDDI' }
+sub version     { '4.0.0' }
+sub description { '1&1: http://www.1and1.de' }
+sub smtpagent   { 'DE::EinsUndEins' }
 
 sub scan {
-    # @Description  Detect an error from KDDI
+    # @Description  Detect an error from 1&1
     # @Param <ref>  (Ref->Hash) Message header
     # @Param <ref>  (Ref->String) Message body
     # @Return       (Ref->Hash) Bounce data list and message/rfc822 part
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
 
-    $match++ if $mhead->{'from'} =~ $RxMSP->{'from'};
-    $match++ if $mhead->{'reply-to'} && $mhead->{'reply-to'} =~ $RxMSP->{'reply-to'};
-    $match++ if $mhead->{'received'} =~ $RxMSP->{'received'};
-    return undef unless $match;
+    return undef unless $mhead->{'from'}    =~ $RxMSP->{'from'};
+    return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -63,11 +49,9 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    require Sisimai::String;
-    require Sisimai::RFC5322;
-    require Sisimai::Address;
-
     for my $e ( @$stripedtxt ) {
+        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        $e =~ s{=\d+\z}{};
 
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
@@ -96,33 +80,39 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( grep { $e =~ $_ } @{ $RxMSP->{'begin'} } ) .. ( $e =~ $RxMSP->{'rfc822'} );
+            next unless ( $e =~ $RxMSP->{'begin'} ) .. ( $e =~ $RxMSP->{'rfc822'} );
             next unless length $e;
 
+            # The following address failed:
+            #
+            # general@example.eu
+            #
+            # For the following reason:
+            #
+            # Mail size limit exceeded. For explanation visit
+            # http://postmaster.1and1.com/en/error-messages?ip=%1s
             $v = $dscontents->[ -1 ];
-            if( $e =~ m/\A\s+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
-                # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
-                #     Could not be delivered to: <******@**.***.**>
-                #     As their mailbox is full.
+
+            if( $e =~ m/\A([^ ]+[@][^ ]+)\z/ ) {
+                # general@example.eu
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[ -1 ];
                 }
+                $v->{'recipient'} = $1;
+                $recipients++;
 
-                my $r = Sisimai::Address->s3s4( $1 );
-                if( Sisimai::RFC5322->is_emailaddress( $r ) ) {
-                    $v->{'recipient'} = $r;
-                    $recipients++;
-                }
-
-            } elsif( $e =~ m/Your mail sent on: (.+)\z/ ) {
-                # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
-                $v->{'date'} = $1;
+            } elsif( $e =~ $RxMSP->{'error'} ) {
+                # For the following reason:
+                $v->{'diagnosis'} = $e;
 
             } else {
-                #     As their mailbox is full.
-                $v->{'diagnosis'} .= $e.' ' if $e =~ m/\A\s+/;
+                # Get error message
+                if( length $v->{'diagnosis'} ) {
+                    # Append error message strings
+                    $v->{'diagnosis'} .= ' '.$e;
+                }
             }
         } # End of if: rfc822
 
@@ -133,11 +123,12 @@ sub scan {
     }
 
     return undef unless $recipients;
+    require Sisimai::String;
     require Sisimai::RFC3463;
+    require Sisimai::RFC5322;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
@@ -145,57 +136,43 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        if( exists $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
-            # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by KDDI)
-            # Filtered recipient returns message that include 'X-SPASIGN' header
-            $e->{'reason'} = 'filtered';
+        $e->{'diagnosis'} =~ s/\A$RxMSP->{'error'}//g;
+        $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        } else {
-            if( $e->{'command'} eq 'RCPT' ) {
-                # set "userunknown" when the remote server rejected after RCPT
-                # command.
-                $e->{'reason'} = 'userunknown';
-
-            } else {
-                # SMTP command is not RCPT
-                SESSION: for my $r ( keys %$RxErr ) {
-                    # Verify each regular expression of session errors
-                    PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                        # Check each regular expression
-                        next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
-                        $e->{'reason'} = $r;
-                        last(SESSION);
-                    }
-                }
+        SESSION: for my $r ( keys %$RxSess ) {
+            # Verify each regular expression of session errors
+            PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
+                # Check each regular expression
+                next unless $e->{'diagnosis'} =~ $rr;
+                $e->{'reason'} = $r;
+                last(SESSION);
             }
         }
 
-        $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-        $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
-        $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-
-    } # end of for()
-
+        $e->{'status'}  =  Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        $e->{'spec'}  ||= 'SMTP';
+        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+    }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 
 1;
 __END__
+
 =encoding utf-8
 
 =head1 NAME
 
-Sisimai::MSP::JP::KDDI - bounce mail parser class for C<au by KDDI>.
+Sisimai::MSP::DE::EinsUndEins - bounce mail parser class for C<1&1>.
 
 =head1 SYNOPSIS
 
-    use Sisimai::MSP::JP::KDDI;
+    use Sisimai::MSP::DE::EinsUndEins;
 
 =head1 DESCRIPTION
 
-Sisimai::MSP::JP::KDDI parses a bounce email which created by C<au by KDDI>.
+Sisimai::MSP::DE::EinsUndEins parses a bounce email which created by C<1&1>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
@@ -204,19 +181,19 @@ Methods in the module are called from only Sisimai::Message.
 
 C<version()> returns the version number of this module.
 
-    print Sisimai::MSP::JP::KDDI->version;
+    print Sisimai::MSP::DE::EinsUndEins->version;
 
 =head2 C<B<description()>>
 
 C<description()> returns description string of this module.
 
-    print Sisimai::MSP::JP::KDDI->description;
+    print Sisimai::MSP::DE::EinsUndEins->description;
 
 =head2 C<B<smtpagent()>>
 
 C<smtpagent()> returns MTA name.
 
-    print Sisimai::MSP::JP::KDDI->smtpagent;
+    print Sisimai::MSP::DE::EinsUndEins->smtpagent;
 
 =head2 C<B<scan( I<header data>, I<reference to body string>)>>
 
@@ -237,3 +214,5 @@ All Rights Reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+
+

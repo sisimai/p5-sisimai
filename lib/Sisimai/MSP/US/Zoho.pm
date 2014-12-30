@@ -23,8 +23,8 @@ my $RxSess = {
 };
 
 
-sub version     { '4.0.1' }
-sub description { 'Zoho Mail' }
+sub version     { '4.0.2' }
+sub description { 'Zoho Mail: https://www.zoho.com' }
 sub smtpagent   { 'US::Zoho' }
 sub headerlist  { 
     return [ 'X-Mailer', 'X-ZohoMail' ],
