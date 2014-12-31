@@ -14,7 +14,7 @@ my $RxARF = {
     'endof'        => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { return '4.0.2' }
+sub version     { return '4.0.3' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
@@ -56,14 +56,18 @@ sub scan {
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $rcptintext = '';    # (String) Recipient address in the message body
-    my $sendertext = '';    # (String) The value of "Original-Mail-From"
     my $remotename = '';    # (String) The value of "Reporting-MTA"
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
-    my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
-    my $connheader = {
-        'date'    => '',    # The value of Arrival-Date header
-        'lhost'   => '',    # The value of Received-From-MTA header
-        'rhost'   => '',    # The value of Reporting-MTA header
+    my $commondata = {
+        'diagnosis'    => '',   # Error message
+        'from'         => '',   # Original-Mail-From:
+        'rhost'        => '',   # Reporting-MTA:
+    };
+    my $arfheaders = {
+        'feedbacktype' => '',   # FeedBack-Type:
+        'rhost'        => '',   # Source-IP:
+        'agent'        => '',   # User-Agent:
+        'date'         => '',   # Arrival-Date:
     };
 
     my $v = undef;
@@ -72,25 +76,25 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     require Sisimai::Address;
-	# 3.1.  Required Fields
-	#
-	#   The following report header fields MUST appear exactly once:
-	#
-	#   o  "Feedback-Type" contains the type of feedback report (as defined
-	#      in the corresponding IANA registry and later in this memo).  This
-	#      is intended to let report parsers distinguish among different
-	#      types of reports.
-	#
-	#   o  "User-Agent" indicates the name and version of the software
-	#      program that generated the report.  The format of this field MUST
-	#      follow section 14.43 of [HTTP].  This field is for documentation
-	#      only; there is no registry of user agent names or versions, and
-	#      report receivers SHOULD NOT expect user agent names to belong to a
-	#      known set.
-	#
-	#   o  "Version" indicates the version of specification that the report
-	#      generator is using to generate the report.  The version number in
-	#      this specification is set to "1".
+    # 3.1.  Required Fields
+    #
+    #   The following report header fields MUST appear exactly once:
+    #
+    #   o  "Feedback-Type" contains the type of feedback report (as defined
+    #      in the corresponding IANA registry and later in this memo).  This
+    #      is intended to let report parsers distinguish among different
+    #      types of reports.
+    #
+    #   o  "User-Agent" indicates the name and version of the software
+    #      program that generated the report.  The format of this field MUST
+    #      follow section 14.43 of [HTTP].  This field is for documentation
+    #      only; there is no registry of user agent names or versions, and
+    #      report receivers SHOULD NOT expect user agent names to belong to a
+    #      known set.
+    #
+    #   o  "Version" indicates the version of specification that the report
+    #      generator is using to generate the report.  The version number in
+    #      this specification is set to "1".
     #
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxARF->{'begin'} and $RxARF->{'rfc822'}.
@@ -145,41 +149,41 @@ sub scan {
             } elsif( $e =~ m/\AFeedback-Type:\s*([^ ]+)\z/ ) {
                 # The header field MUST appear exactly once.
                 # Feedback-Type: abuse
-                $v->{'feedbacktype'} = $1;
+                $arfheaders->{'feedbacktype'} = $1;
 
             } elsif( $e =~ m/\AUser-Agent:\s*(.+)\z/ ) {
                 # The header field MUST appear exactly once.
                 # User-Agent: SomeGenerator/1.0
-                $v->{'agent'} = $1;
+                $arfheaders->{'agent'} = $1;
 
             } elsif( $e =~ m/\A(?:Received|Arrival)-Date:\s*(.+)\z/ ) {
                 # Arrival-Date header is optional and MUST NOT appear more than
                 # once.
                 # Received-Date: Thu, 29 Apr 2010 00:00:00 JST
                 # Arrival-Date: Thu, 29 Apr 2010 00:00:00 +0000
-                $v->{'date'} = $1;
+                $arfheaders->{'date'} = $1;
 
             } elsif( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/ ) {
                 # The header is optional and MUST NOT appear more than once.
                 # Reporting-MTA: dns; mx.example.jp
-                $remotename = $1;
+                $commondata->{'rhost'} = $1;
 
             } elsif( $e =~ m/\ASource-IP:\s*(.+)\z/ ) {
                 # The header is optional and MUST NOT appear more than once.
                 # Source-IP: 192.0.2.45
-                $v->{'rhost'} = $1;
+                $arfheaders->{'rhost'} = $1;
 
             } elsif( $e =~ m/\AOriginal-Mail-From:\s*(.+)\z/ ) {
                 # the header is optional and MUST NOT appear more than once.
                 # Original-Mail-From: <somespammer@example.net>
-                $sendertext ||= Sisimai::Address->s3s4( $1 );
+                $commondata->{'from'} ||= Sisimai::Address->s3s4( $1 );
 
             } elsif( $e =~ $RxARF->{'begin'} ) {
                 # This is an email abuse report for an email message with the 
                 #   message-id of 0000-000000000000000000000000000000000@mx 
                 #   received from IP address 192.0.2.1 on 
                 #   Thu, 29 Apr 2010 00:00:00 +0900 (JST)
-                $v->{'diagnosis'} = $e;
+                $commondata->{'diagnosis'} = $e;
             }
 
         } # End of if: rfc822
@@ -195,7 +199,10 @@ sub scan {
 
     unless( $rfc822part =~ m/\bFrom: [^ ]+[@][^ ]+\b/ ) {
         # From: header in the original message
-        $rfc822part .= sprintf( "From: %s\n", $sendertext ) if length $sendertext;
+        if( length $commondata->{'from'} ) {
+
+            $rfc822part .= sprintf( "From: %s\n", $commondata->{'from'} );
+        }
     }
 
     for my $e ( @$dscontents ) {
@@ -204,12 +211,14 @@ sub scan {
             # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
             $e->{'recipient'} = Sisimai::Address->s3s4( $rcptintext );
         }
+        map {  $e->{ $_ } ||= $arfheaders->{ $_ } } keys %$arfheaders;
+        $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
 
         unless( $e->{'rhost'} ) {
             # Get the remote IP address from the message body
-            if( length $remotename ) {
+            if( length $commondata->{'rhost'} ) {
                 # The value of "Reporting-MTA" header
-                $e->{'rhost'} = $remotename;
+                $e->{'rhost'} = $commondata->{'rhost'};
 
             } elsif( $e->{'diagnosis'} =~ m/\breceived from IP address ([^ ]+)/ ) {
                 # This is an email abuse report for an email message received
