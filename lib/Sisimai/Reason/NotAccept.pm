@@ -14,6 +14,12 @@ sub match {
         qr/domain of sender address .+ does not exist/,
         qr|http://www[.]spamhaus[.]org|,
         qr|http://dsbl[.]org/|,
+	qr/the (:?email|domain|ip).+ is blacklisted/,
+	qr/greylisted.?. please try again in/,
+        qr| blocked for abuse[.] see http://att[.]net/blocks|,	# AT&T
+        qr/www[.]sorbs[.]net/,				# sorbs.net RBL
+        qr/rule imposed as .+is blacklisted on/,	# Mailmarshal RBLs
+        qr/ip \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} is blocked by earthlink/,		# Earthlink
         qr/invalid domain, see [<]url:.+[>]/,
         qr/listed in work[.]drbl[.]imedia[.]ru/,
         qr/mail server at .+ is blocked/,
