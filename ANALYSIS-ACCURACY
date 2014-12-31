@@ -1,46 +1,47 @@
- bounceHammer 2.7.X + bounceHammer nails(*)
- MTA MODULE NAME        CAN PARSE   SAMPLES     RATIO           NOTES
+ bounceHammer 2.7.13 + bounceHammer nails(*)
+ MTA MODULE NAME          CAN PARSE   RATIO   NOTES
 -------------------------------------------------------------------------------
-MTA::Activehunter(*)            7         7     1.0000  TransWARE Active!hunter
-MTA::Courier                   11        11     1.0000  Courier MTA
-MTA::Domino(*)                  9         9     1.0000  IBM Domino Server
-MTA::Exchange(*)               30        32     0.9375  Microsoft Exchange
-MTA::Exim                      66        71     0.9296
-MTA::IMailServer(*)            28        28     1.0000  Ipswitch IMail Server
-MTA::InterScanMSS(*)            5         5     1.0000  Trend Micro InterScan
-MTA::MailFoundry(*)             5         5     1.0000  MailFoundry
-MTA::McAfee(*)                  7         7     1.0000  McAfee Email Appliance
-MTA::Notes(*)                   5         7     0.7142  Lotus Notes Server
-MTA::MessagingServer           16        16     1.0000  Oracle/SJSMS
-MTA::mFILTER(*)                 6         6     1.0000  Digital Arts m-FILTER
-MTA::MXLogic(*)                 0        10     0.0000  McAfee SaaS (MX Logic)
-MTA::OpenSMTPD                  6        15     0.4000
-MTA::Postfix                   51        51     1.0000
-MTA::Sendmail                 204       207     0.9855
-MTA::qmail                     45        51     0.8824
-MTA::SurfControl(*)             5         5     1.0000  WebSense SurfControl
-MTA::V5sendmail                 0       148     0.0000  Sendmail version 5
-MTA::X1                         0         5     0.0000  Unknown MTA #1
-MTA::X2                         0        17     0.0000  Unknown MTA #2
-MTA::X3                         0         7     0.0000  Unknown MTA #3
-MSP::DE::GMX                    0         5     0.0000  GMX
-MSP::JP::Biglobe                5         5     1.0000  BIGLOBE
-MSP::JP::EZweb                128       129     0.9922  au EZweb
-MSP::JP::KDDI                   5         5     1.0000  au by KDDI
-MSP::RU::MailRu                 0         6     1.0000  @mail.ru
-MSP::RU::Yandex                 4         4     1.0000  @yandex.ru
-MSP::US::AmazonSES(*)          14        14     1.0000  Amazon SES
-MSP::US::Aol                    9         9     1.0000  Aol Mail
-MSP::US::Facebook               3         3     1.0000
-MSP::US::Google                43        43     1.0000  Gmail
-MSP::US::Outlook                4         4     1.0000  Microsoft Outlook.com
-MSP::US::SendGrid(*)           12        12     1.0000
-MSP::US::Verizon                4         4     1.0000  Verizon Wireless
-MSP::US::Yahoo                  0         4     0.0000  Yahoo! MAIL
-MSP::US::Zoho                   0         6     0.0000  Zoho Mail
-RFC3464                        99       109     0.9083  Fallback
-ARF                             5        13     0.3846  Feedback Loop(FBL)
+MTA::Activehunter .......    7/0007  1.0000  TransWARE Active!hunter
+MTA::Courier ............   11/0011  1.0000  Courier MTA
+MTA::Domino .............    9/0009  1.0000  IBM Domino Server
+MTA::Exchange ...........   30/0032  0.9375  Microsoft Exchange Server
+MTA::Exim ...............   68/0071  0.9577  Exim
+MTA::IMailServer ........   28/0028  1.0000  IPSWITCH IMail Server
+MTA::InterScanMSS .......    5/0005  1.0000  Trend Micro InterScan Messaging Security Suite
+MTA::MXLogic ............    5/0011  0.4545  McAfee SaaS
+MTA::MailFoundry ........    5/0005  1.0000  MailFoundry
+MTA::MailMarshalSMTP ....    0/0001  0.0000  Trustwave Secure Email Gateway
+MTA::McAfee .............    7/0007  1.0000  McAfee Email Appliance
+MTA::MessagingServer ....   17/0017  1.0000  Oracle Communications Messaging Server
+MTA::Notes ..............    5/0007  0.7143  Lotus Notes
+MTA::OpenSMTPD ..........    6/0016  0.3750  OpenSMTPD
+MTA::Postfix ............   51/0051  1.0000  Postfix
+MTA::Sendmail ...........  204/0207  0.9855  V8Sendmail: /usr/sbin/sendmail
+MTA::SurfControl ........    5/0005  1.0000  WebSense SurfControl
+MTA::V5sendmail .........    0/0148  0.0000  Sendmail version 5
+MTA::X1 .................    0/0006  0.0000  Unknown MTA #1
+MTA::X2 .................    0/0017  0.0000  Unknown MTA #2
+MTA::X3 .................    0/0007  0.0000  Unknown MTA #3
+MTA::mFILTER ............    6/0006  1.0000  Digital Arts m-FILTER
+MTA::qmail ..............   45/0052  0.8654  qmail
+MSP::DE::EinsUndEins ....    0/0001  0.0000  1&1: http://www.1and1.de
+MSP::DE::GMX ............    0/0005  0.0000  GMX: http://www.gmx.net
+MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
+MSP::JP::EZweb ..........  127/0128  0.9922  au EZweb: http://www.au.kddi.com/mobile/
+MSP::JP::KDDI ...........    5/0005  1.0000  au by KDDI: http://www.au.kddi.com
+MSP::RU::MailRu .........    0/0006  0.0000  @mail.ru: https://mail.ru
+MSP::RU::Yandex .........    4/0004  1.0000  Yandex.Mail: http://www.yandex.ru
+MSP::US::AmazonSES ......   14/0014  1.0000  AmazonSES: http://aws.amazon.com/ses/
+MSP::US::Aol ............    9/0009  1.0000  Aol Mail: http://www.aol.com
+MSP::US::Facebook .......    3/0003  1.0000  Facebook: https://www.facebook.com
+MSP::US::Google .........   43/0043  1.0000  Google Gmail: https://mail.google.com
+MSP::US::Outlook ........    5/0005  1.0000  Microsoft Outlook.com: https://www.outlook.com/
+MSP::US::SendGrid .......   12/0012  1.0000  SendGrid: http://sendgrid.com/
+MSP::US::Verizon ........    4/0004  1.0000  Verizon Wireless: http://www.verizonwireless.com
+MSP::US::Yahoo ..........    0/0006  0.0000  Yahoo! MAIL: https://www.yahoo.com
+MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
+ARF .....................    5/0015  0.3333  Abuse Feedback Reporting Format
+RFC3464 .................   99/0109  0.9083  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X           840      1094     0.7678
- Sisimai(bounceHammer 4)     1094      1094     1.0000
-
+ bounceHammer 2.7.X+nails  849/1106  0.7676
+ Sisimai(bounceHammer 4)  1106/1106  1.0000
