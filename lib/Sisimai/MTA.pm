@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub version     { return '4.0.5' }
+sub version     { return '4.0.6' }
 sub description { return '' }
 sub headerlist  { return [] }
 
@@ -86,7 +86,7 @@ sub index {
         'Sendmail', 'Postfix', 'qmail', 'OpenSMTPD', 'Exim', 'Courier',
         'Exchange', 'MessagingServer', 'V5sendmail', 'McAfee', 'Domino', 'Notes',
         'MXLogic', 'MailFoundry', 'IMailServer', 'mFILTER', 'Activehunter',
-        'InterScanMSS', 'SurfControl',
+        'InterScanMSS', 'SurfControl', 'MailMarshalSMTP',
         'X1', 'X2', 'X3',
     ];
 
