@@ -40,6 +40,7 @@ sub list {
             MTA/IMailServer.pm
             MTA/InterScanMSS.pm
             MTA/MailFoundry.pm
+            MTA/MailMarshalSMTP.pm
             MTA/McAfee.pm
             MTA/MessagingServer.pm
             MTA/mFILTER.pm
