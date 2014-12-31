@@ -4,6 +4,11 @@ Revision history for Sisimai/Core module of bouncehammer version 4
     - Implement Sisimai::MTA::X3 for email bounces from Unknown MTA(3).
     - Improved code for getting error message in a bounce mail from MXLogic.
     - Added 4 sample emails from pull request(#32), Thanks to @jcbf.
+    - Implement Sisimai::MSP::DE::EinsUndEins for email bounces from 1&1.
+    - Added 4 sample emails and updated error message patterns in some files in
+      Sisimai/Reason directory from pull request (#34), Thanks to @jcbf.
+    - Implement Sisimai::MTA::MailMarshalSMTP for email bounces from Trustwave
+      Secure Email Gateway: formerly MailMarshal SMTP.
 
 4.1.8   Fri, 19 Dec 2014 17:22:59 +0900 (JST)
     - Support new data format: YAML(optional, "YAML" module required).
