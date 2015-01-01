@@ -19,9 +19,9 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
-sub smtpagent   { 'US::MessageLabs' }
+sub smtpagent   { 'UK::MessageLabs' }
 sub headerlist  { return [ 'X-Msg-Ref', 'X-Originating-IP' ] }
 
 sub scan {
