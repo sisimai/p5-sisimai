@@ -194,7 +194,12 @@ sub scan {
         $e = '';
     }
 
-    return undef unless $recipients;
+    unless ( $recipients ) {
+	    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+	    $v = $dscontents->[ -1 ];
+	    $v->{'recipient'} = Sisimai::Address->s3s4( 'no.recipient@found.invalid' );
+	    $recipients = 1;
+    }
     require Sisimai::RFC5322;
 
     unless( $rfc822part =~ m/\bFrom: [^ ]+[@][^ ]+\b/ ) {
