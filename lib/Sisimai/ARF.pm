@@ -14,7 +14,7 @@ my $RxARF = {
     'endof'        => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { return '4.0.3' }
+sub version     { return '4.0.4' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
