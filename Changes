@@ -1,5 +1,11 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.10
+    - Implement Sisimai::MSP::UK::MessageLabs for email bounces from Symantec.
+      cloud: formerly MessageLabs.
+    - Added 2 sample emails: arf05.eml, arf-06.eml and improved Sisimai::ARF
+      from pull request #37, Thanks to @jcbf.
+
 4.1.9   Wed, 31 Dec 2014 18:59:22 +0900 (JST)
     - Implement Sisimai::MTA::X3 for email bounces from Unknown MTA(3).
     - Improved code for getting error message in a bounce mail from MXLogic.
