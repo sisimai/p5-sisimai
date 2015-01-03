@@ -8,6 +8,8 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = [
+        qr|invalid/inactive user|,
+        qr/mailbox unavailable or access denied/, # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
         qr/recipient suspend the service/,
         qr/sorry your message to .+ cannot be delivered[.] this account has been disabled or discontinued/,
         qr/vdelivermail: account is locked email bounced/,

@@ -20,16 +20,28 @@ sub match {
         qr/domain .+ is a dead domain/,
         qr/email not accepted for policy reasons/,
         qr/insecure mail relay/,
+        qr/email rejected due to security policies/, # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
 
         qr/mail appears to be unsolicited/, # rejected due to spam
+        qr/mail content denied/, # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000726
         qr/message filtered/,
         qr/message filtered[.] please see the faqs section on spam/,
         qr/message rejected due to suspected spam content/,
         qr/message refused by mailmarshal spamprofiler/,
+        qr/spam message rejected[.]/,        # mail.ru
+        qr/your email is considered spam/,
+        qr/denied due to spam list/,
+        qr/spam email not accepted/,
+        qr/transaction failed spam message not queued/,
+        qr/your email is considered spam/,
+        qr/cyberoam anti spam engine has identified this email as a bulk email/,
+        qr/your email is considered spam/,
+        qr/spam detected/,
 
         qr/our filters rate at and above .+ percent probability of being spam/,
         qr/rejected: spamassassin score /,
         qr/rejected due to spam content/,
+        qw/rejecting banned content/, 
         qr/sorry, that domain isn'?t in my list of allowed rcpthosts/,
         qr/sorry, your don'?t authenticate or the domain isn'?t in my list of allowed rcpthosts/,
         qr/spam not accepted/,
