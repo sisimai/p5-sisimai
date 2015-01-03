@@ -1,23 +1,18 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::ARF;
+use Sisimai::MSP::UK::MessageLabs;
 
-my $PackageName = 'Sisimai::ARF';
+my $PackageName = 'Sisimai::MSP::UK::MessageLabs';
 my $MethodNames = {
     'class' => [ 
-        'version', 'description', 'headerlist', 'scan', 'is_arf',
-        'DELIVERYSTATUS', 'RFC822HEADERS',
+        'version', 'description', 'headerlist', 'scan',
+        'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS',
     ],
     'object' => [],
 };
 my $ReturnValue = {
-    '01' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-    '02' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-    '03' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-    '04' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-    '05' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-    '06' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
+    '01' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/userunknown/ },
 };
 
 use_ok $PackageName;
@@ -31,18 +26,19 @@ MAKE_TEST: {
     ok $v, '->version = '.$v;
     $v = $PackageName->description;
     ok $v, '->description = '.$v;
-    isa_ok $PackageName->headerlist, 'ARRAY';
+
+    $v = $PackageName->smtpagent;
+    ok $v, '->smtpagent = '.$v;
 
     is $PackageName->scan, undef, '->scan';
-    is $PackageName->is_arf( 'multipart/report; report-type=feedback-report;'), 1;
 
-    use Sisimai::Data;
     use Sisimai::Mail;
+    use Sisimai::Data;
     use Sisimai::Message;
 
     PARSE_EACH_MAIL: for my $n ( 1..20 ) {
 
-        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/arf-%02d.eml", $n );
+        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/uk-messagelabs-%02d.eml", $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
         my $emindex = sprintf( "%02d", $n );
         next unless defined $mailbox;
@@ -59,11 +55,11 @@ MAKE_TEST: {
             ok length $p->from;
 
             for my $e ( @{ $p->ds } ) {
-                ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
-                ok length $e->{'agent'}, '->agent = '.$e->{'agent'};
+                is $e->{'agent'}, 'UK::MessageLabs', '->agent = '.$e->{'agent'};
 
+                ok defined $e->{'date'}, '->date = '.$e->{'date'};
                 ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
                 ok defined $e->{'status'}, '->status = '.$e->{'status'};
@@ -74,6 +70,8 @@ MAKE_TEST: {
                 ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
                 ok defined $e->{'feedbacktype'}, '->feedbacktype = ""';
                 ok defined $e->{'softbounce'}, '->softbounce = '.$e->{'softbounce'};
+
+                like $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, '->recipient = '.$e->{'recipient'};
             }
 
             $o = Sisimai::Data->make( 'data' => $p );
@@ -82,7 +80,6 @@ MAKE_TEST: {
                 isa_ok $e, 'Sisimai::Data';
                 like $e->deliverystatus, $ReturnValue->{ $emindex }->{'status'}, '->status = '.$e->deliverystatus;
                 like $e->reason, $ReturnValue->{ $emindex }->{'reason'}, '->reason = '.$e->reason;
-                like $e->feedbacktype, $ReturnValue->{ $emindex }->{'feedbacktype'}, '->feedbacktype = '.$e->feedbacktype;
             }
             $c++;
         }

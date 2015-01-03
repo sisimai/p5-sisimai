@@ -22,6 +22,7 @@ sub list {
             MSP/JP/KDDI.pm
             MSP/RU/MailRu.pm
             MSP/RU/Yandex.pm
+            MSP/UK/MessageLabs.pm
             MSP/US/AmazonSES.pm
             MSP/US/Aol.pm
             MSP/US/Facebook.pm
