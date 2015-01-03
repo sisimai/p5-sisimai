@@ -13,6 +13,22 @@ sub match {
         qr/address rejected/,
         qr/domain of sender address .+ does not exist/,
         qr/sender rejected/,
+        qr/sender domain is empty/,
+        qr/empty envelope senders not allowed/,
+        qr/syntax error: empty email address/,
+        qr/the message has been rejected by batv defense/,
+        qr/bogus mail from/, # IMail - block empty sender
+        qr/error: no third-party dsns/, # SpamWall - block empty sender
+        qr/batv failed to verify/,  # SoniWall
+        qr/batv validation failure/,  # SoniWall
+        qr/backscatter protection detected an invalid or expired email address/,  # MDaemon
+        qr/rule imposed mailbox access for/, # MailMarshal
+        qr/denied \[bouncedeny\]/, # McAfee
+        qr/fully qualified email address required/, # McAfee
+        qr/recipient not accepted[.] [(]batv: no tag/,
+        qr/<> invalid sender/,
+        qr/returned mail not accepted here/,
+        qr/transaction failed unsigned dsn for/,
     ];
     return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
     return 0;

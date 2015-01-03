@@ -23,6 +23,7 @@ my $RxErr = {
     ],
     'filtered' => [
         'RCP-P2',   # The attempted recipient's preferences prevent messages from being delivered.
+        'RCP-P3',   # The attempted recipient's privacy settings blocked the delivery.
     ],
     'mesgtoobig' => [
         'MSG-P1',   # The message exceeds Facebook's maximum allowed size.
@@ -30,7 +31,9 @@ my $RxErr = {
     ],
     'contenterror' => [
         'MSG-P2',   # The message contains an attachment type that Facebook does not accept.
+        'MSG-P3',   # The message contains multiple instances of a header field that can only be present once. Please see RFC 5322, section 3.6 for more information
         'POL-P6',   # The message contains a url that has been blocked by Facebook.
+        'POL-P7',   # The message does not comply with Facebook's abuse policies and will not be accepted.
     ],
     'securityerror' => [
         'POL-P1',   # Your mail server's IP Address is listed on the Spamhaus PBL.
@@ -61,6 +64,9 @@ my $RxErr = {
         'CON-T2',   # Your mail server currently has too many connections open to Facebook's mail servers.
         'CON-T3',   # Your mail server has opened too many new connections to Facebook's mail servers in a short period of time.
         'CON-T4',   # Your mail server has exceeded the maximum number of recipients for its current connection.
+    ],
+    'suspend' => [
+        'RCP-T4',   # The attempted recipient address is currently deactivated. The user may or may not reactivate it.
     ],
 };
 
