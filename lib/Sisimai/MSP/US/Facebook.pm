@@ -17,7 +17,6 @@ my $RxMSP = {
 my $RxErr = {
     'userunknown' => [
         'RCP-P1',   # The attempted recipient address does not exist.
-        'RCP-T4',   # The attempted recipient address is currently deactivated. The user may or may not reactivate it.
         'INT-P1',   # The attempted recipient address does not exist.
         'INT-P3',   # The attempted recpient group address does not exist.
         'INT-P4',   # The attempted recipient address does not exist.
@@ -65,6 +64,9 @@ my $RxErr = {
         'CON-T2',   # Your mail server currently has too many connections open to Facebook's mail servers.
         'CON-T3',   # Your mail server has opened too many new connections to Facebook's mail servers in a short period of time.
         'CON-T4',   # Your mail server has exceeded the maximum number of recipients for its current connection.
+    ],
+    'suspend' => [
+        'RCP-T4',   # The attempted recipient address is currently deactivated. The user may or may not reactivate it.
     ],
 };
 
