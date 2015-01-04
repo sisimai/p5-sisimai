@@ -204,25 +204,29 @@ sub scan {
         $p = $e;
         $e = '';
     }
+
     if (($arfheaders->{'feedbacktype'} eq 'auth-failure' ) && $arfheaders->{'authres'}) {
-       $commondata->{'diagnosis'} = $arfheaders->{'authres'}
+        # Use the value of Authentication-Results header as an error message
+        # when the error message is empty.
+        $commondata->{'diagnosis'} ||= $arfheaders->{'authres'}
     }
+
     unless ( $recipients ) {
         # Insert pseudo recipient address when there is no valid recipient
         # address in the message.
         $dscontents->[ -1 ]->{'recipient'} = Sisimai::Address->undisclosed('r');
         $recipients = 1;
     }
-    require Sisimai::RFC5322;
 
     unless( $rfc822part =~ m/\bFrom: [^ ]+[@][^ ]+\b/ ) {
-        # From: header in the original message
+        # There is no "From:" header in the original message
         if( length $commondata->{'from'} ) {
-
+            # Append the value of "Original-Mail-From" value as a sender address.
             $rfc822part .= sprintf( "From: %s\n", $commondata->{'from'} );
         }
     }
 
+    require Sisimai::RFC5322;
     for my $e ( @$dscontents ) {
 
         if( $e->{'recipient'} =~ m/\A[^ ]+[@]\z/ ) {
