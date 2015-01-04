@@ -19,7 +19,7 @@ my $RxARF = {
     'endof'        => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { return '4.0.5' }
+sub version     { return '4.0.6' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
@@ -235,6 +235,7 @@ sub scan {
         }
         map {  $e->{ $_ } ||= $arfheaders->{ $_ } } keys %$arfheaders;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
+        $e->{'date'}      ||= $mhead->{'date'};
 
         unless( $e->{'rhost'} ) {
             # Get the remote IP address from the message body
