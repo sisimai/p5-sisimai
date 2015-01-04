@@ -25,7 +25,7 @@ sub undisclosed {
 
     return undef unless $argvs =~ m/\A(?:r|s)\z/;
     $local = $argvs eq 'r' ? 'recipient' : 'sender';
-    return sprintf( "undisclosed-%s%sin-headers.invalid", $local, '@' );
+    return sprintf( "undisclosed-%s-in-headers%sdummy-domain.invalid", $local, '@' );
 }
 
 sub new {
