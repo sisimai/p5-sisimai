@@ -14,6 +14,20 @@ my $roaccessors = [
 ];
 Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
+sub undisclosed { 
+    # @Description  Return pseudo recipient or sender address
+    # @Param <str>  (String) 'r' or 's'
+    # @Return       (String) Pseudo recipient address or sender address
+    #               (undef) Undef when the $argvs is neither 'r' nor 's'
+    my $class = shift;
+    my $argvs = shift || return undef;
+    my $local = '';
+
+    return undef unless $argvs =~ m/\A(?:r|s)\z/;
+    $local = $argvs eq 'r' ? 'recipient' : 'sender';
+    return sprintf( "undisclosed-%s%sin-headers.invalid", $local, '@' );
+}
+
 sub new {
     # @Description  Constructor of Sisimai::Address
     # @Param <str>  (String) Email address
@@ -185,6 +199,7 @@ sub expand_alias {
     }
     return $alias;
 }
+
 1;
 __END__
 
