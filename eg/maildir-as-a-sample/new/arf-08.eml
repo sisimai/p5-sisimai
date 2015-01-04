@@ -17,7 +17,7 @@ Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 
-This i a spf/dkim authentication-failure report for an email message received from IP 192.0.2.45 on Mon, 01 Dec 2014 12:12:27 +0800.
+This is a spf/dkim authentication-failure report for an email message received from IP 192.0.2.45 on Mon, 01 Dec 2014 12:12:27 +0800.
 Below is some detail information about this message:
  1. SPF-authenticated Identifiers: corp.netease.com;
  2. DKIM-authenticated Identifiers: none;
