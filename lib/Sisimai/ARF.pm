@@ -158,8 +158,11 @@ sub scan {
                 $arfheaders->{'feedbacktype'} = $1;
 
             } elsif( $e =~ m/\AAuthentication-Results:\s*(.+)\z/ ) {
-                # The header field MUST appear exactly once.
-                # Feedback-Type: abuse
+                # "Authentication-Results" indicates the result of one or more
+                # authentication checks run by the report generator.
+                #
+                # Authentication-Results: mail.example.com;
+                #   spf=fail smtp.mail=somespammer@example.com
                 $arfheaders->{'authres'} = $1;
 
             } elsif( $e =~ m/\AUser-Agent:\s*(.+)\z/ ) {
