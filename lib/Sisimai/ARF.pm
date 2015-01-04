@@ -19,7 +19,7 @@ my $RxARF = {
     'endof'        => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { return '4.0.6' }
+sub version     { return '4.0.7' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
@@ -206,9 +206,8 @@ sub scan {
     }
 
     if (($arfheaders->{'feedbacktype'} eq 'auth-failure' ) && $arfheaders->{'authres'}) {
-        # Use the value of Authentication-Results header as an error message
-        # when the error message is empty.
-        $commondata->{'diagnosis'} ||= $arfheaders->{'authres'}
+        # Append the value of Authentication-Results header
+        $commondata->{'diagnosis'} .= ' '.$arfheaders->{'authres'}
     }
 
     unless ( $recipients ) {
