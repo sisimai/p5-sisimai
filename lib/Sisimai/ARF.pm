@@ -19,7 +19,7 @@ my $RxARF = {
     'endof'        => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { return '4.0.4' }
+sub version     { return '4.0.5' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
@@ -208,9 +208,9 @@ sub scan {
        $commondata->{'diagnosis'} = $arfheaders->{'authres'}
     }
     unless ( $recipients ) {
-        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-        $v = $dscontents->[ -1 ];
-        $v->{'recipient'} = Sisimai::Address->s3s4( 'no.recipient@found.invalid' );
+        # Insert pseudo recipient address when there is no valid recipient
+        # address in the message.
+        $dscontents->[ -1 ]->{'recipient'} = Sisimai::Address->undisclosed('r');
         $recipients = 1;
     }
     require Sisimai::RFC5322;
