@@ -17,6 +17,7 @@ LS    = /bin/ls
 CP    = /bin/cp
 RM    = /bin/rm -f
 MV    = /bin/mv
+MP    = /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 GIT   = /usr/bin/git
 
 EMAIL_SAMPLE = ./tmp/sample
@@ -24,6 +25,8 @@ FOR_EMPARSER = ./tmp/data
 FOR_MAKETEST = ./eg/maildir-as-a-sample/new
 MTAMODULEDIR = ./lib/$(NAME)/MTA
 MSPMODULEDIR = ./lib/$(NAME)/MSP
+ACCURACYLIST = ./ANALYSIS-ACCURACY
+TABLE_LENGTH = 24
 
 .PHONY: clean
 test: user-test author-test
@@ -47,22 +50,91 @@ author-test:
 cover-test:
 	cover -test
 
-update-analysis-accuracy:
-	@grep '^[A-Z]' ./ANALYSIS-ACCURACY | awk '{ x += $$2; y += $$3 } END { print x, y, x / y }'
+accuracy-table:
+	@printf " %s\n" 'bounceHammer 2.7.13 + bounceHammer nails(*)'
+	@printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
+	@printf "%s\n" '-------------------------------------------------------------------------------'
+	@for v in `$(LS) -1 $(MTAMODULEDIR)/*.pm`; do \
+		m="MTA::`echo $$v | cut -d/ -f5 | sed 's/.pm//g'`" ;\
+		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
+		l="`echo $$m | wc -c`" ;\
+		printf "%s " $$m ;\
+		while [ $$l -le $(TABLE_LENGTH) ]; do \
+			printf "%s" '.' ;\
+			l=`expr $$l + 1` ;\
+		done ;\
+		printf "%s" ' ' ;\
+		r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
+			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
+		rn="`echo $$r0 | cut -d/ -f1`" ;\
+		rd="`echo $$r0 | cut -d/ -f2 | cut -d' ' -f1`" ;\
+		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
+		printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
+		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
+	done
+	@for c in `$(LS) -1 $(MSPMODULEDIR)`; do \
+		for v in `$(LS) -1 $(MSPMODULEDIR)/$$c/*.pm`; do \
+			m="$$c::"`echo $$v | cut -d/ -f6 | sed 's/.pm//g'` ;\
+			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
+			l="`echo MSP::$$m | wc -c`" ;\
+			printf "MSP::%s " $$m ;\
+			while [ $$l -le $(TABLE_LENGTH) ]; do \
+				printf "%s" '.' ;\
+				l=`expr $$l + 1` ;\
+			done ;\
+			printf "%s" ' ' ;\
+			r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
+				| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
+			rn="`echo $$r0 | cut -d/ -f1`" ;\
+			rd="`echo $$r0 | cut -d/ -f2 | cut -d' ' -f1`" ;\
+			rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
+			printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
+			$(PERL) -Ilib -MSisimai::MSP::$$m -lE "print Sisimai::MSP::$$m->description" ;\
+		done ;\
+	done
+	@for v in ARF RFC3464; do \
+		m=$$v ;\
+		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
+		l="`echo $$m | wc -c`" ;\
+		printf "%s " $$m ;\
+		while [ $$l -le $(TABLE_LENGTH) ]; do \
+			printf "%s" '.' ;\
+			l=`expr $$l + 1` ;\
+		done ;\
+		printf "%s" ' ' ;\
+		r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
+			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
+		rn="`echo $$r0 | cut -d/ -f1`" ;\
+		rd="`echo $$r0 | cut -d/ -f2 | cut -d' ' -f1`" ;\
+		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
+		printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
+		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
+	done
+	@printf "%s\n" '-------------------------------------------------------------------------------'
+
+update-analysis-accuracy: sample
+	$(CP) /dev/null $(ACCURACYLIST)
+	make accuracy-table >> $(ACCURACYLIST)
+	grep '^[A-Z]' $(ACCURACYLIST) | tr '/' ' ' | \
+		awk '{ x += $$3; y += $$4 } END { \
+			printf(" %s %4d/%04d  %0.4f\n %s  %4d/%04d  %0.4f\n", \
+				"bounceHammer 2.7.X+nails", x, y, x / y, \
+				"Sisimai(bounceHammer 4)", y, y, 1 ) }' \
+			>> $(ACCURACYLIST)
 
 release-test:
 	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
 	$(MAKE) clean
 	$(MINIL) test
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
-	$(PERL) -i -ple 's|<.+[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
+	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
 
 dist:
 	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
 	$(MAKE) clean
 	$(MINIL) dist
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
-	$(PERL) -i -ple 's|<.+[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
+	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
 
 push:
 	for G in pchan github; do \
