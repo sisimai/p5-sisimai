@@ -5,7 +5,9 @@ use Sisimai::Address;
 
 my $PackageName = 'Sisimai::Address';
 my $MethodNames = {
-    'class' => [ 'new', 'parse', 's3s4', 'expand_verp', 'expand_alias' ],
+    'class' => [ 
+        'new', 'parse', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
+    ],
     'object' => [ 'address', 'host', 'user', 'verp', 'alias' ],
 };
 my $NewInstance = $PackageName->new( 'maketest@bouncehammer.jp' );
@@ -107,6 +109,12 @@ MAKE_TEST: {
         # ->new
         my $y = $PackageName->new( $e );
         is $y, undef;
+    }
+
+    UNDISCLOSED: {
+        is $PackageName->undisclosed('r'), 'undisclosed-recipient@in-headers.invalid';
+        is $PackageName->undisclosed('s'), 'undisclosed-sender@in-headers.invalid';
+        is $PackageName->undisclosed(''), undef;
     }
 }
 
