@@ -12,12 +12,14 @@ sub match {
         qr/authentication turned on in your email client/,
 
         # Rejected due to message contents: spam, virus or header.
+	qr/"The mail server detected your message as spam and has prevented delivery[.]"/, # CPanel/Exim with SA rejections on
         qr/\d+ denied \[[a-z]+\] .+[(]Mode: .+[)]/,
         qr/because the recipient is not accepting mail with attachments/,   # AOL Phoenix
         qr/because the recipient is not accepting mail with embedded images/,   # AOL Phoenix
         qr/blocked by policy: no spam please/,
         qr/blocked by spamAssassin/,        # rejected by SpamAssassin
         qr/domain .+ is a dead domain/,
+        qr!dt:spm mx.+ http://mail[.]163[.]com/help/help_spam_16[.]htm!,
         qr/email not accepted for policy reasons/,
         qr/insecure mail relay/,
         qr/email rejected due to security policies/, # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
