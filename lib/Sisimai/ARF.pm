@@ -19,7 +19,7 @@ my $RxARF = {
     'endof'        => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { return '4.0.4' }
+sub version     { return '4.0.7' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
@@ -158,8 +158,11 @@ sub scan {
                 $arfheaders->{'feedbacktype'} = $1;
 
             } elsif( $e =~ m/\AAuthentication-Results:\s*(.+)\z/ ) {
-                # The header field MUST appear exactly once.
-                # Feedback-Type: abuse
+                # "Authentication-Results" indicates the result of one or more
+                # authentication checks run by the report generator.
+                #
+                # Authentication-Results: mail.example.com;
+                #   spf=fail smtp.mail=somespammer@example.com
                 $arfheaders->{'authres'} = $1;
 
             } elsif( $e =~ m/\AUser-Agent:\s*(.+)\z/ ) {
@@ -204,25 +207,28 @@ sub scan {
         $p = $e;
         $e = '';
     }
+
     if (($arfheaders->{'feedbacktype'} eq 'auth-failure' ) && $arfheaders->{'authres'}) {
-       $commondata->{'diagnosis'} = $arfheaders->{'authres'}
+        # Append the value of Authentication-Results header
+        $commondata->{'diagnosis'} .= ' '.$arfheaders->{'authres'}
     }
+
     unless ( $recipients ) {
-	    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-	    $v = $dscontents->[ -1 ];
-	    $v->{'recipient'} = Sisimai::Address->s3s4( 'no.recipient@found.invalid' );
-	    $recipients = 1;
+        # Insert pseudo recipient address when there is no valid recipient
+        # address in the message.
+        $dscontents->[ -1 ]->{'recipient'} = Sisimai::Address->undisclosed('r');
+        $recipients = 1;
     }
-    require Sisimai::RFC5322;
 
     unless( $rfc822part =~ m/\bFrom: [^ ]+[@][^ ]+\b/ ) {
-        # From: header in the original message
+        # There is no "From:" header in the original message
         if( length $commondata->{'from'} ) {
-
+            # Append the value of "Original-Mail-From" value as a sender address.
             $rfc822part .= sprintf( "From: %s\n", $commondata->{'from'} );
         }
     }
 
+    require Sisimai::RFC5322;
     for my $e ( @$dscontents ) {
 
         if( $e->{'recipient'} =~ m/\A[^ ]+[@]\z/ ) {
@@ -231,6 +237,7 @@ sub scan {
         }
         map {  $e->{ $_ } ||= $arfheaders->{ $_ } } keys %$arfheaders;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
+        $e->{'date'}      ||= $mhead->{'date'};
 
         unless( $e->{'rhost'} ) {
             # Get the remote IP address from the message body
