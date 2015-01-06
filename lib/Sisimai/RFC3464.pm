@@ -6,7 +6,7 @@ use warnings;
 # http://tools.ietf.org/html/rfc3464
 my $RxRFC = {
     'begin'  => [
-        qr|\AContent-Type:\s*message/delivery-status\z|i,
+        qr|\AContent-Type:\s*message/delivery-status|i,
         qr/\AThe original message was received at /i,
         qr/\AThis report relates to your message/i,
     ],
