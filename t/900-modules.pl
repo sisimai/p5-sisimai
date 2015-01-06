@@ -25,6 +25,7 @@ sub list {
             MSP/UK/MessageLabs.pm
             MSP/US/AmazonSES.pm
             MSP/US/Aol.pm
+            MSP/US/Bigfoot.pm
             MSP/US/Facebook.pm
             MSP/US/Google.pm
             MSP/US/Outlook.pm
