@@ -9,12 +9,12 @@ my $RxMSP = {
     'subject'    => qr/\AMail System Error - Returned Mail\z/,
     'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
     'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    'begin'      => [
-        qr/\AThe user[(]s[)]\s/,
-        qr/\AYour message\s/,
-        qr/\AEach of the following|The following/,
-        qr/\A[<][^ ]+[@][^ ]+[>]\z/,
-    ],
+    'begin'      => qr/\A(?:
+        The\suser[(]s[)]\s|
+        Your\smessage\s|,
+        Each\sof\sthe\sfollowing|
+        [<][^ ]+[@][^ ]+[>]\z)
+    /x,
     'rfc822'     => [
         qr/\A[-]{50}/,
         qr|\AContent-Type: message/rfc822\z|,
@@ -45,7 +45,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -128,9 +128,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless
-                ( grep { $e =~ $_ } @{ $RxMSP->{'begin'} } ) .. 
-                ( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } );
+            next unless ( $e =~ $RxMSP->{'begin'} ) .. ( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } );
             next unless length $e;
 
             $v = $dscontents->[ -1 ];
