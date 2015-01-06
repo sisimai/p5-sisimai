@@ -4,6 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::MTA::Sendmail;
 
 my $PackageName = 'Sisimai::MTA::Sendmail';
+my $EmailPrefix = 'sendmail';
 my $MethodNames = {
     'class' => [ 
         'version', 'description', 'headerlist', 'scan',
@@ -56,7 +57,7 @@ MAKE_TEST: {
 
     PARSE_EACH_MAIL: for my $n ( 1..20 ) {
 
-        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/sendmail-%02d.eml", $n );
+        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/%s-%02d.eml", $EmailPrefix, $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
         my $emindex = sprintf( "%02d", $n );
         next unless defined $mailbox;
