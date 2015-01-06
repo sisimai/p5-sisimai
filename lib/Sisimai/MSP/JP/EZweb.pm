@@ -16,6 +16,7 @@ my $RxMSP = {
         [<][^ ]+[@][^ ]+[>]\z)
     /x,
     'rfc822'     => [
+        # Do not rewrite this regular expressions with /x switch.
         qr/\A[-]{50}/,
         qr|\AContent-Type: message/rfc822\z|,
     ],
