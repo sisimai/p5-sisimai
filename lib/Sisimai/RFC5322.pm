@@ -61,14 +61,11 @@ sub is_mailerdaemon {
     # @Return       (Integer) 0 = not mailer-daemon, 1 = mailer-daemon
     my $class = shift;
     my $email = shift // return 0;
-    my $rxmds = [
-        qr/mailer-daemon[@]/i,
-        qr/[<(]mailer-daemon[)>]/i,
-        qr/\Amailer-daemon\z/i,
-        qr/[ ]?mailer-daemon[ ]/i,
-    ];
+    my $rxmds = qr/(?:
+        mailer-daemon[@]|[<(]mailer-daemon[)>]|
+        \Amailer-daemon\z|[ ]?mailer-daemon[ ])/xi;
 
-    return 1 if grep { $email =~ $_ } @$rxmds;
+    return 1 if $email =~ $rxmds;
     return 0;
 }
 
