@@ -15,12 +15,8 @@ my $RxMDA = {
     'vmailmgr'   => qr/\Avdeliver: /,
 };
 
-my $RxFrom = [
-    qr/\AMail Delivery Subsystem/,  # dovecot/src/deliver/mail-send.c:94
-    qr/\AMAILER-DAEMON/i,
-    qr/\Apostmaster/i,
-];
-
+# dovecot/src/deliver/mail-send.c:94
+my $RxFrom = qr/\A(?:Mail Delivery Subsystem|MAILER-DAEMON|postmaster)/i;
 my $RxErr = {
     'dovecot' => {
         'userunknown' => [
@@ -97,7 +93,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless ref( $mhead ) eq 'HASH';
-    return undef unless grep { $mhead->{'from'} =~ $_ } @$RxFrom;
+    return undef unless $mhead->{'from'} =~ $RxFrom;
     return undef unless ref( $mbody ) eq 'SCALAR';
     return undef unless length $$mbody;
 
