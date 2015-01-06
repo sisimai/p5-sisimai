@@ -89,8 +89,6 @@ sub scan {
             next unless length $e;
 
             if( $connvalues == scalar( keys %$connheader ) ) {
-                # ...
-                #
                 # Final-Recipient: RFC822; <destinaion@example.net>
                 # Action: failed
                 # Status: 5.7.1
