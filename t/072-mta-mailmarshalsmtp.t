@@ -4,6 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::MTA::MailMarshalSMTP;
 
 my $PackageName = 'Sisimai::MTA::MailMarshalSMTP';
+my $EmailPrefix = 'mailmarshalsmtp';
 my $MethodNames = {
     'class' => [ 
         'version', 'description', 'headerlist', 'scan',
@@ -38,7 +39,7 @@ MAKE_TEST: {
 
     PARSE_EACH_MAIL: for my $n ( 1..20 ) {
 
-        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/mailmarshalsmtp-%02d.eml", $n );
+        my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/%s-%02d.eml", $EmailPrefix, $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
         my $emindex = sprintf( "%02d", $n );
         next unless defined $mailbox;
