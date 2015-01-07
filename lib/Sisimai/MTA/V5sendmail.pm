@@ -24,15 +24,16 @@ my $RxMTA = {
     'from'    => qr/\AMail Delivery Subsystem/,
     'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => [
-        qr/\A\s+----- Unsent message follows -----/,
-        qr/\A\s+----- No message was collected -----/,
-    ],
+    'rfc822'  => qr/\A\s+-----\s(?:
+        Unsent\smessage\sfollows|
+        No\smessage\swas\scollected
+        )\s-----
+    /x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject' => qr/\AReturned mail: [A-Z]/,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.5' }
 sub description { 'Sendmail version 5' }
 sub smtpagent   { 'V5sendmail' }
 
@@ -67,9 +68,9 @@ sub scan {
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        $match = 1 if grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} };
+        $match = 1 if $e =~ $RxMTA->{'rfc822'};
 
-        if( ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
+        if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
@@ -96,9 +97,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless 
-                ( $e =~ $RxMTA->{'begin'} ) .. 
-                ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } );
+            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( $e =~ $RxMTA->{'rfc822'} );
             next unless length $e;
 
             #    ----- Transcript of session follows -----
