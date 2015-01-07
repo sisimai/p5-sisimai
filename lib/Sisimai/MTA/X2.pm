@@ -9,13 +9,10 @@ my $RxMTA = {
     'begin'    => qr/\AUnable to deliver message to the following address/,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'rfc822'   => qr/\A--- Original message follows/,
-    'subject'  => [
-        qr/\ADelivery failure/,
-        qr/\Afail(?:ure|ed) delivery/,
-    ],
+    'subject'  => qr/\A(?:Delivery\sfailure|fail(?:ure|ed)\sdelivery)/x,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.0.1' }
 sub description { 'Unknown MTA #2' }
 sub smtpagent   { 'X2' }
 
@@ -28,8 +25,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'} =~ $RxMTA->{'from'};
-    return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
+    return undef unless $mhead->{'from'}    =~ $RxMTA->{'from'};
+    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
