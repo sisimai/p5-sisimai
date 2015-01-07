@@ -9,10 +9,10 @@ my $RxMSP = {
     'reply-to'   => qr/\Afrom\s+\w+[.]auone[-]net[.]jp\s/,
     'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
     'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    'begin'      => [
-        qr/\AYour mail sent on:? [A-Z][a-z]{2}[,]/,
-        qr/\AYour mail attempted to be delivered on:? [A-Z][a-z]{2}[,]/,
-    ],
+    'begin'      => qr/\AYour\smail\s(?:
+                        sent\son:?\s[A-Z][a-z]{2}[,]|
+                        attempted\sto\sbe\sdelivered\son:?\s[A-Z][a-z]{2}[,])
+                    /x,
     'rfc822'     => qr|\AContent-Type: message/rfc822\z|,
     'error'      => qr/Could not be delivered to:? /,
     'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
@@ -30,7 +30,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
 
@@ -96,7 +96,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( grep { $e =~ $_ } @{ $RxMSP->{'begin'} } ) .. ( $e =~ $RxMSP->{'rfc822'} );
+            next unless ( $e =~ $RxMSP->{'begin'} ) .. ( $e =~ $RxMSP->{'rfc822'} );
             next unless length $e;
 
             $v = $dscontents->[ -1 ];
