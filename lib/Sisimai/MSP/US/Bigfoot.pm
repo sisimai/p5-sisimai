@@ -28,7 +28,7 @@ sub scan {
     my $match = 0;
 
     # $match = 1 if $mhead->{'subject'} =~ $RxMSP->{'subject'};
-    $match = 1 if $mhead->{'from'}    =~ $RxMSP->{'from'};
+    $match = 1 if $mhead->{'from'} =~ $RxMSP->{'from'};
     $match = 1 if grep { $_ =~ $RxMSP->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
 
