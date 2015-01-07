@@ -9,10 +9,10 @@ my $RxMSP = {
     'begin'   => qr/\AThis message was created automatically by mail delivery/,
     'rfc822'  => qr/\AReceived:\s*from mail[.]zoho[.]com/,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => [
-        qr/\AUndelivered Mail Returned to Sender\z/,
-        qr/\AMail Delivery Status Notification/,
-    ],
+    'subject' => qr/\A(?:
+        Undelivered\sMail\sReturned\sto\sSender|
+        Mail\sDelivery\sStatus\sNotification)
+    /x,
     'x-mailer'=> qr/\AZoho Mail\z/,
 };
 
@@ -23,7 +23,7 @@ my $RxSess = {
 };
 
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub smtpagent   { 'US::Zoho' }
 sub headerlist  { 
@@ -39,8 +39,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'} =~ $RxMSP->{'from'};
-    return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMSP->{'subject'} };
+    return undef unless $mhead->{'from'}     =~ $RxMSP->{'from'};
+    return undef unless $mhead->{'subject'}  =~ $RxMSP->{'subject'};
     return undef unless $mhead->{'x-mailer'} =~ $RxMSP->{'x-mailer'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
