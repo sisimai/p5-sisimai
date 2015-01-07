@@ -9,19 +9,16 @@ my $RxMTA = {
     'error'    => qr/\Adid not reach the following recipient[(]s[)]:/,
     'rfc822'   => qr|\AContent-Type: message/rfc822|,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'x-mailer' => [
-        # X-Mailer: Internet Mail Service (5.0.1461.28)
-        # X-Mailer: Microsoft Exchange Server Internet Mail Connector Version ...
-        qr/\AInternet Mail Service [(][\d.]+[)]\z/,
-        qr/\AMicrosoft Exchange Server Internet Mail Connector/,
-    ],
-    'x-mimeole' => [
-        qr/\AProduced By Microsoft Exchange/,
-    ],
-    'received' => [
-        # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
-        qr/\Aby .+ with Internet Mail Service [(][\d.]+[)]/,
-    ],
+    # X-Mailer: Internet Mail Service (5.0.1461.28)
+    # X-Mailer: Microsoft Exchange Server Internet Mail Connector Version ...
+    'x-mailer' => qr/\A(?:
+        Internet\sMail\sService\s[(][\d.]+[)]\z|
+        Microsoft\sExchange\sServer\sInternet\sMail\sConnector)
+    /x,
+    'x-mimeole'=> qr/\AProduced By Microsoft Exchange/,
+
+    # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
+    'received' => qr/\Aby .+ with Internet Mail Service [(][\d.]+[)]/,
 };
 
 my $ErrorCodeTable = {
@@ -50,7 +47,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
@@ -71,20 +68,20 @@ sub scan {
         if( defined $mhead->{'x-mailer'} ) {
             # X-Mailer:  Microsoft Exchange Server Internet Mail Connector Version 4.0.994.63
             # X-Mailer: Internet Mail Service (5.5.2232.9)
-            $match = 1 if grep { $mhead->{'x-mailer'} =~ $_ } @{ $RxMTA->{'x-mailer'} };
+            $match = 1 if $mhead->{'x-mailer'} =~ $RxMTA->{'x-mailer'};
             last if $match;
         }
 
         if( defined $mhead->{'x-mimeole'} ) {
             # X-MimeOLE: Produced By Microsoft Exchange V6.5
-            $match = 1 if grep { $mhead->{'x-mimeole'} =~ $_ } @{ $RxMTA->{'x-mimeole'} };
+            $match = 1 if $mhead->{'x-mimeole'} =~ $RxMTA->{'x-mimeole'};
             last if $match;
         }
 
         last unless scalar @{ $mhead->{'received'} };
         for my $e ( @{ $mhead->{'received'} } ) {
             # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
-            next unless grep { $e =~ $_ } @{ $RxMTA->{'received'} };
+            next unless $e =~ $RxMTA->{'received'};
             $match = 1;
             last(EXCHANGE_OR_NOT);
         }
