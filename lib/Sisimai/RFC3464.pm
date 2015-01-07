@@ -5,20 +5,21 @@ use warnings;
 
 # http://tools.ietf.org/html/rfc3464
 my $RxRFC = {
-    'begin'  => [
-        qr|\AContent-Type:\s*message/delivery-status|i,
-        qr/\AThe original message was received at /i,
-        qr/\AThis report relates to your message/i,
-    ],
+    'begin'  => qr!\A(?:
+        Content-Type:\s*message/delivery-status|
+        The\soriginal\smessage\swas\sreceived\sat\s|
+        This\sreport\srelates\sto\syour\smessage
+        )
+    !xi,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822' => [
-        qr|\AContent-Type:\s*message/rfc822\z|i,
-        qr|\AContent-Type:\s*text/rfc822-headers\z|i,
-        qr|\AReturn-Path:\s*<.+>\z|i,
-    ],
+    'rfc822' => qr!\A(?:
+        Content-Type:\s*(?:message/rfc822|text/rfc822-headers)|
+        Return-Path:\s*<.+>\z
+        )\z
+    !xi,
 };
 
-sub version     { '4.0.7' };
+sub version     { '4.0.8' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -61,7 +62,7 @@ sub scan {
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxRFC->{'begin'} and $RxRFC->{'rfc822'}.
-        if( ( grep { $e =~ $_ } @{ $RxRFC->{'rfc822'} } ) .. ( $e =~ $RxRFC->{'endof'} ) ) {
+        if( ( $e =~ $RxRFC->{'rfc822'} ) .. ( $e =~ $RxRFC->{'endof'} ) ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
@@ -88,9 +89,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless 
-                ( grep { $e =~ $_ } @{ $RxRFC->{'begin'} } ) 
-                    .. ( grep { $e =~ $_ } @{ $RxRFC->{'rfc822'} } );
+            next unless ( $e =~ $RxRFC->{'begin'} ) .. ( $e =~ $RxRFC->{'rfc822'} );
             next unless length $e;
   
             $v = $dscontents->[ -1 ];
