@@ -8,19 +8,11 @@ use warnings;
 # courier/module.dsn/dsn*.txt
 my $RxMTA = {
     #'from' => qr{Courier mail server at },
-    'begin' => [
-        qr/DELAYS IN DELIVERING YOUR MESSAGE/,
-        qr/UNDELIVERABLE MAIL/,
-    ],
-    'rfc822'  => [
-        qr|\AContent-Type: message/rfc822\z|,
-        qr|\AContent-Type: text/rfc822-headers\z|,
-    ],
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => [
-        qr/NOTICE: mail delivery status[.]/,
-        qr/WARNING: delayed mail[.]/,
-    ],
+    'begin'      => qr/(?:DELAYS\sIN\sDELIVERING\sYOUR\sMESSAGE|UNDELIVERABLE\sMAIL)/x,
+    'rfc822'     => qr!\AContent-Type:\s*(?:message/rfc822|text/rfc822-headers)\z!x,
+    'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'subject'    => qr/(?:NOTICE:\smail\sdelivery\sstatus[.]|WARNING:\sdelayed\smail[.])/x,
+    'message-id' => qr/\A[<]courier[.][0-9A-F]+[.]/,
 };
 
 my $RxErr = {
@@ -42,7 +34,7 @@ my $RxTmp = {
     ],
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 
@@ -54,10 +46,14 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
-    return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
-    # return undef unless( defined $mhead->{'message-id'} );
-    # return undef unless( $mhead->{'message-id'} =~ $RxMTA->{'message-id'} );
+    $match = 1 if $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    if( defined $mhead->{'message-id'} ) {
+        # Message-ID: <courier.4D025E3A.00001792@5jo.example.org>
+        $match = 1 if $mhead->{'message-id'} =~ $RxMTA->{'message-id'};
+    }
+    return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -82,7 +78,7 @@ sub scan {
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        if( ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
+        if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
@@ -109,7 +105,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( grep { $e =~ $_ } @{ $RxMTA->{'begin'} } ) .. ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } );
+            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( $e =~ $RxMTA->{'rfc822'} );
             next unless length $e;
 
             if( $connvalues == scalar( keys %$connheader ) ) {
