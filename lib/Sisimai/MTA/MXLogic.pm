@@ -10,11 +10,11 @@ my $RxMTA = {
     'rfc822'  => qr/\AIncluded is a copy of the message header:\z/,
     'begin'   => qr/\AThis message was created automatically by mail delivery software[.]\z/,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => [
-        qr/Mail delivery failed(:?: returning message to sender)?/,
-        qr/Warning: message .+ delayed\s+/,
-        qr/Delivery Status Notification/,
-    ],
+    'subject' => qr/(?:
+        Mail\sdelivery\sfailed(:?:\sreturning\smessage\sto\ssender)?|
+        Warning:\smessage\s.+\sdelayed\s+|
+        Delivery\sStatus\sNotification)
+    /x,
     'message-id' => qr/\A[<]mxl[~][0-9a-f]+/,
 };
 
@@ -53,7 +53,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash' ] }
@@ -69,7 +69,7 @@ sub scan {
     my $match = 0;
 
     $match = 1 if defined $mhead->{'x-mxl-notehash'};
-    $match = 1 if grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
+    $match = 1 if $mhead->{'subject'} =~ $RxMTA->{'subject'};
     $match = 1 if $mhead->{'from'} =~ $RxMTA->{'from'};
     return undef unless $match;
 
