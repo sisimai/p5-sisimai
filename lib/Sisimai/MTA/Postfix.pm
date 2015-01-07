@@ -6,27 +6,26 @@ use warnings;
 
 # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
 my $RxMTA = {
-    'from' => qr/ [(]Mail Delivery System[)]\z/,
-    'begin' => [
-        qr/\A\s+The Postfix program\z/,
-        qr/\A\s+The Postfix on .+ program\z/,   # The Postfix on <os name> program
-        qr/\A\s+The \w+ Postfix program\z/,     # The <name> Postfix program
-        qr/\A\s+The mail system\z/,
-        qr/\AThe \w+ program\z/,                # The <custmized-name> program
-        qr/\AThis is the Postfix program/,
-        qr/\AThis is the \w+ Postfix program/,  # This is the <name> Postfix program
-        qr/\AThis is the \w+ program/,          # This is the <customized-name> Postfix program
-        qr/\AThis is the mail system at host/,  # This is the mail system at host <hostname>.
-    ],
-    'rfc822'  => [
-        qr|\AContent-Type: message/rfc822\z|,
-        qr|\AContent-Type: text/rfc822-headers\z|,
-    ],
+    'from'  => qr/ [(]Mail Delivery System[)]\z/,
+    'begin' => qr/\A(?:
+        \s+The\sPostfix\sprogram\z|
+        \s+The\sPostfix\son\s.+\sprogram\z| # The Postfix on <os name> program
+        \s+The\s\w+\sPostfix\sprogram\z|    # The <name> Postfix program
+        \s+The\smail\ssystem\z|
+        The\s\w+\sprogram\z|                # The <custmized-name> program
+        This\sis\sthe\s(?:
+            Postfix\sprogram|       # This is the Postfix program
+            \w+\sPostfix\sprogram|  # This is the <name> Postfix program
+            \w+\sprogram|           # This is the <customized-name> Postfix program
+            mail\ssystem\sat\shost  # This is the mail system at host <hostname>.
+        )
+    )/x,
+    'rfc822'  => qr!\AContent-Type:\s*(?:message/rfc822|text/rfc822-headers)\z!x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -74,7 +73,7 @@ sub scan {
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        if( ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
+        if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
 
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
@@ -102,7 +101,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( grep { $e =~ $_ } @{ $RxMTA->{'begin'} } ) .. ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } );
+            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( $e =~ $RxMTA->{'rfc822'} );
             next unless length $e;
 
             if( $connvalues == scalar( keys %$connheader ) ) {
