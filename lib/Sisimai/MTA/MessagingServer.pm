@@ -7,10 +7,7 @@ use warnings;
 my $RxMTA = {
     'begin'    => qr/\AThis report relates to a message you sent with the following header fields:/,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822'   => [
-        qr|\AContent-type: message/rfc822|,
-        qr/\AReturn-path: /,
-    ],
+    'rfc822'   => qr!\A(?:Content-type:\s*message/rfc822|Return-path:\s*)!x,
     'subject'  => qr/\ADelivery Notification: /,
     'boundary' => qr/Boundary_[(]ID_.+[)]/,
     'received' => qr/[ ][(]MessagingServer[)][ ]with[ ]/,
@@ -22,7 +19,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'Oracle Communications Messaging Server' }
 sub smtpagent   { 'MessagingServer' }
 
@@ -58,7 +55,7 @@ sub scan {
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        if( ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
+        if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
@@ -85,7 +82,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } );
+            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( $e =~ $RxMTA->{'rfc822'} );
             next unless length $e;
 
             # --Boundary_(ID_0000000000000000000000)
