@@ -13,18 +13,12 @@ my $RxMTA = {
     'from'    => qr/\AMail Delivery Subsystem/,
     'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => [
-        qr|\AContent-Type: message/rfc822\z|,
-        qr|\AContent-Type: text/rfc822-headers\z|,
-    ],
+    'rfc822'  => qr!\AContent-Type:\s*(?:message/rfc822|text/rfc822-headers)\z!x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => [
-        qr/see transcript for details\z/,
-        qr/\AWarning: /,
-    ],
+    'subject' => qr/(?:see\stranscript\sfor\sdetails\z|\AWarning:\s)/x,
 };
 
-sub version     { '4.0.14' }
+sub version     { '4.0.15' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -37,7 +31,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
+    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
     unless( $mhead->{'subject'} =~ m/\A\s*Fwd?:/i ) {
         # Fwd: Returned mail: see transcript for details
         # Do not execute this code if the bounce mail is a forwarded message.
@@ -69,7 +63,7 @@ sub scan {
 
     for my $e ( @$stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        if( ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
+        if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
@@ -96,9 +90,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless 
-                ( $e =~ $RxMTA->{'begin'} ) ..
-                ( grep { $e =~ $_ } @{ $RxMTA->{'rfc822'} } );
+            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( $e =~ $RxMTA->{'rfc822'} );
             next unless length $e;
 
             if( $connvalues == scalar( keys %$connheader ) ) {
