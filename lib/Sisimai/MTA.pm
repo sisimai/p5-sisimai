@@ -55,13 +55,11 @@ sub RFC822HEADERS {
 
     if( length $group ) {
         # The 1st argument specified
-        if( exists $heads->{ $group } ) {
-            return $heads->{ $group };
+        return $heads->{ $group } if exists $heads->{ $group };
 
-        } else {
-            # Return all the values when the group name does not exist
-            return $heads;
-        }
+        # Return all the values when the group name does not exist
+        return $heads;
+
     } else {
         # Flatten hash reference then return array reference
         my $lists = [];
@@ -73,6 +71,9 @@ sub RFC822HEADERS {
 }
 
 sub smtpagent {
+    # @Description  Return MTA name: Call smtpagent() in each child class
+    # @Param        None
+    # @Return       (String) MTA name
     my $class = shift; 
     return shift // 'null';
 }

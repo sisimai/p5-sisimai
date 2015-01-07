@@ -18,6 +18,9 @@ sub RFC822HEADERS  {
 }
 
 sub smtpagent {
+    # @Description  Return MSP name: Call smtpagent() in each child class
+    # @Param        None
+    # @Return       (String) MSP name
     my $class = shift; 
     return shift // 'null';
 }
