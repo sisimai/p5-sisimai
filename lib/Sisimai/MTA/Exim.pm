@@ -32,11 +32,11 @@ my $RxMTA = {
     'rfc822'    => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
     'begin'     => qr/\AThis message was created automatically by mail delivery software[.]/,
     'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject'   => [
-        qr/Mail delivery failed(:?: returning message to sender)?/,
-        qr/Warning: message .+ delayed\s+/,
-        qr/Delivery Status Notification/,
-    ],
+    'subject'   => qr/(?:
+        Mail\sdelivery\sfailed(:?:\sreturning\smessage\sto\ssender)?|
+        Warning:\smessage\s.+\sdelayed\s+|
+        Delivery\sStatus\sNotification)
+    /x,
     'message-id' => qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
     # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
 };
@@ -100,7 +100,7 @@ my $RxSess = {
     ],
 };
 
-sub version     { '4.0.11' }
+sub version     { '4.0.12' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -114,8 +114,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless grep { $mhead->{'subject'} =~ $_ } @{ $RxMTA->{'subject'} };
-    return undef unless $mhead->{'from'} =~ $RxMTA->{'from'};
+    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $RxMTA->{'from'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
