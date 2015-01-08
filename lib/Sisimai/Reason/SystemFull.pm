@@ -7,11 +7,13 @@ sub text  { 'systemfull' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr/mail system full/,
-        qr/requested mail action aborted: exceeded storage allocation/, # MS Exchange
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?:
+         mail[ ]system[ ]full
+        |requested[ ]mail[ ]action[ ]aborted:[ ]exceeded[ ]storage[ ]allocation # MS Exchange
+        )
+    }ix;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
