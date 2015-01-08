@@ -37,7 +37,7 @@ sub is_emailaddress {
     my $class = shift;
     my $email = shift // return 0;
 
-    return 0 if $email =~ m/([\x00-\x1f]|\x1f)/;
+    return 0 if $email =~ m/(?:[\x00-\x1f]|\x1f)/;
     return 1 if $email =~ $Rx->{'ignored'};
     return 0;
 }
@@ -49,7 +49,7 @@ sub is_domainpart {
     my $class = shift;
     my $dpart = shift // return 0;
 
-    return 0 if $dpart =~ m/([\x00-\x1f]|\x1f)/;
+    return 0 if $dpart =~ m/(?:[\x00-\x1f]|\x1f)/;
     return 0 if $dpart =~ m/[@]/;
     return 1 if $dpart =~ $Rx->{'domain'};
     return 0;
