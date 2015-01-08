@@ -16,6 +16,7 @@ sub match {
            )
         |hosts[ ]with[ ]dynamic[ ]ip
         |no[ ]access[ ]from[ ]mail[ ]server
+        |sorry,[ ]your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
         |unresolvable[ ]relay[ ]host[ ]name
         )
     }xi;
