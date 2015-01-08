@@ -7,32 +7,35 @@ sub text  { 'notaccept' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        # Rejected due to IP address or hostname.
-        qr/dns lookup failure: .+ try again later/,
-        qr/domain does not exist:/,
-        qr/domain of sender address .+ does not exist/,
-        qr|http://www[.]spamhaus[.]org|,
-        qr|http://dsbl[.]org/|,
-	qr/the (:?email|domain|ip).+ is blacklisted/,
-	qr/greylisted.?. please try again in/,
-        qr| blocked for abuse[.] see http://att[.]net/blocks|,	# AT&T
-        qr/www[.]sorbs[.]net/,				# sorbs.net RBL
-        qr/rule imposed as .+is blacklisted on/,	# Mailmarshal RBLs
-        qr/ip \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} is blocked by earthlink/,		# Earthlink
-        qr/invalid domain, see [<]url:.+[>]/,
-        qr/listed in work[.]drbl[.]imedia[.]ru/,
-        qr/mail server at .+ is blocked/,
-        qr/message rejected for policy reasons/,
-        qr/mx records for .+ violate section .+/,
-        qr/name service error for /,    # Malformed MX RR or host not found
-        qr/rfc 1035 violation: recursive cname records for/,
-        qr/smtp protocol returned a permanent error/,
-        qr/sorry, your remotehost looks suspiciously like spammer/,
-        qr/we do not accept mail from hosts with dynamic ip or generic dns ptr-records/, # MAIL.RU
-        qr/we do not accept mail from dynamic ips/, # MAIL.RU
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr!(?:  # Destination mail server does not accept any message
+         dns[ ]lookup[ ]failure:[ ].+[ ]try[ ]again[ ]later
+        |domain[ ]does[ ]not[ ]exist:
+        |greylisted.?.[ ]please[ ]try[ ]again[ ]in
+        |http://(?:
+             www[.]spamhaus[.]org
+            |dsbl[.]org
+            |www[.]sorbs[.]net
+            )
+        |blocked[ ]for[ ]abuse[.][ ]see[ ]http://att[.]net/blocks   # AT&T
+        |invalid[ ]domain,[ ]see[ ][<]url:.+[>]
+        |ip[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]earthlink # Earthlink
+        |listed[ ]in[ ]work[.]drbl[.]imedia[.]ru
+        |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
+        |message[ ]rejected[ ]for[ ]policy[ ]reasons
+        |mx[ ]records[ ]for[ ].+[ ]violate[ ]section[ ].+
+        |name[ ]service[ ]error[ ]for[ ]    # Malformed MX RR or host not found
+        |rfc[ ]1035[ ]violation:[ ]recursive[ ]cname[ ]records[ ]for
+        |rule[ ]imposed[ ]as[ ].+is[ ]blacklisted[ ]on              # Mailmarshal RBLs
+        |smtp[ ]protocol[ ]returned[ ]a[ ]permanent[ ]error
+        |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
+        |we[ ]do[ ]not[ ]accept[ ]mail[ ]from[ ](?: # @mail.ru
+             hosts[ ]with[ ]dynamic[ ]ip[ ]or[ ]generic[ ]dns[ ]ptr-records
+            |dynamic[ ]ips
+            )
+        )
+    !xi;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
