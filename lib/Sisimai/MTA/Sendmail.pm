@@ -44,6 +44,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
@@ -56,7 +57,6 @@ sub scan {
     };
     my $anotherset = {};    # Another error information
 
-    my $h = __PACKAGE__->LONGFIELDS;
     my $v = undef;
     my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -81,11 +81,11 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$h;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless grep { $previousfn eq $_ } @$h;
+                next unless grep { $previousfn eq $_ } @$longfields;
                 next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
