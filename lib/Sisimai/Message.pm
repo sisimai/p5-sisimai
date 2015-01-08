@@ -231,12 +231,12 @@ sub resolve {
                 # Header name as a key, The value of header as a value
                 if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                     # Header
-                    my $lhs = $1;
+                    my $lhs = lc $1;
                     my $rhs = $2;
 
                     $previousfn = '';
-                    next unless grep { lc $lhs eq lc $_ } @$rfc822head;
-                    $previousfn = lc $lhs;
+                    next unless grep { $lhs eq lc $_ } @$rfc822head;
+                    $previousfn = $lhs;
                     $rfc822part->{ $previousfn } //= $rhs;
 
                 } else {
