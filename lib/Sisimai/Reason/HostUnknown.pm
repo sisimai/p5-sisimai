@@ -7,16 +7,20 @@ sub text  { 'hostunknown' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr/recipient domain must exist/,    # qmail ?
-        qr/host or domain name not found/,
-        qr/host unknown/,
-        qr/host unreachable/,
-        qr/name or service not known/,
-        qr/no such domain/,
-        qr/recipient address rejected: unknown domain name/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?>
+         recipient[ ]domain[ ]must[ ]exist
+        |host[ ](?:
+             or[ ]domain[ ]name[ ]not[ ]found
+            |unknown
+            |unreachable
+            )
+        |name[ ]or[ ]service[ ]not[ ]known
+        |no[ ]such[ ]domain
+        |recipient[ ]address[ ]rejected:[ ]unknown[ ]domain[ ]name
+        )
+    }ix;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
