@@ -7,15 +7,20 @@ sub text  { 'norelaying' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr/mail server requires authentication when attempting to send to a non-local e-mail address/, # MailEnable 
-        qr/relay access denied/,
-        qr/relay denied/,
-        qr/relay not permitted/,
-        qr/relaying denied/,                                    # Sendmail
-        qr/that domain isn[']t in my list of allowed rcpthost/, # qmail
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?> 
+         mail[ ]server[ ]requires[ ]authentication[ ]when[ ]attempting[ ]to[ ]
+            send[ ]to[ ]a[ ]non-local[ ]e-mail[ ]address    # MailEnable 
+        |relay[ ](?:
+             access[ ]denied
+            |denied
+            |not[ ]permitted
+            )
+        |relaying[ ]denied  # Sendmail
+        |that[ ]domain[ ]isn[']t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthost
+        )
+    }ix;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
