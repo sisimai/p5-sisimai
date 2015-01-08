@@ -7,7 +7,7 @@ sub text  { 'blocked' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = qr{(?:
+    my $regex = qr{(?>
          access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
         |client[ ]host[ ]rejected:[ ]may[ ]not[ ]be[ ]mail[ ]exchanger
         |connection[ ](?:
