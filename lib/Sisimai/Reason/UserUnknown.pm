@@ -4,17 +4,15 @@ use strict;
 use warnings;
 
 sub text  { 'userunknown' }
-sub match {
-    my $class = shift;
-    my $argvs = shift // return undef;
-    my $regex = [
+sub regex {
+    return [
         qr/.+ user unknown/,
         qr/[#]5[.]1[.]1 bad address/,
         qr/archived recipient/, 
         qr/destination server rejected recipients/,
         qr/email address does not exist/,
         qr/invalid mailbox path/,
-        qr/invalid recipient/,		# Linkedin
+        qr/invalid recipient/,      # Linkedin
         qr/no account by that name here/,
         qr/no such mailbox/,
         qr/no such person at this address/,
@@ -34,7 +32,7 @@ sub match {
         qr/recipient address rejected: unknown user/,
         qr/recipient is not local/,
         qr/recipient not found/,
-        qr/Requested action not taken: mailbox unavailable/,
+        qr/requested action not taken: mailbox unavailable/,
         qr/said: 550[-\s]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]/,
         qr/sorry, user unknown/,
         qr/sorry, no mailbox here by that name/,    # qmail
@@ -51,7 +49,71 @@ sub match {
         qr/user unknown/, 
         qr/vdeliver: invalid or unknown virtual user/,
     ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+}
+
+sub match {
+    my $class = shift;
+    my $argvs = shift // return undef;
+    my $regex = qr!(?:
+        .+\suser\sunknown|
+        [#]5[.]1[.]1\sbad\saddress|
+        archived\srecipient|
+        destination\sserver\srejected\srecipients|
+        email\saddress\sdoes\snot\sexist|
+        invalid\smailbox\spath|
+        invalid\srecipient|                 # Linkedin
+        no\saccount\sby\sthat\sname\shere|
+        no\ssuch\s(?:
+            mailbox|
+            person\sat\sthis\saddress|
+            recipient|
+            user(?:\shere)?
+            )|
+        [<].+[>]\snot\sfound|
+        mailbox\s(?:
+            not\spresent|
+            not\sfound|
+            unavailable
+            )|
+        no\s.+\sin\sname\sdirectory|
+        recipient\s(?:
+            .+\swas\snot\sfound\sin|
+            address\srejected:\s(?:
+                access\sdenied|
+                invalid\suser|
+                user\s.+\sdoes\snot\sexist|
+                user\sunknown\sin\s.+\stable|
+                unknown\suser
+                )|
+            is\snot\slocal|
+            not\sfound
+            )|
+        Requested\saction\snot\staken:\smailbox\sunavailable|
+        said:\s550[-\s]5[.]1[.]1\s.+\suser\sunknown\s|
+        sorry,\s(?:
+            user\sunknown|
+            no\smailbox\shere\sby\sthat\sname
+            )|
+        this\saddress\sno\slonger\saccepts\smail|
+        this\suser\sdoesn[']?t\shave\sa\s.+\saccount|
+        undeliverable\saddress|
+        unknown\s(?:
+            address|
+            local[- ]part|
+            recipient|
+            user
+            )|
+        user\s(?:
+            .+\swas\snot\sfound|
+            missing\shome\sdirectory|
+            not\sfound|     # 550 User not found. See http://mail.bigmir.net/err/2/
+            unknown
+            )|
+        vdeliver:\sinvalid\sor\sunknown\svirtual\suser
+        )
+    !xi;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
