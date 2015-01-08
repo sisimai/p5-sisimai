@@ -7,7 +7,7 @@ sub text  { 'exceedlimit' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = qr/message too large/
+    my $regex = qr/message too large/;
 
     return 1 if $argvs =~ $regex;
     return 0;
