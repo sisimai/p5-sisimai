@@ -2,6 +2,7 @@
 /_build/
 /Build
 /blib
+/sbin
 
 # Carton releated files
 /carton.lock
