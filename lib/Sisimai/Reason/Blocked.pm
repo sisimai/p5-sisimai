@@ -7,17 +7,20 @@ sub text  { 'blocked' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        # Blocked due to clent IP address or hostname
-        qr/access from ip address .+ blocked/,
-        qr/client host rejected: may not be mail exchanger/,
-        qr/connection refused by/,
-        qr/connection reset by peer/,
-        qr/hosts with dynamic ip/,
-        qr/no access from mail server/,
-        qr/unresolvable relay host name/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?:
+         access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
+        |client[ ]host[ ]rejected:[ ]may[ ]not[ ]be[ ]mail[ ]exchanger
+        |connection[ ](?:
+            refused[ ]by
+           |reset[ ]by[ ]peer
+           )
+        |hosts[ ]with[ ]dynamic[ ]ip
+        |no[ ]access[ ]from[ ]mail[ ]server
+        |unresolvable[ ]relay[ ]host[ ]name
+        )
+    }xi;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
