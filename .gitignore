@@ -10,8 +10,7 @@
 /local/
 
 # Devel::NYTProf related files
-nytprof.out
-nytprof/
+nytprof*
 
 # Devel::Cover related files
 cover_db/
