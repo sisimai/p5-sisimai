@@ -13,12 +13,12 @@ my $RxMTA = {
     'from'    => qr/\AMail Delivery Subsystem/,
     'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => qr!\AContent-Type:\s*(?:message/rfc822|text/rfc822-headers)\z!x,
+    'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/(?:see\stranscript\sfor\sdetails\z|\AWarning:\s)/x,
+    'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
 };
 
-sub version     { '4.0.15' }
+sub version     { '4.0.17' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -56,6 +56,7 @@ sub scan {
     };
     my $anotherset = {};    # Another error information
 
+    my $h = __PACKAGE__->LONGFIELDS;
     my $v = undef;
     my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -69,9 +70,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -79,12 +81,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$h;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$h;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
