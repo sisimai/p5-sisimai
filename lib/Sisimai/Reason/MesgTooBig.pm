@@ -7,16 +7,22 @@ sub text  { 'mesgtoobig' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr/exceeded maximum inbound message size/,
-        qr/message file too big/,
-        qr/message length exceeds administrative limit/,
-        qr/message size exceeds fixed limit/,
-        qr/message size exceeds fixed maximum message size/,
-        qr/message size exceeds maximum value/,
-        qr/message too big/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?>
+         exceeded[ ]maximum[ ]inbound[ ]message[ ]size
+        |message[ ](?:
+             file[ ]too[ ]big
+            |length[ ]exceeds[ ]administrative[ ]limit
+            |size[ ]exceeds[ ](?:
+                 fixed[ ]limit
+                |fixed[ ]maximum[ ]message[ ]size
+                |maximum[ ]value
+                )
+            |too[ ]big
+            )
+        )
+    }ix;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
