@@ -7,15 +7,17 @@ sub text  { 'expired' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr/connection timed out/,
-        qr/could not find a gateway for/,
-        qr/delivery time expired/,
-        qr/giving up on/,
-        qr/retry time not reached for any host after a long failure period/,
-        qr/this message has been in the queue too long/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?:
+         connection[ ]timed[ ]out
+        |could[ ]not[ ]find[ ]a[ ]gateway[ ]for
+        |delivery[ ]time[ ]expired
+        |giving[ ]up[ ]on
+        |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
+        |this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long
+        )
+    }ix;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
