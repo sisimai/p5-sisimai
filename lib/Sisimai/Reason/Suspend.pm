@@ -7,15 +7,19 @@ sub text  { 'suspend' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr|invalid/inactive user|,
-        qr/mailbox unavailable or access denied/, # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
-        qr/user suspended/, # http://mail.163.com/help/help_spam_16.htm
-        qr/recipient suspend the service/,
-        qr/sorry your message to .+ cannot be delivered[.] this account has been disabled or discontinued/,
-        qr/vdelivermail: account is locked email bounced/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?:
+         invalid/inactive[ ]user
+        # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
+        |mailbox[ ]unavailable[ ]or[ ]access[ ]denied
+        |user[ ]suspended   # http://mail.163.com/help/help_spam_16.htm
+        |recipient[ ]suspend[ ]the[ ]service
+        |sorry[ ]your[ ]message[ ]to[ ].+[ ]cannot[ ]be[ ]delivered[.][ ]this[ ]
+            account[ ]has[ ]been[ ]disabled[ ]or[ ]discontinued
+        |vdelivermail:[ ]account[ ]is[ ]locked[ ]email[ ]bounced
+        )
+    }xi;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
