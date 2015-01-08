@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub version     { return '4.0.6' }
+sub version     { return '4.0.7' }
 sub description { return '' }
 sub headerlist  { return [] }
 
@@ -33,6 +33,11 @@ sub DELIVERYSTATUS {
         'softbounce'   => -1,   # Soft bounce or not
         'feedbacktype' => '',   # FeedBack Type
     };
+}
+
+sub LONGFIELDS {
+    # Fields that might be long
+    return [ 'To', 'From', 'Subject' ];
 }
 
 sub RFC822HEADERS {
