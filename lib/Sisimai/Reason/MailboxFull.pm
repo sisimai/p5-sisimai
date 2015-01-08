@@ -7,41 +7,50 @@ sub text  { 'mailboxfull' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        # postfix/src/{local,virtula}/maildir.c:
-        #  vstring_sprintf_prepend(why->reason, "maildir delivery failed: ");
-        qr/maildir delivery failed: User disk quota ?.* exceeded/,
-        qr/maildir delivery failed: Domain disk quota ?.* exceeded/,
-        qr/mailbox exceeded the local limit/,
+    my $regex = qr{(?>
+         account[ ]is[ ](?:
+             over[ ]quota
+            |temporarily[ ]over[ ]quota
+            )
+        |delivery[ ]failed:[ ]over[ ]quota
+        |disc[ ]quota[ ]exceeded
+        |exceeded[ ]storage[ ]allocation
+        |is[ ]over[ ]quota[ ]temporarily
+        |mail[ ](?:
+             file[ ]size[ ]exceeds[ ]the[ ]maximum[ ]size[ ]allowed[ ]for[ ]mail[ ]delivery
+            |quota[ ]exceeded
+            )
+        |mailbox[ ](?:
+             exceeded[ ]the[ ]local[ ]limit
+            |full
+            |is[ ]full
+            |over[ ]quota
+            )
+        |maildir[ ](?:
+             delivery[ ]failed:[ ](?:User|Domain)disk[ ]quota[ ]?.*[ ]exceeded
+            |over[ ]quota
+            )
+        |not[ ]enough[ ]storage[ ]space[ ]in
+        |over[ ]the[ ]allowed[ ]quota
+        |quota[ ]exceeded
+        |recipient[ ](?:
+             reached[ ]disk[ ]quota
+            |rejected:[ ]mailbox[ ]would[ ]exceed[ ]maximum[ ]allowed[ ]storage
+            )
+        |too[ ]much[ ]mail[ ]data   # @docomo.ne.jp
+        |user[ ](?:
+             has[ ]exceeded[ ]quota,[ ]bouncing[ ]mail
+            |is[ ]over[ ]quota
+            |is[ ]over[ ]the[ ]quota
+            |over[ ]quota
+            |over[ ]quota[.][ ][(][#]5[.]1[.]1[)]   # qmail-toaster
+            )
+        |was[ ]automatically[ ]rejected:[ ]quota[ ]exceeded
+        |would[ ]be[ ]over[ ]the[ ]allowed[ ]quota
+        )
+    }ix;
 
-        qr/account is over quota/,
-        qr/account is temporarily over quota/,
-        qr/dd sorry, your message to .+ cannot be delivered[.] this account is over quota/,
-        qr/delivery failed: over quota/,
-        qr/disc quota exceeded/,
-        qr/exceeded storage allocation/,
-        qr/is over quota temporarily/,
-        qr/mail file size exceeds the maximum size allowed for mail delivery/,
-        qr/mail quota exceeded/,
-        qr/mailbox over quota/,
-        qr/mailbox full/,
-        qr/mailbox is full/,
-        qr/maildir over quota/,
-        qr/not enough storage space in/,
-        qr/would be over the allowed quota/,
-        qr/over the allowed quota/,
-        qr/quota exceeded/,
-        qr/recipient reached disk quota/,
-        qr/recipient rejected: mailbox would exceed maximum allowed storage/,
-        qr/too much mail data/, # @docomo.ne.jp
-        qr/user has exceeded quota, bouncing mail/,
-        qr/user is over quota/,
-        qr/user is over the quota/,
-        qr/user over quota[.] [(][#]5[.]1[.]1[)]\z/,    # qmail-toaster
-        qr/user over quota/,
-        qr/was automatically rejected: quota exceeded/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
