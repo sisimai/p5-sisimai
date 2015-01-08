@@ -7,16 +7,23 @@ sub text  { 'filtered' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr/because the recipient is only accepting mail from specific email addresses/, # AOL Phoenix
-        qr/due to extended inactivity new mail is not currently being accepted for this mailbox/,
-        qr|http://postmaster[.]facebook[.]com/.+refused due to recipient preferences|,  # Facebook
-        qr/permanent failure for one or more recipients [(].+:blocked[)]/,
-        qr/user not found:/,    # Filter on MAIL.RU
-        qr/user reject/,
-        qr/we failed to deliver mail because the following address recipient id refuse to receive mail/,    # Willcom
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?>
+         because[ ]the[ ]recipient[ ]is[ ]only[ ]accepting[ ]mail[ ]from[ ]
+            specific[ ]email[ ]addresses    # AOL Phoenix
+        |due[ ]to[ ]extended[ ]inactivity[ ]new[ ]mail[ ]is[ ]not[ ]currently[ ]
+            being[ ]accepted[ ]for[ ]this[ ]mailbox
+        |http://postmaster[.]facebook[.]com/.+refused[ ]due[ ]to[ ]recipient[ ]preferences # Facebook
+        |permanent[ ]failure[ ]for[ ]one[ ]or[ ]more[ ]recipients[ ][(].+:blocked[)]
+        |user[ ](?:
+            not found   # Filter on MAIL.RU
+            reject
+            )
+        |we[ ]failed[ ]to[ ]deliver[ ]mail[ ]because[ ]the[ ]following[ ]address
+            [ ]recipient[ ]id[ ]refuse[ ]to[ ]receive[ ]mail    # Willcom
+        )
+    }ix;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
