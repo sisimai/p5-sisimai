@@ -7,20 +7,23 @@ sub text  { 'mailererror' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        # postfix/src/global/pipe_command.c:
-        #  vstring_prepend(why->reason, "Command failed: ", 
-        qr/Command failed: /,
+    my $regex = qr{(?>
+         command[ ](?:
+             failed:[ ]
+            |died[ ]with[ ]status[ ]\d+
+        )
+        |\Aprocmail:[ ]    # procmail
+        |bin/(?:
+             procmail
+            |maildrop
+            )
+        |mailer[ ]error
+        |X[-]UNIX[;][ ]\d+  # X-UNIX; 127
+        |exit[ ]\d+
+        )
+    }ix;
 
-        qr/\Aprocmail: /,                   # procmail
-        qr|bin/procmail|,
-        qr|bin/maildrop|,
-        qr/mailer error/,
-        qr/x[-]unix[;][ ]\d{1,3}/,          # X-UNIX; 127
-        qr/command died with status \d+/,
-        qr/exit \d/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
