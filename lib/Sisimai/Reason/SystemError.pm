@@ -7,26 +7,28 @@ sub text  { 'systemerror' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        # Postfix
-        qr/can[']t create user output file/,
-        qr/mail forwarding loop for /,
-        qr/mail for .+ loops back to myself/,
-        qr/mail system configuration error/,
-        qr/server configuration error/,
+    my $regex = qr{(?>
+         can[']t[ ]create[ ]user[ ]output[ ]file
+        |host[ ]is[ ]unreachable
+        |interrupted[ ]system[ ]call
+        |local[ ](?:
+             configuration[ ]error
+            |error[ ]in[ ]processing
+            )
+        |mail[ ](?:
+             forwarding[ ]loop[ ]for[ ]
+            |for[ ].+[ ]loops[ ]back[ ]to[ ]myself
+            |system[ ]configuration[ ]error
+            )
+        |maximum[ ]forwarding[ ]loop[ ]count[ ]exceeded
+        |server[ ]configuration[ ]error
+        |system[ ]config[ ]error
+        |timeout[ ]waiting[ ]for[ ]input
+        |too[ ]many[ ]hops
+        )
+    }ix;
 
-        qr/host is unreachable/,
-        qr/interrupted system call/,
-        qr/local configuration error/,
-        qr/local error in processing/,
-        qr/mail system configuration error/,
-        qr/maximum forwarding loop count exceeded/,
-        qr/server configuration error/,
-        qr/system config error/,
-        qr/timeout waiting for input/,
-        qr/too many hops/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
