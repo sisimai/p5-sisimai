@@ -7,54 +7,75 @@ sub text  { 'securityerror' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr/authentication failed; server .+ said:/,     # Postfix
-        qr/authentication turned on in your email client/,
+    my $regex = qr{(?>
+         ["]The[ ]mail[ ]server[ ]detected[ ]your[ ]message[ ]as[ ]spam[ ]and[ ]
+            has[ ]prevented[ ]delivery[.]["]    # CPanel/Exim with SA rejections on
+        |authentication[ ](?:
+             failed;[ ]server[ ].+[ ]said:  # Postfix
+            |turned[ ]on[ ]in[ ]your[ ]email[ ]client
+            )
+        |\d+[ ]denied[ ]\[[a-z]+\][ ].+[(]Mode:[ ].+[)]
+        |because[ ](?>
+             the[ ]recipient[ ]is[ ]not[ ]accepting[ ]mail[ ]with[ ](?:
+                 attachments        # AOL Phoenix
+                |embedded[ ]images  # AOL Phoenix
+                )
+            )
+        |blocked[ ]by[ ](?:
+             policy:[ ]no[ ]spam[ ]please
+            |spamAssassin                   # rejected by SpamAssassin
+            )
+        |cyberoam[ ]anti[ ]spam[ ]engine[ ]has[ ]identified[ ]this[ ]email[ ]as[ ]a[ ]bulk[ ]email
+        |denied[ ]due[ ]to[ ]spam[ ]list
+        |domain[ ].+[ ]is[ ]a[ ]dead[ ]domain
+        |dt:spm[ ]mx.+[ ]http://mail[.]163[.]com/help/help_spam_16[.]htm
+        |email[ ](?:
+             not[ ]accepted[ ]for[ ]policy[ ]reasons
+            # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
+            |rejected[ ]due[ ]to[ ]security[ ]policies
+            )
+        |insecure[ ]mail[ ]relay
+        |mail[ ](?:
+             appears[ ]to[ ]be[ ]unsolicited    # rejected due to spam
+            |content[ ]denied   # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000726
+            )
+        |message[ ](?:
+             filtered
+            |filtered[.][ ]please[ ]see[ ]the[ ]faqs[ ]section[ ]on[ ]spam
+            |rejected[ ]due[ ]to[ ]suspected[ ]spam[ ]content
+            |refused[ ]by[ ]mailmarshal[ ]spamprofiler
+            )
+        |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
+        |rejected(?:
+             :[ ]spamassassin[ ]score[ ]
+            |[ ]due[ ]to[ ]spam[ ]content
+            )
+        |rejecting[ ]banned[ ]content 
+        |sorry,[ ](?:
+             that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
+            |you[ ]don'?t[ ]authenticate[ ]or[ ]the[ ]domain[ ]isn'?t[ ]in[ ]
+                my[ ]list[ ]of[ ]allowed[ ]rcpthosts
+            )
+        |spam[ ](?:
+             detected
+            |email[ ]not[ ]accepted
+            |message[ ]rejected[.]       # mail.ru
+            |not[ ]accepted
+            )
+        |spambouncer[ ]identified[ ]spam # SpamBouncer identified SPAM
+        |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]
+            virus[ ]or[ ]spam[ ]content
+        |transaction[ ]failed[ ]spam[ ]message[ ]not[ ]queued
+        |we[ ]dont[ ]accept[ ]spam
+        |your[ ](?:
+             email[ ]is[ ]considered[ ]spam
+            |message[ ]has[ ]been[ ]temporarily[ ]blocked[ ]by[ ]our[ ]filter
+            |network[ ]is[ ]temporary[ ]blacklisted
+            )
+        )
+    }ix;
 
-        # Rejected due to message contents: spam, virus or header.
-	qr/"The mail server detected your message as spam and has prevented delivery[.]"/, # CPanel/Exim with SA rejections on
-        qr/\d+ denied \[[a-z]+\] .+[(]Mode: .+[)]/,
-        qr/because the recipient is not accepting mail with attachments/,   # AOL Phoenix
-        qr/because the recipient is not accepting mail with embedded images/,   # AOL Phoenix
-        qr/blocked by policy: no spam please/,
-        qr/blocked by spamAssassin/,        # rejected by SpamAssassin
-        qr/domain .+ is a dead domain/,
-        qr!dt:spm mx.+ http://mail[.]163[.]com/help/help_spam_16[.]htm!,
-        qr/email not accepted for policy reasons/,
-        qr/insecure mail relay/,
-        qr/email rejected due to security policies/, # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
-
-        qr/mail appears to be unsolicited/, # rejected due to spam
-        qr/mail content denied/, # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000726
-        qr/message filtered/,
-        qr/message filtered[.] please see the faqs section on spam/,
-        qr/message rejected due to suspected spam content/,
-        qr/message refused by mailmarshal spamprofiler/,
-        qr/spam message rejected[.]/,        # mail.ru
-        qr/your email is considered spam/,
-        qr/denied due to spam list/,
-        qr/spam email not accepted/,
-        qr/transaction failed spam message not queued/,
-        qr/your email is considered spam/,
-        qr/cyberoam anti spam engine has identified this email as a bulk email/,
-        qr/your email is considered spam/,
-        qr/spam detected/,
-
-        qr/our filters rate at and above .+ percent probability of being spam/,
-        qr/rejected: spamassassin score /,
-        qr/rejected due to spam content/,
-        qw/rejecting banned content/, 
-        qr/sorry, that domain isn'?t in my list of allowed rcpthosts/,
-        qr/sorry, your don'?t authenticate or the domain isn'?t in my list of allowed rcpthosts/,
-        qr/spam not accepted/,
-        qr/spambouncer identified spam/,    # SpamBouncer identified SPAM
-
-        qr/the message was rejected because it contains prohibited virus or spam content/,
-        qr/we dont accept spam/,
-        qr/your message has been temporarily blocked by our filter/,
-        qr/your network is temporary blacklisted/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
