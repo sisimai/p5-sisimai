@@ -15,8 +15,8 @@ sub match {
         |http://postmaster[.]facebook[.]com/.+refused[ ]due[ ]to[ ]recipient[ ]preferences # Facebook
         |permanent[ ]failure[ ]for[ ]one[ ]or[ ]more[ ]recipients[ ][(].+:blocked[)]
         |user[ ](?:
-            not found   # Filter on MAIL.RU
-            reject
+             not[ ]found  # Filter on MAIL.RU
+            |reject
             )
         |we[ ]failed[ ]to[ ]deliver[ ]mail[ ]because[ ]the[ ]following[ ]address
             [ ]recipient[ ]id[ ]refuse[ ]to[ ]receive[ ]mail    # Willcom
