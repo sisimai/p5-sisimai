@@ -7,16 +7,21 @@ sub text  { 'contenterror' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = [
-        qr/message header size, or recipient list, exceeds policy limit/,
-        qr/message mime complexity exceeds the policy maximum/,
-        qr/routing loop detected -- too many received: headers/,
-        qr/the headers in this message contain improperly-formatted binary content/,
-        qr/this message contains invalid MIME headers/,
-        qr/this message contains improperly-formatted binary content/,
-        qr/this message contains text that uses unnecessary base64 encoding/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    my $regex = qr{(?>
+         message[ ](?:
+             header[ ]size,[ ]or[ ]recipient[ ]list,[ ]exceeds[ ]policy[ ]limit
+            |mime[ ]complexity[ ]exceeds[ ]the[ ]policy[ ]maximum
+            )
+        |routing[ ]loop[ ]detected[ ][-][-][ ]too[ ]many[ ]received:[ ]headers
+        |this[ ]message[ ]contains?[ ](?:
+             invalid[ ]MIME[ ]headers
+            |improperly[-]formatted[ ]binary[ ]content
+            |text[ ]that[ ]uses[ ]unnecessary[ ]base64[ ]encoding
+            )
+        )
+    }xi;
+
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
