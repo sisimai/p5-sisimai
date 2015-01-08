@@ -5,7 +5,7 @@ use Sisimai::Reason::UserUnknown;
 
 my $PackageName = 'Sisimai::Reason::UserUnknown';
 my $MethodNames = {
-    'class' => [ 'text', 'match', 'regex', 'true' ],
+    'class' => [ 'text', 'match', 'true' ],
     'object' => [],
 };
 
@@ -15,7 +15,6 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     is $PackageName->text, 'userunknown', '->text = userunknown';
     ok $PackageName->match('550 5.1.1 Unknown User');
-    isa_ok $PackageName->regex(), 'ARRAY';
     is $PackageName->true, undef, '->true = undef';
 }
 

@@ -4,53 +4,6 @@ use strict;
 use warnings;
 
 sub text  { 'userunknown' }
-sub regex {
-    return [
-        qr/.+ user unknown/,
-        qr/[#]5[.]1[.]1 bad address/,
-        qr/archived recipient/, 
-        qr/destination server rejected recipients/,
-        qr/email address does not exist/,
-        qr/invalid mailbox path/,
-        qr/invalid recipient/,      # Linkedin
-        qr/no account by that name here/,
-        qr/no such mailbox/,
-        qr/no such person at this address/,
-        qr/no such recipient/,
-        qr/no such user here/,
-        qr/no such user/,
-        qr/<.+> not found/,
-        qr/mailbox not present/,
-        qr/mailbox not found/,
-        qr/mailbox unavailable/,
-        qr/no .+ in name directory/,
-        qr/recipient .+ was not found in/,
-        qr/recipient address rejected: access denied/,
-        qr/recipient address rejected: invalid user/,
-        qr/recipient address rejected: user .+ does not exist/,
-        qr/recipient address rejected: user unknown in[ ].+[ ]table/,
-        qr/recipient address rejected: unknown user/,
-        qr/recipient is not local/,
-        qr/recipient not found/,
-        qr/requested action not taken: mailbox unavailable/,
-        qr/said: 550[-\s]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]/,
-        qr/sorry, user unknown/,
-        qr/sorry, no mailbox here by that name/,    # qmail
-        qr/this address no longer accepts mail/,
-        qr/this user doesn[']?t have a .+ account/, # Yahoo!
-        qr/undeliverable address/,
-        qr/unknown address/,
-        qr/unknown local[- ]part/,
-        qr/unknown recipient/,
-        qr/unknown user/,
-        qr/user .+ was not found/,
-        qr/user missing home directory/,
-        qr/user not found/,     # 550 User not found. See http://mail.bigmir.net/err/2/
-        qr/user unknown/, 
-        qr/vdeliver: invalid or unknown virtual user/,
-    ];
-}
-
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
