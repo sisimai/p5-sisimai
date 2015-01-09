@@ -5,21 +5,21 @@ use warnings;
 
 # http://tools.ietf.org/html/rfc3464
 my $RxRFC = {
-    'begin'  => qr!\A(?:
-        Content-Type:\s*message/delivery-status|
-        The\soriginal\smessage\swas\sreceived\sat\s|
-        This\sreport\srelates\sto\syour\smessage
+    'begin'  => qr{\A(?:
+         Content-Type:[ ]*message/delivery-status
+        |The[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
+        |This[ ]report[ ]relates[ ]to[ ]your[ ]message
         )
-    !xi,
+    }xi,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822' => qr!\A(?:
-        Content-Type:\s*(?:message/rfc822|text/rfc822-headers)|
-        Return-Path:\s*<.+>\z
+    'rfc822' => qr{\A(?>
+         Content-Type:[ ]*(?:message/rfc822|text/rfc822-headers)
+        |Return-Path:[ ]*[<].+[>]\z
         )\z
-    !xi,
+    }xi,
 };
 
-sub version     { '4.0.8' };
+sub version     { '4.0.9' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -46,6 +46,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = Sisimai::MTA->LONGFIELDS;
     my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -68,9 +69,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -78,12 +80,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
