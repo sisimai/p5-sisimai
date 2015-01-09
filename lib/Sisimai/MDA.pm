@@ -107,11 +107,11 @@ sub scan {
         # Detect MDA from error string in the message body.
         $linebuffer = [];
         for my $f ( @$stripedtxt ) {
-            # Check each line with each MDA's symbox regular expression.
+            # Check each line with each MDA's symbol regular expression.
             next if( $agentname0 eq '' && $f !~ $RxMDA->{ $e } );
             $agentname0 ||= $e;
             push @$linebuffer, $f;
-            last if $f =~ m/\A\z/;
+            last unless length $f;
         }
 
         last if $agentname0;
