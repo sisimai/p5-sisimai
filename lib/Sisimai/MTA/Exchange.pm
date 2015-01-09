@@ -11,10 +11,11 @@ my $RxMTA = {
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     # X-Mailer: Internet Mail Service (5.0.1461.28)
     # X-Mailer: Microsoft Exchange Server Internet Mail Connector Version ...
-    'x-mailer' => qr/\A(?:
-        Internet\sMail\sService\s[(][\d.]+[)]\z|
-        Microsoft\sExchange\sServer\sInternet\sMail\sConnector)
-    /x,
+    'x-mailer' => qr{\A(?:
+         Internet[ ]Mail[ ]Service[ ][(][\d.]+[)]\z
+        |Microsoft[ ]Exchange[ ]Server[ ]Internet[ ]Mail[ ]Connector
+        )
+    }x,
     'x-mimeole'=> qr/\AProduced By Microsoft Exchange/,
 
     # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
@@ -47,7 +48,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
@@ -95,6 +96,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $statuspart = 0;     # (Integer) Flag, 1 = have got delivery status part.
@@ -118,9 +120,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -128,12 +131,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
