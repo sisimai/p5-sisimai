@@ -7,25 +7,30 @@ use warnings;
 # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
 my $RxMTA = {
     'from'  => qr/ [(]Mail Delivery System[)]\z/,
-    'begin' => qr/\A(?:
-        \s+The\sPostfix\sprogram\z|
-        \s+The\sPostfix\son\s.+\sprogram\z| # The Postfix on <os name> program
-        \s+The\s\w+\sPostfix\sprogram\z|    # The <name> Postfix program
-        \s+The\smail\ssystem\z|
-        The\s\w+\sprogram\z|                # The <custmized-name> program
-        This\sis\sthe\s(?:
-            Postfix\sprogram|       # This is the Postfix program
-            \w+\sPostfix\sprogram|  # This is the <name> Postfix program
-            \w+\sprogram|           # This is the <customized-name> Postfix program
-            mail\ssystem\sat\shost  # This is the mail system at host <hostname>.
+    'begin' => qr{\A(?>
+         [ ]+The[ ](?:
+             Postfix[ ](?:
+                 program\z              # The Postfix program
+                |on[ ].+[ ]program\z    # The Postfix on <os name> program
+                )
+            |\w+[ ]Postfix[ ]program\z  # The <name> Postfix program
+            |mail\ssystem\z             # The mail system
+            |\w+\sprogram\z             # The <custmized-name> program
+            )
+        |This[ ]is[ ]the[ ](?:
+             Postfix[ ]program          # This is the Postfix program
+            |\w+[ ]Postfix[ ]program    # This is the <name> Postfix program
+            |\w+[ ]program              # This is the <customized-name> Postfix program
+            |mail[ ]system[ ]at[ ]host  # This is the mail system at host <hostname>.
+            )
         )
-    )/x,
+    }x,
     'rfc822'  => qr!\AContent-Type:\s*(?:message/rfc822|text/rfc822-headers)\z!x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.9' }
+sub version     { '4.0.10' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -57,6 +62,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
@@ -80,9 +86,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $1;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $lhs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -90,12 +97,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -125,7 +132,7 @@ sub scan {
                     $recipients++;
 
                 } elsif( $e =~ m/\AX-Actual-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/ ||
-                    $e =~ m/\AOriginal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/ ) {
+                         $e =~ m/\AOriginal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/ ) {
                     # X-Actual-Recipient: RFC822; kijitora@example.co.jp
                     # Original-Recipient: rfc822;kijitora@example.co.jp
                     $v->{'alias'} = $1;
