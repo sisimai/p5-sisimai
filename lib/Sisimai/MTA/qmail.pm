@@ -23,119 +23,124 @@ my $RxMTA = {
 };
 
 my $RxSMTP = {
-    # Error text regular expressions which defined in qmail-remote.c
-    'conn'  => [
+    'conn'  => qr{
+        # Error text regular expressions which defined in qmail-remote.c
         # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
-        qr/(?:Error:)?Connected to .+ but greeting failed[.]/,
-    ],
-    'ehlo' => [
+        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]greeting[ ]failed[.]
+    }x,
+    'ehlo' => qr{
         # qmail-remote.c:231|  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
-        qr/(?:Error:)?Connected to .+ but my name was rejected[.]/,
-    ],
-    'mail'  => [
+        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]my[ ]name[ ]was[ ]rejected[.]
+    }x,
+    'mail'  => qr{
         # qmail-remote.c:238|  if (code >= 500) quit("DConnected to "," but sender was rejected");
         # reason = rejected
-        qr/(?:Error:)?Connected to .+ but sender was rejected[.]/,
-    ],
-    'rcpt'  => [
+        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]sender[ ]was[ ]rejected[.]
+    }x,
+    'rcpt'  => qr{
         # qmail-remote.c:249|  out("h"); outhost(); out(" does not like recipient.\n");
         # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
         # reason = userunknown
-        qr/(?:Error:)?.+ does not like recipient[.]/,
-    ],
-    'data'  => [
+        (?:Error:)?.+[ ]does[ ]not[ ]like[ ]recipient[.]
+    },
+    'data'  => qr{(?:
+         (?:Error:)?.+[ ]failed[ ]on[ ]DATA[ ]command[.]
         # qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
         # qmail-remote.c:266|  if (code >= 400) quit("Z"," failed on DATA command");
-        qr/(?:Error:)?.+ failed on DATA command[.]/,
-
+        |(?:Error:)?.+[ ]failed[ ]after[ ]I[ ]sent[ ]the[ ]message[.]
         # qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
         # qmail-remote.c:272|  if (code >= 400) quit("Z"," failed after I sent the message");
-        qr/(?:Error:)?.+ failed after I sent the message[.]/,
-    ],
+        )
+    }x,
 };
 
-my $RxComm = [
+my $RxComm = qr/
     # qmail-remote-fallback.patch
-    qr/Sorry, no SMTP connection got far enough; most progress was ([A-Z]{4}) /,
-];
+    Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]
+/x;
 
-my $RxHost = [
+my $RxHost = qr{(?:
     # qmail-remote.c:261|  if (!flagbother) quit("DGiving up on ","");
-    qr/Giving up on (.+[0-9a-zA-Z])[.]?\z/,
-    qr/Connected to ([-0-9a-zA-Z.]+[0-9a-zA-Z]) /,
-    qr/remote host ([-0-9a-zA-Z.]+[0-9a-zA-Z]) said:/,
-];
+     Giving[ ]up[ ]on[ ](.+[0-9a-zA-Z])[.]?\z
+    |Connected[ ]to[ ]([-0-9a-zA-Z.]+[0-9a-zA-Z])[ ]
+    |remote[ ]host[ ]([-0-9a-zA-Z.]+[0-9a-zA-Z])[ ]said:
+    )
+}x;
 
 my $RxSess = {
-    'onhold' => [
-    ],
-    'userunknown' => [
+    # 'onhold' => qr//,
+    'userunknown' => qr{(?:
         # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
-        qr/no mailbox here by that name/,
+         no[ ]mailbox[ ]here[ ]by[ ]that[ ]name
         # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
-        qr/ does not like recipient[.]/,
-    ],
-    'mailboxfull' => [
+        |[ ]does[ ]not[ ]like[ ]recipient[.]
+        )
+    }x,
+    'mailboxfull' => qr{
         # error_str.c:192|  X(EDQUOT,"disk quota exceeded")
-        qr/disk quota exceeded/,
-    ],
-    'mesgtoobig' => [
+        disk[ ]quota[ ]exceeded
+    }x,
+    'mesgtoobig' => qr{
         # qmail-qmtpd.c:233| ... result = "Dsorry, that message size exceeds my databytes limit (#5.3.4)";
-        # qmail-smtpd.c:391| ... { out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return; }
-        qr/Message size exceeds fixed maximum message size:/
-    ],
-    'expired' => [
+        # qmail-smtpd.c:391| ... out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return;
+        Message[ ]size[ ]exceeds[ ]fixed[ ]maximum[ ]message[ ]size:
+    }x,
+    'expired' => qr{
         # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
-        qr/this message has been in the queue too long[.]\z/,
-    ],
-    'hostunknown' => [
-        # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie(); }
+        this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z
+    }x,
+    'hostunknown' => qr{
+        # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie();
         # qmail-remote.c:78|  Sorry, I couldn't find any host named ");
-        qr/\ASorry[,] I couldn[']t find any host /,
-    ],
-    'systemerror' => [
-        qr/bad interpreter: No such file or directory/,
-        qr/Sorry[,] I wasn[']t able to establish an SMTP connection/,
-        qr/Sorry[,] I couldn[']t find a mail exchanger or IP address/,
-        qr/Sorry[.] Although I[']m listed as a best[-]preference MX or A for that host,/,
-        qr/system error/,
-        qr/Unable to\b/,
-    ],
-    'systemfull' => [
+        \ASorry[,][ ]I[ ]couldn[']t[ ]find[ ]any[ ]host[ ]
+    }x,
+    'systemerror' => qr{(?>
+         bad[ ]interpreter:[ ]No[ ]such[ ]file[ ]or[ ]directory
+        |Sorry(?:
+             [,][ ]I[ ]wasn[']t[ ]able[ ]to[ ]establish[ ]an[ ]SMTP[ ]connection
+            |[,][ ]I[ ]couldn[']t[ ]find[ ]a[ ]mail[ ]exchanger[ ]or[ ]IP[ ]address
+            |[.][ ]Although[ ]I[']m[ ]listed[ ]as[ ]a[ ]best[-]preference[ ]MX[ ]
+                or[ ]A[ ]for[ ]that[ ]host
+            )
+        |system[ ]error
+        |Unable[ ]to\b
+        )
+    }x,
+    'systemfull' => 
         qr/Requested action not taken: mailbox unavailable [(]not enough free space[)]/,
-    ],
 };
 
 my $RxLDAP = {
     # qmail-ldap-1.03-20040101.patch:19817 - 19866
-    'suspend' => [
-        qr/Mailaddress is administrative?le?y disabled/,            # 5.2.1
-    ],
-    'userunknown' => [
-        qr/[Ss]orry, no mailbox here by that name/,                 # 5.1.1
-    ],
-    'exceedlimit' => [
-        qr/The message exeeded the maximum size the user accepts/,  # 5.2.3
-    ],
-    'systemerror' => [
-        qr/Temporary failure in LDAP lookup/,                       # 4.4.3
-        qr/Unable to login into LDAP server, bad credentials/,      # 4.4.3
-        qr/Timeout while performing search on LDAP server/,         # 4.4.3
-        qr/Unable to contact LDAP server/,                          # 4.4.3
-        qr/Too many results returned but needs to be unique/,       # 5.3.5
-        qr/LDAP attribute is not given but mandatory/,              # 5.3.5
-        qr/Illegal value in LDAP attribute/,                        # 5.3.5
-        qr/Temporary error while executing qmail-forward/,          # 4.4.4
-        qr/Permanent error while executing qmail-forward/,          # 5.4.4
-        qr/Automatic homedir creator crashed/,                      # 4.3.0
-        qr/Temporary error in automatic homedir creation/,          # 4.3.0 or 5.3.0
-    ],
+    'suspend'     => qr/Mailaddress is administrative?le?y disabled/,            # 5.2.1
+    'userunknown' => qr/[Ss]orry, no mailbox here by that name/,                 # 5.1.1
+    'exceedlimit' => qr/The message exeeded the maximum size the user accepts/,  # 5.2.3
+    'systemerror' => qr{(?>
+         Automatic[ ]homedir[ ]creator[ ]crashed                    # 4.3.0
+        |Illegal[ ]value[ ]in[ ]LDAP[ ]attribute                    # 5.3.5
+        |LDAP[ ]attribute[ ]is[ ]not[ ]given[ ]but[ ]mandatory      # 5.3.5
+        |Timeout[ ]while[ ]performing[ ]search[ ]on[ ]LDAP[ ]server # 4.4.3
+        |Too[ ]many[ ]results[ ]returned[ ]but[ ]needs[ ]to[ ]be[ ]unique # 5.3.5
+        |Permanent[ ]error[ ]while[ ]executing[ ]qmail[-]forward    # 5.4.4
+        |Temporary[ ](?:
+             error[ ](?:
+                 in[ ]automatic[ ]homedir[ ]creation            # 4.3.0 or 5.3.0
+                |while[ ]executing[ ]qmail[-]forward            # 4.4.4
+                )
+            |failure[ ]in[ ]LDAP[ ]lookup                       # 4.4.3
+            )
+        |Unable[ ]to[ ](?:
+             contact[ ]LDAP[ ]server                            # 4.4.3
+            |login[ ]into[ ]LDAP[ ]server,[ ]bad[ ]credentials  # 4.4.3
+            )
+        )
+    }x,
 };
 
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -164,6 +169,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my $longfields = __PACKAGE__->LONGFIELDS;
 
     my $v = undef;
     my $p = '';
@@ -178,9 +184,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $lhs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -188,12 +195,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -229,10 +236,7 @@ sub scan {
                 # $v->{'alterrors'}  = $e if $e =~ $RxMTA->{'error'};
 
                 next if $v->{'rhost'};
-                for my $r ( @$RxHost ) {
-                    next unless $e =~ $r;
-                    $v->{'rhost'} = $1;
-                }
+                $v->{'rhost'} = $1 if $e =~ $RxHost;
             }
         } # End of if: rfc822
 
@@ -265,20 +269,13 @@ sub scan {
                 # Get the SMTP command name for the session
                 SMTP: for my $r ( keys %$RxSMTP ) {
                     # Verify each regular expression of SMTP commands
-                    PATTERN: for my $rr ( @{ $RxSMTP->{ $r } } ) {
-                        # Check each regular expression
-                        next unless $e->{'diagnosis'} =~ $rr;
-                        $e->{'command'} = uc $r;
-                        last(COMMAND);
-                    }
-                }
-
-                DIFF: for my $r ( @$RxComm ) {
-                    # Verify each regular expression of patches
-                    next unless $e->{'diagnosis'} =~ $r;
-                    $e->{'command'} = uc $1;
+                    next unless $e->{'diagnosis'} =~ $RxSMTP->{ $r };
+                    $e->{'command'} = uc $r;
                     last(COMMAND);
                 }
+
+                # Verify each regular expression of patches
+                $e->{'command'} = uc $1 if $e->{'diagnosis'} =~ $RxComm;
                 last;
             }
         }
@@ -304,22 +301,16 @@ sub scan {
 
                     SESSION: for my $r ( keys %$RxSess ) {
                         # Verify each regular expression of session errors
-                        PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
-                            # Check each regular expression
-                            next unless $e->{'diagnosis'} =~ $rr;
-                            $e->{'reason'} = $r;
-                            last(SESSION);
-                        }
+                        next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+                        $e->{'reason'} = $r;
+                        last(SESSION);
                     }
 
                     LDAP: for my $r ( keys %$RxLDAP ) {
                         # Verify each regular expression of LDAP errors
-                        PATTERN: for my $rr ( @{ $RxLDAP->{ $r } } ) {
-                            # Check each regular expression
-                            next unless $e->{'diagnosis'} =~ $rr;
-                            $e->{'reason'} = $r;
-                            last(LDAP);
-                        }
+                        next unless $e->{'diagnosis'} =~ $RxLDAP->{ $r };
+                       $e->{'reason'} = $r;
+                       last(LDAP);
                     }
                 }
             }
