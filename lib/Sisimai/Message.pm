@@ -94,7 +94,7 @@ sub resolve {
         SPLIT_EMAIL: for my $e ( split( "\n", $email ) ) {
             # use split() instead of regular expression.
             $e =~ y{\r\n}{}d;
-            $first5byte ||= $e if $e =~ m/\AFrom[ ]/;
+            $first5byte ||= $e if substr( $e, 0, 5 ) eq 'From ';
 
             if( $endofheads ) {
                 # The body part of the email
