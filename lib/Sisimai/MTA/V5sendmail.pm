@@ -24,16 +24,16 @@ my $RxMTA = {
     'from'    => qr/\AMail Delivery Subsystem/,
     'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => qr/\A\s+-----\s(?:
-        Unsent\smessage\sfollows|
-        No\smessage\swas\scollected
+    'rfc822'  => qr{\A\s+-----\s(?:
+         Unsent[ ]message[ ]follows
+        |No[ ]message[ ]was[ ]collected
         )\s-----
-    /x,
+    }x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject' => qr/\AReturned mail: [A-Z]/,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'Sendmail version 5' }
 sub smtpagent   { 'V5sendmail' }
 
@@ -55,6 +55,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $responding = [];    # (Ref->Array) Responses from remote server
@@ -76,9 +77,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -86,12 +88,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 

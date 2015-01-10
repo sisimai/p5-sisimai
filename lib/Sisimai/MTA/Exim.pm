@@ -32,11 +32,12 @@ my $RxMTA = {
     'rfc822'    => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
     'begin'     => qr/\AThis message was created automatically by mail delivery software[.]/,
     'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject'   => qr/(?:
-        Mail\sdelivery\sfailed(:?:\sreturning\smessage\sto\ssender)?|
-        Warning:\smessage\s.+\sdelayed\s+|
-        Delivery\sStatus\sNotification)
-    /x,
+    'subject'   => qr{(?:
+         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
+        |Warning:[ ]message[ ].+[ ]delayed[ ]+
+        |Delivery[ ]Status[ ]Notification
+        )
+    }x,
     'message-id' => qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
     # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
 };
@@ -50,57 +51,58 @@ my $RxComm = [
 
 my $RxSess = {
     # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
-    'expired' => [
+    'expired' => qr{(?:
         # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
-        qr/retry timeout exceeded/,
-
+         retry[ ]timeout[ ]exceeded
         # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
-        qr/No action is required on your part/,
-    ],
-    'userunknown' => [
+        |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
+        )
+    }x,
+    'userunknown' => qr{
         # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
-        qr/user not found/,
-    ],
-    'hostunknown' => [
-        # routers/dnslookup.c:331|  addr->message = US"all relevant MX records point to non-existent hosts";
-        qr/all relevant MX records point to non-existent hosts/,
-
+        user[ ]not[ ]found
+    }x,
+    'hostunknown' => qr{(?>
+         all[ ](?:
+            # transports/smtp.c:3524|  addr->message = US"all host address lookups failed permanently";
+             host[ ]address[ ]lookups[ ]failed[ ]permanently
+            # routers/dnslookup.c:331|  addr->message = US"all relevant MX records point to non-existent hosts";
+            |relevant[ ]MX[ ]records[ ]point[ ]to[ ]non[-]existent[ ]hosts
+            )
         # route.c:1826|  uschar *message = US"Unrouteable address";
-        qr/Unrouteable address/,
-
-        # transports/smtp.c:3524|  addr->message = US"all host address lookups failed permanently";
-        qr/all host address lookups failed permanently/,
-    ],
-    'mailboxfull' => [
+        |Unrouteable[ ]address
+        )
+    }x,
+    'mailboxfull' => qr{(?:
         # transports/appendfile.c:2567|  addr->user_message = US"mailbox is full";
-        qr/mailbox is full:?/,
-
+         mailbox[ ]is[ ]full:?
         # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "$                          
         # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);$
-        qr/error: quota exceed/,
-    ],
-    'notaccept' => [
+        |error:[ ]quota[ ]exceed
+        )
+    }x,
+    'notaccept' => qr{(?:
         # routers/dnslookup.c:328|  addr->message = US"an MX or SRV record indicated no SMTP service";
-        qr/an MX or SRV record indicated no SMTP service/,
-
+         an[ ]MX[ ]or[ ]SRV[ ]record[ ]indicated[ ]no[ ]SMTP[ ]service
         # transports/smtp.c:3502|  addr->message = US"no host found for existing SMTP connection";
-        qr/no host found for existing SMTP connection/,
-    ],
-    'systemerror' => [
+        |no[ ]host[ ]found[ ]for[ ]existing[ ]SMTP[ ]connection
+        )
+    }x,
+    'systemerror' => qr{(?>
         # deliver.c:5614|  addr->message = US"delivery to file forbidden";
         # deliver.c:5624|  addr->message = US"delivery to pipe forbidden";
-        qr/delivery to (?:file|pipe) forbidden/,
-
+         delivery[ ]to[ ](?:file|pipe)[ ]forbidden
         # transports/pipe.c:1156|  addr->user_message = US"local delivery failed";
-        qr/local delivery failed/,
-    ],
-    'contenterror' => [
+        |local[ ]delivery[ ]failed
+        )
+    }x,
+    'contenterror' => qr{
         # deliver.c:5425|  new->message = US"Too many \"Received\" headers - suspected mail loop";
-        qr/Too many ["]Received["] headers /,
-    ],
+        Too[ ]many[ ]["]Received["][ ]headers
+    }x,
 };
 
-sub version     { '4.0.12' }
+sub version     { '4.0.13' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -123,6 +125,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
@@ -140,9 +143,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -150,12 +154,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -288,15 +292,12 @@ sub scan {
                     $e->{'reason'} = 'blocked';
 
                 } else {
-
+                    # Verify each regular expression of session errors
                     SESSION: for my $r ( keys %$RxSess ) {
-                        # Verify each regular expression of session errors
-                        PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
-                            # Check each regular expression
-                            next unless $e->{'diagnosis'} =~ $rr;
-                            $e->{'reason'} = $r;
-                            last(SESSION);
-                        }
+                        # Check each regular expression
+                        next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+                        $e->{'reason'} = $r;
+                        last(SESSION);
                     }
                 }
                 last;

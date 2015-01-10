@@ -8,33 +8,45 @@ use warnings;
 # courier/module.dsn/dsn*.txt
 my $RxMTA = {
     #'from' => qr{Courier mail server at },
-    'begin'      => qr/(?:DELAYS\sIN\sDELIVERING\sYOUR\sMESSAGE|UNDELIVERABLE\sMAIL)/x,
-    'rfc822'     => qr!\AContent-Type:\s*(?:message/rfc822|text/rfc822-headers)\z!x,
+    'begin'      => qr{(?:
+         DELAYS[ ]IN[ ]DELIVERING[ ]YOUR[ ]MESSAGE
+        |UNDELIVERABLE[ ]MAIL
+        )
+    }x,
+    'rfc822'     => qr{\AContent-Type:[ ]*(?:
+         message/rfc822
+        |text/rfc822-headers
+        )\z
+    }x,
     'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject'    => qr/(?:NOTICE:\smail\sdelivery\sstatus[.]|WARNING:\sdelayed\smail[.])/x,
+    'subject'    => qr{(?:
+         NOTICE:[ ]mail[ ]delivery[ ]status[.]
+        |WARNING:[ ]delayed[ ]mail[.]
+        )
+    }x,
     'message-id' => qr/\A[<]courier[.][0-9A-F]+[.]/,
 };
 
 my $RxErr = {
-    'hostunknown' => [
+    'hostunknown' => qr{
         # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
-        qr/\ANo such domain[.]\z/,
-    ],
-    'systemerror' => [
+        \ANo[ ]such[ ]domain[.]\z
+    }x,
+    'systemerror' => qr{
         # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
         # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
-        qr/\AThis domain's DNS violates RFC 1035[.]\z/,
-    ],
+        \AThis[ ]domain's[ ]DNS[ ]violates[ ]RFC[ ]1035[.]\z
+    }x,
 };
 
 my $RxTmp = {
-    'systemerror' => [
+    'systemerror' => qr{
         # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
-        qr/\ADNS lookup failed[.]\z/,
-    ],
+        \ADNS[ ]lookup[ ]failed[.]\z
+    },
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 
@@ -61,6 +73,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
@@ -84,9 +97,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -94,12 +108,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -238,25 +252,19 @@ sub scan {
         SESSION: while(1) {
             HARD_E: for my $r ( keys %$RxErr ) {
                 # Verify each regular expression of session errors
-                PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                    # Check each regular expression
-                    next unless $e->{'diagnosis'} =~ $rr;
-                    $e->{'reason'} = $r;
-                    $e->{'softbounce'} = 0;
-                    last(HARD_E);
-                }
+                next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+                $e->{'reason'} = $r;
+                $e->{'softbounce'} = 0;
+                last(HARD_E);
             }
             last if $e->{'reason'};
 
             SOFT_E: for my $r ( keys %$RxTmp ) {
                 # Verify each regular expression of session errors
-                PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                    # Check each regular expression
-                    next unless $e->{'diagnosis'} =~ $rr;
-                    $e->{'reason'} = $r;
-                    $e->{'softbounce'} = 1;
-                    last(SOFT_E);
-                }
+                next unless $e->{'diagnosis'} =~ $RxTmp->{ $r };
+                $e->{'reason'} = $r;
+                $e->{'softbounce'} = 1;
+                last(SOFT_E);
             }
 
             last;

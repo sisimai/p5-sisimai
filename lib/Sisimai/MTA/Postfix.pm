@@ -89,7 +89,7 @@ sub scan {
                 my $whs = lc $1;
 
                 $previousfn = '';
-                next unless grep { $lhs eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";

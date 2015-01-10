@@ -39,42 +39,43 @@ my $RxMTA = {
 };
 
 my $RxErr = {
-    'expired' => [
+    'expired' => qr{
         # smtpd/queue.c:221|  envelope_set_errormsg(&evp, "Envelope expired");
-        qr/Envelope expired/,
-    ],
-    'hostunknown' => [
+        Envelope[ ]expired
+    }x,
+    'hostunknown' => qr{(?:
         # smtpd/mta.c:976|  relay->failstr = "Invalid domain name";
-        qr/Invalid domain name/,
-
+         Invalid[ ]domain[ ]name
         # smtpd/mta.c:980|  relay->failstr = "Domain does not exist";
-        qr/Domain does not exist/,
-    ],
-    'notaccept' => [
+        |Domain[ ]does[ ]not[ ]exist
+        )
+    }x,
+    'notaccept' => qr{
         # smtp/mta.c:1085|  relay->failstr = "Destination seem to reject all mails";
-        qr/Destination seem to reject all mails/,
-    ],
-    'systemerror' => [
+        Destination[ ]seem[ ]to[ ]reject[ ]all[ ]mails
+    }x,
+    'systemerror' => qr{(?>
         #  smtpd/mta.c:972|  relay->failstr = "Temporary failure in MX lookup";
-        qr/Temporary failure in MX lookup/,
-        qr/No MX found for domain/,
-        qr/bad DNS lookup error code/,
-        qr/Could not retrieve source address/,
-        qr/No valid route to remote MX/,
-        qr/Network error on destination MXs/,
-        qr/No MX found for destination/,
-        qr/Address family mismatch on destination MXs/,
-        qr/All routes to destination blocked/,
-        qr/No valid route to destination/,
-        qr/Loop detected/,
-    ],
-    'securityerror' => [
+         Address[ ]family[ ]mismatch[ ]on[ ]destination[ ]MXs
+        |All[ ]routes[ ]to[ ]destination[ ]blocked
+        |bad[ ]DNS[ ]lookup[ ]error[ ]code
+        |Could[ ]not[ ]retrieve[ ]source[ ]address
+        |Loop[ ]detected
+        |Network[ ]error[ ]on[ ]destination[ ]MXs
+        |No[ ](?>
+             MX[ ]found[ ]for[ ](?:domain|destination)
+            |valid[ ]route[ ]to[ ](?:remote[ ]MX|destination)
+            )
+        |Temporary[ ]failure[ ]in[ ]MX[ ]lookup
+        )
+    }x,
+    'securityerror' => qr{
         # smtpd/mta.c:1013|  relay->failstr = "Could not retrieve credentials";
-        qr/Could not retrieve credentials/,
-    ],
+        Could[ ]not[ ]retrieve[ ]credentials
+    }x,
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'OpenSMTPD' }
 sub smtpagent   { 'OpenSMTPD' }
 
@@ -97,6 +98,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
@@ -113,9 +115,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -123,12 +126,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -187,12 +190,9 @@ sub scan {
 
         SESSION: for my $r ( keys %$RxErr ) {
             # Verify each regular expression of session errors
-            PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                # Check each regular expression
-                next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
-                $e->{'reason'} = $r;
-                last(SESSION);
-            }
+            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            $e->{'reason'} = $r;
+            last;
         }
 
         $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );

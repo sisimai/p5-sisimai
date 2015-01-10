@@ -14,9 +14,7 @@ my $RxMTA = {
 };
 
 my $RxErr = {
-    'hostunknown' => [
-        qr|Illegal host/domain name found|,
-    ],
+    'hostunknown' => qr{Illegal[ ]host/domain[ ]name[ ]found}x,
 };
 
 sub version     { '4.0.3' }
@@ -65,7 +63,7 @@ sub scan {
                 my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -205,12 +203,9 @@ sub scan {
 
         SESSION: for my $r ( keys %$RxErr ) {
             # Verify each regular expression of session errors
-            PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                # Check each regular expression
-                next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
-                $e->{'reason'} = $r;
-                last(SESSION);
-            }
+            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            $e->{'reason'} = $r;
+            last;
         }
 
         if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {

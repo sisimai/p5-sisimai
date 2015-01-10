@@ -10,11 +10,12 @@ my $RxMTA = {
     'rfc822'  => qr/\AIncluded is a copy of the message header:\z/,
     'begin'   => qr/\AThis message was created automatically by mail delivery software[.]\z/,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/(?:
-        Mail\sdelivery\sfailed(:?:\sreturning\smessage\sto\ssender)?|
-        Warning:\smessage\s.+\sdelayed\s+|
-        Delivery\sStatus\sNotification)
-    /x,
+    'subject'   => qr{(?:
+         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
+        |Warning:[ ]message[ ].+[ ]delayed[ ]+
+        |Delivery[ ]Status[ ]Notification
+        )
+    }x,
     'message-id' => qr/\A[<]mxl[~][0-9a-f]+/,
 };
 
@@ -24,36 +25,43 @@ my $RxComm = [
 ];
 
 my $RxSess = {
-    'expired' => [
-        qr/retry timeout exceeded/,
-        qr/No action is required on your part/,
-    ],
-    'userunknown' => [
-        qr/user not found/,
-    ],
-    'hostunknown' => [
-        qr/all relevant MX records point to non-existent hosts/,
-        qr/Unrouteable address/,
-        qr/all host address lookups failed permanently/,
-    ],
-    'mailboxfull' => [
-        qr/mailbox is full:?/,
-        qr/error: quota exceed/,
-    ],
-    'notaccept' => [
-        qr/an MX or SRV record indicated no SMTP service/,
-        qr/no host found for existing SMTP connection/,
-    ],
-    'systemerror' => [
-        qr/delivery to (?:file|pipe) forbidden/,
-        qr/local delivery failed/,
-    ],
-    'contenterror' => [
-        qr/Too many ["]Received["] headers /,
-    ],
+    'expired' => qr{(?:
+         retry[ ]timeout[ ]exceeded
+        |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
+        )
+    }x,
+    'userunknown' => qr{
+        user[ ]not[ ]found
+    }x,
+    'hostunknown' => qr{(?>
+         all[ ](?:
+             host[ ]address[ ]lookups[ ]failed[ ]permanently
+            |relevant[ ]MX[ ]records[ ]point[ ]to[ ]non[-]existent[ ]hosts
+            )
+        |Unrouteable[ ]address
+        )
+    }x,
+    'mailboxfull' => qr{(?:
+         mailbox[ ]is[ ]full:?
+        |error:[ ]quota[ ]exceed
+        )
+    }x,
+    'notaccept' => qr{(?:
+         an[ ]MX[ ]or[ ]SRV[ ]record[ ]indicated[ ]no[ ]SMTP[ ]service
+        |no[ ]host[ ]found[ ]for[ ]existing[ ]SMTP[ ]connection
+        )
+    }x,
+    'systemerror' => qr{(?>
+         delivery[ ]to[ ](?:file|pipe)[ ]forbidden
+        |local[ ]delivery[ ]failed
+        )
+    }x,
+    'contenterror' => qr{
+        Too[ ]many[ ]["]Received["][ ]headers[ ]
+    }x,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash' ] }
@@ -79,6 +87,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
@@ -96,9 +105,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -106,12 +116,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -223,12 +233,9 @@ sub scan {
 
                     SESSION: for my $r ( keys %$RxSess ) {
                         # Verify each regular expression of session errors
-                        PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
-                            # Check each regular expression
-                            next unless $e->{'diagnosis'} =~ $rr;
-                            $e->{'reason'} = $r;
-                            last(SESSION);
-                        }
+                        next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+                        $e->{'reason'} = $r;
+                        last;
                     }
                 }
                 last;

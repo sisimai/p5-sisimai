@@ -13,28 +13,29 @@ my $RxMTA = {
 };
 
 my $RxErr = {
-    'hostunknown' => [
-        qr/\AUnknown host/,
-    ],
-    'userunknown' => [
-        qr/\AUnknown user/,
-        qr/\AInvalid final delivery userid/, # Filtered ?
-    ],
-    'mailboxfull' => [
-        qr/\AUser mailbox exceeds allowed size/,
-    ],
-    'securityerr' => [
-        qr/\ARequested action not taken: virus detected/,
-    ],
-    'undefined' => [
-        qr/\Aundeliverable to /,
-    ],
-    'expired' => [
-        qr/\ADelivery failed \d+ attempts/,
-    ],
+    'hostunknown' => qr{
+        Unknown[ ]host
+    },
+    'userunknown' => qr{\A(?:
+         Unknown[ ]user
+        |Invalid[ ]final[ ]delivery[ ]userid    # Filtered ?
+        )
+    }x,
+    'mailboxfull' => qr{
+        \AUser[ ]mailbox[ ]exceeds[ ]allowed[ ]size
+    }x,
+    'securityerr' => qr{
+        \ARequested[ ]action[ ]not[ ]taken:[ ]virus[ ]detected
+    }x,
+    'undefined' => qr{
+        \Aundeliverable[ ]to[ ]
+    }x,
+    'expired' => qr{
+        \ADelivery[ ]failed[ ]\d+[ ]attempts
+    }x,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'IPSWITCH IMail Server' }
 sub smtpagent   { 'IMailServer' }
 sub headerlist  { return [ 'X-Mailer' ] }
@@ -59,6 +60,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
@@ -75,9 +77,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -85,12 +88,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -141,12 +144,9 @@ sub scan {
 
         SESSION: for my $r ( keys %$RxErr ) {
             # Verify each regular expression of session errors
-            PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                # Check each regular expression
-                next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
-                $e->{'reason'} = $r;
-                last(SESSION);
-            }
+            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            $e->{'reason'} = $r;
+            last;
         }
 
         $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
