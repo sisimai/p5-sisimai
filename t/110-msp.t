@@ -7,7 +7,7 @@ my $PackageName = 'Sisimai::MSP';
 my $MethodNames = {
     'class' => [ 
         'version', 'description', 'headerlist', 'scan', 'smtpagent', 'index',
-        'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS', 'EOM',
+        'SMTPCOMMAND', 'DELIVERYSTATUS', 'LONGFIELDS', 'RFC822HEADERS', 'EOM',
     ],
     'object' => [],
 };

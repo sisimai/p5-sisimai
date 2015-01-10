@@ -4,13 +4,14 @@ use strict;
 use warnings;
 use Sisimai::MTA;
 
-sub version     { return '4.0.11' }
+sub version     { return '4.0.12' }
 sub description { return '' }
 sub headerlist  { return [] }
 
 sub SMTPCOMMAND    { return Sisimai::MTA->SMTPCOMMAND    }
 sub EOM            { return Sisimai::MTA->EOM            }
 sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
+sub LONGFIELDS     { return Sisimai::MTA->LONGFIELDS     }
 sub RFC822HEADERS  { 
     my $class = shift;
     my $argvs = shift;
