@@ -9,21 +9,20 @@ my $RxMSP = {
     'begin'   => qr/\AThis message was created automatically by mail delivery/,
     'rfc822'  => qr/\AReceived:\s*from mail[.]zoho[.]com/,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\A(?:
-        Undelivered\sMail\sReturned\sto\sSender|
-        Mail\sDelivery\sStatus\sNotification)
-    /x,
+    'subject' => qr{\A(?:
+         Undelivered[ ]Mail[ ]Returned[ ]to[ ]Sender
+        |Mail[ ]Delivery[ ]Status[ ]Notification
+        )
+    }x,
     'x-mailer'=> qr/\AZoho Mail\z/,
 };
 
 my $RxSess = {
-    'expired' => [
-        qr/Host not reachable/
-    ],
+    'expired' => qr/Host not reachable/
 };
 
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub smtpagent   { 'US::Zoho' }
 sub headerlist  { 
@@ -50,6 +49,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $qprintable = 0;
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
@@ -78,12 +78,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -167,12 +167,9 @@ sub scan {
 
         SESSION: for my $r ( keys %$RxSess ) {
             # Verify each regular expression of session errors
-            PATTERN: for my $rr ( @{ $RxSess->{ $r } } ) {
-                # Check each regular expression
-                next unless $e->{'diagnosis'} =~ $rr;
-                $e->{'reason'} = $r;
-                last(SESSION);
-            }
+            next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+            $e->{'reason'} = $r;
+            last;
         }
 
         $e->{'status'}  =  Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );

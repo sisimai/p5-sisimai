@@ -9,12 +9,13 @@ my $RxMSP = {
     'subject'    => qr/\AMail System Error - Returned Mail\z/,
     'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
     'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    'begin'      => qr/\A(?:
-        The\suser[(]s[)]\s|
-        Your\smessage\s|,
-        Each\sof\sthe\sfollowing|
-        [<][^ ]+[@][^ ]+[>]\z)
-    /x,
+    'begin'      => qr{\A(?:
+         The[ ]user[(]s[)][ ]
+        |Your[ ]message[ ]
+        |Each[ ]of[ ]the[ ]following
+        |[<][^ ]+[@][^ ]+[>]\z
+        )
+    }x,
     'rfc822'     => [
         # Do not rewrite this regular expressions with /x switch.
         qr/\A[-]{50}/,
@@ -46,7 +47,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -82,6 +83,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
@@ -108,9 +110,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -118,12 +121,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -253,7 +256,10 @@ sub scan {
         }
 
         unless( $e->{'reason'} ) {
+            # The value of "reason" is not set yet.
             unless( $e->{'recipient'} =~ m/[@]ezweb[.]ne[.]jp\z/ ) {
+                # Deal as "userunknown" when the domain part of the recipient
+                # is "ezweb.ne.jp".
                 $e->{'reason'} = 'userunknown';
             }
         }

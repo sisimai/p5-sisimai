@@ -13,12 +13,12 @@ my $RxMSP = {
 };
 
 my $RxErr = {
-    'hostunknown' => [
-        qr/Host or domain name not found/,
-    ],
+    'hostunknown' => qr{
+        Host[ ]or[ ]domain[ ]name[ ]not[ ]found
+    }x,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Aol Mail: http://www.aol.com' }
 sub smtpagent   { 'US::Aol' }
 sub headerlist  { 
@@ -44,6 +44,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
@@ -67,9 +68,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -77,12 +79,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -186,12 +188,9 @@ sub scan {
 
         SESSION: for my $r ( keys %$RxErr ) {
             # Verify each regular expression of session errors
-            PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                # Check each regular expression
-                next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
-                $e->{'reason'} = $r;
-                last(SESSION);
-            }
+            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            $e->{'reason'} = $r;
+            last;
         }
 
         if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {

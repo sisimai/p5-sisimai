@@ -14,7 +14,7 @@ my $RxMSP = {
     'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
 sub headerlist  { return [ 'Return-Path' ] }
@@ -38,6 +38,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
@@ -61,9 +62,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -71,12 +73,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 

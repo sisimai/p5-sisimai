@@ -9,9 +9,10 @@ my $RxMSP = {
     'reply-to'   => qr/\Afrom\s+\w+[.]auone[-]net[.]jp\s/,
     'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
     'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    'begin'      => qr/\AYour\smail\s(?:
-                        sent\son:?\s[A-Z][a-z]{2}[,]|
-                        attempted\sto\sbe\sdelivered\son:?\s[A-Z][a-z]{2}[,])
+    'begin'      => qr/\AYour[ ]mail[ ](?:
+                         sent[ ]on:?[ ][A-Z][a-z]{2}[,]
+                        |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
+                        )
                     /x,
     'rfc822'     => qr|\AContent-Type: message/rfc822\z|,
     'error'      => qr/Could not be delivered to:? /,
@@ -19,18 +20,18 @@ my $RxMSP = {
 };
 
 my $RxErr = {
-    'mailboxfull' => [
-        qr/As their mailbox is full/,
-    ],
-    'norelaying' => [
-        qr/Due to the following SMTP relay error/,
-    ],
-    'hostunknown' => [
-        qr/As the remote domain doesnt exist/,
-    ],
+    'mailboxfull' => qr{
+        As[ ]their[ ]mailbox[ ]is[ ]full
+    }x,
+    'norelaying' => qr{
+        Due[ ]to[ ]the[ ]following[ ]SMTP[ ]relay[ ]error
+    }x,
+    'hostunknown' => qr{
+        As[ ]the[ ]remote[ ]domain[ ]doesnt[ ]exist
+    }x,
 };
 
-sub version     { '4.0.9' }
+sub version     { '4.0.10' }
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
 
@@ -55,6 +56,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
@@ -75,9 +77,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -85,12 +88,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -162,12 +165,9 @@ sub scan {
                 # SMTP command is not RCPT
                 SESSION: for my $r ( keys %$RxErr ) {
                     # Verify each regular expression of session errors
-                    PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                        # Check each regular expression
-                        next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
-                        $e->{'reason'} = $r;
-                        last(SESSION);
-                    }
+                    next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+                    $e->{'reason'} = $r;
+                    last;
                 }
             }
         }

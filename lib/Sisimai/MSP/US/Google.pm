@@ -15,15 +15,17 @@ my $RxMSP = {
 };
 
 my $RxErr = {
-    'expired' => [
-        qr/DNS Error: Could not contact DNS servers/,
-        qr/Delivery to the following recipient has been delayed/,
-        qr/The recipient server did not accept our requests to connect/,
-    ],
-    'hostunknown' => [
-        qr/DNS Error: Domain name not found/,
-        qr/DNS Error: DNS server returned answer with no data/,
-    ],
+    'expired' => qr{(?:
+         DNS[ ]Error:[ ]Could[ ]not[ ]contact[ ]DNS[ ]servers
+        |Delivery[ ]to[ ]the[ ]following[ ]recipient[ ]has[ ]been[ ]delayed
+        |The[ ]recipient[ ]server[ ]did[ ]not[ ]accept[ ]our[ ]requests[ ]to[ ]connect
+        )
+    }x,
+    'hostunknown' => qr{DNS[ ]Error:[ ](?:
+             Domain[ ]name[ ]not[ ]found
+            |DNS[ ]server[ ]returned[ ]answer[ ]with[ ]no[ ]data
+            )
+    }x,
 };
 
 my $StateTable = {
@@ -100,7 +102,7 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'Google Gmail: https://mail.google.com' }
 sub smtpagent   { 'US::Google' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -170,6 +172,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $longfields = __PACKAGE__->LONGFIELDS;
     my $stripedtxt = [ split( "\n", $$mbody ) ];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $softbounce = 0;     # (Integer) 1 = Soft bounce
@@ -196,9 +199,10 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
@@ -206,12 +210,12 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if $previousfn =~ m/\A(?:From|To|Subject)\z/;
+                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless $previousfn =~ m/\A(?:From|To|Subject)\z/;
-                next unless $e =~ m/\A\z/;
+                next unless grep { $previousfn eq $_ } @$longfields;
+                next if length $e;
                 $rfc822next->{ lc $previousfn } = 1;
             }
 
@@ -320,12 +324,9 @@ sub scan {
             # No state code
             SESSION: for my $r ( keys %$RxErr ) {
                 # Verify each regular expression of session errors
-                PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
-                    # Check each regular expression
-                    next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
-                    $e->{'reason'} = $r;
-                    last(SESSION);
-                }
+                next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+                $e->{'reason'} = $r;
+                last;
             }
         }
 
