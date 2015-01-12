@@ -1,6 +1,6 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
-4.1.10
+4.1.10  Mon, 12 Jan 2015 17:59:35 +0900 (JST)
     - Implement Sisimai::MSP::UK::MessageLabs for email bounces from Symantec.
       cloud: formerly MessageLabs.
     - Added 2 sample emails: arf05.eml, arf-06.eml and improved Sisimai::ARF
@@ -8,6 +8,10 @@ Revision history for Sisimai/Core module of bouncehammer version 4
     - Merged pull request #38, Updated Sisimai::US::Facebook and DMARC forensic
       related codes, and error message patterns in Sisimai::Reason::* modules.
       Thanks to @jcbf.
+    - Implement Sisimai::MSP::US::Bigfoot for email bounces from bigfoot.com.
+    - Merged pull request #39, Updated Sisimai::RFC3464 and message patterns in
+      Sisimai::Reason::SecurityError and Suspended. Thanks to @jcbf.
+    - Improved regular expression in each MTA module, Issue #40.
 
 4.1.9   Wed, 31 Dec 2014 18:59:22 +0900 (JST)
     - Implement Sisimai::MTA::X3 for email bounces from Unknown MTA(3).
