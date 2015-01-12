@@ -20,9 +20,11 @@ MAKE_TEST: {
     my $subaddress = 'neko+nyaa@example.jp';
     my $verpstring = 'nyaa+neko=example.jp@example.org';
     my $postmaster = 'mailer-daemon@example.jp';
+    my $rfc5322txt = 'Shironeko Nyanko <shironeko@example.jp>';
 
-    ok $PackageName->is_emailaddress( $ismailaddr ), '->is_emailaddress = 1';
-    is $PackageName->is_emailaddress( $nomailaddr ), 0, '->is_emailaddress = 0';
+    ok $PackageName->is_emailaddress( $ismailaddr ), '->is_emailaddress('.$ismailaddr.') = 1';
+    is $PackageName->is_emailaddress( $nomailaddr ), 0, '->is_emailaddress('.$nomailaddr.') = 0';
+    ok $PackageName->is_emailaddress( $rfc5322txt ), '->is_emailaddress('.$rfc5322txt.') = 1';
 
     ok $PackageName->is_domainpart( 'example.jp' ), '->is_domainpart(example.jp) = 1';
     is $PackageName->is_domainpart( $ismailaddr ), 0, '->is_domainpart('.$ismailaddr.') = 0';
