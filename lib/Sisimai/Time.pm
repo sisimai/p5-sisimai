@@ -40,7 +40,6 @@ my $MonthName = {
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ],
-    'rx-abbr' => qr/\A(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\z/,
 };
 
 my $DayOfWeek = {
@@ -49,7 +48,6 @@ my $DayOfWeek = {
         'Friday', 'Saturday',
     ],
     'abbr' => [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', ],
-    'rx-abbr' => qr/\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)\z/,
 };
 
 my $HourName = {
@@ -310,11 +308,11 @@ sub parse {
             # Day of week or Day of week; Thu, Apr, ...
             chop $p if length( $p ) == 4; # Thu, -> Thu
 
-            if( $p =~ $DayOfWeek->{'rx-abbr'} ) {
+            if( grep { $p eq $_ } @{ $DayOfWeek->{'abbr'} } ) {
                 # Day of week; Mon, Thu, Sun,...
                 $v->{'a'} = $p;
 
-            } elsif( $p =~ $MonthName->{'rx-abbr'} ) {
+            } elsif( grep { $p eq $_ } @{ $MonthName->{'abbr'} } ) {
                 # Month name abbr.; Apr, May, ...
                 $v->{'M'} = $p;
             }
