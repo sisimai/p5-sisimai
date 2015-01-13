@@ -60,7 +60,8 @@ sub read {
 
         seek( $filehandle, $seekoffset, 0 );
         while( my $r = <$filehandle> ) {
-            last if( length $readbuffer && $r =~ m/\AFrom[ ]/ );
+            # Read an email from the mailbox file
+            last if( length $readbuffer && substr( $r, 0, 5 ) eq 'From ' );
             $readbuffer .= $r;
         }
         $filehandle->close;
