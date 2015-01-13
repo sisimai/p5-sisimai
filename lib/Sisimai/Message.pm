@@ -132,6 +132,7 @@ sub resolve {
             ];
             my $multiheads = [ 'Received' ];
             my $ignorelist = [ 'DKIM-Signature' ];
+            my $loaderrors = {};
 
             map { $processing->{'header'}->{ lc $_ } = undef } @$headerlist;
             map { $processing->{'header'}->{ lc $_ } = [] } @$multiheads;
@@ -140,30 +141,36 @@ sub resolve {
                 # Load MTA modules saved in lib/Sisimai/MTA directory
                 try {
                     Module::Load::load $e;
-                    for my $v ( @{ $e->headerlist } ) {
-                        # Get header name which required each MTA module
-                        next if grep { $v eq $_ } @$headerlist;
-                        push @$headerlist, $v;
-                    }
+
                 } catch {
                     # Perhaps it failed to load Sisimai::MTA::*
-                    ;
+                    $loaderrors->{ $e } = 1;
                 };
+
+                next if $loaderrors->{ $e };
+                for my $v ( @{ $e->headerlist } ) {
+                    # Get header name which required each MTA module
+                    next if grep { $v eq $_ } @$headerlist;
+                    push @$headerlist, $v;
+                }
             }
 
             MSP_MODULES: for my $e ( @$mspclasses ) {
                 # Load MSP modules saved in lib/Sisimai/MSP directory
                 try {
                     Module::Load::load $e;
-                    for my $v ( @{ $e->headerlist } ) {
-                        # Get header name which required each MSP module
-                        next if grep { $v eq $_ } @$headerlist;
-                        push @$headerlist, $v;
-                    }
+
                 } catch {
                     # Perhaps it failed to load Sisimai::MSP::*
-                    ;
+                    $loaderrors->{ $e } = 1;
                 };
+
+                next if $loaderrors->{ $e };
+                for my $v ( @{ $e->headerlist } ) {
+                    # Get header name which required each MSP module
+                    next if grep { $v eq $_ } @$headerlist;
+                    push @$headerlist, $v;
+                }
             }
 
             SPLIT_HEADERS: for my $e ( split( "\n", $mailheader ) ) {
