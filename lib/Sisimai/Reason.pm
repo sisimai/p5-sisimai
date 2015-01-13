@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Load;
 
-sub retry { return qr/(?:undefined|onhold|systemerror|securityerror)\z/; }
+sub retry { return [ 'undefined', 'onhold', 'systemerror', 'securityerror' ] }
 sub get {
     # @Description  Detect bounce reason
     # @Param <obj>  (Sisimai::Data) Parsed email object
@@ -13,7 +13,8 @@ sub get {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    unless( $argvs->reason =~ __PACKAGE__->retry ) {
+
+    unless( grep { $argvs->reason eq $_ } @{ __PACKAGE__->retry } ) {
         # Return reason text already decided except reason match with the 
         # regular expression of ->retry() method.
         return $argvs->reason if length $argvs->reason;
