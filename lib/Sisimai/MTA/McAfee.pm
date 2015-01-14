@@ -21,7 +21,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'McAfee Email Appliance' }
 sub smtpagent   { 'McAfee' }
 sub headerlist  { return [ 'X-NAI-Header' ] }
@@ -112,26 +112,26 @@ sub scan {
                 $diagnostic = $2;
                 $recipients++;
 
-            } elsif( $e =~ m/\AOriginal-Recipient:[ ]*([^ ]+)\z/i ) {
+            } elsif( $e =~ m/\A[Oo]riginal-[Rr]ecipient:[ ]*([^ ]+)\z/ ) {
                 # Original-Recipient: <kijitora@example.co.jp>
                 $v->{'alias'} = Sisimai::Address->s3s4( $1 );
 
-            } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
+            } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                 # Action: failed
                 $v->{'action'} = lc $1;
 
-            } elsif( $e =~ m/\ARemote-MTA:[ ]*(.+)\z/i ) {
+            } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(.+)\z/ ) {
                 # Remote-MTA: 192.0.2.192
                 $v->{'rhost'} = lc $1;
 
             } else {
 
-                if( $e =~ m/\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/i ) {
+                if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
 
-                } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/i && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;

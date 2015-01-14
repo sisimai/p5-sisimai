@@ -13,7 +13,7 @@ my $RxMTA = {
     'x-mailer' => qr/\ASurfControl E-mail Filter\z/,
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'WebSense SurfControl' }
 sub smtpagent   { 'SurfControl' }
 sub headerlist  { return [ 'X-SEF-Processed', 'X-Mailer' ] }
@@ -112,21 +112,21 @@ sub scan {
 
             } else {
                 # Fallback, parse RFC3464 headers.
-                if( $e =~ m/\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/i ) {
+                if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
 
-                } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/i && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
 
-                } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/i ) {
+                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.0.-
                     $v->{'status'} = $1;
                 }

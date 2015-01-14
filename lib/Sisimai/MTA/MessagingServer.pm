@@ -17,7 +17,7 @@ my $RxErr = {
     'hostunknown' => qr{Illegal[ ]host/domain[ ]name[ ]found}x,
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'Oracle Communications Messaging Server' }
 sub smtpagent   { 'MessagingServer' }
 
@@ -160,16 +160,16 @@ sub scan {
                 #  (6jo.example.jp ESMTP SENDMAIL-VM)
                 # Diagnostic-code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
                 #
-                if( $e =~ m/\AStatus:\s*(\d[.]\d[.]\d)\s*[(](.+)[)]\z/i ) {
+                if( $e =~ m/\A[Ss]tatus:\s*(\d[.]\d[.]\d)\s*[(](.+)[)]\z/ ) {
                     # Status: 5.1.1 (Remote SMTP server has rejected address)
                     $v->{'status'} = $1;
                     $v->{'diagnosis'} ||= $2;
 
-                } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
                     # Arrival-date: Thu, 29 Apr 2014 23:34:45 +0000 (GMT)
                     $v->{'date'} ||= $1;
 
-                } elsif( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns;mr21p30im-asmtp004.me.com (tcp-daemon)
                     my $l = $1;
                     $v->{'lhost'} ||= $l;

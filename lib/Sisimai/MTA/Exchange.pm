@@ -48,7 +48,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.9' }
+sub version     { '4.0.10' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
@@ -161,7 +161,7 @@ sub scan {
                 $v = $dscontents->[ -1 ];
 
                 if( $e =~ m/\A\s*([^ ]+[@][^ ]+) on\s*.*\z/ ||
-                    $e =~ m/\A\s*.+SMTP=([^ ]+[@][^ ]+) on\s*.*\z/i ) {
+                    $e =~ m/\A\s*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on\s*.*\z/ ) {
                     # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
                     #   kijitora@example.com on 4/29/99 9:19:59 AM
                     if( length $v->{'recipient'} ) {

@@ -30,7 +30,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.10' }
+sub version     { '4.0.11' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -121,7 +121,7 @@ sub scan {
                 # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\AFinal-Recipient:[ ]*rfc822;[ ]*(.+)\z/ ) {
+                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*rfc822;[ ]*(.+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -131,27 +131,27 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\AX-Actual-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/ ||
-                         $e =~ m/\AOriginal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/ ) {
+                } elsif( $e =~ m/\A[Xx]-[Aa]ctual-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
+                         $e =~ m/\A[Oo]riginal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # X-Actual-Recipient: RFC822; kijitora@example.co.jp
                     # Original-Recipient: rfc822;kijitora@example.co.jp
                     $v->{'alias'} = $1;
 
-                } elsif( $e =~ m/\AAction:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.1.1
                     # Status:5.2.0
                     # Status: 5.1.0 (permanent failure)
                     $v->{'status'} = $1;
 
-                } elsif( $e =~ m/Remote-MTA:[ ]*dns;[ ]*(.+)\z/ ) {
+                } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Remote-MTA: DNS; mx.example.jp
                     $v->{'rhost'} = lc $1;
 
-                } elsif( $e =~ m/\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
                     # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                     #
                     # src/bounce/bounce_notify_util.c:
@@ -164,14 +164,14 @@ sub scan {
 
                 } else {
 
-                    if( $e =~ m/\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
                         $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
 
-                    } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -197,13 +197,13 @@ sub scan {
 
                 } else {
 
-                    if( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/ ) {
+                    if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                         # Reporting-MTA: dns; mx.example.jp
                         next if $connheader->{'lhost'};
                         $connheader->{'lhost'} = $1;
                         $connvalues++;
 
-                    } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/ ) {
+                    } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
                         # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                         next if $connheader->{'date'};
                         $connheader->{'date'} = $1;
