@@ -175,7 +175,7 @@ sub resolve {
 
             SPLIT_HEADERS: for my $e ( split( "\n", $mailheader ) ) {
 
-                if( $e =~ m/\A([^ ]+?)[:][ ]*(.+?)\z/i ) {
+                if( $e =~ m/\A([^ ]+?)[:][ ]*(.+?)\z/ ) {
                     # split the line into a header name and a header content
                     my $x = $1;
                     my $y = $2;
