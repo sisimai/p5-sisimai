@@ -17,7 +17,7 @@ my $RxErr = {
     'userunknown' => qr/No[ ]such[ ]user/x,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
 sub smtpagent   { 'UK::MessageLabs' }
 sub headerlist  { return [ 'X-Msg-Ref', 'X-Originating-IP' ] }
@@ -121,7 +121,7 @@ sub scan {
                 # Final-Recipient: rfc822; maria@dest.example.net
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\AFinal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
+                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: rfc822; maria@dest.example.net
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -131,22 +131,22 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/i ) {
+                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.0.0
                     $v->{'status'} = $1;
 
                 } else {
 
-                    if( $e =~ m/\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/i ) {
+                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: smtp; 550 maria@dest.example.net... No such user
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/i && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -156,13 +156,13 @@ sub scan {
             } else {
                 # Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
                 # Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
-                if( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+                if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
                     next if length $connheader->{'lhost'};
                     $connheader->{'lhost'} = $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
                     next if length $connheader->{'date'};
                     $connheader->{'date'} = $1;

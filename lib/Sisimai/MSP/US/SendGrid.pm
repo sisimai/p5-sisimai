@@ -14,7 +14,7 @@ my $RxMSP = {
     'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
 sub headerlist  { return [ 'Return-Path' ] }
@@ -95,7 +95,7 @@ sub scan {
                 # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown 
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\AFinal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
+                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -105,11 +105,11 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/i ) {
+                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.1.1
                     # Status:5.2.0
                     # Status: 5.1.0 (permanent failure)
@@ -117,11 +117,11 @@ sub scan {
 
                 } else {
 
-                    if( $e =~ m/\ADiagnostic-Code:[ ]*(.+)\z/i ) {
+                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'diagnosis'} = $1;
 
-                    } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/i && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -152,12 +152,12 @@ sub scan {
                     # in RCPT TO, in MAIL FROM, end of DATA
                     $commandtxt = $1;
 
-                } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                     next if length $connheader->{'date'};
                     my $r = $1;
 
-                    if( $e =~ m/\AArrival-Date: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/ ) {
+                    if( $e =~ m/\A[Aa]rrival-[Dd]ate: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/ ) {
                         # Arrival-Date: 2011-08-12 01-05-05
                         $r .= 'Thu, '.$3.' ';
                         $r .= Sisimai::Time->monthname(0)->[ int($2) - 1 ];

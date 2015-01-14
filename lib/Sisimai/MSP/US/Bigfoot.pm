@@ -13,7 +13,7 @@ my $RxMSP = {
     'received'=> qr/\w+[.]bigfoot[.]com\b/,
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub smtpagent   { 'US::Bigfoot' }
 
@@ -99,7 +99,7 @@ sub scan {
                 # Last-Attempt-Date: Sun, 28 Dec 2014 18:17:16 -0800
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\AFinal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
+                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: RFC822; <destinaion@example.net>
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -109,26 +109,26 @@ sub scan {
                     $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
                     $recipients++;
 
-                } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/i ) {
+                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.7.1
                     $v->{'status'} = $1;
 
-                } elsif( $e =~ m/\ARemote-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Remote-MTA: DNS; p01c11m075.mx.example.net
                     $v->{'rhost'} = lc $1;
 
                 } else {
                     # Get error message
-                    if( $e =~ m/\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/i ) {
+                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 553 Invalid recipient destinaion@example.net (Mode: normal)
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/i && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -146,13 +146,13 @@ sub scan {
                 # Reporting-MTA: dns; litemail57.bigfoot.com
                 # Arrival-Date: Sun, 28 Dec 2014 18:17:16 -0800
                 #
-                if( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+                if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
                     next if length $connheader->{'lhost'};
                     $connheader->{'lhost'} = $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                     next if length $connheader->{'date'};
                     $connheader->{'date'} = $1;

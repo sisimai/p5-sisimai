@@ -47,7 +47,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -162,21 +162,21 @@ sub scan {
                     $recipients++;
                 }
 
-            } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/i ) {
+            } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # Status: 5.1.1
                 # Status:5.2.0
                 # Status: 5.1.0 (permanent failure)
                 $v->{'status'} = $1;
 
-            } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
+            } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                 # Action: failed
                 $v->{'action'} = lc $1;
 
-            } elsif( $e =~ m/\ARemote-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+            } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                 # Remote-MTA: DNS; mx.example.jp
                 $v->{'rhost'} = lc $1;
 
-            } elsif( $e =~ m/\ALast-Attempt-Date:[ ]*(.+)\z/i ) {
+            } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
                 # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                 $v->{'date'} = $1;
 

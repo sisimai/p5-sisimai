@@ -11,7 +11,7 @@ my $RxMSP = {
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'Yandex.Mail: http://www.yandex.ru' }
 sub smtpagent   { 'RU::Yandex' }
 sub headerlist  { 
@@ -99,7 +99,7 @@ sub scan {
                 # Content-Type: message/rfc822
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\AFinal-Recipient:[ ]*rfc822;[ ]*([^ ]+)\z/i ) {
+                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: rfc822; kijitora@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -109,26 +109,26 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\AAction:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\AStatus:[ ]*(\d[.]\d+[.]\d+)/i ) {
+                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status:5.2.0
                     $v->{'status'} = $1;
 
-                } elsif( $e =~ m/\ARemote-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Remote-MTA: DNS; mx.example.jp
                     $v->{'rhost'} = lc $1;
 
                 } else {
                     # Get error message
-                    if( $e =~ m/\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/i ) {
+                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\ADiagnostic-Code:[ ]*/i && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -142,13 +142,13 @@ sub scan {
                 # X-Yandex-Queue-ID: 367D79E130D
                 # X-Yandex-Sender: rfc822; shironeko@yandex.example.com
                 # Arrival-Date: Sat,  6 Dec 2014 20:12:27 +0300 (MSK)
-                if( $e =~ m/\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/i ) {
+                if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
                     next if length $connheader->{'lhost'};
                     $connheader->{'lhost'} = $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\AArrival-Date:[ ]*(.+)\z/i ) {
+                } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                     next if length $connheader->{'date'};
                     $connheader->{'date'} = $1;
