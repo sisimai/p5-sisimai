@@ -261,7 +261,7 @@ sub get {
     my $cctld = shift || return undef;
     my $alpha = shift || 'alpha-2';
 
-    $cctld = 'gb' if $cctld =~ m/\Auk\z/i;
+    $cctld = 'gb' if $cctld =~ m/\A[Uu][Kk]\z/;
     return $CCTLD->{ lc $cctld }->{ lc $alpha } // '';
 }
 
