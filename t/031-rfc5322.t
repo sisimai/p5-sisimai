@@ -15,26 +15,41 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-    my $ismailaddr = 'neko@example.jp';
-    my $nomailaddr = 'neko';
-    my $subaddress = 'neko+nyaa@example.jp';
-    my $verpstring = 'nyaa+neko=example.jp@example.org';
+    my $emailaddrs = [
+        'neko@example.jp',
+        'neko+nyaa@example.jp',
+        'nyaa+neko=example.jp@example.org',
+        'Shironeko Nyanko <shironeko@example.jp>',
+        '=?UTF-8?B?55m954yr?= <shironeko@example.co.jp>',
+    ];
+    my $isnotaddrs = [
+        'neko',
+        'neko%example.jp',
+    ];
     my $postmaster = 'mailer-daemon@example.jp';
-    my $rfc5322txt = 'Shironeko Nyanko <shironeko@example.jp>';
 
-    ok $PackageName->is_emailaddress( $ismailaddr ), '->is_emailaddress('.$ismailaddr.') = 1';
-    is $PackageName->is_emailaddress( $nomailaddr ), 0, '->is_emailaddress('.$nomailaddr.') = 0';
-    ok $PackageName->is_emailaddress( $rfc5322txt ), '->is_emailaddress('.$rfc5322txt.') = 1';
+    for my $e ( @$emailaddrs ) {
+        ok $PackageName->is_emailaddress( $e ), '->is_emailaddress('.$e.') = 1';
+    }
+
+    for my $e ( @$isnotaddrs ) {
+        is $PackageName->is_emailaddress( $e ), 0, '->is_emailaddress('.$e.') = 0';
+    }
 
     ok $PackageName->is_domainpart( 'example.jp' ), '->is_domainpart(example.jp) = 1';
-    is $PackageName->is_domainpart( $ismailaddr ), 0, '->is_domainpart('.$ismailaddr.') = 0';
+    for my $e ( @$emailaddrs ) {
+        is $PackageName->is_domainpart( $e ), 0, '->is_domainpart('.$e.') = 0';
+    }
     is $PackageName->is_domainpart( undef ), 0, '->is_domainpart(undef) = 0';
     is $PackageName->is_domainpart( '[' ), 0, '->is_domainpart([) = 0';
     is $PackageName->is_domainpart( ')' ), 0, '->is_domainpart()) = 0';
     is $PackageName->is_domainpart( ';' ), 0, '->is_domainpart(;) = 0';
 
-    ok $PackageName->is_mailerdaemon( $postmaster), '->is_mailerdaemon = 1';
-    is $PackageName->is_mailerdaemon( $ismailaddr), 0, '->is_mailerdaemon = 0';
+    ok $PackageName->is_mailerdaemon( $postmaster ), '->is_mailerdaemon('.$postmaster.') = 1';
+
+    for my $e ( @$emailaddrs ) {
+        is $PackageName->is_mailerdaemon( $e ), 0, '->is_mailerdaemon('.$e.') = 0';
+    }
 
     # Check the value of Received header
     my $received00 = [
