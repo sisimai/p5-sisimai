@@ -23,7 +23,7 @@ MTA::X1 .................    0/0006  0.0000  Unknown MTA #1
 MTA::X2 .................    0/0017  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0007  0.0000  Unknown MTA #3
 MTA::mFILTER ............    6/0006  1.0000  Digital Arts m-FILTER
-MTA::qmail ..............   44/0052  0.8462  qmail
+MTA::qmail ..............   45/0052  0.8654  qmail
 MSP::DE::EinsUndEins ....    0/0001  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0005  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
@@ -45,5 +45,5 @@ MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    7/0020  0.3500  Abuse Feedback Reporting Format
 RFC3464 .................   99/0109  0.9083  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X+nails  852/1113  0.7655
+ bounceHammer 2.7.X+nails  853/1113  0.7664
  Sisimai(bounceHammer 4)  1113/1113  1.0000
