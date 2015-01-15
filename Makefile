@@ -163,6 +163,10 @@ sample:
 		$(CP) $(FOR_EMPARSER)/$$v/* $(EMAIL_SAMPLE)/$$v/ ;\
 	done
 
+profile:
+	$(PERL) -d:NYTProf tmp/parse $(FOR_MAKETEST) json > /dev/null
+	nytprofhtml
+
 clean:
 	yes | $(MINIL) clean
 	$(RM) -r nytprof*
