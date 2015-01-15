@@ -1,5 +1,15 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.11  Thu, 15 Jan 2015 15:01:59 +0900 (JST)
+    - Improved code in Sisimai/Mail/Mbox.pm: using substr() function instead of
+      a regular expression is 1.46 times faster than before.
+    - Code improvement in Sisimai/Reason.pm: using grep {} block instead of a 
+      regular expression is 133% faster than before.
+    - Revert commit 0c7782cecafdc923d3c82b81a201a787611654ea for Sisimai::Time.
+    - Improvement of pattern match in Sisimai/Message.pm is 2.27 times faster.
+    - Improvement of regular expressions in each MTA module is 115% faster than
+      before.
+
 4.1.10  Mon, 12 Jan 2015 17:59:35 +0900 (JST)
     - Implement Sisimai::MSP::UK::MessageLabs for email bounces from Symantec.
       cloud: formerly MessageLabs.
@@ -11,7 +21,8 @@ Revision history for Sisimai/Core module of bouncehammer version 4
     - Implement Sisimai::MSP::US::Bigfoot for email bounces from bigfoot.com.
     - Merged pull request #39, Updated Sisimai::RFC3464 and message patterns in
       Sisimai::Reason::SecurityError and Suspended. Thanks to @jcbf.
-    - Improved regular expression in each MTA module, Issue #40.
+    - Regular expression improvements in each MTA module(Issue #40) is between
+      122% and 800% faster than Sisimai 4.1.9.
 
 4.1.9   Wed, 31 Dec 2014 18:59:22 +0900 (JST)
     - Implement Sisimai::MTA::X3 for email bounces from Unknown MTA(3).
