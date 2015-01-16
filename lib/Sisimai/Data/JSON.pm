@@ -19,6 +19,7 @@ sub dump {
 
     try {
         $damneddata = $argvs->damn;
+        $jsonobject->space_after(1);
         $jsonstring = $jsonobject->encode( $damneddata );
 
     } catch {
