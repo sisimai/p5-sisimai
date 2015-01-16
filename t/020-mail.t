@@ -6,7 +6,7 @@ use Sisimai::Mail;
 my $PackageName = 'Sisimai::Mail';
 my $MethodNames = {
     'class' => [ 'new' ],
-    'object' => [ 'data', 'mbox', 'mail', 'read' ],
+    'object' => [ 'path', 'mbox', 'mail', 'read' ],
 };
 my $SampleEmail = {
     'mailbox' => './eg/mbox-as-a-sample',
@@ -26,7 +26,7 @@ MAKE_TEST: {
 
         isa_ok $mailbox, $PackageName;
         can_ok $mailbox, @{ $MethodNames->{'object'} };
-        is $mailbox->data, $SampleEmail->{'mailbox'}, '->data = '.$mailbox->data;
+        is $mailbox->path, $SampleEmail->{'mailbox'}, '->path = '.$mailbox->path;
         is $mailbox->mbox, 1, '->mbox = 1';
         isa_ok $mailbox->mail, $PackageName.'::Mbox';
 
@@ -43,7 +43,7 @@ MAKE_TEST: {
 
         isa_ok $maildir, $PackageName;
         can_ok $maildir, @{ $MethodNames->{'object'} };
-        is $maildir->data, $SampleEmail->{'maildir'}, '->data = '.$maildir->data;
+        is $maildir->path, $SampleEmail->{'maildir'}, '->path = '.$maildir->path;
         is $maildir->mbox, 0, '->mbox = 0';
         isa_ok $maildir->mail, $PackageName.'::Maildir';
 
@@ -60,7 +60,7 @@ MAKE_TEST: {
 
         isa_ok $maildir, $PackageName;
         can_ok $maildir, @{ $MethodNames->{'object'} };
-        is $maildir->data, $IsNotBounce->{'maildir'}, '->data = '.$maildir->data;
+        is $maildir->path, $IsNotBounce->{'maildir'}, '->path = '.$maildir->path;
         is $maildir->mbox, 0, '->mbox = 0';
         isa_ok $maildir->mail, $PackageName.'::Maildir';
 

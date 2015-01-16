@@ -6,7 +6,7 @@ use Sisimai::Mail::Maildir;
 my $PackageName = 'Sisimai::Mail::Maildir';
 my $MethodNames = {
     'class' => [ 'new' ],
-    'object' => [ 'data', 'name', 'files', 'handle', 'read' ],
+    'object' => [ 'path', 'name', 'files', 'handle', 'read' ],
 };
 my $SampleEmail = './eg/maildir-as-a-sample/new';
 my $NewInstance = $PackageName->new( $SampleEmail );
@@ -23,7 +23,7 @@ MAKE_TEST: {
 
         isa_ok $maildir, $PackageName;
         can_ok $maildir, @{ $MethodNames->{'object'} };
-        is $maildir->data, $SampleEmail, '->data = '.$maildir->data;
+        is $maildir->path, $SampleEmail, '->path = '.$maildir->path;
         is $maildir->name, undef, '->name = ""';
         isa_ok $maildir->files, 'ARRAY';
         isa_ok $maildir->handle, 'IO::Dir';
