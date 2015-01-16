@@ -6,7 +6,7 @@ use Class::Accessor::Lite;
 use Module::Load;
 
 my $roaccessors = [
-    'data',     # (String) path to mbox or Maildir/
+    'path',     # (String) path to mbox or Maildir/
     'mbox',     # (Integer) if the value of data is an mbox, this value is 1.
 ];
 my $rwaccessors = [
@@ -29,7 +29,7 @@ sub new {
     return undef if( ! -f $argvs && ! -d $argvs );
 
     $param->{'mbox'} = 0 unless -f $argvs;
-    $param->{'data'} = $argvs;
+    $param->{'path'} = $argvs;
 
     if( -f $argvs ) {
         # The argument is a file, it is an mbox
@@ -94,15 +94,15 @@ C<new()> is a constructor of Sisimai::Mail
 
 =head1 INSTANCE METHODS
 
-=head2 C<B<data()>>
+=head2 C<B<path()>>
 
-C<data()> returns the path to mbox or Maildir.
+C<path()> returns the path to mbox or Maildir.
 
-    print $mailbox->data;   # /var/mail/root
+    print $mailbox->path;   # /var/mail/root
 
 =head2 C<B<mbox()>>
 
-C<mbox()> returns 1 if the value of "data" is a file
+C<mbox()> returns 1 if the value of "path" is a file
 
     print $mailbox->mbox;   # 1
 

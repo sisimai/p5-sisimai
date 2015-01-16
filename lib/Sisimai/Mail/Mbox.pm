@@ -8,7 +8,7 @@ use Try::Tiny;
 use IO::File;
 
 my $roaccessors = [
-    'data',     # (String) path to mbox
+    'path',     # (String) path to mbox
     'name',     # (String) file name of the mbox
     'size',     # (Integer) File size of the mbox
 ];
@@ -31,7 +31,7 @@ sub new {
     return undef unless -e $argvs;
     return undef unless -f $argvs;
 
-    $param->{'data'}   = $argvs;
+    $param->{'path'}   = $argvs;
     $param->{'size'}   = -s $argvs;
     $param->{'name'}   = File::Basename::basename $argvs;
     $param->{'handle'} = IO::File->new( $argvs, 'r' );
@@ -49,14 +49,14 @@ sub read {
     my $filehandle = $self->{'handle'};
     my $readbuffer = '';
 
-    return undef unless defined $self->{'data'};
-    return undef unless -e $self->{'data'};
-    return undef unless -f $self->{'data'};
-    return undef unless -T $self->{'data'};
+    return undef unless defined $self->{'path'};
+    return undef unless -e $self->{'path'};
+    return undef unless -f $self->{'path'};
+    return undef unless -T $self->{'path'};
 
     try {
         $seekoffset = 0 if $seekoffset < 0;
-        $filehandle = IO::File->new( $self->{'data'}, 'r' ) unless eof $filehandle;
+        $filehandle = IO::File->new( $self->{'path'}, 'r' ) unless eof $filehandle;
 
         seek( $filehandle, $seekoffset, 0 );
         while( my $r = <$filehandle> ) {
@@ -104,11 +104,11 @@ C<new()> is a constructor of Sisimai::Mail::Mbox
 
 =head1 INSTANCE METHODS
 
-=head2 C<B<data()>>
+=head2 C<B<path()>>
 
-C<data()> returns the path to mbox.
+C<path()> returns the path to mbox.
 
-    print $mailbox->data;   # /var/mail/root
+    print $mailbox->path;   # /var/mail/root
 
 =head2 C<B<name()>>
 

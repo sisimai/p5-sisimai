@@ -8,7 +8,7 @@ use IO::Dir;
 use IO::File;
 
 my $roaccessors = [
-    'data',     # (String) path to Maildir/
+    'path',     # (String) path to Maildir/
 ];
 my $rwaccessors = [
     'name',     # (String) file name of a mail in the Maildir/
@@ -30,7 +30,7 @@ sub new {
     return undef unless -e $argvs;
     return undef unless -d $argvs;
 
-    $param->{'data'}   = $argvs;
+    $param->{'path'}   = $argvs;
     $param->{'name'}   = undef;
     $param->{'files'}  = [];
     $param->{'handle'} = IO::Dir->new( $argvs );
@@ -44,9 +44,9 @@ sub read {
     # @Return       (String) Contents of file in Maildir/
     my $self = shift;
 
-    return undef unless defined $self->{'data'};
-    return undef unless -e $self->{'data'};
-    return undef unless -d $self->{'data'};
+    return undef unless defined $self->{'path'};
+    return undef unless -e $self->{'path'};
+    return undef unless -d $self->{'path'};
 
     my $seekhandle = $self->{'handle'};
     my $filehandle = undef;
@@ -55,13 +55,13 @@ sub read {
     my $emailinode = undef;
 
     try {
-        $seekhandle = IO::Dir->new( $self->{'data'} ) unless $seekhandle;
+        $seekhandle = IO::Dir->new( $self->{'path'} ) unless $seekhandle;
 
         while( my $r = $seekhandle->read ) {
             # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
 
-            $emailindir =  sprintf( "%s/%s", $self->{'data'}, $r );
+            $emailindir =  sprintf( "%s/%s", $self->{'path'}, $r );
             $emailindir =~ y{/}{}s;
             next unless -f $emailindir;
             next unless -s $emailindir;
@@ -122,11 +122,11 @@ C<new()> is a constructor of Sisimai::Mail::Maildir
 
 =head1 INSTANCE METHODS
 
-=head2 C<B<data()>>
+=head2 C<B<path()>>
 
-C<data()> returns the path to Maildir.
+C<path()> returns the path to Maildir.
 
-    print $maildir->data;   # /home/neko/Maildir/new
+    print $maildir->path;   # /home/neko/Maildir/new
 
 =head2 C<B<name()>>
 
