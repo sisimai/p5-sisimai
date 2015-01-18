@@ -21,7 +21,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Lotus Notes' }
 sub smtpagent   { 'Notes' }
 
@@ -43,7 +43,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $characters = '';    # (String) Character set name of the bounce mail
     my $removedmsg = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';
@@ -53,7 +53,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         next unless length $e;
 

@@ -140,7 +140,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.9' }
+sub version     { '4.0.10' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -168,7 +168,7 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $longfields = __PACKAGE__->LONGFIELDS;
 
     my $v = undef;
@@ -176,7 +176,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
@@ -309,8 +309,8 @@ sub scan {
                     LDAP: for my $r ( keys %$RxLDAP ) {
                         # Verify each regular expression of LDAP errors
                         next unless $e->{'diagnosis'} =~ $RxLDAP->{ $r };
-                       $e->{'reason'} = $r;
-                       last(LDAP);
+                        $e->{'reason'} = $r;
+                        last(LDAP);
                     }
                 }
             }

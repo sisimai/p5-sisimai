@@ -28,7 +28,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'IBM Domino Server' }
 sub smtpagent   { 'Domino' }
 
@@ -50,7 +50,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $subjecttxt = '';    # (String) The value of Subject:
 
@@ -61,7 +61,7 @@ sub scan {
 
     require Sisimai::Address;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         next unless length $e;
 

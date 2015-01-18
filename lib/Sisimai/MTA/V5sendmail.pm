@@ -33,7 +33,7 @@ my $RxMTA = {
     'subject' => qr/\AReturned mail: [A-Z]/,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'Sendmail version 5' }
 sub smtpagent   { 'V5sendmail' }
 
@@ -56,18 +56,18 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
+    my @responding = ();    # (Array) Responses from remote server
+    my @commandset = ();    # (Array) SMTP command which is sent to remote server
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $responding = [];    # (Ref->Array) Responses from remote server
-    my $commandset = [];    # (Ref->Array) SMTP command which is sent to remote server
-    my $anotherset = {};    # Another error information
+    my $anotherset = {};    # (Ref->Hash) Another error information
 
     my $v = undef;
     my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         $match = 1 if $e =~ $RxMTA->{'rfc822'};
 
@@ -120,21 +120,21 @@ sub scan {
                 $v->{'recipient'}  = $1;
                 $v->{'diagnosis'}  = $2;
 
-                if( $responding->[ $recipients ] ) {
+                if( $responding[ $recipients ] ) {
                     # Concatenate the response of the server and error message
-                    $v->{'diagnosis'} .= ': '.$responding->[ $recipients ];
+                    $v->{'diagnosis'} .= ': '.$responding[ $recipients ];
                 }
                 $recipients++;
 
             } elsif( $e =~ m/\A[>]{3}\s*([A-Z]{4})\s*/ ) {
                 # >>> RCPT To:<kijitora@example.org>
-                $commandset->[ $recipients ] = $1;
+                $commandset[ $recipients ] = $1;
 
             } elsif( $e =~ m/\A[<]{3}[ ]+(.+)\z/ ) {
                 # <<< Response
                 # <<< 501 <shironeko@example.co.jp>... no access from mail server [192.0.2.55] which is an open relay.
                 # <<< 550 Requested User Mailbox not found. No such user here.
-                $responding->[ $recipients ] = $1;
+                $responding[ $recipients ] = $1;
 
             } else {
                 # Detect SMTP session error or connection error
@@ -188,7 +188,7 @@ sub scan {
 
         $e->{'spec'}    ||= 'SMTP';
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'}   = $commandset->[ $n ] || '';
+        $e->{'command'}   = $commandset[ $n ] || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
@@ -196,7 +196,7 @@ sub scan {
 
         } else {
             # Set server response as a error message
-            $e->{'diagnosis'} ||= $responding->[ $n ];
+            $e->{'diagnosis'} ||= $responding[ $n ];
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 

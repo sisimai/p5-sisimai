@@ -30,7 +30,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.11' }
+sub version     { '4.0.12' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -55,7 +55,7 @@ sub scan {
     #   Subject: Undelivered Mail Returned to Sender
     return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
 
-    my $commandset = [];    # (Ref->Array) ``in reply to * command'' list
+    my @commandset = ();    # (Array) ``in reply to * command'' list
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -63,7 +63,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
@@ -77,7 +77,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
@@ -189,11 +189,11 @@ sub scan {
                 # command)
                 if( $e =~ m/\s[(]in reply to .*([A-Z]{4}).*/ ) {
                     # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                    push @$commandset, $1;
+                    push @commandset, $1;
 
                 } elsif( $e =~ m/([A-Z]{4})\s*.*command[)]\z/ ) {
                     # to MAIL command)
-                    push @$commandset, $1;
+                    push @commandset, $1;
 
                 } else {
 
@@ -264,7 +264,7 @@ sub scan {
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
-        $e->{'command'} = shift @$commandset || '';
+        $e->{'command'} = shift @commandset || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
