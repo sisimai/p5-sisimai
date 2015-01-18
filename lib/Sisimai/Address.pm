@@ -126,30 +126,30 @@ sub s3s4 {
     $input =~ s{(.)"<}{$1" <};
 
     my $canon = '';
-    my $addrs = [];
-    my $token = [ split( ' ', $input ) ];
+    my @addrs = ();
+    my @token = split( ' ', $input );
 
     # Convert character entity; "&lt;" -> ">", "&gt;" -> "<".
-    map { $_ =~ s/&lt;/</g; $_ =~ s/&gt;/>/g; } @$token;
-    map { $_ =~ s/,\z//g; } @$token;
+    map { $_ =~ s/&lt;/</g; $_ =~ s/&gt;/>/g; } @token;
+    map { $_ =~ s/,\z//g; } @token;
 
-    if( scalar(@$token) == 1 ) {
-        push @$addrs, $token->[0];
+    if( scalar(@token) == 1 ) {
+        push @addrs, $token[0];
 
     } else {
-        for my $e ( @$token ) {
+        for my $e ( @token ) {
             chomp $e;
             next unless $e =~ m{\A[<]?.+[@][-.0-9A-Za-z]+[.][A-Za-z]{2,}[>]?\z};
-            push @$addrs, $e;
+            push @addrs, $e;
         }
     }
 
-    if( scalar( @$addrs ) > 1 ) {
-        $canon = [ grep { $_ =~ m{\A[<].+[>]\z} } @$addrs ]->[0];
-        $canon = $addrs->[0] unless $canon;
+    if( scalar( @addrs ) > 1 ) {
+        $canon = [ grep { $_ =~ m{\A[<].+[>]\z} } @addrs ]->[0];
+        $canon = $addrs[0] unless $canon;
 
     } else {
-        $canon = shift @$addrs;
+        $canon = shift @addrs;
     }
 
     return '' if( ! defined $canon || $canon eq '' );
@@ -189,13 +189,12 @@ sub expand_alias {
     # @Return       (String) Expanded email address
     my $class = shift;
     my $email = shift // return undef;
-    my $local = undef;
     my $alias = '';
 
     return '' unless Sisimai::RFC5322->is_emailaddress( $email );
-    $local = [ split( '@', $email ) ];
-    if( $local->[0] =~ m/\A([-_\w]+?)[+].+\z/ ) {
-        $alias = sprintf( "%s@%s", $1, $local->[1] );
+    my @local = split( '@', $email );
+    if( $local[0] =~ m/\A([-_\w]+?)[+].+\z/ ) {
+        $alias = sprintf( "%s@%s", $1, $local[1] );
     }
     return $alias;
 }
