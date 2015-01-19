@@ -31,8 +31,8 @@ sub mimedecode {
 
     my $characterset = '';
     my $encodingname = '';
-    my $mimeencoded0 = [];
-    my $decodedtext0 = [];
+    my $mimeencoded0 = '';
+    my @decodedtext0 = ();
     my $decodedtext1 = '';
     my $utf8decoded1 = '';
 
@@ -50,20 +50,20 @@ sub mimedecode {
 
                 if( $encodingname eq 'Q' ) {
                     # Quoted-Printable
-                    push @$decodedtext0, MIME::QuotedPrint::decode( $mimeencoded0 );
+                    push @decodedtext0, MIME::QuotedPrint::decode( $mimeencoded0 );
 
                 } elsif( $encodingname eq 'B' ) {
                     # Base64
-                    push @$decodedtext0, MIME::Base64::decode( $mimeencoded0 );
+                    push @decodedtext0, MIME::Base64::decode( $mimeencoded0 );
                 }
             }
         } else {
-            push @$decodedtext0, $e;
+            push @decodedtext0, $e;
         }
     }
 
-    return '' unless scalar @$decodedtext0;
-    $decodedtext1 = join( '', @$decodedtext0 );
+    return '' unless scalar @decodedtext0;
+    $decodedtext1 = join( '', @decodedtext0 );
 
     if( $characterset && $encodingname ) {
         # utf-8 => utf8
