@@ -19,7 +19,7 @@ my $RxRFC = {
     }xi,
 };
 
-sub version     { '4.0.9' };
+sub version     { '4.0.10' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -48,7 +48,7 @@ sub scan {
 
     my $longfields = Sisimai::MTA->LONGFIELDS;
     my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connheader = {
         'date'    => '',    # The value of Arrival-Date header
@@ -61,7 +61,7 @@ sub scan {
     push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
     $rfc822head = Sisimai::MTA->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxRFC->{'begin'} and $RxRFC->{'rfc822'}.
         if( ( $e =~ $RxRFC->{'rfc822'} ) .. ( $e =~ $RxRFC->{'endof'} ) ) {
             # After "message/rfc822"
