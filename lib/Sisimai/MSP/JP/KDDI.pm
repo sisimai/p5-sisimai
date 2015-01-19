@@ -31,7 +31,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.10' }
+sub version     { '4.0.11' }
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
 
@@ -57,7 +57,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     my $v = undef;
@@ -69,7 +69,7 @@ sub scan {
     require Sisimai::RFC5322;
     require Sisimai::Address;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
 
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"

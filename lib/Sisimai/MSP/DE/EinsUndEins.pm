@@ -19,7 +19,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { '1&1: http://www.1and1.de' }
 sub smtpagent   { 'DE::EinsUndEins' }
 
@@ -42,7 +42,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     my $v = undef;
@@ -50,7 +50,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 

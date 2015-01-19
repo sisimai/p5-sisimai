@@ -102,7 +102,7 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'Google Gmail: https://mail.google.com' }
 sub smtpagent   { 'US::Google' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -173,7 +173,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $softbounce = 0;     # (Integer) 1 = Soft bounce
     my $statecode0 = 0;     # (Integer) The value of (state *) in the error message
@@ -186,7 +186,7 @@ sub scan {
     require Sisimai::RFC5322;
     require Sisimai::Address;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 

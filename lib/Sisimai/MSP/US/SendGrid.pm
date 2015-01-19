@@ -14,7 +14,7 @@ my $RxMSP = {
     'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
 sub headerlist  { return [ 'Return-Path' ] }
@@ -39,7 +39,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
@@ -54,7 +54,7 @@ sub scan {
 
     require Sisimai::Time;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"

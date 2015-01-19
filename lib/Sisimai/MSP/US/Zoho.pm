@@ -21,8 +21,7 @@ my $RxSess = {
     'expired' => qr/Host not reachable/
 };
 
-
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub smtpagent   { 'US::Zoho' }
 sub headerlist  { 
@@ -50,7 +49,7 @@ sub scan {
     my $qprintable = 0;
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     my $v = undef;
@@ -58,7 +57,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 

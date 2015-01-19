@@ -17,7 +17,7 @@ my $RxErr = {
     'expired' => qr/Delivery[ ]expired/x,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'AmazonSES: http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::AmazonSES' }
 sub headerlist  { return [ 'X-AWS-Outgoing' ] }
@@ -42,7 +42,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
@@ -56,7 +56,7 @@ sub scan {
 
     require Sisimai::RFC5322;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 

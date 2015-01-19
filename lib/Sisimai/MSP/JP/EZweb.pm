@@ -47,7 +47,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.9' }
+sub version     { '4.0.10' }
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -84,7 +84,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     my $v = undef;
@@ -98,11 +98,11 @@ sub scan {
     require Sisimai::Address;
 
     my $rxboundary = Sisimai::MIME->boundary( $mhead->{'content-type'}, 1 );
-    my $rxmessages = [];
+    my @rxmessages = ();
     push @{ $RxMSP->{'rfc822'} }, qr|\A$rxboundary\z| if length $rxboundary;
-    map { push @$rxmessages, @{ $RxErr->{ $_ } } } ( keys %$RxErr );
+    map { push @rxmessages, @{ $RxErr->{ $_ } } } ( keys %$RxErr );
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
 
         if( ( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
@@ -188,7 +188,7 @@ sub scan {
 
                 } else {
                     # Check error message
-                    if( grep { $e =~ $_ } @$rxmessages ) {
+                    if( grep { $e =~ $_ } @rxmessages ) {
                         # Check with regular expressions of each error
                         $v->{'diagnosis'} .= ' '.$e;
                     } else {

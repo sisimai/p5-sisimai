@@ -27,7 +27,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
 sub smtpagent   { 'JP::Biglobe' }
 
@@ -50,7 +50,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     my $v = undef;
@@ -61,7 +61,7 @@ sub scan {
     require Sisimai::RFC5322;
     require Sisimai::Address;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"

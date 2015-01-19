@@ -11,7 +11,7 @@ my $RxMSP = {
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Yandex.Mail: http://www.yandex.ru' }
 sub smtpagent   { 'RU::Yandex' }
 sub headerlist  { 
@@ -37,8 +37,8 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
-    my $commandset = [];    # (Ref->Array) ``in reply to * command'' list
+    my @stripedtxt = split( "\n", $$mbody );
+    my @commandset = ();    # (Array) ``in reply to * command'' list
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
@@ -51,7 +51,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
@@ -160,11 +160,11 @@ sub scan {
                     #    command)
                     if( $e =~ m/\s[(]in reply to .*([A-Z]{4}).*/ ) {
                         # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                        push @$commandset, $1;
+                        push @commandset, $1;
 
                     } elsif( $e =~ m/([A-Z]{4})\s*.*command[)]\z/ ) {
                         # to MAIL command)
-                        push @$commandset, $1;
+                        push @commandset, $1;
                     }
                 }
             }
@@ -184,7 +184,7 @@ sub scan {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
-        $e->{'command'} = shift @$commandset || '';
+        $e->{'command'} = shift @commandset || '';
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.

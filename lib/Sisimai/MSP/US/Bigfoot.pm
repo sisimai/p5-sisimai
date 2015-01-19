@@ -13,7 +13,7 @@ my $RxMSP = {
     'received'=> qr/\w+[.]bigfoot[.]com\b/,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub smtpagent   { 'US::Bigfoot' }
 
@@ -39,7 +39,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
@@ -55,7 +55,7 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     require Sisimai::Address;
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 

@@ -57,7 +57,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { '@mail.ru: https://mail.ru' }
 sub smtpagent   { 'RU::MailRu' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -82,7 +82,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
 
@@ -91,7 +91,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
@@ -181,11 +181,11 @@ sub scan {
         # Fallback for getting recipient addresses
         if( defined $mhead->{'x-failed-recipients'} ) {
             # X-Failed-Recipients: kijitora@example.jp
-            my $rcptinhead = [ split( ',', $mhead->{'x-failed-recipients'} ) ];
-            map { $_ =~ y/ //d } @$rcptinhead;
-            $recipients = scalar @$rcptinhead;
+            my @rcptinhead = split( ',', $mhead->{'x-failed-recipients'} );
+            map { $_ =~ y/ //d } @rcptinhead;
+            $recipients = scalar @rcptinhead;
 
-            for my $e ( @$rcptinhead ) {
+            for my $e ( @rcptinhead ) {
                 # Insert each recipient address into @$dscontents
                 $dscontents->[-1]->{'recipient'} = $e;
                 next if scalar @$dscontents == $recipients;

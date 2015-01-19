@@ -15,7 +15,7 @@ my $RxMSP = {
     },
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.0.8' }
 sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub smtpagent   { 'US::Verizon' }
 
@@ -45,7 +45,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $senderaddr = '';    # (String) Sender address in the message body
     my $subjecttxt = '';    # (String) Subject of the original message
@@ -81,7 +81,7 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         $RxMTA->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
 
-        for my $e ( @$stripedtxt ) {
+        for my $e ( @stripedtxt ) {
             # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
             if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
                 # After "message/rfc822"
@@ -173,7 +173,7 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         $RxMTA->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
 
-        for my $e ( @$stripedtxt ) {
+        for my $e ( @stripedtxt ) {
             # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
             if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
                 # After "message/rfc822"

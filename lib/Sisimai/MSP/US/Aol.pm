@@ -18,7 +18,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Aol Mail: http://www.aol.com' }
 sub smtpagent   { 'US::Aol' }
 sub headerlist  { 
@@ -45,7 +45,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = __PACKAGE__->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
@@ -58,7 +58,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
