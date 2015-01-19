@@ -100,27 +100,27 @@ sub received {
         #   (authenticated bits=0)
         #   by nijo.example.jp (V8/cf) with ESMTP id s1QB5ka0018055;
         #   Wed, 26 Feb 2014 06:05:47 -0500
-        my $received = [ split( ' ', $value->{'from'} ) ];
-        my $namelist = [];
-        my $addrlist = [];
+        my @received = split( ' ', $value->{'from'} );
+        my @namelist = ();
+        my @addrlist = ();
         my $hostname = '';
         my $hostaddr = '';
 
-        for my $e ( @$received ) {
+        for my $e ( @received ) {
             # Received: from [10.22.22.222] (smtp-gateway.kyoto.ocn.ne.jp [192.0.2.222])
             if( $e =~ m/\A[(\[]\d+[.]\d+[.]\d+[.]\d+[)\]]\z/ ) {
                 # [192.0.2.1] or (192.0.2.1)
                 $e =~ y/[]()//d;
-                push @$addrlist, $e;
+                push @addrlist, $e;
 
             } else {
                 # hostname
                 $e =~ y/()//d;
-                push @$namelist, $e;
+                push @namelist, $e;
             }
         }
 
-        for my $e ( @$namelist ) {
+        for my $e ( @namelist ) {
             # 1. Hostname takes priority over all other IP addresses
             next unless $e =~ m/[.]/;
             $hostname = $e;
@@ -129,7 +129,7 @@ sub received {
 
         if( length( $hostname ) == 0 ) {
             # 2. Use IP address as a remote host name
-            for my $e ( @$addrlist ) {
+            for my $e ( @addrlist ) {
                 # Skip if the address is a private address
                 next if $e =~ m/\A(?:10|127)[.]/;
                 next if $e =~ m/\A172[.](?:1[6-9]|2[0-9]|3[0-1])[.]/;
@@ -139,7 +139,7 @@ sub received {
             }
         }
 
-        $value->{'from'} = $hostname || $hostaddr || $addrlist->[-1];
+        $value->{'from'} = $hostname || $hostaddr || $addrlist[-1];
     }
 
     for my $e ( 'from', 'by' ) {
