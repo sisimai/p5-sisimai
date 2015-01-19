@@ -290,7 +290,7 @@ sub parse {
     my $argvs = shift || return undef;
 
     my $datestring = $argvs; $datestring =~ s{[,](\d+)}{, $1};  # Thu,13 -> Thu, 13
-    my $timetokens = [ split( ' ', $datestring ) ];
+    my @timetokens = split( ' ', $datestring );
     my $parseddate = '';    # (String) Canonified Date/Time string
     my $afternoon1 = 0;     # (Integer) After noon flag
     my $v = {
@@ -302,7 +302,7 @@ sub parse {
         'z' => undef,   # (Integer) Timezone offset
     };
 
-    while( my $p = shift @$timetokens ) {
+    while( my $p = shift @timetokens ) {
         # Parse each piece of time
         if( $p =~ m/\A[A-Z][a-z]{2}[,]?\z/ ) {
             # Day of week or Day of week; Thu, Apr, ...
@@ -394,9 +394,9 @@ sub parse {
     if( $v->{'T'} && $afternoon1 ) {
         # +12
         my $t0 = $v->{'T'};
-        my $t1 = [ split( ':', $v->{'T'} ) ];
-        $v->{'T'} = sprintf( "%02d:%02d:%02d", $t1->[0] + 12, $t1->[1], $t1->[2] );
-        $v->{'T'} = $t0 if $t1->[0] > 12;
+        my @t1 = split( ':', $v->{'T'} );
+        $v->{'T'} = sprintf( "%02d:%02d:%02d", $t1[0] + 12, $t1[1], $t1[2] );
+        $v->{'T'} = $t0 if $t1[0] > 12;
     }
 
     $v->{'a'} ||= 'Thu';   # There is no day of week
