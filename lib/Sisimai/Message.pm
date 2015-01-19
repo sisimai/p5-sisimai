@@ -65,8 +65,8 @@ sub resolve {
 
     my $processing = { 'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [] };
     my $methodargv = {};
-    my $mtamodules = [];
-    my $mspmodules = [];
+    my @mtamodules = ();
+    my @mspmodules = ();
 
     for my $e ( 'mtalist', 'msplist' ) {
         # The order of MTA modules specified by user
@@ -74,13 +74,13 @@ sub resolve {
         next unless ref $argvs->{ $e } eq 'ARRAY';
         next unless scalar @{ $argvs->{ $e } };
 
-        push @$mtamodules, @{ $argvs->{'mtalist'} } if $e eq 'mtalist';
-        push @$mspmodules, @{ $argvs->{'msplist'} } if $e eq 'msplist';
+        push @mtamodules, @{ $argvs->{'mtalist'} } if $e eq 'mtalist';
+        push @mspmodules, @{ $argvs->{'msplist'} } if $e eq 'msplist';
     }
 
     # Default order of MTA modules
-    push @$mtamodules, @$DefaultMTA;
-    push @$mspmodules, @$DefaultMSP;
+    push @mtamodules, @$DefaultMTA;
+    push @mspmodules, @$DefaultMSP;
 
     EMAIL_PROCESSING: {
         my $endofheads = 0;
@@ -123,21 +123,21 @@ sub resolve {
 
         CONVERT_HEADER: {
             # 2. Convert email headers from text to hash reference
-            my $mtaclasses = [ map { 'Sisimai::MTA::'.$_ } @$mtamodules ];
-            my $mspclasses = [ map { 'Sisimai::MSP::'.$_ } @$mspmodules ];
+            my @mtaclasses = map { 'Sisimai::MTA::'.$_ } @mtamodules;
+            my @mspclasses = map { 'Sisimai::MSP::'.$_ } @mspmodules;
             my $currheader = '';
-            my $headerlist = [ 
+            my @headerlist = ( 
                 'From', 'To', 'Date', 'Subject', 'Content-Type', 'Reply-To',
                 'Message-Id', 'Received'
-            ];
-            my $multiheads = [ 'Received' ];
-            my $ignorelist = [ 'DKIM-Signature' ];
+            );
+            my @multiheads = ( 'Received' );
+            my @ignorelist = ( 'DKIM-Signature' );
             my $loaderrors = {};
 
-            map { $processing->{'header'}->{ lc $_ } = undef } @$headerlist;
-            map { $processing->{'header'}->{ lc $_ } = [] } @$multiheads;
+            map { $processing->{'header'}->{ lc $_ } = undef } @headerlist;
+            map { $processing->{'header'}->{ lc $_ } = [] } @multiheads;
 
-            MTA_MODULES: for my $e ( @$mtaclasses ) {
+            MTA_MODULES: for my $e ( @mtaclasses ) {
                 # Load MTA modules saved in lib/Sisimai/MTA directory
                 try {
                     Module::Load::load $e;
@@ -150,12 +150,12 @@ sub resolve {
                 next if $loaderrors->{ $e };
                 for my $v ( @{ $e->headerlist } ) {
                     # Get header name which required each MTA module
-                    next if grep { $v eq $_ } @$headerlist;
-                    push @$headerlist, $v;
+                    next if grep { $v eq $_ } @headerlist;
+                    push @headerlist, $v;
                 }
             }
 
-            MSP_MODULES: for my $e ( @$mspclasses ) {
+            MSP_MODULES: for my $e ( @mspclasses ) {
                 # Load MSP modules saved in lib/Sisimai/MSP directory
                 try {
                     Module::Load::load $e;
@@ -168,8 +168,8 @@ sub resolve {
                 next if $loaderrors->{ $e };
                 for my $v ( @{ $e->headerlist } ) {
                     # Get header name which required each MSP module
-                    next if grep { $v eq $_ } @$headerlist;
-                    push @$headerlist, $v;
+                    next if grep { $v eq $_ } @headerlist;
+                    push @headerlist, $v;
                 }
             }
 
@@ -181,9 +181,9 @@ sub resolve {
                     my $y = $2;
 
                     $currheader = lc $x;
-                    next unless grep { $currheader eq lc $_ } @$headerlist;
+                    next unless grep { $currheader eq lc $_ } @headerlist;
 
-                    if( grep { $currheader eq lc $_ } @$multiheads ) {
+                    if( grep { $currheader eq lc $_ } @multiheads ) {
                         # Such as 'Received' header, there are multiple headers
                         # in a single email message.
                         $y =~ y{\t}{ };
@@ -196,7 +196,7 @@ sub resolve {
 
                 } elsif( $e =~ m/\A[\s\t]+(.+?)\z/ ) {
                     # Ignore header?
-                    next if grep { $currheader eq lc $_ } @$ignorelist;
+                    next if grep { $currheader eq lc $_ } @ignorelist;
 
                     # Header line continued from the previous line
                     if( ref $processing->{'header'}->{ $currheader } eq 'ARRAY' ) {
@@ -228,13 +228,13 @@ sub resolve {
 
             # Convert from string to hash reference
             my $v          = $bouncedata->{'rfc822'} // $bodystring;
-            my $rfc822text = [ split( "\n", $v ) ];
+            my @rfc822text = split( "\n", $v );
             my $rfc822head = Sisimai::MTA->RFC822HEADERS;
             my $previousfn = ''; # Previous field name
             my $borderline = '__MIME_ENCODED_BOUNDARY__';
             my $mimeborder = {};
 
-            for my $e ( @$rfc822text ) {
+            for my $e ( @rfc822text ) {
                 # Header name as a key, The value of header as a value
                 if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                     # Header
