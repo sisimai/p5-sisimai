@@ -66,15 +66,15 @@ sub scan {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A[-0-9A-Za-z]+?[:][ ]*.+\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
-                my @set = split( ':', $e, 2 );
-                my $lhs = lc $set[0];
+                my $lhs = $1;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { $lhs eq lc( $_ ) } @$rfc822head;
+                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
 
-                $previousfn  = $set[0];
+                $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
