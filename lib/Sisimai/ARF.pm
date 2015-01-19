@@ -26,7 +26,7 @@ my $RxARF = {
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { return '4.0.10' }
+sub version     { return '4.0.11' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
@@ -66,7 +66,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
 
     my $longfields = Sisimai::MTA->LONGFIELDS;
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
+    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $rcptintext = '';    # (String) Recipient address in the message body
     my $remotename = '';    # (String) The value of "Reporting-MTA"
@@ -110,7 +110,7 @@ sub scan {
     #      generator is using to generate the report.  The version number in
     #      this specification is set to "1".
     #
-    for my $e ( @$stripedtxt ) {
+    for my $e ( @stripedtxt ) {
         # Read each line between $RxARF->{'begin'} and $RxARF->{'rfc822'}.
         if( ( $e =~ $RxARF->{'rfc822'} ) .. ( $e =~ $RxARF->{'endof'} ) ) {
             # After "message/rfc822"
