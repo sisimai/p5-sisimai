@@ -100,17 +100,17 @@ sub scan {
     my $agentname0 = '';    # (String) MDA name
     my $reasonname = '';    # (String) Error reason
     my $bouncemesg = '';    # (String) Error message
-    my $stripedtxt = [ split( "\n", $$mbody ) ];
-    my $linebuffer = [];
+    my @stripedtxt = split( "\n", $$mbody );
+    my @linebuffer = ();
 
     for my $e ( keys %$RxMDA ) {
         # Detect MDA from error string in the message body.
-        $linebuffer = [];
-        for my $f ( @$stripedtxt ) {
+        @linebuffer = ();
+        for my $f ( @stripedtxt ) {
             # Check each line with each MDA's symbol regular expression.
             next if( $agentname0 eq '' && $f !~ $RxMDA->{ $e } );
             $agentname0 ||= $e;
-            push @$linebuffer, $f;
+            push @linebuffer, $f;
             last unless length $f;
         }
 
@@ -118,11 +118,11 @@ sub scan {
     }
 
     return undef unless $agentname0;
-    return undef unless scalar @$linebuffer;
+    return undef unless scalar @linebuffer;
 
     for my $e ( keys %{ $RxErr->{ $agentname0 } } ) {
         # Detect an error reason from message patterns of the MDA.
-        for my $f ( @$linebuffer ) {
+        for my $f ( @linebuffer ) {
 
             next unless grep { $f =~ $_ } @{ $RxErr->{ $agentname0 }->{ $e } };
             $reasonname = $e;
