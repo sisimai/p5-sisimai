@@ -87,12 +87,12 @@ sub new {
     }
 
     OTHER_VALUES: {
-        my $v = [ 
+        my @v = ( 
             'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
             'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
             'smtpcommand', 'feedbacktype', 'action',
-        ];
-        $thing->{ $_ } = $argvs->{ $_ } // '' for @$v;
+        );
+        $thing->{ $_ } = $argvs->{ $_ } // '' for @v;
     }
     return bless( $thing, __PACKAGE__ );
 }
@@ -315,13 +315,13 @@ sub damn {
 
     try {
         my $v = {};
-        my $stringdata = [ qw|
+        my @stringdata = ( qw|
             token lhost rhost listid alias reason subject messageid smtpagent 
             smtpcommand destination diagnosticcode senderdomain deliverystatus
             timezoneoffset feedbacktype diagnostictype action|
-        ];
-        
-        for my $e ( @$stringdata ) {
+        );
+
+        for my $e ( @stringdata ) {
             # Copy string data
             $v->{ $e } = $self->$e // '';
         }
