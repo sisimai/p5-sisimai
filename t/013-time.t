@@ -98,6 +98,12 @@ MAKE_TEST: {
         my $time = undef;
 
         for my $e ( -65535, -2, -1, 0, 1, 2, 65535 ) {
+
+            if( abs $e > 10 && $^V lt v5.12 ) {
+                # Avoid failure for Year 2038 problem
+                # http://www.cpantesters.org/cpan/report/ace5c860-9f5f-11e4-b221-9e126cbd7f71
+                next;
+            }
             $date = $v->o2d( $e );
             $base = Time::Piece->strptime( $base->ymd, "%Y-%m-%d" );
             $time = Time::Piece->strptime( $date, "%Y-%m-%d" );
