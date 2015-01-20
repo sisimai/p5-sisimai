@@ -171,7 +171,7 @@ sub expand_verp {
     # @Return       (String) Email address
     my $class = shift;
     my $email = shift // return undef;
-    my $local = [ split( '@', $email ) ]->[0];
+    my $local = [ split( '@', $email, 2 ) ]->[0];
     my $verp0 = '';
 
     if( $local =~ m/\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/ ) {
