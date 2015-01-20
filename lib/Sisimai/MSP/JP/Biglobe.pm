@@ -27,7 +27,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.0.9' }
 sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
 sub smtpagent   { 'JP::Biglobe' }
 
@@ -65,10 +65,9 @@ sub scan {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';

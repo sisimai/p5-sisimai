@@ -31,7 +31,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.11' }
+sub version     { '4.0.12' }
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
 
@@ -73,10 +73,9 @@ sub scan {
 
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';

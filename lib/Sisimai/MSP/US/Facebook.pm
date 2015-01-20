@@ -70,7 +70,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.10' }
+sub version     { '4.0.11' }
 sub description { 'Facebook: https://www.facebook.com' }
 sub smtpagent   { 'US::Facebook' }
 
@@ -111,10 +111,9 @@ sub scan {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';

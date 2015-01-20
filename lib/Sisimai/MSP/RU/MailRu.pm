@@ -57,7 +57,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { '@mail.ru: https://mail.ru' }
 sub smtpagent   { 'RU::MailRu' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -95,10 +95,9 @@ sub scan {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';

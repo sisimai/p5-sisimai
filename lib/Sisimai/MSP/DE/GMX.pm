@@ -18,7 +18,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'GMX: http://www.gmx.net' }
 sub smtpagent   { 'DE::GMX' }
 sub headerlist  {
@@ -59,10 +59,9 @@ sub scan {
 
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';

@@ -19,7 +19,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { '1&1: http://www.1and1.de' }
 sub smtpagent   { 'DE::EinsUndEins' }
 
@@ -56,10 +56,9 @@ sub scan {
 
         if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';
