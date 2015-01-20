@@ -58,7 +58,7 @@ my $StateTable = {
     # We recommend contacting the other email provider for further information about the
     # cause of this error. The error that the other server returned was:
     # 500 Remote server does not support SMTP Authenticated Relay (state 12). 
-    '12' => { 'command' => 'AUTH', 'reason' => 'systemerror' },
+    '12' => { 'command' => 'AUTH', 'reason' => 'relayingdenied' },
 
     # Technical details of permanent failure: 
     # Google tried to deliver your message, but it was rejected by the recipient domain.
@@ -102,7 +102,7 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub version     { '4.0.10' }
+sub version     { '4.0.11' }
 sub description { 'Google Gmail: https://mail.google.com' }
 sub smtpagent   { 'US::Google' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
