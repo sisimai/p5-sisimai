@@ -21,7 +21,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'McAfee Email Appliance' }
 sub smtpagent   { 'McAfee' }
 sub headerlist  { return [ 'X-NAI-Header' ] }
@@ -61,10 +61,9 @@ sub scan {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';

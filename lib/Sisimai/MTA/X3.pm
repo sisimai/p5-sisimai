@@ -12,7 +12,7 @@ my $RxMTA = {
     'subject'  => qr/\ADelivery status notification/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Unknown MTA #3' }
 sub smtpagent   { 'X3' }
 
@@ -48,10 +48,9 @@ sub scan {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';

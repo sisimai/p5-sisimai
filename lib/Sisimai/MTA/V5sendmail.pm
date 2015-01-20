@@ -73,10 +73,9 @@ sub scan {
 
         if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
-                my $rhs = $2;
                 my $whs = lc $lhs;
 
                 $previousfn = '';
