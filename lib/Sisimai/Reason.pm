@@ -2,7 +2,7 @@ package Sisimai::Reason;
 use feature ':5.10';
 use strict;
 use warnings;
-use Module::Load;
+use Module::Load '';
 
 sub retry { 
     return [ 
