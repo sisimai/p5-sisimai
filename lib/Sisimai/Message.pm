@@ -3,11 +3,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
-use Module::Load;
+use Module::Load '';
 use Sisimai::ARF;
 use Sisimai::MTA;
 use Sisimai::MSP;
-use Try::Tiny;
 
 my $rwaccessors = [
     'from',             # (String) UNIX From line
@@ -132,22 +131,15 @@ sub resolve {
             );
             my @multiheads = ( 'Received' );
             my @ignorelist = ( 'DKIM-Signature' );
-            my $loaderrors = {};
 
             map { $processing->{'header'}->{ lc $_ } = undef } @headerlist;
             map { $processing->{'header'}->{ lc $_ } = [] } @multiheads;
 
             MTA_MODULES: for my $e ( @mtaclasses ) {
                 # Load MTA modules saved in lib/Sisimai/MTA directory
-                try {
-                    Module::Load::load $e;
+                eval { Module::Load::load $e };
+                next if $@;
 
-                } catch {
-                    # Perhaps it failed to load Sisimai::MTA::*
-                    $loaderrors->{ $e } = 1;
-                };
-
-                next if $loaderrors->{ $e };
                 for my $v ( @{ $e->headerlist } ) {
                     # Get header name which required each MTA module
                     next if grep { $v eq $_ } @headerlist;
@@ -157,15 +149,9 @@ sub resolve {
 
             MSP_MODULES: for my $e ( @mspclasses ) {
                 # Load MSP modules saved in lib/Sisimai/MSP directory
-                try {
-                    Module::Load::load $e;
+                eval { Module::Load::load $e };
+                next if $@;
 
-                } catch {
-                    # Perhaps it failed to load Sisimai::MSP::*
-                    $loaderrors->{ $e } = 1;
-                };
-
-                next if $loaderrors->{ $e };
                 for my $v ( @{ $e->headerlist } ) {
                     # Get header name which required each MSP module
                     next if grep { $v eq $_ } @headerlist;
