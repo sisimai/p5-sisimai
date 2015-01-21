@@ -37,19 +37,18 @@ sub new {
     my $email = shift // return undef;
     my $argvs = { 'address' => '', 'user' => '', 'host' => '', 'verp' => '', 'alias' => '' };
 
-    if( $email =~ m{\A([^@]+)[@]([^@]+)\z} ) {
+    if( $email =~ m/\A([^@]+)[@]([^@]+)\z/ ) {
         # Get the local part and the domain part from the email address
         my $lpart = $1;
         my $dpart = $2;
 
         # Remove MIME-Encoded comment part
-        $lpart =~ s{\A=[?].+[?]b[?].+[?]=}{};
-        $lpart =~ y{`'"<>}{}d unless $lpart =~ m/\A["].+["]\z/;
+        $lpart =~ s/\A=[?].+[?]b[?].+[?]=//;
+        $lpart =~ y/`'"<>//d unless $lpart =~ m/\A["].+["]\z/;
 
         my $alias = 0;
         my $addr0 = sprintf( "%s@%s", $lpart, $dpart );
         my $addr1 = __PACKAGE__->expand_verp( $addr0 );
-        my $addrL = undef;
 
         unless( length $addr1 ) {
             $addr1 = __PACKAGE__->expand_alias( $addr0 );
@@ -58,7 +57,7 @@ sub new {
 
         if( length $addr1 ) {
             # The email address is VERP or alias
-            $addrL = [ split( '@', $addr1 ) ];
+            my @addrL = split( '@', $addr1 );
             if( $alias ) {
                 # The email address is an alias
                 $argvs->{'alias'} = $addr0;
@@ -67,8 +66,8 @@ sub new {
                 # The email address is a VERP
                 $argvs->{'verp'}  = $addr0;
             }
-            $argvs->{'user'} = $addrL->[0];
-            $argvs->{'host'} = $addrL->[1];
+            $argvs->{'user'} = $addrL[0];
+            $argvs->{'host'} = $addrL[1];
 
         } else {
             # The email address is neither VERP nor alias.
@@ -97,13 +96,16 @@ sub parse {
     return undef unless ref( $argvs ) eq 'ARRAY';
 
     PARSE_ARRAY: for my $e ( @$argvs ) {
-
+        # Parse each element in the array
+        #   1. The element must include '@'.
+        #   2. The element must not include character except from 0x20 to 0x7e.
         next unless defined $e;
-        next unless $e =~ m{[@]};
-        next if $e =~ m{[^\x20-\x7e]};
+        next unless $e =~ m/[@]/;
+        next if $e =~ m/[^\x20-\x7e]/;
 
         my $v = __PACKAGE__->s3s4( $e );
         if( length $v ) {
+            # The element includes a valid email address
             push @$addrs, $v;
         }
     }
@@ -123,15 +125,18 @@ sub s3s4 {
 
     # "=?ISO-2022-JP?B?....?="<user@example.jp>
     # no space character between " and < .
-    $input =~ s{(.)"<}{$1" <};
+    $input =~ s/(.)"</$1" </;
 
     my $canon = '';
     my @addrs = ();
     my @token = split( ' ', $input );
 
-    # Convert character entity; "&lt;" -> ">", "&gt;" -> "<".
-    map { $_ =~ s/&lt;/</g; $_ =~ s/&gt;/>/g; } @token;
-    map { $_ =~ s/,\z//g; } @token;
+    for my $e ( @token ) {
+        # Convert character entity; "&lt;" -> ">", "&gt;" -> "<".
+        $e =~ s/&lt;/</g; 
+        $e =~ s/&gt;/>/g;
+        $e =~ s/,\z//g;
+    }
 
     if( scalar(@token) == 1 ) {
         push @addrs, $token[0];
@@ -139,13 +144,14 @@ sub s3s4 {
     } else {
         for my $e ( @token ) {
             chomp $e;
-            next unless $e =~ m{\A[<]?.+[@][-.0-9A-Za-z]+[.][A-Za-z]{2,}[>]?\z};
+            next unless $e =~ m/\A[<]?.+[@][-.0-9A-Za-z]+[.][A-Za-z]{2,}[>]?\z/;
             push @addrs, $e;
         }
     }
 
     if( scalar( @addrs ) > 1 ) {
-        $canon = [ grep { $_ =~ m{\A[<].+[>]\z} } @addrs ]->[0];
+        # Get the first element which is <...> format string from @addrs array.
+        $canon = (grep { $_ =~ m/\A[<].+[>]\z/ } @addrs)[0];
         $canon = $addrs[0] unless $canon;
 
     } else {
@@ -153,7 +159,7 @@ sub s3s4 {
     }
 
     return '' if( ! defined $canon || $canon eq '' );
-    $canon =~ y{<>[]():;}{}d;   # Remove brackets, colons
+    $canon =~ y/<>[]():;//d;    # Remove brackets, colons
 
     if( $canon =~ m/\A["].+["][@].+\z/ ) {
         # "localpart..."@example.jp
@@ -171,7 +177,7 @@ sub expand_verp {
     # @Return       (String) Email address
     my $class = shift;
     my $email = shift // return undef;
-    my $local = [ split( '@', $email, 2 ) ]->[0];
+    my $local = (split( '@', $email, 2 ) )[0];
     my $verp0 = '';
 
     if( $local =~ m/\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/ ) {
