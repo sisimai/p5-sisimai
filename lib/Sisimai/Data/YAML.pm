@@ -2,8 +2,6 @@ package Sisimai::Data::YAML;
 use feature ':5.10';
 use strict;
 use warnings;
-use Try::Tiny;
-use Module::Load;
 
 sub dump {
     # @Description  Data dumper(YAML)
@@ -11,28 +9,22 @@ sub dump {
     # @Return       (String) Dumped data
     my $class = shift;
     my $argvs = shift // return undef;
-    my $error = undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
     my $damneddata = undef;
     my $yamlstring = '';
 
-    try {
-        Module::Load::load('YAML');
-        $damneddata = $argvs->damn;
-        $YAML::SortKeys = 1;
-        $YAML::Stringify = 0;
-        $YAML::UseHeader = 1;
-        $YAML::UseBlock = 0;
-        $YAML::CompressSeries = 0;
-        $yamlstring = YAML::Dump( $damneddata );
+    eval { require YAML };
+    die ' ***error: "YAML" module is not installed' if $@;
 
-    } catch {
-        # YAML module is not installed
-        $error = ' ***error: "YAML" module is not installed';
-    };
+    $damneddata = $argvs->damn;
+    $YAML::SortKeys = 1;
+    $YAML::Stringify = 0;
+    $YAML::UseHeader = 1;
+    $YAML::UseBlock = 0;
+    $YAML::CompressSeries = 0;
+    $yamlstring = YAML::Dump( $damneddata );
 
-    die $error if length $error;
     return $yamlstring;
 }
 

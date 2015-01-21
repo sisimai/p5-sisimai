@@ -2,7 +2,6 @@ package Sisimai::Data::JSON;
 use feature ':5.10';
 use strict;
 use warnings;
-use Try::Tiny;
 use JSON;
 
 sub dump {
@@ -17,13 +16,10 @@ sub dump {
     my $jsonstring = '';
     my $jsonobject = JSON->new;
 
-    try {
+    eval {
         $damneddata = $argvs->damn;
         $jsonobject->space_after(1);
         $jsonstring = $jsonobject->encode( $damneddata );
-
-    } catch {
-        warn $_;
     };
 
     return $jsonstring;
