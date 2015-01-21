@@ -2,7 +2,7 @@ package Sisimai::Rhost;
 use feature ':5.10';
 use strict;
 use warnings;
-use Module::Load;
+use Module::Load '';
 
 my $RhostClass = {
     'aspmx.l.google.com' => 'GoogleApps',
