@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Class::Accessor::Lite;
 use File::Basename 'basename';
-use Try::Tiny;
 use IO::File;
 
 my $roaccessors = [
@@ -54,7 +53,7 @@ sub read {
     return undef unless -f $self->{'path'};
     return undef unless -T $self->{'path'};
 
-    try {
+    eval {
         $seekoffset = 0 if $seekoffset < 0;
         $filehandle = IO::File->new( $self->{'path'}, 'r' ) unless eof $filehandle;
 
@@ -67,9 +66,6 @@ sub read {
         $filehandle->close;
         $seekoffset += length $readbuffer;
         $self->{'offset'} = $seekoffset;
-
-    } catch {
-        warn $_;
     };
     return $readbuffer;
 }
