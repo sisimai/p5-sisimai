@@ -3,7 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
-use Try::Tiny;
 use IO::Dir;
 use IO::File;
 
@@ -54,7 +53,7 @@ sub read {
     my $emailindir = '';
     my $emailinode = undef;
 
-    try {
+    eval {
         $seekhandle = IO::Dir->new( $self->{'path'} ) unless $seekhandle;
 
         while( my $r = $seekhandle->read ) {
@@ -84,9 +83,6 @@ sub read {
 
             last;
         }
-
-    } catch {
-        warn $_;
     };
     return $readbuffer;
 }
