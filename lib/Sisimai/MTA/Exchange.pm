@@ -34,6 +34,8 @@ my $ErrorCodeTable = {
     'systemerror' => [
         '00010256', # Too many recipients. 
         '000D06B5', # No proxy for recipient (non-smtp mail?)
+    ],
+    'networkerror' => [
         '00120270', # Too Many Hops
     ],
     'contenterr' => [
@@ -48,7 +50,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.12' }
+sub version     { '4.0.13' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };

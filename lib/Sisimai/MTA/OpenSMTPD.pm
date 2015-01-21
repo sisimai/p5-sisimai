@@ -54,7 +54,7 @@ my $RxErr = {
         # smtp/mta.c:1085|  relay->failstr = "Destination seem to reject all mails";
         Destination[ ]seem[ ]to[ ]reject[ ]all[ ]mails
     }x,
-    'systemerror' => qr{(?>
+    'networkerror' => qr{(?>
         #  smtpd/mta.c:972|  relay->failstr = "Temporary failure in MX lookup";
          Address[ ]family[ ]mismatch[ ]on[ ]destination[ ]MXs
         |All[ ]routes[ ]to[ ]destination[ ]blocked
@@ -75,7 +75,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.10' }
+sub version     { '4.0.11' }
 sub description { 'OpenSMTPD' }
 sub smtpagent   { 'OpenSMTPD' }
 

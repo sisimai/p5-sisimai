@@ -40,13 +40,13 @@ my $RxErr = {
 };
 
 my $RxTmp = {
-    'systemerror' => qr{
+    'networkerror' => qr{
         # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
         \ADNS[ ]lookup[ ]failed[.]\z
     },
 };
 
-sub version     { '4.0.12' }
+sub version     { '4.0.13' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 

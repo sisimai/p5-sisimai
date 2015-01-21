@@ -96,14 +96,15 @@ my $RxSess = {
     }x,
     'systemerror' => qr{(?>
          bad[ ]interpreter:[ ]No[ ]such[ ]file[ ]or[ ]directory
-        |Sorry(?:
-             [,][ ]I[ ]wasn[']t[ ]able[ ]to[ ]establish[ ]an[ ]SMTP[ ]connection
-            |[,][ ]I[ ]couldn[']t[ ]find[ ]a[ ]mail[ ]exchanger[ ]or[ ]IP[ ]address
-            |[.][ ]Although[ ]I[']m[ ]listed[ ]as[ ]a[ ]best[-]preference[ ]MX[ ]
-                or[ ]A[ ]for[ ]that[ ]host
-            )
         |system[ ]error
         |Unable[ ]to\b
+        )
+    }x,
+    'networkerror' => qr{Sorry(?:
+         [,][ ]I[ ]wasn[']t[ ]able[ ]to[ ]establish[ ]an[ ]SMTP[ ]connection
+        |[,][ ]I[ ]couldn[']t[ ]find[ ]a[ ]mail[ ]exchanger[ ]or[ ]IP[ ]address
+        |[.][ ]Although[ ]I[']m[ ]listed[ ]as[ ]a[ ]best[-]preference[ ]MX[ ]
+            or[ ]A[ ]for[ ]that[ ]host
         )
     }x,
     'systemfull' => 
