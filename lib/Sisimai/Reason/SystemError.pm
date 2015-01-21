@@ -9,22 +9,18 @@ sub match {
     my $argvs = shift // return undef;
     my $regex = qr{(?>
          can[']t[ ]create[ ]user[ ]output[ ]file
-        |host[ ]is[ ]unreachable
         |interrupted[ ]system[ ]call
         |local[ ](?:
              configuration[ ]error
             |error[ ]in[ ]processing
             )
         |mail[ ](?:
-             forwarding[ ]loop[ ]for[ ]
-            |for[ ].+[ ]loops[ ]back[ ]to[ ]myself
+             for[ ].+[ ]loops[ ]back[ ]to[ ]myself
             |system[ ]configuration[ ]error
             )
-        |maximum[ ]forwarding[ ]loop[ ]count[ ]exceeded
         |server[ ]configuration[ ]error
         |system[ ]config[ ]error
         |timeout[ ]waiting[ ]for[ ]input
-        |too[ ]many[ ]hops
         )
     }ix;
 
