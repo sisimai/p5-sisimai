@@ -4,7 +4,12 @@ use strict;
 use warnings;
 use Module::Load;
 
-sub retry { return [ 'undefined', 'onhold', 'systemerror', 'securityerror' ] }
+sub retry { 
+    return [ 
+        'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror'
+    ]
+}
+
 sub get {
     # @Description  Detect bounce reason
     # @Param <obj>  (Sisimai::Data) Parsed email object
@@ -85,8 +90,8 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'SecurityError', 'SystemError', 'Suspend', 'Expired',
-        'ContentError', 'NotAccept', 'MailerError',
+        'MailboxFull', 'SecurityError', 'SystemError', 'NetworkError', 
+        'Suspend', 'Expired', 'ContentError', 'NotAccept', 'MailerError',
     ];
 
     require Sisimai::RFC3463;
@@ -239,9 +244,13 @@ of C<Status> header or the value of C<deliverystatus> is X.7.Y.
 
 The recipient's mailbox temporary disabled.
 
+=head2 C<networkerror>
+
+Network related errors.
+
 =head2 C<systemerror>
 
-Configuration error on the remote host or network error.
+Configuration error on the remote host or local hosts.
 
 =head2 C<systemfull>
 
