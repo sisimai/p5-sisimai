@@ -3,9 +3,8 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
-use Module::Load;
+use Module::Load '';
 use Time::Piece;
-use Try::Tiny;
 
 use Sisimai::Address;
 use Sisimai::RFC3463;
@@ -226,15 +225,11 @@ sub make {
                 $p->{'timezoneoffset'} = $2;
             }
 
-            try {
+            eval {
                 # Convert from the date string to an object then calculate time
                 # zone offset.
                 my $t = Time::Piece->strptime( $datestring, '%a, %d %b %Y %T' );
                 $p->{'timestamp'} = ( $t->epoch - $zoneoffset ) // undef; 
-
-            } catch {
-                # Failed to parse the date string...
-                warn $_;
             };
         }
         next unless $p->{'timestamp'};
@@ -313,7 +308,7 @@ sub damn {
     my $self = shift;
     my $data = undef;
 
-    try {
+    eval {
         my $v = {};
         my @stringdata = ( qw|
             token lhost rhost listid alias reason subject messageid smtpagent 
@@ -329,9 +324,6 @@ sub damn {
         $v->{'recipient'} = $self->recipient->address;
         $v->{'timestamp'} = $self->timestamp->epoch;
         $data = $v;
-
-    } catch {
-        warn $_;
     };
 
     return $data;
@@ -346,17 +338,11 @@ sub dump {
 
     return undef unless $argv =~ m/\A(?:json|yaml)\z/;
 
-    my $referclass = '';
     my $dumpeddata = '';
+    my $referclass = sprintf( "Sisimai::Data::%s", uc $argv );
 
-    try {
-        $referclass = sprintf( "Sisimai::Data::%s", uc $argv );
-        Module::Load::load $referclass;
-        $dumpeddata = $referclass->dump( $self );
-
-    } catch {
-        warn $_;
-    };
+    eval { Module::Load::load $referclass };
+    $dumpeddata = $referclass->dump( $self );
 
     return $dumpeddata;
 }
