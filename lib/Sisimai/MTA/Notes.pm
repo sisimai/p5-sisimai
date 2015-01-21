@@ -4,7 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Encode;
-use Try::Tiny;
 
 my $RxMTA = {
     'begin'   => qr/\A[-]+\s+Failure Reasons\s+[-]+\z/,
@@ -21,7 +20,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.0.7' }
 sub description { 'Lotus Notes' }
 sub smtpagent   { 'Notes' }
 
@@ -118,14 +117,13 @@ sub scan {
                     # Error message is not ISO-8859-1
                     my $s = $e;
                     if( length $characters ) {
-                        try {
-                            # Try to convert string
-                            Encode::from_to( $s, $characters, 'utf8' );
-
-                        } catch {
+                        # Try to convert string
+                        eval { Encode::from_to( $s, $characters, 'utf8' ); };
+                        if( $@ ) {
                             # Failed to convert
                             $s = $removedmsg;
-                        };
+                        }
+
                     } else {
                         $s = $removedmsg;
                     }
