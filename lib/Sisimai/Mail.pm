@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
-use Module::Load;
+use Module::Load '';
 
 my $roaccessors = [
     'path',     # (String) path to mbox or Maildir/
