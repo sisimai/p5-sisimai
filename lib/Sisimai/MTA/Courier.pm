@@ -46,7 +46,7 @@ my $RxTmp = {
     },
 };
 
-sub version     { '4.0.13' }
+sub version     { '4.0.14' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 
@@ -158,7 +158,7 @@ sub scan {
                     $v->{'rhost'} = lc $1;
                     if( $v->{'rhost'} =~ m/ / ) {
                         # Get the first element
-                        $v->{'rhost'} = [ split( ' ', $v->{'rhost'} ) ]->[0];
+                        $v->{'rhost'} = (split( ' ', $v->{'rhost'} ))[0];
                     }
 
                 } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
