@@ -241,7 +241,7 @@ sub make {
                 # Check space character in each value
                 if( $p->{ $e } =~ m/ / ) {
                     # Get the first element
-                    $p->{ $e } = [ split( ' ', $p->{ $e }, 2 ) ]->[0];
+                    $p->{ $e } = (split( ' ', $p->{ $e }, 2 ))[0];
                 }
             }
             $p->{'subject'} = $rfc822data->{'subject'} // '';
