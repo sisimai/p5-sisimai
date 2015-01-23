@@ -26,7 +26,6 @@ sub new {
     my $argvs = shift // return undef;
     my $param = { 'files' => [] };
 
-    return undef unless -e $argvs;
     return undef unless -d $argvs;
 
     $param->{'path'}   = $argvs;
@@ -44,7 +43,6 @@ sub read {
     my $self = shift;
 
     return undef unless defined $self->{'path'};
-    return undef unless -e $self->{'path'};
     return undef unless -d $self->{'path'};
 
     my $seekhandle = $self->{'handle'};

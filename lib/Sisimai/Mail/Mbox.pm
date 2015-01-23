@@ -27,7 +27,6 @@ sub new {
     my $argvs = shift // return undef;
     my $param = { 'offset' => 0 };
 
-    return undef unless -e $argvs;
     return undef unless -f $argvs;
 
     $param->{'path'}   = $argvs;
@@ -49,7 +48,6 @@ sub read {
     my $readbuffer = '';
 
     return undef unless defined $self->{'path'};
-    return undef unless -e $self->{'path'};
     return undef unless -f $self->{'path'};
     return undef unless -T $self->{'path'};
 
