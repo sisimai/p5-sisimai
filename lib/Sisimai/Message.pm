@@ -163,21 +163,21 @@ sub resolve {
 
                 if( $e =~ m/\A([^ ]+?)[:][ ]*(.+?)\z/ ) {
                     # split the line into a header name and a header content
-                    my $x = $1;
-                    my $y = $2;
+                    my $lhs = $1;
+                    my $rhs = $2;
 
-                    $currheader = lc $x;
+                    $currheader = lc $lhs;
                     next unless grep { $currheader eq lc $_ } @headerlist;
 
                     if( grep { $currheader eq lc $_ } @multiheads ) {
                         # Such as 'Received' header, there are multiple headers
                         # in a single email message.
-                        $y =~ y{\t}{ };
-                        $y =~ y{ }{}s;
-                        push @{ $processing->{'header'}->{ $currheader } }, $y;
+                        $rhs =~ y/\t/ /;
+                        $rhs =~ y/ //s;
+                        push @{ $processing->{'header'}->{ $currheader } }, $rhs;
 
                     } else {
-                        $processing->{'header'}->{ $currheader } = $y;
+                        $processing->{'header'}->{ $currheader } = $rhs;
                     }
 
                 } elsif( $e =~ m/\A[\s\t]+(.+?)\z/ ) {
@@ -314,8 +314,8 @@ sub rewrite {
         # Get the original text when the subject begins from 'fwd:' or 'fw:'
         if( $mailheader->{'subject'} =~ m/\A\s*fwd?:/i ) {
             # Delete quoted strings, quote symbols(>)
-            $$bodystring =~ s{^[>]+[ ]}{}gm;
-            $$bodystring =~ s{^[>]$}{}gm;
+            $$bodystring =~ s/^[>]+[ ]//gm;
+            $$bodystring =~ s/^[>]$//gm;
         }
     }
 
@@ -323,7 +323,7 @@ sub rewrite {
         # 1. Sisimai::ARF 
         # 2. Sisimai::MTA::*
         # 3. Sisimai::MSP::*
-        # 4. Sisimai::RFc3464
+        # 4. Sisimai::RFC3464
         #
         if( Sisimai::ARF->is_arf( $mailheader->{'content-type'} ) ) {
             # Feedback Loop message
