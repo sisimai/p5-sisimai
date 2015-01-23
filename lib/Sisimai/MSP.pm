@@ -4,9 +4,9 @@ use strict;
 use warnings;
 use Sisimai::MTA;
 
-sub version     { return '4.0.12' }
-sub description { return '' }
-sub headerlist  { return [] }
+sub version     { '4.0.12' }
+sub description { '' }
+sub headerlist  { [] }
 
 sub SMTPCOMMAND    { return Sisimai::MTA->SMTPCOMMAND    }
 sub EOM            { return Sisimai::MTA->EOM            }

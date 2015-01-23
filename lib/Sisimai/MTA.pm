@@ -3,9 +3,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub version     { return '4.0.7' }
-sub description { return '' }
-sub headerlist  { return [] }
+sub version     { '4.0.7' }
+sub description { '' }
+sub headerlist  { [] }
 
 sub SMTPCOMMAND {
     return {
