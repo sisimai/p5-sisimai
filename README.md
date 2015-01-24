@@ -37,7 +37,7 @@ version 4 (Sisimai).
 | The speed of parsing email(750 files)          | 5.36s         | 2.95s        |
 | Easy to install                                | No            | Yes          |
 | Install using cpan or cpanm command            | N/A           | OK           |
-| Dependencies                                   | 24 modules    | 3 modules    |
+| Dependencies                                   | 24 modules    | 2 modules    |
 | License                                        | GPLv2 or Perl | 2 clause BSD |
 | Support Contract provided by Developer         | Available     | Coming soon  |
 
@@ -62,7 +62,7 @@ version 4 (Sisimai).
 | メール解析の速度(750通)                        | 5.36秒        | 2.95秒       |
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽     |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
-| 依存モジュール数                               | 24モジュール  | 3モジュール  |
+| 依存モジュール数                               | 24モジュール  | 2モジュール  |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD    |
 | 開発会社によるサポート契約                     | 提供中        | 準備中       |
 
@@ -82,7 +82,6 @@ Sisimai relies on:
 
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
 * [__JSON__](https://metacpan.org/pod/JSON)
-* [__Try::Tiny__](https://metacpan.org/pod/Try::Tiny)
 
 Sisimaiは上記のモジュールに依存しています。
 
