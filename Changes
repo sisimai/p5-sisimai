@@ -1,5 +1,19 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.12  Sat, 24 Jan 2015 15:00:59 +0900 (JST)
+    - Update sample code in POD at Sisimai::RFC5322 and test codes (RT#101436,
+      Issue #41, See https://rt.cpan.org/Ticket/Display.html?id=101436). Thanks
+      to Mark Stosberg.
+    - Changed accessor name: "data" => "path" in Sisimai::Mail.
+    - Space character will be inserted after ":" in Sisimai::Data::JSON.
+    - Improved regular expression for getting the value of email header at each
+      MTA module.
+    - Message patterns related to DNS or network error have been moved to new
+      module: Sisimai::Reason::NetworkError.
+    - New error reason "networkerror": the value of reason for bounce messages
+      returned due to network related errors will be set as the reason.
+    - Sisimai does not rely on Try::Tiny module from this version.
+
 4.1.11  Thu, 15 Jan 2015 15:01:59 +0900 (JST)
     - Improved code in Sisimai/Mail/Mbox.pm: using substr() function instead of
       a regular expression is 1.46 times faster than before.
@@ -86,11 +100,11 @@ Revision history for Sisimai/Core module of bouncehammer version 4
     - Improved code for detecting connection errors at Sendmail and Courier.
     - Sisimai::RFC3464 and Sisimai::MTA::Exchange imporved.
     - Implement Sisimai::MTA::Notes for email bounces from Lotus Notes.
-    - Implement Sisimai::MTA::McAfee and Sisimai::MTA::MXLogic for email bounces
+    - Implement Sisimai::MTA::McAfee and Sisimai::MTA::MXLogic for email bounce
       from McAfee Products.
     - Implement Sisimai::MTA::MailFoundry for email bounces from MailFoundry.
-    - Implement Sisimai::MTA::IMailServer for email bounces from IPSWITCHI IMail
-      Server.
+    - Implement Sisimai::MTA::IMailServer for email bounces from IPSWITCHI 
+      IMail Server.
     - Improved code for deciding error reason at Sendmail and qmail.
     - Implement Sisimai::MTA::mFILTER for email bounces from DigitalArts 
       m-FILTER.
@@ -98,7 +112,7 @@ Revision history for Sisimai/Core module of bouncehammer version 4
       Active!hunter.
 
 4.1.0   Sat,  4 Oct 2014 15:09:09 +0900 (JST)
-    - Sisimai::Group, child classes, and "provider" and "category" in the parsed
+    - Sisimai::Group: child classes, "provider", and "category" in the parsed
       data have been removed permanently.
     - Fix the newline in sample email files for `make test`.
 
@@ -109,7 +123,7 @@ Revision history for Sisimai/Core module of bouncehammer version 4
     - Large scale code refactoring at Sisimai::RFC3464.
 
 4.0.1   Sun, 17 Aug 2014 23:00:00 +0900 (JST)
-    - Fixed bug for reading each email file in the Maildir/ given as an argument
+    - Fixed bug for reading each email file in the Maildir given as an argument
       of Sisimai::Mail::Maildir->read method.
     - Refactoring around codes to return the parsed data.
     - Implement "make" method to get bounce data at Sisimai.pm.
