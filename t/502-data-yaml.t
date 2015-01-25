@@ -14,20 +14,21 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     is $PackageName->dump('yaml'), undef;
 
+    use Module::Load;
     use Sisimai::Data;
     use Sisimai::Mail;
     use Sisimai::Message;
-    use Try::Tiny;
     my $test = 0;
 
-    try {
-        Module::Load::load('YAML1');
+    eval {
+        Module::Load::load('YAML');
         ok 'YAML', 'YAML module is installed';
         $test = 1;
-
-    } catch {
-        ok 'YAML', 'YAML module is not installed';
     };
+
+    if( $@ ) {
+        ok 'YAML', 'YAML module is not installed';
+    }
 
     if( $test ) {
 
