@@ -5,7 +5,7 @@ use Sisimai::Reason;
 
 my $PackageName = 'Sisimai::Reason';
 my $MethodNames = {
-    'class' => [ 'get', 'retry' ],
+    'class' => [ 'get', 'retry', 'index' ],
     'object' => [],
 };
 
@@ -15,6 +15,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     is $PackageName->get, undef;
     is $PackageName->anotherone, undef;
+    isa_ok $PackageName->index, 'ARRAY';
 
     use Sisimai::Mail;
     use Sisimai::Message;

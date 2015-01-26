@@ -10,6 +10,17 @@ sub retry {
     ]
 }
 
+sub index {
+    # @Description  Reason list
+    # @Param        <None>
+    # @Return       (Ref->Array) List
+    return [ qw|
+        Blocked ContentError ExceedLimit Expired Filtered HostUnknown MailboxFull
+        MailerError MesgTooBig NetworkError NotAccept OnHold Rejected RelayingDenied
+        SecurityError Suspend SystemError SystemFull UserUnknown 
+    | ];
+}
+
 sub get {
     # @Description  Detect bounce reason
     # @Param <obj>  (Sisimai::Data) Parsed email object
