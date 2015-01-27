@@ -1,5 +1,11 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.13  Tue, 27 Jan 2015 15:00:55 +0900 (JST)
+    - Fixed bug in test code for Sisimai::DATA::YAML. Thanks to CPAN Testers
+      Reports.
+    - Implement new method Sisimai::Reason->index(), returns the list of bounce
+      reasons.
+
 4.1.12  Sat, 24 Jan 2015 15:00:59 +0900 (JST)
     - Update sample code in POD at Sisimai::RFC5322 and test codes (RT#101436,
       Issue #41, See https://rt.cpan.org/Ticket/Display.html?id=101436). Thanks
