@@ -20,9 +20,11 @@ MV    = /bin/mv
 MP    = /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 GIT   = /usr/bin/git
 
+EMAIL_PARSER = ./tmp/emparser -fjson
 EMAIL_SAMPLE = ./tmp/sample
 FOR_EMPARSER = ./tmp/data
 FOR_MAKETEST = ./eg/maildir-as-a-sample/new
+MAILBOX_FILE = ./eg/mbox-as-a-sample
 MTAMODULEDIR = ./lib/$(NAME)/MTA
 MSPMODULEDIR = ./lib/$(NAME)/MSP
 ACCURACYLIST = ./ANALYSIS-ACCURACY
@@ -164,7 +166,7 @@ sample:
 	done
 
 profile:
-	$(PERL) -d:NYTProf tmp/parse $(FOR_MAKETEST) json > /dev/null
+	$(PERL) -d:NYTProf $(EMAIL_PARSER) $(FOR_MAKETEST) $(MAILBOX_FILE) > /dev/null
 	nytprofhtml
 
 clean:
