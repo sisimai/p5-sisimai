@@ -18,7 +18,7 @@ my $RxErr = {
     'userunknown' => qr/Requested action not taken: mailbox unavailable/,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'Microsoft Outlook.com: https://www.outlook.com/' }
 sub smtpagent   { 'US::Outlook' }
 sub headerlist  { return [ 'X-Message-Delivery', 'X-Message-Info' ] }
@@ -178,6 +178,11 @@ sub scan {
         $e->{'spec'}    ||= 'SMTP';
         $e->{'agent'}   ||= __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+
+        if( $e->{'action'} eq 'delayed' && length $e->{'diagnosis'} == 0 ) {
+            # Set pseudo diagnostic code message
+            $e->{'diagnosis'} = 'Delivery to the following recipients has been delayed.';
+        }
 
         SESSION: for my $r ( keys %$RxErr ) {
             # Verify each regular expression of session errors
