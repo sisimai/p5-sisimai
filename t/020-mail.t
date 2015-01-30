@@ -6,7 +6,7 @@ use Sisimai::Mail;
 my $PackageName = 'Sisimai::Mail';
 my $MethodNames = {
     'class' => [ 'new' ],
-    'object' => [ 'path', 'mbox', 'mail', 'read' ],
+    'object' => [ 'path', 'type', 'mail', 'read', 'close' ],
 };
 my $SampleEmail = {
     'mailbox' => './eg/mbox-as-a-sample',
@@ -27,13 +27,15 @@ MAKE_TEST: {
         isa_ok $mailbox, $PackageName;
         can_ok $mailbox, @{ $MethodNames->{'object'} };
         is $mailbox->path, $SampleEmail->{'mailbox'}, '->path = '.$mailbox->path;
-        is $mailbox->mbox, 1, '->mbox = 1';
+        is $mailbox->type, 'mailbox', '->type = mailbox';
         isa_ok $mailbox->mail, $PackageName.'::Mbox';
 
         while( my $r = $mailbox->read ) {
             ok length $r, 'mailbox->read('.( $emindex + 1 ).')';
             $emindex++;
         }
+        ok $mailbox->close, 'mailbox->close';
+        is $mailbox->close, 0, 'mailbox->close';
         is $emindex, 37;
     }
 
@@ -44,13 +46,15 @@ MAKE_TEST: {
         isa_ok $maildir, $PackageName;
         can_ok $maildir, @{ $MethodNames->{'object'} };
         is $maildir->path, $SampleEmail->{'maildir'}, '->path = '.$maildir->path;
-        is $maildir->mbox, 0, '->mbox = 0';
+        is $maildir->type, 'maildir', '->type = maildir';
         isa_ok $maildir->mail, $PackageName.'::Maildir';
 
         while( my $r = $maildir->read ) {
             ok length $r, 'maildir->read('.( $emindex + 1 ).')';
             $emindex++;
         }
+        ok $maildir->close, 'maildir->close';
+        is $maildir->close, 0, 'maildir->close';
         is $emindex, 37;
     }
 
@@ -61,13 +65,15 @@ MAKE_TEST: {
         isa_ok $maildir, $PackageName;
         can_ok $maildir, @{ $MethodNames->{'object'} };
         is $maildir->path, $IsNotBounce->{'maildir'}, '->path = '.$maildir->path;
-        is $maildir->mbox, 0, '->mbox = 0';
+        is $maildir->type, 'maildir', '->type = maildir';
         isa_ok $maildir->mail, $PackageName.'::Maildir';
 
         while( my $r = $maildir->read ) {
             ok length $r, 'maildir->read('.( $emindex + 1 ).')';
             $emindex++;
         }
+        ok $maildir->close, 'maildir->close';
+        is $maildir->close, 0, 'maildir->close';
         is $emindex, 1;
     }
 }

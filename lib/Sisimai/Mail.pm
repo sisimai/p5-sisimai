@@ -7,7 +7,7 @@ use Module::Load '';
 
 my $roaccessors = [
     'path',     # (String) path to mbox or Maildir/
-    'mbox',     # (Integer) if the value of data is an mbox, this value is 1.
+    'type',     # (String) Data type: mailbox, maildir, or stdin
 ];
 my $rwaccessors = [
     'mail',     # (Object) ::Mbox or ::Maildir
@@ -21,23 +21,37 @@ sub new {
     # @Return       (Sisimai::Mail) Object
     #               (undef) Undef if the argument was wrong
     my $class = shift;
-    my $argvs = shift // return undef;
-    my $param = { 'mbox' => 1, 'mail' => undef };
+    my $argvs = shift;
     my $klass = undef;
+    my $param = { 
+        'type' => '', 
+        'mail' => undef,
+        'path' => $argvs,
+    };
 
-    return undef unless -e $argvs;
-    return undef if( ! -f $argvs && ! -d $argvs );
-
-    $param->{'mbox'} = 0 unless -f $argvs;
     $param->{'path'} = $argvs;
 
+    # The argumenet is a mailbox or a Maildir/.
     if( -f $argvs ) {
         # The argument is a file, it is an mbox
         $klass = sprintf( "%s::Mbox", __PACKAGE__ );
-    } else {
+        $param->{'type'} = 'mailbox';
+
+    } elsif( -d $argvs ) {
         # The agument is not a file, it is a Maildir/
         $klass = sprintf( "%s::Maildir", __PACKAGE__ );
+        $param->{'type'} = 'maildir';
+
+    } else {
+        # The argument neither a mailbox nor a Maildir/.
+        if( $argvs eq '<STDIN>' || ref $argvs eq 'IO::Handle' ) {
+            # Read from STDIN
+            $klass = sprintf( "%s::STDIN", __PACKAGE__ );
+            $param->{'type'} = 'stdin';
+        }
     }
+
+    return undef unless $klass;
     Module::Load::load $klass;
     $param->{'mail'} = $klass->new( $argvs );
 
@@ -46,13 +60,24 @@ sub new {
 
 sub read {
     # @Description  mbox/Maildir reader, works as a iterator.
-    # @Param
+    # @Param        <None>
     # @Return       (String) Contents of mbox/Maildir
     my $self = shift;
     my $mail = $self->{'mail'};
 
     return undef unless ref $mail;
     return $mail->read;
+}
+
+sub close {
+    # @Description  Close the handle
+    # @Param        <None>
+    # @Return
+    my $self = shift;
+    return 0 unless $self->{'mail'}->{'handle'};
+
+    $self->{'mail'}->{'handle'} = undef;
+    return 1;
 }
 
 1;
@@ -71,11 +96,13 @@ Sisimai::Mail - Handler of Mbox/Maildir for reading each mail.
     while( my $r = $mailbox->read ) {
         print $r;
     }
+    $mailbox->close;
 
     my $maildir = Sisimai::Mail->new('/home/neko/Maildir/cur');
     while( my $r = $maildir->read ) {
         print $r;
     }
+    $maildir->close;
 
 
 =head1 DESCRIPTION
@@ -102,9 +129,9 @@ C<path()> returns the path to mbox or Maildir.
 
 =head2 C<B<mbox()>>
 
-C<mbox()> returns 1 if the value of "path" is a file
+C<type()> Returns the name of data type
 
-    print $mailbox->mbox;   # 1
+    print $mailbox->type;   # mailbox or maildir, or stdin.
 
 =head2 C<B<mail()>>
 
@@ -122,6 +149,14 @@ Sisimai::Mail::Mbox->read or Sisimai::Mail::Maildir->read method.
     while( my $r = $mailbox->read ) {
         print $r;   # print each email in /var/mail/neko
     }
+    $mailbox->close;
+
+=head2 C<B<close()>>
+
+C<close()> Close the handle of the mailbox or the maildir.
+
+    my $o = $mailbox->close;
+    print $o;   # 1 = Successfully closed, 0 = already closed.
 
 =head1 AUTHOR
 
