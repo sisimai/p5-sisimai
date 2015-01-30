@@ -12,6 +12,7 @@ sub list {
         Mail.pm
             Mail/Mbox.pm
             Mail/Maildir.pm
+            Mail/STDIN.pm
         Message.pm
         MDA.pm
         MSP.pm
@@ -68,6 +69,7 @@ sub list {
             Reason/MailerError.pm
             Reason/MesgTooBig.pm
             Reason/NotAccept.pm
+            Reason/NetworkError.pm
             Reason/OnHold.pm
             Reason/Rejected.pm
             Reason/RelayingDenied.pm
