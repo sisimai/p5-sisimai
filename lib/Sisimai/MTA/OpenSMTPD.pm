@@ -252,7 +252,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014 azumakuniyuki E<lt>perl.org@azumakuniyuki.orgE<gt>,
+Copyright (C) 2014-2015 azumakuniyuki E<lt>perl.org@azumakuniyuki.orgE<gt>,
 All Rights Reserved.
 
 =head1 LICENSE
