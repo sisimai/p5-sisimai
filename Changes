@@ -1,5 +1,11 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.14
+    - Update Sisimai::MSP::US::Outlook for delayed message.
+    - Changed accessor name "data" to "path" in Sisimai::Mail module.
+    - Implement new module: Sisimai::Mail::STDIN for reading email data from
+      standard-in.
+
 4.1.13  Tue, 27 Jan 2015 15:00:55 +0900 (JST)
     - Fixed bug in test code for Sisimai::DATA::YAML. Thanks to CPAN Testers
       Reports.
