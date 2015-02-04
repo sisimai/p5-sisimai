@@ -6,7 +6,7 @@ use Sisimai::Mail::Maildir;
 my $PackageName = 'Sisimai::Mail::Maildir';
 my $MethodNames = {
     'class' => [ 'new' ],
-    'object' => [ 'path', 'name', 'files', 'handle', 'read' ],
+    'object' => [ 'path', 'dir', 'file', 'inodes', 'handle', 'read' ],
 };
 my $SampleEmail = './eg/maildir-as-a-sample/new';
 my $NewInstance = $PackageName->new( $SampleEmail );
@@ -23,19 +23,20 @@ MAKE_TEST: {
 
         isa_ok $maildir, $PackageName;
         can_ok $maildir, @{ $MethodNames->{'object'} };
-        is $maildir->path, $SampleEmail, '->path = '.$maildir->path;
-        is $maildir->name, undef, '->name = ""';
-        isa_ok $maildir->files, 'ARRAY';
+        is $maildir->dir, $SampleEmail, '->dir = '.$maildir->dir;
+        is $maildir->file, undef, '->file = ""';
+        isa_ok $maildir->inodes, 'ARRAY';
         isa_ok $maildir->handle, 'IO::Dir';
 
         while( my $r = $maildir->read ) {
             ok length $r, 'maildir->read('.( $emindex + 1 ).')';
-            ok length $maildir->name, '->name = '.$maildir->name;
-            ok scalar @{ $maildir->files };
+            ok length $maildir->file, '->file = '.$maildir->file;
+            ok $maildir->path, '->path = '.$maildir->path;
+            ok scalar @{ $maildir->inodes };
             $emindex++;
         }
         ok $emindex > 1;
-        is $emindex, scalar @{ $maildir->files };
+        is $emindex, scalar @{ $maildir->inodes };
     }
 }
 

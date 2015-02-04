@@ -6,7 +6,7 @@ use Sisimai::Mail::Mbox;
 my $PackageName = 'Sisimai::Mail::Mbox';
 my $MethodNames = {
     'class' => [ 'new' ],
-    'object' => [ 'path', 'name', 'size', 'handle', 'offset', 'read' ],
+    'object' => [ 'path', 'dir', 'file', 'size', 'handle', 'offset', 'read' ],
 };
 my $SampleEmail = './eg/mbox-as-a-sample';
 my $NewInstance = $PackageName->new( $SampleEmail );
@@ -23,8 +23,9 @@ MAKE_TEST: {
 
         isa_ok $mailbox, $PackageName;
         can_ok $mailbox, @{ $MethodNames->{'object'} };
+        is $mailbox->dir, './eg', '->dir = ./eg';
         is $mailbox->path, $SampleEmail, '->path = '.$SampleEmail;
-        is $mailbox->name, 'mbox-as-a-sample', '->name = mbox-as-a-sample';
+        is $mailbox->file, 'mbox-as-a-sample', '->file = mbox-as-a-sample';
         is $mailbox->size, -s $SampleEmail, '->size = 94515';
         isa_ok $mailbox->handle, 'IO::File';
         is $mailbox->offset, 0, '->offset = 0';
