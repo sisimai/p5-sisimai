@@ -7,11 +7,12 @@ use IO::Dir;
 use IO::File;
 
 my $roaccessors = [
-    'path',     # (String) path to Maildir/
+    'dir',      # (String) path to Maildir/
 ];
 my $rwaccessors = [
-    'name',     # (String) file name of a mail in the Maildir/
-    'files',    # (Ref->Array) i-node list of files in the Maildir/
+    'path',     # (String) path to each file 
+    'file',     # (String) file name of a mail in the Maildir/
+    'inodes',   # (Ref->Array) i-node list of files in the Maildir/
     'handle',   # (IO::File) File handle
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
@@ -24,13 +25,14 @@ sub new {
     #               (undef) Undef if the argument is not a directory or does not exist
     my $class = shift;
     my $argvs = shift // return undef;
-    my $param = { 'files' => [] };
+    my $param = { 'inodes' => [] };
 
     return undef unless -d $argvs;
 
-    $param->{'path'}   = $argvs;
-    $param->{'name'}   = undef;
-    $param->{'files'}  = [];
+    $param->{'dir'}    = $argvs;
+    $param->{'file'}   = undef;
+    $param->{'path'}   = undef;
+    $param->{'inodes'} = [];
     $param->{'handle'} = IO::Dir->new( $argvs );
 
     return bless( $param, __PACKAGE__ );
@@ -42,8 +44,8 @@ sub read {
     # @Return       (String) Contents of file in Maildir/
     my $self = shift;
 
-    return undef unless defined $self->{'path'};
-    return undef unless -d $self->{'path'};
+    return undef unless defined $self->{'dir'};
+    return undef unless -d $self->{'dir'};
 
     my $seekhandle = $self->{'handle'};
     my $filehandle = undef;
@@ -52,13 +54,13 @@ sub read {
     my $emailinode = undef;
 
     eval {
-        $seekhandle = IO::Dir->new( $self->{'path'} ) unless $seekhandle;
+        $seekhandle = IO::Dir->new( $self->{'dir'} ) unless $seekhandle;
 
         while( my $r = $seekhandle->read ) {
             # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
 
-            $emailindir =  sprintf( "%s/%s", $self->{'path'}, $r );
+            $emailindir =  sprintf( "%s/%s", $self->{'dir'}, $r );
             $emailindir =~ y{/}{}s;
             next unless -f $emailindir;
             next unless -s $emailindir;
@@ -66,8 +68,9 @@ sub read {
             next unless -r $emailindir;
 
             # Get inode number of the file
+            $self->{'path'} = $emailindir;
             $emailinode = [ stat $emailindir ]->[1];
-            next if grep { $emailinode == $_ } @{ $self->{'files'} };
+            next if grep { $emailinode == $_ } @{ $self->{'inodes'} };
 
             $filehandle = IO::File->new( $emailindir, 'r' );
             while( my $f = <$filehandle> ) {
@@ -76,8 +79,8 @@ sub read {
             }
             $filehandle->close;
 
-            push @{ $self->{'files'} }, $emailinode;
-            $self->{'name'} = $r;
+            push @{ $self->{'inodes'} }, $emailinode;
+            $self->{'file'} = $r;
 
             last;
         }
@@ -116,23 +119,29 @@ C<new()> is a constructor of Sisimai::Mail::Maildir
 
 =head1 INSTANCE METHODS
 
+=head2 C<B<dir()>>
+
+C<dir()> returns the path to Maildir/
+
+    print $maildir->dir;   # /home/neko/Maildir/new/
+
 =head2 C<B<path()>>
 
-C<path()> returns the path to Maildir.
+C<path()> returns the path to each email in Maildir/
 
-    print $maildir->path;   # /home/neko/Maildir/new
+    print $maildir->path;   # /home/neko/Maildir/new/1.eml
 
-=head2 C<B<name()>>
+=head2 C<B<file()>>
 
-C<name()> returns current file name of the Maildir.
+C<file()> returns current file name of the Maildir.
 
-    print $maildir->name;
+    print $maildir->file;
 
 =head2 C<B<files()>>
 
-C<name()> returns i-node list of each email in Maildir.
+C<inodes()> returns i-node list of each email in Maildir.
 
-    print for @{ $maildir->files };
+    print for @{ $maildir->inodes };
 
 =head2 C<B<handle()>>
 

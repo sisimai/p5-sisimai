@@ -3,12 +3,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
-use File::Basename 'basename';
+use File::Basename qw(basename dirname);
 use IO::File;
 
 my $roaccessors = [
+    'dir',      # (String) Directory name of the mbox
+    'file',     # (String) file name of the mbox
     'path',     # (String) path to mbox
-    'name',     # (String) file name of the mbox
     'size',     # (Integer) File size of the mbox
 ];
 my $rwaccessors = [
@@ -29,9 +30,10 @@ sub new {
 
     return undef unless -f $argvs;
 
+    $param->{'dir'}    = File::Basename::dirname $argvs;
     $param->{'path'}   = $argvs;
     $param->{'size'}   = -s $argvs;
-    $param->{'name'}   = File::Basename::basename $argvs;
+    $param->{'file'}   = File::Basename::basename $argvs;
     $param->{'handle'} = IO::File->new( $argvs, 'r' );
 
     return bless( $param, __PACKAGE__ );
@@ -98,17 +100,23 @@ C<new()> is a constructor of Sisimai::Mail::Mbox
 
 =head1 INSTANCE METHODS
 
+=head2 C<B<base()>>
+
+C<dir()> returns the directory name of mbox
+
+    print $mailbox->dir;   # /var/mail
+
 =head2 C<B<path()>>
 
 C<path()> returns the path to mbox.
 
     print $mailbox->path;   # /var/mail/root
 
-=head2 C<B<name()>>
+=head2 C<B<file()>>
 
-C<name()> returns a file name of the mbox.
+C<file()> returns a file name of the mbox.
 
-    print $mailbox->name;   # root
+    print $mailbox->file;   # root
 
 =head2 C<B<size()>>
 
