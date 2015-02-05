@@ -153,7 +153,7 @@ Sisimai::Mail::Mbox->read or Sisimai::Mail::Maildir->read method.
 
 =head2 C<B<close()>>
 
-C<close()> Close the handle of the mailbox or the maildir.
+C<close()> Close the handle of the mailbox or the Maildir/.
 
     my $o = $mailbox->close;
     print $o;   # 1 = Successfully closed, 0 = already closed.
