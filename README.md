@@ -46,7 +46,7 @@ version 4 (Sisimai).
 3. See ./ANALYSIS-ACCURACY
 4. YAML format is available if "YAML" module has been installed
 
-公開中のbouncehammer version 2.7.13とversion 4(シシマイ)は上記のような違いがあります。
+公開中のbouncehammer version 2.7.13とversion 4(シシマイ)は下記のような違いがあります。
 
 | 機能                                           | ver 2.7.13    | Sisimai      |
 |------------------------------------------------|---------------|--------------|
