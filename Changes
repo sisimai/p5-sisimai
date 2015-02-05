@@ -5,6 +5,12 @@ Revision history for Sisimai/Core module of bouncehammer version 4
     - Changed accessor name "data" to "path" in Sisimai::Mail module.
     - Implement new module: Sisimai::Mail::STDIN for reading email data from
       standard-in.
+    - Changed accessor names in Sisimai::Mail::Mbox and Sisimai::Mail::Maildir.
+      "name" to "file", "files" to "inodes".
+    - Accessor "path" always return the path to a mailbox or path to each mail
+      file in Maildir/ at Sisimai::Mail::Mbox and Sisimai::Mail::Maildir.
+    - Implement new accessor "dir", it returns the path to directory of given
+      argument in Sisimai::Mail::Mbox and Sisimai::Mail::Maildir.
 
 4.1.13  Tue, 27 Jan 2015 15:00:55 +0900 (JST)
     - Fixed bug in test code for Sisimai::DATA::YAML. Thanks to CPAN Testers
