@@ -5,18 +5,19 @@
 # | |  | | (_| |   <  __/  _| | |  __/
 # |_|  |_|\__,_|_|\_\___|_| |_|_|\___|
 # ---------------------------------------------------------------------------
+SHELL = /bin/sh
 HERE  = $(shell `pwd`)
 TIME  = $(shell date '+%s')
 NAME  = Sisimai
-MAKE  = /usr/bin/make
-PERL  = /usr/local/bin/perl
+MAKE  = make
+PERL  = perl
 MKDIR = mkdir -p
-PROVE = /usr/local/bin/prove -Ilib --timer
-MINIL = /usr/local/bin/minil
-LS    = /bin/ls
-CP    = /bin/cp
-RM    = /bin/rm -f
-MV    = /bin/mv
+PROVE = prove -Ilib --timer
+MINIL = minil
+LS    = ls
+CP    = cp
+RM    = rm -f
+MV    = mv
 MP    = /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 GIT   = /usr/bin/git
 
@@ -53,10 +54,10 @@ cover-test:
 	cover -test
 
 accuracy-table:
-	@printf " %s\n" 'bounceHammer 2.7.13 + bounceHammer nails(*)'
-	@printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
-	@printf "%s\n" '-------------------------------------------------------------------------------'
-	@for v in `$(LS) -1 $(MTAMODULEDIR)/*.pm`; do \
+	@ printf " %s\n" 'bounceHammer 2.7.13 + bounceHammer nails(*)'
+	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
+	@ printf "%s\n" '-------------------------------------------------------------------------------'
+	@ for v in `$(LS) -1 $(MTAMODULEDIR)/*.pm`; do \
 		m="MTA::`echo $$v | cut -d/ -f5 | sed 's/.pm//g'`" ;\
 		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -74,7 +75,7 @@ accuracy-table:
 		printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
 		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
 	done
-	@for c in `$(LS) -1 $(MSPMODULEDIR)`; do \
+	@ for c in `$(LS) -1 $(MSPMODULEDIR)`; do \
 		for v in `$(LS) -1 $(MSPMODULEDIR)/$$c/*.pm`; do \
 			m="$$c::"`echo $$v | cut -d/ -f6 | sed 's/.pm//g'` ;\
 			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
@@ -94,7 +95,7 @@ accuracy-table:
 			$(PERL) -Ilib -MSisimai::MSP::$$m -lE "print Sisimai::MSP::$$m->description" ;\
 		done ;\
 	done
-	@for v in ARF RFC3464; do \
+	@ for v in ARF RFC3464; do \
 		m=$$v ;\
 		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -112,7 +113,7 @@ accuracy-table:
 		printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
 		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
 	done
-	@printf "%s\n" '-------------------------------------------------------------------------------'
+	@ printf "%s\n" '-------------------------------------------------------------------------------'
 
 update-analysis-accuracy: sample
 	$(CP) /dev/null $(ACCURACYLIST)
