@@ -22,6 +22,7 @@ cover_db/
 *.o
 *.obj
 /tmp
+cpanm
 
 !LICENSE
 
