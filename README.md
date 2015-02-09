@@ -146,7 +146,7 @@ AUTHOR | 作者
 
 COPYRIGHT | 著作権
 ------------------
-Copyright (C) 2014 azumakuniyuki <perl.org@azumakuniyuki.org>,
+Copyright (C) 2014-2015 azumakuniyuki <perl.org@azumakuniyuki.org>,
 All Rights Reserved.
 
 LICENSE | ライセンス
