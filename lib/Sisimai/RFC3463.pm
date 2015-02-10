@@ -276,6 +276,7 @@ my $StandardCode = {
         'mailboxfull'   => [ '4.2.2' ],
         'exceedlimit'   => [ '4.2.3' ],
         'systemfull'    => [ '4.3.1' ],
+        'notaccept'     => [ '4.3.2' ],
         'systemerror'   => [ '4.3.5' ],
         'networkerror'  => [ '4.4.2', '4.4.4', '4.4.6' ],
         'expired'       => [ '4.4.7', '4.4.1' ],
