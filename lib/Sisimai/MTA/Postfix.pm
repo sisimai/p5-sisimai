@@ -30,7 +30,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.13' }
+sub version     { '4.0.14' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 
@@ -186,7 +186,7 @@ sub scan {
                 # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                 # command)
-                if( $e =~ m/\s[(]in reply to .*([A-Z]{4}).*/ ) {
+                if( $e =~ m/\s[(]in reply to ([A-Z]{4}).*/ ) {
                     # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                     push @commandset, $1;
 
