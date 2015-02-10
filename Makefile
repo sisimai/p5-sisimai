@@ -9,15 +9,17 @@ SHELL = /bin/sh
 HERE  = $(shell `pwd`)
 TIME  = $(shell date '+%s')
 NAME  = Sisimai
-MAKE  = make
 PERL  = perl
+CPANM = http://xrl.us/cpanm
+WGET  = wget -c
+CURL  = curl -LOk
+CHMOD = chmod
 MKDIR = mkdir -p
 PROVE = prove -Ilib --timer
 MINIL = minil
-LS    = ls
+LS    = ls -1
 CP    = cp
 RM    = rm -f
-MV    = mv
 MP    = /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 GIT   = /usr/bin/git
 
@@ -57,7 +59,7 @@ accuracy-table:
 	@ printf " %s\n" 'bounceHammer 2.7.13 + bounceHammer nails(*)'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
 	@ printf "%s\n" '-------------------------------------------------------------------------------'
-	@ for v in `$(LS) -1 $(MTAMODULEDIR)/*.pm`; do \
+	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm`; do \
 		m="MTA::`echo $$v | cut -d/ -f5 | sed 's/.pm//g'`" ;\
 		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -75,8 +77,8 @@ accuracy-table:
 		printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
 		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
 	done
-	@ for c in `$(LS) -1 $(MSPMODULEDIR)`; do \
-		for v in `$(LS) -1 $(MSPMODULEDIR)/$$c/*.pm`; do \
+	@ for c in `$(LS) $(MSPMODULEDIR)`; do \
+		for v in `$(LS) $(MSPMODULEDIR)/$$c/*.pm`; do \
 			m="$$c::"`echo $$v | cut -d/ -f6 | sed 's/.pm//g'` ;\
 			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
 			l="`echo MSP::$$m | wc -c`" ;\
@@ -145,14 +147,14 @@ push:
 	done
 
 sample:
-	for v in `$(LS) -1 $(MTAMODULEDIR)/*.pm`; do \
+	for v in `$(LS) $(MTAMODULEDIR)/*.pm`; do \
 		MTA=`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
 		$(MKDIR) $(EMAIL_SAMPLE)/$$MTA ;\
 		$(CP) $(FOR_MAKETEST)/$$MTA-*.eml $(EMAIL_SAMPLE)/$$MTA/ ;\
 		$(CP) $(FOR_EMPARSER)/$$MTA/* $(EMAIL_SAMPLE)/$$MTA/ ;\
 	done
-	for c in `$(LS) -1 $(MSPMODULEDIR)`; do \
-		for v in `$(LS) -1 $(MSPMODULEDIR)/$$c/*.pm`; do \
+	for c in `$(LS) $(MSPMODULEDIR)`; do \
+		for v in `$(LS) $(MSPMODULEDIR)/$$c/*.pm`; do \
 			DIR=`echo $$c | tr '[A-Z]' '[a-z]' | tr -d '/'` ;\
 			MSP="`echo $$v | cut -d/ -f6 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 			$(MKDIR) $(EMAIL_SAMPLE)/$$DIR-$$MSP ;\
@@ -169,6 +171,16 @@ sample:
 profile:
 	$(PERL) -d:NYTProf $(EMAIL_PARSER) $(FOR_MAKETEST) $(MAILBOX_FILE) > /dev/null
 	nytprofhtml
+
+cpanm:
+	$(WGET) $(CPANM) || $(CURL) $(CPANM)
+	test -f ./$@ && $(CHMOD) a+x ./$@
+
+install-from-cpan: cpanm
+	sudo ./cpanm $(NAME)
+
+install-from-local:
+	sudo ./cpanm .
 
 clean:
 	yes | $(MINIL) clean
