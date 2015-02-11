@@ -1,6 +1,6 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
-4.1.15  Wed, 11 Feb 2015
+4.1.15  Wed, 11 Feb 2015 13:59:59 +0900 (JST)
     - Improved code for detecting abuse message "opt-out" in Sisimai::ARF.
     - Minor improvements in Sisimai::MTA::Postfix.
 
