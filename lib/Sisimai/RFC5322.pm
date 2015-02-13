@@ -62,8 +62,11 @@ sub is_mailerdaemon {
     my $class = shift;
     my $email = shift // return 0;
     my $rxmds = qr/(?:
-        mailer-daemon[@]|[<(]mailer-daemon[)>]|
-        \Amailer-daemon\z|[ ]?mailer-daemon[ ])/xi;
+         mailer-daemon[@]
+        |[<(]mailer-daemon[)>]
+        |\Amailer-daemon\z
+        |[ ]?mailer-daemon[ ])
+    /xi;
 
     return 1 if $email =~ $rxmds;
     return 0;
