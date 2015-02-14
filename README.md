@@ -11,7 +11,7 @@
 What is Sisimai ? | シシマイ?
 =============================
 
-Sisimai is a core module of bounceHammer version. 4, is a Perl module for 
+Sisimai is a core module of bounceHammer version 4, is a Perl module for 
 analyzing email bounce. "Sisimai" is a coined word: Sisi (the number 4 is 
 pronounced "Si" in Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
