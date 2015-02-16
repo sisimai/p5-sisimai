@@ -44,7 +44,7 @@ sub new {
 
     } else {
         # The argument neither a mailbox nor a Maildir/.
-        if( $argvs eq '<STDIN>' || ref $argvs eq 'IO::Handle' ) {
+        if( ref($argvs) =~ m/\A(?:GLOB|IO::Handle)\z/ || $argvs eq '<STDIN>' ) {
             # Read from STDIN
             $klass = sprintf( "%s::STDIN", __PACKAGE__ );
             $param->{'type'} = 'stdin';
