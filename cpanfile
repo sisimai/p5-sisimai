@@ -7,6 +7,6 @@ on 'test' => sub {
     requires 'Test::More', '0.98';
 };
 
-on develop => sub {
+on 'develop' => sub {
     requires 'Test::UsedModules', '0.03';
 };
