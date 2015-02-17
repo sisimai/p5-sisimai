@@ -12,18 +12,46 @@ sub dump {
 
     return undef unless ref $argvs eq 'Sisimai::Data';
     my $damneddata = undef;
-    my $yamlstring = '';
+    my $yamlstring = undef;
+    my $modulename = undef;
 
-    eval { require YAML };
-    die ' ***error: "YAML" module is not installed' if $@;
+    eval { 
+        require YAML;
+        $modulename = 'YAML';
+    };
+
+    if( $@ ) {
+        # Try to load JSON::Syck
+        eval { 
+            require YAML::Syck;
+            $modulename = 'YAML::Syck';
+        };
+
+        if( $@ ) {
+            # YAML::Syck is not installed
+            die ' ***error: Neither "YAML" nor "YAML::Syck" module is installed';
+        }
+    }
 
     $damneddata = $argvs->damn;
-    $YAML::SortKeys = 1;
-    $YAML::Stringify = 0;
-    $YAML::UseHeader = 1;
-    $YAML::UseBlock = 0;
-    $YAML::CompressSeries = 0;
-    $yamlstring = YAML::Dump( $damneddata );
+    if( $modulename eq 'YAML' ) {
+        # Use YAML module
+        $YAML::SortKeys = 1;
+        $YAML::Stringify = 0;
+        $YAML::UseHeader = 1;
+        $YAML::UseBlock = 0;
+        $YAML::CompressSeries = 0;
+        $yamlstring = YAML::Dump( $damneddata );
+
+    } elsif( $modulename eq 'YAML::Syck' ) {
+        # Use JSON::Syck module instead of YAML module.
+        $YAML::Syck::ImplicitTyping  = 1;
+        $YAML::Syck::Headless        = 0;
+        $YAML::Syck::ImplicitUnicode = 1;
+        $YAML::Syck::SingleQuote     = 0;
+        $YAML::Syck::SortKeys        = 1;
+        $yamlstring = YAML::Syck::Dump( $damneddata );
+    }
 
     return $yamlstring;
 }
