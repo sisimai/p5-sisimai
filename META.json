@@ -1,12 +1,12 @@
 {
-   "abstract" : "It's a core module of bounceHammer version 4",
+   "abstract" : "It's a core module of bounceHammer 4, is a module for analyzing email bounces and generate structured data in a JSON format from parsed bounce messages.",
    "author" : [
       "azumakuniyuki"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.2.1, CPAN::Meta::Converter version 2.143240",
+   "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.143240",
    "license" : [
-      "unknown"
+      "freebsd"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
