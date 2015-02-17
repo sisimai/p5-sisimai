@@ -28,9 +28,9 @@ sub new {
         'offset' => 0,
     };
 
-    $param->{'path'}   = undef;
+    $param->{'path'}   = '<STDIN>';
+    $param->{'name'}   = '<STDIN>';
     $param->{'size'}   = undef;
-    $param->{'name'}   = undef;
     $param->{'handle'} = IO::Handle->new->fdopen( fileno(STDIN), 'r' );
 
     return bless( $param, __PACKAGE__ );
