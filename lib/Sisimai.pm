@@ -46,7 +46,8 @@ __END__
 
 =head1 NAME
 
-Sisimai - It's a core module of bounceHammer version 4
+Sisimai - It's a module for analyzing email bounces and generate structured data
+in a JSON format from parsed bounce messages.
 
 =head1 SYNOPSIS
 
@@ -54,8 +55,10 @@ Sisimai - It's a core module of bounceHammer version 4
 
 =head1 DESCRIPTION
 
-Sisimai is a core module of C<bounceHammer> version. 3, is a Perl module for 
-analyzing email bounce. C<Sisimai> stands for SISI "Mail Analyzing Interface".
+Sisimai is a core module of C<bounceHammer> version 4, is a Perl module for 
+analyzing email bounce and generate structured data in a JSON format (YAML is 
+also available if "YAML" module is installed on your system) from parsed bounce
+messages. C<Sisimai> stands for SISI "Mail Analyzing Interface".
 
 =head1 BASIC USAGE
 
