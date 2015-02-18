@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-our $VERSION = '4.1.15';
+our $VERSION = '4.1.16';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
@@ -76,6 +76,7 @@ messages like following.
 
             my $h = $e->damn;               # Convert to HASH reference
             my $j = $e->dump('json');       # Convert to JSON string
+            my $y = $e->dump('yaml');       # Convert to YAML string
         }
     }
 
