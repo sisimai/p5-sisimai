@@ -47,7 +47,8 @@ __END__
 =head1 NAME
 
 Sisimai - It's a module for analyzing email bounces and generate structured data
-in a JSON format from parsed bounce messages.
+in a JSON format from parsed bounce messages, is a core module of bounceHammer
+version 4.
 
 =head1 SYNOPSIS
 
