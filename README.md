@@ -71,6 +71,32 @@ version 4 (Sisimai).
 3. ./ANALYSIS-ACCURACY を参照
 4. "YAML"モジュールが入っていればYAMLでの出力も可能
 
+Included Commercial MTA Modules | 商用MTAモジュール
+---------------------------------------------------
+
+The following commercial MTA modules are included in Sisimai by default.
+
+| Sisimai::                 | Description                                       |
+|-------------------------------------------------------------------------------|
+| MTA::Activehunter         | TransWARE Active!hunter                           |
+| MTA::Domino               | IBM Domino Server                                 |
+| MTA::Exchange             | Microsoft Exchange Server                         |
+| MTA::IMailServer          | IPSWITCH IMail Server                             |
+| MTA::InterScanMSS         | Trend Micro InterScan Messaging Security Suite    |
+| MTA::MXLogic              | McAfee SaaS                                       |
+| MTA::MailFoundry          | MailFoundry                                       |
+| MTA::MailMarshalSMTP      | Trustwave Secure Email Gateway                    |
+| MTA::McAfee               | McAfee Email Appliance                            |
+| MTA::MessagingServer      | Oracle Communications Messaging Server            |
+| MTA::Notes                | Lotus Notes                                       |
+| MTA::SurfControl          | WebSense SurfControl                              |
+| MTA::mFILTER              | Digital Arts m-FILTER                             |
+| MSP::US::AmazonSES        | AmazonSES: http://aws.amazon.com/ses/             |
+| MSP::US::SendGrid         | SendGrid: http://sendgrid.com/                    |
+
+上記の商用MTAモジュールはSisimaiに最初から含まれています。
+
+
 System requirements | 動作環境
 ------------------------------
 
