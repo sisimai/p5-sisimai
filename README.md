@@ -71,8 +71,8 @@ version 4 (Sisimai).
 3. ./ANALYSIS-ACCURACY を参照
 4. "YAML"モジュールが入っていればYAMLでの出力も可能
 
-Included Commercial MTA Modules | 商用MTAモジュール
----------------------------------------------------
+Commercial MTA Modules | 商用MTAモジュール
+------------------------------------------
 
 The following commercial MTA modules are included in Sisimai by default.
 
