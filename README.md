@@ -77,7 +77,7 @@ Included Commercial MTA Modules | 商用MTAモジュール
 The following commercial MTA modules are included in Sisimai by default.
 
 | Sisimai::                 | Description                                       |
-|-------------------------------------------------------------------------------|
+|---------------------------|---------------------------------------------------|
 | MTA::Activehunter         | TransWARE Active!hunter                           |
 | MTA::Domino               | IBM Domino Server                                 |
 | MTA::Exchange             | Microsoft Exchange Server                         |
