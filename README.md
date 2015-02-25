@@ -73,7 +73,6 @@ version 4 (Sisimai).
 
 Commercial MTA Modules | 商用MTAモジュール
 ------------------------------------------
-
 The following commercial MTA modules are included in Sisimai by default.
 
 | Sisimai::                 | Description                                       |
