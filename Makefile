@@ -172,6 +172,10 @@ profile:
 	$(PERL) -d:NYTProf $(EMAIL_PARSER) $(FOR_MAKETEST) $(MAILBOX_FILE) > /dev/null
 	nytprofhtml
 
+benchmark-mbox:
+	$(MKDIR) -p tmp/benchmark
+	$(CP) `find $(EMAIL_SAMPLE) -type f` tmp/benchmark/
+
 cpanm:
 	$(WGET) $(CPANM) || $(CURL) $(CPANM)
 	test -f ./$@ && $(CHMOD) a+x ./$@
