@@ -142,7 +142,7 @@ dist:
 	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
 
 push:
-	for G in pchan github; do \
+	for G in `grep -E '^[[]remote' .git/config | cut -d' ' -f2 | tr -d '"]'`; do \
 		$(GIT) push --tags $$G master; \
 	done
 
