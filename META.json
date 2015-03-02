@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's a module for analyzing email bounces and generate structured data in a JSON format from parsed bounce messages.",
+   "abstract" : "It's a module for analyzing email bounces and generate structured data in a JSON format from parsed bounce messages, is a core module of bounceHammer version 4.",
    "author" : [
       "azumakuniyuki"
    ],
@@ -56,7 +56,7 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "4.1.16",
+   "version" : "4.1.17",
    "x_contributors" : [
       "jcbf <underspell@gmail.com>",
       "azumakuniyuki <perl.org@azumakuniyuki.org>"
