@@ -33,6 +33,7 @@ my $ReturnValue = {
     '18' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/mailererror/ },
     '19' => { 'status' => qr/\A5[.]2[.]0\z/, 'reason' => qr/filtered/ },
     '20' => { 'status' => qr/\A5[.]4[.]6\z/, 'reason' => qr/networkerror/ },
+    '21' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/blocked/ },
 };
 
 use_ok $PackageName;
@@ -56,7 +57,7 @@ MAKE_TEST: {
     use Sisimai::Mail;
     use Sisimai::Message;
 
-    PARSE_EACH_MAIL: for my $n ( 1..20 ) {
+    PARSE_EACH_MAIL: for my $n ( 1 .. scalar keys %$ReturnValue ) {
 
         my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/%s-%02d.eml", $EmailPrefix, $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
