@@ -1,5 +1,9 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.17  Mon,  2 Mar 2015 16:01:20 +0900 (JST)
+    - Improved regular expressions of networkerror, expired and related code in
+      Sisimai::MTA::qmail. Thanks to m-walk at issue #56.
+
 4.1.16  Wed, 18 Feb 2015 16:01:20 +0900 (JST)
     - Add bounce emails as a sample from Postfix 3.0.0.
     - Improved code for reading mail data from STDIN at Sisimai::Mail.
