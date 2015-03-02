@@ -85,10 +85,6 @@ my $RxSess = {
         # qmail-smtpd.c:391| ... out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return;
         Message[ ]size[ ]exceeds[ ]fixed[ ]maximum[ ]message[ ]size:
     }x,
-    'expired' => qr{
-        # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
-        this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z
-    }x,
     'hostunknown' => qr{
         # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie();
         # qmail-remote.c:78|  Sorry, I couldn't find any host named ");
@@ -110,6 +106,11 @@ my $RxSess = {
     'systemfull' => 
         qr/Requested action not taken: mailbox unavailable [(]not enough free space[)]/,
 };
+
+my $RxExpr = qr{
+    # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
+    this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z
+}x;
 
 my $RxLDAP = {
     # qmail-ldap-1.03-20040101.patch:19817 - 19866
@@ -141,7 +142,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.11' }
+sub version     { '4.0.12' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -312,6 +313,9 @@ sub scan {
                         $e->{'reason'} = $r;
                         last(LDAP);
                     }
+
+                    last if $e->{'reason'};
+                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $RxExpr;
                 }
             }
             last;
