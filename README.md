@@ -46,7 +46,7 @@ Install | インストール
 OR
     
     % cd /usr/local/src
-    % git clone https://github.com/azumakuniyuki/Sisimai.git
+    % git clone https://github.com/azumakuniyuki/p5-Sisimai.git
     % cd ./Sisimai
     % sudo cpanm .
     --> Working on .
@@ -160,7 +160,7 @@ The following commercial MTA modules are included in Sisimai by default.
 
 REPOSITORY | リポジトリ
 -----------------------
-[github.com/azumakuniyuki/Sisimai](https://github.com/azumakuniyuki/Sisimai)
+[github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
 
 WEB SITE | サイト
 -----------------
