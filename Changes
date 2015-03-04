@@ -1,5 +1,8 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.18
+    - Repository name on github has been changed to p5-Sisimai.
+
 4.1.17  Mon,  2 Mar 2015 16:01:20 +0900 (JST)
     - Improved regular expressions of networkerror, expired and related code in
       Sisimai::MTA::qmail. Thanks to m-walk at issue #56.
