@@ -31,7 +31,7 @@ MAKE_TEST: {
     TO_SECOND: {
         is $v->to_second( '1d' ), 86400, $v.' 1 Day';
         is $v->to_second( '2w' ), ( 86400 * 7 * 2 ), $v.' 2 Weeks';
-        is $v->to_second( '3f' ), ( 86400 * 14 * 3 ), $v.' 3 Fortnites';
+        is $v->to_second( '3f' ), ( 86400 * 14 * 3 ), $v.' 3 Fortnights';
         is int $v->to_second( '4l' ), 10205771, $v.' 4 Lunar months';
         is int $v->to_second( '5q' ), 39446190, $v.' 5 Quarters';
         is int $v->to_second( '6y' ), 189341712, $v.' 6 Years';
