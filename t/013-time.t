@@ -181,7 +181,7 @@ MAKE_TEST: {
         }
 
         for my $e ( @$invaliddates ) {
-            my $text = $v->parse( $e, 1 );
+            my $text = $v->parse( $e );
             ok length( $text || '' ) == 0, '->parse('.$e.') = '.( $text || '' );
         }
     }
