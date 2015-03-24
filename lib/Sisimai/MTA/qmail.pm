@@ -142,7 +142,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.12' }
+sub version     { '4.0.13' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -234,7 +234,7 @@ sub scan {
                 # Append error message
                 next unless length $e;
                 $v->{'diagnosis'} .= $e.' ';
-                # $v->{'alterrors'}  = $e if $e =~ $RxMTA->{'error'};
+                $v->{'alterrors'}  = $e if $e =~ $RxMTA->{'error'};
 
                 next if $v->{'rhost'};
                 $v->{'rhost'} = $1 if $e =~ $RxHost;
@@ -302,6 +302,13 @@ sub scan {
 
                     SESSION: for my $r ( keys %$RxSess ) {
                         # Verify each regular expression of session errors
+                        if( $e->{'alterrors'} ) {
+                            # Check the value of "alterrors"
+                            next unless $e->{'alterrors'} =~ $RxSess->{ $r };
+                            $e->{'reason'} = $r;
+                        }
+                        last(SESSION) if $e->{'reason'};
+
                         next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
                         $e->{'reason'} = $r;
                         last(SESSION);
