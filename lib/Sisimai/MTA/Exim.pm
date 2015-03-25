@@ -49,15 +49,16 @@ my $RxComm = [
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
 ];
 
+my $RxExpr = qr{(?:
+    # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
+     retry[ ]timeout[ ]exceeded
+    # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
+    |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
+    )
+}x;
+
 my $RxSess = {
     # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
-    'expired' => qr{(?:
-        # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
-         retry[ ]timeout[ ]exceeded
-        # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
-        |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
-        )
-    }x,
     'userunknown' => qr{
         # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
         user[ ]not[ ]found
@@ -102,7 +103,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.15' }
+sub version     { '4.0.16' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -299,6 +300,9 @@ sub scan {
                         $e->{'reason'} = $r;
                         last(SESSION);
                     }
+
+                    last if $e->{'reason'};
+                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $RxExpr;
                 }
                 last;
             }
