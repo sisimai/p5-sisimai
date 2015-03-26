@@ -18,6 +18,7 @@ sub match {
         |no[ ]access[ ]from[ ]mail[ ]server
         |sorry,[ ]your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
         |unresolvable[ ]relay[ ]host[ ]name
+        |http://www[.]spamcop[.]net/bl[.]
         )
     }xi;
 
