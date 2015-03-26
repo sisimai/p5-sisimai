@@ -46,6 +46,7 @@ sub match {
             |refused[ ]by[ ]mailmarshal[ ]spamprofiler
             )
         |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
+        |probable[ ]spam
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
             |[ ]due[ ]to[ ]spam[ ]content
@@ -61,6 +62,7 @@ sub match {
             |email[ ]not[ ]accepted
             |message[ ]rejected[.]       # mail.ru
             |not[ ]accepted
+            |score[ ]
             )
         |spambouncer[ ]identified[ ]spam # SpamBouncer identified SPAM
         |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]
