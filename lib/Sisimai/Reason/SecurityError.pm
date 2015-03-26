@@ -68,7 +68,11 @@ sub match {
         |transaction[ ]failed[ ]spam[ ]message[ ]not[ ]queued
         |we[ ]dont[ ]accept[ ]spam
         |your[ ](?:
-             email[ ]is[ ]considered[ ]spam
+             email[ ](?:
+                 had[ ]spam[-]like[ ]
+                |is[ ]considered[ ]spam
+                |was[ ]detected[ ]as[ ]spam
+            )
             |message[ ]has[ ]been[ ]temporarily[ ]blocked[ ]by[ ]our[ ]filter
             |network[ ]is[ ]temporary[ ]blacklisted
             )
