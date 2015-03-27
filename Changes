@@ -1,10 +1,12 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
-4.1.18
+4.1.18  Fri, 27 Mar 2015 12:59:07 +0900 (JST)
     - Repository name on github has been changed to p5-Sisimai.
     - Fixed code around regular expressions of "mailboxfull", "expired" in MTA
       modules: Sisimai::MTA::qmail and Sisimai::MTA::Exim.
       Thanks to m-walk at issue #57.
+    - Update regular expressions of error message pattern at SecurityError.pm
+      and Blocked.pm in Sisimai/Reason.
 
 4.1.17  Mon,  2 Mar 2015 16:01:20 +0900 (JST)
     - Improved regular expressions of networkerror, expired and related code in
