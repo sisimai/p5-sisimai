@@ -45,6 +45,7 @@ sub match {
         |said:[ ]550[-[ ]]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]
         |sorry,[ ](?:
              user[ ]unknown
+            |badrcptto
             |no[ ]mailbox[ ]here[ ]by[ ]that[ ]name
             )
         |this[ ]address[ ]no[ ]longer[ ]accepts[ ]mail
