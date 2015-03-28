@@ -10,6 +10,7 @@ sub match {
     my $regex = qr{(?:
          invalid/inactive[ ]user
         # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
+        |mailbox[ ]currently[ ]suspended
         |mailbox[ ]unavailable[ ]or[ ]access[ ]denied
         |user[ ]suspended   # http://mail.163.com/help/help_spam_16.htm
         |recipient[ ]suspend[ ]the[ ]service
