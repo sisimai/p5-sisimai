@@ -7,9 +7,14 @@ sub text  { 'rejected' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
+
+
+
+
     my $regex = [
         # Rejected due to envelope from address
         qr/sender verify failed/,		# Exim callout
+        qr/sender not pre[-]approved/,
         qr/address rejected/,
         qr/domain of sender address .+ does not exist/,
         qr/sender rejected/,
