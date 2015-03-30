@@ -15,6 +15,7 @@ sub match {
         |email[ ]address[ ]does[ ]not[ ]exist
         |invalid[ ]mailbox[ ]path
         |invalid[ ]recipient                 # Linkedin
+        |is[ ]not[ ]a[ ]known[ ]user[ ]on
         |no[ ]account[ ]by[ ]that[ ]name[ ]here
         |no[ ]such[ ](?:
              mailbox
