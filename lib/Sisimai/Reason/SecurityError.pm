@@ -76,7 +76,6 @@ sub match {
                 |was[ ]detected[ ]as[ ]spam
             )
             |message[ ]has[ ]been[ ]temporarily[ ]blocked[ ]by[ ]our[ ]filter
-            |network[ ]is[ ]temporary[ ]blacklisted
             )
         )
     }ix;
