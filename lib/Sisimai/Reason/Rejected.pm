@@ -5,37 +5,39 @@ use warnings;
 
 sub text  { 'rejected' }
 sub match {
+    # Rejected due to envelope from address
     my $class = shift;
     my $argvs = shift // return undef;
+    my $regex = qr{(?>
+         [<][>][ ]invalid[ ]sender
+        |address[ ]rejected
+        |batv[ ](?:
+             failed[ ]to[ ]verify   # SoniWall
+            |validation[ ]failure   # SoniWall
+            )
+        |backscatter[ ]protection[ ]detected[ ]an[ ]invalid[ ]or[ ]expired[ ]email[ ]address    # MDaemon
+        |bogus[ ]mail[ ]from        # IMail - block empty sender
+        |denied[ ]\[bouncedeny\]    # McAfee
+        |domain[ ]of[ ]sender[ ]address[ ].+[ ]does[ ]not[ ]exist
+        |empty[ ]envelope[ ]senders[ ]not[ ]allowed
+        |error:[ ]no[ ]third-party[ ]dsns               # SpamWall - block empty sender
+        |fully[ ]qualified[ ]email[ ]address[ ]required # McAfee
+        |recipient[ ]not[ ]accepted[.][ ][(]batv:[ ]no[ ]tag
+        |returned[ ]mail[ ]not[ ]accepted[ ]here
+        |rule[ ]imposed[ ]mailbox[ ]access[ ]for        # MailMarshal
+        |sender[ ](?:
+             verify[ ]failed        # Exim callout
+            |not[ ]pre[-]approved
+            |rejected
+            |domain[ ]is[ ]empty
+            )
+        |syntax[ ]error:[ ]empty[ ]email[ ]address
+        |the[ ]message[ ]has[ ]been[ ]rejected[ ]by[ ]batv[ ]defense
+        |transaction[ ]failed[ ]unsigned[ ]dsn[ ]for
+        )
+    }xi;
 
-
-
-
-    my $regex = [
-        # Rejected due to envelope from address
-        qr/sender verify failed/,		# Exim callout
-        qr/sender not pre[-]approved/,
-        qr/address rejected/,
-        qr/domain of sender address .+ does not exist/,
-        qr/sender rejected/,
-        qr/sender domain is empty/,
-        qr/empty envelope senders not allowed/,
-        qr/syntax error: empty email address/,
-        qr/the message has been rejected by batv defense/,
-        qr/bogus mail from/, # IMail - block empty sender
-        qr/error: no third-party dsns/, # SpamWall - block empty sender
-        qr/batv failed to verify/,  # SoniWall
-        qr/batv validation failure/,  # SoniWall
-        qr/backscatter protection detected an invalid or expired email address/,  # MDaemon
-        qr/rule imposed mailbox access for/, # MailMarshal
-        qr/denied \[bouncedeny\]/, # McAfee
-        qr/fully qualified email address required/, # McAfee
-        qr/recipient not accepted[.] [(]batv: no tag/,
-        qr/<> invalid sender/,
-        qr/returned mail not accepted here/,
-        qr/transaction failed unsigned dsn for/,
-    ];
-    return 1 if grep { lc( $argvs ) =~ $_ } @$regex;
+    return 1 if $argvs =~ $regex;
     return 0;
 }
 
