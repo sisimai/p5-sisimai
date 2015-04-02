@@ -10,24 +10,30 @@ sub match {
     my $regex = qr{(?>
          .+[ ]user[ ]unknown
         |[#]5[.]1[.]1[ ]bad[ ]address
+        |[<].+[>][ ]not[ ]found
+        |address[ ]does[ ]not[ ]exist
         |archived[ ]recipient
         |destination[ ]server[ ]rejected[ ]recipients
         |email[ ]address[ ]does[ ]not[ ]exist
-        |invalid[ ]mailbox[ ]path
-        |invalid[ ]recipient                 # Linkedin
-        |is[ ]not[ ]a[ ]known[ ]user[ ]on
+        |invalid[ ](?:
+             mailbox[ ]path
+            |recipient                 # Linkedin
+            )
+        |is[ ]not[ ](?:
+             a[ ]known[ ]user
+            |an[ ]active[ ]address[ ]at[ ]this[ ]host
+            )
+        |mailbox[ ](?:
+             not[ ]present
+            |not[ ]found
+            |unavailable
+            )
         |no[ ]account[ ]by[ ]that[ ]name[ ]here
         |no[ ]such[ ](?:
              mailbox
             |person[ ]at[ ]this[ ]address
             |recipient
             |user(?:[ ]here)?
-            )
-        |[<].+[>][ ]not[ ]found
-        |mailbox[ ](?:
-             not[ ]present
-            |not[ ]found
-            |unavailable
             )
         |no[ ].+[ ]in[ ]name[ ]directory
         |recipient[ ](?:
@@ -39,10 +45,11 @@ sub match {
                 |user[ ]unknown[ ]in[ ].+[ ]table
                 |unknown[ ]user
                 )
+            |does[ ]not[ ]exist[ ]on[ ]this[ ]system
             |is[ ]not[ ]local
             |not[ ]found
             )
-        |Requested[ ]action[ ]not[ ]taken:[ ]mailbox[ ]unavailable
+        |requested[ ]action[ ]not[ ]taken:[ ]mailbox[ ]unavailable
         |said:[ ]550[-[ ]]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]
         |sorry,[ ](?:
              user[ ]unknown
