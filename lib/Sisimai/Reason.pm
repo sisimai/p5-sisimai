@@ -6,7 +6,8 @@ use Module::Load '';
 
 sub retry { 
     return [ 
-        'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror'
+        'undefined', 'onhold', 'systemerror', 'nospam', 'securityerror', 
+        'networkerror'
     ]
 }
 
@@ -17,7 +18,7 @@ sub index {
     return [ qw|
         Blocked ContentError ExceedLimit Expired Filtered HostUnknown MailboxFull
         MailerError MesgTooBig NetworkError NotAccept OnHold Rejected RelayingDenied
-        SecurityError Suspend SystemError SystemFull UserUnknown 
+        NoSpam SecurityError Suspend SystemError SystemFull UserUnknown 
     | ];
 }
 
