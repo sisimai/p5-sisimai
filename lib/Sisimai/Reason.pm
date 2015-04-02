@@ -102,7 +102,7 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'SecurityError', 'SystemError', 'NetworkError', 
+        'MailboxFull', 'NoSpam', 'SecurityError', 'SystemError', 'NetworkError', 
         'Suspend', 'Expired', 'ContentError', 'NotAccept', 'MailerError',
     ];
 
