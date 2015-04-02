@@ -5,7 +5,7 @@ MTA::Activehunter .......    7/0007  1.0000  TransWARE Active!hunter
 MTA::Courier ............   11/0011  1.0000  Courier MTA
 MTA::Domino .............    9/0009  1.0000  IBM Domino Server
 MTA::Exchange ...........   30/0032  0.9375  Microsoft Exchange Server
-MTA::Exim ...............   68/0071  0.9577  Exim
+MTA::Exim ...............   69/0072  0.9583  Exim
 MTA::IMailServer ........   29/0029  1.0000  IPSWITCH IMail Server
 MTA::InterScanMSS .......    5/0005  1.0000  Trend Micro InterScan Messaging Security Suite
 MTA::MXLogic ............    5/0011  0.4545  McAfee SaaS
@@ -15,7 +15,7 @@ MTA::McAfee .............    7/0007  1.0000  McAfee Email Appliance
 MTA::MessagingServer ....   17/0017  1.0000  Oracle Communications Messaging Server
 MTA::Notes ..............    5/0007  0.7143  Lotus Notes
 MTA::OpenSMTPD ..........    6/0016  0.3750  OpenSMTPD
-MTA::Postfix ............   63/0063  1.0000  Postfix
+MTA::Postfix ............   73/0073  1.0000  Postfix
 MTA::Sendmail ...........  206/0209  0.9856  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    5/0005  1.0000  WebSense SurfControl
 MTA::V5sendmail .........    0/0148  0.0000  Sendmail version 5
@@ -23,7 +23,7 @@ MTA::X1 .................    0/0006  0.0000  Unknown MTA #1
 MTA::X2 .................    0/0018  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0007  0.0000  Unknown MTA #3
 MTA::mFILTER ............    6/0006  1.0000  Digital Arts m-FILTER
-MTA::qmail ..............   45/0053  0.8491  qmail
+MTA::qmail ..............   46/0054  0.8519  qmail
 MSP::DE::EinsUndEins ....    0/0002  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0005  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
@@ -45,5 +45,5 @@ MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    7/0022  0.3182  Abuse Feedback Reporting Format
 RFC3464 .................  101/0111  0.9099  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X+nails  873/1138  0.7671
- Sisimai(bounceHammer 4)  1138/1138  1.0000
+ bounceHammer 2.7.X+nails  885/1150  0.7696
+ Sisimai(bounceHammer 4)  1150/1150  1.0000
