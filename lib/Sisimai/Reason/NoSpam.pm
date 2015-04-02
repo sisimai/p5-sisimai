@@ -42,7 +42,7 @@ sub match {
             |not[ ]accepted
             |score[ ]
             )
-        |spambouncer[ ]identified[ ]spam # SpamBouncer identified SPAM
+        |spambouncer[ ]identified[ ]spam    # SpamBouncer identified SPAM
         |transaction[ ]failed[ ]spam[ ]message[ ]not[ ]queued
         |we[ ]dont[ ]accept[ ]spam
         |your[ ](?:
