@@ -8,9 +8,7 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?>
-         ["]The[ ]mail[ ]server[ ]detected[ ]your[ ]message[ ]as[ ]spam[ ]and[ ]
-            has[ ]prevented[ ]delivery[.]["]    # CPanel/Exim with SA rejections on
-        |authentication[ ](?:
+         authentication[ ](?:
              failed;[ ]server[ ].+[ ]said:  # Postfix
             |turned[ ]on[ ]in[ ]your[ ]email[ ]client
             )
@@ -21,62 +19,20 @@ sub match {
                 |embedded[ ]images  # AOL Phoenix
                 )
             )
-        |blocked[ ]by[ ](?:
-             policy:[ ]no[ ]spam[ ]please
-            |spamAssassin                   # rejected by SpamAssassin
-            )
-        |cyberoam[ ]anti[ ]spam[ ]engine[ ]has[ ]identified[ ]this[ ]email[ ]as[ ]a[ ]bulk[ ]email
-        |denied[ ]due[ ]to[ ]spam[ ]list
         |domain[ ].+[ ]is[ ]a[ ]dead[ ]domain
-        |dt:spm[ ]mx.+[ ]http://mail[.]163[.]com/help/help_spam_16[.]htm
         |email[ ](?:
              not[ ]accepted[ ]for[ ]policy[ ]reasons
             # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
             |rejected[ ]due[ ]to[ ]security[ ]policies
             )
         |insecure[ ]mail[ ]relay
-        |mail[ ](?:
-             appears[ ]to[ ]be[ ]unsolicited    # rejected due to spam
-            |content[ ]denied   # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000726
-            )
-        |message[ ](?:
-             filtered
-            |filtered[.][ ]please[ ]see[ ]the[ ]faqs[ ]section[ ]on[ ]spam
-            |rejected[ ]due[ ]to[ ]suspected[ ]spam[ ]content
-            |refused[ ]by[ ]mailmarshal[ ]spamprofiler
-            )
-        |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
-        |probable[ ]spam
-        |rejected(?:
-             :[ ]spamassassin[ ]score[ ]
-            |[ ]due[ ]to[ ]spam[ ]content
-            )
-        |rejecting[ ]banned[ ]content 
         |sorry,[ ](?:
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |you[ ]don'?t[ ]authenticate[ ]or[ ]the[ ]domain[ ]isn'?t[ ]in[ ]
                 my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             )
-        |spam[ ](?:
-             detected
-            |email[ ]not[ ]accepted
-            |message[ ]rejected[.]       # mail.ru
-            |not[ ]accepted
-            |score[ ]
-            )
-        |spambouncer[ ]identified[ ]spam # SpamBouncer identified SPAM
         |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]
             virus[ ]or[ ]spam[ ]content
-        |transaction[ ]failed[ ]spam[ ]message[ ]not[ ]queued
-        |we[ ]dont[ ]accept[ ]spam
-        |your[ ](?:
-             email[ ](?:
-                 had[ ]spam[-]like[ ]
-                |is[ ]considered[ ]spam
-                |was[ ]detected[ ]as[ ]spam
-            )
-            |message[ ]has[ ]been[ ]temporarily[ ]blocked[ ]by[ ]our[ ]filter
-            )
         )
     }ix;
 
