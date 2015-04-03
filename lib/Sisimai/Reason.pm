@@ -6,8 +6,7 @@ use Module::Load '';
 
 sub retry { 
     return [ 
-        'undefined', 'onhold', 'systemerror', 'nospam', 'securityerror', 
-        'networkerror'
+        'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror'
     ]
 }
 
@@ -40,7 +39,7 @@ sub get {
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'UserUnknown', 
-        'Filtered', 'Rejected', 'HostUnknown', 'Blocked', 
+        'Filtered', 'Rejected', 'HostUnknown', 'Blocked', 'NoSpam',
     ];
 
     if( $argvs->diagnostictype eq 'SMTP' ) {
