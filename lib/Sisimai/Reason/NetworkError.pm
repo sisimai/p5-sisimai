@@ -10,7 +10,9 @@ sub match {
     my $regex = qr{(?:
          host[ ]is[ ]unreachable
         |mail[ ]forwarding[ ]loop[ ]for[ ]
+        |malformed[ ]name[ ]server[ ]reply
         |maximum[ ]forwarding[ ]loop[ ]count[ ]exceeded
+        |name[ ]service[ ]error[ ]for
         |too[ ]many[ ]hops
         )
     }ix;
