@@ -28,14 +28,18 @@ sub match {
             |not[ ]found
             |unavailable
             )
-        |no[ ]account[ ]by[ ]that[ ]name[ ]here
-        |no[ ]such[ ](?:
-             mailbox
-            |person[ ]at[ ]this[ ]address
-            |recipient
-            |user(?:[ ]here)?
+        |no[ ](?:
+             account[ ]by[ ]that[ ]name[ ]here
+            |mail[ ]box[ ]available[ ]for[ ]this[ ]user
+            |mailbox[ ]found
+            |such[ ](?:
+                 mailbox
+                |person[ ]at[ ]this[ ]address
+                |recipient
+                |user(?:[ ]here)?
+                )
+            |[ ].+[ ]in[ ]name[ ]directory
             )
-        |no[ ].+[ ]in[ ]name[ ]directory
         |recipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in
             |address[ ]rejected:[ ](?:
@@ -45,7 +49,7 @@ sub match {
                 |user[ ]unknown[ ]in[ ].+[ ]table
                 |unknown[ ]user
                 )
-            |does[ ]not[ ]exist[ ]on[ ]this[ ]system
+            |does[ ]not[ ]exist(?:[ ]on[ ]this[ ]system)?
             |is[ ]not[ ]local
             |not[ ]found
             )
@@ -67,6 +71,7 @@ sub match {
             )
         |user[ ](?:
              .+[ ]was[ ]not[ ]found
+            |.+[ ]does[ ]not[ ]exist
             |missing[ ]home[ ]directory
             |not[ ]found     # 550 User not found. See http://mail.bigmir.net/err/2/
             |unknown
