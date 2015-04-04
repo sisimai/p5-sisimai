@@ -10,15 +10,20 @@ sub match {
     my $regex = qr{(?>
          access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
         |client[ ]host[ ]rejected:[ ]may[ ]not[ ]be[ ]mail[ ]exchanger
+        |confirm[ ]this[ ]mail[ ]server
         |connection[ ](?:
             refused[ ]by
            |reset[ ]by[ ]peer
            )
         |hosts[ ]with[ ]dynamic[ ]ip
+        |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
         |no[ ]access[ ]from[ ]mail[ ]server
         |sorry[,][ ]your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
         |unresolvable[ ]relay[ ]host[ ]name
-        |your[ ]network[ ]is[ ]temporary[ ]blacklisted
+        |your[ ](?:
+             network[ ]is[ ]temporary[ ]blacklisted
+            |server[ ]requires[ ]confirmation
+            )
         |http://www[.]spamcop[.]net/bl[.]
         )
     }xi;
