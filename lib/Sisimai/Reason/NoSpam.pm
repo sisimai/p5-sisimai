@@ -99,7 +99,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::NoSpam - Bounce reason is C<rejected> due to spam content in 
+Sisimai::Reason::NoSpam - Bounce reason is C<rejected> due to Spam content in 
 the message or not.
 
 =head1 SYNOPSIS
@@ -109,7 +109,7 @@ the message or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::NoSpam checks the bounce reason is C<rejected> due to spam 
+Sisimai::Reason::NoSpam checks the bounce reason is C<rejected> due to Spam 
 content in the message or not. This class is called only Sisimai::Reason class.
 
 =head1 CLASS METHODS
@@ -128,7 +128,7 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true( I<Sisimai::Data> )>>
 
-C<true()> returns 1 if the bounce reason is C<rejected> due to spam content in 
+C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in 
 the message. The argument must be Sisimai::Data object and this method is called
 only from Sisimai::Reason class.
 
