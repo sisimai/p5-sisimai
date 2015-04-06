@@ -1,5 +1,12 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.19  Mon,  6 Apr 2015 14:20:59 +0900 (JST)
+    - Update regular expressions of error message pattern at Rejected.pm, 
+      Mailboxfull.pm, MesgTooBig.pm, and UserUnknown.pm in Sisimai/Reason.
+    - New error reason "nospam" implemented.
+    - Some message patterns have moved from Sisimai::Reason::SecurityError to
+      Sisimai::Reason::NoSpam module.
+
 4.1.18  Fri, 27 Mar 2015 12:59:07 +0900 (JST)
     - Repository name on github has been changed to p5-Sisimai.
     - Fixed code around regular expressions of "mailboxfull", "expired" in MTA
