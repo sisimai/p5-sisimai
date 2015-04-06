@@ -9,6 +9,7 @@ sub match {
     my $argvs = shift // return undef;
     my $regex = qr{(?>
          exceeded[ ]maximum[ ]inbound[ ]message[ ]size
+        |max[ ]message[ ]size[ ]exceeded
         |message[ ](?:
              file[ ]too[ ]big
             |length[ ]exceeds[ ]administrative[ ]limit
