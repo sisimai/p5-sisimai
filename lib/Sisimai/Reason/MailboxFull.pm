@@ -23,8 +23,10 @@ sub match {
         |mailbox[ ](?:
              exceeded[ ]the[ ]local[ ]limit
             |full
+            |has[ ]exceeded[ ]its[ ]disk[ ]space[ ]limit
             |is[ ]full
             |over[ ]quota
+            |size[ ]limit[ ]exceeded
             )
         |maildir[ ](?:
              delivery[ ]failed:[ ](?:User|Domain)disk[ ]quota[ ]?.*[ ]exceeded
@@ -39,7 +41,10 @@ sub match {
             )
         |too[ ]much[ ]mail[ ]data   # @docomo.ne.jp
         |user[ ](?:
-             has[ ]exceeded[ ]quota,[ ]bouncing[ ]mail
+             has[ ](?:
+                 exceeded[ ]quota,[ ]bouncing[ ]mail
+                |too[ ]many[ ]messages[ ]on[ ]the[ ]server
+                )
             |is[ ]over[ ]quota
             |is[ ]over[ ]the[ ]quota
             |over[ ]quota
