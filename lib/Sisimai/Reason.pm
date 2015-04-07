@@ -39,7 +39,7 @@ sub get {
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'UserUnknown', 
-        'Filtered', 'Rejected', 'HostUnknown', 'Blocked', 'NoSpam',
+        'Filtered', 'Rejected', 'HostUnknown', 'NoSpam', 'Blocked',
     ];
 
     if( $argvs->diagnostictype eq 'SMTP' ) {
