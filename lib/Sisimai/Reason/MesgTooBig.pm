@@ -19,6 +19,7 @@ sub match {
                 |maximum[ ]value
                 )
             |too[ ]big
+            |too[ ]large[ ]for[ ]this[ ].+
             )
         )
     }ix;
