@@ -19,6 +19,7 @@ sub match {
             |system[ ]configuration[ ]error
             )
         |server[ ]configuration[ ]error
+        |service[ ]currently[ ]unavailable
         |system[ ]config[ ]error
         |timeout[ ]waiting[ ]for[ ]input
         )
