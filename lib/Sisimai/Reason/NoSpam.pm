@@ -27,8 +27,10 @@ sub match {
             )
         |may[ ]consider[ ]spam
         |message[ ](?:
-             filtered
+             content[ ]rejected
+            |filtered
             |filtered[.][ ]please[ ]see[ ]the[ ]faqs[ ]section[ ]on[ ]spam
+            |looks[ ]like[ ]spam
             |rejected[ ]as[ ]spam
             |rejected[ ]due[ ]to[ ]suspected[ ]spam[ ]content
             |refused[ ]by[ ]mailmarshal[ ]spamprofiler
@@ -57,8 +59,9 @@ sub match {
         |spamming[ ]not[ ]allowed
         |this[ ]message[ ](?:
              appears[ ]to[ ]be[ ]spam
-            |was[ ]classified[ ]as[ ]spam
             |has[ ]been[ ]identified[ ]as[ ]spam
+            |scored[ ].+[ ]spam[ ]points
+            |was[ ]classified[ ]as[ ]spam
             )
         |transaction[ ]failed[ ]spam[ ]message[ ]not[ ]queued
         |we[ ]dont[ ]accept[ ]spam
@@ -68,10 +71,18 @@ sub match {
                  appears[ ]similar[ ]to[ ]spam[ ]we[ ]have[ ]received[ ]before
                 |had[ ]spam[-]like[ ]
                 |is[ ]considered[ ]spam
+                |is[ ]probably[ ]spam
                 |was[ ]detected[ ]as[ ]spam
                 )
-            |message[ ]has[ ]been[ ]temporarily[ ]blocked[ ]by[ ]our[ ]filter
-            |message[ ]failed[ ]several[ ]antispam[ ]checks
+            |message[ ](?:
+                 has[ ]been[ ](?:
+                     temporarily[ ]blocked[ ]by[ ]our[ ]filter
+                    |rejected[ ]because[ ]it[ ]appears[ ]to[ ]be[ ]SPAM
+                    )
+                |has[ ]triggered[ ]a[ ]SPAM[ ]block
+                |may[ ]contain[ ]the[ ]spam[ ]contents
+                |failed[ ]several[ ]antispam[ ]checks
+                )
             )
         )
     }xi;
