@@ -1,5 +1,10 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.20  Thu,  9 Apr 2015 14:20:59 +0900 (JST)
+    - Update regular expressions of error message pattern at SystemError.pm, 
+      MesgTooBig.pm and NoSpam.pm in Sisimai/Reason.
+    - Add two sample emails for "make test" in eg/ directory.
+
 4.1.19  Mon,  6 Apr 2015 14:20:59 +0900 (JST)
     - Update regular expressions of error message pattern at Rejected.pm, 
       Mailboxfull.pm, MesgTooBig.pm, and UserUnknown.pm in Sisimai/Reason.
