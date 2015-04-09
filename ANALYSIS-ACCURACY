@@ -15,15 +15,15 @@ MTA::McAfee .............    7/0007  1.0000  McAfee Email Appliance
 MTA::MessagingServer ....   17/0017  1.0000  Oracle Communications Messaging Server
 MTA::Notes ..............    5/0007  0.7143  Lotus Notes
 MTA::OpenSMTPD ..........    6/0016  0.3750  OpenSMTPD
-MTA::Postfix ............   82/0082  1.0000  Postfix
-MTA::Sendmail ...........  206/0209  0.9856  V8Sendmail: /usr/sbin/sendmail
+MTA::Postfix ............  123/0123  1.0000  Postfix
+MTA::Sendmail ...........  208/0211  0.9858  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    5/0005  1.0000  WebSense SurfControl
 MTA::V5sendmail .........    0/0148  0.0000  Sendmail version 5
 MTA::X1 .................    0/0006  0.0000  Unknown MTA #1
 MTA::X2 .................    0/0018  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0007  0.0000  Unknown MTA #3
 MTA::mFILTER ............    6/0006  1.0000  Digital Arts m-FILTER
-MTA::qmail ..............   46/0054  0.8519  qmail
+MTA::qmail ..............   45/0054  0.8333  qmail
 MSP::DE::EinsUndEins ....    0/0002  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0005  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
@@ -37,13 +37,13 @@ MSP::US::Aol ............    9/0009  1.0000  Aol Mail: http://www.aol.com
 MSP::US::Bigfoot ........    1/0001  1.0000  Bigfoot: http://www.bigfoot.com
 MSP::US::Facebook .......    3/0003  1.0000  Facebook: https://www.facebook.com
 MSP::US::Google .........   43/0043  1.0000  Google Gmail: https://mail.google.com
-MSP::US::Outlook ........    9/0009  1.0000  Microsoft Outlook.com: https://www.outlook.com/
+MSP::US::Outlook ........   12/0012  1.0000  Microsoft Outlook.com: https://www.outlook.com/
 MSP::US::SendGrid .......   12/0012  1.0000  SendGrid: http://sendgrid.com/
 MSP::US::Verizon ........    4/0004  1.0000  Verizon Wireless: http://www.verizonwireless.com
 MSP::US::Yahoo ..........    0/0006  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    7/0022  0.3182  Abuse Feedback Reporting Format
-RFC3464 .................  101/0111  0.9099  Fallback Module for MTAs
+RFC3464 .................  108/0118  0.9153  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X+nails  895/1160  0.7716
- Sisimai(bounceHammer 4)  1160/1160  1.0000
+ bounceHammer 2.7.X+nails  947/1213  0.7807
+ Sisimai(bounceHammer 4)  1213/1213  1.0000
