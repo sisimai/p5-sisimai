@@ -81,7 +81,7 @@ sub true {
     my $v = 0;
 
     if( Sisimai::RFC3463->reason( $statuscode ) eq $reasontext ) {
-        # Delivery status code points C<mailboxfull>.
+        # Delivery status code points "mailboxfull".
         # Status: 4.2.2
         # Diagnostic-Code: SMTP; 450 4.2.2 <***@example.jp>... Mailbox Full
         $v = 1;
