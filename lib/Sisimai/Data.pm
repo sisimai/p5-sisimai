@@ -111,6 +111,7 @@ sub make {
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
     my $endofemail = '';
+    my $rxcommands = qr/\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
 
     return undef unless $messageobj->ds;
     return undef unless $messageobj->rfc822;
@@ -264,6 +265,9 @@ sub make {
 
             # Cleanup the value of "Diagnostic-Code:" header
             $p->{'diagnosticcode'} =~ s/\s+$endofemail//;
+
+            # Check the value of SMTP command
+            $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ $rxcommands;
         }
 
         $o = __PACKAGE__->new( %$p );
