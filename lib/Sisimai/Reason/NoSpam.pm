@@ -44,6 +44,7 @@ sub match {
             )
         |rejecting[ ]banned[ ]content 
         |sending[ ]address[ ]not[ ]accepted[ ]due[ ]to[ ]spam[ ]filter
+        |spam
         |spam[ ](?:
              blocked
             |check
@@ -57,6 +58,7 @@ sub match {
             )
         |spambouncer[ ]identified[ ]spam    # SpamBouncer identified SPAM
         |spamming[ ]not[ ]allowed
+        |the[ ]message[ ]was[ ]rejected[ ]due[ ]to[ ]classification[ ]as[ ]bulk[ ]mail
         |this[ ]message[ ](?:
              appears[ ]to[ ]be[ ]spam
             |has[ ]been[ ]identified[ ]as[ ]spam
@@ -69,6 +71,7 @@ sub match {
         |your[ ](?:
              email[ ](?:
                  appears[ ]similar[ ]to[ ]spam[ ]we[ ]have[ ]received[ ]before
+                |breaches[ ]local[ ]URIBL[ ]policy
                 |had[ ]spam[-]like[ ]
                 |is[ ]considered[ ]spam
                 |is[ ]probably[ ]spam
