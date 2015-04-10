@@ -38,7 +38,7 @@ sub get {
 
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'UserUnknown', 
+        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown', 
         'Filtered', 'Rejected', 'HostUnknown', 'NoSpam', 'Blocked',
     ];
 
@@ -104,6 +104,8 @@ sub anotherone {
         'MailboxFull', 'NoSpam', 'SecurityError', 'SystemError', 'NetworkError', 
         'Suspend', 'Expired', 'ContentError', 'NotAccept', 'MailerError',
     ];
+    my $retryingto = __PACKAGE__->retry;
+    push @$retryingto, 'userunknown';
 
     require Sisimai::RFC3463;
     for my $e ( 'temporary', 'permanent' ) {
@@ -111,7 +113,7 @@ sub anotherone {
         last if $reasontext;
     }
 
-    if( $reasontext eq '' || $reasontext =~ m/\A(?:undefined|userunknown)\z/ ) {
+    if( $reasontext eq '' || grep { $reasontext eq $_ } @$retryingto ) {
         # Could not decide the reason by the value of Status:
         for my $e ( @$classorder ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
