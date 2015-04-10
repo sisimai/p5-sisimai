@@ -27,7 +27,23 @@ sub match {
     return 0;
 }
 
-sub true { return undef };
+sub true { 
+    # @Description  The envelope recipient's mailbox is suspended or not
+    # @Param <obj>  (Sisimai::Data) Object
+    # @Return       (Integer) 1 = is mailbox suspended
+    #               (Integer) 0 = is not suspended
+    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    my $class = shift;
+    my $argvs = shift // return undef;
+
+    return undef unless ref $argvs eq 'Sisimai::Data';
+    my $statuscode = $argvs->deliverystatus // '';
+    my $reasontext = __PACKAGE__->text;
+
+    return undef unless length $statuscode;
+    return 1 if $argvs->reason eq $reasontext;
+    return 1 if __PACKAGE__->match( $argvs->diagnosticcode // '' );
+}
 
 1;
 __END__
