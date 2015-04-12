@@ -54,6 +54,11 @@ my $RxExpr = qr{(?:
      retry[ ]timeout[ ]exceeded
     # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
     |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
+    # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
+    # smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
+    #                 "after this message arrived";
+    |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
+    |all[ ]hosts[ ]have[ ]been[ ]failing[ ]for[ ]a[ ]long[ ]time[ ]and[ ]were[ ]last[ ]tried
     )
 }x;
 
@@ -103,7 +108,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.16' }
+sub version     { '4.0.17' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
