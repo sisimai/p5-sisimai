@@ -5,7 +5,7 @@ MTA::Activehunter .......    7/0007  1.0000  TransWARE Active!hunter
 MTA::Courier ............   11/0011  1.0000  Courier MTA
 MTA::Domino .............    9/0009  1.0000  IBM Domino Server
 MTA::Exchange ...........   30/0032  0.9375  Microsoft Exchange Server
-MTA::Exim ...............   69/0072  0.9583  Exim
+MTA::Exim ...............   70/0073  0.9589  Exim
 MTA::IMailServer ........   29/0029  1.0000  IPSWITCH IMail Server
 MTA::InterScanMSS .......    5/0005  1.0000  Trend Micro InterScan Messaging Security Suite
 MTA::MXLogic ............    5/0011  0.4545  McAfee SaaS
@@ -15,8 +15,8 @@ MTA::McAfee .............    7/0007  1.0000  McAfee Email Appliance
 MTA::MessagingServer ....   17/0017  1.0000  Oracle Communications Messaging Server
 MTA::Notes ..............    5/0007  0.7143  Lotus Notes
 MTA::OpenSMTPD ..........    6/0016  0.3750  OpenSMTPD
-MTA::Postfix ............  123/0123  1.0000  Postfix
-MTA::Sendmail ...........  208/0211  0.9858  V8Sendmail: /usr/sbin/sendmail
+MTA::Postfix ............  129/0129  1.0000  Postfix
+MTA::Sendmail ...........  209/0212  0.9858  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    5/0005  1.0000  WebSense SurfControl
 MTA::V5sendmail .........    0/0148  0.0000  Sendmail version 5
 MTA::X1 .................    0/0006  0.0000  Unknown MTA #1
@@ -43,7 +43,7 @@ MSP::US::Verizon ........    4/0004  1.0000  Verizon Wireless: http://www.verizo
 MSP::US::Yahoo ..........    0/0006  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    7/0022  0.3182  Abuse Feedback Reporting Format
-RFC3464 .................  108/0118  0.9153  Fallback Module for MTAs
+RFC3464 .................  109/0119  0.9160  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X+nails  947/1213  0.7807
- Sisimai(bounceHammer 4)  1213/1213  1.0000
+ bounceHammer 2.7.X+nails  956/1222  0.7823
+ Sisimai(bounceHammer 4)  1222/1222  1.0000
