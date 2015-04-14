@@ -12,8 +12,10 @@ sub match {
         |client[ ]host[ ]rejected:[ ]may[ ]not[ ]be[ ]mail[ ]exchanger
         |confirm[ ]this[ ]mail[ ]server
         |connection[ ](?:
-            refused[ ]by
+            dropped
+           |refused[ ]by
            |reset[ ]by[ ]peer
+           |was[ ]dropped[ ]by[ ]remote[ ]host
            )
         |hosts[ ]with[ ]dynamic[ ]ip
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
