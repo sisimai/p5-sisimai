@@ -14,6 +14,7 @@ sub match {
         |maximum[ ]forwarding[ ]loop[ ]count[ ]exceeded
         |name[ ]service[ ]error[ ]for
         |too[ ]many[ ]hops
+        |unrouteable[ ]mail[ ]domain
         )
     }ix;
 
