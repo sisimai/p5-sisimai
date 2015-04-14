@@ -40,6 +40,7 @@ sub match {
                 )
             |[ ].+[ ]in[ ]name[ ]directory
             )
+        |non[- ]?existent[ ]user
         |rcpt[ ][<].+[>][ ]does[ ]not[ ]exist
         |recipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in

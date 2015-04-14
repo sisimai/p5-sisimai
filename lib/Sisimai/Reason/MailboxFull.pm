@@ -14,6 +14,7 @@ sub match {
             )
         |delivery[ ]failed:[ ]over[ ]quota
         |disc[ ]quota[ ]exceeded
+        |does[ ]not[ ]have[ ]enough[ ]space
         |exceeded[ ]storage[ ]allocation
         |is[ ]over[ ]quota[ ]temporarily
         |mail[ ](?:
