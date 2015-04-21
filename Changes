@@ -1,5 +1,13 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.21  Tue, 21 Apr 2015 14:20:59 +0900 (JST)
+    - Update regular expressions of error message pattern at Sisimai::Reason::
+      NoSpam, Suspend, Blocked, UserUnknown, Expired, NetworkError, MailboxFull
+      and MesgTooBig.
+    - Fix bug for setting the value of SMTP command at Sisimai::Data.
+    - Update regular expression of "expired" in Sisimai::MTA::Exim.
+    - Add three sample emails for "make test" in eg/ directory.
+
 4.1.20  Thu,  9 Apr 2015 14:20:59 +0900 (JST)
     - Update regular expressions of error message pattern at SystemError.pm, 
       MesgTooBig.pm and NoSpam.pm in Sisimai/Reason.
