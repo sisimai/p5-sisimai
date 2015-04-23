@@ -24,6 +24,7 @@ my $ReturnValue = {
     '10' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
     '11' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
     '12' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/opt-out/ },
+    '13' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
 };
 
 use_ok $PackageName;
@@ -40,7 +41,7 @@ MAKE_TEST: {
     isa_ok $PackageName->headerlist, 'ARRAY';
 
     is $PackageName->scan, undef, '->scan';
-    is $PackageName->is_arf( 'multipart/report; report-type=feedback-report;'), 1;
+    is $PackageName->is_arf( { 'content-type' => 'multipart/report; report-type=feedback-report;' } ), 1;
 
     use Sisimai::Data;
     use Sisimai::Mail;

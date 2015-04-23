@@ -325,7 +325,7 @@ sub rewrite {
         # 3. Sisimai::MSP::*
         # 4. Sisimai::RFC3464
         #
-        if( Sisimai::ARF->is_arf( $mailheader->{'content-type'} ) ) {
+        if( Sisimai::ARF->is_arf( $mailheader ) ) {
             # Feedback Loop message
             $scannedset = Sisimai::ARF->scan( $mailheader, $bodystring );
             last(SCANNER) if $scannedset;
