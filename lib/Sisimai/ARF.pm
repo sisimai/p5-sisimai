@@ -45,7 +45,9 @@ sub is_arf {
     my $class = shift;
     my $argvs = shift || return 0;
 
-    return 1 if $argvs =~ $RxARF->{'content-type'};
+    return 1 if $argvs->{'content-type'} =~ $RxARF->{'content-type'};
+    # Microsoft (Hotmail, MSN, Live, Outlook) uses its own report format.
+    return 1 if $argvs->{'content-type'} =~ 'multipart/mixed' && $argvs->{'from'} eq 'staff@hotmail.com' && $argvs->{'subject'} =~ 'complaint about message from';
     return 0;
 }
 
@@ -58,8 +60,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'content-type'} =~ $RxARF->{'content-type'};
-    # return undef unless $mhead->{'from'}    =~ $RxARF->{'from'};
+    return undef unless is_arf( undef, $mhead );
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -115,7 +116,21 @@ sub scan {
         # Read each line between $RxARF->{'begin'} and $RxARF->{'rfc822'}.
         if( ( $e =~ $RxARF->{'rfc822'} ) .. ( $e =~ $RxARF->{'endof'} ) ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+            if( $e =~ m/X-HmXmrOriginalRecipient:\s*(.+)\z/ ) {
+                # Microsoft ARF: original recipient.
+                $dscontents->[ -1 ]->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $recipients++;
+                # The "X-HmXmrOriginalRecipient" header appears only once so
+                # we take this opportunity to hard-code ARF headers missing in
+                # Microsoft's implementation.
+                $arfheaders->{'feedbacktype'} = 'abuse';
+                $arfheaders->{'agent'} = 'Microsoft Junk Mail Reporting Program';
+            
+            } elsif( $e =~ m/\AFrom:\s*(.+)\z/ ) {
+                # Microsoft ARF: original sender.
+                $commondata->{'from'} ||= Sisimai::Address->s3s4( $1 );
+            
+            } elsif( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
@@ -196,12 +211,12 @@ sub scan {
                 # The header is optional and MUST NOT appear more than once.
                 # Source-IP: 192.0.2.45
                 $arfheaders->{'rhost'} = $1;
-
+            
             } elsif( $e =~ m/\AOriginal-Mail-From:\s*(.+)\z/ ) {
                 # the header is optional and MUST NOT appear more than once.
                 # Original-Mail-From: <somespammer@example.net>
                 $commondata->{'from'} ||= Sisimai::Address->s3s4( $1 );
-
+            
             } elsif( $e =~ $RxARF->{'begin'} ) {
                 # This is an email abuse report for an email message with the 
                 #   message-id of 0000-000000000000000000000000000000000@mx 
@@ -236,6 +251,12 @@ sub scan {
             # Append the value of "Original-Mail-From" value as a sender address.
             $rfc822part .= sprintf( "From: %s\n", $commondata->{'from'} );
         }
+    }
+
+    if ( $mhead->{'subject'} =~ /complaint about message from ((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))/ ) {
+        # Microsoft ARF: remote host address.
+        $arfheaders->{'rhost'} = $1;
+        $commondata->{'diagnosis'} = sprintf( "This is a Microsoft email abuse report for an email message received from IP %s on %s", $arfheaders->{'rhost'}, $mhead->{'date'} );
     }
 
     require Sisimai::RFC5322;
