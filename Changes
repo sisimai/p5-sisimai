@@ -1,5 +1,12 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.22  Thu, 28 May 2015 14:20:59 +0900 (JST)
+    - Merged pull request #59 (Support for Microsoft custom ARF format) at 
+      https://github.com/azumakuniyuki/p5-Sisimai/pull/59 . Thanks to jleroy.
+    - Add Time::Piece and Module::Load to ./cpanfile. Thanks to kkdYodoKazahaya
+      at issue #60.
+    - Update Sisimai::ARF for parsing Amazon SES Complaints bounces.
+
 4.1.21  Tue, 21 Apr 2015 14:20:59 +0900 (JST)
     - Update regular expressions of error message pattern at Sisimai::Reason::
       NoSpam, Suspend, Blocked, UserUnknown, Expired, NetworkError, MailboxFull
