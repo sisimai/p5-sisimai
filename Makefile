@@ -5,33 +5,33 @@
 # | |  | | (_| |   <  __/  _| | |  __/
 # |_|  |_|\__,_|_|\_\___|_| |_|_|\___|
 # ---------------------------------------------------------------------------
-SHELL = /bin/sh
-HERE  = $(shell `pwd`)
-TIME  = $(shell date '+%s')
-NAME  = Sisimai
-PERL  = perl
-CPANM = http://xrl.us/cpanm
-WGET  = wget -c
-CURL  = curl -LOk
-CHMOD = chmod
-MKDIR = mkdir -p
-PROVE = prove -Ilib --timer
-MINIL = minil
-LS    = ls -1
-CP    = cp
-RM    = rm -f
-MP    = /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
-GIT   = /usr/bin/git
+SHELL := /bin/sh
+HERE  := $(shell pwd)
+TIME  := $(shell date '+%s')
+NAME  := Sisimai
+PERL  := perl
+CPANM := http://xrl.us/cpanm
+WGET  := wget -c
+CURL  := curl -LOk
+CHMOD := chmod
+MKDIR := mkdir -p
+PROVE := prove -Ilib --timer
+MINIL := minil
+LS    := ls -1
+CP    := cp
+RM    := rm -f
+MP    := /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
+GIT   := /usr/bin/git
 
-EMAIL_PARSER = ./tmp/emparser -fjson
-EMAIL_SAMPLE = ./tmp/sample
-FOR_EMPARSER = ./tmp/data
-FOR_MAKETEST = ./eg/maildir-as-a-sample/new
-MAILBOX_FILE = ./eg/mbox-as-a-sample
-MTAMODULEDIR = ./lib/$(NAME)/MTA
-MSPMODULEDIR = ./lib/$(NAME)/MSP
-ACCURACYLIST = ./ANALYSIS-ACCURACY
-TABLE_LENGTH = 24
+EMAIL_PARSER := ./tmp/emparser -fjson
+EMAIL_SAMPLE := ./tmp/sample
+FOR_EMPARSER := ./tmp/data
+FOR_MAKETEST := ./eg/maildir-as-a-sample/new
+MAILBOX_FILE := ./eg/mbox-as-a-sample
+MTAMODULEDIR := ./lib/$(NAME)/MTA
+MSPMODULEDIR := ./lib/$(NAME)/MSP
+ACCURACYLIST := ./ANALYSIS-ACCURACY
+TABLE_LENGTH := 24
 
 .PHONY: clean
 test: user-test author-test
