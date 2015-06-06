@@ -157,6 +157,34 @@ The following commercial MTA modules are included in Sisimai by default.
 
 上記の商用MTAモジュールはSisimaiに最初から含まれています。
 
+Bounce Reason List | バウンス理由の一覧
+----------------------------------------
+Sisimai can detect the following 20 bounce reasons.
+
+| Reason         | Description
+|----------------|----------------------------------------|----------------------------------|
+| Blocked        | Blocked due to client IP address       | IPアドレスによる拒否             |
+| ContentError   | Invalid format email                   | 不正な形式のメール               |
+| ExceedLimit    | Message size exceeded the limit(5.2.3) | メールサイズの超過               |
+| Expired        | Delivery time expired                  | 配送時間切れ                     |
+| Filtered       | Rejected after DATA command            | DATAコマンド以降で拒否された     |
+| HostUnknown    | Unknown destination host name          | 宛先ホスト名が存在しない         |
+| MailboxFull    | Recipient's mailbox is full            | メールボックスが一杯             |
+| MailerError    | Mailer program error                   | メールプログラムのエラー         |
+| MesgTooBig     | Message size is too big(5.3.4)         | メールが大き過ぎる               |
+| NetworkError   | Network error: DNS or routing          | DNS等ネットワーク関係のエラー    |
+| NoSpam         | Detected a message as spam             | メールはスパムとして判定された   |
+| NotAccept      | Destinaion does not accept any message | 宛先ホストはメールを受けとらない |
+| OnHold         | Sisimai could not decide the reason    | エラー理由が明確に判定できず     |
+| Rejected       | Rejected due to envelope from address  | エンベロープFromで拒否された     |
+| RelayingDenied | Relay access denied                    | リレーの拒否                     |
+| SecurityError  | Virus detected or authentication error | ウィルスの検出または認証失敗     |
+| Suspend        | Recipient's account is suspended       | 宛先アカウントは一時的に停止中   |
+| SystemError    | Some error on the destination host     | 宛先サーバでのOSレベルのエラー   |
+| SystemFull     | Disk full on the destination host      | 宛先サーバのディスクが一杯       |
+| UserUnknown    | Recipient's address does not exist     | 宛先メールアドレスは存在しない   |
+
+Sisimaiは上記のエラー20種を検出出来ます。
 
 REPOSITORY | リポジトリ
 -----------------------
