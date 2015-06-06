@@ -96,7 +96,7 @@ version 4 (Sisimai).
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
 | Classification based on recipient domain       | Available     | N/A          |
 | Output format of parsed data                   | YAML,JSON,CSV | JSON only(4) |
-| The speed of parsing email(1048 files)         | 5.00s         | 3.73s        |
+| The speed of parsing email(1484 files)         | 6.15s         | 4.40s        |
 | Easy to install                                | No            | Yes          |
 | Install using cpan or cpanm command            | N/A           | OK           |
 | Dependencies                                   | 24 modules    | 2 modules    |
@@ -121,7 +121,7 @@ version 4 (Sisimai).
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
 | 宛先ドメインによる分類項目                     | あり          | 無し         |
 | 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ(4)  |
-| メール解析の速度(1048通)                       | 5.00秒        | 3.73秒       |
+| メール解析の速度(1484通)                       | 6.15秒        | 4.40秒       |
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽     |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
 | 依存モジュール数                               | 24モジュール  | 2モジュール  |
