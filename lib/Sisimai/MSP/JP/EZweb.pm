@@ -47,7 +47,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.11' }
+sub version     { '4.0.12' }
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -229,7 +229,7 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        if( exists $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
+        if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by EZweb)
             # Filtered recipient returns message that include 'X-SPASIGN' header
             $e->{'reason'} = 'filtered';

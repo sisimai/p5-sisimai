@@ -31,7 +31,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.12' }
+sub version     { '4.0.13' }
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
 
@@ -149,7 +149,7 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        if( exists $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
+        if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by KDDI)
             # Filtered recipient returns message that include 'X-SPASIGN' header
             $e->{'reason'} = 'filtered';
