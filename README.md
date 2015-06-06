@@ -161,7 +161,7 @@ Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
 Sisimai can detect the following 20 bounce reasons.
 
-| Reason         | Description
+| Reason(理由)   | Description                            | 理由の説明                       |
 |----------------|----------------------------------------|----------------------------------|
 | Blocked        | Blocked due to client IP address       | IPアドレスによる拒否             |
 | ContentError   | Invalid format email                   | 不正な形式のメール               |
