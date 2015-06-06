@@ -18,8 +18,51 @@ Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 
 my $DefaultMTA = Sisimai::MTA->index;
 my $DefaultMSP = Sisimai::MSP->index;
+my @HeaderList = @{ __PACKAGE__->makeheaders };
 
 sub ENDOFEMAIL { '__END_OF_EMAIL_MESSAGE__' };
+
+sub makeheaders {
+    # @Description  Make email header list
+    # @Param <none> None
+    # @Return       (Ref->Array) Header list to be parsed
+    my $class = shift;
+
+    # Load email headers from each MTA,MSP module
+    my @mtaclasses = map { 'Sisimai::MTA::'.$_ } @$DefaultMTA;
+    my @mspclasses = map { 'Sisimai::MSP::'.$_ } @$DefaultMSP;
+    my $headerlist = [
+        'from', 'to', 'date', 'subject', 'content-type', 'reply-to',
+        'message-id', 'received'
+    ];
+
+    MTA_MODULES: for my $e ( @mtaclasses ) {
+        # Load MTA modules saved in lib/Sisimai/MTA directory
+        eval { Module::Load::load $e };
+        next if $@;
+
+        for my $v ( @{ $e->headerlist } ) {
+            # Get header name which required each MTA module
+            my $q = lc $v;
+            next if grep { $q eq $_ } @$headerlist;
+            push @$headerlist, $q;
+        }
+    }
+
+    MSP_MODULES: for my $e ( @mspclasses ) {
+        # Load MSP modules saved in lib/Sisimai/MSP directory
+        eval { Module::Load::load $e };
+        next if $@;
+
+        for my $v ( @{ $e->headerlist } ) {
+            # Get header name which required each MSP module
+            my $q = lc $v;
+            next if grep { $q eq $_ } @$headerlist;
+            push @$headerlist, $q;
+        }
+    }
+    return $headerlist;
+}
 
 sub new {
     # @Description  Constructor of Sisimai::Message
@@ -122,42 +165,12 @@ sub resolve {
 
         CONVERT_HEADER: {
             # 2. Convert email headers from text to hash reference
-            my @mtaclasses = map { 'Sisimai::MTA::'.$_ } @mtamodules;
-            my @mspclasses = map { 'Sisimai::MSP::'.$_ } @mspmodules;
             my $currheader = '';
-            my @headerlist = ( 
-                'From', 'To', 'Date', 'Subject', 'Content-Type', 'Reply-To',
-                'Message-Id', 'Received'
-            );
             my @multiheads = ( 'Received' );
             my @ignorelist = ( 'DKIM-Signature' );
 
-            map { $processing->{'header'}->{ lc $_ } = undef } @headerlist;
+            map { $processing->{'header'}->{ $_ } = undef } @HeaderList;
             map { $processing->{'header'}->{ lc $_ } = [] } @multiheads;
-
-            MTA_MODULES: for my $e ( @mtaclasses ) {
-                # Load MTA modules saved in lib/Sisimai/MTA directory
-                eval { Module::Load::load $e };
-                next if $@;
-
-                for my $v ( @{ $e->headerlist } ) {
-                    # Get header name which required each MTA module
-                    next if grep { $v eq $_ } @headerlist;
-                    push @headerlist, $v;
-                }
-            }
-
-            MSP_MODULES: for my $e ( @mspclasses ) {
-                # Load MSP modules saved in lib/Sisimai/MSP directory
-                eval { Module::Load::load $e };
-                next if $@;
-
-                for my $v ( @{ $e->headerlist } ) {
-                    # Get header name which required each MSP module
-                    next if grep { $v eq $_ } @headerlist;
-                    push @headerlist, $v;
-                }
-            }
 
             SPLIT_HEADERS: for my $e ( split( "\n", $mailheader ) ) {
 
@@ -167,7 +180,7 @@ sub resolve {
                     my $rhs = $2;
 
                     $currheader = lc $lhs;
-                    next unless grep { $currheader eq lc $_ } @headerlist;
+                    next unless grep { $currheader eq $_ } @HeaderList;
 
                     if( grep { $currheader eq lc $_ } @multiheads ) {
                         # Such as 'Received' header, there are multiple headers
