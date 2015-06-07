@@ -54,6 +54,7 @@ sub match {
             |does[ ]not[ ]exist(?:[ ]on[ ]this[ ]system)?
             |is[ ]not[ ]local
             |not[ ]found
+            |unknown
             )
         |requested[ ]action[ ]not[ ]taken:[ ]mailbox[ ]unavailable
         |said:[ ]550[-[ ]]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]
