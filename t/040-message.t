@@ -5,7 +5,7 @@ use Sisimai::Message;
 
 my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
-    'class' => [ 'new', 'resolve', 'rewrite', 'ENDOFEMAIL' ],
+    'class' => [ 'new', 'makeheaders', 'resolve', 'rewrite', 'ENDOFEMAIL' ],
     'object' => [ 'from', 'header', 'ds', 'rfc822' ],
 };
 my $SampleEmail = './eg/mbox-as-a-sample';
