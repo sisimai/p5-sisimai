@@ -19,7 +19,7 @@ my $RxRFC = {
     }xi,
 };
 
-sub version     { '4.0.10' };
+sub version     { '4.0.11' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -93,7 +93,7 @@ sub scan {
             # Before "message/rfc822"
             next unless ( $e =~ $RxRFC->{'begin'} ) .. ( $e =~ $RxRFC->{'rfc822'} );
             next unless length $e;
-  
+
             $v = $dscontents->[ -1 ];
             if( $e =~ m/\A(?:[Ff]inal|[Oo]riginal)-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                 # 2.3.2 Final-Recipient field
@@ -213,6 +213,11 @@ sub scan {
                     #           "Diagnostic-Code" ":" diagnostic-type ";" *text
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
+
+                } elsif( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+)\z/ ) {
+                    # No value of "diagnostic-type"
+                    # Diagnostic-Code: 554 ...
+                    $v->{'diagnosis'} = $1;
 
                 } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
