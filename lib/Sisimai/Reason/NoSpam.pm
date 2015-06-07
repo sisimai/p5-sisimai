@@ -37,6 +37,7 @@ sub match {
             )
         |our[ ]email[ ]server[ ]thinks[ ]this[ ]email[ ]is[ ]spam
         |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
+        |our[ ]system[ ]has[ ]detected[ ]that[ ]this[ ]message[ ]is
         |probable[ ]spam
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
