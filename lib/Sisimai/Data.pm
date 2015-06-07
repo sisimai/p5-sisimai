@@ -198,26 +198,29 @@ sub make {
 
         TIMESTAMP: {
             # Convert from a time stamp or a date string to a machine time.
-            my $v = $e->{'date'} || '';
+            my $datestring = undef;
+            my $zoneoffset = 0;
+            my @datevalues = ();
 
-            unless( $v ) {
-                # Date information did not exist in message/delivery-status part,...
-                for my $f ( @{ Sisimai::MTA->RFC822HEADERS('date') } ) {
-                    # Get the value of Date header or other date related header.
-                    next unless $rfc822data->{ lc $f };
-                    $v = $rfc822data->{ lc $f };
-                    last;
-                }
+            push @datevalues, $e->{'date'} if $e->{'date'};
 
-                unless( $v ) {
-                    # Set "date" getting from the value of "Date" in the bounce
-                    # message
-                    $v= $messageobj->{'header'}->{'date'}; 
-                }
+            # Date information did not exist in message/delivery-status part,...
+            for my $f ( @{ Sisimai::MTA->RFC822HEADERS('date') } ) {
+                # Get the value of Date header or other date related header.
+                next unless $rfc822data->{ lc $f };
+                push @datevalues, $rfc822data->{ lc $f };
             }
 
-            my $datestring = Sisimai::Time->parse( $v );
-            my $zoneoffset = 0;
+            if( scalar( @datevalues ) < 2 ) {
+                # Set "date" getting from the value of "Date" in the bounce message
+                push @datevalues, $messageobj->{'header'}->{'date'}; 
+            }
+
+            while( my $v = shift @datevalues ) {
+                # Parse each date value in the array
+                $datestring = Sisimai::Time->parse( $v );
+                last if $datestring;
+            }
 
             if( $datestring =~ m/\A(.+)\s+([-+]\d{4})\z/ ) {
                 # Wed, 26 Feb 2014 06:05:48 -0500
