@@ -33,6 +33,8 @@ sub match {
             )
         |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]
             virus[ ]or[ ]spam[ ]content
+        |You[ ]have[ ]exceeded[ ]the[ ]the[ ]allowable[ ]number[ ]of[ ]posts[ ]
+            without[ ]solving[ ]a[ ]captcha
         )
     }ix;
 
