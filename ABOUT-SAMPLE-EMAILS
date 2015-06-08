@@ -1,0 +1,20 @@
+
+About sample emails in eg/maildir-as-a-sample/new directory
+
+* arf-14.eml
+https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/FBL-auth.eml
+Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+
+* rfc3464-10.eml
+https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-bounce.eml
+Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+
+* rfc3464-11.eml
+https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/NDR-block.eml
+Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+
+* sendmail-23.eml
+https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-spam.eml
+Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+
+
