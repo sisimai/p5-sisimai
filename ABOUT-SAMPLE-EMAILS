@@ -5,6 +5,14 @@ About sample emails in eg/maildir-as-a-sample/new directory
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/FBL-auth.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
 
+* us-outlook-09.eml
+https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/connection_timed_out.eml
+Copyright (c) 2011 Chew Choon Keat | MIT license
+
+* postfix-18.eml
+https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/relay_failed.eml
+Copyright (c) 2011 Chew Choon Keat | MIT license
+
 * rfc3464-10.eml
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-bounce.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
