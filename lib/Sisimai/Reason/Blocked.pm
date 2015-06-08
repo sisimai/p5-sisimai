@@ -17,6 +17,7 @@ sub match {
            |reset[ ]by[ ]peer
            |was[ ]dropped[ ]by[ ]remote[ ]host
            )
+        |domain[ ].+[ ]mismatches[ ]client[ ]ip
         |hosts[ ]with[ ]dynamic[ ]ip
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
         |no[ ]access[ ]from[ ]mail[ ]server
