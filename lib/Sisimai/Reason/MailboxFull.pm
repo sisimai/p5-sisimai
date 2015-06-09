@@ -33,6 +33,7 @@ sub match {
              delivery[ ]failed:[ ](?:User|Domain)disk[ ]quota[ ]?.*[ ]exceeded
             |over[ ]quota
             )
+        |mailfolder[ ]is[ ]full
         |not[ ]enough[ ]storage[ ]space[ ]in
         |over[ ]the[ ]allowed[ ]quota
         |quota[ ]exceeded
