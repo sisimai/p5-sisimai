@@ -9,7 +9,8 @@ sub match {
     my $argvs = shift // return undef;
     my $regex = qr{(?>
          account[ ]is[ ](?:
-             over[ ]quota
+             exceeding[ ]their[ ]quota
+            |over[ ]quota
             |temporarily[ ]over[ ]quota
             )
         |delivery[ ]failed:[ ]over[ ]quota
@@ -27,6 +28,7 @@ sub match {
             |has[ ]exceeded[ ]its[ ]disk[ ]space[ ]limit
             |is[ ]full
             |over[ ]quota
+            |quota[ ]usage[ ]exceeded
             |size[ ]limit[ ]exceeded
             )
         |maildir[ ](?:
