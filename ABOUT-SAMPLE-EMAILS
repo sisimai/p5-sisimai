@@ -45,3 +45,23 @@ Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
 https://github.com/justingit/dada-mail/blob/master/dada/t/corpus/email_messages/bounce-secureservers.net-mailfolder_is_full.eml
 Copyright (c) 1999 - 2015 Justin Simoni | GPL
 
+* x4-02.eml
+http://www.opensource.apple.com/source/mailman/mailman-132/mailman/tests/bounces/newmailru_01.txt
+Copyright (c) Apple Inc. | ASPL?
+
+* x4-03.eml
+mailman-2.1.15/tests/bounces/qmail_03.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* x4-04.eml
+mailman-2.1.15/tests/bounces/qmail_04.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* x4-05.eml
+mailman-2.1.15/tests/bounces/qmail_05.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* x4-06.eml
+mailman-2.1.15/tests/bounces/qmail_06.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
