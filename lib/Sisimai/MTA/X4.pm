@@ -14,11 +14,21 @@ use warnings;
 #
 # MTA module for qmail clones
 my $RxMTA = {
-    'begin'    => qr{\A(?:
-                     Hi[.][ ]This[ ]is[ ]the[ ]qmail
-                    |Your[ ]mail[ ]message[ ]to[ ]the[ ]following[ ]address
+    'begin'    => qr{\A(?>
+                     He/Her[ ]is[ ]not.+[ ]user
+                    |Su[ ]mensaje[ ]no[ ]pudo[ ]ser[ ]entregado
+                    |This[ ]is[ ]the[ ](?:
+                         machine[ ]generated[ ]message[ ]from[ ]mail[ ]service
+                        |mail[ ]delivery[ ]agent[ ]at
+                        )
+                    |Unfortunately,[ ]your[ ]mail[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]address:
+                    |Your[ ](?:
+                         mail[ ]message[ ]to[ ]the[ ]following[ ]address
+                        |message[ ]to[ ]the[ ]following[ ]addresses
+                        )
+                    |We're[ ]sorry[.]
                     )
-                  }x,
+                  }ix,
     'rfc822'   => qr/\A--- Below this line is a copy of the message[.]\z/,
     'error'    => qr/\ARemote host said:/,
     'sorry'    => qr/\A[Ss]orry[,.][ ]/,
@@ -147,7 +157,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.1' }
+sub version     { '4.0.2' }
 sub description { 'Unknown MTA #4 qmail clones' }
 sub smtpagent   { 'X4' }
 
