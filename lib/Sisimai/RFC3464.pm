@@ -5,8 +5,11 @@ use warnings;
 
 # http://tools.ietf.org/html/rfc3464
 my $RxRFC = {
-    'begin'  => qr{\A(?:
-         Content-Type:[ ]*message/delivery-status
+    'begin'  => qr{\A(?>
+         Content-Type:[ ]*(?:
+              message/delivery-status
+             |message/disposition-notification
+             )
         |The[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
         |This[ ]report[ ]relates[ ]to[ ]your[ ]message
         )
@@ -19,7 +22,7 @@ my $RxRFC = {
     }xi,
 };
 
-sub version     { '4.0.11' };
+sub version     { '4.0.12' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
