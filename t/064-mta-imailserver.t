@@ -61,7 +61,7 @@ MAKE_TEST: {
 
             for my $e ( @{ $p->ds } ) {
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
-                ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
+                ok defined $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 is $e->{'agent'}, 'IMailServer', '->agent = '.$e->{'agent'};
 
                 ok defined $e->{'date'}, '->date = '.$e->{'date'};
