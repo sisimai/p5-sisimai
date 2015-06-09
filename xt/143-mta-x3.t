@@ -1,10 +1,10 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::MTA::X2;
+use Sisimai::MTA::X3;
 
-my $c = 'Sisimai::MTA::X2';
-my $d = './tmp/data/x2';
+my $c = 'Sisimai::MTA::X3';
+my $d = './tmp/data/x3';
 my $h = undef;
 use_ok $c;
 
