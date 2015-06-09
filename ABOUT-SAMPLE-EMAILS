@@ -41,4 +41,7 @@ Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-spam.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
 
+* x4-01.eml
+https://github.com/justingit/dada-mail/blob/master/dada/t/corpus/email_messages/bounce-secureservers.net-mailfolder_is_full.eml
+Copyright (c) 1999 - 2015 Justin Simoni | GPL
 
