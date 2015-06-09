@@ -35,7 +35,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.0.6' }
 sub description { 'IPSWITCH IMail Server' }
 sub smtpagent   { 'IMailServer' }
 sub headerlist  { return [ 'X-Mailer' ] }
@@ -114,6 +114,16 @@ sub scan {
                 }
                 $v->{'diagnosis'} = $1;
                 $v->{'recipient'} = $2;
+                $recipients++;
+
+            } elsif( $e =~ m/\Aundeliverable[ ]+to[ ]+(.+)\z/ ) {
+                # undeliverable to kijitora@example.com
+                if( length $v->{'recipient'} ) {
+                    # There are multiple recipient addresses in the message body.
+                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                    $v = $dscontents->[ -1 ];
+                }
+                $v->{'recipient'} = $1;
                 $recipients++;
             }
         } # End of if: rfc822

@@ -21,6 +21,7 @@ my $RxMTA = {
                          machine[ ]generated[ ]message[ ]from[ ]mail[ ]service
                         |mail[ ]delivery[ ]agent[ ]at
                         )
+                    |Unable[ ]to[ ]deliver[ ]message[ ]to[ ]the[ ]following[ ]address
                     |Unfortunately,[ ]your[ ]mail[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]address:
                     |Your[ ](?:
                          mail[ ]message[ ]to[ ]the[ ]following[ ]address
@@ -29,10 +30,18 @@ my $RxMTA = {
                     |We're[ ]sorry[.]
                     )
                   }ix,
-    'rfc822'   => qr/\A--- Below this line is a copy of the message[.]\z/,
+    'rfc822'   => qr{\A(?:
+                     ---[ ]Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message[.]
+                    |---[ ]Original[ ]message[ ]follows[.]
+                    )
+                  }xi,
     'error'    => qr/\ARemote host said:/,
     'sorry'    => qr/\A[Ss]orry[,.][ ]/,
-    'subject'  => qr/\Afailure notice/,
+    'subject'  => qr{\A(?:
+                      failure[ ]notice
+                     |Permanent[ ]Delivery[ ]Failure
+                     )
+                    }xi,
     'received' => qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+for[ ]+bounce[)]/,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
@@ -157,7 +166,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.2' }
+sub version     { '4.0.3' }
 sub description { 'Unknown MTA #4 qmail clones' }
 sub smtpagent   { 'X4' }
 
