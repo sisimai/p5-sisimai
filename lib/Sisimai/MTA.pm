@@ -93,7 +93,7 @@ sub index {
         'Exchange', 'MessagingServer', 'V5sendmail', 'McAfee', 'Domino', 'Notes',
         'MXLogic', 'MailFoundry', 'IMailServer', 'mFILTER', 'Activehunter',
         'InterScanMSS', 'SurfControl', 'MailMarshalSMTP',
-        'X1', 'X2', 'X3',
+        'X1', 'X2', 'X3', 'X4',
     ];
 
     return $index;
