@@ -5,6 +5,10 @@ About sample emails in eg/maildir-as-a-sample/new directory
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/FBL-auth.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
 
+* exchange-06.eml
+mailman-2.1.15/tests/bounces/groupwise_01.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
 * exim-09.eml
 https://github.com/prasad83/node-bounce-handler/blob/master/eml/13.eml
 Copyright (c) 2014 prasad83 | MIT license
@@ -16,6 +20,10 @@ Copyright (c) 2014 prasad83 | MIT license
 * exim-11.eml
 https://github.com/prasad83/node-bounce-handler/blob/master/eml/44.eml
 Copyright (c) 2014 prasad83 | MIT license
+
+* imailserver-05.eml
+mailman-2.1.15/tests/bounces/smtp32_03.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
 * us-outlook-09.eml
 https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/connection_timed_out.eml
@@ -29,6 +37,10 @@ Copyright (c) 2011 Chew Choon Keat | MIT license
 https://github.com/prasad83/node-bounce-handler/blob/master/eml/testfile.eml
 Copyright (c) 2011 Chew Choon Keat | MIT license
 
+* postfix-20.eml
+mailman-2.1.15/tests/bounces/postfix_05.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
 * rfc3464-10.eml
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-bounce.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
@@ -37,17 +49,37 @@ Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/NDR-block.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
 
+* rfc3464-12.eml
+mailman-2.1.15/tests/bounces/dsn_17.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* rfc3464-13.eml
+mailman-2.1.15/tests/bounces/dsn_08.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* rfc3464-14.eml
+mailman-2.1.15/tests/bounces/dsn_07.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* rfc3464-15.eml
+mailman-2.1.15/tests/bounces/dsn_03.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
 * sendmail-23.eml
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-spam.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+
+* x2-05.eml
+mailman-2.1.15/tests/bounces/yahoo_03.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
 * x4-01.eml
 https://github.com/justingit/dada-mail/blob/master/dada/t/corpus/email_messages/bounce-secureservers.net-mailfolder_is_full.eml
 Copyright (c) 1999 - 2015 Justin Simoni | GPL
 
 * x4-02.eml
-http://www.opensource.apple.com/source/mailman/mailman-132/mailman/tests/bounces/newmailru_01.txt
-Copyright (c) Apple Inc. | ASPL?
+mailman-2.1.15/tests/bounces/newmailru_01.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
 * x4-03.eml
 mailman-2.1.15/tests/bounces/qmail_03.txt
