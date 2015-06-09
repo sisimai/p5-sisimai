@@ -22,7 +22,7 @@ MTA::V5sendmail .........    0/0148  0.0000  Sendmail version 5
 MTA::X1 .................    0/0006  0.0000  Unknown MTA #1
 MTA::X2 .................    0/0018  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0007  0.0000  Unknown MTA #3
-MTA::X4 .................    0/0001  0.0000  Unknown MTA #4 qmail clones
+MTA::X4 .................    0/0017  0.0000  Unknown MTA #4 qmail clones
 MTA::mFILTER ............    6/0006  1.0000  Digital Arts m-FILTER
 MTA::qmail ..............   48/0058  0.8276  qmail
 MSP::DE::EinsUndEins ....    0/0002  0.0000  1&1: http://www.1and1.de
@@ -46,5 +46,5 @@ MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    8/0031  0.2581  Abuse Feedback Reporting Format
 RFC3464 .................  112/0126  0.8889  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X+nails 1020/1300  0.7846
- Sisimai(bounceHammer 4)  1300/1300  1.0000
+ bounceHammer 2.7.X+nails 1020/1316  0.7751
+ Sisimai(bounceHammer 4)  1316/1316  1.0000
