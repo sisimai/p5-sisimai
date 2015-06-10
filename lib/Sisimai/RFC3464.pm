@@ -20,9 +20,14 @@ my $RxRFC = {
         |Return-Path:[ ]*[<].+[>]\z
         )\z
     }xi,
+    'error'  => qr{\A(?:
+         [45]\d\d\s+
+        |[<][^@]+[@][^@]+[>]:?\s+
+        )
+    }xi,
 };
 
-sub version     { '4.0.13' };
+sub version     { '4.0.14' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -272,12 +277,11 @@ sub scan {
                     } else {
                         # Get error message
                         next if $e =~ m/\A[ -]+/;
+                        next unless $e =~ $RxRFC->{'error'};
 
-                        if( $e =~ m/\A[45]\d\d\s+/ || $e =~ m/\A[<].+[@].+[>]\s+/ ) {
-                            # 500 User Unknown
-                            # <kijitora@example.jp> Unknown
-                            $v->{'alterrors'} .= ' '.$e;
-                        }
+                        # 500 User Unknown
+                        # <kijitora@example.jp> Unknown
+                        $v->{'alterrors'} .= ' '.$e;
                     }
                 }
             }
