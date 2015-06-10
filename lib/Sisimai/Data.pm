@@ -209,11 +209,14 @@ sub make {
                 last if $datestring;
             }
 
-            if( $datestring =~ m/\A(.+)\s+([-+]\d{4})\z/ ) {
-                # Wed, 26 Feb 2014 06:05:48 -0500
-                $datestring = $1;
-                $zoneoffset = Sisimai::Time->tz2second($2);
-                $p->{'timezoneoffset'} = $2;
+            if( defined $datestring ) {
+                # Get the value of timezone offset from $datestring
+                if( $datestring =~ m/\A(.+)\s+([-+]\d{4})\z/ ) {
+                    # Wed, 26 Feb 2014 06:05:48 -0500
+                    $datestring = $1;
+                    $zoneoffset = Sisimai::Time->tz2second($2);
+                    $p->{'timezoneoffset'} = $2;
+                }
             }
 
             eval {
