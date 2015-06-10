@@ -125,7 +125,8 @@ sub resolve {
     push @mspmodules, @$DefaultMSP;
 
     EMAIL_PROCESSING: {
-        my $endofheads = 0;
+        my $endofheads = 0;     # Flag: The end of the email header
+        my $getstarted = 0;     # Flag: The beginning of the email header
         my $first5byte = '';
         my $mailheader = '';
         my $bodystring = '';
@@ -147,11 +148,12 @@ sub resolve {
                 # appeare yet.
                 if( length $e == 0 ) {
                     # Blank line, it is a boundary of headers and a body part
-                    $endofheads = 1;
+                    $endofheads = 1 if $getstarted;
 
                 } else {
                     # The header part of the email
                     $mailheader .= $e."\n";
+                    $getstarted  = 1;
                 }
             }
         }
