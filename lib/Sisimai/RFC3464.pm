@@ -28,7 +28,9 @@ my $RxRFC = {
     }xi,
 };
 
-sub version     { '4.0.15' };
+my $RxCmd = qr{\b(RCPT|MAIL|DATA)[ ]+command\b};
+
+sub version     { '4.0.16' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -104,7 +106,8 @@ sub scan {
             next unless length $e;
 
             $v = $dscontents->[ -1 ];
-            if( $e =~ m/\A(?:[Ff]inal|[Oo]riginal)-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
+            if( $e =~ m/\A(?:[Ff]inal|[Oo]riginal)-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
+                $e =~ m/\A(?:[Ff]inal|[Oo]riginal)-[Rr]ecipient:[ ]*([^ ]+)\z/ ) {
                 # 2.3.2 Final-Recipient field
                 #   The Final-Recipient field indicates the recipient for which this set
                 #   of per-recipient fields applies.  This field MUST be present in each
@@ -321,6 +324,7 @@ sub scan {
             $e->{'command'}   = '';
         }
         $e->{'status'} ||= Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $RxCmd;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
