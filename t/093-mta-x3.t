@@ -60,9 +60,9 @@ MAKE_TEST: {
 
             for my $e ( @{ $p->ds } ) {
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
-                ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 is $e->{'agent'}, 'X3', '->agent = '.$e->{'agent'};
 
+                ok defined $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok defined $e->{'date'}, '->date = '.$e->{'date'};
                 ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
