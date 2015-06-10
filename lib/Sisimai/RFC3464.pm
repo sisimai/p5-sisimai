@@ -29,8 +29,19 @@ my $RxRFC = {
 };
 
 my $RxCmd = qr{\b(RCPT|MAIL|DATA)[ ]+command\b};
+my $RxEMF = qr{\b(?:postmaster|mailer-daemon|root)[@]}i;    # From:
+my $RxEMR = qr{(?:[<][>]|mailer-daemon)}i;                  # Return-Path:
+my $RxEMS = qr{(?:
+     delivery[ ]failure
+    |failure[ ]notice
+    |mail[ ]error
+    |non[-]delivery
+    |returned[ ]mail
+    |undeliverable[ ]mail
+    )
+}xi;
 
-sub version     { '4.0.16' };
+sub version     { '4.0.17' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -42,6 +53,7 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
     return undef unless keys %$mhead;
     return undef unless ref $mbody eq 'SCALAR';
@@ -295,6 +307,106 @@ sub scan {
         # Save the current line for the next loop
         $p = $e;
         $e = '';
+    }
+
+    BODY_PARSER_FOR_FALLBACK: {
+        # Fallback, parse entire message body
+
+        unless( $recipients ) {
+            # Failed to get a recipient address at code above
+            $match = 1 if $mhead->{'from'}        =~ $RxEMF;
+            $match = 1 if $mhead->{'subject'}     =~ $RxEMS;
+            if( defined $mhead->{'return-path'} ) {
+                # Check the value of Return-Path of the message
+                $match = 1 if $mhead->{'return-path'} =~ $RxEMR;
+            }
+            last unless $match;
+
+            my $b = $dscontents->[ -1 ];
+
+            my $RxSkip = qr{(?>
+                 \A[-]+=
+                |\A\\\*
+                |\A[\s\t]+\z
+                |\A\s*--
+                |\AHi[ ][!]
+                |Content-(?:Description|Disposition|Transfer-Encoding|Type):[ ]
+                |(?:name|charset)=
+                |--\z
+                |:[ ]--------
+                )
+            }xi;
+
+            my $RxEnd  = qr{(?:
+                  \AContent-Type:[ ]message/delivery-status
+                 |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
+                 |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
+                 |\AReceived:\s*
+                 |\AReturn-Path:\s*
+                 |\AA[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
+                 |Attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
+                 |Below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
+                 |Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
+                 |Message[ ]text[ ]follows:[ ]
+                 |Original[ ]message[ ]follows
+                 |Unsent[ ]Message[ ]below
+                 |Your[ ]message[ ]reads[ ][(]in[ ]part[)]:
+                )
+            }xi;
+
+            my $RxAddr = qr{(?:
+                     \A\s*
+                    |\A["].+["]\s*
+                    |\ARecipient:\s*
+                    |addressed[ ]to[ ]
+                    |delivered[ ]to[ ]+
+                    |delivery[ ]failed:[ ]
+                    |Error-for:[ ]+
+                    |Failed[ ]Recipient:[ ]
+                    |generated[ ]from[ ]
+                    |Intended[ ]recipient:[ ]
+                    |Mailbox[ ]is[ ]full:[ ]
+                    |RCPT[ ]To:
+                    |Unknown[ ]User:[ ]
+                    |undeliverable[ ]to[ ]
+                    |Undeliverable[ ]Address:[ ]*
+                    |You[ ]sent[ ]mail[ ]to[ ]
+                    |Your[ ]message[ ]to[ ]
+                    )
+                [<]?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?
+            }xi;
+
+            for my $e ( split( "\n", $$mbody ) ) {
+                # Get the recipient's email address and error messages.
+                last if $e =~ $RxRFC->{'endof'};
+                last if $e =~ $RxRFC->{'rfc822'};
+                last if $e =~ $RxEnd;
+
+                next unless length $e;
+                next if $e =~ $RxSkip;
+
+                if( $e =~ $RxAddr ) {
+                    # May be an email address
+                    my $x = $b->{'recipienet'} || '';
+                    my $y = Sisimai::Address->s3s4( $1 );
+
+                    if( length $x && $x ne $y ) {
+                        # There are multiple recipient addresses in the message body.
+                        push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+                        $b = $dscontents->[ -1 ];
+                    }
+                    $b->{'recipient'} = $y;
+                    $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
+                    $recipients++;
+
+                } elsif( $e =~ m/[(]expanded[ ]from:[ ]([^@]+[@][^@]+)[)]/ ) {
+                    # (expanded from: neko@example.jp)
+                    $b->{'alias'} = Sisimai::Address->s3s4( $1 );
+
+                }
+                $b->{'diagnosis'} .= ' '.$e;
+            }
+        }
     }
 
     return undef unless $recipients;
