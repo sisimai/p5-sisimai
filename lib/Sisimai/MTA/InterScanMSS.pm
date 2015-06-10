@@ -20,7 +20,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
 sub smtpagent   { 'InterScanMSS' }
 
@@ -102,14 +102,15 @@ sub scan {
                 $v->{'recipient'} = $r;
                 $recipients = scalar @$dscontents;
 
-                if( $e =~ m/\A.+[<>]{3}\s+([A-Z]{4})\s/ ) {
-                    # Sent <<< RCPT TO:<kijitora@example.co.jp>
-                    $v->{'command'} = $1
+            }
 
-                } elsif( $e =~ m/\A.+[<>]{3}\s+(\d{3}\s+.+)\z/ ) {
-                    # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
-                    $v->{'diagnosis'} = $1;
-                }
+            if( $e =~ m/\ASent\s+[<]{3}\s+([A-Z]{4})\s/ ) {
+                # Sent <<< RCPT TO:<kijitora@example.co.jp>
+                $v->{'command'} = $1
+
+            } elsif( $e =~ m/\AReceived\s+[>]{3}\s+(\d{3}\s+.+)\z/ ) {
+                # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
+                $v->{'diagnosis'} = $1;
             }
         } # End of if: rfc822
 
