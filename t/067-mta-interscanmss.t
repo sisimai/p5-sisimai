@@ -14,6 +14,7 @@ my $MethodNames = {
 };
 my $ReturnValue = {
     '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+    '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
 };
 
 use_ok $PackageName;

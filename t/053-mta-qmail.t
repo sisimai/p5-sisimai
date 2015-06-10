@@ -21,6 +21,7 @@ my $ReturnValue = {
     '06' => { 'status' => qr/\A4[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
     '07' => { 'status' => qr/\A4[.]4[.]1\z/, 'reason' => qr/networkerror/ },
     '08' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
+    '09' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/undefined/ },
 };
 
 use_ok $PackageName;
@@ -64,9 +65,9 @@ MAKE_TEST: {
 
             for my $e ( @{ $p->ds } ) {
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
-                ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 is $e->{'agent'}, 'qmail', '->agent = '.$e->{'agent'};
 
+                ok defined $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok defined $e->{'date'}, '->date = '.$e->{'date'};
                 ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
