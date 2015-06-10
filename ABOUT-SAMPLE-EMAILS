@@ -69,6 +69,30 @@ Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 mailman-2.1.15/tests/bounces/dsn_03.txt
 Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
+* rfc3464-16.eml
+mailman-2.1.15/tests/bounces/bounce_02.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* rfc3464-17.eml
+mailman-2.1.15/tests/bounces/bounce_03.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* rfc3464-18.eml
+mailman-2.1.15/tests/bounces/dsn_14.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* rfc3464-19.eml
+mailman-2.1.15/tests/bounces/microsoft_03.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* rfc3464-20.eml
+mailman-2.1.15/tests/bounces/postfix_03.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* rfc3464-21.eml
+mailman-2.1.15/tests/bounces/sendmail_01.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
 * sendmail-23.eml
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-spam.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
