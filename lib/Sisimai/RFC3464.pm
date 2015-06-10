@@ -12,6 +12,7 @@ my $RxRFC = {
              )
         |The[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
         |This[ ]report[ ]relates[ ]to[ ]your[ ]message
+        |Your[ ]message[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
         )
     }xi,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
@@ -27,7 +28,7 @@ my $RxRFC = {
     }xi,
 };
 
-sub version     { '4.0.14' };
+sub version     { '4.0.15' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
