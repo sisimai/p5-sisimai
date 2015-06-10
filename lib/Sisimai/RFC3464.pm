@@ -22,7 +22,7 @@ my $RxRFC = {
     }xi,
 };
 
-sub version     { '4.0.12' };
+sub version     { '4.0.13' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -272,8 +272,12 @@ sub scan {
                     } else {
                         # Get error message
                         next if $e =~ m/\A[ -]+/;
-                        next unless $e =~ m/\A[45]\d\d\s+/;
-                        $v->{'alterrors'} .= ' '.$e;
+
+                        if( $e =~ m/\A[45]\d\d\s+/ || $e =~ m/\A[<].+[@].+[>]\s+/ ) {
+                            # 500 User Unknown
+                            # <kijitora@example.jp> Unknown
+                            $v->{'alterrors'} .= ' '.$e;
+                        }
                     }
                 }
             }
