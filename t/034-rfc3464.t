@@ -26,8 +26,16 @@ my $ReturnValue = {
     '13' => { 'status' => qr/\A4[.]0[.]0\z/, 'reason' => qr/mailererror/, 'agent' => qr/RFC3464/ },
     '14' => { 'status' => qr/\A4[.]4[.]1\z/, 'reason' => qr/expired/, 'agent' => qr/RFC3464/ },
     '15' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mesgtoobig/, 'agent' => qr/RFC3464/ },
+    '16' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/, 'agent' => qr/RFC3464/ },
+    '17' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/, 'agent' => qr/RFC3464/ },
+    '18' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/, 'agent' => qr/RFC3464/ },
+    '19' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/undefined/, 'agent' => qr/RFC3464/ },
+    '20' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailererror/, 'agent' => qr/RFC3464/ },
+    '21' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/networkerror/, 'agent' => qr/RFC3464/ },
+    '22' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/hostunknown/, 'agent' => qr/RFC3464/ },
+    '23' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/, 'agent' => qr/RFC3464/ },
 };
-my $RxAgentName = qr/\A(?:RFC3464|dovecot|mail[.]local|procmail|maildrop|vpopmail|vmailmgr)\z/;
+my $RxAgentName = qr/\A(?:RFC3464|dovecot|mail[.]local|procmail|maildrop|vpopmail|vmailmgr)/;
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
