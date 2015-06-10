@@ -25,9 +25,9 @@ Copyright (c) 2014 prasad83 | MIT license
 mailman-2.1.15/tests/bounces/smtp32_03.txt
 Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
-* us-outlook-09.eml
-https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/connection_timed_out.eml
-Copyright (c) 2011 Chew Choon Keat | MIT license
+* interscanmss-02.eml
+mailman-2.1.15/tests/bounces/simple_15.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
 * postfix-18.eml
 https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/relay_failed.eml
@@ -39,6 +39,10 @@ Copyright (c) 2011 Chew Choon Keat | MIT license
 
 * postfix-20.eml
 mailman-2.1.15/tests/bounces/postfix_05.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* qmail-09.eml
+mailman-2.1.15/tests/bounces/qmail_01.txt
 Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
 * rfc3464-10.eml
@@ -68,6 +72,14 @@ Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 * sendmail-23.eml
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-spam.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+
+* us-google-12.eml
+mailman-2.1.15/tests/bounces/simple_17.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
+* us-outlook-09.eml
+https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/connection_timed_out.eml
+Copyright (c) 2011 Chew Choon Keat | MIT license
 
 * x2-05.eml
 mailman-2.1.15/tests/bounces/yahoo_03.txt
