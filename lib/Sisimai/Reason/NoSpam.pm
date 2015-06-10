@@ -12,6 +12,7 @@ sub match {
          ["]The[ ]mail[ ]server[ ]detected[ ]your[ ]message[ ]as[ ]spam[ ]and[ ]
             has[ ]prevented[ ]delivery[.]["]    # CPanel/Exim with SA rejections on
         |appears[ ]to[ ]be[ ]unsolicited
+        |Blacklisted[ ]URL[ ]in[ ]message
         |blocked[ ]by[ ](?:
              policy:[ ]no[ ]spam[ ]please
             |spamAssassin                   # rejected by SpamAssassin

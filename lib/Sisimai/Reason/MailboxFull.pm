@@ -17,7 +17,9 @@ sub match {
         |disc[ ]quota[ ]exceeded
         |does[ ]not[ ]have[ ]enough[ ]space
         |exceeded[ ]storage[ ]allocation
+        |exceeding[ ]its[ ]mailbox[ ]quota
         |is[ ]over[ ]quota[ ]temporarily
+        |is[ ]over[ ]disk[ ]quota
         |mail[ ](?:
              file[ ]size[ ]exceeds[ ]the[ ]maximum[ ]size[ ]allowed[ ]for[ ]mail[ ]delivery
             |quota[ ]exceeded

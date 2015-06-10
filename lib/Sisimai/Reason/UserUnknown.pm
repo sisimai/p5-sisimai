@@ -14,6 +14,7 @@ sub match {
         |address[ ]does[ ]not[ ]exist
         |archived[ ]recipient
         |BAD[-_\s]RECIPIENT
+        |destination[ ]addresses[ ]were[ ]unknown
         |destination[ ]server[ ]rejected[ ]recipients
         |email[ ]address[ ]does[ ]not[ ]exist
         |invalid[ ](?:
@@ -66,7 +67,6 @@ sub match {
             )
         |this[ ]address[ ]no[ ]longer[ ]accepts[ ]mail
         |this[ ]user[ ]doesn[']?t[ ]have[ ]a[ ].+[ ]account
-        |undeliverable[ ]address
         |unknown[ ](?:
              address
             |e[-]?mail[ ]address
