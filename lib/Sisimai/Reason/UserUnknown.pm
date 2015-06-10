@@ -34,6 +34,7 @@ sub match {
              account[ ]by[ ]that[ ]name[ ]here
             |mail[ ]box[ ]available[ ]for[ ]this[ ]user
             |mailbox[ ]found
+            |matches[ ]to[ ]nameserver[ ]query
             |such[ ](?:
                  mailbox
                 |person[ ]at[ ]this[ ]address
@@ -43,6 +44,7 @@ sub match {
             |[ ].+[ ]in[ ]name[ ]directory
             )
         |non[- ]?existent[ ]user
+        |not[ ]a[ ]valid[ ]user[ ]here
         |rcpt[ ][<].+[>][ ]does[ ]not[ ]exist
         |recipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in
@@ -66,6 +68,7 @@ sub match {
             |no[ ]mailbox[ ]here[ ]by[ ]that[ ]name
             )
         |this[ ]address[ ]no[ ]longer[ ]accepts[ ]mail
+        |this[ ]email[ ]address[ ]is[ ]wrong[ ]or[ ]no[ ]longer[ ]valid
         |this[ ]user[ ]doesn[']?t[ ]have[ ]a[ ].+[ ]account
         |unknown[ ](?:
              address
@@ -79,6 +82,7 @@ sub match {
             |.+[ ]does[ ]not[ ]exist
             |missing[ ]home[ ]directory
             |not[ ]found     # 550 User not found. See http://mail.bigmir.net/err/2/
+            |not[ ]known
             |unknown
             )
         |vdeliver:[ ]invalid[ ]or[ ]unknown[ ]virtual[ ]user

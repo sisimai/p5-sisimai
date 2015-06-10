@@ -41,6 +41,7 @@ sub match {
         |not[ ]enough[ ]storage[ ]space[ ]in
         |over[ ]the[ ]allowed[ ]quota
         |quota[ ]exceeded
+        |quota[ ]violation[ ]for
         |recipient[ ](?:
              reached[ ]disk[ ]quota
             |rejected:[ ]mailbox[ ]would[ ]exceed[ ]maximum[ ]allowed[ ]storage

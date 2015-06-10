@@ -15,6 +15,7 @@ sub match {
         |it[ ]has[ ]not[ ]been[ ]collected[ ]after
         |message[ ]expired[ ]after[ ]sitting[ ]in[ ]queue[ ]for
         |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
+        |server[ ]did[ ]not[ ]respond
         |this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long
         |was[ ]not[ ]reachable[ ]within[ ]the[ ]allowed[ ]queue[ ]period
         )
