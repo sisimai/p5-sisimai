@@ -68,6 +68,7 @@ sub match {
         |undeliverable[ ]address
         |unknown[ ](?:
              address
+            |e[-]?mail[ ]address
             |local[- ]part
             |recipient
             |user
