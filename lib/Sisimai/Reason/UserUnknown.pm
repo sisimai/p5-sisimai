@@ -13,6 +13,7 @@ sub match {
         |[<].+[>][ ]not[ ]found
         |address[ ]does[ ]not[ ]exist
         |archived[ ]recipient
+        |BAD[-_\s]RECIPIENT
         |destination[ ]server[ ]rejected[ ]recipients
         |email[ ]address[ ]does[ ]not[ ]exist
         |invalid[ ](?:
