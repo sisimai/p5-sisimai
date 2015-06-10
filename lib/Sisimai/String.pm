@@ -46,6 +46,7 @@ sub sweep {
 
     chomp $argvs;
     $argvs =~ y{ }{}s;
+    $argvs =~ s{\t}{}g;
     $argvs =~ s{\A }{}g;
     $argvs =~ s{ \z}{}g;
     $argvs =~ s{ [-]{2,}.+\z}{};
