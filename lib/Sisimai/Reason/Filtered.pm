@@ -12,6 +12,7 @@ sub match {
             specific[ ]email[ ]addresses    # AOL Phoenix
         |due[ ]to[ ]extended[ ]inactivity[ ]new[ ]mail[ ]is[ ]not[ ]currently[ ]
             being[ ]accepted[ ]for[ ]this[ ]mailbox
+        |has[ ]restricted[ ]SMS[ ]e-mail    # AT&T
         |http://postmaster[.]facebook[.]com/.+refused[ ]due[ ]to[ ]recipient[ ]preferences # Facebook
         |permanent[ ]failure[ ]for[ ]one[ ]or[ ]more[ ]recipients[ ][(].+:blocked[)]
         |user[ ](?:
