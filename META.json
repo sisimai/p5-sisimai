@@ -45,7 +45,9 @@
          "requires" : {
             "Class::Accessor::Lite" : "0.05",
             "JSON" : "2.90",
+            "Module::Load" : "0.32",
             "Time::Local" : "1.19",
+            "Time::Piece" : "1.29",
             "perl" : "5.010"
          }
       },
@@ -56,9 +58,10 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "4.1.21",
+   "version" : "4.1.23",
    "x_contributors" : [
       "jcbf <underspell@gmail.com>",
+      "Jonathan Leroy <jonathan@inikup.com>",
       "azumakuniyuki <perl.org@azumakuniyuki.org>"
    ]
 }
