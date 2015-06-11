@@ -43,6 +43,7 @@ sub match {
         |probable[ ]spam
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
+            |[ ]by[ ].+[ ][(]spam[)]
             |[ ]due[ ]to[ ]spam[ ]content
             )
         |rejecting[ ]banned[ ]content 
@@ -56,6 +57,7 @@ sub match {
             |email[ ]not[ ]accepted
             |message[ ]rejected[.]       # mail.ru
             |not[ ]accepted
+            |rejection
             |score[ ]
             )
         |spambouncer[ ]identified[ ]spam    # SpamBouncer identified SPAM

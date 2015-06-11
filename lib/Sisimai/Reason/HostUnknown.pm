@@ -8,7 +8,7 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?>
-         recipient[ ]domain[ ]must[ ]exist
+         domain[ ]does[ ]not[ ]exist
         |host[ ](?:
              or[ ]domain[ ]name[ ]not[ ]found
             |unknown
@@ -16,7 +16,10 @@ sub match {
             )
         |name[ ]or[ ]service[ ]not[ ]known
         |no[ ]such[ ]domain
-        |recipient[ ]address[ ]rejected:[ ]unknown[ ]domain[ ]name
+        |recipient[ ](?:
+            address[ ]rejected:[ ]unknown[ ]domain[ ]name
+            domain[ ]must[ ]exist
+            )
         |unknown[ ]host
         )
     }ix;
