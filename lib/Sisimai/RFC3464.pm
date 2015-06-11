@@ -42,7 +42,7 @@ my $RxEMS = qr{(?:                                          # Subject:
     )
 }xi;
 
-sub version     { '4.0.18' };
+sub version     { '4.0.19' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -323,8 +323,6 @@ sub scan {
             }
             last unless $match;
 
-            my $b = $dscontents->[ -1 ];
-
             my $RxSkip = qr{(?>
                  \A[-]+=
                 |\A\\\*
@@ -378,6 +376,7 @@ sub scan {
                 [<]?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?
             }xi;
 
+            my $b = $dscontents->[ -1 ];
             for my $e ( split( "\n", $$mbody ) ) {
                 # Get the recipient's email address and error messages.
                 last if $e =~ $RxRFC->{'endof'};
@@ -389,7 +388,7 @@ sub scan {
 
                 if( $e =~ $RxAddr ) {
                     # May be an email address
-                    my $x = $b->{'recipienet'} || '';
+                    my $x = $b->{'recipient'} || '';
                     my $y = Sisimai::Address->s3s4( $1 );
 
                     if( length $x && $x ne $y ) {
