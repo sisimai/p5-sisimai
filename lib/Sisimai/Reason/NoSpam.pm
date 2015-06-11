@@ -13,6 +13,7 @@ sub match {
             has[ ]prevented[ ]delivery[.]["]    # CPanel/Exim with SA rejections on
         |appears[ ]to[ ]be[ ]unsolicited
         |Blacklisted[ ]URL[ ]in[ ]message
+        |block[ ]for[ ]spam
         |blocked[ ]by[ ](?:
              policy:[ ]no[ ]spam[ ]please
             |spamAssassin                   # rejected by SpamAssassin
@@ -46,7 +47,6 @@ sub match {
             )
         |rejecting[ ]banned[ ]content 
         |sending[ ]address[ ]not[ ]accepted[ ]due[ ]to[ ]spam[ ]filter
-        |spam
         |spam[ ](?:
              blocked
             |check
