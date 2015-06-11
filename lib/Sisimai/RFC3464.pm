@@ -34,6 +34,7 @@ my $RxEMF = qr{\b(?:postmaster|mailer-daemon|root)[@]}i;    # From:
 my $RxEMR = qr{(?:[<][>]|mailer-daemon)}i;                  # Return-Path:
 my $RxEMS = qr{(?:                                          # Subject:
      delivery[ ]failure
+    |Delivery[ ]Report
     |failure[ ]notice
     |mail[ ]error
     |non[-]delivery
@@ -42,7 +43,7 @@ my $RxEMS = qr{(?:                                          # Subject:
     )
 }xi;
 
-sub version     { '4.0.19' };
+sub version     { '4.0.20' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -348,6 +349,7 @@ sub scan {
                  |Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
                  |Message[ ]text[ ]follows:[ ]
                  |Original[ ]message[ ]follows
+                 |The[ ]first[ ]\d+[ ]lines[ ]
                  |Unsent[ ]Message[ ]below
                  |Your[ ]message[ ]reads[ ][(]in[ ]part[)]:
                 )
@@ -382,6 +384,7 @@ sub scan {
                 last if $e =~ $RxRFC->{'endof'};
                 last if $e =~ $RxRFC->{'rfc822'};
                 last if $e =~ $RxEnd;
+                last if $e =~ m/\A[*]/;
 
                 next unless length $e;
                 next if $e =~ $RxSkip;
