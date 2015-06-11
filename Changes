@@ -1,5 +1,25 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.23  Thu, 11 Jun 2015 13:20:59 +0900 (JST)
+    - Sisimai works on Perl 5.22.0.
+    - New MTA module Sisimai::MTA::X4 for qmail clone MTAs.
+    - Performance tuning, Sisimai is now 1.39 times faster than before.
+    - Improved code in Sisimai/Message.pm: 1.62 times faster than before.
+    - Bug fix in Sisimai::MSP::JP::EZweb and Sisimai::MSP::JP::KDDI.
+    - Support "2015-04-29 01:23:45" date format in Sisimai::Time.
+    - Support the value of Diagnostic-Code without the value of diagnostic-type
+      field in Sisimai::RFC3464.
+    - Emails in https://github.com/sendgrid/go-gmime/tree/master/gmime/fixtures
+      and some emails have been added as a sample in eg/ directory.
+    - Add message patterns at NoSpam, MailboxFull, RelayingDenied, UserUnknown, 
+      Blocked, Filtered, SecurityError, Expired, HostUnknown, and NetworkError
+      in Sisimai/Reason.
+    - Fix bug in Sisimai::Data for calling Sisimai::Time->parse() method.
+    - Sisimai::MTA::IMailServer and Sisimai::MTA::InterScanMSS updated.
+    - Implement fallback code in Sisimai::RFC3464: parse entire message body to
+      get a recipient address and error messages. The value of the "smtpagent"
+      parsed by this code is "RFC3464::Fallback".
+
 4.1.22  Thu, 28 May 2015 14:20:59 +0900 (JST)
     - Merged pull request #59 (Support for Microsoft custom ARF format) at 
       https://github.com/azumakuniyuki/p5-Sisimai/pull/59 . Thanks to jleroy.
