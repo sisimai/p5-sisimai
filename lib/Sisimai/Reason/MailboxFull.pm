@@ -18,6 +18,7 @@ sub match {
         |does[ ]not[ ]have[ ]enough[ ]space
         |exceeded[ ]storage[ ]allocation
         |exceeding[ ]its[ ]mailbox[ ]quota
+        |full[ ]mailbox
         |is[ ]over[ ]quota[ ]temporarily
         |is[ ]over[ ]disk[ ]quota
         |mail[ ](?:
