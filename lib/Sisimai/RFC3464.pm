@@ -28,10 +28,11 @@ my $RxRFC = {
     }xi,
 };
 
-my $RxCmd = qr{\b(RCPT|MAIL|DATA)[ ]+command\b};
+# Regular expressions for BODY_PARSER_FOR_FALLBACK block.
+my $RxCmd = qr{[ ](RCPT|MAIL|DATA)[ ]+command\b};            # SMTP Command
 my $RxEMF = qr{\b(?:postmaster|mailer-daemon|root)[@]}i;    # From:
 my $RxEMR = qr{(?:[<][>]|mailer-daemon)}i;                  # Return-Path:
-my $RxEMS = qr{(?:
+my $RxEMS = qr{(?:                                          # Subject:
      delivery[ ]failure
     |failure[ ]notice
     |mail[ ]error
@@ -41,7 +42,7 @@ my $RxEMS = qr{(?:
     )
 }xi;
 
-sub version     { '4.0.17' };
+sub version     { '4.0.18' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -358,6 +359,7 @@ sub scan {
                      \A\s*
                     |\A["].+["]\s*
                     |\ARecipient:\s*
+                    |\A[ ]*Address:[ ]
                     |addressed[ ]to[ ]
                     |delivered[ ]to[ ]+
                     |delivery[ ]failed:[ ]
