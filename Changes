@@ -1,5 +1,9 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.24  Mon, 11 Jun 2015 22:20:59 +0900 (JST)
+    - Improved fallback code in Sisimai::RFC3464.
+    - Add message patterns at NoSpam and HostUnknown in Sisimai/Reason.
+
 4.1.23  Thu, 11 Jun 2015 13:20:59 +0900 (JST)
     - Sisimai works on Perl 5.22.0.
     - New MTA module Sisimai::MTA::X4 for qmail clone MTAs.
