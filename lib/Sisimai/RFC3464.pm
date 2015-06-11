@@ -32,18 +32,18 @@ my $RxRFC = {
 my $RxCmd = qr{[ ](RCPT|MAIL|DATA)[ ]+command\b};            # SMTP Command
 my $RxEMF = qr{\b(?:postmaster|mailer-daemon|root)[@]}i;    # From:
 my $RxEMR = qr{(?:[<][>]|mailer-daemon)}i;                  # Return-Path:
-my $RxEMS = qr{(?:                                          # Subject:
-     delivery[ ]failure
-    |Delivery[ ]Report
+my $RxEMS = qr{(?>                                          # Subject:
+     delivery[ ](?:failed|failure|report)
     |failure[ ]notice
-    |mail[ ]error
+    |mail[ ](?:delivery|error)
     |non[-]delivery
     |returned[ ]mail
     |undeliverable[ ]mail
+    |Warning:[ ]
     )
 }xi;
 
-sub version     { '4.0.20' };
+sub version     { '4.0.21' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -329,6 +329,7 @@ sub scan {
                 |\A\\\*
                 |\A[\s\t]+\z
                 |\A\s*--
+                |\A\s+[=]\d+
                 |\AHi[ ][!]
                 |Content-(?:Description|Disposition|Transfer-Encoding|Type):[ ]
                 |(?:name|charset)=
@@ -338,43 +339,44 @@ sub scan {
             }xi;
 
             my $RxEnd  = qr{(?:
-                  \AContent-Type:[ ]message/delivery-status
-                 |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
-                 |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
-                 |\AReceived:\s*
-                 |\AReturn-Path:\s*
-                 |\AA[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
-                 |Attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
-                 |Below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
-                 |Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
-                 |Message[ ]text[ ]follows:[ ]
-                 |Original[ ]message[ ]follows
-                 |The[ ]first[ ]\d+[ ]lines[ ]
-                 |Unsent[ ]Message[ ]below
-                 |Your[ ]message[ ]reads[ ][(]in[ ]part[)]:
+                 \AContent-Type:[ ]message/delivery-status
+                |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
+                |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
+                |\AReceived:\s*
+                |\AReturn-Path:\s*
+                |\AA[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
+                |Attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
+                |Below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
+                |Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
+                |Message[ ]contains[ ].+[ ]file[ ]attachments
+                |Message[ ]text[ ]follows:[ ]
+                |Original[ ]message[ ]follows
+                |The[ ]first[ ]\d+[ ]lines[ ]
+                |Unsent[ ]Message[ ]below
+                |Your[ ]message[ ]reads[ ][(]in[ ]part[)]:
                 )
             }xi;
 
             my $RxAddr = qr{(?:
-                     \A\s*
-                    |\A["].+["]\s*
-                    |\ARecipient:\s*
-                    |\A[ ]*Address:[ ]
-                    |addressed[ ]to[ ]
-                    |delivered[ ]to[ ]+
-                    |delivery[ ]failed:[ ]
-                    |Error-for:[ ]+
-                    |Failed[ ]Recipient:[ ]
-                    |generated[ ]from[ ]
-                    |Intended[ ]recipient:[ ]
-                    |Mailbox[ ]is[ ]full:[ ]
-                    |RCPT[ ]To:
-                    |Unknown[ ]User:[ ]
-                    |undeliverable[ ]to[ ]
-                    |Undeliverable[ ]Address:[ ]*
-                    |You[ ]sent[ ]mail[ ]to[ ]
-                    |Your[ ]message[ ]to[ ]
-                    )
+                 \A\s*
+                |\A["].+["]\s*
+                |\ARecipient:\s*
+                |\A[ ]*Address:[ ]
+                |addressed[ ]to[ ]
+                |delivered[ ]to[ ]+
+                |delivery[ ]failed:[ ]
+                |Error-for:[ ]+
+                |Failed[ ]Recipient:[ ]
+                |generated[ ]from[ ]
+                |Intended[ ]recipient:[ ]
+                |Mailbox[ ]is[ ]full:[ ]
+                |RCPT[ ]To:
+                |Unknown[ ]User:[ ]
+                |undeliverable[ ]to[ ]
+                |Undeliverable[ ]Address:[ ]*
+                |You[ ]sent[ ]mail[ ]to[ ]
+                |Your[ ]message[ ]to[ ]
+                )
                 [<]?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?
             }xi;
 
