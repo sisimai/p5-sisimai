@@ -15,11 +15,11 @@ MTA::McAfee .............    7/0007  1.0000  McAfee Email Appliance
 MTA::MessagingServer ....   18/0018  1.0000  Oracle Communications Messaging Server
 MTA::Notes ..............    5/0007  0.7143  Lotus Notes
 MTA::OpenSMTPD ..........    6/0016  0.3750  OpenSMTPD
-MTA::Postfix ............  153/0153  1.0000  Postfix
-MTA::Sendmail ...........  216/0219  0.9863  V8Sendmail: /usr/sbin/sendmail
+MTA::Postfix ............  154/0154  1.0000  Postfix
+MTA::Sendmail ...........  217/0220  0.9864  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    6/0006  1.0000  WebSense SurfControl
 MTA::V5sendmail .........    0/0148  0.0000  Sendmail version 5
-MTA::X1 .................    0/0006  0.0000  Unknown MTA #1
+MTA::X1 .................    0/0007  0.0000  Unknown MTA #1
 MTA::X2 .................    0/0018  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0007  0.0000  Unknown MTA #3
 MTA::X4 .................    0/0018  0.0000  Unknown MTA #4 qmail clones
@@ -29,7 +29,7 @@ MSP::DE::EinsUndEins ....    0/0002  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0005  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
 MSP::JP::EZweb ..........  127/0128  0.9922  au EZweb: http://www.au.kddi.com/mobile/
-MSP::JP::KDDI ...........    5/0005  1.0000  au by KDDI: http://www.au.kddi.com
+MSP::JP::KDDI ...........    6/0006  1.0000  au by KDDI: http://www.au.kddi.com
 MSP::RU::MailRu .........    0/0006  0.0000  @mail.ru: https://mail.ru
 MSP::RU::Yandex .........    4/0004  1.0000  Yandex.Mail: http://www.yandex.ru
 MSP::UK::MessageLabs ....    1/0001  1.0000  Symantec.cloud http://www.messagelabs.com
@@ -44,7 +44,7 @@ MSP::US::Verizon ........    4/0004  1.0000  Verizon Wireless: http://www.verizo
 MSP::US::Yahoo ..........    0/0006  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    8/0031  0.2581  Abuse Feedback Reporting Format
-RFC3464 .................  127/0204  0.6225  Fallback Module for MTAs
+RFC3464 .................  129/0209  0.6172  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.X+nails 1039/1398  0.7432
- Sisimai(bounceHammer 4)  1398/1398  1.0000
+ bounceHammer 2.7.X+nails 1044/1407  0.7420
+ Sisimai(bounceHammer 4)  1407/1407  1.0000
