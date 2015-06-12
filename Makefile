@@ -56,7 +56,7 @@ cover-test:
 	cover -test
 
 accuracy-table:
-	@ printf " %s\n" 'bounceHammer 2.7.13 + bounceHammer nails(*)'
+	@ printf " %s\n" 'bounceHammer 2.7.13'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
 	@ printf "%s\n" '-------------------------------------------------------------------------------'
 	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm`; do \
@@ -121,10 +121,17 @@ update-analysis-accuracy: sample
 	$(CP) /dev/null $(ACCURACYLIST)
 	make accuracy-table >> $(ACCURACYLIST)
 	grep '^[A-Z]' $(ACCURACYLIST) | tr '/' ' ' | \
-		awk '{ x += $$3; y += $$4 } END { \
-			printf(" %s %4d/%04d  %0.4f\n %s  %4d/%04d  %0.4f\n", \
-				"bounceHammer 2.7.X+nails", x, y, x / y, \
-				"Sisimai(bounceHammer 4)", y, y, 1 ) }' \
+		awk ' { \
+				x += $$3; \
+				y += $$4; \
+			} END { \
+				sisimai_cmd = "$(PERL) -Ilib -M$(NAME) -E '\''print $(NAME)->version'\''"; \
+				sisimai_cmd | getline sisimai_ver; \
+				close(sisimai_cmd); \
+				printf(" %s %4d/%04d  %0.4f\n %s %s %9s %4d/%04d  %0.4f\n", \
+					"bounceHammer 2.7.13     ", x, y, x / y, \
+					"Sisimai", sisimai_ver, " ", y, y, 1 ); \
+			} ' \
 			>> $(ACCURACYLIST)
 
 release-test:
