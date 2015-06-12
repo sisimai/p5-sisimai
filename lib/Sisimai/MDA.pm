@@ -23,6 +23,7 @@ my $RxErr = {
             qr/\AMailbox doesn't exist: /i,
         ],
         'mailboxfull' => [
+            qr/\AQuota exceeded/,   # Dovecot 1.2 dovecot/src/plugins/quota/quota.c
             qr/\AQuota exceeded [(]mailbox for user is full[)]\z/i,  # dovecot/src/plugins/quota/quota.c
             qr/\ANot enough disk space\z/i,
         ],
