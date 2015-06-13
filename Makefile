@@ -31,7 +31,8 @@ MAILBOX_FILE := ./eg/mbox-as-a-sample
 MTAMODULEDIR := ./lib/$(NAME)/MTA
 MSPMODULEDIR := ./lib/$(NAME)/MSP
 ACCURACYLIST := ./ANALYSIS-ACCURACY
-TABLE_LENGTH := 24
+INDEX_LENGTH := 24
+DESCR_LENGTH := 48
 
 .PHONY: clean
 test: user-test author-test
@@ -64,7 +65,7 @@ accuracy-table:
 		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 		l="`echo $$m | wc -c`" ;\
 		printf "%s " $$m ;\
-		while [ $$l -le $(TABLE_LENGTH) ]; do \
+		while [ $$l -le $(INDEX_LENGTH) ]; do \
 			printf "%s" '.' ;\
 			l=`expr $$l + 1` ;\
 		done ;\
@@ -83,7 +84,7 @@ accuracy-table:
 			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
 			l="`echo MSP::$$m | wc -c`" ;\
 			printf "MSP::%s " $$m ;\
-			while [ $$l -le $(TABLE_LENGTH) ]; do \
+			while [ $$l -le $(INDEX_LENGTH) ]; do \
 				printf "%s" '.' ;\
 				l=`expr $$l + 1` ;\
 			done ;\
@@ -102,7 +103,7 @@ accuracy-table:
 		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
 		l="`echo $$m | wc -c`" ;\
 		printf "%s " $$m ;\
-		while [ $$l -le $(TABLE_LENGTH) ]; do \
+		while [ $$l -le $(INDEX_LENGTH) ]; do \
 			printf "%s" '.' ;\
 			l=`expr $$l + 1` ;\
 		done ;\
@@ -133,6 +134,69 @@ update-analysis-accuracy: sample
 					"Sisimai", sisimai_ver, " ", y, y, 1 ); \
 			} ' \
 			>> $(ACCURACYLIST)
+
+mta-module-table:
+	@ printf "%s\n"  '| Module Name(Sisimai::)   | Description                                       |'
+	@ printf "%s\n"  '|--------------------------|---------------------------------------------------|'
+	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm`; do \
+		m="MTA::`echo $$v | cut -d/ -f5 | sed 's/.pm//g'`" ;\
+		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
+		l="`echo $$m | wc -c`" ;\
+		printf "| %s " $$m ;\
+		while [ $$l -le $(INDEX_LENGTH) ]; do \
+			printf "%s" ' ' ;\
+			l=`expr $$l + 1` ;\
+		done ;\
+		printf "%s" '|' ;\
+		r=`$(PERL) -Ilib -MSisimai::$$m -le "print Sisimai::$$m->description"` ;\
+		x="`echo $$r | wc -c`" ;\
+		printf " %s" $$r ;\
+		while [ $$x -le $(DESCR_LENGTH) ]; do \
+			printf "%s" ' ' ;\
+			x=`expr $$x + 1` ;\
+		done ;\
+		printf " %s\n" ' |' ;\
+	done
+	@ for c in `$(LS) $(MSPMODULEDIR)`; do \
+		for v in `$(LS) $(MSPMODULEDIR)/$$c/*.pm`; do \
+			m="$$c::"`echo $$v | cut -d/ -f6 | sed 's/.pm//g'` ;\
+			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
+			l="`echo MSP::$$m | wc -c`" ;\
+			printf "| MSP::%s " $$m ;\
+			while [ $$l -le $(INDEX_LENGTH) ]; do \
+				printf "%s" ' ' ;\
+				l=`expr $$l + 1` ;\
+			done ;\
+			printf "%s" '|' ;\
+			r=`$(PERL) -Ilib -MSisimai::MSP::$$m -le "print Sisimai::MSP::$$m->description"` ;\
+			x="`echo $$r | wc -c`" ;\
+			printf " %s" $$r ;\
+			while [ $$x -le $(DESCR_LENGTH) ]; do \
+				printf "%s" ' ' ;\
+				x=`expr $$x + 1` ;\
+			done ;\
+			printf " %s\n" ' |' ;\
+		done ;\
+	done
+	@ for v in ARF RFC3464; do \
+		m=$$v ;\
+		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
+		l="`echo $$m | wc -c`" ;\
+		printf "| %s " $$m ;\
+		while [ $$l -le $(INDEX_LENGTH) ]; do \
+			printf "%s" ' ' ;\
+			l=`expr $$l + 1` ;\
+		done ;\
+		printf "%s" '|' ;\
+		r=`$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description"` ;\
+		x="`echo $$r | wc -c`" ;\
+		printf " %s" $$r ;\
+		while [ $$x -le $(DESCR_LENGTH) ]; do \
+			printf "%s" ' ' ;\
+			x=`expr $$x + 1` ;\
+		done ;\
+		printf " %s\n" ' |' ;\
+	done
 
 release-test:
 	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
