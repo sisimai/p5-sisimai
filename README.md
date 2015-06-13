@@ -132,8 +132,8 @@ version 4 (Sisimai).
 2. ./ANALYSIS-ACCURACY を参照
 3. "YAML"モジュールが入っていればYAMLでの出力も可能
 
-Supported MTA/MSP Modules | 対応しているMTA/MSPモジュール
-----------------------------------------------------------
+MTA/MSP Modules | MTA/MSPモジュール一覧
+---------------------------------------
 The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 
 | Module Name(Sisimai::)   | Description                                       |
