@@ -6,7 +6,7 @@ use warnings;
 
 # Based on Sisimai::MTA::Exim
 my $RxMSP = {
-    'from'      => qr/\Amailer-daemon[@].*mail[.]ru/,
+    'from'      => qr/[<]?mailer-daemon[@].*mail[.]ru[>]?/i,
     'rfc822'    => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
     'begin'     => qr/\AThis message was created automatically by mail delivery software[.]/,
     'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
@@ -57,7 +57,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { '@mail.ru: https://mail.ru' }
 sub smtpagent   { 'RU::MailRu' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
