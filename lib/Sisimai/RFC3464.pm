@@ -9,6 +9,7 @@ my $RxRFC = {
          Content-Type:[ ]*(?:
               message/delivery-status
              |message/disposition-notification
+             |text/plain;[ ]charset=
              )
         |The[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
         |This[ ]report[ ]relates[ ]to[ ]your[ ]message
@@ -43,7 +44,7 @@ my $RxEMS = qr{(?>                                          # Subject:
     )
 }xi;
 
-sub version     { '4.0.21' };
+sub version     { '4.0.22' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
