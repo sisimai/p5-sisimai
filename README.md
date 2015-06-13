@@ -60,6 +60,7 @@ make() method provides feature for getting parsed data from bounced email
 messages like following.
 
 ```perl
+#! /usr/bin/env perl
 use Sisimai;
 my $v = Sisimai->make( '/path/to/mbox' );   # or Path to Maildir
 
@@ -85,77 +86,104 @@ Differences between ver.2 and ver.4 | 新旧の違い
 The followings are the differences between version 2 (bounceHammer 2.7.13) and
 version 4 (Sisimai).
 
-| Features                                       | ver 2.7.13    | Sisimai      |
-|------------------------------------------------|---------------|--------------|
-| Command line tools                             | OK            | N/A          |
-| Modules for Commercial MTAs                    | N/A(1)        | Included     |
-| WebUI/API                                      | OK            | N/A          |
-| Database schema for storing parsed bounce data | Available     | N/A(2)       |
-| Analysis accuracy ratio(3)                     | 0.65          | 1.00         |
-| Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL          |
-| Parse FeedBack Loop Message/ARF format mail    | N/A           | OK           |
-| Classification based on recipient domain       | Available     | N/A          |
-| Output format of parsed data                   | YAML,JSON,CSV | JSON only(4) |
-| The speed of parsing email(1484 files)         | 6.15s         | 3.16s        |
-| Easy to install                                | No            | Yes          |
-| Install using cpan or cpanm command            | N/A           | OK           |
-| Dependencies                                   | 24 modules    | 2 modules    |
-| License                                        | GPLv2 or Perl | 2 clause BSD |
-| Support Contract provided by Developer         | Available     | Coming soon  |
+| Features                                       | ver 2.7.13    | Sisimai     |
+|------------------------------------------------|---------------|-------------|
+| Command line tools                             | OK            | N/A         |
+| Modules for Commercial MTAs                    | N/A           | Included    |
+| WebUI/API                                      | OK            | N/A         |
+| Database schema for storing parsed bounce data | Available     | N/A(1)      |
+| Analysis accuracy ratio(2)                     | 0.65          | 1.00        |
+| Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
+| Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
+| Classification based on recipient domain       | Available     | N/A         |
+| Output format of parsed data                   | YAML,JSON,CSV | JSON only(3)|
+| The speed of parsing email(1484 files)         | 6.15s         | 3.16s       |
+| Easy to install                                | No            | Yes         |
+| Install using cpan or cpanm command            | N/A           | OK          |
+| Dependencies                                   | 24 modules    | 2 modules   |
+| License                                        | GPLv2 or Perl | 2 clause BSD|
+| Support Contract provided by Developer         | Available     | Coming soon |
 
-1. bounceHammer-nails
-2. Implement yourself with using DBI or any O/R Mapper you like
-3. See ./ANALYSIS-ACCURACY
-4. YAML format is available if "YAML" module has been installed
+1. Implement yourself with using DBI or any O/R Mapper you like
+2. See ./ANALYSIS-ACCURACY
+3. YAML format is available if "YAML" module has been installed
 
 公開中のbouncehammer version 2.7.13とversion 4(シシマイ)は下記のような違いがあります。
 
-| 機能                                           | ver 2.7.13    | Sisimai      |
-|------------------------------------------------|---------------|--------------|
-| コマンドラインツール                           | あり          | 無し         |
-| 商用MTA対応解析モジュール                      | 無し(商用版,1)| あり(標準)   |
-| WebUIとAPI                                     | あり          | 無し         |
-| 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(2)      |
-| 解析精度の割合(3)                              | 0.65          | 1.00         |
-| 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応     |
-| FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済       |
-| 宛先ドメインによる分類項目                     | あり          | 無し         |
-| 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ(4)  |
-| メール解析の速度(1484通)                       | 6.15秒        | 3.16秒       |
-| インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽     |
-| cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済       |
-| 依存モジュール数                               | 24モジュール  | 2モジュール  |
-| ライセンス                                     | GPLv2かPerl   | 二条項BSD    |
-| 開発会社によるサポート契約                     | 提供中        | 準備中       |
+| 機能                                           | ver 2.7.13    | Sisimai     |
+|------------------------------------------------|---------------|-------------|
+| コマンドラインツール                           | あり          | 無し        |
+| 商用MTA対応解析モジュール                      | 無し          | あり(標準)  |
+| WebUIとAPI                                     | あり          | 無し        |
+| 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(1)     |
+| 解析精度の割合(2)                              | 0.65          | 1.00        |
+| 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応    |
+| FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
+| 宛先ドメインによる分類項目                     | あり          | 無し        |
+| 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ(3) |
+| メール解析の速度(1484通)                       | 6.15秒        | 3.16秒      |
+| インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
+| cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
+| 依存モジュール数                               | 24モジュール  | 2モジュール |
+| ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
+| 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
-1. bounceHammer-nails
-2. DBIまたは好きなORMを使って自由に実装してください
-3. ./ANALYSIS-ACCURACY を参照
-4. "YAML"モジュールが入っていればYAMLでの出力も可能
+1. DBIまたは好きなORMを使って自由に実装してください
+2. ./ANALYSIS-ACCURACY を参照
+3. "YAML"モジュールが入っていればYAMLでの出力も可能
 
-Commercial MTA Modules | 商用MTAモジュール
-------------------------------------------
-The following commercial MTA modules are included in Sisimai by default.
+Supported MTA/MSP Modules | 対応しているMTA/MSPモジュール
+----------------------------------------------------------
+The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 
-| Sisimai::                 | Description                                       |
-|---------------------------|---------------------------------------------------|
-| MTA::Activehunter         | TransWARE Active!hunter                           |
-| MTA::Domino               | IBM Domino Server                                 |
-| MTA::Exchange             | Microsoft Exchange Server                         |
-| MTA::IMailServer          | IPSWITCH IMail Server                             |
-| MTA::InterScanMSS         | Trend Micro InterScan Messaging Security Suite    |
-| MTA::MXLogic              | McAfee SaaS                                       |
-| MTA::MailFoundry          | MailFoundry                                       |
-| MTA::MailMarshalSMTP      | Trustwave Secure Email Gateway                    |
-| MTA::McAfee               | McAfee Email Appliance                            |
-| MTA::MessagingServer      | Oracle Communications Messaging Server            |
-| MTA::Notes                | Lotus Notes                                       |
-| MTA::SurfControl          | WebSense SurfControl                              |
-| MTA::mFILTER              | Digital Arts m-FILTER                             |
-| MSP::US::AmazonSES        | AmazonSES: http://aws.amazon.com/ses/             |
-| MSP::US::SendGrid         | SendGrid: http://sendgrid.com/                    |
+| Module Name(Sisimai::)   | Description                                       |
+|--------------------------|---------------------------------------------------|
+| MTA::Activehunter        | TransWARE Active!hunter                           |
+| MTA::Courier             | Courier MTA                                       |
+| MTA::Domino              | IBM Domino Server                                 |
+| MTA::Exchange            | Microsoft Exchange Server                         |
+| MTA::Exim                | Exim                                              |
+| MTA::IMailServer         | IPSWITCH IMail Server                             |
+| MTA::InterScanMSS        | Trend Micro InterScan Messaging Security Suite    |
+| MTA::MXLogic             | McAfee SaaS                                       |
+| MTA::MailFoundry         | MailFoundry                                       |
+| MTA::MailMarshalSMTP     | Trustwave Secure Email Gateway                    |
+| MTA::McAfee              | McAfee Email Appliance                            |
+| MTA::MessagingServer     | Oracle Communications Messaging Server            |
+| MTA::Notes               | Lotus Notes                                       |
+| MTA::OpenSMTPD           | OpenSMTPD                                         |
+| MTA::Postfix             | Postfix                                           |
+| MTA::Sendmail            | V8Sendmail: /usr/sbin/sendmail                    |
+| MTA::SurfControl         | WebSense SurfControl                              |
+| MTA::V5sendmail          | Sendmail version 5                                |
+| MTA::X1                  | Unknown MTA #1                                    |
+| MTA::X2                  | Unknown MTA #2                                    |
+| MTA::X3                  | Unknown MTA #3                                    |
+| MTA::X4                  | Unknown MTA #4 qmail clones                       |
+| MTA::mFILTER             | Digital Arts m-FILTER                             |
+| MTA::qmail               | qmail                                             |
+| MSP::DE::EinsUndEins     | 1&1: http://www.1and1.de                          |
+| MSP::DE::GMX             | GMX: http://www.gmx.net                           |
+| MSP::JP::Biglobe         | BIGLOBE: http://www.biglobe.ne.jp                 |
+| MSP::JP::EZweb           | au EZweb: http://www.au.kddi.com/mobile/          |
+| MSP::JP::KDDI            | au by KDDI: http://www.au.kddi.com                |
+| MSP::RU::MailRu          | @mail.ru: https://mail.ru                         |
+| MSP::RU::Yandex          | Yandex.Mail: http://www.yandex.ru                 |
+| MSP::UK::MessageLabs     | Symantec.cloud http://www.messagelabs.com         |
+| MSP::US::AmazonSES       | AmazonSES: http://aws.amazon.com/ses/             |
+| MSP::US::Aol             | Aol Mail: http://www.aol.com                      |
+| MSP::US::Bigfoot         | Bigfoot: http://www.bigfoot.com                   |
+| MSP::US::Facebook        | Facebook: https://www.facebook.com                |
+| MSP::US::Google          | Google Gmail: https://mail.google.com             |
+| MSP::US::Outlook         | Microsoft Outlook.com: https://www.outlook.com/   |
+| MSP::US::SendGrid        | SendGrid: http://sendgrid.com/                    |
+| MSP::US::Verizon         | Verizon Wireless: http://www.verizonwireless.com  |
+| MSP::US::Yahoo           | Yahoo! MAIL: https://www.yahoo.com                |
+| MSP::US::Zoho            | Zoho Mail: https://www.zoho.com                   |
+| ARF                      | Abuse Feedback Reporting Format                   |
+| RFC3464                  | Fallback Module for MTAs                          |
 
-上記の商用MTAモジュールはSisimaiに最初から含まれています。
+上記はSisimaiに含まれてるMTA/MSP(メールサービスプロバイダ)モジュールの一覧です。
 
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
