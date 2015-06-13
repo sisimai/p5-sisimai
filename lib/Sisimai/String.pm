@@ -49,7 +49,7 @@ sub sweep {
     $argvs =~ s{\t}{}g;
     $argvs =~ s{\A }{}g;
     $argvs =~ s{ \z}{}g;
-    $argvs =~ s{ [-]{2,}.+\z}{};
+    $argvs =~ s{ [-]{2,}[^\s].+\z}{};
 
     return $argvs;
 }
