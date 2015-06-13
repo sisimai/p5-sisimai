@@ -352,6 +352,7 @@ sub scan {
                 |Message[ ]contains[ ].+[ ]file[ ]attachments
                 |Message[ ]text[ ]follows:[ ]
                 |Original[ ]message[ ]follows
+                |The[ ]attachment[ ]contains[ ]the[ ]original[ ]mail[ ]headers
                 |The[ ]first[ ]\d+[ ]lines[ ]
                 |Unsent[ ]Message[ ]below
                 |Your[ ]message[ ]reads[ ][(]in[ ]part[)]:
@@ -372,6 +373,8 @@ sub scan {
                 |Intended[ ]recipient:[ ]
                 |Mailbox[ ]is[ ]full:[ ]
                 |RCPT[ ]To:
+                |SMTP[ ]Server[ ][<].+[>][ ]rejected[ ]recipient[ ]
+                |The[ ]following[ ]recipients[ ]returned[ ]permanent[ ]errors:[ ]
                 |Unknown[ ]User:[ ]
                 |undeliverable[ ]to[ ]
                 |Undeliverable[ ]Address:[ ]*
