@@ -11,6 +11,7 @@ sub match {
     my $regex = qr{(?>
          ["]The[ ]mail[ ]server[ ]detected[ ]your[ ]message[ ]as[ ]spam[ ]and[ ]
             has[ ]prevented[ ]delivery[.]["]    # CPanel/Exim with SA rejections on
+        |(?:\d[.]\d[.]\d|\d{3})[ ]spam\z
         |appears[ ]to[ ]be[ ]unsolicited
         |Blacklisted[ ]URL[ ]in[ ]message
         |block[ ]for[ ]spam
