@@ -35,6 +35,7 @@ sub match {
             virus[ ]or[ ]spam[ ]content
         |You[ ]have[ ]exceeded[ ]the[ ]the[ ]allowable[ ]number[ ]of[ ]posts[ ]
             without[ ]solving[ ]a[ ]captcha
+        |verification[ ]failure
         )
     }ix;
 
