@@ -230,7 +230,11 @@ sub make {
 
         OTHER_TEXT_HEADERS: {
             # Remove square brackets and curly brackets from the host variable
-            map { $p->{ $_ } =~ y/[]()//d } ( 'rhost', 'lhost' );
+            map { $p->{ $_ } =~ y/[]()//d } ( 'rhost', 'lhost' ); 
+
+            # Remove string before "="
+            map { $p->{ $_ } =~ s/\A.+=// } ( 'rhost', 'lhost' );
+
             for my $e ( 'rhost', 'lhost' ) {
                 # Check space character in each value
                 if( $p->{ $e } =~ m/ / ) {
