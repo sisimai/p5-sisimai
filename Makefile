@@ -27,6 +27,7 @@ EMAIL_PARSER := ./tmp/emparser -fjson
 EMAIL_SAMPLE := ./tmp/sample
 FOR_EMPARSER := ./tmp/data
 FOR_MAKETEST := ./eg/maildir-as-a-sample/new
+CRLF_SAMPLES := ./eg/maildir-as-a-sample/dos
 MAILBOX_FILE := ./eg/mbox-as-a-sample
 MTAMODULEDIR := ./lib/$(NAME)/MTA
 MSPMODULEDIR := ./lib/$(NAME)/MSP
@@ -196,6 +197,12 @@ mta-module-table:
 			x=`expr $$x + 1` ;\
 		done ;\
 		printf " %s\n" ' |' ;\
+	done
+
+update-sample-emails:
+	for v in `find $(FOR_MAKETEST) -name '*-01.eml' -type f`; do \
+		f="`basename $$v`" ;\
+		nkf -Lw $$v > $(CRLF_SAMPLES)/$$f ;\
 	done
 
 release-test:
