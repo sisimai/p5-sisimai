@@ -11,12 +11,13 @@
 What is Sisimai ? | シシマイ?
 =============================
 
-Sisimai is a core module of bounceHammer version 4, is a Perl module for 
+Sisimai is the system formerly known as bounceHammer 4, is a Perl module for 
 analyzing email bounce. "Sisimai" is a coined word: Sisi (the number 4 is 
 pronounced "Si" in Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
-"シシマイ"はbounceHammer version 4の中核となるエラーメール解析モジュールです。
-Version 4なので"シ"から始まりマイ(MAI: Mail Analyzing Interface)を含む名前になりました。
+"シシマイ"はbounceHammer version 4として開発していたエラーメール解析モジュール
+です。Version 4なので"シ"から始まりマイ(MAI: Mail Analyzing Interface)を含む
+名前になりました。
 
 System requirements | 動作環境
 ------------------------------
