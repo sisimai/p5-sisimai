@@ -385,7 +385,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Message - Convert email text to data structure.
+Sisimai::Message - Convert bounce email text to data structure.
 
 =head1 SYNOPSIS
 
@@ -397,11 +397,18 @@ Sisimai::Message - Convert email text to data structure.
         my $p = Sisimai::Message->new( 'data' => $r );
     }
 
+    my $notmail = '/home/neko/Maildir/cur/22222';   # is not a bounce email
+    my $mailobj = Sisimai::Mail->new( $notmail );
+    while( my $r = $mailobj->read ) {
+        my $p = Sisimai::Message->new( 'data' => $r );  # $p is "undef"
+    }
+
 =head1 DESCRIPTION
 
-Sisimai::Message convert email text to data structure. It resolve email text
-into an UNIX From line, the header part of the mail, delivery status, and RFC822
-header part.
+Sisimai::Message convert bounce email text to data structure. It resolve email
+text into an UNIX From line, the header part of the mail, delivery status, and
+RFC822 header part. When the email given as a argument of "new" method is not a
+bounce email, the method returns "undef".
 
 =head1 CLASS METHODS
 
