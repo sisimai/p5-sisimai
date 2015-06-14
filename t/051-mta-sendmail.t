@@ -36,6 +36,8 @@ my $ReturnValue = {
     '21' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/blocked/ },
     '22' => { 'status' => qr/\A5[.]1[.]6\z/, 'reason' => qr/hasmoved/ },
     '23' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/nospam/ },
+    '24' => { 'status' => qr/\A5[.]1[.]2\z/, 'reason' => qr/hostunknown/ },
+    '25' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
 };
 
 use_ok $PackageName;
