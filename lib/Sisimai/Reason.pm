@@ -42,8 +42,8 @@ sub get {
         'Filtered', 'Rejected', 'HostUnknown', 'NoSpam', 'Blocked',
     ];
 
-    if( $argvs->diagnostictype eq 'SMTP' ) {
-        # Diagnostic-Code: SMTP; ...
+    if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
+        # Diagnostic-Code: SMTP; ... or empty value
         for my $e ( @$classorder ) {
             # Check the value of Diagnostic-Code: and the value of Status:, it is a
             # deliverystats, with true() method in each Sisimai::Reason::* class.
