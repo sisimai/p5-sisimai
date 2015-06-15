@@ -256,6 +256,11 @@ benchmark-mbox:
 	$(MKDIR) -p tmp/benchmark
 	$(CP) `find $(EMAIL_SAMPLE) -type f` tmp/benchmark/
 
+loc:
+	@ for v in `find lib -type f -name '*.pm'`; do \
+		cat -n $$v | grep '\t1;' | tail -n 1 | awk '{ print $$1 }'; \
+	done | awk '{ s += $$1 } END { print s }'
+
 cpanm:
 	$(WGET) $(CPANM) || $(CURL) $(CPANM)
 	test -f ./$@ && $(CHMOD) a+x ./$@
