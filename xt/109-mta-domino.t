@@ -6,6 +6,20 @@ use Sisimai::MTA::Domino;
 my $c = 'Sisimai::MTA::Domino';
 my $d = './tmp/data/domino';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/undefined/,
+    '01002' => qr/userunknown/,
+    '01003' => qr/userunknown/,
+    '01004' => qr/undefined/,
+    '01005' => qr/undefined/,
+    '01006' => qr/userunknown/,
+    '01007' => qr/userunknown/,
+    '01008' => qr/userunknown/,
+    '01009' => qr/userunknown/,
+    '01010' => qr/userunknown/,
+    '01011' => qr/userunknown/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +33,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -40,7 +56,7 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok defined $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;

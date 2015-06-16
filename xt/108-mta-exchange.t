@@ -6,6 +6,41 @@ use Sisimai::MTA::Exchange;
 my $c = 'Sisimai::MTA::Exchange';
 my $d = './tmp/data/exchange';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/userunknown/,
+    '01002' => qr/userunknown/,
+    '01003' => qr/userunknown/,
+    '01004' => qr/userunknown/,
+    '01005' => qr/userunknown/,
+    '01006' => qr/userunknown/,
+    '01007' => qr/userunknown/,
+    '01008' => qr/userunknown/,
+    '01009' => qr/userunknown/,
+    '01010' => qr/userunknown/,
+    '01011' => qr/userunknown/,
+    '01012' => qr/userunknown/,
+    '01013' => qr/userunknown/,
+    '01014' => qr/userunknown/,
+    '01015' => qr/userunknown/,
+    '01016' => qr/userunknown/,
+    '01017' => qr/filtered/,
+    '01018' => qr/userunknown/,
+    '01019' => qr/userunknown/,
+    '01020' => qr/userunknown/,
+    '01021' => qr/userunknown/,
+    '01022' => qr/userunknown/,
+    '01023' => qr/filtered/,
+    '01024' => qr/userunknown/,
+    '01025' => qr/userunknown/,
+    '01026' => qr/userunknown/,
+    '01027' => qr/userunknown/,
+    '01028' => qr/userunknown/,
+    '01029' => qr/userunknown/,
+    '01030' => qr/userunknown/,
+    '01031' => qr/userunknown/,
+    '01032' => qr/userunknown/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +54,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -40,7 +77,7 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok defined $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;
