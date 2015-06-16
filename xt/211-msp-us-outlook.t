@@ -6,6 +6,31 @@ use Sisimai::MSP::US::Outlook;
 my $c = 'Sisimai::MSP::US::Outlook';
 my $d = './tmp/data/us-outlook';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/userunknown/,
+    '01002' => qr/userunknown/,
+    '01003' => qr/userunknown/,
+    '01004' => qr/userunknown/,
+    '01005' => qr/userunknown/,
+    '01006' => qr/userunknown/,
+    '01007' => qr/blocked/,
+    '01008' => qr/mailboxfull/,
+    '01009' => qr/userunknown/,
+    '01010' => qr/userunknown/,
+    '01011' => qr/userunknown/,
+    '01012' => qr/undefined/,
+    '01013' => qr/userunknown/,
+    '01014' => qr/mailboxfull/,
+    '01015' => qr/mailboxfull/,
+    '01016' => qr/mailboxfull/,
+    '01017' => qr/userunknown/,
+    '01018' => qr/hostunknown/,
+    '01019' => qr/(?:userunknown|mailboxfull)/,
+    '01020' => qr/userunknown/,
+    '01021' => qr/userunknown/,
+    '01022' => qr/mailboxfull/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +44,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -38,8 +65,8 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok length $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
                 ok length $f->token, sprintf( "(%s) token = %s", $e, $f->token );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;
