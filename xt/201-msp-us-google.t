@@ -6,6 +6,53 @@ use Sisimai::MSP::US::Google;
 my $c = 'Sisimai::MSP::US::Google';
 my $d = './tmp/data/us-google';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/expired/,
+    '01002' => qr/suspend/,
+    '01003' => qr/expired/,
+    '01004' => qr/filtered/,
+    '01005' => qr/expired/,
+    '01006' => qr/filtered/,
+    '01007' => qr/userunknown/,
+    '01008' => qr/expired/,
+    '01009' => qr/expired/,
+    '01010' => qr/userunknown/,
+    '01011' => qr/mailboxfull/,
+    '01012' => qr/expired/,
+    '01013' => qr/mailboxfull/,
+    '01014' => qr/userunknown/,
+    '01015' => qr/filtered/,
+    '01016' => qr/filtered/,
+    '01017' => qr/filtered/,
+    '01018' => qr/userunknown/,
+    '01019' => qr/userunknown/,
+    '01020' => qr/userunknown/,
+    '01021' => qr/userunknown/,
+    '01022' => qr/userunknown/,
+    '01023' => qr/userunknown/,
+    '01024' => qr/blocked/,
+    '01025' => qr/filtered/,
+    '01026' => qr/filtered/,
+    '01027' => qr/blocked/,
+    '01028' => qr/systemerror/,
+    '01029' => qr/undefined/,
+    '01030' => qr/blocked/,
+    '01031' => qr/blocked/,
+    '01032' => qr/expired/,
+    '01033' => qr/blocked/,
+    '01034' => qr/expired/,
+    '01035' => qr/expired/,
+    '01036' => qr/expired/,
+    '01037' => qr/blocked/,
+    '01038' => qr/userunknown/,
+    '01039' => qr/userunknown/,
+    '01040' => qr/(?:expired|undefined)/,
+    '01041' => qr/userunknown/,
+    '01042' => qr/userunknown/,
+    '01043' => qr/userunknown/,
+    '01044' => qr/securityerror/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +66,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -38,8 +87,8 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok length $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
                 ok length $f->token, sprintf( "(%s) token = %s", $e, $f->token );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;
