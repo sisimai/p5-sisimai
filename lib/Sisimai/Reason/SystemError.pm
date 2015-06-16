@@ -10,10 +10,15 @@ sub match {
     my $regex = qr{(?>
          can[']t[ ]create[ ]user[ ]output[ ]file
         |interrupted[ ]system[ ]call
+        |it[ ](?:
+             encountered[ ]an[ ]error[ ]while[ ]being[ ]processed
+            |would[ ]create[ ]a[ ]mail[ ]loop
+            )
         |local[ ](?:
              configuration[ ]error
             |error[ ]in[ ]processing
             )
+        |loop[ ]was[ ]found[ ]in[ ]the[ ]Mail[ ]eXchanger
         |mail[ ](?:
              for[ ].+[ ]loops[ ]back[ ]to[ ]myself
             |system[ ]configuration[ ]error

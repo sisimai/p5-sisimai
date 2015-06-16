@@ -8,7 +8,8 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?:
-         host[ ]is[ ]unreachable
+         DNS[ ]records[ ]for[ ]the[ ]destination[ ]computer[ ]could[ ]not[ ]be[ ]found
+        |host[ ]is[ ]unreachable
         |mail[ ]forwarding[ ]loop[ ]for[ ]
         |malformed[ ]name[ ]server[ ]reply
         |maximum[ ]forwarding[ ]loop[ ]count[ ]exceeded

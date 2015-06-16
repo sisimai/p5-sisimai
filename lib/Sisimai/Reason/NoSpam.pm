@@ -48,6 +48,7 @@ sub match {
             |[ ]due[ ]to[ ]spam[ ]content
             )
         |rejecting[ ]banned[ ]content 
+        |related[ ]to[ ]content[ ]with[ ]spam[-]like[ ]characteristics
         |sending[ ]address[ ]not[ ]accepted[ ]due[ ]to[ ]spam[ ]filter
         |spam[ ](?:
              blocked

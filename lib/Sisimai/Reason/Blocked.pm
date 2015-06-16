@@ -14,12 +14,14 @@ sub match {
         |confirm[ ]this[ ]mail[ ]server
         |connection[ ](?:
             dropped
+           |rate[ ]limit[ ]exceeded
            |refused[ ]by
            |reset[ ]by[ ]peer
            |was[ ]dropped[ ]by[ ]remote[ ]host
            )
         |domain[ ].+[ ]mismatches[ ]client[ ]ip
         |hosts[ ]with[ ]dynamic[ ]ip
+        |IP[/]domain[ ]reputation[ ]problems
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
         |no[ ]access[ ]from[ ]mail[ ]server
