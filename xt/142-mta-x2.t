@@ -6,6 +6,26 @@ use Sisimai::MTA::X2;
 my $c = 'Sisimai::MTA::X2';
 my $d = './tmp/data/x2';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/expired/,
+    '01002' => qr/filtered/,
+    '01003' => qr/filtered/,
+    '01004' => qr/(?:suspend|filtered)/,
+    '01005' => qr/expired/,
+    '01006' => qr/hostunknown/,
+    '01007' => qr/expired/,
+    '01008' => qr/expired/,
+    '01009' => qr/mailboxfull/,
+    '01010' => qr/suspend/,
+    '01011' => qr/mailboxfull/,
+    '01012' => qr/suspend/,
+    '01013' => qr/suspend/,
+    '01014' => qr/suspend/,
+    '01015' => qr/suspend/,
+    '01016' => qr/suspend/,
+    '01017' => qr/(?:suspend|filtered)/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +39,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -40,7 +62,7 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok defined $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;
