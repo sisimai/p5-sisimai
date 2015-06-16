@@ -42,6 +42,7 @@ sub true {
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::RFC3463;
+    require Sisimai::Reason::UserUnknown;
     my $statuscode = $argvs->deliverystatus // '';
     my $commandtxt = $argvs->smtpcommand // '';
     my $reasontext = __PACKAGE__->text;
@@ -55,7 +56,11 @@ sub true {
 
     if( $tempreason eq $reasontext ) {
         # Delivery status code points "filtered".
-        $v = 1;
+        if( Sisimai::Reason::UserUnknown->match( $diagnostic ) ||
+            __PACKAGE__->match( $diagnostic ) ) {
+
+            $v = 1 
+        }
 
     } else {
         # Check the value of Diagnostic-Code and the last SMTP command
@@ -69,7 +74,6 @@ sub true {
             } else {
                 # Did not match with patterns in this class,
                 # Check the value of "Diagnostic-Code" with other error patterns.
-                require Sisimai::Reason::UserUnknown;
                 $v = 1 if Sisimai::Reason::UserUnknown->match( $diagnostic );
             }
         }

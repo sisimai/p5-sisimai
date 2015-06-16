@@ -8,7 +8,8 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?>
-         access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
+         access[ ]denied[.][ ]IP[ ]name[ ]lookup[ ]failed
+        |access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
         |client[ ]host[ ]rejected:[ ]may[ ]not[ ]be[ ]mail[ ]exchanger
         |confirm[ ]this[ ]mail[ ]server
         |connection[ ](?:
@@ -20,8 +21,12 @@ sub match {
         |domain[ ].+[ ]mismatches[ ]client[ ]ip
         |hosts[ ]with[ ]dynamic[ ]ip
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
+        |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
         |no[ ]access[ ]from[ ]mail[ ]server
-        |sorry[,][ ]your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
+        |sorry,[ ](?:
+             that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
+            |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
+            )
         |unresolvable[ ]relay[ ]host[ ]name
         |your[ ](?:
              network[ ]is[ ]temporary[ ]blacklisted

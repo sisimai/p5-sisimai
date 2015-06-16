@@ -58,6 +58,7 @@ sub match {
             |email[ ]not[ ]accepted
             |message[ ]rejected[.]       # mail.ru
             |not[ ]accepted
+            |refused
             |rejection
             |score[ ]
             )

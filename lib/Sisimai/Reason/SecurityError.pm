@@ -26,11 +26,8 @@ sub match {
             |rejected[ ]due[ ]to[ ]security[ ]policies
             )
         |insecure[ ]mail[ ]relay
-        |sorry,[ ](?:
-             that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
-            |you[ ]don'?t[ ]authenticate[ ]or[ ]the[ ]domain[ ]isn'?t[ ]in[ ]
+        |sorry,[ ]you[ ]don'?t[ ]authenticate[ ]or[ ]the[ ]domain[ ]isn'?t[ ]in[ ]
                 my[ ]list[ ]of[ ]allowed[ ]rcpthosts
-            )
         |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]
             virus[ ]or[ ]spam[ ]content
         |You[ ]have[ ]exceeded[ ]the[ ]the[ ]allowable[ ]number[ ]of[ ]posts[ ]
