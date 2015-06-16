@@ -10,6 +10,7 @@ sub match {
     my $regex = qr{(?> 
          mail[ ]server[ ]requires[ ]authentication[ ]when[ ]attempting[ ]to[ ]
             send[ ]to[ ]a[ ]non-local[ ]e-mail[ ]address    # MailEnable 
+        |not[ ]allowed[ ]to[ ]relay[ ]through[ ]this[ ]machine
         |relay[ ](?:
              access[ ]denied
             |denied

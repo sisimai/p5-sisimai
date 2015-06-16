@@ -10,6 +10,7 @@ sub match {
     my $regex = qr{(?>
          access[ ]denied[.][ ]IP[ ]name[ ]lookup[ ]failed
         |access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
+        |cannot[ ]resolve[ ]your[ ]address
         |client[ ]host[ ]rejected:[ ]may[ ]not[ ]be[ ]mail[ ]exchanger
         |confirm[ ]this[ ]mail[ ]server
         |connection[ ](?:
