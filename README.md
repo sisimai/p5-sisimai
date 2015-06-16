@@ -87,7 +87,7 @@ Differences between ver.2 and ver.4 | 新旧の違い
 The followings are the differences between version 2 (bounceHammer 2.7.13) and
 version 4 (Sisimai).
 
-| Features                                       | ver 2.7.13    | Sisimai     |
+| Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
 | Command line tools                             | OK            | N/A         |
 | Modules for Commercial MTAs                    | N/A           | Included    |
@@ -102,6 +102,8 @@ version 4 (Sisimai).
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies                                   | 24 modules    | 2 modules   |
+| LOC:Source lines of code                       | 18200 lines   | 7500 lines  |
+| The number of tests in t/ directory            | 27365 tests   | 69900 tests |
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
 
@@ -111,7 +113,7 @@ version 4 (Sisimai).
 
 公開中のbouncehammer version 2.7.13とversion 4(シシマイ)は下記のような違いがあります。
 
-| 機能                                           | ver 2.7.13    | Sisimai     |
+| 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
 | コマンドラインツール                           | あり          | 無し        |
 | 商用MTA対応解析モジュール                      | 無し          | あり(標準)  |
@@ -126,6 +128,8 @@ version 4 (Sisimai).
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数                               | 24モジュール  | 2モジュール |
+| LOC:ソースコードの行数                         | 18200行       | 7500行      |
+| テスト件数(t/ディレクトリ)                     | 27365件       | 69900件     |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
@@ -197,6 +201,7 @@ Sisimai can detect the following 20 bounce reasons.
 | ExceedLimit    | Message size exceeded the limit(5.2.3) | メールサイズの超過               |
 | Expired        | Delivery time expired                  | 配送時間切れ                     |
 | Filtered       | Rejected after DATA command            | DATAコマンド以降で拒否された     |
+| HasMoved       | Destination mail addrees has moved     | 宛先メールアドレスは移動した     |
 | HostUnknown    | Unknown destination host name          | 宛先ホスト名が存在しない         |
 | MailboxFull    | Recipient's mailbox is full            | メールボックスが一杯             |
 | MailerError    | Mailer program error                   | メールプログラムのエラー         |
