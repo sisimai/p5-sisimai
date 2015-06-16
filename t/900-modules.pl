@@ -65,6 +65,7 @@ sub list {
             Reason/ExceedLimit.pm
             Reason/Expired.pm
             Reason/Filtered.pm
+            Reason/HasMoved.pm
             Reason/HostUnknown.pm
             Reason/MailboxFull.pm
             Reason/MailerError.pm
