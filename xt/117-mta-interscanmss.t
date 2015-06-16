@@ -6,6 +6,14 @@ use Sisimai::MTA::InterScanMSS;
 my $c = 'Sisimai::MTA::InterScanMSS';
 my $d = './tmp/data/interscanmss';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/userunknown/,
+    '01002' => qr/undefined/,
+    '01003' => qr/userunknown/,
+    '01004' => qr/userunknown/,
+    '01005' => qr/userunknown/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +27,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -40,7 +50,7 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok defined $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;
