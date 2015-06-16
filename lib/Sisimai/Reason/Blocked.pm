@@ -23,6 +23,7 @@ sub match {
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
         |no[ ]access[ ]from[ ]mail[ ]server
+        |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
         |sorry,[ ](?:
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
