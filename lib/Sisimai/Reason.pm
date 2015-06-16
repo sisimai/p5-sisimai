@@ -17,7 +17,7 @@ sub index {
     return [ qw|
         Blocked ContentError ExceedLimit Expired Filtered HostUnknown MailboxFull
         MailerError MesgTooBig NetworkError NotAccept OnHold Rejected RelayingDenied
-        NoSpam SecurityError Suspend SystemError SystemFull UserUnknown 
+        NoSpam SecurityError Suspend SystemError SystemFull UserUnknown HasMoved
     | ];
 }
 
@@ -102,7 +102,7 @@ sub anotherone {
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'NoSpam', 'SecurityError', 'SystemError', 'NetworkError', 
-        'Suspend', 'Expired', 'ContentError', 'NotAccept', 'MailerError',
+        'Suspend', 'Expired', 'ContentError', 'HasMoved', 'NotAccept', 'MailerError',
     ];
     my $retryingto = __PACKAGE__->retry;
     push @$retryingto, 'userunknown';
