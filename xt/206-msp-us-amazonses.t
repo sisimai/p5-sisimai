@@ -6,6 +6,22 @@ use Sisimai::MSP::US::AmazonSES;
 my $c = 'Sisimai::MSP::US::AmazonSES';
 my $d = './tmp/data/us-amazonses';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/mailboxfull/,
+    '01002' => qr/filtered/,
+    '01003' => qr/userunknown/,
+    '01004' => qr/mailboxfull/,
+    '01005' => qr/blocked/,
+    '01006' => qr/userunknown/,
+    '01007' => qr/expired/,
+    '01008' => qr/hostunknown/,
+    '01009' => qr/userunknown/,
+    '01010' => qr/userunknown/,
+    '01011' => qr/userunknown/,
+    '01012' => qr/userunknown/,
+    '01013' => qr/userunknown/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +35,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -38,8 +56,8 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok length $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
                 ok length $f->token, sprintf( "(%s) token = %s", $e, $f->token );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;
