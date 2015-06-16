@@ -6,6 +6,40 @@ use Sisimai::MTA::IMailServer;
 my $c = 'Sisimai::MTA::IMailServer';
 my $d = './tmp/data/imailserver';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/hostunknown/,
+    '01002' => qr/mailboxfull/,
+    '01003' => qr/userunknown/,
+    '01004' => qr/userunknown/,
+    '01005' => qr/mailboxfull/,
+    '01006' => qr/userunknown/,
+    '01007' => qr/userunknown/,
+    '01008' => qr/hostunknown/,
+    '01009' => qr/expired/,
+    '01010' => qr/expired/,
+    '01011' => qr/userunknown/,
+    '01012' => qr/mailboxfull/,
+    '01013' => qr/userunknown/,
+    '01014' => qr/hostunknown/,
+    '01015' => qr/userunknown/,
+    '01016' => qr/expired/,
+    '01017' => qr/expired/,
+    '01018' => qr/mailboxfull/,
+    '01019' => qr/mailboxfull/,
+    '01020' => qr/undefined/,
+    '01021' => qr/mailboxfull/,
+    '01022' => qr/userunknown/,
+    '01023' => qr/mailboxfull/,
+    '01024' => qr/undefined/,
+    '01025' => qr/userunknown/,
+    '01026' => qr/userunknown/,
+    '01027' => qr/userunknown/,
+    '01028' => qr/userunknown/,
+    '01029' => qr/userunknown/,
+    '01030' => qr/hostunknown/,
+    '01031' => qr/hostunknown/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +53,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -40,7 +76,7 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok defined $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;
