@@ -20,7 +20,7 @@ my $ReturnValue = {
     '05' => { 'status' => qr/\A5[.]2[.]3\z/, 'reason' => qr/mesgtoobig/ },
     '06' => { 'status' => qr/\A5[.]6[.]9\z/, 'reason' => qr/contenterror/ },
     '07' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/norelaying/ },
-    '08' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
+    '08' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/blocked/ },
     '09' => { 'status' => qr/\A5[.]7[.]9\z/, 'reason' => qr/securityerror/ },
     '10' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/blocked/ },
     '11' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
