@@ -6,6 +6,21 @@ use Sisimai::MTA::MessagingServer;
 my $c = 'Sisimai::MTA::MessagingServer';
 my $d = './tmp/data/messagingserver';
 my $h = undef;
+my $ReturnValue = {
+    '01001' => qr/hostunknown/,
+    '01002' => qr/mailboxfull/,
+    '01003' => qr/filtered/,
+    '01004' => qr/mailboxfull/,
+    '01005' => qr/hostunknown/,
+    '01006' => qr/filtered/,
+    '01007' => qr/mailboxfull/,
+    '01008' => qr/filtered/,
+    '01009' => qr/mailboxfull/,
+    '01010' => qr/mailboxfull/,
+    '01011' => qr/expired/,
+    '01012' => qr/filtered/,
+};
+
 use_ok $c;
 
 if( -d $d ) {
@@ -19,9 +34,11 @@ if( -d $d ) {
 
         my $emailfn = sprintf( "%s/%s", $d, $e );
         my $mailbox = undef;
+        my $emindex = $e;
 
         next unless -f $emailfn;
-        $mailbox = Sisimai::Mail->new( $emailfn );
+        $mailbox =  Sisimai::Mail->new( $emailfn );
+        $emindex =~ s/\A(\d+)[-].*[.]eml/$1/;
 
         while( my $r = $mailbox->read ) {
 
@@ -40,7 +57,7 @@ if( -d $d ) {
                 ok defined $f->alias, sprintf( "(%s) alias = %s", $e, $f->alias );
 
                 ok defined $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
-                ok length $f->reason, sprintf( "(%s) reason = %s", $e, $f->reason );
+                like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
                 isa_ok $f->timestamp, 'Time::Piece';
                 $t = $f->timestamp;
