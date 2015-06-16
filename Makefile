@@ -23,9 +23,10 @@ RM    := rm -f
 MP    := /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 GIT   := /usr/bin/git
 
-EMAIL_PARSER := ./tmp/emparser -fjson
+EMAIL_PARSER := ./tmp/emparser
 EMAIL_SAMPLE := ./tmp/sample
 FOR_EMPARSER := ./tmp/data
+PARSERLOGDIR := ./tmp/log
 FOR_MAKETEST := ./eg/maildir-as-a-sample/new
 CRLF_SAMPLES := ./eg/maildir-as-a-sample/dos
 CRFORMATMAIL := ./eg/maildir-as-a-sample/mac
@@ -58,6 +59,43 @@ author-test:
 cover-test:
 	cover -test
 
+release-test:
+	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
+	$(MAKE) clean
+	$(MINIL) test
+	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
+	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
+
+dist:
+	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
+	$(MAKE) clean
+	$(MINIL) dist
+	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
+	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
+
+push:
+	for G in `grep -E '^[[]remote' .git/config | cut -d' ' -f2 | tr -d '"]'`; do \
+		$(GIT) push --tags $$G master; \
+	done
+
+cpanm:
+	$(WGET) $(CPANM) || $(CURL) $(CPANM)
+	test -f ./$@ && $(CHMOD) a+x ./$@
+
+install-from-cpan: cpanm
+	sudo ./cpanm $(NAME)
+
+install-from-local:
+	sudo ./cpanm .
+
+# -----------------------------------------------------------------------------
+#  _____                    _          __                  _                _   
+# |_   _|_ _ _ __ __ _  ___| |_ ___   / _| ___  _ __    __| | _____   _____| |  
+#   | |/ _` | '__/ _` |/ _ \ __/ __| | |_ / _ \| '__|  / _` |/ _ \ \ / / _ \ |  
+#   | | (_| | | | (_| |  __/ |_\__ \ |  _| (_) | |    | (_| |  __/\ V /  __/ |_ 
+#   |_|\__,_|_|  \__, |\___|\__|___/ |_|  \___/|_|     \__,_|\___| \_/ \___|_(_)
+#                |___/                                                          
+# -----------------------------------------------------------------------------
 accuracy-table:
 	@ printf " %s\n" 'bounceHammer 2.7.13'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
@@ -207,25 +245,6 @@ update-sample-emails:
 		nkf -Lm $$v > $(CRFORMATMAIL)/$$f ;\
 	done
 
-release-test:
-	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
-	$(MAKE) clean
-	$(MINIL) test
-	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
-	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
-
-dist:
-	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
-	$(MAKE) clean
-	$(MINIL) dist
-	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
-	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
-
-push:
-	for G in `grep -E '^[[]remote' .git/config | cut -d' ' -f2 | tr -d '"]'`; do \
-		$(GIT) push --tags $$G master; \
-	done
-
 sample:
 	for v in `$(LS) $(MTAMODULEDIR)/*.pm`; do \
 		MTA=`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
@@ -248,8 +267,20 @@ sample:
 		$(CP) $(FOR_EMPARSER)/$$v/* $(EMAIL_SAMPLE)/$$v/ ;\
 	done
 
+parser-log:
+	$(MKDIR) $(PARSERLOGDIR)
+	for v in `$(LS) $(FOR_EMPARSER)`; do \
+		$(CP) /dev/null $(PARSERLOGDIR)/$$v.log; \
+		for r in `find $(FOR_EMPARSER)/$$v -type f -name '*.eml'`; do \
+			echo $$r; \
+			echo $$r >> $(PARSERLOGDIR)/$$v.log; \
+			$(EMAIL_PARSER) -Fddp $$r | grep -E 'reason|diagnosticcode|deliverystatus' >> $(PARSERLOGDIR)/$$v.log; \
+			echo >> $(PARSERLOGDIR)/$$v.log; \
+		done; \
+	done
+
 profile:
-	$(PERL) -d:NYTProf $(EMAIL_PARSER) $(FOR_MAKETEST) $(MAILBOX_FILE) > /dev/null
+	$(PERL) -d:NYTProf $(EMAIL_PARSER) -Fjson $(FOR_MAKETEST) $(MAILBOX_FILE) > /dev/null
 	nytprofhtml
 
 benchmark-mbox:
@@ -263,16 +294,6 @@ loc:
 		z=`grep -E '^\s*#|^$$' $$v | wc -l | awk '{ print $$1 }'`; \
 		echo "$$x - ( $$x - $$y ) - $$z" | bc ;\
 	done | awk '{ s += $$1 } END { print s }'
-
-cpanm:
-	$(WGET) $(CPANM) || $(CURL) $(CPANM)
-	test -f ./$@ && $(CHMOD) a+x ./$@
-
-install-from-cpan: cpanm
-	sudo ./cpanm $(NAME)
-
-install-from-local:
-	sudo ./cpanm .
 
 clean:
 	yes | $(MINIL) clean
