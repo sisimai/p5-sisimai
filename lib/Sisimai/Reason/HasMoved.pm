@@ -7,7 +7,7 @@ sub text  { 'hasmoved' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = qr/The[ ]e[-]mail[ ]address[ ].+[ ]has[ ]been[ ]replaced[ ]by[ ]/ix;
+    my $regex = qr/address[ ].+[ ]has[ ]been[ ]replaced[ ]by[ ]/ix;
 
     return 1 if $argvs =~ $regex;
     return 0;
