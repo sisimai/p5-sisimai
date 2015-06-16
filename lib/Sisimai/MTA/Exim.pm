@@ -108,7 +108,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.17' }
+sub version     { '4.0.18' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -289,13 +289,14 @@ sub scan {
 
             REASON: while(1) {
                 # Detect the reason of bounce
-                if( $e->{'command'} eq 'MAIL' ) {
-                    # MAIL | Connected to 192.0.2.135 but sender was rejected.
-                    $e->{'reason'} = 'rejected';
-
-                } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
+                if( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
                     # HELO | Connected to 192.0.2.135 but my name was rejected.
                     $e->{'reason'} = 'blocked';
+
+                } elsif( $e->{'command'} eq 'MAIL' ) {
+                    # MAIL | Connected to 192.0.2.135 but sender was rejected.
+                    # $e->{'reason'} = 'rejected';
+                    $e->{'reason'} = 'onhold';
 
                 } else {
                     # Verify each regular expression of session errors
