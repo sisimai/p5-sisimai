@@ -228,7 +228,7 @@ sub resolve {
             require Sisimai::MIME;
 
             # Convert from string to hash reference
-            my $v          = $bouncedata->{'rfc822'} // $bodystring;
+            my $v          = $bouncedata->{'rfc822'} || $bodystring;
             my @rfc822text = split( "\n", $v );
             my $rfc822head = Sisimai::MTA->RFC822HEADERS;
             my $previousfn = ''; # Previous field name
