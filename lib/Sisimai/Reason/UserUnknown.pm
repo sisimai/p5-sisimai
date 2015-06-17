@@ -78,6 +78,7 @@ sub match {
              address
             |e[-]?mail[ ]address
             |local[- ]part
+            |mailbox
             |recipient
             |user
             )
