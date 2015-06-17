@@ -8,6 +8,7 @@ my $d = './tmp/data/de-einsundeins';
 my $h = undef;
 my $ReturnValue = {
     '01001' => qr/undefined/,
+    '01002' => qr/undefined/,
 };
 
 use_ok $c;

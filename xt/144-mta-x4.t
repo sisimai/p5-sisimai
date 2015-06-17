@@ -25,6 +25,8 @@ my $ReturnValue = {
     '01016' => qr/mailboxfull/,
     '01017' => qr/networkerror/,
     '01018' => qr/userunknown/,
+    '01019' => qr/filtered/,
+    '01020' => qr/mailboxfull/,
 };
 
 use_ok $c;

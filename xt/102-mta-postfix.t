@@ -151,6 +151,8 @@ my $ReturnValue = {
     '01142' => qr/blocked/,
     '01143' => qr/userunknown/,
     '01144' => qr/suspend/,
+    '01145' => qr/filtered/,
+    '01146' => qr/userunknown/,
 };
 
 use_ok $c;

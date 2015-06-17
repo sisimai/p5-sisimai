@@ -24,6 +24,8 @@ my $ReturnValue = {
     '01015' => qr/suspend/,
     '01016' => qr/suspend/,
     '01017' => qr/(?:suspend|filtered)/,
+    '01018' => qr/suspend/,
+    '01019' => qr/mailboxfull/,
 };
 
 use_ok $c;

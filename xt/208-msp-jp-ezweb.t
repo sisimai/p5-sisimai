@@ -125,6 +125,7 @@ my $ReturnValue = {
     '01116' => qr/filtered/,
     '01117' => qr/(?:filtered|suspend)/,
     '01118' => qr/suspend/,
+    '01119' => qr/filtered/,
 };
 
 use_ok $c;
