@@ -1,5 +1,26 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
+4.1.25
+    - Update message patterns at NoSpam, SystemError, Blocked, RelayingDenied,
+      NetworkError, MesgTooBig, SecurityError, Filtered, Suspend, MailboxFull,
+      and UserUnknown.
+    - Implement Sisimai::Reason::HasMoved.
+    - 2 emails bounced due to "expired" reason have been added as a sample for
+      issue #50.
+    - Fix bug in Sisimai::MTA::MailMarshalSMTP for a bounce mail which have no
+      boundary strings.
+    - Fix bug in Sisimai::MTA::Exim for setting an error reason decided by SMTP
+      MAIL command.
+    - Improved regular expression in Sisimai::RFC3464.
+    - Update Sisimai::MDA, add an error message pattern defined in dovecot 1.2,
+      dovecot/src/plugins/quota/quota.c.
+    - Add test code for sample emails in CRLF.
+    - Add sample emails which is an IDN email.
+    - Add sample emails which could not be parsed yet into eg/cannot-parse-yet/
+      directory and implement test code.
+    - Add sample emails which reason is "undefined" into eg/reason-is-undefined
+      directory and implement test code.
+
 4.1.24  Mon, 11 Jun 2015 22:20:59 +0900 (JST)
     - Improved fallback code in Sisimai::RFC3464.
     - Add message patterns at NoSpam and HostUnknown in Sisimai/Reason.
