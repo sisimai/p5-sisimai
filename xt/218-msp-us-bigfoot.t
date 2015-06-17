@@ -7,7 +7,7 @@ my $c = 'Sisimai::MSP::US::Bigfoot';
 my $d = './tmp/data/us-bigfoot';
 my $h = undef;
 my $ReturnValue = {
-    '01001' => qr/nospam/,
+    '01001' => qr/spamdetected/,
 };
 
 use_ok $c;

@@ -70,7 +70,7 @@ sub list {
             Reason/MailboxFull.pm
             Reason/MailerError.pm
             Reason/MesgTooBig.pm
-            Reason/NoSpam.pm
+            Reason/SpamDetected.pm
             Reason/NotAccept.pm
             Reason/NetworkError.pm
             Reason/OnHold.pm
