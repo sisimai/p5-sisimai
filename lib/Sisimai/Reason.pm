@@ -17,7 +17,8 @@ sub index {
     return [ qw|
         Blocked ContentError ExceedLimit Expired Filtered HostUnknown MailboxFull
         MailerError MesgTooBig NetworkError NotAccept OnHold Rejected RelayingDenied
-        NoSpam SecurityError Suspend SystemError SystemFull UserUnknown HasMoved
+        SpamDetected SecurityError Suspend SystemError SystemFull UserUnknown 
+        HasMoved
     | ];
 }
 
@@ -39,7 +40,7 @@ sub get {
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown', 
-        'Filtered', 'Rejected', 'HostUnknown', 'NoSpam', 'Blocked',
+        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'Blocked',
     ];
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
@@ -101,8 +102,9 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'NoSpam', 'SecurityError', 'SystemError', 'NetworkError', 
-        'Suspend', 'Expired', 'ContentError', 'HasMoved', 'NotAccept', 'MailerError',
+        'MailboxFull', 'SpamDetected', 'SecurityError', 'SystemError', 
+        'NetworkError', 'Suspend', 'Expired', 'ContentError', 'HasMoved', 
+        'NotAccept', 'MailerError',
     ];
     my $retryingto = __PACKAGE__->retry;
     push @$retryingto, 'userunknown';
@@ -267,6 +269,10 @@ The recipient's mailbox temporary disabled.
 =head2 C<networkerror>
 
 Network related errors such as DNS look up failure.
+
+=head2 C<spamdetected>
+
+The message was detected as a spam.
 
 =head2 C<systemerror>
 

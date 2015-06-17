@@ -1,9 +1,9 @@
-package Sisimai::Reason::NoSpam;
+package Sisimai::Reason::SpamDetected;
 use feature ':5.10';
 use strict;
 use warnings;
 
-sub text  { 'nospam' }
+sub text  { 'spamdetected' }
 sub match {
     # Rejected due to spam content in the message
     my $class = shift;
@@ -140,32 +140,32 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::NoSpam - Bounce reason is C<rejected> due to Spam content in 
+Sisimai::Reason::SpamDetected - Bounce reason is C<rejected> due to Spam content in 
 the message or not.
 
 =head1 SYNOPSIS
 
-    use Sisimai::Reason::NoSpam;
-    print Sisimai::Reason::NoSpam->match('550 spam detected');   # 1
+    use Sisimai::Reason::SpamDetected;
+    print Sisimai::Reason::SpamDetected->match('550 spam detected');   # 1
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::NoSpam checks the bounce reason is C<rejected> due to Spam 
+Sisimai::Reason::SpamDetected checks the bounce reason is C<rejected> due to Spam 
 content in the message or not. This class is called only Sisimai::Reason class.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<nospam>.
+C<text()> returns string: C<spamdetected>.
 
-    print Sisimai::Reason::NoSpam->text;  # nospam
+    print Sisimai::Reason::SpamDetected->text;  # spamdetected
 
 =head2 C<B<match( I<string> )>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
-    print Sisimai::Reason::NoSpam->match('550 Spam detected');   # 1
+    print Sisimai::Reason::SpamDetected->match('550 Spam detected');   # 1
 
 =head2 C<B<true( I<Sisimai::Data> )>>
 
