@@ -1,9 +1,10 @@
 Revision history for Sisimai/Core module of bouncehammer version 4
 
 4.1.25
-    - Update message patterns at NoSpam, SystemError, Blocked, RelayingDenied,
-      NetworkError, MesgTooBig, SecurityError, Filtered, Suspend, MailboxFull,
-      and UserUnknown.
+    - Reason name has been changed from "NoSpam" to "SpamDetected".
+    - Update message patterns at SpamDetected, SystemError, Blocked, Filtered,
+      RelayingDenied, NetworkError, MesgTooBig, SecurityError, UserUnknown and
+      Suspend.
     - Implement Sisimai::Reason::HasMoved.
     - 2 emails bounced due to "expired" reason have been added as a sample for
       issue #50.
