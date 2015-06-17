@@ -258,6 +258,7 @@ sub resolve {
                         if( $previousfn eq 'subject' ) {
                             # Subject: header
                             $rfc822part->{ $previousfn } .= $borderline.$e;
+
                         } else {
                             # Is not Subject header
                             $rfc822part->{ $previousfn } .= $e;
@@ -266,8 +267,8 @@ sub resolve {
 
                     } else {
                         # ASCII Characters only: Not MIME-Encoded
-                        $rfc822part->{ $previousfn } .= $e;
-                        $mimeborder->{ $previousfn }  = 0;
+                        $rfc822part->{ $previousfn }  .= $e;
+                        $mimeborder->{ $previousfn } //= 0;
                     }
                 }
             }
@@ -283,13 +284,20 @@ sub resolve {
 
                 } else {
                     # MIME-Encoded subject field or ASCII characters only
-                    if( Sisimai::MIME->is_mimeencoded( \$v ) ) {
-                        # MIME-Encoded subject such as ISO-2022-JP, UTF-8...
-                        my $r = [ $v ];
+                    my $r = [];
 
-                        $r = [ split( $borderline, $v ) ] if $mimeborder->{'subject'};
-                        $v = Sisimai::MIME->mimedecode( $r );
+                    if( $mimeborder->{'subject'} ) {
+                        # split the value of Subject by $borderline
+                        for my $m ( split( $borderline, $v ) ) {
+                            # Insert value to the array if the string is MIME
+                            # encoded text
+                            push @$r, $m if Sisimai::MIME->is_mimeencoded( \$m );
+                        }
+                    } else {
+                        # Subject line is not MIME encoded
+                        $r = [ $v ];
                     }
+                    $v = Sisimai::MIME->mimedecode( $r );
                 }
                 $rfc822part->{'subject'} = $v;
             } 
