@@ -234,6 +234,7 @@ my $ReturnValue = {
     '01225' => qr/expired/,
     '01226' => qr/filtered/,
     '01227' => qr/userunknown/,
+    '01228' => qr/undefined/,
 };
 use_ok $c;
 
