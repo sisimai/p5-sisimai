@@ -192,7 +192,8 @@ of Sisimai::Data instance.
 
 =head2 C<blocked>
 
-Clienet hostname: the argument of C<HELO/EHLO>, is rejected.
+Rejected SMTP session due to clienet hostname or IP address or the argument of 
+C<HELO/EHLO>.
 
 =head2 C<contenterror>
 
@@ -211,6 +212,11 @@ Delivery time has expired.
 =head2 C<filtered>
 
 The recipient address rejected at the end of DATA command.
+
+=head2 C<hasmoved>
+
+The recipient address has moved to another address or the value of C<Status>
+header or the value of C<deliverystatus> is 4.1.6 or 5.1.6.
 
 =head2 C<hostunknown>
 
@@ -237,7 +243,8 @@ Remote server does not accept email.
 
 =head2 C<onhold>
 
-Could not detect the reason of bounce.
+Could not detect the reason of bounce or deciding the reason is on hold due to
+lack of error messages.
 
 =head2 C<rejected>
 
@@ -259,7 +266,7 @@ The recipient's mailbox temporary disabled.
 
 =head2 C<networkerror>
 
-Network related errors.
+Network related errors such as DNS look up failure.
 
 =head2 C<systemerror>
 
