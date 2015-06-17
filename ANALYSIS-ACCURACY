@@ -44,7 +44,7 @@ MSP::US::Verizon ........    4/0004  1.0000  Verizon Wireless: http://www.verizo
 MSP::US::Yahoo ..........    0/0006  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    9/0032  0.2812  Abuse Feedback Reporting Format
-RFC3464 .................  122/0244  0.5000  Fallback Module for MTAs
+RFC3464 .................  122/0245  0.4980  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13       951/1490  0.6383
- Sisimai 4.1.25           1490/1490  1.0000
+ bounceHammer 2.7.13       951/1491  0.6378
+ Sisimai 4.1.25           1491/1491  1.0000
