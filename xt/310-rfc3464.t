@@ -242,6 +242,8 @@ my $ReturnValue = {
     '01233' => qr/mailererror/,
     '01234' => qr/filtered/,
     '01235' => qr/mailboxfull/,
+    '01236' => qr/expired/,
+    '01237' => qr/filtered/,
 };
 use_ok $c;
 
