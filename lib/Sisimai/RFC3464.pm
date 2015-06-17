@@ -44,7 +44,7 @@ my $RxEMS = qr{(?>                                          # Subject:
     )
 }xi;
 
-sub version     { '4.0.22' };
+sub version     { '4.0.23' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -327,7 +327,6 @@ sub scan {
 
             my $RxSkip = qr{(?>
                  \A[-]+=
-                |\A\\\*
                 |\A[\s\t]+\z
                 |\A\s*--
                 |\A\s+[=]\d+
@@ -390,10 +389,10 @@ sub scan {
                 last if $e =~ $RxRFC->{'endof'};
                 last if $e =~ $RxRFC->{'rfc822'};
                 last if $e =~ $RxEnd;
-                last if $e =~ m/\A[*]/;
 
                 next unless length $e;
                 next if $e =~ $RxSkip;
+                next if $e =~ m/\A[*]/;
 
                 if( $e =~ $RxAddr ) {
                     # May be an email address
