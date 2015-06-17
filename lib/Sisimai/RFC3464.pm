@@ -44,7 +44,7 @@ my $RxEMS = qr{(?>                                          # Subject:
     )
 }xi;
 
-sub version     { '4.0.23' };
+sub version     { '4.0.24' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -380,7 +380,7 @@ sub scan {
                 |You[ ]sent[ ]mail[ ]to[ ]
                 |Your[ ]message[ ]to[ ]
                 )
-                [<]?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?
+                [<"']?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>"']?
             }xi;
 
             my $b = $dscontents->[ -1 ];
