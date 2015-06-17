@@ -192,7 +192,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
-Sisimai can detect the following 20 bounce reasons.
+Sisimai can detect the following 22 bounce reasons.
 
 | Reason(理由)   | Description                            | 理由の説明                       |
 |----------------|----------------------------------------|----------------------------------|
@@ -207,9 +207,9 @@ Sisimai can detect the following 20 bounce reasons.
 | MailerError    | Mailer program error                   | メールプログラムのエラー         |
 | MesgTooBig     | Message size is too big(5.3.4)         | メールが大き過ぎる               |
 | NetworkError   | Network error: DNS or routing          | DNS等ネットワーク関係のエラー    |
-| NoSpam         | Detected a message as spam             | メールはスパムとして判定された   |
+| SpamDetected   | Detected a message as spam             | メールはスパムとして判定された   |
 | NotAccept      | Destinaion does not accept any message | 宛先ホストはメールを受けとらない |
-| OnHold         | Sisimai could not decide the reason    | エラー理由が明確に判定できず     |
+| OnHold         | Deciding the bounce reason is on hold  | エラー理由の特定は保留           |
 | Rejected       | Rejected due to envelope from address  | エンベロープFromで拒否された     |
 | RelayingDenied | Relay access denied                    | リレーの拒否                     |
 | SecurityError  | Virus detected or authentication error | ウィルスの検出または認証失敗     |
@@ -217,8 +217,9 @@ Sisimai can detect the following 20 bounce reasons.
 | SystemError    | Some error on the destination host     | 宛先サーバでのOSレベルのエラー   |
 | SystemFull     | Disk full on the destination host      | 宛先サーバのディスクが一杯       |
 | UserUnknown    | Recipient's address does not exist     | 宛先メールアドレスは存在しない   |
+| Undefined      | Could not decide the error reason      | バウンスした理由は特定出来ず     |
 
-Sisimaiは上記のエラー20種を検出出来ます。
+Sisimaiは上記のエラー22種を検出します。
 
 REPOSITORY | リポジトリ
 -----------------------
