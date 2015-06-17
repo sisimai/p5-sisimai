@@ -48,6 +48,7 @@ sub match {
             |rejected:[ ]mailbox[ ]would[ ]exceed[ ]maximum[ ]allowed[ ]storage
             )
         |The[ ]recipient[ ]mailbox[ ]has[ ]exceeded[ ]its[ ]disk[ ]space[ ]limit
+        |The[ ]user[']s[ ]space[ ]has[ ]been[ ]used[ ]up
         |too[ ]much[ ]mail[ ]data   # @docomo.ne.jp
         |user[ ](?:
              has[ ](?:

@@ -84,6 +84,7 @@ sub match {
         |user[ ](?:
              .+[ ]was[ ]not[ ]found
             |.+[ ]does[ ]not[ ]exist
+            |does[ ]not[ ]exist
             |missing[ ]home[ ]directory
             |not[ ]found     # 550 User not found. See http://mail.bigmir.net/err/2/
             |not[ ]known

@@ -22,7 +22,6 @@ sub match {
             |too[ ]large[ ]for[ ]this[ ].+
             )
         |size[ ]limit
-        |size=\d[ ]
         )
     }ix;
 
