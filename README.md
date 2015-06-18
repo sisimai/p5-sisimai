@@ -209,7 +209,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
-Sisimai can detect the following 22 bounce reasons.
+Sisimai can detect the following 23 bounce reasons.
 
 | Reason(理由)   | Description                            | 理由の説明                       |
 |----------------|----------------------------------------|----------------------------------|
@@ -217,6 +217,7 @@ Sisimai can detect the following 22 bounce reasons.
 | ContentError   | Invalid format email                   | 不正な形式のメール               |
 | ExceedLimit    | Message size exceeded the limit(5.2.3) | メールサイズの超過               |
 | Expired        | Delivery time expired                  | 配送時間切れ                     |
+| Feedback       | Bounced due to a complaint the message | 元メールへの苦情によるバウンス   |
 | Filtered       | Rejected after DATA command            | DATAコマンド以降で拒否された     |
 | HasMoved       | Destination mail addrees has moved     | 宛先メールアドレスは移動した     |
 | HostUnknown    | Unknown destination host name          | 宛先ホスト名が存在しない         |
@@ -236,7 +237,37 @@ Sisimai can detect the following 22 bounce reasons.
 | UserUnknown    | Recipient's address does not exist     | 宛先メールアドレスは存在しない   |
 | Undefined      | Could not decide the error reason      | バウンスした理由は特定出来ず     |
 
-Sisimaiは上記のエラー22種を検出します。
+Sisimaiは上記のエラー23種を検出します。
+
+Parsed data structure | 解析後のデータ構造
+------------------------------------------
+The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
+
+| Name           | Description                           | 値の説明                       |
+|----------------|---------------------------------------|--------------------------------|
+| token          | MD5 value of addresser and recipient  | 送信者と受信者のハッシュ値     |
+| lhost          | local host name(local MTA)            | 送信側MTAのホスト名            |
+| rhost          | Remote host name(remote MTA)          | 受信側MTAのホスト名            |
+| alias          | Alias of the recipient                | 受信者アドレスのエイリアス     |
+| listid         | List-Id: header of each ML            | List-Idヘッダの値              |
+| reason         | Detected bounce reason                | 検出したバウンスした理由       |
+| action         | The value of Action: header           | Action:ヘッダの値              |
+| subject        | Subject of the original message(UTF8) | 元メールのSubject(UTF-8)       |
+| timestamp      | Date: header in the original message  | 元メールのDate                 |
+| addresser      | The From address                      | 送信者のアドレス               |
+| recipient      | Recipient address which bounced       | バウンスした受信者のアドレス   |
+| messageid      | Message-Id: of the original message   | 元メールのMessage-Id           |
+| smtpagent      | MTA name(Sisimai::MTA::, MSP::)       | MTA名(Sisimai::MTA::,MSP::)    |
+| smtpcommand    | The last SMTP command in the session  | セッション中最後のSMTPコマンド |
+| destination    | The domain part of the "recipinet"    | recipientのドメイン部分        |
+| senderdomain   | the domain part of the "addresser"    | addresserのドメイン部分        |
+| feedbacktype   | Feedback Type                         | Feedback-Typeのフィールド      |
+| diagnosticcode | Error message                         | エラーメッセージ               |
+| diagnostictype | Error message type                    | エラーメッセージの種別         |
+| deliverystatus | Delivery Status(DSN)                  | 配信状態(DSN)の値              |
+| timezoneoffset | Time zone offset(seconds)             | タイムゾーンの時差             |
+
+上記の表は解析後のバウンスメールの構造(Sisimai::Data)です。
 
 REPOSITORY | リポジトリ
 -----------------------
