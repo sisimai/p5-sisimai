@@ -52,7 +52,7 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    require Sisimai::Time;
+    require Sisimai::DateTime;
 
     for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
@@ -159,9 +159,9 @@ sub scan {
                     if( $e =~ m/\A[Aa]rrival-[Dd]ate: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/ ) {
                         # Arrival-Date: 2011-08-12 01-05-05
                         $r .= 'Thu, '.$3.' ';
-                        $r .= Sisimai::Time->monthname(0)->[ int($2) - 1 ];
+                        $r .= Sisimai::DateTime->monthname(0)->[ int($2) - 1 ];
                         $r .= ' '.$1.' '.join( ':', $4, $5, $6 );
-                        $r .= ' '.Sisimai::Time->abbr2tz('CDT');
+                        $r .= ' '.Sisimai::DateTime->abbr2tz('CDT');
                     }
                     $connheader->{'date'} = $r;
                     $connvalues++;

@@ -12,7 +12,7 @@ use Sisimai::RFC5322;
 use Sisimai::String;
 use Sisimai::Reason;
 use Sisimai::Rhost;
-use Sisimai::Time;
+use Sisimai::DateTime;
 
 my $rwaccessors = [
     'token',            # (String) Message token/MD5 Hex digest value
@@ -205,7 +205,7 @@ sub make {
 
             while( my $v = shift @datevalues ) {
                 # Parse each date value in the array
-                $datestring = Sisimai::Time->parse( $v );
+                $datestring = Sisimai::DateTime->parse( $v );
                 last if $datestring;
             }
 
@@ -214,7 +214,7 @@ sub make {
                 if( $datestring =~ m/\A(.+)\s+([-+]\d{4})\z/ ) {
                     # Wed, 26 Feb 2014 06:05:48 -0500
                     $datestring = $1;
-                    $zoneoffset = Sisimai::Time->tz2second($2);
+                    $zoneoffset = Sisimai::DateTime->tz2second($2);
                     $p->{'timezoneoffset'} = $2;
                 }
             }
