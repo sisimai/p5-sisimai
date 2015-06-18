@@ -1,10 +1,10 @@
-Revision history for Sisimai/Core module of bouncehammer version 4
+Revision history for Sisimai/formerly known as bounceHammer version 4
 
 4.1.25
     - Reason name has been changed from "NoSpam" to "SpamDetected".
-    - Update message patterns at SpamDetected, SystemError, Blocked, Filtered,
-      RelayingDenied, NetworkError, MesgTooBig, SecurityError, UserUnknown and
-      Suspend.
+    - Package name has been changed from Sisimai::Time to Sisimai::DateTime.
+    - Implemnet Sisimai::Time again as a child class of Time::Piece.
+    - The class of "timestamp" is now Sisimai::Time in Sisimai::Data object.
     - Implement Sisimai::Reason::HasMoved.
     - 2 emails bounced due to "expired" reason have been added as a sample for
       issue #50.
@@ -15,6 +15,11 @@ Revision history for Sisimai/Core module of bouncehammer version 4
     - Improved regular expression in Sisimai::RFC3464.
     - Update Sisimai::MDA, add an error message pattern defined in dovecot 1.2,
       dovecot/src/plugins/quota/quota.c.
+    - Update message patterns at SpamDetected, SystemError, Blocked, Filtered,
+      RelayingDenied, NetworkError, MesgTooBig, MailboxFull, SecurityError, 
+      UserUnknown and Suspend.
+    - Fix code for detecting MIME encoded string in Sisimai::MIME.
+    - Implement TO_JSON method in Sisimai::Address for JSON module.
     - Add test code for sample emails in CRLF.
     - Add sample emails which is an IDN email.
     - Add sample emails which could not be parsed yet into eg/cannot-parse-yet/
