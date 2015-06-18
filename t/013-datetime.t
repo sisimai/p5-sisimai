@@ -2,11 +2,11 @@ use strict;
 no warnings 'once';
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::Time;
+use Sisimai::DateTime;
 use Time::Piece;
 require './t/999-values.pl';
 
-my $PackageName = 'Sisimai::Time';
+my $PackageName = 'Sisimai::DateTime';
 my $MethodNames = {
     'class' => [ 
         'to_second', 'monthname', 'hourname', 'dayofweek',
