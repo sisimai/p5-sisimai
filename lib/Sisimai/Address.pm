@@ -205,6 +205,14 @@ sub expand_alias {
     return $alias;
 }
 
+sub TO_JSON {
+    # @Description  Instance method for JSON::encode()
+    # @Param        None
+    # @Return       (String) The value of "address" accessor
+    my $self = shift;
+    return $self->address;
+}
+
 1;
 __END__
 
