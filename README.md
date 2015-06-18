@@ -91,6 +91,10 @@ if( defined $v ) {
 }
 ```
 
+```json
+[{"recipient": "kijitora@example.jp", "addresser": "shironeko@1jo.example.org", "feedbacktype": "", "action": "failed", "subject": "Nyaaaaan", "smtpcommand": "DATA", "diagnosticcode": "550 Unknown user kijitora@example.jp", "listid": "", "destination": "example.jp", "smtpagent": "Courier", "lhost": "1jo.example.org", "deliverystatus": "5.0.0", "timestamp": 1291954879, "messageid": "201012100421.oBA4LJFU042012@1jo.example.org", "diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "filtered", "token": "ce999a4c869e3f5e4d8a77b2e310b23960fb32ab", "alias": "", "senderdomain": "1jo.example.org", "rhost": "mfsmax.example.jp"}, {"diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "userunknown", "timestamp": 1381900535, "messageid": "E1C50F1B-1C83-4820-BC36-AC6FBFBE8568@example.org", "token": "9fe754876e9133aae5d20f0fd8dd7f05b4e9d9f0", "alias": "", "senderdomain": "example.org", "rhost": "mx.bouncehammer.jp", "action": "failed", "addresser": "kijitora@example.org", "recipient": "userunknown@bouncehammer.jp", "feedbacktype": "", "smtpcommand": "DATA", "subject": "バウンスメールのテスト(日本語)", "destination": "bouncehammer.jp", "listid": "", "diagnosticcode": "550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown", "deliverystatus": "5.1.1", "lhost": "p0000-ipbfpfx00kyoto.kyoto.example.co.jp", "smtpagent": "Sendmail"}]
+```
+
 上記のようにSisimaiのmake()メソッドをmboxかMaildirのPATHを引数にして実行すると
 解析結果が配列リファレンスで返ってきます。
 
@@ -98,12 +102,12 @@ if( defined $v ) {
 Differences between ver.2 and ver.4 | 新旧の違い
 ------------------------------------------------
 The followings are the differences between version 2 (bounceHammer 2.7.13) and
-version 4 (Sisimai).
+Sisimai.
 
 | Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
 | Command line tools                             | OK            | N/A         |
-| Modules for Commercial MTAs                    | N/A           | Included    |
+| Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | OK            | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A(1)      |
 | Analysis accuracy ratio(2)                     | 0.64          | 1.00        |
@@ -124,12 +128,12 @@ version 4 (Sisimai).
 2. See ./ANALYSIS-ACCURACY
 3. YAML format is available if "YAML" module has been installed
 
-公開中のbouncehammer version 2.7.13とversion 4(シシマイ)は下記のような違いがあります。
+公開中のbouncehammer version 2.7.13とSisimai(シシマイ)は下記のような違いがあります。
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
 | コマンドラインツール                           | あり          | 無し        |
-| 商用MTA対応解析モジュール                      | 無し          | あり(標準)  |
+| 商用MTAとMSP対応解析モジュール                 | 無し          | あり(標準)  |
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(1)     |
 | 解析精度の割合(2)                              | 0.64          | 1.00        |
