@@ -46,8 +46,7 @@ __END__
 
 =head1 NAME
 
-Sisimai - Analyzing email bounces and generate structured data in a JSON format
-from parsed bounce messages, Is the module formerly known as bounceHammer.
+Sisimai - Mail Analyzing Interface for bounce mails.
 
 =head1 SYNOPSIS
 
@@ -56,7 +55,7 @@ from parsed bounce messages, Is the module formerly known as bounceHammer.
 =head1 DESCRIPTION
 
 Sisimai is the system formerly known as C<bounceHammer> 4, is a Pelr module for
-analyzing email bounce and generate structured data in a JSON format (YAML is 
+analyzing bounce emails and generate structured data in a JSON format (YAML is 
 also available if "YAML" module is installed on your system) from parsed bounce
 messages. C<Sisimai> is a coined word: Sisi (the number 4 is pronounced "Si" in
 Japanese) and MAI (acronym of "Mail Analyzing Interface").
@@ -72,13 +71,25 @@ messages like following.
     if( defined $v ) {
         for my $e ( @$v ) {
             print ref $e;                   # Sisimai::Data
-            print $e->recipient->address;   # kijitora@example.jp
+            print ref $e->recipient;        # Sisimai::Address
+            print ref $e->timestamp;        # Sisimai::Time
+
+            print $e->addresser->address;   # shironeko@example.org # From
+            print $e->recipient->address;   # kijitora@example.jp   # To
+            print $e->recipient->host;      # example.jp
+            print $e->deliverystatus;       # 5.1.1
             print $e->reason;               # userunknown
 
             my $h = $e->damn;               # Convert to HASH reference
             my $j = $e->dump('json');       # Convert to JSON string
             my $y = $e->dump('yaml');       # Convert to YAML string
         }
+
+        # OR
+        use JSON '-convert_blessed_universally';
+        my $json = JSON->new->allow_blessed->convert_blessed;
+
+        printf "%s\n", $json->encode( $v );
     }
 
 =head1 SEE ALSO
