@@ -33,7 +33,7 @@ CRFORMATMAIL := ./eg/maildir-as-a-sample/mac
 MAILBOX_FILE := ./eg/mbox-as-a-sample
 MTAMODULEDIR := ./lib/$(NAME)/MTA
 MSPMODULEDIR := ./lib/$(NAME)/MSP
-ACCURACYLIST := ./ANALYSIS-ACCURACY
+PRECISIONTAB := ./ANALYTICAL-PRECISION
 INDEX_LENGTH := 24
 DESCR_LENGTH := 48
 
@@ -158,10 +158,10 @@ accuracy-table:
 	done
 	@ printf "%s\n" '-------------------------------------------------------------------------------'
 
-update-analysis-accuracy: sample
-	$(CP) /dev/null $(ACCURACYLIST)
-	make accuracy-table >> $(ACCURACYLIST)
-	grep '^[A-Z]' $(ACCURACYLIST) | tr '/' ' ' | \
+update-analytical-precision-table: sample
+	$(CP) /dev/null $(PRECISIONTAB)
+	make accuracy-table >> $(PRECISIONTAB)
+	grep '^[A-Z]' $(PRECISIONTAB) | tr '/' ' ' | \
 		awk ' { \
 				x += $$3; \
 				y += $$4; \
@@ -173,7 +173,7 @@ update-analysis-accuracy: sample
 					"bounceHammer 2.7.13     ", x, y, x / y, \
 					"Sisimai", sisimai_ver, " ", y, y, 1 ); \
 			} ' \
-			>> $(ACCURACYLIST)
+			>> $(PRECISIONTAB)
 
 mta-module-table:
 	@ printf "%s\n"  '| Module Name(Sisimai::)   | Description                                       |'
