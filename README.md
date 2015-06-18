@@ -22,17 +22,17 @@ bounceHammer version 4として開発していたものであり、Version 4な�
 
 Features | 主な機能
 -------------------
-* __Convert various formatted bounce mails to structured data | エラーメールをデータ構造に変換__
+* __Convert bounce mails to structured data__ | __エラーメールをデータ構造に変換__
   * Supported format are Perl, JSON, and YAML | Perlのデータ形式とJSON,YAMLに対応
-* __Easy to install, use. | インストールも使用も簡単__
+* __Easy to install, use.__ | __インストールも使用も簡単__
   * cpanm
   * git clone
-* __High analytical precision | 高い解析精度__
+* __High analytical precision__ | __高い解析精度__
   * Support 20 known MTAs and 4 unknown MTAs | 24種類のMTAに対応
   * Support 18 major MSPs(Mail Service Providers) | 18種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
   * Can detect 23 error reasons | 23種類のエラー理由を検出
-* __Faster than bounceHammer version 2.7.X | bounceHammer 2.7.Xよりも高速に解析__
+* __Faster than bounceHammer version 2.7.X__ | __bounceHammer 2.7.Xよりも高速に解析__
 
 
 System requirements | 動作環境
@@ -309,7 +309,7 @@ REPOSITORY | リポジトリ
 
 WEB SITE | サイト
 -----------------
-bounceHammer [bounceHammer | an open source software for handling email bounces](http://bouncehammer.jp/)
+[bounceHammer | an open source software for handling email bounces](http://bouncehammer.jp/)
 
 AUTHOR | 作者
 -------------
