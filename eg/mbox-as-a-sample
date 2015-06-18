@@ -52,7 +52,7 @@ Received: from USER-PC97 ([192.0.2.97])
 Message-ID: <AA406E7E18714AB2927DAACC24B47C4A@USER-PC97>
 From: "User1, For Example" <user1@example.jp>
 To: <domain-does-not-exist@example.gov>
-Subject: =?utf-8?B?44Kt44K444OI44Op?=
+Subject: キジトラ
 Date: Thu, 18 Sep 2008 17:53:55 +0900
 MIME-Version: 1.0
 Content-Type: text/plain;
@@ -129,7 +129,7 @@ Message-Id: <E9E9449A-4918-4B8B-8589-435230D67AC7@example.jp>
 Content-Type: text/plain; charset=US-ASCII; format=flowed
 To: recipient-address-does-not-exist@docomo.ne.jp
 From: "User2, For Example" <user2@example.jp>
-Subject: =?utf-8?B?44Kt44K444OI44Op?=
+Subject: キジトラ
 Date: Tue, 28 Apr 2009 08:17:45 +0900
 X-Mailer: Apple Mail (2.753.1)
 X-Virus-Scanned: ClamAV version 0.94.2, clamav-milter version 0.94.2 on 192.0.2.252
@@ -586,7 +586,7 @@ Received: from outgoing-smtp-4.example.co.jp ([192.0.2.4])
 X-BMTA-TYPE-ISP: 
 X-Mailer: Apple Mail (2.752.2)
 Date: Thu, 5 Feb 2009 18:39:26 +0900
-Subject: =?utf-8?B?44Ko44Op44O8?=
+Subject: エラー
 From: user <user@example.co.jp>
 To: the-recipient-does-not-exist-on-the-host@k.vodafone.ne.jp
 Content-Type: text/plain;charset=US-ASCII;format=flowed
@@ -2030,7 +2030,7 @@ Authentication-Results: mx.sp.example.jp; sender-id=pass header.from=Postmaster@
 To: admin@sp.example.jp
 From: Mail Administrator <Postmaster@mopera.net>
 Reply-To: Mail Administrator <Postmaster@mopera.net>
-Subject: =?ISO-2022-JP?B?GyRCJWEhPCVrQXc/LiUoJWkhPBsoQiAoRXJyb3IgbWVzc2FnZSkA?=
+Subject: メール送信エラー (Error message) 
 Date: Tue, 28 Apr 2009 11:51:03 +0900
 Message-ID: <20090428025103.QPTX17287.mapsmtag2.mopera.net@mapsmtag2>
 MIME-Version: 1.0
