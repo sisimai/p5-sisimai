@@ -44,7 +44,10 @@ sub match {
             |[ ].+[ ]in[ ]name[ ]directory
             )
         |non[- ]?existent[ ]user
-        |not[ ]a[ ]valid[ ]user[ ]here
+        |not[ ](?:
+             a[ ]valid[ ]user[ ]here
+            |a[ ]local[ ]address
+            )
         |rcpt[ ][<].+[>][ ]does[ ]not[ ]exist
         |recipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in
