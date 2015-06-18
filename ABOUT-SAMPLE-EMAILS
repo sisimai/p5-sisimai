@@ -93,6 +93,10 @@ Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 mailman-2.1.15/tests/bounces/sendmail_01.txt
 Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
+* rfc3464-24.eml
+mailman-2.1.15/tests/bounces/simple_24.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
 * sendmail-23.eml
 https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-spam.eml
 Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
