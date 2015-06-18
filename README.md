@@ -309,16 +309,19 @@ REPOSITORY | リポジトリ
 
 WEB SITE | サイト
 -----------------
-[bounceHammer | an open source software for handling email bounces](http://bouncehammer.jp/)
+Coming soon
+
 
 AUTHOR | 作者
 -------------
 [@azumakuniyuki](https://twitter.com/azumakuniyuki)
 
+
 COPYRIGHT | 著作権
 ------------------
 Copyright (C) 2014-2015 azumakuniyuki <perl.org@azumakuniyuki.org>,
 All Rights Reserved.
+
 
 LICENSE | ライセンス
 --------------------
