@@ -29,7 +29,7 @@ MAKE_TEST: {
             ok scalar @{ $maildir->inodes };
             $emindex++;
         }
-        ok $emindex > 1;
+        ok $emindex > 0;
         is $emindex, scalar @{ $maildir->inodes };
     }
 
