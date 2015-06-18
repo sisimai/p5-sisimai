@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.1.25
+4.1.25  Mon, 22 Jun 2015
     - Reason name has been changed from "NoSpam" to "SpamDetected".
     - Package name has been changed from Sisimai::Time to Sisimai::DateTime.
     - Implemnet Sisimai::Time again as a child class of Time::Piece.
