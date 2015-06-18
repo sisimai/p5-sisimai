@@ -44,7 +44,7 @@ my $RxEMS = qr{(?>                                          # Subject:
     )
 }xi;
 
-sub version     { '4.0.24' };
+sub version     { '4.0.25' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -343,6 +343,8 @@ sub scan {
                 |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
                 |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
                 |\AReceived:\s*
+                |\AReceived-From-MTA:\s*
+                |\AReporting-MTA:\s*
                 |\AReturn-Path:\s*
                 |\AA[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
                 |Attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
@@ -361,7 +363,7 @@ sub scan {
             my $RxAddr = qr{(?:
                  \A\s*
                 |\A["].+["]\s*
-                |\ARecipient:\s*
+                |\A\s*Recipient:\s*
                 |\A[ ]*Address:[ ]
                 |addressed[ ]to[ ]
                 |delivered[ ]to[ ]+
