@@ -269,6 +269,17 @@ The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
 
 上記の表は解析後のバウンスメールの構造(Sisimai::Data)です。
 
+Emails could not be parsed | 解析出来ないメール
+-----------------------------------------------
+Bounce mails which could not be parsed is in eg/cannot-parse-yet directory. 
+If you find any bounce email cannot be parsed using Sisimai, please add the
+email into the directory and send Pull-Request to this repository.
+
+解析出来ないメールはeg/cannot-parse-yetディレクトリにはいっています。もしも
+Sisimaiで解析出来ないメールを見つけたら、このディレクトリに追加してPull-Request
+を送ってください。
+
+
 REPOSITORY | リポジトリ
 -----------------------
 [github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
