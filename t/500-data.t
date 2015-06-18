@@ -39,7 +39,7 @@ MAKE_TEST: {
             is $e->reason, 'userunknown', 'reason = '.$e->reason;
             ok length $e->subject, 'subject = '.$e->subject;
 
-            isa_ok $e->timestamp, 'Time::Piece';
+            isa_ok $e->timestamp, 'Sisimai::Time';
             is $e->timestamp->year, 2014, 'timestamp->year = '.$e->timestamp->year;
             is $e->timestamp->month, 'Jun', 'timestamp->month = '.$e->timestamp->month;
             is $e->timestamp->mday, 21, 'timestamp->mday = '.$e->timestamp->mday;
@@ -92,7 +92,7 @@ MAKE_TEST: {
             is $e->reason, 'rejected', 'reason = '.$e->reason;
             ok length $e->subject, 'subject = '.$e->subject;
 
-            isa_ok $e->timestamp, 'Time::Piece';
+            isa_ok $e->timestamp, 'Sisimai::Time';
             is $e->timestamp->year, 2009, 'timestamp->year = '.$e->timestamp->year;
             is $e->timestamp->month, 'Apr', 'timestamp->month = '.$e->timestamp->month;
             is $e->timestamp->mday, 29, 'timestamp->mday = '.$e->timestamp->mday;

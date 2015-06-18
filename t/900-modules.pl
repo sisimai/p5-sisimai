@@ -89,6 +89,7 @@ sub list {
         Rhost.pm
             Rhost/GoogleApps.pm
         String.pm
+        Time.pm
     | ];
 
     push @$v, 'Sisimai.pm';

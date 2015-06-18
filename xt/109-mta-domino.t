@@ -58,7 +58,7 @@ if( -d $d ) {
                 ok defined $f->deliverystatus, sprintf( "(%s) deliverystatus = %s", $e, $f->deliverystatus );
                 like $f->reason, $ReturnValue->{ $emindex }, sprintf( "(%s) reason = %s", $e, $f->reason );
 
-                isa_ok $f->timestamp, 'Time::Piece';
+                isa_ok $f->timestamp, 'Sisimai::Time';
                 $t = $f->timestamp;
                 like $t->year, qr/\A\d{4}\z/, sprintf( "(%s) timestamp->year = %s", $e, $t->year );
                 like $t->month, qr/\A\w+\z/, sprintf( "(%s) timestamp->month = %s", $e, $t->month );
