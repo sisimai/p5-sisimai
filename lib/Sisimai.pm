@@ -85,7 +85,7 @@ messages like following.
             my $y = $e->dump('yaml');       # Convert to YAML string
         }
 
-        # OR
+        # Dump entire list as a JSON 
         use JSON '-convert_blessed_universally';
         my $json = JSON->new->allow_blessed->convert_blessed;
 
@@ -96,6 +96,10 @@ messages like following.
 
 L<Sisimai::Mail> - Mailbox or Maildir object
 L<Sisimai::Data> - Parsed data object
+
+=head1 REPOSITORY
+
+L<https://github.com/azumakuniyuki/p5-Sisimai> - Sisimai on GitHub
 
 =head1 AUTHOR
 
