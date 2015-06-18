@@ -22,17 +22,17 @@ bounceHammer version 4として開発していたものであり、Version 4な�
 
 Features | 主な機能
 -------------------
-* Convert various formatted bounce mails to structured data | エラーメールをデータ構造に変換
+* __Convert various formatted bounce mails to structured data | エラーメールをデータ構造に変換__
   * Supported format are Perl, JSON, and YAML | Perlのデータ形式とJSON,YAMLに対応
-* Easy to install, use. | インストールも使用も簡単
+* __Easy to install, use. | インストールも使用も簡単__
   * cpanm
   * git clone
-* High analytical precision | 高い解析精度
+* __High analytical precision | 高い解析精度__
   * Support 20 known MTAs and 4 unknown MTAs | 24種類のMTAに対応
   * Support 18 major MSPs(Mail Service Providers) | 18種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
   * Can detect 23 error reasons | 23種類のエラー理由を検出
-* Faster than bounceHammer version 2.7.X | bounceHammer 2.7.Xよりも高速に解析
+* __Faster than bounceHammer version 2.7.X | bounceHammer 2.7.Xよりも高速に解析__
 
 
 System requirements | 動作環境
@@ -53,8 +53,7 @@ Sisimaiは上記のモジュールに依存しています。
 Install | インストール
 ----------------------
 
-From CPAN
-=========
+### From CPAN
 
     % sudo cpanm Sisimai
     --> Working on Sisimai
@@ -64,8 +63,7 @@ From CPAN
     % perldoc -l Sisimai
     /usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
 
-From GitHub
-===========
+### From GitHub
     
     % cd /usr/local/src
     % git clone https://github.com/azumakuniyuki/p5-Sisimai.git
