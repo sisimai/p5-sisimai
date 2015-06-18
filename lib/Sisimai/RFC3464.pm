@@ -314,7 +314,6 @@ sub scan {
 
     BODY_PARSER_FOR_FALLBACK: {
         # Fallback, parse entire message body
-
         unless( $recipients ) {
             # Failed to get a recipient address at code above
             $match = 1 if $mhead->{'from'}        =~ $RxEMF;
@@ -366,23 +365,27 @@ sub scan {
                 |\A\s*Recipient:\s*
                 |\A[ ]*Address:[ ]
                 |addressed[ ]to[ ]
+                |Could[ ]not[ ]be[ ]delivered[ ]to:[ ]
                 |delivered[ ]to[ ]+
                 |delivery[ ]failed:[ ]
+                |Did[ ]not[ ]reach[ ]the[ ]following[ ]recipient:[ ]
                 |Error-for:[ ]+
                 |Failed[ ]Recipient:[ ]
+                |Failed[ ]to[ ]deliver[ ]to[ ]
                 |generated[ ]from[ ]
                 |Intended[ ]recipient:[ ]
                 |Mailbox[ ]is[ ]full:[ ]
                 |RCPT[ ]To:
                 |SMTP[ ]Server[ ][<].+[>][ ]rejected[ ]recipient[ ]
                 |The[ ]following[ ]recipients[ ]returned[ ]permanent[ ]errors:[ ]
+                |The[ ]following[ ]message[ ]to[ ]
                 |Unknown[ ]User:[ ]
                 |undeliverable[ ]to[ ]
                 |Undeliverable[ ]Address:[ ]*
                 |You[ ]sent[ ]mail[ ]to[ ]
                 |Your[ ]message[ ]to[ ]
                 )
-                [<"']?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>"']?
+                ['"]?[<]?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
             }xi;
 
             my $b = $dscontents->[ -1 ];
