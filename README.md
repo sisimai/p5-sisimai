@@ -10,20 +10,35 @@
 
 What is Sisimai ? | シシマイ?
 =============================
+Sisimai is a Perl module for analyzing RFC822 bounce emails and generating
+structured data from parsed results. Sisimai is the system formerly known as
+bounceHammer 4. "Sisimai" is a coined word: Sisi (the number 4 is pronounced
+"Si" in Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
-Sisimai is the system formerly known as bounceHammer 4, is a Perl module for 
-analyzing bounce emails and output parsed results as a JSON format. "Sisimai"
-is a coined word: Sisi (the number 4 is pronounced "Si" in Japanese) and MAI
-(acronym of "Mail Analyzing Interface").
+Sisimai(シシマイ)はRFC822準拠(それ以外も)のエラーメールを解析し、解析結果を
+データ構造に変換するインターフェイスを提供するPerlモジュールです。"シシマイ"は
+bounceHammer version 4として開発していたものであり、Version 4なので"シ"から
+始まりマイ(MAI: Mail Analyzing Interface)を含む名前になりました。
 
-"シシマイ"はbounceHammer version 4として開発していたエラーメール解析モジュール
-で、解析結果をJSONで出力します。Version 4なので"シ"から始まりマイ(MAI: Mail 
-Analyzing Interface)を含む名前になりました。
+Features | 主な機能
+-------------------
+* Convert various formatted bounce mails to structured data | エラーメールをデータ構造に変換
+  * Supported format are Perl, JSON, and YAML | Perlのデータ形式とJSON,YAMLに対応
+* Easy to install, use. | インストールも使用も簡単
+  * cpanm
+  * git clone
+* High analytical precision | 高い解析精度
+  * Support 20 known MTAs and 4 unknown MTAs | 24種類のMTAに対応
+  * Support 18 major MSPs(Mail Service Providers) | 18種類の著名なMSPに対応
+  * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
+  * Can detect 23 error reasons | 23種類のエラー理由を検出
+* Faster than bounceHammer version 2.7.X | bounceHammer 2.7.Xよりも高速に解析
+
 
 System requirements | 動作環境
 ------------------------------
-
 * [Perl 5.10.1 or later](http://www.perl.org/)
+
 
 Dependencies | 依存モジュール
 -----------------------------
@@ -34,8 +49,12 @@ Sisimai relies on:
 
 Sisimaiは上記のモジュールに依存しています。
 
+
 Install | インストール
 ----------------------
+
+From CPAN
+=========
 
     % sudo cpanm Sisimai
     --> Working on Sisimai
@@ -45,7 +64,8 @@ Install | インストール
     % perldoc -l Sisimai
     /usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
 
-OR
+From GitHub
+===========
     
     % cd /usr/local/src
     % git clone https://github.com/azumakuniyuki/p5-Sisimai.git
@@ -83,7 +103,7 @@ if( defined $v ) {
         print $e->dump('json');         # JSON formatted bounce data
     }
 
-    # OR
+    # Dump entire list as a JSON 
     use JSON '-convert_blessed_universally';
     my $json = JSON->new->allow_blessed->convert_blessed;
 
@@ -99,8 +119,8 @@ if( defined $v ) {
 解析結果が配列リファレンスで返ってきます。
 
 
-Differences between ver.2 and ver.4 | 新旧の違い
-------------------------------------------------
+Differences between ver.2 and Sisimai | 新旧の違い
+--------------------------------------------------
 The followings are the differences between version 2 (bounceHammer 2.7.13) and
 Sisimai.
 
@@ -125,7 +145,7 @@ Sisimai.
 | Support Contract provided by Developer         | Available     | Coming soon |
 
 1. Implement yourself with using DBI or any O/R Mapper you like
-2. See ./ANALYSIS-ACCURACY
+2. See ./ANALYTICAL-PRECISION
 3. YAML format is available if "YAML" module has been installed
 
 公開中のbouncehammer version 2.7.13とSisimai(シシマイ)は下記のような違いがあります。
@@ -151,8 +171,9 @@ Sisimai.
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
 1. DBIまたは好きなORMを使って自由に実装してください
-2. ./ANALYSIS-ACCURACY を参照
+2. ./ANALYTICAL-PRECISIONを参照
 3. "YAML"モジュールが入っていればYAMLでの出力も可能
+
 
 MTA/MSP Modules | MTA/MSPモジュール一覧
 ---------------------------------------
@@ -172,9 +193,11 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | MTA::MailMarshalSMTP     | Trustwave Secure Email Gateway                    |
 | MTA::McAfee              | McAfee Email Appliance                            |
 | MTA::MessagingServer     | Oracle Communications Messaging Server            |
+| MTA::mFILTER             | Digital Arts m-FILTER                             |
 | MTA::Notes               | Lotus Notes                                       |
 | MTA::OpenSMTPD           | OpenSMTPD                                         |
 | MTA::Postfix             | Postfix                                           |
+| MTA::qmail               | qmail                                             |
 | MTA::Sendmail            | V8Sendmail: /usr/sbin/sendmail                    |
 | MTA::SurfControl         | WebSense SurfControl                              |
 | MTA::V5sendmail          | Sendmail version 5                                |
@@ -182,8 +205,6 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | MTA::X2                  | Unknown MTA #2                                    |
 | MTA::X3                  | Unknown MTA #3                                    |
 | MTA::X4                  | Unknown MTA #4 qmail clones                       |
-| MTA::mFILTER             | Digital Arts m-FILTER                             |
-| MTA::qmail               | qmail                                             |
 | MSP::DE::EinsUndEins     | 1&1: http://www.1and1.de                          |
 | MSP::DE::GMX             | GMX: http://www.gmx.net                           |
 | MSP::JP::Biglobe         | BIGLOBE: http://www.biglobe.ne.jp                 |
@@ -207,6 +228,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 
 上記はSisimaiに含まれてるMTA/MSP(メールサービスプロバイダ)モジュールの一覧です。
 
+
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
 Sisimai can detect the following 23 bounce reasons.
@@ -217,7 +239,7 @@ Sisimai can detect the following 23 bounce reasons.
 | ContentError   | Invalid format email                   | 不正な形式のメール               |
 | ExceedLimit    | Message size exceeded the limit(5.2.3) | メールサイズの超過               |
 | Expired        | Delivery time expired                  | 配送時間切れ                     |
-| Feedback       | Bounced due to a complaint the message | 元メールへの苦情によるバウンス   |
+| Feedback       | Bounced for a complaint of the message | 元メールへの苦情によるバウンス   |
 | Filtered       | Rejected after DATA command            | DATAコマンド以降で拒否された     |
 | HasMoved       | Destination mail addrees has moved     | 宛先メールアドレスは移動した     |
 | HostUnknown    | Unknown destination host name          | 宛先ホスト名が存在しない         |
@@ -239,6 +261,7 @@ Sisimai can detect the following 23 bounce reasons.
 
 Sisimaiは上記のエラー23種を検出します。
 
+
 Parsed data structure | 解析後のデータ構造
 ------------------------------------------
 The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
@@ -259,8 +282,8 @@ The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
 | messageid      | Message-Id: of the original message   | 元メールのMessage-Id           |
 | smtpagent      | MTA name(Sisimai::MTA::, MSP::)       | MTA名(Sisimai::MTA::,MSP::)    |
 | smtpcommand    | The last SMTP command in the session  | セッション中最後のSMTPコマンド |
-| destination    | The domain part of the "recipinet"    | recipientのドメイン部分        |
-| senderdomain   | the domain part of the "addresser"    | addresserのドメイン部分        |
+| destination    | The domain part of the "recipinet"    | "recipient"のドメイン部分      |
+| senderdomain   | the domain part of the "addresser"    | "addresser"のドメイン部分      |
 | feedbacktype   | Feedback Type                         | Feedback-Typeのフィールド      |
 | diagnosticcode | Error message                         | エラーメッセージ               |
 | diagnostictype | Error message type                    | エラーメッセージの種別         |
@@ -268,6 +291,7 @@ The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
 | timezoneoffset | Time zone offset(seconds)             | タイムゾーンの時差             |
 
 上記の表は解析後のバウンスメールの構造(Sisimai::Data)です。
+
 
 Emails could not be parsed | 解析出来ないメール
 -----------------------------------------------
@@ -284,9 +308,10 @@ REPOSITORY | リポジトリ
 -----------------------
 [github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
 
+
 WEB SITE | サイト
 -----------------
-[bounceHammer | an open source software for handling email bounces](http://bouncehammer.jp/)
+bounceHammer [bounceHammer | an open source software for handling email bounces](http://bouncehammer.jp/)
 
 AUTHOR | 作者
 -------------
