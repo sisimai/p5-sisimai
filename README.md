@@ -12,12 +12,13 @@ What is Sisimai ? | シシマイ?
 =============================
 
 Sisimai is the system formerly known as bounceHammer 4, is a Perl module for 
-analyzing email bounce. "Sisimai" is a coined word: Sisi (the number 4 is 
-pronounced "Si" in Japanese) and MAI (acronym of "Mail Analyzing Interface").
+analyzing bounce emails and output parsed results as a JSON format. "Sisimai"
+is a coined word: Sisi (the number 4 is pronounced "Si" in Japanese) and MAI
+(acronym of "Mail Analyzing Interface").
 
 "シシマイ"はbounceHammer version 4として開発していたエラーメール解析モジュール
-です。Version 4なので"シ"から始まりマイ(MAI: Mail Analyzing Interface)を含む
-名前になりました。
+で、解析結果をJSONで出力します。Version 4なので"シ"から始まりマイ(MAI: Mail 
+Analyzing Interface)を含む名前になりました。
 
 System requirements | 動作環境
 ------------------------------
@@ -68,13 +69,25 @@ my $v = Sisimai->make( '/path/to/mbox' );   # or Path to Maildir
 if( defined $v ) {
     for my $e ( @$v ) {
         print ref $e;                   # Sisimai::Data
-        print $e->recipient->address;   # kijitora@example.jp
+        print ref $e->recipient;        # Sisimai::Address
+        print ref $e->timestamp;        # Sisimai::Time
+
+        print $e->addresser->address;   # shironeko@example.org # From
+        print $e->recipient->address;   # kijitora@example.jp   # To
+        print $e->recipient->host;      # example.jp
+        print $e->deliverystatus;       # 5.1.1
         print $e->reason;               # userunknown
 
         my $h = $e->damn();             # Convert to HASH reference
         my $j = $e->dump('json');       # Convert to JSON string
         print $e->dump('json');         # JSON formatted bounce data
     }
+
+    # OR
+    use JSON '-convert_blessed_universally';
+    my $json = JSON->new->allow_blessed->convert_blessed;
+
+    printf "%s\n", $json->encode( $v );
 }
 ```
 
@@ -93,7 +106,7 @@ version 4 (Sisimai).
 | Modules for Commercial MTAs                    | N/A           | Included    |
 | WebUI/API                                      | OK            | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A(1)      |
-| Analysis accuracy ratio(2)                     | 0.65          | 1.00        |
+| Analysis accuracy ratio(2)                     | 0.64          | 1.00        |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
@@ -103,7 +116,7 @@ version 4 (Sisimai).
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies                                   | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 7500 lines  |
-| The number of tests in t/ directory            | 27365 tests   | 69900 tests |
+| The number of tests in t/ directory            | 27365 tests   | 70500 tests |
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
 
@@ -119,7 +132,7 @@ version 4 (Sisimai).
 | 商用MTA対応解析モジュール                      | 無し          | あり(標準)  |
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(1)     |
-| 解析精度の割合(2)                              | 0.65          | 1.00        |
+| 解析精度の割合(2)                              | 0.64          | 1.00        |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応    |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
@@ -129,7 +142,7 @@ version 4 (Sisimai).
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数                               | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 7500行      |
-| テスト件数(t/ディレクトリ)                     | 27365件       | 69900件     |
+| テスト件数(t/ディレクトリ)                     | 27365件       | 70500件     |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
