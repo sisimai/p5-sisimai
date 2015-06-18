@@ -7,6 +7,7 @@ sub list {
         Data.pm
             Data/JSON.pm
             Data/YAML.pm
+        DateTime.pm
         ISO3166.pm
         MIME.pm
         Mail.pm
@@ -88,7 +89,6 @@ sub list {
         Rhost.pm
             Rhost/GoogleApps.pm
         String.pm
-        Time.pm
     | ];
 
     push @$v, 'Sisimai.pm';
