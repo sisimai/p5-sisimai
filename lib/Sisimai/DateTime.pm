@@ -1,4 +1,4 @@
-package Sisimai::Time;
+package Sisimai::DateTime;
 use feature ':5.10';
 use strict;
 use warnings;
@@ -494,13 +494,13 @@ __END__
 
 =head1 NAME
 
-Sisimai::Time - Date and time utilities
+Sisimai::DateTime - Date and time utilities
 
 =head1 SYNOPSIS
 
-    use Sisimai::Time;
+    use Sisimai::DateTime;
     my $v = 'Sat Mar  1 13:47:46 JST 2014';
-    print Sisimai::Time->parse( $v );  # Sat, 1 Mar 2014 13:47:46 +0900
+    print Sisimai::DateTime->parse( $v );  # Sat, 1 Mar 2014 13:47:46 +0900
 
 =head1 DESCRIPTION
 
@@ -514,25 +514,25 @@ C<parse()> convert various date format string.
 
     my $x = 'Fri, 9 Apr 2004 04:01:03 +0000 (GMT)';
     my $y = '27 Apr 2009 08:08:54 +0900';
-    print Sisimai::Time->parse( $x );  # Fri, 9 Apr 2004 04:01:03 +0000
-    print Sisimai::Time->parse( $y );  # Thu, 27 Apr 2009 08:08:54 +0900
+    print Sisimai::DateTime->parse( $x );  # Fri, 9 Apr 2004 04:01:03 +0000
+    print Sisimai::DateTime->parse( $y );  # Thu, 27 Apr 2009 08:08:54 +0900
 
 =head2 C<B<to_second( I<String> )>>
 
 C<to_string()> convert a string to the value of seconds like followings:
 
-    print Sisimai::Time->to_second('1m');  # 60, 1 minute
-    print Sisimai::Time->to_second('2h');  # 7200, 2 hours
-    print Sisimai::Time->to_second('1d');  # 86400, 1 day
-    print Sisimai::Time->to_second('1w');  # 604800, 1 week
+    print Sisimai::DateTime->to_second('1m');  # 60, 1 minute
+    print Sisimai::DateTime->to_second('2h');  # 7200, 2 hours
+    print Sisimai::DateTime->to_second('1d');  # 86400, 1 day
+    print Sisimai::DateTime->to_second('1w');  # 604800, 1 week
 
 =head2 C<B<abbr2tz( I<Abbr> )>>
 
 C<abbr2tz()> convert a time zone abbreviation to 4 digit string of time zone.
 
-    print Sisimai::Time->abbr2tz('JST');   # +0900
-    print Sisimai::Time->abbr2tz('UTC');   # +0000
-    print Sisimai::Time->abbr2tz('CDT');   # -0500
+    print Sisimai::DateTime->abbr2tz('JST');   # +0900
+    print Sisimai::DateTime->abbr2tz('UTC');   # +0000
+    print Sisimai::DateTime->abbr2tz('CDT');   # -0500
 
 =head1 AUTHOR
 
