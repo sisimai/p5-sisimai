@@ -8,7 +8,7 @@ my $MethodNames = {
     'class' => [ 
         'new', 'parse', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
     ],
-    'object' => [ 'address', 'host', 'user', 'verp', 'alias' ],
+    'object' => [ 'address', 'host', 'user', 'verp', 'alias', 'TO_JSON' ],
 };
 my $NewInstance = $PackageName->new( 'maketest@bouncehammer.jp' );
 
@@ -95,6 +95,12 @@ MAKE_TEST: {
         my $v = $PackageName->new( $e );
         is $PackageName->expand_alias( $e ), $v->address, '->expand_alias = '.$v->address;
         is $v->alias, $e, '->alias = '.$e;
+    }
+
+    TO_JSON: {
+        my $e = 'nyaan@example.org';
+        my $v = $PackageName->new( $e );
+        is $v->TO_JSON, $e, '->TO_JSON = '.$e;
     }
 
     for my $e ( @$isnotemail ) {
