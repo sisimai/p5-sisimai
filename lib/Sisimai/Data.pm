@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Class::Accessor::Lite;
 use Module::Load '';
-use Time::Piece;
 
 use Sisimai::Address;
 use Sisimai::RFC3463;
@@ -12,6 +11,7 @@ use Sisimai::RFC5322;
 use Sisimai::String;
 use Sisimai::Reason;
 use Sisimai::Rhost;
+use Sisimai::Time;
 use Sisimai::DateTime;
 
 my $rwaccessors = [
@@ -23,7 +23,7 @@ my $rwaccessors = [
     'reason',           # (String) Bounce reason
     'action',           # (String) The value of Action header
     'subject',          # (String) UTF-8 Subject text
-    'timestamp',        # (Time::Piece) Date: in the original message
+    'timestamp',        # (Sisimai::Time) Date: in the original message
     'addresser',        # (Sisimai::Address) From: header in the original message
     'recipient',        # (Sisimai::Address) Final-Recipient: or To: in the original message
     'messageid',        # (String) Message-Id: header
@@ -80,8 +80,8 @@ sub new {
                             $argvs->{'timestamp'} );
 
     TIMESTAMP: {
-        # Create Time::Piece object
-        $thing->{'timestamp'} = localtime Time::Piece->new( $argvs->{'timestamp'} );
+        # Create Sisimai::Time object
+        $thing->{'timestamp'} = localtime Sisimai::Time->new( $argvs->{'timestamp'} );
         $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
     }
 
@@ -222,7 +222,7 @@ sub make {
             eval {
                 # Convert from the date string to an object then calculate time
                 # zone offset.
-                my $t = Time::Piece->strptime( $datestring, '%a, %d %b %Y %T' );
+                my $t = Sisimai::Time->strptime( $datestring, '%a, %d %b %Y %T' );
                 $p->{'timestamp'} = ( $t->epoch - $zoneoffset ) // undef; 
             };
         }
@@ -364,7 +364,7 @@ Sisimai::Data - Parsed data object
     for my $e ( @$data ) {
         print $e->reason;               # userunknown, mailboxfull, and so on.
         print $e->recipient->address;   # (Sisimai::Address) envelope recipient address
-        print $e->bonced->ymd           # (Time::Piece) Date of bounce
+        print $e->bonced->ymd           # (Sisimai::Time) Date of bounce
     }
 
 =head1 DESCRIPTION
@@ -385,7 +385,7 @@ including Sisimai::Data objects.
         for my $e ( @$data ) {
             print $e->reason;               # userunknown, mailboxfull, and so on.
             print $e->recipient->address;   # (Sisimai::Address) envelope recipient address
-            print $e->timestamp->ymd        # (Time::Piece) Date of the email bounce
+            print $e->timestamp->ymd        # (Sisimai::Time) Date of the email bounce
         }
     }
 
@@ -403,7 +403,7 @@ C<damn> convert the object to a hash reference.
 
 Sisimai::Data have the following properties:
 
-=head2 C<timestamp>(I<Time::Piece>)
+=head2 C<timestamp>(I<Sisimai::Time>)
 
 The value of Date: header of the original message or the bounce message.
 
