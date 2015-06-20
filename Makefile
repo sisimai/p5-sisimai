@@ -74,8 +74,9 @@ dist:
 	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
 
 push:
-	for G in `grep -E '^[[]remote' .git/config | cut -d' ' -f2 | tr -d '"]'`; do \
-		$(GIT) push --tags $$G master; \
+	@ for v in `grep -E '^[[]remote' .git/config | cut -d' ' -f2 | tr -d '"]'`; do \
+		printf "[%s]\n" $$v; \
+		$(GIT) push --tags $$v master; \
 	done
 
 cpanm:
