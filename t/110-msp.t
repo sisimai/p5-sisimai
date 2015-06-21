@@ -6,7 +6,7 @@ use Sisimai::MSP;
 my $PackageName = 'Sisimai::MSP';
 my $MethodNames = {
     'class' => [ 
-        'version', 'description', 'headerlist', 'scan', 'smtpagent', 'index',
+        'description', 'headerlist', 'scan', 'smtpagent', 'index',
         'SMTPCOMMAND', 'DELIVERYSTATUS', 'LONGFIELDS', 'RFC822HEADERS', 'EOM',
     ],
     'object' => [],
@@ -16,7 +16,6 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-    ok $PackageName->version;
     ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
     is $PackageName->scan, '', '->scan';
