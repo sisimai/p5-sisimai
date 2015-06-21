@@ -3,7 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub version     { '4.0.7' }
 sub description { '' }
 sub headerlist  { [] }
 
