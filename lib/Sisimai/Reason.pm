@@ -194,7 +194,7 @@ of Sisimai::Data instance.
 
 =head2 C<blocked>
 
-Rejected SMTP session due to clienet hostname or IP address or the argument of 
+Rejected SMTP session due to client hostname or IP address or the argument of 
 C<HELO/EHLO>.
 
 =head2 C<contenterror>
@@ -272,7 +272,7 @@ Network related errors such as DNS look up failure.
 
 =head2 C<spamdetected>
 
-The message was detected as a spam.
+The message was detected as a C<spam>.
 
 =head2 C<systemerror>
 
