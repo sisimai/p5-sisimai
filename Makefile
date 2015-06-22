@@ -64,14 +64,14 @@ release-test:
 	$(MAKE) clean
 	$(MINIL) test
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
-	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
+	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<github.com\@azumakuniyuki.org>|' META.json
 
 dist:
 	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
 	$(MAKE) clean
 	$(MINIL) dist
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
-	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<perl.org\@azumakuniyuki.org>|' META.json
+	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<github.com\@azumakuniyuki.org>|' META.json
 
 push:
 	@ for v in `grep -E '^[[]remote' .git/config | cut -d' ' -f2 | tr -d '"]'`; do \
