@@ -12,9 +12,9 @@ before_install:
 script:
   - perl Build.PL 
   - ./Build build 
-  - travis_wait 25 cover -test -report coveralls
+  - travis_wait 35 cover -test -report coveralls
 after_success:
-  - travis_wait 25 cover -report coveralls
+  - travis_wait 35 cover -report coveralls
 notifications:
   recipients:
     - travis-ci.org@azumakuniyuki.org
