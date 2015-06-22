@@ -1,10 +1,10 @@
 {
-   "abstract" : "It's a module for analyzing email bounces and generate structured data in a JSON format from parsed bounce messages, is a core module of bounceHammer version 4.",
+   "abstract" : "Mail Analyzing Interface for bounce mails.",
    "author" : [
       "azumakuniyuki"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.143240",
+   "generated_by" : "Minilla/v2.4.1, CPAN::Meta::Converter version 2.143240",
    "license" : [
       "freebsd"
    ],
@@ -58,10 +58,11 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "4.1.24",
+   "version" : "4.1.25",
    "x_contributors" : [
       "jcbf <underspell@gmail.com>",
       "Jonathan Leroy <jonathan@inikup.com>",
+      "azumakuniyuki <perl.org@azumakuniyuki.org>",
       "azumakuniyuki <perl.org@azumakuniyuki.org>"
    ]
 }
