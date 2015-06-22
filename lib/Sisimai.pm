@@ -55,7 +55,7 @@ Sisimai - Mail Analyzing Interface for bounce mails.
 =head1 DESCRIPTION
 
 Sisimai is the system formerly known as C<bounceHammer> 4, is a Pelr module for
-analyzing bounce emails and generate structured data in a JSON format (YAML is 
+analyzing bounce mails and generate structured data in a JSON format (YAML is 
 also available if "YAML" module is installed on your system) from parsed bounce
 messages. C<Sisimai> is a coined word: Sisi (the number 4 is pronounced "Si" in
 Japanese) and MAI (acronym of "Mail Analyzing Interface").
