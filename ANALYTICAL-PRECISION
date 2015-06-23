@@ -24,11 +24,11 @@ MTA::X2 .................    0/0020  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0007  0.0000  Unknown MTA #3
 MTA::X4 .................    0/0022  0.0000  Unknown MTA #4 qmail clones
 MTA::mFILTER ............    0/0006  0.0000  Digital Arts m-FILTER
-MTA::qmail ..............   49/0059  0.8305  qmail
+MTA::qmail ..............   48/0059  0.8136  qmail
 MSP::DE::EinsUndEins ....    0/0003  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0005  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
-MSP::JP::EZweb ..........  129/0130  0.9923  au EZweb: http://www.au.kddi.com/mobile/
+MSP::JP::EZweb ..........  129/0129  1.0000  au EZweb: http://www.au.kddi.com/mobile/
 MSP::JP::KDDI ...........    6/0006  1.0000  au by KDDI: http://www.au.kddi.com
 MSP::RU::MailRu .........    0/0008  0.0000  @mail.ru: https://mail.ru
 MSP::RU::Yandex .........    4/0004  1.0000  Yandex.Mail: http://www.yandex.ru
@@ -44,7 +44,7 @@ MSP::US::Verizon ........    4/0004  1.0000  Verizon Wireless: http://www.verizo
 MSP::US::Yahoo ..........    0/0006  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0006  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    9/0032  0.2812  Abuse Feedback Reporting Format
-RFC3464 .................  127/0259  0.4903  Fallback Module for MTAs
+RFC3464 .................  127/0257  0.4942  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13       961/1515  0.6343
- Sisimai 4.1.25           1515/1515  1.0000
+ bounceHammer 2.7.13       960/1512  0.6349
+ Sisimai 4.1.26           1512/1512  1.0000
