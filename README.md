@@ -128,7 +128,7 @@ Sisimai.
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | OK            | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A(1)      |
-| Analysis accuracy ratio(2)                     | 0.64          | 1.00        |
+| Analytical precision ratio(2)                  | 0.63          | 1.00        |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
@@ -154,7 +154,7 @@ Sisimai.
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(標準)  |
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(1)     |
-| 解析精度の割合(2)                              | 0.64          | 1.00        |
+| 解析精度の割合(2)                              | 0.63          | 1.00        |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応    |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
