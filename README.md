@@ -309,10 +309,10 @@ REPOSITORY | リポジトリ
 
 SEE ALSO | 参考サイト
 ---------------------
-[RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
-[RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
-[RFC5321 - Simple Mail Transfer Protocol](https://tools.ietf.org/html/rfc5321)
-[RFC5322 - Internet Message Format](https://tools.ietf.org/html/rfc5322)
+* [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
+* [RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
+* [RFC5321 - Simple Mail Transfer Protocol](https://tools.ietf.org/html/rfc5321)
+* [RFC5322 - Internet Message Format](https://tools.ietf.org/html/rfc5322)
 
 
 WEB SITE | サイト
