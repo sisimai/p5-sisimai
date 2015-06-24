@@ -10,15 +10,15 @@
 
 What is Sisimai ? | シシマイ?
 =============================
-Sisimai is a Perl module for analyzing RFC822 bounce emails and generating
+Sisimai is a Perl module for analyzing RFC5322 bounce emails and generating
 structured data from parsed results. Sisimai is the system formerly known as
 bounceHammer 4. "Sisimai" is a coined word: Sisi (the number 4 is pronounced
 "Si" in Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
-Sisimai(シシマイ)はRFC822準拠(それ以外も)のエラーメールを解析し、解析結果を
-データ構造に変換するインターフェイスを提供するPerlモジュールです。"シシマイ"は
-bounceHammer version 4として開発していたものであり、Version 4なので"シ"から
-始まりマイ(MAI: Mail Analyzing Interface)を含む名前になりました。
+Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析結果をデータ構造に
+変換するインターフェイスを提供するPerlモジュールです。
+"シシマイ"はbounceHammer version 4として開発していたものであり、Version 4なので
+"シ"から始まりマイ(MAI: Mail Analyzing Interface)を含む名前になりました。
 
 Features | 主な機能
 -------------------
@@ -305,6 +305,14 @@ Sisimaiで解析出来ないメールを見つけたら、このディレクト�
 REPOSITORY | リポジトリ
 -----------------------
 [github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
+
+
+SEE ALSO | 参考サイト
+---------------------
+[RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
+[RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
+[RFC5321 - Simple Mail Transfer Protocol](https://tools.ietf.org/html/rfc5321)
+[RFC5322 - Internet Message Format](https://tools.ietf.org/html/rfc5322)
 
 
 WEB SITE | サイト
