@@ -124,6 +124,7 @@ Sisimai.
 
 | Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
+| System requirements(Perl)                      | 5.10 - 5.14   | 5.10 - 5.22 |
 | Command line tools                             | OK            | N/A         |
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | OK            | N/A         |
@@ -150,6 +151,7 @@ Sisimai.
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
+| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.22 |
 | コマンドラインツール                           | あり          | 無し        |
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(標準)  |
 | WebUIとAPI                                     | あり          | 無し        |
