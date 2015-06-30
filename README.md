@@ -125,16 +125,16 @@ Sisimai.
 | Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
 | System requirements(Perl)                      | 5.10 - 5.14   | 5.10 - 5.22 |
-| Command line tools                             | OK            | N/A         |
+| Command line tools                             | Available     | N/A         |
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
-| WebUI/API                                      | OK            | N/A         |
+| WebUI/API                                      | Included      | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A(1)      |
-| Analytical precision ratio(2)                  | 0.63          | 1.00        |
+| Analytical precision ratio(1915 files) (2)     | 0.50          | 1.00        |
+| The speed of parsing email(1915 files)         | 5.79s         | 5.13s       |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
 | Output format of parsed data                   | YAML,JSON,CSV | JSON only(3)|
-| The speed of parsing email(1484 files)         | 6.15s         | 3.16s       |
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies                                   | 24 modules    | 2 modules   |
@@ -156,12 +156,12 @@ Sisimai.
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(標準)  |
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(1)     |
-| 解析精度の割合(2)                              | 0.63          | 1.00        |
+| 解析精度の割合(1915通)(2)                      | 0.50          | 1.00        |
+| メール解析の速度(1915通)                       | 5.79秒        | 5.13秒      |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応    |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
 | 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ(3) |
-| メール解析の速度(1484通)                       | 6.15秒        | 3.16秒      |
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数                               | 24モジュール  | 2モジュール |
