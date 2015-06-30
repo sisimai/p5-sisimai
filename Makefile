@@ -25,6 +25,7 @@ GIT   := /usr/bin/git
 
 EMAIL_PARSER := ./tmp/emparser
 EMAIL_SAMPLE := ./tmp/sample
+BENCHMARKDIR := ./tmp/benchmark
 FOR_EMPARSER := ./tmp/data
 PARSERLOGDIR := ./tmp/log
 FOR_MAKETEST := ./eg/maildir-as-a-sample/new
@@ -97,7 +98,7 @@ install-from-local:
 #   |_|\__,_|_|  \__, |\___|\__|___/ |_|  \___/|_|     \__,_|\___| \_/ \___|_(_)
 #                |___/                                                          
 # -----------------------------------------------------------------------------
-accuracy-table:
+precision-table:
 	@ printf " %s\n" 'bounceHammer 2.7.13'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
 	@ printf "%s\n" '-------------------------------------------------------------------------------'
@@ -111,12 +112,12 @@ accuracy-table:
 			l=`expr $$l + 1` ;\
 		done ;\
 		printf "%s" ' ' ;\
+		n0=`$(EMAIL_PARSER) --count-only $(EMAIL_SAMPLE)/$$d` ;\
 		r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
-		rd="`echo $$r0 | cut -d/ -f2 | cut -d' ' -f1`" ;\
 		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
-		printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
+		printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
 		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
 	done
 	@ for c in `$(LS) $(MSPMODULEDIR)`; do \
@@ -130,12 +131,12 @@ accuracy-table:
 				l=`expr $$l + 1` ;\
 			done ;\
 			printf "%s" ' ' ;\
+			n0=`$(EMAIL_PARSER) --count-only $(EMAIL_SAMPLE)/$$d` ;\
 			r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
 				| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 			rn="`echo $$r0 | cut -d/ -f1`" ;\
-			rd="`echo $$r0 | cut -d/ -f2 | cut -d' ' -f1`" ;\
 			rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
-			printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
+			printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
 			$(PERL) -Ilib -MSisimai::MSP::$$m -lE "print Sisimai::MSP::$$m->description" ;\
 		done ;\
 	done
@@ -149,19 +150,19 @@ accuracy-table:
 			l=`expr $$l + 1` ;\
 		done ;\
 		printf "%s" ' ' ;\
+		n0=`$(EMAIL_PARSER) --count-only $(EMAIL_SAMPLE)/$$d` ;\
 		r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
-		rd="`echo $$r0 | cut -d/ -f2 | cut -d' ' -f1`" ;\
 		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
-		printf "%4d/%04d  %s  " $$rn $$rd $$rr ;\
+		printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
 		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
 	done
 	@ printf "%s\n" '-------------------------------------------------------------------------------'
 
 update-analytical-precision-table: sample
 	$(CP) /dev/null $(PRECISIONTAB)
-	make accuracy-table >> $(PRECISIONTAB)
+	make precision-table >> $(PRECISIONTAB)
 	grep '^[A-Z]' $(PRECISIONTAB) | tr '/' ' ' | \
 		awk ' { \
 				x += $$3; \
@@ -280,13 +281,13 @@ parser-log:
 		done; \
 	done
 
-profile:
-	$(PERL) -d:NYTProf $(EMAIL_PARSER) -Fjson $(FOR_MAKETEST) $(MAILBOX_FILE) > /dev/null
+profile: benchmark-mbox
+	$(PERL) -d:NYTProf $(EMAIL_PARSER) -Fjson $(BENCHMARKDIR) > /dev/null
 	nytprofhtml
 
-benchmark-mbox:
-	$(MKDIR) -p tmp/benchmark
-	$(CP) `find $(EMAIL_SAMPLE) -type f` tmp/benchmark/
+benchmark-mbox: sample
+	$(MKDIR) -p $(BENCHMARKDIR)
+	$(CP) `find $(EMAIL_SAMPLE) -type f` $(BENCHMARKDIR)/
 
 loc:
 	@ for v in `find lib -type f -name '*.pm'`; do \
@@ -302,4 +303,5 @@ clean:
 	$(RM) -r cover_db
 	$(RM) -r ./build
 	$(RM) -r $(EMAIL_SAMPLE)
+	$(RM) -r $(BENCHMARKDIR)
 
