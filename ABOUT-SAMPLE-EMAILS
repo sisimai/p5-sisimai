@@ -105,6 +105,10 @@ Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
 mailman-2.1.15/tests/bounces/simple_17.txt
 Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
+* us-google-13.eml
+mailman-2.1.15/tests/bounces/simple_28.txt
+Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
+
 * us-outlook-09.eml
 https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/connection_timed_out.eml
 Copyright (c) 2011 Chew Choon Keat | MIT license
