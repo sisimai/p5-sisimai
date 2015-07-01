@@ -65,6 +65,7 @@ MAKE_TEST: {
             ok length $e->diagnostictype, 'diagnostictype = '.$e->diagnostictype;
             like $e->deliverystatus, qr/\A\d+[.]\d+[.]\d\z/, 'deliverystatus = '.$e->deliverystatus;
             like $e->timezoneoffset, qr/\A[+-]\d+\z/, 'timezoneoffset = '.$e->timezoneoffset;
+            like $e->replycode, qr/\A[2345][0-5][0-9]\z/, 'replycode = '.$e->replycode;
 
             ok defined $e->feedbacktype, 'feedbacktype = '.$e->feedbacktype;
             ok defined $e->action, 'action = '.$e->action;
