@@ -37,6 +37,7 @@ sub list {
             MSP/US/Zoho.pm
         MTA.pm
             MTA/Activehunter.pm
+            MTA/ApacheJames.pm
             MTA/Courier.pm
             MTA/Domino.pm
             MTA/Exim.pm
