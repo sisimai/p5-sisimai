@@ -137,7 +137,7 @@ Sisimai.
 | Output format of parsed data                   | YAML,JSON,CSV | JSON only(3)|
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
-| Dependencies                                   | 24 modules    | 2 modules   |
+| Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 7500 lines  |
 | The number of tests in t/ directory            | 27365 tests   | 71500 tests |
 | License                                        | GPLv2 or Perl | 2 clause BSD|
@@ -164,7 +164,7 @@ Sisimai.
 | 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ(3) |
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
-| 依存モジュール数                               | 24モジュール  | 2モジュール |
+| 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 7500行      |
 | テスト件数(t/ディレクトリ)                     | 27365件       | 71500件     |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
