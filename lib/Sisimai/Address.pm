@@ -144,7 +144,7 @@ sub s3s4 {
     } else {
         for my $e ( @token ) {
             chomp $e;
-            next unless $e =~ m/\A[<]?.+[@][-.0-9A-Za-z]+[.][A-Za-z]{2,}[>]?\z/;
+            next unless $e =~ m/\A[<]?.+[@][-.0-9A-Za-z]+[.]?[A-Za-z]{2,}[>]?\z/;
             push @addrs, $e;
         }
     }
