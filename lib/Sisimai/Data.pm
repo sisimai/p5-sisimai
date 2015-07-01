@@ -8,6 +8,7 @@ use Module::Load '';
 use Sisimai::Address;
 use Sisimai::RFC3463;
 use Sisimai::RFC5322;
+use Sisimai::RFC5321;
 use Sisimai::String;
 use Sisimai::Reason;
 use Sisimai::Rhost;
@@ -27,6 +28,7 @@ my $rwaccessors = [
     'addresser',        # (Sisimai::Address) From address
     'recipient',        # (Sisimai::Address) Recipient address which bounced
     'messageid',        # (String) Message-Id: header
+    'replycode',        # (String) SMTP Reply Code
     'smtpagent',        # (String) MTA name
     'smtpcommand',      # (String) The last SMTP command
     'destination',      # (String) The domain part of the "recipinet"
@@ -92,6 +94,7 @@ sub new {
             'smtpcommand', 'feedbacktype', 'action',
         );
         $thing->{ $_ } = $argvs->{ $_ } // '' for @v;
+        $thing->{'replycode'} = Sisimai::RFC5321->getrc( $argvs->{'diagnosticcode'} );
     }
     return bless( $thing, __PACKAGE__ );
 }
@@ -314,7 +317,7 @@ sub damn {
         my @stringdata = ( qw|
             token lhost rhost listid alias reason subject messageid smtpagent 
             smtpcommand destination diagnosticcode senderdomain deliverystatus
-            timezoneoffset feedbacktype diagnostictype action|
+            timezoneoffset feedbacktype diagnostictype action replycode|
         );
 
         for my $e ( @stringdata ) {
@@ -450,6 +453,11 @@ Recipient address of the original message. See C<perldoc Sisimai::Address>.
 
 The value of C<Message-Id> header of the original message. When the header does
 not exist in the message, this value will be set "".
+
+=head2 C<replycode>(I<String>)
+
+The value of SMTP Reply Code defined in RFC 5321. When the code does
+not exist in the SMTP response or error message, this value will be set "".
 
 =head2 C<smtpagent>(I<String>)
 
