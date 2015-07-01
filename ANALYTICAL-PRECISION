@@ -2,6 +2,7 @@
  MTA MODULE NAME          CAN PARSE   RATIO   NOTES
 -------------------------------------------------------------------------------
 MTA::Activehunter .......    0/0009  0.0000  TransWARE Active!hunter
+MTA::ApacheJames ........    1/0006  0.1667  Java Apache Mail Enterprise Server
 MTA::Courier ............   13/0015  1.0000  Courier MTA
 MTA::Domino .............    7/0013  0.6364  IBM Domino Server
 MTA::Exchange ...........    1/0050  0.0303  Microsoft Exchange Server
@@ -24,7 +25,7 @@ MTA::X2 .................    0/0045  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0008  0.0000  Unknown MTA #3
 MTA::X4 .................    0/0027  0.0000  Unknown MTA #4 qmail clones
 MTA::mFILTER ............    0/0009  0.0000  Digital Arts m-FILTER
-MTA::qmail ..............   49/0074  0.8305  qmail
+MTA::qmail ..............   48/0074  0.8136  qmail
 MSP::DE::EinsUndEins ....    0/0003  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0010  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
@@ -46,5 +47,5 @@ MSP::US::Zoho ...........    0/0011  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    9/0049  0.2812  Abuse Feedback Reporting Format
 RFC3464 .................  127/0271  0.4942  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13       961/1915  0.5018
- Sisimai 4.1.26           1915/1915  1.0000
+ bounceHammer 2.7.13       961/1921  0.5003
+ Sisimai 4.1.26           1921/1921  1.0000
