@@ -74,9 +74,11 @@ sub match {
               following[ ]recipients[ ]was[ ]undeliverable
              |user[']s[ ]email[ ]name[ ]is[ ]not[ ]found
              )
-        |this[ ]address[ ]no[ ]longer[ ]accepts[ ]mail
-        |this[ ]email[ ]address[ ]is[ ]wrong[ ]or[ ]no[ ]longer[ ]valid
-        |this[ ]user[ ]doesn[']?t[ ]have[ ]a[ ].+[ ]account
+        |this[ ](?:
+             address[ ]no[ ]longer[ ]accepts[ ]mail
+            |email[ ]address[ ]is[ ]wrong[ ]or[ ]no[ ]longer[ ]valid
+            |user[ ]doesn[']?t[ ]have[ ]a[ ].+[ ]account
+            )
         |unknown[ ](?:
              address
             |e[-]?mail[ ]address
