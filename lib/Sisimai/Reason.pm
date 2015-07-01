@@ -15,10 +15,10 @@ sub index {
     # @Param        <None>
     # @Return       (Ref->Array) List
     return [ qw|
-        Blocked ContentError ExceedLimit Expired Filtered HostUnknown MailboxFull
-        MailerError MesgTooBig NetworkError NotAccept OnHold Rejected RelayingDenied
-        SpamDetected SecurityError Suspend SystemError SystemFull UserUnknown 
-        HasMoved
+        Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
+        MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold 
+        Rejected RelayingDenied SpamDetected SecurityError Suspend SystemError
+        SystemFull UserUnknown
     | ];
 }
 
@@ -39,8 +39,8 @@ sub get {
 
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown', 
-        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'Blocked',
+        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend',  'HasMoved', 
+        'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'Blocked',
     ];
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
@@ -103,7 +103,7 @@ sub anotherone {
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'SpamDetected', 'SecurityError', 'SystemError', 
-        'NetworkError', 'Suspend', 'Expired', 'ContentError', 'HasMoved', 
+        'NetworkError', 'Suspend', 'Expired', 'ContentError',
         'SystemFull', 'NotAccept', 'MailerError',
     ];
     my $retryingto = __PACKAGE__->retry;
@@ -156,6 +156,56 @@ sub anotherone {
     return $reasontext;
 }
 
+sub match {
+    # @Description  Detect bounce reason from given text
+    # @Param <str>  (String) Error message
+    # @Return       (String) Bounce reason
+    my $class = shift;
+    my $argvs = shift // return undef;
+
+    require Sisimai::RFC3463;
+
+    my $reasontext = '';
+    my $statuscode = '';
+    my $typestring = '';
+    my $classorder = [
+        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown', 
+        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'Blocked',
+        'SpamDetected', 'SecurityError', 'SystemError', 'NetworkError', 
+        'Suspend', 'Expired', 'ContentError', 'HasMoved', 'SystemFull', 
+        'NotAccept', 'MailerError', 'RelayingDenied', 'OnHold',
+    ];
+
+    $statuscode = Sisimai::RFC3463->getdsn( $argvs ) || '';
+    $typestring = uc( $1 ) if $argvs =~ m/\A(SMTP|X-.+);/i;
+
+    # Diagnostic-Code: SMTP; ... or empty value
+    for my $e ( @$classorder ) {
+        # Check the value of Diagnostic-Code: and the value of Status:, it is a
+        # deliverystats, with true() method in each Sisimai::Reason::* class.
+        my $p = 'Sisimai::Reason::'.$e;
+        Module::Load::load( $p );
+
+        next unless $p->match( $argvs );
+        $reasontext = $p->text;
+        last;
+    }
+
+    if( not $reasontext ) {
+        # Check the value of $typestring
+        if( $typestring eq 'X-UNIX' ) {
+            # X-Unix; ...
+            $reasontext = 'mailererror';
+        }
+        else {
+            # Detect the bounce reason from "Status:" code
+            $reasontext = Sisimai::RFC3463->reason( $statuscode ) || 'undefined';
+        }
+    }
+
+    return $reasontext;
+}
+
 1;
 __END__
 
@@ -185,6 +235,14 @@ C<get()> detects the bounce reason.
 
 C<anotherone()> is a method for detecting the bounce reason, it works as a fall
 back method of get() and called only from get() method.
+
+C<match()> detects the bounce reason from given text as a error message.
+
+=head2 C<B<match( I<String> )>>
+
+C<match()> is a method for detecting the bounce reason from the string given as
+an argument of the method. However, this method is experimental implementation
+and low analytical precision.
 
 =head1 LIST OF BOUNCE REASONS
 
