@@ -139,7 +139,7 @@ Sisimai.
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies                                   | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 7500 lines  |
-| The number of tests in t/ directory            | 27365 tests   | 70500 tests |
+| The number of tests in t/ directory            | 27365 tests   | 71500 tests |
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
 
@@ -166,7 +166,7 @@ Sisimai.
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数                               | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 7500行      |
-| テスト件数(t/ディレクトリ)                     | 27365件       | 70500件     |
+| テスト件数(t/ディレクトリ)                     | 27365件       | 71500件     |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
@@ -281,6 +281,7 @@ The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
 | addresser      | The From address                      | 送信者のアドレス               |
 | recipient      | Recipient address which bounced       | バウンスした受信者のアドレス   |
 | messageid      | Message-Id: of the original message   | 元メールのMessage-Id           |
+| replycode      | SMTP Reply Code                       | SMTP応答コード                 |
 | smtpagent      | MTA name(Sisimai::MTA::, MSP::)       | MTA名(Sisimai::MTA::,MSP::)    |
 | smtpcommand    | The last SMTP command in the session  | セッション中最後のSMTPコマンド |
 | destination    | The domain part of the "recipinet"    | "recipient"のドメイン部分      |
