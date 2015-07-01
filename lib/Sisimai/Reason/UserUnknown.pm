@@ -117,7 +117,9 @@ sub true {
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::RFC3463;
-    my $prematches = [ 'RelayingDenied', 'NotAccept', 'MailboxFull' ];
+    my $prematches = [ 
+        'RelayingDenied', 'NotAccept', 'MailboxFull', 'HasMoved'
+    ];
     my $matchother = 0;
     my $statuscode = $argvs->deliverystatus // '';
     my $reasontext = __PACKAGE__->text;

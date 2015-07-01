@@ -13,7 +13,20 @@ sub match {
     return 0;
 }
 
-sub true { return undef };
+sub true {
+    # @Description  Whether the address is "userunknown" or not
+    # @Param <obj>  (Sisimai::Data) Object
+    # @Return       (Integer) 1 = is unknown user
+    #               (Integer) 0 = is not unknown user.
+    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    my $class = shift;
+    my $argvs = shift // return undef;
+
+    return undef unless ref $argvs eq 'Sisimai::Data';
+    return 1 if $argvs->reason eq __PACKAGE__->text;
+    return 1 if __PACKAGE__->match( $argvs->diagnosticcode );
+    return 0;
+}
 
 1;
 __END__

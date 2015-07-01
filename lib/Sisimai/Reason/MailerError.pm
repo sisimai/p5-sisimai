@@ -11,6 +11,7 @@ sub match {
          command[ ](?:
              failed:[ ]
             |died[ ]with[ ]status[ ]\d+
+            |output:
         )
         |\Aprocmail:[ ]    # procmail
         |bin/(?:

@@ -11,6 +11,7 @@ sub match {
          domain[ ](?:
              does[ ]not[ ]exist
             |must[ ]exist
+            |is[ ]not[ ]reachable
             )
         |host[ ](?:
              or[ ]domain[ ]name[ ]not[ ]found

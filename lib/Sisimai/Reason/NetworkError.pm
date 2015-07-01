@@ -14,7 +14,7 @@ sub match {
         |malformed[ ]name[ ]server[ ]reply
         |maximum[ ]forwarding[ ]loop[ ]count[ ]exceeded
         |message[ ]looping
-        |name[ ]service[ ]error[ ]for
+        |name[ ]service[ ]error
         |too[ ]many[ ]hops
         |unrouteable[ ]mail[ ]domain
         )
