@@ -9,7 +9,11 @@ my $RxMSP = {
     'begin'   => qr/Delivery to the following recipient/,
     'start'   => qr/Technical details of (?:permanent|temporary) failure:/,
     'error'   => qr/The error that the other server returned was:/,
-    'rfc822'  => qr/\A----- Original message -----\z/,
+    'rfc822'  => qr{\A(?:
+         -----[ ]Original[ ]message[ ]-----
+        |\s*-----[ ]Message[ ]header[ ]follows[ ]-----
+        )\z
+    }x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject' => qr/Delivery[ ]Status[ ]Notification/,
 };
@@ -102,7 +106,7 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub version     { '4.0.11' }
+sub version     { '4.0.12' }
 sub description { 'Google Gmail: https://mail.google.com' }
 sub smtpagent   { 'US::Google' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
