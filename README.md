@@ -182,6 +182,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | Module Name(Sisimai::)   | Description                                       |
 |--------------------------|---------------------------------------------------|
 | MTA::Activehunter        | TransWARE Active!hunter                           |
+| MTA::ApacheJames         | Java Apache Mail Enterprise Server                |
 | MTA::Courier             | Courier MTA                                       |
 | MTA::Domino              | IBM Domino Server                                 |
 | MTA::Exchange            | Microsoft Exchange Server                         |
