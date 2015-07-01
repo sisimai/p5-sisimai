@@ -7,7 +7,6 @@ my $c = 'Sisimai::MSP::US::Verizon';
 my $d = './tmp/data/us-verizon';
 my $h = undef;
 my $ReturnValue = {
-    '01001' => qr/userunknown/,
     '01002' => qr/userunknown/,
 };
 
