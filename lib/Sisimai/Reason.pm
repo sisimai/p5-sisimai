@@ -40,7 +40,8 @@ sub get {
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend',  'HasMoved', 
-        'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'Blocked',
+        'RelayingDenied', 'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown',
+        'SpamDetected', 'Blocked',
     ];
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
@@ -71,12 +72,6 @@ sub get {
 
             # Other reason ?
             $reasontext = __PACKAGE__->anotherone( $argvs );
-            last if $reasontext;
-
-            # Relaying Denied ?
-            $p = 'Sisimai::Reason::RelayingDenied';
-            Module::Load::load( $p );
-            $reasontext = $p->text if $p->true( $argvs );
             last;
         }
 

@@ -27,7 +27,7 @@ sub match {
 }
 
 sub true {
-    # @Description  Whether the message is rejected by 'Relaying denied
+    # @Description  Whether the message is rejected by 'Relaying denied'
     # @Param <obj>  (Sisimai::Data) Object
     # @Return       (Integer) 1 = Rejected for "relaying denied"
     #               (Integer) 0 = is not 
@@ -41,8 +41,8 @@ sub true {
 
     if( $currreason ) {
         # Do not overwrite the reason
-        my $rxnr = qr/\A(?:securityerr|systemerror|undefined)\z/;
-        return 0 unless $currreason =~ $rxnr;
+        my $rxnr = qr/\A(?:securityerror|systemerror|undefined)\z/;
+        return 0 if $currreason =~ $rxnr;
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
