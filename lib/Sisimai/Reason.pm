@@ -17,7 +17,7 @@ sub index {
     return [ qw|
         Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
         MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold 
-        Rejected RelayingDenied SpamDetected SecurityError Suspend SystemError
+        Rejected NoRelaying SpamDetected SecurityError Suspend SystemError
         SystemFull UserUnknown
     | ];
 }
@@ -40,7 +40,7 @@ sub get {
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend',  'HasMoved', 
-        'RelayingDenied', 'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown',
+        'NoRelaying', 'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown',
         'SpamDetected', 'Blocked',
     ];
 
@@ -168,7 +168,7 @@ sub match {
         'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'Blocked',
         'SpamDetected', 'SecurityError', 'SystemError', 'NetworkError', 
         'Suspend', 'Expired', 'ContentError', 'HasMoved', 'SystemFull', 
-        'NotAccept', 'MailerError', 'RelayingDenied', 'OnHold',
+        'NotAccept', 'MailerError', 'NoRelaying', 'OnHold',
     ];
 
     $statuscode = Sisimai::RFC3463->getdsn( $argvs ) || '';
