@@ -68,7 +68,7 @@ sub getrc {
     my $rcode = '';
 
     return ''   if $rtext =~ m/X-Unix;/i;
-    $rcode = $1 if $rtext =~ m/\b([2345][0-5][0-9])\b/;
+    $rcode = $1 if $rtext =~ m/\b([45][0-5][0-9])\b/;
     return $rcode;
 }
 
