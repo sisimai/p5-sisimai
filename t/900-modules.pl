@@ -73,11 +73,11 @@ sub list {
             Reason/MailerError.pm
             Reason/MesgTooBig.pm
             Reason/SpamDetected.pm
+            Reason/NoRelaying.pm
             Reason/NotAccept.pm
             Reason/NetworkError.pm
             Reason/OnHold.pm
             Reason/Rejected.pm
-            Reason/RelayingDenied.pm
             Reason/SecurityError.pm
             Reason/Suspend.pm
             Reason/SystemError.pm

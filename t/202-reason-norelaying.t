@@ -1,9 +1,9 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::Reason::RelayingDenied;
+use Sisimai::Reason::NoRelaying;
 
-my $PackageName = 'Sisimai::Reason::RelayingDenied';
+my $PackageName = 'Sisimai::Reason::NoRelaying';
 my $MethodNames = {
     'class' => [ 'text', 'match', 'true' ],
     'object' => [],

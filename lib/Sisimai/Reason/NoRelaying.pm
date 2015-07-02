@@ -1,4 +1,4 @@
-package Sisimai::Reason::RelayingDenied;
+package Sisimai::Reason::NoRelaying;
 use feature ':5.10';
 use strict;
 use warnings;
@@ -57,16 +57,16 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::RelayingDenied - Bounce reason is C<norelaying> or not.
+Sisimai::Reason::NoRelaying - Bounce reason is C<norelaying> or not.
 
 =head1 SYNOPSIS
 
-    use Sisimai::Reason::RelayingDenied;
-    print Sisimai::Reason::RelayingDenied->match('Relaying denied');   # 1
+    use Sisimai::Reason::NoRelaying;
+    print Sisimai::Reason::NoRelaying->match('Relaying denied');   # 1
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::RelayingDenied checks the bounce reason is C<norelaying> or not.
+Sisimai::Reason::NoRelaying checks the bounce reason is C<norelaying> or not.
 This class is called only Sisimai::Reason class.
 
 =head1 CLASS METHODS
@@ -75,13 +75,13 @@ This class is called only Sisimai::Reason class.
 
 C<text()> returns string: C<norelaying>.
 
-    print Sisimai::Reason::RelayingDenied->text;  # norelaying
+    print Sisimai::Reason::NoRelaying->text;  # norelaying
 
 =head2 C<B<match( I<string> )>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
-    print Sisimai::Reason::RelayingDenied->match('Relaying denied');   # 1
+    print Sisimai::Reason::NoRelaying->match('Relaying denied');   # 1
 
 =head2 C<B<true( I<Sisimai::Data> )>>
 
