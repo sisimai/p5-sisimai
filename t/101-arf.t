@@ -91,6 +91,7 @@ MAKE_TEST: {
                 like $e->deliverystatus, $ReturnValue->{ $emindex }->{'status'}, '->status = '.$e->deliverystatus;
                 like $e->reason, $ReturnValue->{ $emindex }->{'reason'}, '->reason = '.$e->reason;
                 like $e->feedbacktype, $ReturnValue->{ $emindex }->{'feedbacktype'}, '->feedbacktype = '.$e->feedbacktype;
+                ok defined $e->replycode, '->replycode = '.$e->replycode;
             }
             $c++;
         }

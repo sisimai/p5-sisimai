@@ -175,6 +175,7 @@ if( -d $d ) {
                 ok defined $f->messageid, sprintf( "(%s) messageid = %s", $e, $f->messageid );
                 ok defined $f->smtpcommand, sprintf( "(%s) smtpcommand = %s", $e, $f->smtpcommand );
                 ok defined $f->diagnosticcode, sprintf( "(%s) diagnosticcode = %s", $e, $f->diagnosticcode );
+                ok defined $f->replycode, '->replycode = '.$f->replycode;
 
                 isa_ok $f->addresser, 'Sisimai::Address';
                 $t = $f->addresser;

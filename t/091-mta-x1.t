@@ -82,6 +82,7 @@ MAKE_TEST: {
                 isa_ok $e, 'Sisimai::Data';
                 like $e->deliverystatus, $ReturnValue->{ $emindex }->{'status'}, '->status = '.$e->deliverystatus;
                 like $e->reason, $ReturnValue->{ $emindex }->{'reason'}, '->reason = '.$e->reason;
+                ok defined $e->replycode, '->replycode = '.$e->replycode;
             }
             $c++;
         }

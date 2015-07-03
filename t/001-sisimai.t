@@ -40,6 +40,7 @@ MAKE_TEST: {
             ok $r->addresser->address, '->addresser = '.$r->addresser->address;
             ok $r->recipient->address, '->recipient = '.$r->recipient->address;
             ok length $r->reason, '->reason = '.$r->reason;
+            ok defined $r->replycode, '->replycode = '.$r->replycode;
 
             my $h = $r->damn;
             isa_ok $h, 'HASH';

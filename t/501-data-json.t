@@ -52,6 +52,7 @@ MAKE_TEST: {
 
             is $e->subject, $perl->{'subject'};
             is $e->timestamp->epoch, $perl->{'timestamp'}, 'timestamp->epoch = '.$e->timestamp->epoch;
+            is $e->replycode, $perl->{'replycode'};
 
             is $e->addresser->address, $perl->{'addresser'}, 'addresser->address = '.$e->addresser->address;
             is $e->addresser->host, $perl->{'senderdomain'}, 'senderdomain = '.$e->senderdomain;
