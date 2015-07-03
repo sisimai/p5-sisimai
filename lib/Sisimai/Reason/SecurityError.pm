@@ -30,6 +30,7 @@ sub match {
                 my[ ]list[ ]of[ ]allowed[ ]rcpthosts
         |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]
             virus[ ]or[ ]spam[ ]content
+        |TLS[ ]required[ ]but[ ]not[ ]supported # SendGrid|the recipient mailserver does not support TLS or have a valid certificate
         |You[ ]have[ ]exceeded[ ]the[ ]the[ ]allowable[ ]number[ ]of[ ]posts[ ]
             without[ ]solving[ ]a[ ]captcha
         |verification[ ]failure

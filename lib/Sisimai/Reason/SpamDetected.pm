@@ -19,11 +19,19 @@ sub match {
              policy:[ ]no[ ]spam[ ]please
             |spamAssassin                   # rejected by SpamAssassin
             )
+        |blocked[ ]for[ ]abuse[.][ ]see[ ]http://att[.]net/blocks   # AT&T
         |bulk[ ]email
         |content[ ]filter[ ]rejection
         |cyberoam[ ]anti[ ]spam[ ]engine[ ]has[ ]identified[ ]this[ ]email[ ]as[ ]a[ ]bulk[ ]email
         |denied[ ]due[ ]to[ ]spam[ ]list
         |dt:spm[ ]mx.+[ ]http://mail[.]163[.]com/help/help_spam_16[.]htm
+        |greylisted.?.[ ]please[ ]try[ ]again[ ]in
+        |http://(?:
+             www[.]spamhaus[.]org
+            |dsbl[.]org
+            |www[.]sorbs[.]net
+            )
+        |listed[ ]in[ ]work[.]drbl[.]imedia[.]ru
         |mail[ ](?:
              appears[ ]to[ ]be[ ]unsolicited    # rejected due to spam
             |content[ ]denied   # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000726
@@ -34,9 +42,10 @@ sub match {
             |filtered
             |filtered[.][ ]please[ ]see[ ]the[ ]faqs[ ]section[ ]on[ ]spam
             |looks[ ]like[ ]spam
+            |refused[ ]by[ ]mailmarshal[ ]spamprofiler
             |rejected[ ]as[ ]spam
             |rejected[ ]due[ ]to[ ]suspected[ ]spam[ ]content
-            |refused[ ]by[ ]mailmarshal[ ]spamprofiler
+            |rejected[ ]for[ ]policy[ ]reasons
             )
         |our[ ]email[ ]server[ ]thinks[ ]this[ ]email[ ]is[ ]spam
         |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
@@ -49,6 +58,7 @@ sub match {
             )
         |rejecting[ ]banned[ ]content 
         |related[ ]to[ ]content[ ]with[ ]spam[-]like[ ]characteristics
+        |rule[ ]imposed[ ]as[ ].+is[ ]blacklisted[ ]on              # Mailmarshal RBLs
         |sending[ ]address[ ]not[ ]accepted[ ]due[ ]to[ ]spam[ ]filter
         |spam[ ](?:
              blocked
@@ -61,18 +71,20 @@ sub match {
             |not[ ]accepted
             |refused
             |rejection
+            |Reporting[ ]Address    # SendGrid|a message to an address has previously been marked as Spam by the recipient.
             |score[ ]
             )
         |spambouncer[ ]identified[ ]spam    # SpamBouncer identified SPAM
         |spamming[ ]not[ ]allowed
         |the[ ]message[ ]was[ ]rejected[ ]due[ ]to[ ]classification[ ]as[ ]bulk[ ]mail
+        |The[ ]content[ ]of[ ]this[ ]message[ ]looked[ ]like[ ]spam # SendGrid
         |this[ ]message[ ](?:
              appears[ ]to[ ]be[ ]spam
             |has[ ]been[ ]identified[ ]as[ ]spam
             |scored[ ].+[ ]spam[ ]points
             |was[ ]classified[ ]as[ ]spam
             )
-        |transaction[ ]failed[ ]spam[ ]message[ ]not[ ]queued
+        |transaction[ ]failed[ ]spam[ ]message[ ]not[ ]queued       # SendGrid
         |we[ ]dont[ ]accept[ ]spam
         |you're[ ]using[ ]a[ ]mass[ ]mailer
         |your[ ](?:

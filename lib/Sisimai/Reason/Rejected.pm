@@ -22,8 +22,12 @@ sub match {
         |empty[ ]envelope[ ]senders[ ]not[ ]allowed
         |error:[ ]no[ ]third-party[ ]dsns               # SpamWall - block empty sender
         |fully[ ]qualified[ ]email[ ]address[ ]required # McAfee
+        |invalid[ ]domain,[ ]see[ ][<]url:.+[>]
+        |mx[ ]records[ ]for[ ].+[ ]violate[ ]section[ ].+
+        |name[ ]service[ ]error[ ]for[ ]    # Malformed MX RR or host not found
         |recipient[ ]not[ ]accepted[.][ ][(]batv:[ ]no[ ]tag
         |returned[ ]mail[ ]not[ ]accepted[ ]here
+        |rfc[ ]1035[ ]violation:[ ]recursive[ ]cname[ ]records[ ]for
         |rule[ ]imposed[ ]mailbox[ ]access[ ]for        # MailMarshal
         |sender[ ](?:
              verify[ ]failed        # Exim callout

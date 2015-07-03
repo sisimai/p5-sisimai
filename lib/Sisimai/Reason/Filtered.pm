@@ -10,6 +10,7 @@ sub match {
     my $regex = qr{(?>
          because[ ]the[ ]recipient[ ]is[ ]only[ ]accepting[ ]mail[ ]from[ ]
             specific[ ]email[ ]addresses    # AOL Phoenix
+        |Bounced[ ]Address  # SendGrid|a message to an address has previously been Bounced.
         |due[ ]to[ ]extended[ ]inactivity[ ]new[ ]mail[ ]is[ ]not[ ]currently[ ]
             being[ ]accepted[ ]for[ ]this[ ]mailbox
         |has[ ]restricted[ ]SMS[ ]e-mail    # AT&T

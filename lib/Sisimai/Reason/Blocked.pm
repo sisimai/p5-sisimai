@@ -15,26 +15,34 @@ sub match {
         |confirm[ ]this[ ]mail[ ]server
         |connection[ ](?:
             dropped
-           |rate[ ]limit[ ]exceeded
            |refused[ ]by
            |reset[ ]by[ ]peer
            |was[ ]dropped[ ]by[ ]remote[ ]host
            )
+        |domain[ ]does[ ]not[ ]exist:
         |domain[ ].+[ ]mismatches[ ]client[ ]ip
+        |dns[ ]lookup[ ]failure:[ ].+[ ]try[ ]again[ ]later
         |hosts[ ]with[ ]dynamic[ ]ip
+        |ip[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]earthlink # Earthlink
         |IP[/]domain[ ]reputation[ ]problems
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
         |no[ ]access[ ]from[ ]mail[ ]server
+        |Please[ ]get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
         |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
         |sorry,[ ](?:
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
             )
+        |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
         |unresolvable[ ]relay[ ]host[ ]name
         |your[ ](?:
              network[ ]is[ ]temporary[ ]blacklisted
             |server[ ]requires[ ]confirmation
+            )
+        |we[ ]do[ ]not[ ]accept[ ]mail[ ]from[ ](?: # @mail.ru
+             hosts[ ]with[ ]dynamic[ ]IP[ ]or[ ]generic[ ]dns[ ]PTR-records
+            |dynamic[ ]ips
             )
         |http://www[.]spamcop[.]net/bl[.]
         )
