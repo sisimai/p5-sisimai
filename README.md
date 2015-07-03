@@ -138,7 +138,7 @@ Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 7500 lines  |
+| LOC:Source lines of code                       | 18200 lines   | 7600 lines  |
 | The number of tests in t/ directory            | 27365 tests   | 71500 tests |
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
@@ -165,7 +165,7 @@ Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 7500行      |
+| LOC:ソースコードの行数                         | 18200行       | 7600行      |
 | テスト件数(t/ディレクトリ)                     | 27365件       | 71500件     |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
@@ -232,7 +232,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
-Sisimai can detect the following 23 bounce reasons.
+Sisimai can detect the following 24 bounce reasons.
 
 | Reason(理由)   | Description                            | 理由の説明                       |
 |----------------|----------------------------------------|----------------------------------|
@@ -252,15 +252,16 @@ Sisimai can detect the following 23 bounce reasons.
 | NotAccept      | Destinaion does not accept any message | 宛先ホストはメールを受けとらない |
 | OnHold         | Deciding the bounce reason is on hold  | エラー理由の特定は保留           |
 | Rejected       | Rejected due to envelope from address  | エンベロープFromで拒否された     |
-| RelayingDenied | Relay access denied                    | リレーの拒否                     |
+| NoRelaying     | Relay access denied                    | リレーの拒否                     |
 | SecurityError  | Virus detected or authentication error | ウィルスの検出または認証失敗     |
 | Suspend        | Recipient's account is suspended       | 宛先アカウントは一時的に停止中   |
 | SystemError    | Some error on the destination host     | 宛先サーバでのOSレベルのエラー   |
 | SystemFull     | Disk full on the destination host      | 宛先サーバのディスクが一杯       |
+| TooManyConn    | Connection rate limit exceeded         | 接続制限数を超過した             |
 | UserUnknown    | Recipient's address does not exist     | 宛先メールアドレスは存在しない   |
 | Undefined      | Could not decide the error reason      | バウンスした理由は特定出来ず     |
 
-Sisimaiは上記のエラー23種を検出します。
+Sisimaiは上記のエラー24種を検出します。
 
 
 Parsed data structure | 解析後のデータ構造
