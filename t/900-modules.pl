@@ -82,6 +82,7 @@ sub list {
             Reason/Suspend.pm
             Reason/SystemError.pm
             Reason/SystemFull.pm
+            Reason/TooManyConn.pm
             Reason/UserUnknown.pm
         RFC2606.pm
         RFC3463.pm
