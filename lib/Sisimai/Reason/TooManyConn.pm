@@ -7,11 +7,15 @@ sub text  { 'toomanyconn' }
 sub match {
     my $class = shift;
     my $argvs = shift // return undef;
-    my $regex = qr{(?:
+    my $regex = qr{(?>
          All[ ]available[ ]IPs[ ]are[ ]at[ ]maximum[ ]connection[ ]limit    # SendGrid
         |connection[ ]rate[ ]limit[ ]exceeded
         |no[ ]IPs[ ]available[ ][-][ ].+[ ]exceeds[ ]per[-]domain[ ]connection[ ]limit[ ]for
-        |Too[ ]many[ ]connections
+        |Too[ ]many[ ](?:
+             connections
+            |connections[ ]from[ ]your[ ]host[.]# Microsoft 
+            |concurrent[ ]SMTP[ ]connections    # Microsoft
+            )
         )
     }xi;
 

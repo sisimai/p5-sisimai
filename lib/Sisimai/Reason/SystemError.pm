@@ -9,6 +9,10 @@ sub match {
     my $argvs = shift // return undef;
     my $regex = qr{(?>
          can[']t[ ]create[ ]user[ ]output[ ]file
+        |Internal[ ](?:
+             error[ ]reading[ ]data                             # Microsoft
+            |server[ ]error:[ ]Operation[ ]now[ ]in[ ]progress  # Microsoft
+            )
         |interrupted[ ]system[ ]call
         |it[ ](?:
              encountered[ ]an[ ]error[ ]while[ ]being[ ]processed

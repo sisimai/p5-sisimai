@@ -16,6 +16,7 @@ sub match {
         |has[ ]restricted[ ]SMS[ ]e-mail    # AT&T
         |http://postmaster[.]facebook[.]com/.+refused[ ]due[ ]to[ ]recipient[ ]preferences # Facebook
         |permanent[ ]failure[ ]for[ ]one[ ]or[ ]more[ ]recipients[ ][(].+:blocked[)]
+        |RESOLVER[.]RST[.]NotAuthorized # Microsoft Exchange
         |This[ ]account[ ]is[ ]protected[ ]by
         |user[ ](?:
              not[ ]found  # Filter on MAIL.RU

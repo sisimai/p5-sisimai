@@ -42,6 +42,7 @@ sub match {
                 |user(?:[ ]here)?
                 )
             |[ ].+[ ]in[ ]name[ ]directory
+            |valid[ ]recipients[,][ ]bye    # Microsoft
             )
         |non[- ]?existent[ ]user
         |not[ ](?:
@@ -64,6 +65,7 @@ sub match {
             |unknown
             )
         |requested[ ]action[ ]not[ ]taken:[ ]mailbox[ ]unavailable
+        |RESOLVER[.]ADR[.]RecipNotFound # Microsoft
         |said:[ ]550[-[ ]]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]
         |sorry,[ ](?:
              user[ ]unknown

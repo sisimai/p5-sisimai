@@ -41,9 +41,12 @@ sub match {
              content[ ]rejected
             |filtered
             |filtered[.][ ]please[ ]see[ ]the[ ]faqs[ ]section[ ]on[ ]spam
+            |filtered[.][ ]Refer[ ]to[ ]the[ ]Troubleshooting[ ]page[ ]at[ ]
             |looks[ ]like[ ]spam
+            |not[ ]accepted[ ]for[ ]policy[ ]reasons[.][ ]See[ ]http:   # Yahoo!
             |refused[ ]by[ ]mailmarshal[ ]spamprofiler
             |rejected[ ]as[ ]spam
+            |rejected[ ]as[ ]spam[ ]by[ ]Content[ ]Filtering
             |rejected[ ]due[ ]to[ ]suspected[ ]spam[ ]content
             |rejected[ ]for[ ]policy[ ]reasons
             )
@@ -76,6 +79,7 @@ sub match {
             )
         |spambouncer[ ]identified[ ]spam    # SpamBouncer identified SPAM
         |spamming[ ]not[ ]allowed
+        |Too[ ]much[ ]spam[.]               # Earthlink
         |the[ ]message[ ]was[ ]rejected[ ]due[ ]to[ ]classification[ ]as[ ]bulk[ ]mail
         |The[ ]content[ ]of[ ]this[ ]message[ ]looked[ ]like[ ]spam # SendGrid
         |this[ ]message[ ](?:

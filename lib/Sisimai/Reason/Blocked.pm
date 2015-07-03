@@ -10,8 +10,13 @@ sub match {
     my $regex = qr{(?>
          access[ ]denied[.][ ]IP[ ]name[ ]lookup[ ]failed
         |access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
+        |Blocked[ ]-[ ]see[ ]https://support[.]proofpoint[.]com/dnsbl-lookup[.]cgi[?]ip=.+
         |cannot[ ]resolve[ ]your[ ]address
-        |client[ ]host[ ]rejected:[ ]may[ ]not[ ]be[ ]mail[ ]exchanger
+        |client[ ]host[ ]rejected:[ ](?:
+             may[ ]not[ ]be[ ]mail[ ]exchanger
+            |cannot[ ]find[ ]your[ ]hostname    # Yahoo!
+            |was[ ]not[ ]authenticated          # Microsoft
+            )
         |confirm[ ]this[ ]mail[ ]server
         |connection[ ](?:
             dropped
@@ -23,11 +28,13 @@ sub match {
         |domain[ ].+[ ]mismatches[ ]client[ ]ip
         |dns[ ]lookup[ ]failure:[ ].+[ ]try[ ]again[ ]later
         |hosts[ ]with[ ]dynamic[ ]ip
-        |ip[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]earthlink # Earthlink
+        |IP[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]EarthLink # Earthlink
         |IP[/]domain[ ]reputation[ ]problems
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
+        |Messages[ ]from[ ].+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
         |no[ ]access[ ]from[ ]mail[ ]server
+        |Not[ ]currently[ ]accepting[ ]mail[ ]from[ ]your[ ]ip  # Microsoft
         |Please[ ]get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
         |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
         |sorry,[ ](?:

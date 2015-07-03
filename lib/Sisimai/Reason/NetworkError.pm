@@ -9,6 +9,7 @@ sub match {
     my $argvs = shift // return undef;
     my $regex = qr{(?:
          DNS[ ]records[ ]for[ ]the[ ]destination[ ]computer[ ]could[ ]not[ ]be[ ]found
+        |Hop[ ]count[ ]exceeded[ ]-[ ]possible[ ]mail[ ]loop
         |host[ ]is[ ]unreachable
         |mail[ ]forwarding[ ]loop[ ]for[ ]
         |malformed[ ]name[ ]server[ ]reply
