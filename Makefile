@@ -44,17 +44,6 @@ user-test:
 	$(PROVE) t/
 
 author-test:
-	for v in `find $(FOR_MAKETEST) -name '*.eml' -type f`; do \
-		n=`basename $$v` ;\
-		l=`echo $$n | wc -c` ;\
-		printf "[%s] %s " `date '+%T'` `basename $$v` ;\
-		while [ $$l -le 30 ]; do \
-			printf "%s" '.' ;\
-			l=`expr $$l + 1` ;\
-		done ;\
-		printf ' ' ;\
-		nkf --guess $$v | grep '(LF)' > /dev/null || exit 1 && echo 'ok';\
-	done
 	$(PROVE) xt/
 
 cover-test:
