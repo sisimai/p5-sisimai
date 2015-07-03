@@ -18,7 +18,7 @@ sub index {
         Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
         MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold 
         Rejected NoRelaying SpamDetected SecurityError Suspend SystemError
-        SystemFull UserUnknown
+        SystemFull TooManyConn UserUnknown
     | ];
 }
 
@@ -39,9 +39,9 @@ sub get {
 
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend',  'HasMoved', 
+        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'HasMoved', 
         'NoRelaying', 'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown',
-        'SpamDetected', 'Blocked',
+        'SpamDetected', 'TooManyConn', 'Blocked',
     ];
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
@@ -165,10 +165,10 @@ sub match {
     my $typestring = '';
     my $classorder = [
         'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown', 
-        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'Blocked',
-        'SpamDetected', 'SecurityError', 'SystemError', 'NetworkError', 
-        'Suspend', 'Expired', 'ContentError', 'HasMoved', 'SystemFull', 
-        'NotAccept', 'MailerError', 'NoRelaying', 'OnHold',
+        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'TooManyConn', 
+        'Blocked', 'SpamDetected', 'SecurityError', 'SystemError', 
+        'NetworkError', 'Suspend', 'Expired', 'ContentError', 'HasMoved', 
+        'SystemFull', 'NotAccept', 'MailerError', 'NoRelaying', 'OnHold',
     ];
 
     $statuscode = Sisimai::RFC3463->getdsn( $argvs ) || '';
