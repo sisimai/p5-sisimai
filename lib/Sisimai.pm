@@ -78,6 +78,7 @@ messages like following.
             print $e->recipient->address;   # kijitora@example.jp   # To
             print $e->recipient->host;      # example.jp
             print $e->deliverystatus;       # 5.1.1
+            print $e->replycode;            # 550
             print $e->reason;               # userunknown
 
             my $h = $e->damn;               # Convert to HASH reference
