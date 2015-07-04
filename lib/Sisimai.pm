@@ -94,8 +94,17 @@ messages like following.
 
 =head1 SEE ALSO
 
-L<Sisimai::Mail> - Mailbox or Maildir object
-L<Sisimai::Data> - Parsed data object
+=item L<Sisimai::Mail> - Mailbox or Maildir object
+
+=item L<Sisimai::Data> - Parsed data object
+
+=item L<https://tools.ietf.org/html/rfc3463> - RFC3463: Enhanced Mail System Status Codes
+
+=item L<https://tools.ietf.org/html/rfc3464> - RFC3464: An Extensible Message Format for Delivery Status Notifications
+
+=item L<https://tools.ietf.org/html/rfc5321> - RFC5321: Simple Mail Transfer Protocol
+
+=item L<https://tools.ietf.org/html/rfc5322> - RFC5322: Internet Message Format
 
 =head1 REPOSITORY
 
