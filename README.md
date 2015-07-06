@@ -55,7 +55,7 @@ Install | インストール
 
 ### From CPAN
 
-    % make install-from-cpan
+    % sudo cpanm Sisimai
     --> Working on Sisimai
     Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.1.20.tar.gz ... OK
     ...
