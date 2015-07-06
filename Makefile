@@ -76,7 +76,7 @@ cpanm:
 install-from-cpan: cpanm
 	sudo ./cpanm $(NAME)
 
-install-from-local:
+install-from-local: cpanm
 	sudo ./cpanm .
 
 # -----------------------------------------------------------------------------
