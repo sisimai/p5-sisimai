@@ -64,11 +64,11 @@ Install | インストール
     /usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
 
 ### From GitHub
-    
+
     % cd /usr/local/src
     % git clone https://github.com/azumakuniyuki/p5-Sisimai.git
     % cd ./p5-Sisimai
-    % make install-from-local
+    % sudo make install-from-local
     --> Working on .
     Configuring Sisimai-4.1.20 ... OK
     1 distribution installed
