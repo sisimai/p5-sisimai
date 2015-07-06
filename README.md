@@ -55,7 +55,7 @@ Install | インストール
 
 ### From CPAN
 
-    % sudo cpanm Sisimai
+    % make install-from-cpan
     --> Working on Sisimai
     Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.1.20.tar.gz ... OK
     ...
@@ -67,8 +67,8 @@ Install | インストール
     
     % cd /usr/local/src
     % git clone https://github.com/azumakuniyuki/p5-Sisimai.git
-    % cd ./Sisimai
-    % sudo cpanm .
+    % cd ./p5-Sisimai
+    % make install-from-local
     --> Working on .
     Configuring Sisimai-4.1.20 ... OK
     1 distribution installed
