@@ -1,7 +1,7 @@
 use Test::More;
 use Module::Load;
 
-eval { Module::Load::load 'Test::UsedModules1'; };
+eval { Module::Load::load 'Test::UsedModules'; };
 plan 'skip_all' => 'No Test::UsedModules' if $@;
 
 require './t/900-modules.pl';
