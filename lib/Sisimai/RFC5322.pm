@@ -84,6 +84,9 @@ sub received {
         'by'   => '',
     };
 
+    # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
+    return [] if $argvs =~ m/qmail\s+.+invoked\s+/;
+
     if( $argvs =~ m/\Afrom\s+(.+)\s+by\s+([^ ]+)/ ) {
         # Received: from localhost (localhost)
         #   by nijo.example.jp (V8/cf) id s1QB5ma0018057;
