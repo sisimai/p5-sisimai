@@ -279,7 +279,9 @@ sub scan {
     if ( $mhead->{'subject'} =~ /complaint about message from ((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))/ ) {
         # Microsoft ARF: remote host address.
         $arfheaders->{'rhost'} = $1;
-        $commondata->{'diagnosis'} = sprintf( "This is a Microsoft email abuse report for an email message received from IP %s on %s", $arfheaders->{'rhost'}, $mhead->{'date'} );
+        $commondata->{'diagnosis'} = sprintf( 
+            "This is a Microsoft email abuse report for an email message received from IP %s on %s",
+            $arfheaders->{'rhost'}, $mhead->{'date'} );
     }
 
     require Sisimai::RFC5322;
