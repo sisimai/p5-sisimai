@@ -43,12 +43,17 @@ MAKE_TEST: {
         is $e->{'spec'}, 'SMTP', '->spec = SMTP';
         ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
         like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
-        ok defined $e->{'command'}, '->command = '.$e->{'command'};
+        ok exists $e->{'command'}, '->command = '.$e->{'command'};
         ok length $e->{'date'}, '->date = '.$e->{'date'};
         ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
         ok length $e->{'action'}, '->action = '.$e->{'action'};
         ok length $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
         ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
+
+        for my $q ( 'rhost', 'lhost' ) {
+            next unless $e->{ $q };
+            like $e->{ $q }, qr/\A.+[.].+\z/, '->'.$q.' = '.$e->{ $q };
+        }
         is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
     }
 

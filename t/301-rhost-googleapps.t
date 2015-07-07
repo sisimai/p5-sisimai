@@ -46,7 +46,7 @@ MAKE_TEST: {
                 ok length $e->{'action'}, '->action = '.$e->{'action'};
                 is $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
-                ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
+                ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
                 is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
             }
             $c++;

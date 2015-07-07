@@ -62,17 +62,17 @@ MAKE_TEST: {
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 is $e->{'agent'}, 'McAfee', '->agent = '.$e->{'agent'};
 
-                ok defined $e->{'date'}, '->date = '.$e->{'date'};
-                ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
-                ok defined $e->{'reason'}, '->reason = '.$e->{'reason'};
-                ok defined $e->{'status'}, '->status = '.$e->{'status'};
-                ok defined $e->{'command'}, '->command = '.$e->{'command'};
-                ok defined $e->{'action'}, '->action = '.$e->{'action'};
-                ok defined $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
-                ok defined $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
-                ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
-                ok defined $e->{'feedbacktype'}, '->feedbacktype = ""';
-                ok defined $e->{'softbounce'}, '->softbounce = '.$e->{'softbounce'};
+                ok exists $e->{'date'}, '->date = '.$e->{'date'};
+                ok exists $e->{'spec'}, '->spec = '.$e->{'spec'};
+                ok exists $e->{'reason'}, '->reason = '.$e->{'reason'};
+                ok exists $e->{'status'}, '->status = '.$e->{'status'};
+                ok exists $e->{'command'}, '->command = '.$e->{'command'};
+                ok exists $e->{'action'}, '->action = '.$e->{'action'};
+                ok exists $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
+                ok exists $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
+                ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
+                ok exists $e->{'feedbacktype'}, '->feedbacktype = ""';
+                ok exists $e->{'softbounce'}, '->softbounce = '.$e->{'softbounce'};
 
                 like $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, '->recipient = '.$e->{'recipient'};
             }
