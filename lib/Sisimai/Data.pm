@@ -19,7 +19,7 @@ my $rwaccessors = [
     'token',            # (String) Message token/MD5 Hex digest value
     'lhost',            # (String) local host name/Local MTA
     'rhost',            # (String) Remote host name/Remote MTA
-    'alias',            # (String) The value of alias(RHS)
+    'alias',            # (String) Alias of the recipient address
     'listid',           # (String) List-Id header of each ML
     'reason',           # (String) Bounce reason
     'action',           # (String) The value of Action: header
