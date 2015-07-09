@@ -2,6 +2,7 @@ package Sisimai;
 use feature ':5.10';
 use strict;
 use warnings;
+use Module::Load '';
 
 our $VERSION = '4.1.26';
 sub version { return $VERSION }
@@ -39,6 +40,24 @@ sub make {
     return $list;
 }
 
+sub dump {
+    # @Description  Wrapper method to parse mailbox/maidir and dump as JSON
+    # @Param <str>  (String) Path to mbox or Maildir/
+    # @Return       (Ref->Scalar) JSON text
+    my $class = shift;
+    my $argv0 = shift // return undef;
+
+    my $parseddata = __PACKAGE__->make( $argv0 ) // [];
+    my $jsonobject = undef;
+    my $dumpedtext = undef;
+
+    # Dump as JSON
+    Module::Load::load( 'JSON', '-convert_blessed_universally' );
+    $jsonobject = JSON->new->allow_blessed->convert_blessed;
+
+    return $jsonobject->encode( $parseddata );
+}
+
 1;
 __END__
 
@@ -62,11 +81,13 @@ Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
 =head1 BASIC USAGE
 
+=head2 C<B<make( I<'/path/to/mbox'> )>>
+
 C<make> method provides feature for getting parsed data from bounced email 
 messages like following.
 
     use Sisimai;
-    my $v = Sisimai->make( '/path/to/mbox' );   # or Path to Maildir
+    my $v = Sisimai->make('/path/to/mbox'); # or Path to Maildir
 
     if( defined $v ) {
         for my $e ( @$v ) {
@@ -92,6 +113,13 @@ messages like following.
 
         printf "%s\n", $json->encode( $v );
     }
+
+=head2 C<B<dump( I<'/path/to/mbox'> )>>
+C<dump> method provides feature to get parsed data from bounced email as JSON.
+
+    use Sisimai;
+    my $v = Sisimai->dump('/path/to/mbox'); # or Path to Maildir
+    print $v;                               # JSON string
 
 =head1 SEE ALSO
 
