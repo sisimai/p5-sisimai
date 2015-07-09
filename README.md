@@ -82,7 +82,7 @@ messages like following.
 ```perl
 #! /usr/bin/env perl
 use Sisimai;
-my $v = Sisimai->make( '/path/to/mbox' );   # or Path to Maildir
+my $v = Sisimai->make('/path/to/mbox'); # or path to Maildir/
 
 if( defined $v ) {
     for my $e ( @$v ) {
@@ -101,13 +101,12 @@ if( defined $v ) {
         my $j = $e->dump('json');       # Convert to JSON string
         print $e->dump('json');         # JSON formatted bounce data
     }
-
-    # Dump entire list as a JSON 
-    use JSON '-convert_blessed_universally';
-    my $json = JSON->new->allow_blessed->convert_blessed;
-
-    printf "%s\n", $json->encode( $v );
 }
+
+# Get JSON string from parsed mailbox or Maildir/
+my $j = Sisimai->dump('/path/to/mbox'); # or path to Maildir/
+print $j;                               # parsed data as JSON
+
 ```
 
 ```json
