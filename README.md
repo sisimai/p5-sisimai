@@ -138,8 +138,8 @@ Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 7600 lines  |
-| The number of tests in t/ directory            | 27365 tests   | 84000 tests |
+| LOC:Source lines of code                       | 18200 lines   | 7700 lines  |
+| The number of tests in t/ directory            | 27365 tests   | 87200 tests |
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
 
@@ -164,8 +164,8 @@ Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 7600行      |
-| テスト件数(t/ディレクトリ)                     | 27365件       | 84000件     |
+| LOC:ソースコードの行数                         | 18200行       | 7700行      |
+| テスト件数(t/ディレクトリ)                     | 27365件       | 87200件     |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
