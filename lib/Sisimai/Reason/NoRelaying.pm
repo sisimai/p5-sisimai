@@ -8,7 +8,8 @@ sub match {
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?> 
-         mail[ ]server[ ]requires[ ]authentication[ ]when[ ]attempting[ ]to[ ]
+         Insecure[ ]Mail[ ]Relay
+        |mail[ ]server[ ]requires[ ]authentication[ ]when[ ]attempting[ ]to[ ]
             send[ ]to[ ]a[ ]non-local[ ]e-mail[ ]address    # MailEnable 
         |not[ ]allowed[ ]to[ ]relay[ ]through[ ]this[ ]machine
         |relay[ ](?:
