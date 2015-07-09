@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Load '';
 
-our $VERSION = '4.1.26';
+our $VERSION = '4.1.27';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
@@ -43,7 +43,7 @@ sub make {
 sub dump {
     # @Description  Wrapper method to parse mailbox/maidir and dump as JSON
     # @Param <str>  (String) Path to mbox or Maildir/
-    # @Return       (Ref->Scalar) JSON text
+    # @Return       (String) JSON text
     my $class = shift;
     my $argv0 = shift // return undef;
 
