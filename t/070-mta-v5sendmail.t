@@ -18,7 +18,7 @@ my $ReturnValue = {
     '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
     '04' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/hostunknown/ },
     '05' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/(?:hostunknown|blocked|userunknown)/ },
-    '06' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/securityerror/ },
+    '06' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/norelaying/ },
     '07' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/(?:hostunknown|blocked|userunknown)/ },
 };
 
