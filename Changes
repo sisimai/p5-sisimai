@@ -1,6 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
 4.1.27
+    - New method implemented: Sisimai->dump('/path/to/mbox') return parsed data
+      as JSON format.
+    - Updated error message pattern class: Sisimai::Reason::NoRelaying.
 
 4.1.26  Sat,  4 Jul 2015 11:34:44 +0900 (JST)
     - Module name changed from Sisimai::Reason::RelayingDenied to "NoRelaying".
