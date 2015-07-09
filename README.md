@@ -23,7 +23,7 @@ Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析�
 Features | 主な機能
 -------------------
 * __Convert bounce mails to structured data__ | __エラーメールをデータ構造に変換__
-  * Supported format are Perl, JSON, and YAML | Perlのデータ形式とJSON,YAMLに対応
+  * Supported format are Perl, JSON | Perlのデータ形式とJSONに対応
 * __Easy to install, use.__ | __インストールも使用も簡単__
   * cpanm
   * git clone
@@ -135,7 +135,7 @@ Sisimai.
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
-| Output format of parsed data                   | YAML,JSON,CSV | JSON only(3)|
+| Output format of parsed data                   | YAML,JSON,CSV | JSON only   |
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
@@ -146,7 +146,6 @@ Sisimai.
 
 1. Implement yourself with using DBI or any O/R Mapper you like
 2. See ./ANALYTICAL-PRECISION
-3. YAML format is available if "YAML" module has been installed
 
 公開中のbouncehammer version 2.7.13とSisimai(シシマイ)は下記のような違いがあります。
 
@@ -162,7 +161,7 @@ Sisimai.
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応    |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
-| 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ(3) |
+| 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ    |
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
@@ -173,7 +172,6 @@ Sisimai.
 
 1. DBIまたは好きなORMを使って自由に実装してください
 2. ./ANALYTICAL-PRECISIONを参照
-3. "YAML"モジュールが入っていればYAMLでの出力も可能
 
 
 MTA/MSP Modules | MTA/MSPモジュール一覧
