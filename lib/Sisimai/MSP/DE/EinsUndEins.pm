@@ -148,9 +148,9 @@ sub scan {
             last;
         }
 
-        $e->{'status'}  =  Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-        $e->{'spec'}  ||= 'SMTP';
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+        $e->{'status'} =  Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        $e->{'spec'} ||= 'SMTP';
+        $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

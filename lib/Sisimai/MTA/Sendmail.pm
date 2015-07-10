@@ -247,7 +247,7 @@ sub scan {
         }
 
         $e->{'spec'}    ||= 'SMTP';
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
         $e->{'command'} ||= 'EHLO' if length $esmtpreply;
 

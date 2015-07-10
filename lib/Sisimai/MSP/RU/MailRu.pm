@@ -206,7 +206,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+        $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {

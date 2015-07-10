@@ -290,7 +290,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         unless( $e->{'rhost'} ) {

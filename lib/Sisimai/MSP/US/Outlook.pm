@@ -176,7 +176,7 @@ sub scan {
         }
 
         $e->{'spec'}    ||= 'SMTP';
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( length $e->{'diagnosis'} == 0 ) {

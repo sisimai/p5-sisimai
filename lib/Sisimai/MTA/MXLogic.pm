@@ -184,7 +184,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+        $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 
         $e->{'diagnosis'} =~ s/[-]{2}.*\z//g;

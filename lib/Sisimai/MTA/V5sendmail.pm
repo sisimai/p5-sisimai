@@ -185,9 +185,9 @@ sub scan {
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
 
-        $e->{'spec'}    ||= 'SMTP';
-        $e->{'agent'}   ||= __PACKAGE__->smtpagent;
-        $e->{'command'}   = $commandset[ $n ] || '';
+        $e->{'spec'}  ||= 'SMTP';
+        $e->{'agent'}   = __PACKAGE__->smtpagent;
+        $e->{'command'} = $commandset[ $n ] || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message

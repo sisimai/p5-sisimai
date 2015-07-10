@@ -218,7 +218,7 @@ sub scan {
 
         $e->{'reason'} ||= Sisimai::RFC3463->reason( $e->{'status'} );
         $e->{'spec'}   ||= 'SMTP';
-        $e->{'agent'}  ||= __PACKAGE__->smtpagent;
+        $e->{'agent'}    = __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

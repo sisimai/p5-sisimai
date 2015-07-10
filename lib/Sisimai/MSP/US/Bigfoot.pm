@@ -204,8 +204,8 @@ sub scan {
             $e->{'status'} = $r if length $r;
         }
 
-        $e->{'spec'}  ||= 'SMTP';
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+        $e->{'spec'} ||= 'SMTP';
+        $e->{'agent'} |= __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

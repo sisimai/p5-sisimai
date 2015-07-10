@@ -262,7 +262,7 @@ sub scan {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+        $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'command'} = shift @commandset || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {

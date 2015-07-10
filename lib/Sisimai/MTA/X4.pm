@@ -166,7 +166,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.3' }
+sub version     { '4.0.4' }
 sub description { 'Unknown MTA #4 qmail clones' }
 sub smtpagent   { 'X4' }
 
@@ -278,7 +278,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
+        $e->{'agent'} = __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
