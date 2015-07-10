@@ -147,7 +147,7 @@ for my $x ( keys %$R ) {
 
             $n = sprintf( "%02d", $i );
             next unless defined $mailbox;
-            ok -f $emailfn, sprintf( "[%s] %s/email = ", $n, $M,$emailfn );
+            ok -f $emailfn, sprintf( "[%s] %s/email = %s", $n, $M,$emailfn );
 
             while( my $r = $mailbox->read ) {
                 # Parse each email in eg/ directory
