@@ -448,6 +448,10 @@ sub scan {
             $e->{'reason'}    = $scannedset->{'reason'} || 'undefined';
             $e->{'diagnosis'} = $scannedset->{'message'} if length $scannedset->{'message'};
             $e->{'command'}   = '';
+
+        } else {
+            # Set the value of smtpagent
+            $e->{'agent'} = __PACKAGE__->smtpagent;
         }
         $e->{'status'} ||= Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $RxCmd;
@@ -461,7 +465,6 @@ sub scan {
 
         $e->{'date'}  ||= $mhead->{'date'};
         $e->{'spec'}  ||= 'SMTP';
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
