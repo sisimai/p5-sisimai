@@ -61,10 +61,10 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.9' }
+sub version     { '4.0.10' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
-sub headerlist  { return [ 'X-MXL-NoteHash' ] }
+sub headerlist  { return [ 'X-MXL-NoteHash', 'X-MXL-Hash' ] }
 
 sub scan {
     # @Description  Detect an error from MXLogic
@@ -76,9 +76,10 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
+    $match = 1 if defined $mhead->{'x-mxl-hash'};
     $match = 1 if defined $mhead->{'x-mxl-notehash'};
     $match = 1 if $mhead->{'subject'} =~ $RxMTA->{'subject'};
-    $match = 1 if $mhead->{'from'} =~ $RxMTA->{'from'};
+    $match = 1 if $mhead->{'from'}    =~ $RxMTA->{'from'};
     return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
