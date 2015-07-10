@@ -3,7 +3,15 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
 4.1.27  Fri, 17 Jul 2015
     - New method implemented: Sisimai->dump('/path/to/mbox') return parsed data
       as JSON format.
-    - Updated error message pattern class: Sisimai::Reason::NoRelaying.
+    - Updated error message patterns: Sisimai::Reason::NoRelaying, TooManyConn,
+      and Blocked.
+    - Fixed code in Sisimai::Reason::MesgTooBig. Error reason of bounce message
+      that the value of "Status" field is 5.2.3 will be set as "exceedlimit".
+    - Fixed code for getting the value of Message-Id header in the original 
+      message at Sisimai::Data.
+    - Sisimai reports the bounce reason as "onhold" when Sisimail::Reason->get
+      method did not decide the reason and the value of "diagnosticcode" is not
+      empty.
 
 4.1.26  Sat,  4 Jul 2015 11:34:44 +0900 (JST)
     - Module name changed from Sisimai::Reason::RelayingDenied to "NoRelaying".
