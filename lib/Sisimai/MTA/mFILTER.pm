@@ -15,7 +15,7 @@ my $RxMTA = {
     'x-mailer' => qr/\Am-FILTER\z/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.0.5' }
 sub description { 'Digital Arts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
 sub headerlist  { return [ 'X-Mailer' ] }
@@ -151,8 +151,14 @@ sub scan {
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r = $mhead->{'received'};
+            my $x = Sisimai::RFC5322->received( $r->[-1] );
+
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            for my $ee ( @$x ) {
+                # Avoid "... by m-FILTER"
+                next unless $ee =~ m/[.]/;
+                $e->{'rhost'} = $ee;
+            }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'status'}    = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
