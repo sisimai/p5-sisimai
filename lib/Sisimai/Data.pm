@@ -261,7 +261,11 @@ sub make {
 
             # The value of "Message-Id" header
             $p->{'messageid'} =  $rfc822data->{'message-id'} // '';
-            $p->{'messageid'} =~ y/<>//d if length $p->{'messageid'};
+            if( length $p->{'messageid'} ) {
+                # Remove angle brackets
+                $p->{'messageid'} =  $1 if $p->{'messageid'} =~ m/\A([^ ]+)[ ].*/;
+                $p->{'messageid'} =~ y/<>//d;
+            }
 
             # Cleanup the value of "Diagnostic-Code:" header
             $p->{'diagnosticcode'} =~ s/\s+$endofemail//;
