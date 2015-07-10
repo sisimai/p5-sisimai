@@ -58,8 +58,14 @@ sub true {
         $v = 1;
 
     } else {
-        # Check the value of Diagnosic-Code: header with patterns
-        $v = 1 if __PACKAGE__->match( $diagnostic );
+        if( $tempreason eq 'exceedlimit' || $statuscode eq '5.2.3' ) {
+            #  5.2.3   Message length exceeds administrative limit
+            $v = 0;
+
+        } else {
+            # Check the value of Diagnosic-Code: header with patterns
+            $v = 1 if __PACKAGE__->match( $diagnostic );
+        }
     }
 
     return $v;
