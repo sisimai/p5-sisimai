@@ -319,7 +319,7 @@ sub scan {
         $e->{'action'}  = 'failed';
         $e->{'reason'}  = 'feedback';
         $e->{'command'} = '';
-        $e->{'agent'} ||= 'FeedBack-Loop';
+        $e->{'agent'}   = 'FeedBack-Loop';
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
