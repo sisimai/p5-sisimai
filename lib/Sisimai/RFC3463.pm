@@ -279,6 +279,7 @@ my $StandardCode = {
         'notaccept'     => [ '4.3.2' ],
         'systemerror'   => [ '4.3.5' ],
         'networkerror'  => [ '4.4.2', '4.4.4', '4.4.6' ],
+        'toomanyconn'   => [ '4.4.5' ],
         'expired'       => [ '4.4.7', '4.4.1' ],
     },
     'permanent' => {
@@ -310,6 +311,7 @@ my $InternalCode = {
         'mailboxfull'   => [ '4.0.922' ],
         'exceedlimit'   => [ '4.0.923' ],
         'systemfull'    => [ '4.0.931' ],
+        'toomanyconn'   => [ '4.0.945' ],
         'expired'       => [ '4.0.947' ],
         'suspend'       => [ '4.0.990' ],
     },
