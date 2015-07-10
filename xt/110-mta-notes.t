@@ -8,10 +8,10 @@ my $d = './tmp/data/notes';
 my $h = undef;
 my $ReturnValue = {
     '01001' => qr/userunknown/,
-    '01002' => qr/undefined/,
-    '01003' => qr/undefined/,
+    '01002' => qr/onhold/,
+    '01003' => qr/onhold/,
     '01004' => qr/userunknown/,
-    '01005' => qr/undefined/,
+    '01005' => qr/onhold/,
     '01006' => qr/userunknown/,
     '01007' => qr/userunknown/,
 };

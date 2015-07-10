@@ -13,7 +13,7 @@ my $MethodNames = {
     'object' => [],
 };
 my $ReturnValue = {
-    '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/undefined/ },
+    '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/ },
     '02' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
     '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
 };
