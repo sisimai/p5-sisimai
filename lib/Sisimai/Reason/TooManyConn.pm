@@ -13,8 +13,9 @@ sub match {
         |no[ ]IPs[ ]available[ ][-][ ].+[ ]exceeds[ ]per[-]domain[ ]connection[ ]limit[ ]for
         |Too[ ]many[ ](?:
              connections
-            |connections[ ]from[ ]your[ ]host[.]# Microsoft 
-            |concurrent[ ]SMTP[ ]connections    # Microsoft
+            |connections[ ]from[ ]your[ ]host[.]    # Microsoft 
+            |concurrent[ ]SMTP[ ]connections        # Microsoft
+            |SMTP[ ]sessions[ ]for[ ]this[ ]host    # Sendmail(daemon.c)
             )
         )
     }xi;
