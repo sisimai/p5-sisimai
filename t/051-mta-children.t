@@ -234,7 +234,7 @@ for my $x ( keys %$R ) {
 
             $n = sprintf( "%02d", $i );
             next unless defined $mailbox;
-            ok -f $emailfn, sprintf( "[%s] %s/email = ", $n, $M,$emailfn );
+            ok -f $emailfn, sprintf( "[%s] %s/email = %s", $n, $M,$emailfn );
 
             while( my $r = $mailbox->read ) {
                 # Parse each email in eg/ directory
@@ -264,7 +264,14 @@ for my $x ( keys %$R ) {
                     # Check the value of the following variables
                     unless( $x =~ m/\AmFILTER\z/ ) {
                         # mFILTER => m-FILTER
-                        is   $e->{'agent'}, $x, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
+                        if( $x eq 'X4' ) {
+                            # X4 is qmail clone
+                            like $e->{'agent'}, qr/(?:qmail|X4)/, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
+
+                        } else {
+                            # Other MTA modules
+                            is $e->{'agent'}, $x, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
+                        }
                     }
                     like $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, sprintf( "[%s] %s->recipient = %s", $n, $x, $e->{'recipient'} );
 
