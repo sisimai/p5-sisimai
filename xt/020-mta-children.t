@@ -946,7 +946,13 @@ for my $x ( keys %$R ) {
 
                     unless( $x =~ m/\A(?:mFILTER)\z/ ) {
                         # mFILTER => m-FILTER
-                        is $ee->smtpagent, $x, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
+                        if( $x eq 'X4' ) {
+                            # X4 is qmail clone
+                            like $ee->smtpagent, qr/\A(?:qmail|X4)\z/, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
+                        } else {
+                            # Other MTA modules
+                            is $ee->smtpagent, $x, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
+                        }
                     }
 
                     like $ee->reason, $R->{ $x }->{ $n },      sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );
