@@ -105,6 +105,7 @@ if( defined $v ) {
 
 # Get JSON string from parsed mailbox or Maildir/
 my $j = Sisimai->dump('/path/to/mbox'); # or path to Maildir/
+                                        # dump() is added in v4.1.27
 print $j;                               # parsed data as JSON
 
 ```
@@ -139,7 +140,7 @@ Sisimai.
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 7700 lines  |
-| The number of tests in t/ directory            | 27365 tests   | 87200 tests |
+| The number of tests in t/ directory            | 27365 tests   | 116600 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
 
@@ -165,7 +166,7 @@ Sisimai.
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 7700行      |
-| テスト件数(t/ディレクトリ)                     | 27365件       | 87200件     |
+| テスト件数(t/ディレクトリ)                     | 27365件       | 116600件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
