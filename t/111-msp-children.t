@@ -158,7 +158,7 @@ for my $x ( keys %$R ) {
                 isa_ok $p->ds, 'ARRAY';
                 isa_ok $p->header, 'HASH';
                 isa_ok $p->rfc822, 'HASH';
-                ok length $p->from, sprintf( "[%s] %s->from() = %s", $n, $M, $p->from );
+                ok length $p->from, sprintf( "[%s] %s->from = %s", $n, $M, $p->from );
 
                 for my $e ( @{ $p->ds } ) {
 
@@ -205,6 +205,7 @@ for my $x ( keys %$R ) {
 
                     unlike $e->lhost,     qr/[ ]/, sprintf( "[%s] %s->lhost = %s", $n, $x, $e->lhost );
                     unlike $e->rhost,     qr/[ ]/, sprintf( "[%s] %s->rhost = %s", $n, $x, $e->rhost );
+                    unlike $e->alias,     qr/[ ]/, sprintf( "[%s] %s->alias = %s", $n, $x, $e->alias );
                     unlike $e->listid,    qr/[ ]/, sprintf( "[%s] %s->listid = %s", $n, $x, $e->listid );
                     unlike $e->messageid, qr/[ ]/, sprintf( "[%s] %s->messageid = %s", $n, $x, $e->messageid );
                 }
