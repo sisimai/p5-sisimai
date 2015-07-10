@@ -345,11 +345,6 @@ for my $x ( keys %$R ) {
                     ok defined $ee->subject,       sprintf( "[%s] %s/%s->subject", $n, $e, $x );
                     ok defined $ee->deliverystatus,sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
 
-                    unless( $x =~ m/\A(?:mFILTER)\z/ ) {
-                        # mFILTER => m-FILTER
-                        is $ee->smtpagent, $x, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
-                    }
-
                     like $ee->reason, $R->{ $x }->{ $n },      sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );
                     like $ee->timezoneoffset, qr/\A[+-]\d+\z/, sprintf( "[%s] %s/%s->timezoneoffset = %s", $n, $e, $x, $ee->timezoneoffset );
 
