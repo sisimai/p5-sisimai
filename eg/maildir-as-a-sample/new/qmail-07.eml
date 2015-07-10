@@ -3,7 +3,7 @@ Return-Path: <>
 X-Original-To: shironeko@example.ad.jp
 Delivered-To: shironeko@example.ad.jp
 Received: from host (mta1)
-    by xxxxxx (Postfix) with SMTP id F00000
+    by mta.example.jp (Postfix) with SMTP id F00000
     for shironeko@example.ad.jp; Fri, 1 Jan 2015 00:00:00 +0900 (JST)
 Received: (qmail host invoked for bounce); 1 Jan 2015 00:00:00 +0900
 Date: 1 Jan 2015 00:00:00 +0900
@@ -11,7 +11,7 @@ From: MAILER-DAEMON@example.jp
 To: shironeko@example.ad.jp
 Subject: failure notice
 
-Hi. This is the qmail-send program at xxx.
+Hi. This is the qmail-send program at MTA.
 I'm afraid I wasn't able to deliver your message to the following addresses.
 This is a permanent error; I've given up. Sorry it didn't work out.
 
