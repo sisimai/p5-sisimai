@@ -37,6 +37,7 @@ sub match {
         |Not[ ]currently[ ]accepting[ ]mail[ ]from[ ]your[ ]ip  # Microsoft
         |Please[ ]get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
         |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
+        |Rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
         |sorry,[ ](?:
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
