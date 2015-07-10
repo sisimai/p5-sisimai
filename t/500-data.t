@@ -88,8 +88,14 @@ MAKE_TEST: {
             isa_ok $e, $PackageName;
             ok length $e->token, 'token = '.$e->token;
             ok length $e->lhost, 'lhost = '.$e->lhost;
+            unlike $e->lhost, qr/[ ]/, '->lhost = '.$e->lhost;
+
             ok length $e->rhost, 'rhost = '.$e->rhost;
+            unlike $e->rhost, qr/[ ]/, '->rhost = '.$e->rhost;
+
             ok defined $e->listid, 'listid = '.$e->listid;
+            unlike $e->listid, qr/[ ]/, '->listid = '.$e->listid;
+
             is $e->reason, 'rejected', 'reason = '.$e->reason;
             ok length $e->subject, 'subject = '.$e->subject;
 
@@ -112,6 +118,8 @@ MAKE_TEST: {
             is $e->recipient->host, $e->destination, 'destination = '.$e->destination;
 
             ok length $e->messageid, 'messageid = '.$e->messageid;
+            unlike $e->messageid, qr/[ ]/, '->messageid = '.$e->messageid;
+
             is $e->smtpagent, 'Sendmail', 'smtpagent = '.$e->smtpagent;
             is $e->smtpcommand, 'MAIL', 'smtpcommand = '.$e->smtpcommand;
 

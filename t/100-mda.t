@@ -43,8 +43,6 @@ MAKE_TEST: {
             ok $v->{'message'}, 'message => '.$v->{'message'};
         }
     }
-
-
 }
 
 done_testing;

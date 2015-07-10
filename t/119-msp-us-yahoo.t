@@ -86,6 +86,10 @@ MAKE_TEST: {
                 like $e->deliverystatus, $ReturnValue->{ $emindex }->{'status'}, '->status = '.$e->deliverystatus;
                 like $e->reason, $ReturnValue->{ $emindex }->{'reason'}, '->reason = '.$e->reason;
                 ok defined $e->replycode, '->replycode = '.$e->replycode;
+                unlike $e->lhost, qr/[ ]/, '->lhost = '.$e->lhost;
+                unlike $e->rhost, qr/[ ]/, '->rhost = '.$e->rhost;
+                unlike $e->listid, qr/[ ]/, '->listid = '.$e->listid;
+                unlike $e->messageid, qr/[ ]/, '->messageid = '.$e->messageid;
             }
             $c++;
         }
