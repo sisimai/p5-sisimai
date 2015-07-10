@@ -319,7 +319,8 @@ for my $x ( keys %$R ) {
 
                     } elsif( $x eq 'ARF' ) {
                         # Sisimai::ARF
-                        ok $ee->smtpagent, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
+                        ok $ee->smtpagent,           sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
+                        ok length $ee->feedbacktype, sprintf( "[%s] %s/%s->feedbacktype = %s", $n, $e, $x, $ee->feedbacktype );
                     }
 
                     like $ee->reason, $R->{ $x }->{ $n },      sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );
