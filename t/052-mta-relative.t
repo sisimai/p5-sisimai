@@ -121,7 +121,25 @@ for my $x ( keys %$R ) {
                             ok $e->{'agent'}, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
                         }
                     }
-                    like $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, sprintf( "[%s] %s->recipient = %s", $n, $x, $e->{'recipient'} );
+
+                    cmp_ok $e->{'softbounce'},'>=', -1, sprintf( "[%s] %s->softbounce = %s", $n, $x, $e->{'softbounce'} );
+                    cmp_ok $e->{'softbounce'},'<=',  1, sprintf( "[%s] %s->softbounce = %s", $n, $x, $e->{'softbounce'} );
+
+                    like   $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, sprintf( "[%s] %s->recipient = %s", $n, $x, $e->{'recipient'} );
+                    unlike $e->{'recipient'}, qr/[ ]/,              sprintf( "[%s] %s->recipient = %s", $n, $x, $e->{'recipient'} );
+                    unlike $e->{'command'},   qr/[ ]/,              sprintf( "[%s] %s->command = %s", $n, $x, $e->{'command'} );
+
+                    if( length $e->{'status'} ) {
+                        # Check the value of "status"
+                        like $e->{'status'}, qr/\A(?:[45][.]\d[.]\d+)\z/,
+                            sprintf( "[%s] %s->status = %s", $n, $x, $e->{'status'} );
+                    }
+
+                    if( length $e->{'action'} ) {
+                        # Check the value of "action"
+                        like $e->{'action'}, qr/\A(?:fail.+|delayed|expired)\z/, 
+                            sprintf( "[%s] %s->action = %s", $n, $x, $e->{'action'} );
+                    }
 
                     for my $ee ( 'rhost', 'lhost' ) {
                         # Check rhost and lhost are valid hostname or not
@@ -138,15 +156,33 @@ for my $x ( keys %$R ) {
 
                 for my $e ( @$o ) {
                     # Check each accessor
-                    isa_ok $e, 'Sisimai::Data';
-                    ok defined $e->replycode, sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
+                    isa_ok $e,            'Sisimai::Data';
+                    isa_ok $e->timestamp, 'Sisimai::Time';
+                    isa_ok $e->addresser, 'Sisimai::Address';
+                    isa_ok $e->recipient, 'Sisimai::Address';
+
+                    ok defined $e->replycode,      sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
+                    ok defined $e->subject,        sprintf( "[%s] %s->subject = ...", $n, $x );
+                    ok defined $e->smtpcommand,    sprintf( "[%s] %s->smtpcommand = %s", $n, $x, $e->smtpcommand );
+                    ok defined $e->diagnosticcode, sprintf( "[%s] %s->diagnosticcode = %s", $n, $x, $e->diagnosticcode );
+                    ok defined $e->diagnostictype, sprintf( "[%s] %s->diagnostictype = %s", $n, $x, $e->diagnostictype );
+                    ok defined $e->deliverystatus, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
+                    ok length  $e->token,          sprintf( "[%s] %s->token = %s", $n, $x, $e->token );
+                    ok length  $e->smtpagent,      sprintf( "[%s] %s->smtpagent = %s", $n, $x, $e->smtpagent );
+                    ok length  $e->timezoneoffset, sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
+
                     if( length $e->replycode ) {
                         # Check SMTP Reply Code format
                         like $e->replycode, qr/\A[45]\d\d\z/, sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
                     }
 
+                    is $e->addresser->host, $e->senderdomain, sprintf( "[%s] %s->senderdomain = %s", $n, $x, $e->senderdomain );
+                    is $e->recipient->host, $e->destination,  sprintf( "[%s] %s->destination = %s", $n, $x, $e->destination );
+
+                    like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
                     like $e->deliverystatus, $R->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
                     like $e->reason,         $R->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );
+                    like $e->token,          qr/\A([0-9a-f]{40})\z/,         sprintf( "[%s] %s->token = %s", $n, $x, $e->token );
 
                     unlike $e->lhost,     qr/[ ]/, sprintf( "[%s] %s->lhost = %s", $n, $x, $e->lhost );
                     unlike $e->rhost,     qr/[ ]/, sprintf( "[%s] %s->rhost = %s", $n, $x, $e->rhost );

@@ -348,6 +348,12 @@ for my $x ( keys %$R ) {
                     like $ee->reason, $R->{ $x }->{ $n },      sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );
                     like $ee->timezoneoffset, qr/\A[+-]\d+\z/, sprintf( "[%s] %s/%s->timezoneoffset = %s", $n, $e, $x, $ee->timezoneoffset );
 
+                    if( length $ee->action ) {
+                        # Check the value of action
+                        like $ee->action, qr/(?:fail.+|delayed|expired)\z/, 
+                            sprintf( "[%s] %s/%s->action = %s", $n, $e, $x, $ee->action );
+                    }
+
                     if( length $ee->deliverystatus ) {
                         # Check the value of D.S.N. format
                         like $ee->deliverystatus, qr/\A[45][.]\d/, 

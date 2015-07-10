@@ -927,8 +927,7 @@ for my $x ( keys %$R ) {
                 for my $ee ( @$v ) {
                     isa_ok $ee, 'Sisimai::Data';
 
-                    ok length $ee->token,          sprintf( "[%s] %s/%s->token = %s", $n, $e, $x, $ee->token );
-
+                    ok length  $ee->token, sprintf( "[%s] %s/%s->token = %s", $n, $e, $x, $ee->token );
                     ok defined $ee->lhost, sprintf( "[%s] %s/%s->lhost = %s", $n, $e, $x, $ee->lhost );
                     ok defined $ee->rhost, sprintf( "[%s] %s/%s->rhost = %s", $n, $e, $x, $ee->rhost );
                     ok defined $ee->alias, sprintf( "[%s] %s/%s->alias = %s", $n, $e, $x, $ee->alias );
@@ -957,6 +956,12 @@ for my $x ( keys %$R ) {
 
                     like $ee->reason, $R->{ $x }->{ $n },      sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );
                     like $ee->timezoneoffset, qr/\A[+-]\d+\z/, sprintf( "[%s] %s/%s->timezoneoffset = %s", $n, $e, $x, $ee->timezoneoffset );
+
+                    if( length $ee->action ) {
+                        # Check the value of action
+                        like $ee->action, qr/(?:fail.+|delayed|expired)\z/, 
+                            sprintf( "[%s] %s/%s->action = %s", $n, $e, $x, $ee->action );
+                    }
 
                     if( length $ee->deliverystatus ) {
                         # Check the value of D.S.N. format
