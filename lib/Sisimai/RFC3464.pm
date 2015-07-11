@@ -44,7 +44,7 @@ my $RxEMS = qr{(?>                                          # Subject:
     )
 }xi;
 
-sub version     { '4.0.25' };
+sub version     { '4.0.26' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -177,6 +177,11 @@ sub scan {
                 #   The action-value may be spelled in any combination of upper and lower
                 #   case characters.
                 $v->{'action'} = lc $1;
+
+                if( $v->{'action'} =~ m/\A([^ ]+)[ ]/ ) {
+                    # failed (bad destination mailbox address)
+                    $v->{'action'} = $1;
+                }
 
             } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # 2.3.4 Status field
