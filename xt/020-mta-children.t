@@ -943,19 +943,18 @@ for my $x ( keys %$R ) {
                     ok defined $ee->subject,       sprintf( "[%s] %s/%s->subject", $n, $e, $x );
                     ok defined $ee->deliverystatus,sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
 
-                    unless( $x =~ m/\A(?:mFILTER)\z/ ) {
+                    if( $x eq 'mFILTER' ) {
                         # mFILTER => m-FILTER
-                        if( $x eq 'X4' ) {
-                            # X4 is qmail clone
-                            like $ee->smtpagent, qr/\A(?:qmail|X4)\z/, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
-                        } else {
-                            # Other MTA modules
-                            is $ee->smtpagent, $x, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
-                        }
-                    }
+                        is $ee->smtpagent, 'm-FILTER', sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
 
-                    like $ee->reason, $R->{ $x }->{ $n },      sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );
-                    like $ee->timezoneoffset, qr/\A[+-]\d+\z/, sprintf( "[%s] %s/%s->timezoneoffset = %s", $n, $e, $x, $ee->timezoneoffset );
+                    } elsif( $x eq 'X4' ) {
+                        # X4 is qmail clone
+                        like $ee->smtpagent, qr/\A(?:qmail|X4)\z/, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
+
+                    } else {
+                        # Other MTA modules
+                        is $ee->smtpagent, $x, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
+                    }
 
                     if( length $ee->action ) {
                         # Check the value of action
@@ -969,10 +968,18 @@ for my $x ( keys %$R ) {
                             sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
                     }
 
+                    like $ee->reason,         $R->{ $x }->{ $n },   sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );
+                    like $ee->replycode,      qr/\A(?:[45]\d\d|)\z/,sprintf( "[%s] %s/%s->replycode = %s", $n, $e, $x, $ee->replycode );
+                    like $ee->timezoneoffset, qr/\A[+-]\d+\z/,      sprintf( "[%s] %s/%s->timezoneoffset = %s", $n, $e, $x, $ee->timezoneoffset );
+
+                    unlike $ee->deliverystatus,qr/[ ]/, sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
+                    unlike $ee->smtpcommand,   qr/[ ]/, sprintf( "[%s] %s/%s->smtpcommand = %s", $n, $e, $x, $ee->smtpcommand );
+
                     unlike $ee->lhost,     qr/[ ]/, sprintf( "[%s] %s/%s->lhost = %s", $n, $e, $x, $ee->lhost );
                     unlike $ee->rhost,     qr/[ ]/, sprintf( "[%s] %s/%s->rhost = %s", $n, $e, $x, $ee->rhost );
                     unlike $ee->alias,     qr/[ ]/, sprintf( "[%s] %s/%s->alias = %s", $n, $e, $x, $ee->alias );
                     unlike $ee->listid,    qr/[ ]/, sprintf( "[%s] %s/%s->listid = %s", $n, $e, $x, $ee->listid );
+                    unlike $ee->action,    qr/[ ]/, sprintf( "[%s] %s/%s->action = %s", $n, $e, $x, $ee->action );
                     unlike $ee->messageid, qr/[ ]/, sprintf( "[%s] %s/%s->messageid = %s", $n, $e, $x, $ee->messageid );
 
                     isa_ok $ee->timestamp, 'Sisimai::Time'; $y = $ee->timestamp;
@@ -987,7 +994,13 @@ for my $x ( keys %$R ) {
                     ok length  $y->address,         sprintf( "[%s] %s/%s->addresser->address = %s", $n, $e, $x, $y->address );
                     ok defined $y->verp,            sprintf( "[%s] %s/%s->addresser->verp = %s", $n, $e, $x, $y->verp );
                     ok defined $y->alias,           sprintf( "[%s] %s/%s->addresser->alias = %s", $n, $e, $x, $y->alias );
+
                     is $y->host, $ee->senderdomain, sprintf( "[%s] %s/%s->senderdomain = %s", $n, $e, $x, $y->host );
+                    unlike $y->host,   qr/[ ]/,     sprintf( "[%s] %s/%s->addresser->host = %s", $n, $e, $x, $y->host );
+                    unlike $y->user,   qr/[ ]/,     sprintf( "[%s] %s/%s->addresser->user = %s", $n, $e, $x, $y->user );
+                    unlike $y->verp,   qr/[ ]/,     sprintf( "[%s] %s/%s->addresser->verp = %s", $n, $e, $x, $y->verp );
+                    unlike $y->alias,  qr/[ ]/,     sprintf( "[%s] %s/%s->addresser->alias = %s", $n, $e, $x, $y->alias );
+                    unlike $y->address,qr/[ ]/,     sprintf( "[%s] %s/%s->addresser->address = %s", $n, $e, $x, $y->address );
 
                     isa_ok $ee->recipient, 'Sisimai::Address'; $y = $ee->recipient;
                     ok length  $y->host,            sprintf( "[%s] %s/%s->recipient->host = %s", $n, $e, $x, $y->host );
@@ -995,7 +1008,13 @@ for my $x ( keys %$R ) {
                     ok length  $y->address,         sprintf( "[%s] %s/%s->recipient->address = %s", $n, $e, $x, $y->address );
                     ok defined $y->verp,            sprintf( "[%s] %s/%s->recipient->verp = %s", $n, $e, $x, $y->verp );
                     ok defined $y->alias,           sprintf( "[%s] %s/%s->recipient->alias = %s", $n, $e, $x, $y->alias );
+
                     is $y->host, $ee->destination,  sprintf( "[%s] %s/%s->destination = %s", $n, $e, $x, $y->host );
+                    unlike $y->host,   qr/[ ]/,     sprintf( "[%s] %s/%s->recipient->host = %s", $n, $e, $x, $y->host );
+                    unlike $y->user,   qr/[ ]/,     sprintf( "[%s] %s/%s->recipient->user = %s", $n, $e, $x, $y->user );
+                    unlike $y->verp,   qr/[ ]/,     sprintf( "[%s] %s/%s->recipient->verp = %s", $n, $e, $x, $y->verp );
+                    unlike $y->alias,  qr/[ ]/,     sprintf( "[%s] %s/%s->recipient->alias = %s", $n, $e, $x, $y->alias );
+                    unlike $y->address,qr/[ ]/,     sprintf( "[%s] %s/%s->recipient->address = %s", $n, $e, $x, $y->address );
                 }
             }
         }

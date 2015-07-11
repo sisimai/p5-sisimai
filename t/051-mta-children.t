@@ -264,16 +264,17 @@ for my $x ( keys %$R ) {
                     }
 
                     # Check the value of the following variables
-                    unless( $x =~ m/\AmFILTER\z/ ) {
+                    if( $x =~ m/\AmFILTER\z/ ) {
                         # mFILTER => m-FILTER
-                        if( $x eq 'X4' ) {
-                            # X4 is qmail clone
-                            like $e->{'agent'}, qr/(?:qmail|X4)/, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
+                        is $e->{'agent'}, 'm-FILTER', sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
 
-                        } else {
-                            # Other MTA modules
-                            is $e->{'agent'}, $x, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
-                        }
+                    } elsif( $x eq 'X4' ) {
+                        # X4 is qmail clone
+                        like $e->{'agent'}, qr/(?:qmail|X4)/, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
+
+                    } else {
+                        # Other MTA modules
+                        is $e->{'agent'}, $x, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
                     }
 
                     cmp_ok $e->{'softbounce'},'>=', -1, sprintf( "[%s] %s->softbounce = %s", $n, $x, $e->{'softbounce'} );
@@ -325,24 +326,35 @@ for my $x ( keys %$R ) {
                     ok length  $e->smtpagent,      sprintf( "[%s] %s->smtpagent = %s", $n, $x, $e->smtpagent );
                     ok length  $e->timezoneoffset, sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
 
-                    if( length $e->replycode ) {
-                        # Check SMTP Reply Code format
-                        like $e->replycode, qr/\A[45]\d\d\z/, sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
-                    }
-
                     is $e->addresser->host, $e->senderdomain, sprintf( "[%s] %s->senderdomain = %s", $n, $x, $e->senderdomain );
                     is $e->recipient->host, $e->destination,  sprintf( "[%s] %s->destination = %s", $n, $x, $e->destination );
 
+                    like $e->replycode,      qr/\A(?:[45]\d\d|)\z/,          sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
                     like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
                     like $e->deliverystatus, $R->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
                     like $e->reason,         $R->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );
                     like $e->token,          qr/\A([0-9a-f]{40})\z/,         sprintf( "[%s] %s->token = %s", $n, $x, $e->token );
 
+                    unlike $e->deliverystatus,qr/[ ]/, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
+                    unlike $e->diagnostictype,qr/[ ]/, sprintf( "[%s] %s->diagnostictype = %s", $n, $x, $e->diagnostictype );
+                    unlike $e->smtpcommand,   qr/[ ]/, sprintf( "[%s] %s->smtpcommand = %s", $n, $x, $e->smtpcommand );
+
                     unlike $e->lhost,     qr/[ ]/, sprintf( "[%s] %s->lhost = %s", $n, $x, $e->lhost );
                     unlike $e->rhost,     qr/[ ]/, sprintf( "[%s] %s->rhost = %s", $n, $x, $e->rhost );
                     unlike $e->alias,     qr/[ ]/, sprintf( "[%s] %s->alias = %s", $n, $x, $e->alias );
                     unlike $e->listid,    qr/[ ]/, sprintf( "[%s] %s->listid = %s", $n, $x, $e->listid );
+                    unlike $e->action,    qr/[ ]/, sprintf( "[%s] %s->action = %s", $n, $x, $e->action );
                     unlike $e->messageid, qr/[ ]/, sprintf( "[%s] %s->messageid = %s", $n, $x, $e->messageid );
+
+                    unlike $e->addresser->user, qr/[ ]/, sprintf( "[%s] %s->addresser->user = %s", $n, $x, $e->addresser->user );
+                    unlike $e->addresser->host, qr/[ ]/, sprintf( "[%s] %s->addresser->host = %s", $n, $x, $e->addresser->host );
+                    unlike $e->addresser->verp, qr/[ ]/, sprintf( "[%s] %s->addresser->verp = %s", $n, $x, $e->addresser->verp );
+                    unlike $e->addresser->alias,qr/[ ]/, sprintf( "[%s] %s->addresser->alias = %s", $n, $x, $e->addresser->alias );
+
+                    unlike $e->recipient->user, qr/[ ]/, sprintf( "[%s] %s->recipient->user = %s", $n, $x, $e->recipient->user );
+                    unlike $e->recipient->host, qr/[ ]/, sprintf( "[%s] %s->recipient->host = %s", $n, $x, $e->recipient->host );
+                    unlike $e->recipient->verp, qr/[ ]/, sprintf( "[%s] %s->recipient->verp = %s", $n, $x, $e->recipient->verp );
+                    unlike $e->recipient->alias,qr/[ ]/, sprintf( "[%s] %s->recipient->alias = %s", $n, $x, $e->recipient->alias );
                 }
                 $c++;
             }
