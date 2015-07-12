@@ -28,17 +28,17 @@ Features | 主な機能
   * cpanm
   * git clone
 * __High analytical precision__ | __高い解析精度__
-  * Support 20 known MTAs and 4 unknown MTAs | 24種類のMTAに対応
+  * Support 21 known MTAs and 4 unknown MTAs | 25種類のMTAに対応
   * Support 18 major MSPs(Mail Service Providers) | 18種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
-  * Can detect 23 error reasons | 23種類のエラー理由を検出
+  * Can detect 24 error reasons | 24種類のエラー理由を検出
 * __Faster than bounceHammer version 2.7.X__ | __bounceHammer 2.7.Xよりも高速に解析__
 
 
 System requirements | 動作環境
 ------------------------------
 More details about system requirements are available at available at 
-[Sisimai — How to Install and Start](http://libsisimai.org/start).
+[Sisimai — How to Install and Start](http://libsisimai.org/start) page.
 
 * [Perl 5.10.1 or later](http://www.perl.org/)
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
@@ -227,7 +227,8 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
 Sisimai can detect the following 24 bounce reasons. More details about reasons
-are available at [Sisimai — Bounce Reason List Sisimai detects](http://libsisimai.org/reason).
+are available at [Sisimai — Bounce Reason List Sisimai detects](http://libsisimai.org/reason)
+page.
 
 | Reason(理由)   | Description                            | 理由の説明                       |
 |----------------|----------------------------------------|----------------------------------|
@@ -262,6 +263,8 @@ Sisimaiは上記のエラー24種を検出します。
 Parsed data structure | 解析後のデータ構造
 ------------------------------------------
 The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
+More details about data structure are available at available at 
+[Sisimai — Data Structure of Sisimai::Data Object](http://libsisimai.org/data) page.
 
 | Name           | Description                           | 値の説明                       |
 |----------------|---------------------------------------|--------------------------------|
