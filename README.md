@@ -37,17 +37,12 @@ Features | 主な機能
 
 System requirements | 動作環境
 ------------------------------
+More details about system requirements are available at available at 
+[Sisimai — How to Install and Start](http://libsisimai.org/start).
+
 * [Perl 5.10.1 or later](http://www.perl.org/)
-
-
-Dependencies | 依存モジュール
------------------------------
-Sisimai relies on:
-
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
 * [__JSON__](https://metacpan.org/pod/JSON)
-
-Sisimaiは上記のモジュールに依存しています。
 
 
 Install | インストール
@@ -231,7 +226,8 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
-Sisimai can detect the following 24 bounce reasons.
+Sisimai can detect the following 24 bounce reasons. More details about reasons
+are available at [Sisimai — Bounce Reason List Sisimai detects](http://libsisimai.org/reason).
 
 | Reason(理由)   | Description                            | 理由の説明                       |
 |----------------|----------------------------------------|----------------------------------|
