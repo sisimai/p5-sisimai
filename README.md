@@ -321,7 +321,7 @@ SEE ALSO | 参考サイト
 
 WEB SITE | サイト
 -----------------
-[Sisimai — libsisimai.org](http://libsisimai.org/)
+[Sisimai — A successor to bounceHammer, Library to parse error mails(http://libsisimai.org/)](http://libsisimai.org/)
 
 
 AUTHOR | 作者
