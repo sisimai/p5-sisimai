@@ -12,6 +12,9 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Sisimai reports the bounce reason as "onhold" when Sisimail::Reason->get
       method did not decide the reason and the value of "diagnosticcode" is not
       empty.
+    - Issue #74 is that reported at CPAN Testers Report might be fixed.
+    - Test codes for Sisimai::MTA, Sisimai::MSP, Sisimai::ARF, Sisimai::RFC3464
+      have been integrated and improved.
 
 4.1.26  Sat,  4 Jul 2015 11:34:44 +0900 (JST)
     - Module name changed from Sisimai::Reason::RelayingDenied to "NoRelaying".
