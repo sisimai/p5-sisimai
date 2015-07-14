@@ -123,6 +123,8 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 
 =head1 SEE ALSO
 
+=over
+
 =item L<Sisimai::Mail> - Mailbox or Maildir object
 
 =item L<Sisimai::Data> - Parsed data object
@@ -134,6 +136,8 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 =item L<https://tools.ietf.org/html/rfc5321> - RFC5321: Simple Mail Transfer Protocol
 
 =item L<https://tools.ietf.org/html/rfc5322> - RFC5322: Internet Message Format
+
+=back
 
 =head1 REPOSITORY
 
