@@ -17,7 +17,7 @@ MTA::MessagingServer ....   18/0021  1.0000  Oracle Communications Messaging Ser
 MTA::Notes ..............    0/0010  0.0000  Lotus Notes
 MTA::OpenSMTPD ..........    5/0023  0.2778  OpenSMTPD
 MTA::Postfix ............  158/0175  1.0000  Postfix
-MTA::Sendmail ...........  230/0215  0.9829  V8Sendmail: /usr/sbin/sendmail
+MTA::Sendmail ...........  231/0215  0.9830  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    6/0008  1.0000  WebSense SurfControl
 MTA::V5sendmail .........    0/0377  0.0000  Sendmail version 5
 MTA::X1 .................    0/0007  0.0000  Unknown MTA #1
@@ -25,7 +25,7 @@ MTA::X2 .................    0/0045  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0008  0.0000  Unknown MTA #3
 MTA::X4 .................    0/0027  0.0000  Unknown MTA #4 qmail clones
 MTA::mFILTER ............    0/0009  0.0000  Digital Arts m-FILTER
-MTA::qmail ..............   49/0075  0.8033  qmail
+MTA::qmail ..............   50/0075  0.8197  qmail
 MSP::DE::EinsUndEins ....    0/0003  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0010  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
@@ -47,5 +47,5 @@ MSP::US::Zoho ...........    0/0011  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    9/0049  0.2812  Abuse Feedback Reporting Format
 RFC3464 .................  127/0278  0.4942  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13       965/1934  0.4990
+ bounceHammer 2.7.13       967/1934  0.5000
  Sisimai 4.1.27           1934/1934  1.0000
