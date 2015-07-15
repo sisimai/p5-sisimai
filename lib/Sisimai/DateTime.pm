@@ -293,6 +293,7 @@ sub parse {
     my @timetokens = split( ' ', $datestring );
     my $parseddate = '';    # (String) Canonified Date/Time string
     my $afternoon1 = 0;     # (Integer) After noon flag
+    my $altervalue = {};
     my $v = {
         'Y' => undef,   # (Integer) Year
         'M' => undef,   # (String) Month Abbr.
@@ -322,9 +323,17 @@ sub parse {
             if( $p > 31 ) {
                 # The piece is the value of an year
                 $v->{'Y'} = $p;
+
             } else {
                 # The piece is the value of a day
-                $v->{'d'} ||= $p;
+                if( $v->{'d'} ) {
+                    # 2-digit year?
+                    $altervalue->{'Y'} = $p unless $v->{'Y'};
+
+                } else {
+                    # The value is "day"
+                    $v->{'d'} = $p;
+                }
             }
 
         } elsif( $p =~ m/\A([0-2]\d):([0-5]\d):([0-5]\d)\z/ ||
@@ -406,6 +415,19 @@ sub parse {
         $v->{'Y'}  += 1900;
     }
     $v->{'z'} ||= __PACKAGE__->second2tz( Time::Piece->new->tzoffset );
+
+    # Adjust 2-digit Year
+    if( exists $altervalue->{'Y'} && ! $v->{'Y'} ) {
+        # Check alternative value(Year)
+        if( $altervalue->{'Y'} >= 82 ) {
+            # SMTP was born in 1982
+            $v->{'Y'} ||= 1900 + $altervalue->{'Y'};
+
+        } else {
+            # 20XX
+            $v->{'Y'} ||= 2000 + $altervalue->{'Y'};
+        }
+    }
 
     # Check each piece
     if( grep { ! defined $_ } values %$v ) {
