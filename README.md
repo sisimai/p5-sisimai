@@ -112,6 +112,18 @@ print $j;                               # parsed data as JSON
 上記のようにSisimaiのmake()メソッドをmboxかMaildirのPATHを引数にして実行すると
 解析結果が配列リファレンスで返ってきます。
 
+One-Liner | ワンライナーで
+
+Beginning with Sisimai 4.1.27, dump() method is available and you can get parsed
+data as JSON using the method.
+
+```
+% perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
+```
+
+Sisimai 4.1.27から登場したdump()メソッドを使うとワンライナーでJSON化した解析結果
+が得られます。
+
 
 Differences between ver.2 and Sisimai | 新旧の違い
 --------------------------------------------------
