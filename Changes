@@ -1,8 +1,8 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.1.27  Fri, 17 Jul 2015
+4.1.27  Fri, 17 Jul 2015 11:45:05 +0900 (JST)
     - New method implemented: Sisimai->dump('/path/to/mbox') return parsed data
-      as JSON format.
+      as JSON string.
     - Updated error message patterns: Sisimai::Reason::NoRelaying, TooManyConn,
       and Blocked.
     - Fixed code in Sisimai::Reason::MesgTooBig. Error reason of bounce message
@@ -13,6 +13,8 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       method did not decide the reason and the value of "diagnosticcode" is not
       empty.
     - Issue #74 is that reported at CPAN Testers Report might be fixed.
+    - Issue #75, Improved code for parsing 2-digit year value in a Date: header
+      at Sisimai::DateTime.
     - Test codes for Sisimai::MTA, Sisimai::MSP, Sisimai::ARF, Sisimai::RFC3464
       have been integrated and improved.
 
