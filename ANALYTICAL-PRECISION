@@ -41,11 +41,11 @@ MSP::US::Facebook .......    3/0003  1.0000  Facebook: https://www.facebook.com
 MSP::US::Google .........   52/0057  1.0000  Google Gmail: https://mail.google.com
 MSP::US::Outlook ........   32/0042  1.0000  Microsoft Outlook.com: https://www.outlook.com/
 MSP::US::SendGrid .......    0/0012  0.0000  SendGrid: http://sendgrid.com/
-MSP::US::Verizon ........    2/0004  1.0000  Verizon Wireless: http://www.verizonwireless.com
+MSP::US::Verizon ........    2/0002  1.0000  Verizon Wireless: http://www.verizonwireless.com
 MSP::US::Yahoo ..........    0/0009  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0011  0.0000  Zoho Mail: https://www.zoho.com
-ARF .....................    9/0049  0.2812  Abuse Feedback Reporting Format
-RFC3464 .................  127/0278  0.4942  Fallback Module for MTAs
+ARF .....................    9/0050  0.2812  Abuse Feedback Reporting Format
+RFC3464 .................  121/0263  0.4859  Fallback Module for MTAs
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13       967/1934  0.5000
- Sisimai 4.1.27           1934/1934  1.0000
+ bounceHammer 2.7.13       961/1918  0.5010
+ Sisimai 4.1.27           1918/1918  1.0000
