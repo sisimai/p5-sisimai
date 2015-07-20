@@ -129,6 +129,8 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 
 =item L<Sisimai::Data> - Parsed data object
 
+=item L<http://libsisimai.org/> - Sisimai — A successor to bounceHammer, Library to parse error mails
+
 =item L<https://tools.ietf.org/html/rfc3463> - RFC3463: Enhanced Mail System Status Codes
 
 =item L<https://tools.ietf.org/html/rfc3464> - RFC3464: An Extensible Message Format for Delivery Status Notifications
@@ -136,6 +138,7 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 =item L<https://tools.ietf.org/html/rfc5321> - RFC5321: Simple Mail Transfer Protocol
 
 =item L<https://tools.ietf.org/html/rfc5322> - RFC5322: Internet Message Format
+
 
 =back
 
