@@ -115,6 +115,7 @@ messages like following.
     }
 
 =head2 C<B<dump( I<'/path/to/mbox'> )>>
+
 C<dump> method provides feature to get parsed data from bounced email as JSON.
 
     use Sisimai;
