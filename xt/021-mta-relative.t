@@ -260,6 +260,9 @@ my $R = {
         '01232' => qr/networkerror/,
         '01233' => qr/mailererror/,
     },
+    'RFC3834' => {
+        '01001' => qr/vacation/,
+    },
 };
 
 for my $x ( keys %$R ) {
