@@ -61,6 +61,19 @@ sub makeheaders {
             push @$headerlist, $q;
         }
     }
+
+    OTHERS: for my $e ( qw|Sisimai::RFC3834| ) {
+        # Load MTA modules saved in lib/Sisimai directory
+        eval { Module::Load::load $e };
+        next if $@;
+
+        for my $v ( @{ $e->headerlist } ) {
+            # Get header name which required each MTA module
+            my $q = lc $v;
+            next if grep { $q eq $_ } @$headerlist;
+            push @$headerlist, $q;
+        }
+    }
     return $headerlist;
 }
 
@@ -376,9 +389,13 @@ sub rewrite {
 
         # When the all of Sisimai::MTA::* modules did not return bounce data,
         # call Sisimai::RFC3464;
-        #
         require Sisimai::RFC3464;
         $scannedset = Sisimai::RFC3464->scan( $mailheader, $bodystring );
+        last(SCANNER) if $scannedset;
+
+        # Try to parse the message as auto reply message defined in RFC3834
+        require Sisimai::RFC3834;
+        $scannedset = Sisimai::RFC3834->scan( $mailheader, $bodystring );
         last(SCANNER) if $scannedset;
 
         # as of now, we have no sample email for coding this block
