@@ -129,7 +129,7 @@ precision-table:
 			$(PERL) -Ilib -MSisimai::MSP::$$m -lE "print Sisimai::MSP::$$m->description" ;\
 		done ;\
 	done
-	@ for v in ARF RFC3464; do \
+	@ for v in ARF RFC3464 RFC3834; do \
 		m=$$v ;\
 		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -209,7 +209,7 @@ mta-module-table:
 			printf " %s\n" ' |' ;\
 		done ;\
 	done
-	@ for v in ARF RFC3464; do \
+	@ for v in ARF RFC3464 RFC3834; do \
 		m=$$v ;\
 		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -252,7 +252,7 @@ sample:
 			$(CP) $(FOR_EMPARSER)/$$DIR-$$MSP/* $(EMAIL_SAMPLE)/$$DIR-$$MSP/ ;\
 		done ;\
 	done
-	for v in arf rfc3464; do \
+	for v in arf rfc3464 rfc3834; do \
 		$(MKDIR) $(EMAIL_SAMPLE)/$$v ;\
 		$(CP) $(FOR_MAKETEST)/$$v*.eml $(EMAIL_SAMPLE)/$$v/ ;\
 		$(CP) $(FOR_EMPARSER)/$$v/* $(EMAIL_SAMPLE)/$$v/ ;\
