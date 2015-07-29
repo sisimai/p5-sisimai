@@ -124,7 +124,7 @@ sub scan {
     }
 
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::RFC5322;
 
     $v->{'diagnosis'} = Sisimai::String->sweep( $v->{'diagnosis'} );
     $v->{'reason'}    = 'vacation';
