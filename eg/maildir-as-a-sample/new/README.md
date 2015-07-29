@@ -5,11 +5,11 @@ Sisimai::ARF
 ------------
 * arf-14.eml
   * [FBL-auth.eml](https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/FBL-auth.eml)
-  * Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+  * Copyright (c) 2014, 2015 SendGrid Inc. | The MIT License
 
 * arf-15.eml
   * [fbl-hotmail.txt](https://github.com/prasad83/node-bounce-handler/blob/master/eml/fbl-hotmail.txt)
-  * Copyright (c) 2014 prasad83 | MIT license
+  * Copyright (c) 2014 prasad83 | The MIT License
 
 Sisimai::MTA::Exchange
 ----------------------
@@ -21,15 +21,15 @@ Sisimai::MTA::Exim
 ------------------
 * exim-09.eml
   * [13.eml](https://github.com/prasad83/node-bounce-handler/blob/master/eml/13.eml)
-  * Copyright (c) 2014 prasad83 | MIT license
+  * Copyright (c) 2014 prasad83 | The MIT License
 
 * exim-10.eml
   * [34.eml](https://github.com/prasad83/node-bounce-handler/blob/master/eml/34.eml)
-  * Copyright (c) 2014 prasad83 | MIT license
+  * Copyright (c) 2014 prasad83 | The MIT License
 
 * exim-11.eml
   * [44.eml](https://github.com/prasad83/node-bounce-handler/blob/master/eml/44.eml)
-  * Copyright (c) 2014 prasad83 | MIT license
+  * Copyright (c) 2014 prasad83 | The MIT License
 
 Sisimai::MTA::IMailServer
 -------------------------
@@ -47,11 +47,11 @@ Sisimai::MTA::Postfix
 ---------------------
 * postfix-18.eml
   * [relay_failed.eml](https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/relay_failed.eml)
-  * Copyright (c) 2011 Chew Choon Keat | MIT license
+  * Copyright (c) 2011 Chew Choon Keat | The MIT License
 
 * postfix-19.eml
   * [testfile.eml](https://github.com/prasad83/node-bounce-handler/blob/master/eml/testfile.eml)
-  * Copyright (c) 2011 Chew Choon Keat | MIT license
+  * Copyright (c) 2011 Chew Choon Keat | The MIT License
 
 * postfix-20.eml
   * mailman-2.1.15/tests/bounces/postfix_05.txt
@@ -67,11 +67,11 @@ Sisimai::RFC3464
 ----------------
 * rfc3464-10.eml
   * [DSN-bounce.eml](https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-bounce.eml)
-  * Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+  * Copyright (c) 2014, 2015 SendGrid Inc. | The MIT License
 
 * rfc3464-11.eml
   * [NDR-block.eml](https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/NDR-block.eml)
-  * Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+  * Copyright (c) 2014, 2015 SendGrid Inc. | The MIT License
 
 * rfc3464-12.eml
   * mailman-2.1.15/tests/bounces/dsn_17.txt
@@ -117,11 +117,22 @@ Sisimai::RFC3464
   * mailman-2.1.15/tests/bounces/simple_24.txt
   * Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
+Sisimai::RFC3834
+----------------
+* rfc3834-01.eml
+  * [out_of_office.eml](https://github.com/tangofoxtrot/tmail_bouncer/blob/master/test/fixtures/out_of_office.eml)
+  * Copyright (c) 2009 tangofoxtrot | The MIT License
+
+* rfc3834-02.eml
+  * [warning-6.msg](https://github.com/rjbs/Mail-DeliveryStatus-BounceParser/blob/master/t/corpus/warning-6.msg)
+  * Copyright (C) 2003-2006 IC Group, Inc. | GPLv2
+
+
 Sisimai::MTA::Sendmail
 ----------------------
 * sendmail-23.eml
   * [DSN-spam.eml](https://github.com/sendgrid/go-gmime/blob/master/gmime/fixtures/DSN-spam.eml)
-  * Copyright (c) 2014, 2015 SendGrid Inc. | MIT license
+  * Copyright (c) 2014, 2015 SendGrid Inc. | The MIT License
 
 Sisimai::MSP::US::Google
 ------------------------
@@ -137,7 +148,7 @@ Sisimai::MSP::US::Outlook
 -------------------------
 * us-outlook-09.eml
   * [connection_timed_out.eml](https://github.com/choonkeat/deliveryboy/blob/master/spec/fixtures/bounce_cases/connection_timed_out.eml)
-  * Copyright (c) 2011 Chew Choon Keat | MIT license
+  * Copyright (c) 2011 Chew Choon Keat | The MIT License
 
 Sisimai::MTA::X2
 ----------------
