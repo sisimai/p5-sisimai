@@ -1,0 +1,200 @@
+package Sisimai::RFC3834;
+use feature ':5.10';
+use strict;
+use warnings;
+
+# http://tools.ietf.org/html/rfc3834
+my $RxRFC = {
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'header' => {
+        # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
+        'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/i,
+        # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
+        'x-auto-response-suppress' => qr/(?:OOF|AutoReply)/i,
+        'precedence' => qr/\Aauto_reply\z/,
+        'subject' => qr/\A(?:
+             Auto:
+            |Out[ ]of[ ]Office:
+            )
+        /xi,
+    },
+};
+
+my $RxExcluding = {
+    'subject' => qr/SECURITY information for /, # sudo
+    'from'    => qr/root[@]/,
+    'to'      => qr/root[@]/,
+};
+
+sub version     { '4.0.0' };
+sub description { 'Detector for auto replied message' };
+sub smtpagent   { 'RFC3834' };
+sub headerlist  {
+    return [
+        'Auto-Submitted',
+        'Precedence',
+        'X-Auto-Response-Suppress',
+    ];
+}
+
+sub scan {
+    # @Description  Detect auto reply message as RFC3834
+    # @Param <ref>  (Ref->Hash) Message header
+    # @Param <ref>  (Ref->String) Message body
+    # @Return       (Ref->Array) Bounce data list
+    my $class = shift;
+    my $mhead = shift // return undef;
+    my $mbody = shift // return undef;
+    my $leave = 0;
+    my $match = 0;
+
+    return undef unless keys %$mhead;
+    return undef unless ref $mbody eq 'SCALAR';
+
+    DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$RxExcluding ) {
+        # Exclude message from root@
+        next unless exists $mhead->{ $e };
+        next unless defined $mhead->{ $e };
+        next unless $mhead->{ $e } =~ $RxExcluding->{ $e };
+        $leave = 1;
+        last;
+    }
+    return undef if $leave;
+
+    DETECT_AUTO_REPLY_MESSAGE: for my $e ( keys %{ $RxRFC->{'header'} } ) {
+        # RFC3834 Auto-Submitted and other headers
+        next unless exists $mhead->{ $e };
+        next unless defined $mhead->{ $e };
+        next unless $mhead->{ $e } =~ $RxRFC->{'header'}->{ $e };
+        $match++;
+        last;
+    }
+    return undef unless $match;
+
+    require Sisimai::MTA;
+    require Sisimai::Address;
+
+    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
+    my @stripedtxt = split( "\n", $$mbody );
+    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
+    my $maxmsgline = 5;     # (Integer) Max message length(lines)
+    my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
+    my $blanklines = 0;     # (Integer) Counter for countinuous blank lines
+    my $v = undef;
+    my $p = '';
+
+    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+    $v = $dscontents->[ -1 ];
+
+    RECIPIENT_ADDRESS: {
+        # Try to get the address of the recipient
+        for my $e ( 'from', 'return-path' ) {
+            # Get the recipient address
+            next unless exists $mhead->{ $e };
+            next unless defined $mhead->{ $e };
+
+            $v->{'recipient'} = $mhead->{ $e };
+            last;
+        }
+
+        if( $v->{'recipient'} ) {
+            # Clean-up the recipient address
+            $v->{'recipient'} = Sisimai::Address->s3s4( $v->{'recipient'} );
+            $recipients++;
+        }
+    }
+    return undef unless $recipients;
+
+    BODY_PARSER: {
+        # Get vacation message
+        for my $e ( @stripedtxt ) {
+            # Read the first 5 lines except a blank line
+            unless( length $e ) {
+                # Check a blank line
+                $blanklines++;
+                last if $blanklines > 1;
+                next;
+            }
+            next unless $e =~ m/ /;
+            $v->{'diagnosis'} .= $e.' ';
+            $haveloaded++;
+            last if $haveloaded >= $maxmsgline;
+        }
+        $v->{'diagnosis'} ||= $mhead->{'subject'};
+    }
+
+    require Sisimai::String;
+    require Sisimai::RFC3463;
+
+    $v->{'diagnosis'} = Sisimai::String->sweep( $v->{'diagnosis'} );
+    $v->{'reason'}    = 'vacation';
+    $v->{'agent'}     = __PACKAGE__->smtpagent;
+    $v->{'date'}      = $mhead->{'date'};
+    $v->{'status'}    = '';
+
+    if( scalar @{ $mhead->{'received'} } ) {
+        # Get localhost and remote host name from Received header.
+        my $r = $mhead->{'received'};
+        $v->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
+        $v->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+    }
+    return { 'ds' => $dscontents, 'rfc822' => '' };
+}
+
+1;
+__END__
+=encoding utf-8
+
+=head1 NAME
+
+Sisimai::RFC3834 - RFC3834 auto reply message detector
+
+=head1 SYNOPSIS
+
+    use Sisimai::RFC3834;
+
+=head1 DESCRIPTION
+
+Sisimai::RFC3834 is a class which called from called from only Sisimai::Message
+when other Sisimai::MTA::* modules did not detected a bounce reason.
+
+=head1 CLASS METHODS
+
+=head2 C<B<version()>>
+
+C<version()> returns the version number of this module.
+
+    print Sisimai::RFC3834->version;
+
+=head2 C<B<description()>>
+
+C<description()> returns description string of this module.
+
+    print Sisimai::RFC3834->description;
+
+=head2 C<B<smtpagent()>>
+
+C<smtpagent()> returns MDA name or string 'RFC3834'.
+
+    print Sisimai::RFC3834->smtpagent;
+
+=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+
+C<scan()> method parses an auto replied message and return results as an array
+reference. See Sisimai::Message for more details.
+
+=head1 AUTHOR
+
+azumakuniyuki
+
+=head1 COPYRIGHT
+
+Copyright (C) 2015 azumakuniyuki E<lt>perl.org@azumakuniyuki.orgE<gt>,
+All Rights Reserved.
+
+=head1 LICENSE
+
+This software is distributed under The BSD 2-Clause License.
+
+=cut
+
