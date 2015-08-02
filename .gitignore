@@ -1,6 +1,7 @@
 /.build/
 /_build/
 /Build
+/bin
 /blib
 /sbin
 
