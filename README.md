@@ -31,7 +31,7 @@ Features | 主な機能
   * Support 21 known MTAs and 4 unknown MTAs | 25種類のMTAに対応
   * Support 18 major MSPs(Mail Service Providers) | 18種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
-  * Can detect 24 error reasons | 24種類のエラー理由を検出
+  * Can detect 25 error reasons | 25種類のエラー理由を検出
 * __Faster than bounceHammer version 2.7.X__ | __bounceHammer 2.7.Xよりも高速に解析__
 
 
@@ -146,8 +146,8 @@ Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 7700 lines  |
-| The number of tests in t/ directory            | 27365 tests   | 143500 tests|
+| LOC:Source lines of code                       | 18200 lines   | 7750 lines  |
+| The number of tests in t/ directory            | 27365 tests   | 144000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
 
@@ -172,8 +172,8 @@ Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 7700行      |
-| テスト件数(t/ディレクトリ)                     | 27365件       | 143500件    |
+| LOC:ソースコードの行数                         | 18200行       | 7750行      |
+| テスト件数(t/ディレクトリ)                     | 27365件       | 144000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
@@ -188,7 +188,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | Module Name(Sisimai::)   | Description                                       |
 |--------------------------|---------------------------------------------------|
 | MTA::Activehunter        | TransWARE Active!hunter                           |
-| MTA::ApacheJames         | Java Apache Mail Enterprise Server                |
+| MTA::ApacheJames         | Java Apache Mail Enterprise Server(> v4.1.26)     |
 | MTA::Courier             | Courier MTA                                       |
 | MTA::Domino              | IBM Domino Server                                 |
 | MTA::Exchange            | Microsoft Exchange Server                         |
@@ -211,7 +211,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | MTA::X1                  | Unknown MTA #1                                    |
 | MTA::X2                  | Unknown MTA #2                                    |
 | MTA::X3                  | Unknown MTA #3                                    |
-| MTA::X4                  | Unknown MTA #4 qmail clones                       |
+| MTA::X4                  | Unknown MTA #4 qmail clones(> v4.1.23)            |
 | MSP::DE::EinsUndEins     | 1&1: http://www.1and1.de                          |
 | MSP::DE::GMX             | GMX: http://www.gmx.net                           |
 | MSP::JP::Biglobe         | BIGLOBE: http://www.biglobe.ne.jp                 |
@@ -232,13 +232,14 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | MSP::US::Zoho            | Zoho Mail: https://www.zoho.com                   |
 | ARF                      | Abuse Feedback Reporting Format                   |
 | RFC3464                  | Fallback Module for MTAs                          |
+| RFC3834                  | Detector for auto replied message (> v4.1.28)     |
 
 上記はSisimaiに含まれてるMTA/MSP(メールサービスプロバイダ)モジュールの一覧です。
 
 
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
-Sisimai can detect the following 24 bounce reasons. More details about reasons
+Sisimai can detect the following 25 bounce reasons. More details about reasons
 are available at [Sisimai — Bounce Reason List Sisimai detects](http://libsisimai.org/reason)
 page.
 
@@ -267,9 +268,11 @@ page.
 | SystemFull     | Disk full on the destination host      | 宛先サーバのディスクが一杯       |
 | TooManyConn    | Connection rate limit exceeded         | 接続制限数を超過した             |
 | UserUnknown    | Recipient's address does not exist     | 宛先メールアドレスは存在しない   |
+| Vacation       | Auto replied message such as vacation  | 自動応答メッセージ(vacationなど) |
+|                | (implemented at v4.1.28)               | (v4.1.28から実装)                |
 | Undefined      | Could not decide the error reason      | バウンスした理由は特定出来ず     |
 
-Sisimaiは上記のエラー24種を検出します。
+Sisimaiは上記のエラー25種を検出します。
 
 
 Parsed data structure | 解析後のデータ構造
@@ -326,6 +329,7 @@ SEE ALSO | 参考サイト
 ---------------------
 * [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
 * [RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
+* [RFC3834 - Recommendations for Automatic Responses to Electronic Mail](https://tools.ietf.org/html/rfc3834)
 * [RFC5321 - Simple Mail Transfer Protocol](https://tools.ietf.org/html/rfc5321)
 * [RFC5322 - Internet Message Format](https://tools.ietf.org/html/rfc5322)
 
