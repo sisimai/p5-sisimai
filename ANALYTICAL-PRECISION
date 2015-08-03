@@ -46,6 +46,7 @@ MSP::US::Yahoo ..........    0/0009  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0011  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    9/0050  0.2812  Abuse Feedback Reporting Format
 RFC3464 .................  121/0263  0.4859  Fallback Module for MTAs
+RFC3834 .................    0/0002  0.0000  Detector for auto replied message
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13       961/1918  0.5010
- Sisimai 4.1.27           1918/1918  1.0000
+ bounceHammer 2.7.13       961/1920  0.5005
+ Sisimai 4.1.28           1920/1920  1.0000
