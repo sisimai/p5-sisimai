@@ -113,6 +113,7 @@ print $j;                               # parsed data as JSON
 解析結果が配列リファレンスで返ってきます。
 
 One-Liner | ワンライナーで
+--------------------------
 
 Beginning with Sisimai 4.1.27, dump() method is available and you can get parsed
 data as JSON using the method.
