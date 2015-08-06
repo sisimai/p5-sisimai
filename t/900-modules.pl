@@ -56,6 +56,7 @@ sub list {
             MTA/qmail.pm
             MTA/Sendmail.pm
             MTA/SurfControl.pm
+            MTA/UserDefined.pm
             MTA/V5sendmail.pm
             MTA/X1.pm
             MTA/X2.pm

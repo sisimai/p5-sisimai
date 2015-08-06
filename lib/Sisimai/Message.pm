@@ -19,6 +19,7 @@ Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 my $DefaultMTA = Sisimai::MTA->index;
 my $DefaultMSP = Sisimai::MSP->index;
 my @HeaderList = @{ __PACKAGE__->makeheaders };
+my $ExtModules = [];
 
 sub ENDOFEMAIL { '__END_OF_EMAIL_MESSAGE__' };
 
@@ -90,7 +91,7 @@ sub new {
     my $messageobj = undef;
     my $parameters = undef;
 
-    for my $e ( 'mtalist', 'msplist' ) {
+    for my $e ( 'load', 'mtalist', 'msplist' ) {
         # Order of MTA, MSP modules
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
@@ -123,7 +124,7 @@ sub resolve {
     my @mtamodules = ();
     my @mspmodules = ();
 
-    for my $e ( 'user-defind', 'mtalist', 'msplist' ) {
+    for my $e ( 'load', 'mtalist', 'msplist' ) {
         # The order of MTA modules specified by user
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
@@ -131,6 +132,23 @@ sub resolve {
 
         push @mtamodules, @{ $argvs->{'mtalist'} } if $e eq 'mtalist';
         push @mspmodules, @{ $argvs->{'msplist'} } if $e eq 'msplist';
+
+        next unless $e eq 'load';
+
+        # Load user defined MTA module
+        for my $v ( @{ $argvs->{'load'} } ) {
+            # Load user defined MTA module
+            eval { Module::Load::load $v };
+            next if $@;
+
+            for my $w ( @{ $v->headerlist } ) {
+                # Get header name which required user defined MTA module
+                my $q = lc $w;
+                next if grep { $q eq $_ } @HeaderList;
+                unshift @HeaderList, $q;
+            }
+            push @$ExtModules, $v;
+        }
     }
 
     for my $e ( @mtamodules ) {
@@ -377,6 +395,13 @@ sub rewrite {
             last(SCANNER) if $scannedset;
         }
 
+        EXT: for my $r ( @$ExtModules ) {
+            # Call user defined MTA modules
+            $scannedset = $r->scan( $mailheader, $bodystring );
+            last(EXT) if $scannedset;
+        }
+        last(SCANNER) if $scannedset;
+
         MTA: for my $r ( @$DefaultMTA ) {
             # Pre-process email headers of a bounce message in standard format.
             # Famous MTAs, such as Sendmail, Postfix, and qmail...
@@ -453,6 +478,14 @@ C<new()> is a constructor of Sisimai::Message
 
     my $mailtxt = 'Entire email text';
     my $message = Sisimai::Message->new( 'data' => $mailtxt );
+
+If you have implemented a custom MTA module and use it, set the value of "load"
+in the argument of this method as an array reference like following code:
+
+    my $message = Sisimai::Message->new( 
+                        'data' => $mailtxt,
+                        'load' => [ 'Your::Custom::MTA::Module' ]
+                  );
 
 =head1 INSTANCE METHODS
 
