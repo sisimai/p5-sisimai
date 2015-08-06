@@ -91,7 +91,7 @@ precision-table:
 	@ printf " %s\n" 'bounceHammer 2.7.13'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
 	@ printf "%s\n" '-------------------------------------------------------------------------------'
-	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm`; do \
+	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v 'UserDefined'`; do \
 		m="MTA::`echo $$v | cut -d/ -f5 | sed 's/.pm//g'`" ;\
 		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -169,7 +169,7 @@ update-analytical-precision-table: sample
 mta-module-table:
 	@ printf "%s\n"  '| Module Name(Sisimai::)   | Description                                       |'
 	@ printf "%s\n"  '|--------------------------|---------------------------------------------------|'
-	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm`; do \
+	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
 		m="MTA::`echo $$v | cut -d/ -f5 | sed 's/.pm//g'`" ;\
 		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -237,7 +237,7 @@ update-sample-emails:
 	done
 
 sample:
-	for v in `$(LS) $(MTAMODULEDIR)/*.pm`; do \
+	for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
 		MTA=`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
 		$(MKDIR) $(EMAIL_SAMPLE)/$$MTA ;\
 		$(CP) $(FOR_MAKETEST)/$$MTA-*.eml $(EMAIL_SAMPLE)/$$MTA/ ;\
