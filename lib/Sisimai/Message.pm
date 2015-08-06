@@ -91,7 +91,7 @@ sub new {
     my $parameters = undef;
 
     for my $e ( 'mtalist', 'msplist' ) {
-        # Order of MTA, MSP
+        # Order of MTA, MSP modules
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
         next unless scalar @{ $argvs->{ $e } };
@@ -123,7 +123,7 @@ sub resolve {
     my @mtamodules = ();
     my @mspmodules = ();
 
-    for my $e ( 'mtalist', 'msplist' ) {
+    for my $e ( 'user-defind', 'mtalist', 'msplist' ) {
         # The order of MTA modules specified by user
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
@@ -133,9 +133,17 @@ sub resolve {
         push @mspmodules, @{ $argvs->{'msplist'} } if $e eq 'msplist';
     }
 
-    # Default order of MTA modules
-    push @mtamodules, @$DefaultMTA;
-    push @mspmodules, @$DefaultMSP;
+    for my $e ( @mtamodules ) {
+        # Append the custom order of MTA modules
+        next if grep { $e eq $_ } @$DefaultMTA;
+        unshift @$DefaultMTA, $e;
+    }
+
+    for my $e ( @mspmodules ) {
+        # Append the custom order of MTA modules
+        next if grep { $e eq $_ } @$DefaultMSP;
+        unshift @$DefaultMSP, $e;
+    }
 
     EMAIL_PROCESSING: {
         my $endofheads = 0;     # Flag: The end of the email header
