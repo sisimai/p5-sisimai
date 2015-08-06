@@ -3,6 +3,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
 4.1.28
     - Experimental implementation about issue #76: New module Sisimai::RF3834
       is for detecting auto replied message and decides a reason as "vacation".
+    - Fixed bug in Sisimai::Message for setting the order of MTA, MSP modules.
 
 4.1.27  Fri, 17 Jul 2015 11:45:05 +0900 (JST)
     - New method implemented: Sisimai->dump('/path/to/mbox') return parsed data
