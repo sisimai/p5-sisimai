@@ -34,6 +34,7 @@ CRFORMATMAIL := ./eg/maildir-as-a-sample/mac
 MAILBOX_FILE := ./eg/mbox-as-a-sample
 MTAMODULEDIR := ./lib/$(NAME)/MTA
 MSPMODULEDIR := ./lib/$(NAME)/MSP
+MTARELATIVES := ARF RFC3464 RFC3834
 PRECISIONTAB := ./ANALYTICAL-PRECISION
 INDEX_LENGTH := 24
 DESCR_LENGTH := 48
@@ -129,7 +130,7 @@ precision-table:
 			$(PERL) -Ilib -MSisimai::MSP::$$m -lE "print Sisimai::MSP::$$m->description" ;\
 		done ;\
 	done
-	@ for v in ARF RFC3464 RFC3834; do \
+	@ for v in $(MTARELATIVES); do \
 		m=$$v ;\
 		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -209,7 +210,7 @@ mta-module-table:
 			printf " %s\n" ' |' ;\
 		done ;\
 	done
-	@ for v in ARF RFC3464 RFC3834; do \
+	@ for v in $(MTARELATIVES); do \
 		m=$$v ;\
 		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
 		l="`echo $$m | wc -c`" ;\
