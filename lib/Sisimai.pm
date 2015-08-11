@@ -147,6 +147,10 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 
 L<https://github.com/azumakuniyuki/p5-Sisimai> - Sisimai on GitHub
 
+=head1 WEB SITE
+
+L<http://libsisimai.org/> - A successor to bounceHammer, Library to parse error mails.
+
 =head1 AUTHOR
 
 azumakuniyuki
