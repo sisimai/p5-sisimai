@@ -64,7 +64,7 @@ dist:
 	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<github.com\@azumakuniyuki.org>|' META.json
 
 push:
-	@ for v in `grep -E '^[[]remote' .git/config | cut -d' ' -f2 | tr -d '"]'`; do \
+	@ for v in `git remote show | grep -v origin`; do
 		printf "[%s]\n" $$v; \
 		$(GIT) push --tags $$v master; \
 	done
@@ -287,7 +287,6 @@ loc:
 	done | awk '{ s += $$1 } END { print s }'
 
 clean:
-	yes | $(MINIL) clean
 	$(RM) -r nytprof*
 	$(RM) -r cover_db
 	$(RM) -r ./build
