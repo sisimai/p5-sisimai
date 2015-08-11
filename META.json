@@ -4,7 +4,7 @@
       "azumakuniyuki"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.4.1, CPAN::Meta::Converter version 2.143240",
+   "generated_by" : "Minilla/v2.4.3, CPAN::Meta::Converter version 2.143240",
    "license" : [
       "freebsd"
    ],
@@ -28,7 +28,7 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.38"
+            "Module::Build::Tiny" : "0.035"
          }
       },
       "develop" : {
@@ -58,7 +58,18 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "4.1.27",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/azumakuniyuki/p5-Sisimai/issues"
+      },
+      "homepage" : "http://libsisimai.org/",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/azumakuniyuki/p5-Sisimai.git",
+         "web" : "https://github.com/azumakuniyuki/p5-Sisimai"
+      }
+   },
+   "version" : "4.1.28",
    "x_contributors" : [
       "jcbf <underspell@gmail.com>",
       "Jonathan Leroy <jonathan@inikup.com>",
