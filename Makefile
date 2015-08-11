@@ -64,7 +64,7 @@ dist:
 	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<github.com\@azumakuniyuki.org>|' META.json
 
 push:
-	@ for v in `git remote show | grep -v origin`; do
+	@ for v in `git remote show | grep -v origin`; do \
 		printf "[%s]\n" $$v; \
 		$(GIT) push --tags $$v master; \
 	done
