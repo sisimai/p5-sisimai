@@ -941,7 +941,7 @@ for my $x ( keys %$R ) {
                     ok defined $ee->replycode,     sprintf( "[%s] %s/%s->replycode = %s", $n, $e, $x, $ee->replycode );
                     ok defined $ee->feedbacktype,  sprintf( "[%s] %s/%s->feedbacktype = %s", $n, $e, $x, $ee->feedbacktype );
                     ok defined $ee->subject,       sprintf( "[%s] %s/%s->subject", $n, $e, $x );
-                    ok defined $ee->deliverystatus,sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
+                    ok length  $ee->deliverystatus,sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
 
                     if( $x eq 'mFILTER' ) {
                         # mFILTER => m-FILTER
