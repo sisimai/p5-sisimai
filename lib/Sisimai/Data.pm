@@ -290,17 +290,22 @@ sub make {
 
         unless( $o->deliverystatus ) {
             # Set pseudo status code
-            my $s = undef;  # Delivery status
-            my $t = 'p';    # Permanent or Temporary
+            if( $o->reason ne 'feedback' && $o->reason ne 'vacation' ) {
+                # Bounce message which reason is "feedback" or "vacation" does
+                # not have the value of "deliverystatus".
+                #
+                my $s = undef;  # Delivery status
+                my $t = 'p';    # Permanent or Temporary
 
-            if( $p->{'softbounce'} < 0 ) {
-                # Check the bounce is soft bounce or not
-                $p->{'softbounce'} = Sisimai::RFC3463->is_softbounce( $p->{'diagnosticcode'} );
+                if( $p->{'softbounce'} < 0 ) {
+                    # Check the bounce is soft bounce or not
+                    $p->{'softbounce'} = Sisimai::RFC3463->is_softbounce( $p->{'diagnosticcode'} );
+                }
+
+                $t = 't' if $p->{'softbounce'} == 1;
+                $s = Sisimai::RFC3463->status( $o->reason, $t, 'i' );
+                $o->deliverystatus( $s ) if length $s;
             }
-
-            $t = 't' if $p->{'softbounce'} == 1;
-            $s = Sisimai::RFC3463->status( $o->reason, $t, 'i' );
-            $o->deliverystatus( $s ) if length $s;
         }
         push @$objectlist, $o;
 
