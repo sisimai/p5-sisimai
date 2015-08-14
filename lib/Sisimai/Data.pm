@@ -30,6 +30,7 @@ my $rwaccessors = [
     'messageid',        # (String) Message-Id: header
     'replycode',        # (String) SMTP Reply Code
     'smtpagent',        # (String) MTA name
+    'softbounce',       # (Integer) 1 = Soft bounce, 0 = Hard bounce, -1 = ?
     'smtpcommand',      # (String) The last SMTP command
     'destination',      # (String) The domain part of the "recipinet"
     'senderdomain',     # (String) The domain part of the "addresser"
@@ -91,7 +92,7 @@ sub new {
         my @v = ( 
             'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
             'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
-            'smtpcommand', 'feedbacktype', 'action',
+            'smtpcommand', 'feedbacktype', 'action', 'softbounce',
         );
         $thing->{ $_ } = $argvs->{ $_ } // '' for @v;
         $thing->{'replycode'} = Sisimai::RFC5321->getrc( $argvs->{'diagnosticcode'} );
@@ -157,7 +158,7 @@ sub make {
             'reason'         => $e->{'reason'}       // '',
             'smtpagent'      => $e->{'agent'}        // '',
             'recipient'      => $e->{'recipient'}    // '',
-            'softbounce'     => $e->{'softbounce'}   // -1,
+            'softbounce'     => $e->{'softbounce'}   // '',
             'smtpcommand'    => $e->{'command'}      // '',
             'feedbacktype'   => $e->{'feedbacktype'} // '',
             'diagnosticcode' => $e->{'diagnosis'}    // '',
@@ -288,25 +289,39 @@ sub make {
             $o->reason( $r );
         }
 
-        unless( $o->deliverystatus ) {
-            # Set pseudo status code
-            if( $o->reason ne 'feedback' && $o->reason ne 'vacation' ) {
-                # Bounce message which reason is "feedback" or "vacation" does
-                # not have the value of "deliverystatus".
-                #
-                my $s = undef;  # Delivery status
-                my $t = 'p';    # Permanent or Temporary
-
-                if( $p->{'softbounce'} < 0 ) {
-                    # Check the bounce is soft bounce or not
-                    $p->{'softbounce'} = Sisimai::RFC3463->is_softbounce( $p->{'diagnosticcode'} );
+        if( $o->reason ne 'feedback' && $o->reason ne 'vacation' ) {
+            # Bounce message which reason is "feedback" or "vacation" does
+            # not have the value of "deliverystatus".
+            unless( length $o->softbounce ) {
+                # The value is not set yet
+                for my $v ( 'deliverystatus',  'diagnosticcode' ) {
+                    # Set the value of softbounce
+                    next unless length $p->{ $v };
+                    $o->softbounce( Sisimai::RFC3463->is_softbounce( $p->{ $v } ) );
+                    last if $o->softbounce > -1;
                 }
-
-                $t = 't' if $p->{'softbounce'} == 1;
-                $s = Sisimai::RFC3463->status( $o->reason, $t, 'i' );
-                $o->deliverystatus( $s ) if length $s;
+                $o->softbounce(-1) unless length $o->softbounce;
             }
+
+            unless( $o->deliverystatus ) {
+                # Set pseudo status code
+                my $pdsv = undef; # Pseudo delivery status value
+                my $torp = undef; # Temporary or Permanent
+
+                $torp = $o->softbounce == 1 ? 't' : 'p';
+                $pdsv = Sisimai::RFC3463->status( $o->reason, $torp, 'i' );
+
+                if( length $pdsv ) {
+                    # Set the value of "deliverystatus" and "softbounce".
+                    $o->deliverystatus( $pdsv );
+                    $o->softbounce( Sisimai::RFC3463->is_softbounce( $pdsv ) ) if $o->softbounce < 0;
+                }
+            }
+        } else {
+            # The value of reason is "vacation" or "feedback"
+            $o->softbounce(-1);
         }
+
         push @$objectlist, $o;
 
     } # End of for(LOOP_DELIVERY_STATUS)
@@ -326,7 +341,8 @@ sub damn {
         my @stringdata = ( qw|
             token lhost rhost listid alias reason subject messageid smtpagent 
             smtpcommand destination diagnosticcode senderdomain deliverystatus
-            timezoneoffset feedbacktype diagnostictype action replycode|
+            timezoneoffset feedbacktype diagnostictype action replycode
+            softbounce|
         );
 
         for my $e ( @stringdata ) {
@@ -472,6 +488,10 @@ not exist in the SMTP response or error message, this value will be set "".
 
 MTA or MSP module name which is used to get bounce reason such as C<Sendmail>,
 C<US::Google>, and so on. See C<perldoc Sisimai::MTA> or C<perldoc Sisimai::MSP>.
+
+=head2 C<softbounce>(I<Integer>)
+
+Soft bounce or not. 1 = soft bounce, 0 = hard bounce, -1 = did not decide
 
 =head2 C<smtpcommand>(I<String>)
 
