@@ -142,7 +142,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.13' }
+sub version     { '4.0.14' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -216,11 +216,7 @@ sub scan {
             # Giving up on 192.0.2.153.
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\AThis is a permanent error;/ ) {
-                # This is a permanent error; I've given up. Sorry it didn't work out.
-                $v->{'softbounce'} = 0;
-
-            } elsif( $e =~ m/\A(?:To[ ]*:)?[<](.+[@].+)[>]:\s*\z/ ) {
+            if( $e =~ m/\A(?:To[ ]*:)?[<](.+[@].+)[>]:\s*\z/ ) {
                 # <kijitora@example.jp>:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
