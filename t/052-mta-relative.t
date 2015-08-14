@@ -127,9 +127,6 @@ for my $x ( keys %$R ) {
                         }
                     }
 
-                    cmp_ok $e->{'softbounce'},'>=', -1, sprintf( "[%s] %s->softbounce = %s", $n, $x, $e->{'softbounce'} );
-                    cmp_ok $e->{'softbounce'},'<=',  1, sprintf( "[%s] %s->softbounce = %s", $n, $x, $e->{'softbounce'} );
-
                     like   $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, sprintf( "[%s] %s->recipient = %s", $n, $x, $e->{'recipient'} );
                     unlike $e->{'recipient'}, qr/[ ]/,              sprintf( "[%s] %s->recipient = %s", $n, $x, $e->{'recipient'} );
                     unlike $e->{'command'},   qr/[ ]/,              sprintf( "[%s] %s->command = %s", $n, $x, $e->{'command'} );
@@ -184,6 +181,18 @@ for my $x ( keys %$R ) {
 
                     is $e->addresser->host, $e->senderdomain, sprintf( "[%s] %s->senderdomain = %s", $n, $x, $e->senderdomain );
                     is $e->recipient->host, $e->destination,  sprintf( "[%s] %s->destination = %s", $n, $x, $e->destination );
+
+                    if( substr( $e->deliverystatus, 0, 1 ) == 4 ) {
+                        # 4.x.x
+                        is $e->softbounce, 1, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
+
+                    } elsif( substr( $e->deliverystatus, 0, 1 ) == 5 ) {
+                        # 5.x.x
+                        is $e->softbounce, 0, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
+                    } else {
+                        # No deliverystatus
+                        is $e->softbounce, -1, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
+                    }
 
                     like $e->replycode,      qr/\A(?:[45]\d\d|)\z/,          sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
                     like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );

@@ -942,6 +942,7 @@ for my $x ( keys %$R ) {
                     ok defined $ee->feedbacktype,  sprintf( "[%s] %s/%s->feedbacktype = %s", $n, $e, $x, $ee->feedbacktype );
                     ok defined $ee->subject,       sprintf( "[%s] %s/%s->subject", $n, $e, $x );
                     ok length  $ee->deliverystatus,sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
+                    ok length  $ee->softbounce,    sprintf( "[%s] %s/%s->softbounce = %s", $n, $e, $x, $ee->softbounce );
 
                     if( $x eq 'mFILTER' ) {
                         # mFILTER => m-FILTER
@@ -966,6 +967,18 @@ for my $x ( keys %$R ) {
                         # Check the value of D.S.N. format
                         like $ee->deliverystatus, qr/\A[45][.]\d/, 
                             sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
+
+                        if( substr( $ee->deliverystatus, 0, 1 ) == 4 ) {
+                            # 4.x.x
+                            is $ee->softbounce, 1, sprintf( "[%s] %s/%s->softbounce = %s", $n, $e, $x, $ee->softbounce );
+
+                        } elsif( substr( $ee->deliverystatus, 0, 1 ) == 5 ) {
+                            # 5.x.x
+                            is $ee->softbounce, 0, sprintf( "[%s] %s/%s->softbounce = %s", $n, $e, $x, $ee->softbounce );
+                        }
+                    } else {
+                        # No deliverystatus
+                        is $ee->softbounce, -1, sprintf( "[%s] %s/%s->softbounce = %s", $n, $e, $x, $ee->softbounce );
                     }
 
                     like $ee->reason,         $R->{ $x }->{ $n },   sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );

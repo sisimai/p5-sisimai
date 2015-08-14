@@ -74,6 +74,7 @@ MAKE_TEST: {
 
                 is $e->messageid, $perl->{'messageid'}, 'messageid = '.$e->messageid;
                 is $e->smtpagent, $perl->{'smtpagent'}, 'smtpagent = '.$e->smtpagent;
+                is $e->softbounce, $perl->{'softbounce'}, 'softbouce = '.$e->softbounce;
                 is $e->smtpcommand, $perl->{'smtpcommand'}, 'smtpcommand = '.$e->smtpcommand;
 
                 is $e->diagnosticcode, $perl->{'diagnosticcode'}, 'diagnosticcode = '.$e->diagnosticcode;

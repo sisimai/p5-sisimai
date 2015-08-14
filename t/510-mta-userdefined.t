@@ -63,6 +63,7 @@ MAKE_TEST: {
             is $e->recipient->host, $e->destination, 'destination = '.$e->destination;
 
             ok length $e->subject, 'subject = '.$e->subject;
+            ok length $e->softbounce, 'softbounce = '.$e->softbounce;
             ok length $e->diagnosticcode, 'diagnosticcode = '.$e->diagnosticcode;
             ok length $e->diagnostictype, 'diagnostictype = '.$e->diagnostictype;
             like $e->deliverystatus, qr/\A\d+[.]\d+[.]\d\z/, 'deliverystatus = '.$e->deliverystatus;
