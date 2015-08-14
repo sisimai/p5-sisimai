@@ -426,7 +426,7 @@ sub is_softbounce {
     if( $argvs =~ m/\b([245])\d\d\b/ ) {
         $first = $1;
 
-    } elsif( $argvs =~ m/\b([245])[.][0-7][.]\d+\b/ ) {
+    } elsif( $argvs =~ m/\b([245])[.][0-9][.]\d+\b/ ) {
         $first = $1;
     }
 
@@ -437,7 +437,19 @@ sub is_softbounce {
         $value = 0;
 
     } else {
-        $value = -1;
+        # Check with regular expression
+        if( $argvs =~ m/temporar/i ) {
+            # Temporary failure
+            $value = 1;
+
+        } elsif( $argvs =~ m/permanent/i ) {
+            # Permanently failure
+            $value = 0;
+
+        } else {
+            # Did not decide
+            $value = -1;
+        }
     }
 
     return $value;
