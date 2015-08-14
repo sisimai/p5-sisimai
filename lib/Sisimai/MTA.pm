@@ -29,7 +29,7 @@ sub DELIVERYSTATUS {
         'command'      => '',   # SMTP command in the message body
         'diagnosis'    => '',   # The value of Diagnostic-Code header
         'recipient'    => '',   # The value of Final-Recipient header
-        'softbounce'   => -1,   # Soft bounce or not
+        'softbounce'   => '',   # Soft bounce or not
         'feedbacktype' => '',   # FeedBack Type
     };
 }
