@@ -7,6 +7,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Fixed bug in Sisimai::Message for setting the order of MTA, MSP modules.
     - Issue #70, Implemented code for using user defined MTA module and added
       Sisimai::MTA::UserDefined as a sample.
+    - Issue #78, Implement new accessor "softbounce" in Sisimai::Data object.
 
 4.1.27  Fri, 17 Jul 2015 11:45:05 +0900 (JST)
     - New method implemented: Sisimai->dump('/path/to/mbox') return parsed data
