@@ -350,6 +350,7 @@ Feedback Reporting Format message.
 
 L<Sisimai::ARF>
 L<http://tools.ietf.org/html/rfc5965>
+L<http://libsisimai.org/reason/>
 
 =head1 AUTHOR
 

@@ -526,6 +526,10 @@ or error message string and so on.
 
 Time zone offset value(seconds).
 
+=head1 SEE ALSO
+
+L<http://libsisimai.org/data/>
+
 =head1 AUTHOR
 
 azumakuniyuki
