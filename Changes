@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.1.28  Sun, 16 Aug 2015
+4.1.28  Sun, 16 Aug 2015 14:50:20 +0900 (JST)
     - Happy 1st Birthday To Sisimai !!
     - Experimental implementation about issue #76: New module Sisimai::RF3834
       is for detecting auto replied message and decides a reason as "vacation".
