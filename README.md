@@ -299,7 +299,8 @@ More details about data structure are available at available at
 | recipient      | Recipient address which bounced       | バウンスした受信者のアドレス   |
 | replycode      | SMTP Reply Code                       | SMTP応答コード                 |
 | rhost          | Remote host name(remote MTA)          | 受信側MTAのホスト名            |
-| senderdomain   | the domain part of the "addresser"    | "addresser"のドメイン部分      |
+| senderdomain   | The domain part of the "addresser"    | "addresser"のドメイン部分      |
+| softbounce     | The bounce is soft bounce or not      | ソフトバウンスであるかどうか   |
 | smtpagent      | MTA name(Sisimai::MTA::, MSP::)       | MTA名(Sisimai::MTA::,MSP::)    |
 | smtpcommand    | The last SMTP command in the session  | セッション中最後のSMTPコマンド |
 | subject        | Subject of the original message(UTF8) | 元メールのSubject(UTF-8)       |
