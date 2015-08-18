@@ -41,8 +41,11 @@ Sisimai::Reason::OnHold - Bounce reason is C<onhold> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::OnHold checks the bounce reason is C<onhold> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::OnHold checks the bounce reason is C<onhold> or not. This class
+is called only Sisimai::Reason class.
+
+Sisimai will set C<onhold> to the reason of email bounce if there is no (or 
+less) detailed information about email bounce for judging the reason.
 
 =head1 CLASS METHODS
 

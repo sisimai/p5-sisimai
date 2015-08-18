@@ -38,6 +38,10 @@ Sisimai::Reason::SystemFull - Bounce reason is C<systemfull> or not.
 Sisimai::Reason::SystemFull checks the bounce reason is C<systemfull> or not.
 This class is called only Sisimai::Reason class.
 
+This is the error that a destination mail server's disk (or spool) is full.
+Sisimai will set C<systemfull> to the reason of email bounce if the value of
+Status: field in a bounce email is C<4.3.1> or C<5.3.1>.
+
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>

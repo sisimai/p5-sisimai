@@ -101,8 +101,22 @@ Sisimai::Reason::Filtered - Bounce reason is C<filtered> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Filtered checks the bounce reason is C<filtered> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::Filtered checks the bounce reason is C<filtered> or not.  This
+class is called only Sisimai::Reason class.
+
+This is the error that an email has been rejected by a header content after 
+SMTP DATA command. 
+In Japanese cellular phones, the error will incur that a sender's email address
+or a domain is rejected by recipient's email configuration. Sisimai will set 
+C<filtered> to the reason of email bounce if the value of Status: field in a 
+bounce email is C<5.2.0> or C<5.2.1>. 
+
+This error reason is almost the same as UserUnknown.
+
+    ... while talking to mfsmax.ntt.example.ne.jp.:
+    >>> DATA
+    <<< 550 Unknown user kijitora@ntt.example.ne.jp
+    554 5.0.0 Service unavailable
 
 =head1 CLASS METHODS
 

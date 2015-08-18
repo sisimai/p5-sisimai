@@ -166,8 +166,18 @@ the message or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SpamDetected checks the bounce reason is C<rejected> due to Spam 
-content in the message or not. This class is called only Sisimai::Reason class.
+Sisimai::Reason::SpamDetected checks the bounce reason is C<rejected> due to 
+Spam content in the message or not. This class is called only Sisimai::Reason 
+class.
+
+This is the error that the message you sent was rejected by spam filter running
+on the remote host. This reason has added in Sisimai 4.1.25 and does not exist
+in any version of bounceHammer.
+
+    Action: failed
+    Status: 5.7.1
+    Diagnostic-Code: smtp; 550 5.7.1 Message content rejected, UBE, id=00000-00-000
+    Last-Attempt-Date: Thu, 9 Apr 2008 23:34:45 +0900 (JST)
 
 =head1 CLASS METHODS
 

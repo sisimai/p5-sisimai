@@ -49,6 +49,12 @@ Sisimai::Reason::MailerError - Bounce reason is C<mailererror> or not.
 Sisimai::Reason::MailerError checks the bounce reason is C<mailererror> or not.
 This class is called only Sisimai::Reason class.
 
+This is the error that a mailer program has not exited successfully or exited
+unexpectedly on a destination mail server.
+
+    X-Actual-Recipient: X-Unix; |/home/kijitora/mail/catch.php
+    Diagnostic-Code: X-Unix; 255
+
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>

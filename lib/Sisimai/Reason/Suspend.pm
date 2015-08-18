@@ -62,8 +62,11 @@ Sisimai::Reason::Suspend - Bounce reason is C<suspend> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Suspend checks the bounce reason is C<suspend> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::Suspend checks the bounce reason is C<suspend> or not. This 
+class is called only Sisimai::Reason class.
+
+This is the error that a recipient account is being suspended due to unpaid or 
+other reasons.
 
 =head1 CLASS METHODS
 

@@ -76,6 +76,13 @@ Sisimai::Reason::TooManyConn - Bounced due to that too many connections.
 Sisimai::Reason::TooManyConn checks the bounce reason is C<toomanyconn> or not.
 This class is called only Sisimai::Reason class.
 
+This is the error that SMTP connection was rejected temporarily due to too many
+concurrency connections to the remote server. This reason has added in Sisimai
+4.1.26 and does not exist in any version of bounceHammer.
+
+    <kijitora@example.ne.jp>: host mx02.example.ne.jp[192.0.1.20] said:
+        452 4.3.2 Connection rate limit exceeded. (in reply to MAIL FROM command)
+
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>

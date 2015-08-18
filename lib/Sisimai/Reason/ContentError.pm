@@ -47,6 +47,26 @@ Sisimai::Reason::ContentError - Bounce reason is C<contenterror> or not.
 Sisimai::Reason::ContentError checks the bounce reason is C<contenterror> or not.
 This class is called only Sisimai::Reason class.
 
+This is the error that a destination mail server has rejected email due to 
+header format of the email like the following. Sisimai will set C<contenterror>
+to the reason of email bounce if the value of Status: field in a bounce email 
+is C<5.6.*>.
+
+=over 
+
+=item - 8 bit data in message header
+
+=item - Too many “Received” headers
+
+=item - Invalid MIME headers
+
+=over
+
+    ... while talking to g5.example.net.:
+    >>> DATA
+    <<< 550 5.6.9 improper use of 8-bit data in message header
+    554 5.0.0 Service unavailable
+
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>

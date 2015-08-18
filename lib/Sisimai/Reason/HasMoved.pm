@@ -44,8 +44,15 @@ Sisimai::Reason::HasMoved - Bounce reason is C<hasmoved> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::HasMoved checks the bounce reason is C<hasmoved> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::HasMoved checks the bounce reason is C<hasmoved> or not.  This
+class is called only Sisimai::Reason class.
+
+This is the error that a user's mailbox has moved (and is not forwarded 
+automatically). Sisimai will set C<hasmoved> to the reason of email bounce if
+the value of Status: field in a bounce email is C<5.1.6>.
+
+    <kijitora@example.go.jp>: host mx1.example.go.jp[192.0.2.127] said: 550 5.1.6 recipient
+        no longer on server: kijitora@example.go.jp (in reply to RCPT TO command)
 
 =head1 CLASS METHODS
 

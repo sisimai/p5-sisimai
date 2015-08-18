@@ -109,8 +109,16 @@ Sisimai::Reason::Blocked - Bounce reason is C<blocked> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Blocked checks the bounce reason is C<blocked> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::Blocked checks the bounce reason is C<blocked> or not. This
+class is called only Sisimai::Reason class.
+
+This is the error that SMTP connection was rejected due to a client IP address
+or a hostname, or the parameter of C<HELO/EHLO> command. This reason has added
+in Sisimai 4.0.0 and does not exist in any version of bounceHammer.
+
+    <kijitora@example.net>: 
+    Connected to 192.0.2.112 but my name was rejected. 
+    Remote host said: 501 5.0.0 Invalid domain name 
 
 =head1 CLASS METHODS
 

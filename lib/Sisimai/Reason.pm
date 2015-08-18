@@ -248,103 +248,246 @@ of Sisimai::Data instance.
 
 =head2 C<blocked>
 
-Rejected SMTP session due to client hostname or IP address or the argument of 
-C<HELO/EHLO>.
+This is the error that SMTP connection was rejected due to a client IP address
+or a hostname, or the parameter of C<HELO/EHLO> command. This reason has added
+in Sisimai 4.0.0 and does not exist in any version of bounceHammer.
+
+    <kijitora@example.net>: 
+    Connected to 192.0.2.112 but my name was rejected. 
+    Remote host said: 501 5.0.0 Invalid domain name 
 
 =head2 C<contenterror>
 
-The value of C<Status> header or the value of C<deliverystatus> is 5.6.X or the
-original message is invalid format message and so on.
+This is the error that a destination mail server has rejected email due to 
+header format of the email like the following. Sisimai will set C<contenterror>
+to the reason of email bounce if the value of Status: field in a bounce email 
+is C<5.6.*>.
+
+=over 
+
+=item - 8 bit data in message header
+
+=item - Too many “Received” headers
+
+=item - Invalid MIME headers
+
+=over
+
+    ... while talking to g5.example.net.:
+    >>> DATA
+    <<< 550 5.6.9 improper use of 8-bit data in message header
+    554 5.0.0 Service unavailable
+
 
 =head2 C<exceedlimit>
 
-The value of C<Status> header or the value of C<deliverystatus> is X.2.3 or the
-message size exceeded the limit of recipient's mailbox size limit.
+This is the error that a message was rejected due to an email exceeded the 
+limit. The value of D.S.N. is C<5.2.3>. This reason is almost the same as 
+C<MesgTooBig>, we think.
+
+    ... while talking to mx.example.org.:
+    >>> MAIL From:<kijitora@example.co.jp> SIZE=16600348
+    <<< 552 5.2.3 Message size exceeds fixed maximum message size (10485760)
+    554 5.0.0 Service unavailable
 
 =head2 C<expired>
 
-Delivery time has expired.
-
-=head2 C<filtered>
-
-The recipient address rejected at the end of DATA command.
-
-=head2 C<hasmoved>
-
-The recipient address has moved to another address or the value of C<Status>
-header or the value of C<deliverystatus> is 4.1.6 or 5.1.6.
-
-=head2 C<hostunknown>
-
-The host part of the recipient address does not exist or the value of C<Status>
-header or the value of C<deliverystatus> is 5.1.2.
-
-=head2 C<mailboxfull>
-
-The recipient's mailbox is full or the value of C<Status> header or the value of
-C<deliverystatus> is X.2.2
-
-=head2 C<mailererror>
-
-Mailer program at the remote host exit with the status code except 0 and 75.
-
-=head2 C<mesgtoobig>
-
-SMTP session rejected due to the message size exceeded server limit or the value
-of C<Status> header or the value of C<deliverystatus> is X.3.4.
-
-=head2 C<notaccept>
-
-Remote server does not accept email.
-
-=head2 C<onhold>
-
-Could not detect the reason of bounce or deciding the reason is on hold due to
-lack of error messages.
-
-=head2 C<rejected>
-
-The sender email address rejected or the value of C<Status> header or the value
-of C<deliverystatus> is X.1.8.
-
-=head2 C<norelaying>
-
-Relaying denied.
-
-=head2 C<securityerror>
-
-Message rejected due to SPAM content or virus or other security reason. The value
-of C<Status> header or the value of C<deliverystatus> is X.7.Y.
-
-=head2 C<suspend>
-
-The recipient's mailbox temporary disabled.
-
-=head2 C<networkerror>
-
-Network related errors such as DNS look up failure.
-
-=head2 C<spamdetected>
-
-The message was detected as a C<spam>.
-
-=head2 C<systemerror>
-
-Configuration error on the remote host or local hosts.
-
-=head2 C<systemfull>
-
-Disk full or other similar status on the remote server.
-
-=head2 C<userunknown>
-
-Recipient address does not exist or the value of C<Status> header or the value
-of C<deliverystatus> is 5.1.1.
+This is the error that delivery time has expired due to connection failure or 
+network error and the message you sent has been in the queue for long time.
 
 =head2 C<feedback>
 
-The message returned from the recipient or his/her provider as a ARF: Abuse 
-Feedback Reporting Format message.
+The message you sent was forwarded to the sender as a complaint message from 
+your mailbox provider. When Sismai has set C<feedback> to the reason, the value
+of C<feedbacktype> is also set like the following parsed data.
+
+=head2 C<filtered>
+
+This is the error that an email has been rejected by a header content after 
+SMTP DATA command. 
+In Japanese cellular phones, the error will incur that a sender's email address
+or a domain is rejected by recipient's email configuration. Sisimai will set 
+C<filtered> to the reason of email bounce if the value of Status: field in a 
+bounce email is C<5.2.0> or C<5.2.1>. 
+
+This error reason is almost the same as UserUnknown.
+
+    ... while talking to mfsmax.ntt.example.ne.jp.:
+    >>> DATA
+    <<< 550 Unknown user kijitora@ntt.example.ne.jp
+    554 5.0.0 Service unavailable
+
+=head2 C<hasmoved>
+
+This is the error that a user's mailbox has moved (and is not forwarded 
+automatically). Sisimai will set C<hasmoved> to the reason of email bounce if
+the value of Status: field in a bounce email is C<5.1.6>.
+
+    <kijitora@example.go.jp>: host mx1.example.go.jp[192.0.2.127] said: 550 5.1.6 recipient
+        no longer on server: kijitora@example.go.jp (in reply to RCPT TO command)
+
+=head2 C<hostunknown>
+
+This is the error that a domain part (Right hand side of @ sign) of a 
+recipient's email address does not exist. In many case, the domain part is 
+misspelled, or the domain name has been expired. Sisimai will set C<hostunknown>
+to the reason of email bounce if the value of Status: field in a bounce mail is
+C<5.1.2>.
+
+    Your message to the following recipients cannot be delivered:
+
+    <kijitora@example.cat>:
+    <<< No such domain.
+
+=head2 C<mailboxfull>
+
+This is the error that a recipient's mailbox is full. Sisimai will set 
+C<mailboxfull> to the reason of email bounce if the value of Status: field in a
+bounce email is C<4.2.2> or C<5.2.2>.
+
+    Action: failed
+    Status: 5.2.2
+    Diagnostic-Code: smtp;550 5.2.2 <kijitora@example.jp>... Mailbox Full
+
+=head2 C<mailererror>
+
+This is the error that a mailer program has not exited successfully or exited
+unexpectedly on a destination mail server.
+
+    X-Actual-Recipient: X-Unix; |/home/kijitora/mail/catch.php
+    Diagnostic-Code: X-Unix; 255
+
+=head2 C<mesgtoobig>
+
+This is the error that a sent email size is too big for a destination mail
+server. In many case, There are many attachment files with email, or the file
+size is too large. Sisimai will set C<mesgtoobig> to the reason of email bounce
+if the value of Status: field in a bounce email is C<5.3.4>.
+
+    Action: failure
+    Status: 553 Exceeded maximum inbound message size
+
+=head2 C<notaccept>
+
+This is the error that a destination mail server does ( or can ) not accespt 
+any email. In many case, the server is high load or under the maintenance. 
+Sisimai will set C<notaccept> to the reason of email bounce if the value of
+Status: field in a bounce email is C<5.3.2> or the value of SMTP reply code is
+556.
+
+=head2 C<onhold>
+
+Sisimai will set C<onhold> to the reason of email bounce if there is no (or 
+less) detailed information about email bounce for judging the reason.
+
+=head2 C<rejected>
+
+This is the error that a connection to destination server was rejected by a 
+sender's email address (envelope from). Sisimai set C<rejected> to the reason
+of email bounce if the value of Status: field in a bounce email is C<5.1.8> or
+the connection has been rejected due to the argument of SMTP MAIL command.
+
+    <kijitora@example.org>:
+    Connected to 192.0.2.225 but sender was rejected.
+    Remote host said: 550 5.7.1 <root@nijo.example.jp>... Access denied
+
+=head2 C<norelaying>
+
+This is the error that SMTP connection rejected with error message 
+C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
+
+    ... while talking to mailin-01.mx.example.com.:
+    >>> RCPT To:<kijitora@example.org>
+    <<< 554 5.7.1 <kijitora@example.org>: Relay access denied
+    554 5.0.0 Service unavailable
+
+=head2 C<securityerror>
+
+This is the error that a security violation was detected on a destination mail 
+server. Depends on the security policy on the server, there is any viruse in the
+email, a sender's email address is phished. Sisimai will set C<securityerror> 
+to the reason of email bounce if the value of Status: field in a bounce email 
+is C<5.7.*>.
+
+    Status: 5.7.0
+    Remote-MTA: DNS; gmail-smtp-in.l.google.com
+    Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
+
+=head2 C<suspend>
+
+This is the error that a recipient account is being suspended due to unpaid or 
+other reasons.
+
+=head2 C<networkerror>
+
+This is the error that SMTP connection failed due to DNS look up failure or 
+other network problems. This reason has added in Sisimai 4.1.12 and does not
+exist in any version of bounceHammer.
+
+    A message is delayed for more than 10 minutes for the following
+    list of recipients:
+
+    kijitora@neko.example.jp: Network error on destination MXs
+
+=head2 C<spamdetected>
+
+This is the error that the message you sent was rejected by spam filter running
+on the remote host. This reason has added in Sisimai 4.1.25 and does not exist
+in any version of bounceHammer.
+
+    Action: failed
+    Status: 5.7.1
+    Diagnostic-Code: smtp; 550 5.7.1 Message content rejected, UBE, id=00000-00-000
+    Last-Attempt-Date: Thu, 9 Apr 2008 23:34:45 +0900 (JST)
+
+=head2 C<systemerror>
+
+This is the error that an email has bounced due to system error on the remote
+host such as LDAP connection failure or other internal system error.
+
+    <kijitora@example.net>: 
+    Unable to contact LDAP server. (#4.4.3)I'm not going to try again; this
+    message has been in the queue too long.
+
+=head2 C<systemfull>
+
+This is the error that a destination mail server's disk (or spool) is full.
+Sisimai will set C<systemfull> to the reason of email bounce if the value of
+Status: field in a bounce email is C<4.3.1> or C<5.3.1>.
+
+=head2 C<toomanyconn>
+
+This is the error that SMTP connection was rejected temporarily due to too many
+concurrency connections to the remote server. This reason has added in Sisimai
+4.1.26 and does not exist in any version of bounceHammer.
+
+    <kijitora@example.ne.jp>: host mx02.example.ne.jp[192.0.1.20] said:
+        452 4.3.2 Connection rate limit exceeded. (in reply to MAIL FROM command)
+
+=head2 C<userunknown>
+
+This is the error that a local part (Left hand side of @ sign) of a recipient's
+email address does not exist. In many case, a user has changed internet service
+provider, or has quit company, or the local part is misspelled. Sisimai will set
+C<userunknown> to the resason of email bounce if the value of Status: field in 
+a bounce email is C<5.1.1>, or connection was refused at SMTP RCPT command, or
+the contents of Diagnostic-Code: field represents that it is unknown user.
+
+    <kijitora@example.co.jp>: host mx01.example.co.jp[192.0.2.8] said:
+      550 5.1.1 Address rejected kijitora@example.co.jp (in reply to
+      RCPT TO command)
+
+=head2 C<undefined>
+
+Sisimai could not detect the error reason. In many case, error message is 
+written in non English or there are no enough error message in a bounce email
+to decide the reason.
+
+=head2 C<vacation>
+
+This is the reason that the recipient is out of office. The bounce message is 
+generated and returned from auto reponder program. This reason has added in 
+Sisimai 4.1.28 and does not exist in any version of bounceHammer.
 
 =head1 SEE ALSO
 

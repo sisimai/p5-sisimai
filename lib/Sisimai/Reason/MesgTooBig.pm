@@ -90,6 +90,14 @@ Sisimai::Reason::MesgTooBig - Bounce reason is C<mesgtoobig> or not.
 Sisimai::Reason::MesgTooBig checks the bounce reason is C<mesgtoobig> or not.
 This class is called only Sisimai::Reason class.
 
+This is the error that a sent email size is too big for a destination mail
+server. In many case, There are many attachment files with email, or the file
+size is too large. Sisimai will set C<mesgtoobig> to the reason of email bounce
+if the value of Status: field in a bounce email is C<5.3.4>.
+
+    Action: failure
+    Status: 553 Exceeded maximum inbound message size
+
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
@@ -108,6 +116,14 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 C<true()> returns 1 if the bounce reason is C<mesgtoobig>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.
+
+=head1 SEE ALSO
+
+=over
+
+=item L<Sisimai::Reason::ExceedLimit> - Sisimai::Reason::ExceedLimit
+
+=back
 
 =head1 AUTHOR
 

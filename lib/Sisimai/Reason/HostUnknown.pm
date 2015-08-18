@@ -86,6 +86,17 @@ Sisimai::Reason::HostUnknown - Bounce reason is C<hostunknown> or not.
 Sisimai::Reason::HostUnknown checks the bounce reason is C<hostunknown> or not.
 This class is called only Sisimai::Reason class.
 
+This is the error that a domain part (Right hand side of @ sign) of a 
+recipient's email address does not exist. In many case, the domain part is 
+misspelled, or the domain name has been expired. Sisimai will set C<hostunknown>
+to the reason of email bounce if the value of Status: field in a bounce mail is
+C<5.1.2>.
+
+    Your message to the following recipients cannot be delivered:
+
+    <kijitora@example.cat>:
+    <<< No such domain.
+
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
