@@ -127,6 +127,9 @@ Sisimai::RFC3834
   * [warning-6.msg](https://github.com/rjbs/Mail-DeliveryStatus-BounceParser/blob/master/t/corpus/warning-6.msg)
   * Copyright (C) 2003-2006 IC Group, Inc. | GPLv2
 
+* rfc3834-03.eml
+  * [aol-vacation.msg](https://github.com/rjbs/Mail-DeliveryStatus-BounceParser/blob/master/t/corpus/aol-vacation.msg)
+  * Copyright (C) 2003-2006 IC Group, Inc. | GPLv2
 
 Sisimai::MTA::Sendmail
 ----------------------
