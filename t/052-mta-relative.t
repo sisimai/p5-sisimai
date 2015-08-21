@@ -38,6 +38,7 @@ my $R = {
     'RFC3834' => {
         '01' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
         '02' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
+        '03' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
     },
     'ARF' => {
         '01' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
