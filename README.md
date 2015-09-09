@@ -1,12 +1,7 @@
 [![Build Status](https://travis-ci.org/azumakuniyuki/p5-Sisimai.svg?branch=master)](https://travis-ci.org/azumakuniyuki/p5-Sisimai) 
 [![Coverage Status](https://img.shields.io/coveralls/azumakuniyuki/p5-Sisimai.svg)](https://coveralls.io/r/azumakuniyuki/p5-Sisimai)
 
-         ____  _     _                 _ 
-        / ___|(_)___(_)_ __ ___   __ _(_)
-        \___ \| / __| | '_ ` _ \ / _` | |
-         ___) | \__ \ | | | | | | (_| | |
-        |____/|_|___/_|_| |_| |_|\__,_|_|
-                                 
+![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
 
 What is Sisimai ? | シシマイ?
 =============================
