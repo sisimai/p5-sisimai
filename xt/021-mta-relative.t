@@ -259,9 +259,11 @@ my $R = {
         '01231' => qr/filtered/,
         '01232' => qr/networkerror/,
         '01233' => qr/mailererror/,
+        '01234' => qr/(?:filtered|onhold)/,
     },
     'RFC3834' => {
         '01001' => qr/vacation/,
+        '01002' => qr/vacation/,
     },
 };
 
