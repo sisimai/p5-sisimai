@@ -18,7 +18,7 @@ Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析�
 Features | 主な機能
 -------------------
 * __Convert bounce mails to structured data__ | __エラーメールをデータ構造に変換__
-  * Supported format are Perl, JSON | Perlのデータ形式とJSONに対応
+  * Supported formats are Perl, JSON | Perlのデータ形式とJSONに対応
 * __Easy to install, use.__ | __インストールも使用も簡単__
   * cpanm
   * git clone
@@ -29,6 +29,9 @@ Features | 主な機能
   * Can detect 25 error reasons | 25種類のエラー理由を検出
 * __Faster than bounceHammer version 2.7.X__ | __bounceHammer 2.7.Xよりも高速に解析__
 
+
+Setting Up Sisimai | シシマイを使う準備
+=======================================
 
 System requirements | 動作環境
 ------------------------------
@@ -63,6 +66,9 @@ Install | インストール
     Configuring Sisimai-4.1.20 ... OK
     1 distribution installed
 
+
+Usage | 使い方
+==============
 
 Basic usage | 基本的な使い方
 ----------------------------
@@ -120,6 +126,9 @@ data as JSON using the method.
 Sisimai 4.1.27から登場したdump()メソッドを使うとワンライナーでJSON化した解析結果
 が得られます。
 
+
+Sisimai Specification | シシマイの仕様
+======================================
 
 Differences between ver.2 and Sisimai | 新旧の違い
 --------------------------------------------------
@@ -317,10 +326,14 @@ Sisimaiで解析出来ないメールを見つけたら、このディレクト�
 を送ってください。
 
 
-REPOSITORY | リポジトリ
------------------------
-[github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
+Other Information | その他の情報
+================================
 
+Related Sites | 関連サイト
+--------------------------
+
+* __http://libsisimai.org/__ | [Sisimai — A successor to bounceHammer, Library to parse error mails](http://libsisimai.org/)
+* __GitHub__ | [github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
 
 SEE ALSO | 参考サイト
 ---------------------
@@ -330,22 +343,14 @@ SEE ALSO | 参考サイト
 * [RFC5321 - Simple Mail Transfer Protocol](https://tools.ietf.org/html/rfc5321)
 * [RFC5322 - Internet Message Format](https://tools.ietf.org/html/rfc5322)
 
-
-WEB SITE | サイト
------------------
-[Sisimai — A successor to bounceHammer, Library to parse error mails(http://libsisimai.org/)](http://libsisimai.org/)
-
-
 AUTHOR | 作者
 -------------
 [@azumakuniyuki](https://twitter.com/azumakuniyuki)
-
 
 COPYRIGHT | 著作権
 ------------------
 Copyright (C) 2014-2015 azumakuniyuki <perl.org@azumakuniyuki.org>,
 All Rights Reserved.
-
 
 LICENSE | ライセンス
 --------------------
