@@ -18,7 +18,7 @@ my $RxMTA = {
     'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
 };
 
-sub version     { '4.0.20' }
+sub version     { '4.0.21' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 
@@ -192,10 +192,10 @@ sub scan {
                     # Detect SMTP session error or connection error
                     next if $sessionerr;
                     if( $e =~ $RxMTA->{'error'} ) { 
-                        # ----- Transcript of session follows -----
-                        # ... while talking to mta.example.org.:
-                        $sessionerr = 1;
-                        next;
+                      # ----- Transcript of session follows -----
+                       # ... while talking to mta.example.org.:
+                       $sessionerr = 1;
+                       next;
                     }
 
                     if( $e =~ m/\A[<](.+)[>][.]+ (.+)\z/ ) {
@@ -208,7 +208,7 @@ sub scan {
                         # Message could not be delivered for too long
                         # Message will be deleted from queue
                         next if $e =~ m/\A\s*[-]+/;
-                        if( $e =~ m/\A\d\d\d\s(\d[.]\d[.]\d)\s.+/ ) {
+                        if( $e =~ m/\A[45]\d\d\s([45][.]\d[.]\d)\s.+/ ) {
                             # 550 5.1.2 <kijitora@example.org>... Message
                             #
                             # DBI connect('dbname=...')
@@ -216,8 +216,9 @@ sub scan {
                             $anotherset->{'status'} = $1;
                             $anotherset->{'diagnosis'} .= ' '.$e;
 
-                        } elsif( $e =~ m/\AMessage / ) {
+                        } elsif( $e =~ m/\A(?:Message|Warning:) / ) {
                             # Message could not be delivered for too long
+                            # Warning: message still undelivered after 4 hours
                             $anotherset->{'diagnosis'} .= ' '.$e;
                         }
                     }
@@ -253,7 +254,9 @@ sub scan {
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
+            $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ m/\A\s+\z/;
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
+
             if( $e->{'diagnosis'} =~ m/\A\d+\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $anotherset->{'diagnosis'};
