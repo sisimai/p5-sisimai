@@ -21,7 +21,7 @@ my $RxSess = {
     'expired' => qr/Host not reachable/
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.1.0' }
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub smtpagent   { 'US::Zoho' }
 sub headerlist  { 

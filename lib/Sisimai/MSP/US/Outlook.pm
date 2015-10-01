@@ -11,6 +11,7 @@ my $RxMSP = {
     'rfc822'  => qr|\AContent-Type: message/rfc822\z|,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject' => qr/Delivery Status Notification/,
+    'received'=> qr/.+[.]hotmail[.]com\b/,
 };
 
 my $RxErr = {
@@ -18,7 +19,7 @@ my $RxErr = {
     'userunknown' => qr/Requested action not taken: mailbox unavailable/,
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.1.0' }
 sub description { 'Microsoft Outlook.com: https://www.outlook.com/' }
 sub smtpagent   { 'US::Outlook' }
 sub headerlist  { return [ 'X-Message-Delivery', 'X-Message-Info' ] }
@@ -33,10 +34,11 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if $mhead->{'subject'} =~ $RxMSP->{'subject'};
-    $match = 1 if $mhead->{'x-message-delivery'};
-    $match = 1 if $mhead->{'x-message-info'};
-    return undef unless $match;
+    $match++ if $mhead->{'subject'} =~ $RxMSP->{'subject'};
+    $match++ if $mhead->{'x-message-delivery'};
+    $match++ if $mhead->{'x-message-info'};
+    $match++ if grep { $_ =~ $RxMSP->{'received'} } @{ $mhead->{'received'} };
+    return undef if $match < 2;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part

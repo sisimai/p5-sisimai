@@ -15,7 +15,7 @@ my $RxMSP = {
     },
 };
 
-sub version     { '4.0.9' }
+sub version     { '4.1.0' }
 sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub smtpagent   { 'US::Verizon' }
 

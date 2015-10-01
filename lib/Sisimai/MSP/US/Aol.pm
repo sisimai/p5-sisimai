@@ -18,7 +18,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.1.0' }
 sub description { 'Aol Mail: http://www.aol.com' }
 sub smtpagent   { 'US::Aol' }
 sub headerlist  { 

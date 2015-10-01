@@ -70,7 +70,7 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.0.11' }
+sub version     { '4.1.0' }
 sub description { 'Facebook: https://www.facebook.com' }
 sub smtpagent   { 'US::Facebook' }
 

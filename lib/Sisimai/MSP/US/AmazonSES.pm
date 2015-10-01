@@ -17,7 +17,7 @@ my $RxErr = {
     'expired' => qr/Delivery[ ]expired/x,
 };
 
-sub version     { '4.0.8' }
+sub version     { '4.1.0' }
 sub description { 'AmazonSES: http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::AmazonSES' }
 sub headerlist  { return [ 'X-AWS-Outgoing' ] }
@@ -53,8 +53,6 @@ sub scan {
     my $p = '';
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
-
-    require Sisimai::RFC5322;
 
     for my $e ( @stripedtxt ) {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.

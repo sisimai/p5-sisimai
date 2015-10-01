@@ -19,7 +19,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.1.0' }
 sub description { '1&1: http://www.1and1.de' }
 sub smtpagent   { 'DE::EinsUndEins' }
 

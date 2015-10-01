@@ -13,7 +13,7 @@ my $RxMSP = {
     'received'=> qr/\w+[.]bigfoot[.]com\b/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.1.0' }
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub smtpagent   { 'US::Bigfoot' }
 

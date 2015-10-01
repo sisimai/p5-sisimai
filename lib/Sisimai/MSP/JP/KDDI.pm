@@ -31,7 +31,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.13' }
+sub version     { '4.1.0' }
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
 

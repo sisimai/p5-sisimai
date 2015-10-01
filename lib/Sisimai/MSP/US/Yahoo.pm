@@ -12,7 +12,7 @@ my $RxMSP = {
     'subject' => qr/\AFailure Notice\z/,
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.1.0' }
 sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 sub smtpagent   { 'US::Yahoo' }
 sub headerlist  { 

@@ -18,7 +18,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.1.0' }
 sub description { 'GMX: http://www.gmx.net' }
 sub smtpagent   { 'DE::GMX' }
 sub headerlist  {

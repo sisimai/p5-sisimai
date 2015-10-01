@@ -17,7 +17,7 @@ my $RxErr = {
     'userunknown' => qr/No[ ]such[ ]user/x,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.1.0' }
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
 sub smtpagent   { 'UK::MessageLabs' }
 sub headerlist  { return [ 'X-Msg-Ref', 'X-Originating-IP' ] }

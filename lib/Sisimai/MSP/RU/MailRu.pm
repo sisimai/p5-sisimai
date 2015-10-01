@@ -57,7 +57,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.1.0' }
 sub description { '@mail.ru: https://mail.ru' }
 sub smtpagent   { 'RU::MailRu' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
