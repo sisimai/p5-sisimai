@@ -28,7 +28,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.1.0' }
 sub description { 'IBM Domino Server' }
 sub smtpagent   { 'Domino' }
 

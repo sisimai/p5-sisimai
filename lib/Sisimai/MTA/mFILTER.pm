@@ -15,7 +15,7 @@ my $RxMTA = {
     'x-mailer' => qr/\Am-FILTER\z/,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.1.0' }
 sub description { 'Digital Arts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
 sub headerlist  { return [ 'X-Mailer' ] }

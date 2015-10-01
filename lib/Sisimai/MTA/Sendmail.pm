@@ -18,7 +18,7 @@ my $RxMTA = {
     'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
 };
 
-sub version     { '4.0.21' }
+sub version     { '4.1.0' }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
 

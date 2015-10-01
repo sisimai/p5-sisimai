@@ -16,7 +16,7 @@ my $RxMTA = {
     }x,
 };
 
-sub version     { '4.0.3' }
+sub version     { '4.1.0' }
 sub description { 'Unknown MTA #2' }
 sub smtpagent   { 'X2' }
 

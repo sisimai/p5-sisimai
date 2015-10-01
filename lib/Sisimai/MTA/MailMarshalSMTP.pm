@@ -13,7 +13,7 @@ my $RxMTA = {
     'subject'  => qr/\AUndeliverable Mail: ["]/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.1.0' }
 sub description { 'Trustwave Secure Email Gateway' }
 sub smtpagent   { 'MailMarshalSMTP' }
 sub headerlist  { return [ 'X-Mailer' ] }

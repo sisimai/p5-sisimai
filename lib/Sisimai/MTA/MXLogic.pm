@@ -61,7 +61,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.10' }
+sub version     { '4.1.0' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash', 'X-MXL-Hash' ] }

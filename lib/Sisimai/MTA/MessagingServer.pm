@@ -17,7 +17,7 @@ my $RxErr = {
     'hostunknown' => qr{Illegal[ ]host/domain[ ]name[ ]found}x,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.1.0' }
 sub description { 'Oracle Communications Messaging Server' }
 sub smtpagent   { 'MessagingServer' }
 

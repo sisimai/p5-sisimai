@@ -13,7 +13,7 @@ my $RxMTA = {
     'x-mailer' => qr/\ASurfControl E-mail Filter\z/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.1.0' }
 sub description { 'WebSense SurfControl' }
 sub smtpagent   { 'SurfControl' }
 sub headerlist  { return [ 'X-SEF-Processed', 'X-Mailer' ] }

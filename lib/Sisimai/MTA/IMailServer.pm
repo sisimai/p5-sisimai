@@ -35,7 +35,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.6' }
+sub version     { '4.1.0' }
 sub description { 'IPSWITCH IMail Server' }
 sub smtpagent   { 'IMailServer' }
 sub headerlist  { return [ 'X-Mailer' ] }

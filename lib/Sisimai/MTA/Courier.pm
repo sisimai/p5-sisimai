@@ -46,7 +46,7 @@ my $RxTmp = {
     },
 };
 
-sub version     { '4.0.14' }
+sub version     { '4.1.0' }
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
 

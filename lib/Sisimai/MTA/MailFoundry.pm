@@ -13,7 +13,7 @@ my $RxMTA = {
     'subject'  => qr/\AMessage delivery has failed\z/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.1.0' }
 sub description { 'MailFoundry' }
 sub smtpagent   { 'MailFoundry' }
 

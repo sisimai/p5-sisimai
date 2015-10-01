@@ -50,7 +50,7 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.0.13' }
+sub version     { '4.1.0' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };

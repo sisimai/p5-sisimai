@@ -142,7 +142,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.0.14' }
+sub version     { '4.1.0' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 

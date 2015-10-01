@@ -12,7 +12,7 @@ my $RxMTA = {
     'subject'  => qr/\ADelivery status notification/,
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.1.0' }
 sub description { 'Unknown MTA #3' }
 sub smtpagent   { 'X3' }
 

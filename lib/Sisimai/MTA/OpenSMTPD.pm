@@ -75,7 +75,7 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.0.11' }
+sub version     { '4.1.0' }
 sub description { 'OpenSMTPD' }
 sub smtpagent   { 'OpenSMTPD' }
 

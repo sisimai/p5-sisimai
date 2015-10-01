@@ -13,7 +13,7 @@ my $RxMTA = {
     'subject' => qr/FAILURE NOTICE :/,
 };
 
-sub version     { '4.0.4' }
+sub version     { '4.1.0' }
 sub description { 'TransWARE Active!hunter' };
 sub smtpagent   { 'Activehunter' }
 sub headerlist  { return [ 'X-AHMAILID' ] }

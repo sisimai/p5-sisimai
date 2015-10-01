@@ -17,7 +17,7 @@ my $RxMTA = {
     'message-id' => qr/\d+[.]JavaMail[.].+[@]/,
 };
 
-sub version     { '4.0.0' }
+sub version     { '4.1.0' }
 sub description { 'Java Apache Mail Enterprise Server' }
 sub smtpagent   { 'ApacheJames' }
 

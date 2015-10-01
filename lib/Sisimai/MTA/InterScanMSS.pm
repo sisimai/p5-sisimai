@@ -20,7 +20,7 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.0.5' }
+sub version     { '4.1.0' }
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
 sub smtpagent   { 'InterScanMSS' }
 

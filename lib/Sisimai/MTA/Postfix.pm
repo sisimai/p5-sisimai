@@ -30,7 +30,7 @@ my $RxMTA = {
     'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
-sub version     { '4.0.14' }
+sub version     { '4.1.0' }
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
 

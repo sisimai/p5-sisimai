@@ -108,7 +108,7 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.0.18' }
+sub version     { '4.1.0' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }

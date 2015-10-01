@@ -33,7 +33,7 @@ my $RxMTA = {
     'subject' => qr/\AReturned mail: [A-Z]/,
 };
 
-sub version     { '4.0.7' }
+sub version     { '4.1.0' }
 sub description { 'Sendmail version 5' }
 sub smtpagent   { 'V5sendmail' }
 
