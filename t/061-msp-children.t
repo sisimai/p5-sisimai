@@ -50,6 +50,15 @@ my $R = {
         '03' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
         '04' => { 'status' => qr/\A5[.]4[.]7\z/, 'reason' => qr/expired/ },
     },
+    'US::ReceivingSES' => {
+        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/filtered/ },
+        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/filtered/ },
+        '03' => { 'status' => qr/\A4[.]0[.]0\z/, 'reason' => qr/onhold/ },
+        '04' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
+        '05' => { 'status' => qr/\A5[.]3[.]4\z/, 'reason' => qr/mesgtoobig/ },
+        '06' => { 'status' => qr/\A5[.]6[.]1\z/, 'reason' => qr/contenterror/ },
+        '07' => { 'status' => qr/\A5[.]2[.]0\z/, 'reason' => qr/filtered/ },
+    },
     'US::SendGrid' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
         '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
@@ -83,8 +92,6 @@ my $R = {
         '05' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/userunknown/ },
         '06' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
         '07' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
-        '08' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '09' => { 'status' => qr/\A4[.]4[.]6\z/, 'reason' => qr/networkerror/ },
     },
     'RU::MailRu' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
