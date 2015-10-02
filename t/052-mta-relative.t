@@ -34,6 +34,8 @@ my $R = {
         '23' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/, 'agent' => qr/RFC3464/ },
         '24' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/, 'agent' => qr/RFC3464/ },
         '25' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/, 'agent' => qr/RFC3464/ },
+        '26' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/, 'agent' => qr/RFC3464/ },
+        '27' => { 'status' => qr/\A4[.]4[.]6\z/, 'reason' => qr/networkerror/, 'agent' => qr/RFC3464/ },
     },
     'RFC3834' => {
         '01' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
