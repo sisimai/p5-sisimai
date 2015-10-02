@@ -36,6 +36,7 @@ sub index {
         'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
         'US::Verizon', 'RU::MailRu', 'RU::Yandex', 'DE::GMX', 'DE::EinsUndEins',
         'US::Zoho', 'US::Bigfoot', 'US::Facebook', 'UK::MessageLabs',
+        'US::ReceivingSES',
     ];
 
     return $index;
