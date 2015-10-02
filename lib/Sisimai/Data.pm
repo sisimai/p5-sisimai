@@ -271,14 +271,10 @@ sub make {
             CHECK_DELIVERY_STATUS_VALUE: {
                 # Cleanup the value of "Diagnostic-Code:" header
                 $p->{'diagnosticcode'} =~ s/\s+$endofemail//;
-
-                if( $p->{'deliverystatus'} =~ m/\A[45][.]0[.]0\z/ ) {
-                    # Status: 5.0.0 or 4.0.0
-                    my $v = Sisimai::RFC3463->getdsn( $p->{'diagnosticcode'} );
-                    if( $v =~ m/\A[45][.][1-9]+[.][1-9]+\z/ ) {
-                        # Check the alternative value
-                        $p->{'deliverystatus'} = $v;
-                    }
+                my $v = Sisimai::RFC3463->getdsn( $p->{'diagnosticcode'} );
+                if( $v =~ m/\A[45][.][1-9][.][1-9]\z/ ) {
+                    # Use the DSN value in Diagnostic-Code:
+                    $p->{'deliverystatus'} = $v;
                 }
             }
 
