@@ -18,7 +18,7 @@ my $RxErr = {
 };
 
 sub version     { '4.1.0' }
-sub description { 'AmazonSES: http://aws.amazon.com/ses/' };
+sub description { 'AmazonSES(Sending): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::AmazonSES' }
 sub headerlist  { return [ 'X-AWS-Outgoing' ] }
 
