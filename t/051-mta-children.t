@@ -21,7 +21,7 @@ my $R = {
         '04' => { 'status' => qr/\A5[.]1[.]8\z/, 'reason' => qr/rejected/ },
         '05' => { 'status' => qr/\A5[.]2[.]3\z/, 'reason' => qr/exceedlimit/ },
         '06' => { 'status' => qr/\A5[.]6[.]9\z/, 'reason' => qr/contenterror/ },
-        '07' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/norelaying/ },
+        '07' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/norelaying/ },
         '08' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/blocked/ },
         '09' => { 'status' => qr/\A5[.]7[.]9\z/, 'reason' => qr/securityerror/ },
         '10' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/blocked/ },

@@ -268,8 +268,19 @@ sub make {
                 $p->{'messageid'} =~ y/<>//d;
             }
 
-            # Cleanup the value of "Diagnostic-Code:" header
-            $p->{'diagnosticcode'} =~ s/\s+$endofemail//;
+            CHECK_DELIVERY_STATUS_VALUE: {
+                # Cleanup the value of "Diagnostic-Code:" header
+                $p->{'diagnosticcode'} =~ s/\s+$endofemail//;
+
+                if( $p->{'deliverystatus'} =~ m/\A[45][.]0[.]0\z/ ) {
+                    # Status: 5.0.0 or 4.0.0
+                    my $v = Sisimai::RFC3463->getdsn( $p->{'diagnosticcode'} );
+                    if( $v =~ m/\A[45][.][1-9]+[.][1-9]+\z/ ) {
+                        # Check the alternative value
+                        $p->{'deliverystatus'} = $v;
+                    }
+                }
+            }
 
             # Check the value of SMTP command
             $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ $rxcommands;
@@ -463,7 +474,7 @@ address. Sisimai::Address object have the following accessors:
 =head2 C<alias> (I<String>)
 
 C<alias> is an alias address of the recipient. When the Original-Recipient: 
-field or C<expanded from …> string  did not exist in a bounce message, this 
+field or C<expanded from 窶ｦ> string  did not exist in a bounce message, this 
 value is empty.
 
     Original-Recipient: rfc822;kijitora@example.org
