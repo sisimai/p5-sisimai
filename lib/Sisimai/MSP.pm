@@ -32,7 +32,7 @@ sub index {
     my $class = shift;
     my $index = [
         'US::Google', 'US::Yahoo', 'US::Aol', 'US::Outlook',
-        'US::AmazonSES', 'US::SendGrid',
+        'US::AmazonSES', 'US::SendGrid', 'US::ReceivingSES',
         'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
         'US::Verizon', 'RU::MailRu', 'RU::Yandex', 'DE::GMX', 'DE::EinsUndEins',
         'US::Zoho', 'US::Bigfoot', 'US::Facebook', 'UK::MessageLabs',
