@@ -24,7 +24,7 @@ Features | 主な機能
   * git clone
 * __High analytical precision__ | __高い解析精度__
   * Support 21 known MTAs and 4 unknown MTAs | 25種類のMTAに対応
-  * Support 18 major MSPs(Mail Service Providers) | 18種類の著名なMSPに対応
+  * Support 19 major MSPs(Mail Service Providers) | 19種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
   * Can detect 25 error reasons | 25種類のエラー理由を検出
 * __Faster than bounceHammer version 2.7.X__ | __bounceHammer 2.7.Xよりも高速に解析__
@@ -142,8 +142,8 @@ Sisimai.
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | Included      | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A(1)      |
-| Analytical precision ratio(1915 files) (2)     | 0.50          | 1.00        |
-| The speed of parsing email(1915 files)         | 5.79s         | 5.13s       |
+| Analytical precision ratio(2000 files) (2)     | 0.50          | 1.00        |
+| The speed of parsing email(2000 files)         | 7.07s         | 4.70s       |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
@@ -152,7 +152,7 @@ Sisimai.
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 7800 lines  |
-| The number of tests in t/ directory            | 27365 tests   | 147200 tests|
+| The number of tests in t/ directory            | 27365 tests   | 149300 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
 
@@ -168,8 +168,8 @@ Sisimai.
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(標準)  |
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(1)     |
-| 解析精度の割合(1915通)(2)                      | 0.50          | 1.00        |
-| メール解析の速度(1915通)                       | 5.79秒        | 5.13秒      |
+| 解析精度の割合(2000通)(2)                      | 0.50          | 1.00        |
+| メール解析速度(2000通)                         | 7.07秒        | 4.70秒      |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応    |
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
@@ -178,7 +178,7 @@ Sisimai.
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 7800行      |
-| テスト件数(t/ディレクトリ)                     | 27365件       | 147200件    |
+| テスト件数(t/ディレクトリ)                     | 27365件       | 149300件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
@@ -225,12 +225,13 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | MSP::RU::MailRu          | @mail.ru: https://mail.ru                         |
 | MSP::RU::Yandex          | Yandex.Mail: http://www.yandex.ru                 |
 | MSP::UK::MessageLabs     | Symantec.cloud http://www.messagelabs.com         |
-| MSP::US::AmazonSES       | AmazonSES: http://aws.amazon.com/ses/             |
+| MSP::US::AmazonSES       | AmazonSES(Sending): http://aws.amazon.com/ses/    |
 | MSP::US::Aol             | Aol Mail: http://www.aol.com                      |
 | MSP::US::Bigfoot         | Bigfoot: http://www.bigfoot.com                   |
 | MSP::US::Facebook        | Facebook: https://www.facebook.com                |
 | MSP::US::Google          | Google Gmail: https://mail.google.com             |
 | MSP::US::Outlook         | Microsoft Outlook.com: https://www.outlook.com/   |
+| MSP::US::ReceivingSES    | AmazonSES(Receiving): http://aws.amazon.com/ses/  |
 | MSP::US::SendGrid        | SendGrid: http://sendgrid.com/                    |
 | MSP::US::Verizon         | Verizon Wireless: http://www.verizonwireless.com  |
 | MSP::US::Yahoo           | Yahoo! MAIL: https://www.yahoo.com                |
