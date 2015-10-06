@@ -170,9 +170,9 @@ Sisimai::Reason::SpamDetected checks the bounce reason is C<rejected> due to
 Spam content in the message or not. This class is called only Sisimai::Reason 
 class.
 
-This is the error that the message you sent was rejected by spam filter running
-on the remote host. This reason has added in Sisimai 4.1.25 and does not exist
-in any version of bounceHammer.
+This is the error that the message you sent was rejected by C<spam> filter which
+is running on the remote host. This reason has added in Sisimai 4.1.25 and does
+not exist in any version of bounceHammer.
 
     Action: failed
     Status: 5.7.1

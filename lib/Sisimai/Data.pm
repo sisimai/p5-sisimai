@@ -470,7 +470,7 @@ address. Sisimai::Address object have the following accessors:
 =head2 C<alias> (I<String>)
 
 C<alias> is an alias address of the recipient. When the Original-Recipient: 
-field or C<expanded from 窶ｦ> string  did not exist in a bounce message, this 
+field or C<expanded from 腦駈拾> string  did not exist in a bounce message, this 
 value is empty.
 
     Original-Recipient: rfc822;kijitora@example.org
@@ -637,18 +637,18 @@ C<subject> is the value of Subject header of the original message. When the
 original message which is included in a bounce email contains no Subject header 
 (removed by remote MTA), this value will be empty. 
 If the value of Subject header of the original message contain any multibyte 
-character (non ASCII character), such as MIME encoded Japanese or German and so
+character (non-ASCII character), such as MIME encoded Japanese or German and so
 on, the value of subject in parsed data is encoded with UTF-8 again.
 
 =head2 C<token> (I<String>)
 
 C<token> is an identifier of each email-bounce. The token string is created from
 the sender email address (addresser) and the recipient email address (recipient)
-and the machine time of the date in a bounce message as an MD5 hash value. 
+and the machine time of the date in a bounce message as an MD5 hash value.
 The token value is generated at C<token()> method of L<Sisimai::String> class.
 
-If you want to get the same token string at command line, try to run the 
-following comand:
+If you want to get the same token string at command line, try to run the
+following command:
 
     % printf "\x02%s\x1e%s\x1e%d\x03" sender@example.jp recipient@example.org `date '+%s'` | md5
     714d72dfd972242ad04f8053267e7365

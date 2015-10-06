@@ -271,13 +271,12 @@ is C<5.6.*>.
 
 =item - Invalid MIME headers
 
-=over
+=back
 
     ... while talking to g5.example.net.:
     >>> DATA
     <<< 550 5.6.9 improper use of 8-bit data in message header
     554 5.0.0 Service unavailable
-
 
 =head2 C<exceedlimit>
 
@@ -369,11 +368,10 @@ if the value of Status: field in a bounce email is C<5.3.4>.
 
 =head2 C<notaccept>
 
-This is the error that a destination mail server does ( or can ) not accespt 
-any email. In many case, the server is high load or under the maintenance. 
-Sisimai will set C<notaccept> to the reason of email bounce if the value of
-Status: field in a bounce email is C<5.3.2> or the value of SMTP reply code is
-556.
+This is the error that a destination mail server does ( or can ) not accept any
+email. In many case, the server is high load or under the maintenance. Sisimai
+will set C<notaccept> to the reason of email bounce if the value of Status: 
+field in a bounce email is C<5.3.2> or the value of SMTP reply code is 556.
 
 =head2 C<onhold>
 
@@ -404,10 +402,10 @@ C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
 =head2 C<securityerror>
 
 This is the error that a security violation was detected on a destination mail 
-server. Depends on the security policy on the server, there is any viruse in the
-email, a sender's email address is phished. Sisimai will set C<securityerror> 
-to the reason of email bounce if the value of Status: field in a bounce email 
-is C<5.7.*>.
+server. Depends on the security policy on the server, there is any virus in the
+email, a sender's email address is camouflaged address. Sisimai will set 
+C<securityerror> to the reason of email bounce if the value of Status: field in
+a bounce email is C<5.7.*>.
 
     Status: 5.7.0
     Remote-MTA: DNS; gmail-smtp-in.l.google.com
@@ -431,9 +429,9 @@ exist in any version of bounceHammer.
 
 =head2 C<spamdetected>
 
-This is the error that the message you sent was rejected by spam filter running
-on the remote host. This reason has added in Sisimai 4.1.25 and does not exist
-in any version of bounceHammer.
+This is the error that the message you sent was rejected by C<spam> filter which
+is running on the remote host. This reason has added in Sisimai 4.1.25 and does
+not exist in any version of bounceHammer.
 
     Action: failed
     Status: 5.7.1
@@ -469,8 +467,8 @@ concurrency connections to the remote server. This reason has added in Sisimai
 This is the error that a local part (Left hand side of @ sign) of a recipient's
 email address does not exist. In many case, a user has changed internet service
 provider, or has quit company, or the local part is misspelled. Sisimai will set
-C<userunknown> to the resason of email bounce if the value of Status: field in 
-a bounce email is C<5.1.1>, or connection was refused at SMTP RCPT command, or
+C<userunknown> to the reason of email bounce if the value of Status: field in a
+bounce email is C<5.1.1>, or connection was refused at SMTP RCPT command, or
 the contents of Diagnostic-Code: field represents that it is unknown user.
 
     <kijitora@example.co.jp>: host mx01.example.co.jp[192.0.2.8] said:
@@ -480,13 +478,13 @@ the contents of Diagnostic-Code: field represents that it is unknown user.
 =head2 C<undefined>
 
 Sisimai could not detect the error reason. In many case, error message is 
-written in non English or there are no enough error message in a bounce email
+written in non-English or there are no enough error message in a bounce email
 to decide the reason.
 
 =head2 C<vacation>
 
 This is the reason that the recipient is out of office. The bounce message is 
-generated and returned from auto reponder program. This reason has added in 
+generated and returned from auto responder program. This reason has added in 
 Sisimai 4.1.28 and does not exist in any version of bounceHammer.
 
 =head1 SEE ALSO

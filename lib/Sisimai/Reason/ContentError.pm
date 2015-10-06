@@ -60,7 +60,7 @@ is C<5.6.*>.
 
 =item - Invalid MIME headers
 
-=over
+=back
 
     ... while talking to g5.example.net.:
     >>> DATA

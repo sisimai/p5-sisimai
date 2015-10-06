@@ -66,11 +66,10 @@ Sisimai::Reason::NotAccept - Bounce reason is C<notaccept> or not.
 Sisimai::Reason::NotAccept checks the bounce reason is C<notaccept> or not.
 This class is called only Sisimai::Reason class.
 
-This is the error that a destination mail server does ( or can ) not accespt 
-any email. In many case, the server is high load or under the maintenance. 
-Sisimai will set C<notaccept> to the reason of email bounce if the value of
-Status: field in a bounce email is C<5.3.2> or the value of SMTP reply code is
-556.
+This is the error that a destination mail server does ( or can ) not accept any
+email. In many case, the server is high load or under the maintenance.  Sisimai
+will set C<notaccept> to the reason of email bounce if the value of Status:
+field in a bounce email is C<5.3.2> or the value of SMTP reply code is 556.
 
 =head1 CLASS METHODS
 
