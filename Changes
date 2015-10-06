@@ -1,8 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.1.29  Tue,  6 Oct 2015
+4.1.29  Tue,  6 Oct 2015 10:55:00 +0900 (JST)
     - Issue #83, New MTA module implemented as "Sisimai::MSP::US::ReceivingSES".
       This module parse bounce mails from Amazon SES(Receiving).
+    - Improved code for getting and setting the value of Status: field.
     - Improved document in Sisimai::Data and Sisimai::Reason, imported from web
       site: http://libsisimai.org/ .
     - Added new sample email rfc3834-03.eml to test code for Sisimai::RFC3834.
