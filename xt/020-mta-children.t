@@ -406,6 +406,7 @@ my $R = {
         '01061' => qr/filtered/,
         '01062' => qr/filtered/,
         '01063' => qr/userunknown/,
+        '01064' => qr/userunknown/,
     },
     'Exim' => {
         '01001' => qr/securityerror/,
