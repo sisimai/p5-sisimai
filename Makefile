@@ -4,7 +4,7 @@
 # | |\/| |/ _` | |/ / _ \ |_| | |/ _ \
 # | |  | | (_| |   <  __/  _| | |  __/
 # |_|  |_|\__,_|_|\_\___|_| |_|_|\___|
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 SHELL := /bin/sh
 HERE  := $(shell pwd)
 TIME  := $(shell date '+%s')
@@ -23,6 +23,8 @@ RM    := rm -f
 MP    := /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 GIT   := /usr/bin/git
 
+.DEFAULT_GOAL = git-status
+BH_LATESTVER := 2.7.13
 EMAIL_PARSER := ./tmp/emparser
 EMAIL_SAMPLE := ./tmp/sample
 BENCHMARKDIR := ./tmp/benchmark
@@ -39,7 +41,26 @@ PRECISIONTAB := ./ANALYTICAL-PRECISION
 INDEX_LENGTH := 24
 DESCR_LENGTH := 48
 
+# -----------------------------------------------------------------------------
 .PHONY: clean
+cpanm:
+	$(WGET) $(CPANM) || $(CURL) $(CPANM)
+	test -f ./$@ && $(CHMOD) a+x ./$@
+
+install-from-cpan: cpanm
+	sudo ./cpanm $(NAME)
+
+install-from-local: cpanm
+	sudo ./cpanm .
+
+# -----------------------------------------------------------------------------
+#  _____                    _          __                  _                _   
+# |_   _|_ _ _ __ __ _  ___| |_ ___   / _| ___  _ __    __| | _____   _____| |  
+#   | |/ _` | '__/ _` |/ _ \ __/ __| | |_ / _ \| '__|  / _` |/ _ \ \ / / _ \ |  
+#   | | (_| | | | (_| |  __/ |_\__ \ |  _| (_) | |    | (_| |  __/\ V /  __/ |_ 
+#   |_|\__,_|_|  \__, |\___|\__|___/ |_|  \___/|_|     \__,_|\___| \_/ \___|_(_)
+#                |___/                                                          
+# -----------------------------------------------------------------------------
 test: user-test author-test
 user-test:
 	$(PROVE) t/
@@ -70,26 +91,11 @@ push:
 		$(GIT) push --tags $$v master; \
 	done
 
-cpanm:
-	$(WGET) $(CPANM) || $(CURL) $(CPANM)
-	test -f ./$@ && $(CHMOD) a+x ./$@
+git-status:
+	git status
 
-install-from-cpan: cpanm
-	sudo ./cpanm $(NAME)
-
-install-from-local: cpanm
-	sudo ./cpanm .
-
-# -----------------------------------------------------------------------------
-#  _____                    _          __                  _                _   
-# |_   _|_ _ _ __ __ _  ___| |_ ___   / _| ___  _ __    __| | _____   _____| |  
-#   | |/ _` | '__/ _` |/ _ \ __/ __| | |_ / _ \| '__|  / _` |/ _ \ \ / / _ \ |  
-#   | | (_| | | | (_| |  __/ |_\__ \ |  _| (_) | |    | (_| |  __/\ V /  __/ |_ 
-#   |_|\__,_|_|  \__, |\___|\__|___/ |_|  \___/|_|     \__,_|\___| \_/ \___|_(_)
-#                |___/                                                          
-# -----------------------------------------------------------------------------
 precision-table:
-	@ printf " %s\n" 'bounceHammer 2.7.13'
+	@ printf " %s\n" 'bounceHammer $(BH_LATESTVER)'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
 	@ printf "%s\n" '-------------------------------------------------------------------------------'
 	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v 'UserDefined'`; do \
@@ -162,7 +168,7 @@ update-analytical-precision-table: sample
 				sisimai_cmd | getline sisimai_ver; \
 				close(sisimai_cmd); \
 				printf(" %s %4d/%04d  %0.4f\n %s %s %9s %4d/%04d  %0.4f\n", \
-					"bounceHammer 2.7.13     ", x, y, x / y, \
+					"bounceHammer $(BH_LATESTVER)     ", x, y, x / y, \
 					"Sisimai", sisimai_ver, " ", y, y, 1 ); \
 			} ' \
 			>> $(PRECISIONTAB)
