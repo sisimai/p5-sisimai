@@ -15,19 +15,21 @@ Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析�
 "シシマイ"はbounceHammer version 4として開発していたものであり、Version 4なので
 "シ"から始まりマイ(MAI: Mail Analyzing Interface)を含む名前になりました。
 
-Features | 主な機能
--------------------
-* __Convert bounce mails to structured data__ | __エラーメールをデータ構造に変換__
-  * Supported formats are Perl, JSON | Perlのデータ形式とJSONに対応
-* __Easy to install, use.__ | __インストールも使用も簡単__
+Key Features | 主な特徴的機能
+-----------------------------
+* __Convert Bounce Mails to Structured Data__ | __エラーメールをデータ構造に変換__
+  * Supported formats are Perl and JSON | Perlのデータ形式とJSONに対応
+* __Easy to Install, Use.__ | __インストールも使用も簡単__
   * cpanm
-  * git clone
-* __High analytical precision__ | __高い解析精度__
+  * git clone & make
+* __High Precision of Analysis__ | __高い解析精度__
+  * 2 times higher than bounceHammer | 解析精度はbounceHammerの二倍
   * Support 21 known MTAs and 4 unknown MTAs | 25種類のMTAに対応
   * Support 19 major MSPs(Mail Service Providers) | 19種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
   * Can detect 25 error reasons | 25種類のエラー理由を検出
 * __Faster than bounceHammer version 2.7.X__ | __bounceHammer 2.7.Xよりも高速に解析__
+  * About 1.5 times faster | 1.5倍程高速
 
 
 Setting Up Sisimai | シシマイを使う準備
@@ -48,24 +50,27 @@ Install | インストール
 
 ### From CPAN
 
-    % sudo cpanm Sisimai
-    --> Working on Sisimai
-    Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.1.20.tar.gz ... OK
-    ...
-    1 distribution installed
-    % perldoc -l Sisimai
-    /usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
+```shell
+% sudo cpanm Sisimai
+--> Working on Sisimai
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.1.20.tar.gz ... OK
+...
+1 distribution installed
+% perldoc -l Sisimai
+/usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
+```
 
 ### From GitHub
 
-    % cd /usr/local/src
-    % git clone https://github.com/azumakuniyuki/p5-Sisimai.git
-    % cd ./p5-Sisimai
-    % sudo make install-from-local
-    --> Working on .
-    Configuring Sisimai-4.1.20 ... OK
-    1 distribution installed
-
+```shell
+% cd /usr/local/src
+% git clone https://github.com/azumakuniyuki/p5-Sisimai.git
+% cd ./p5-Sisimai
+% sudo make install-from-local
+--> Working on .
+Configuring Sisimai-4.1.20 ... OK
+1 distribution installed
+```
 
 Usage | 使い方
 ==============
@@ -119,7 +124,7 @@ One-Liner | ワンライナーで
 Beginning with Sisimai 4.1.27, dump() method is available and you can get parsed
 data as JSON using the method.
 
-```
+```shell
 % perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
 
@@ -132,8 +137,8 @@ Sisimai Specification | シシマイの仕様
 
 Differences between ver.2 and Sisimai | 新旧の違い
 --------------------------------------------------
-The followings are the differences between version 2 (bounceHammer 2.7.13) and
-Sisimai.
+The following table show the differences between version 2 (bounceHammer 2.7.13)
+and Sisimai.
 
 | Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
@@ -141,8 +146,8 @@ Sisimai.
 | Command line tools                             | Available     | N/A         |
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | Included      | N/A         |
-| Database schema for storing parsed bounce data | Available     | N/A(1)      |
-| Analytical precision ratio(2000 files) (2)     | 0.50          | 1.00        |
+| Database schema for storing parsed bounce data | Available     | N/A[1]      |
+| Analytical precision ratio(2000 files)[2]      | 0.50          | 1.00        |
 | The speed of parsing email(2000 files)         | 7.07s         | 4.70s       |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
@@ -165,15 +170,15 @@ Sisimai.
 |------------------------------------------------|---------------|-------------|
 | 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.22 |
 | コマンドラインツール                           | あり          | 無し        |
-| 商用MTAとMSP対応解析モジュール                 | 無し          | あり(標準)  |
+| 商用MTAとMSP対応解析モジュール                 | 無し          | あり(同梱)  |
 | WebUIとAPI                                     | あり          | 無し        |
-| 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し(1)     |
-| 解析精度の割合(2000通)(2)                      | 0.50          | 1.00        |
+| 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し[1]     |
+| 解析精度の割合(2000通)[2]                      | 0.50          | 1.00        |
 | メール解析速度(2000通)                         | 7.07秒        | 4.70秒      |
-| 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件対応    |
+| 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件解析可能|
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
-| 解析結果の出力形式                             | YAML,JSON,CSV | JSONのみ    |
+| 解析結果の出力形式                             | YAML,JSON,CSV | JSON        |
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
