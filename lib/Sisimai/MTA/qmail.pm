@@ -18,7 +18,7 @@ my $RxMTA = {
     'error'    => qr/\ARemote host said:/,
     'sorry'    => qr/\A[Ss]orry[,.][ ]/,
     'subject'  => qr/\Afailure notice/,
-    'received' => qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+for[ ]+bounce[)]/,
+    'received' => qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+(?:for[ ]+bounce|from[ ]+network)[)]/,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
@@ -142,7 +142,7 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.1.0' }
+sub version     { '4.1.1' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
