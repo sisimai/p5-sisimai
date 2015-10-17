@@ -14,6 +14,7 @@ sub is_mimeencoded {
 
     return undef unless ref $argvs;
     return undef unless ref $argvs eq 'SCALAR';
+    $$argvs =~ y/"//d;
 
     return 1 if $$argvs =~ m{[\s\t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=\s*\z};
     return 0;
@@ -37,8 +38,10 @@ sub mimedecode {
     my $utf8decoded1 = '';
 
     for my $e ( @$argvs ) {
+        # Check and decode each element
         $e =~ s/\A\s+//g;
         $e =~ s/\s+\z//g;
+        $e =~ y/"//d;
 
         if( __PACKAGE__->is_mimeencoded( \$e ) ) {
             # MIME Encoded string
