@@ -892,6 +892,9 @@ my $R = {
         '01019' => qr/filtered/,
         '01020' => qr/mailboxfull/,
     },
+    'X5' => {
+        '01001' => qr/userunknown/,
+    },
 };
 
 for my $x ( keys %$R ) {
