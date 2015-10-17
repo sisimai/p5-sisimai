@@ -63,6 +63,7 @@ sub list {
             MTA/X2.pm
             MTA/X3.pm
             MTA/X4.pm
+            MTA/X5.pm
         Reason.pm
             Reason/Blocked.pm
             Reason/ContentError.pm
