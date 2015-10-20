@@ -215,6 +215,9 @@ my $R = {
         '06' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
         '07' => { 'status' => qr/\A4[.]4[.]1\z/, 'reason' => qr/networkerror/ },
     },
+    'X5' => {
+        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+    }
 };
 
 for my $x ( keys %$R ) {
