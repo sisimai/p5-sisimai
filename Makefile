@@ -94,6 +94,29 @@ push:
 git-status:
 	git status
 
+private-sample:
+	@test -n "$(E)" || ( echo 'Usage: make $@ E=/path/to/email' && exit 1 )
+	test -f $(E)
+	$(EMAIL_PARSER) $(E)
+	@echo
+	@while true; do \
+		d=`$(EMAIL_PARSER) -Fjson ./$(E) | jq -M '.[].smtpagent' | tr '[A-Z]' '[a-z]' \
+			| sed -e 's/"//g' -e 's/::/-/g'`; \
+		if [ -d "$(FOR_EMPARSER)/$$d" ]; then \
+			latestfile=`ls -1 $(FOR_EMPARSER)/$$d/*.eml | tail -1`; \
+			curr_index=`basename $$latestfile | cut -d'-' -f1`; \
+			next_index=`echo $$curr_index + 1 | bc`; \
+		else \
+			$(MAKEDIR) $(FOR_EMPARSER)/$$d; \
+			next_index=1001; \
+		fi; \
+		hash_value=`md5 -q $(E)`; \
+		printf "[%05d] %s %s\n" $$next_index $$hash_value \
+			`$(EMAIL_PARSER) -Fjson ./$(SAMPLE) | jq -M '.[].reason'`; \
+		mv -v $(E) $(FOR_EMPARSER)/$$d/0$${next_index}-$${hash_value}.eml; \
+		break; \
+	done
+
 precision-table:
 	@ printf " %s\n" 'bounceHammer $(BH_LATESTVER)'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
