@@ -1,5 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.Y.Z
+    - Issue #84, Experimental implementation: New module Sisimai::MTA::X5 and
+      added a sample email(x5-01.eml) for the module. Thanks to Masayoshi.M .
+
 4.1.29  Tue,  6 Oct 2015 10:55:00 +0900 (JST)
     - Issue #83, New MTA module implemented as "Sisimai::MSP::US::ReceivingSES".
       This module parse bounce mails from Amazon SES(Receiving).
