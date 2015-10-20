@@ -341,6 +341,9 @@ my $R = {
         '01144' => qr/suspend/,
         '01145' => qr/filtered/,
         '01146' => qr/userunknown/,
+        '01147' => qr/userunknown/,
+        '01148' => qr/userunknown/,
+        '01149' => qr/mailboxfull/,
     },
     'qmail' => {
         '01001' => qr/filtered/,
