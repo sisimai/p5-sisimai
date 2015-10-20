@@ -24,7 +24,7 @@ Key Features | 主な特徴的機能
   * git clone & make
 * __High Precision of Analysis__ | __高い解析精度__
   * 2 times higher than bounceHammer | 解析精度はbounceHammerの二倍
-  * Support 21 known MTAs and 4 unknown MTAs | 25種類のMTAに対応
+  * Support 21 known MTAs and 5 unknown MTAs | 26種類のMTAに対応
   * Support 19 major MSPs(Mail Service Providers) | 19種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
   * Can detect 25 error reasons | 25種類のエラー理由を検出
@@ -222,6 +222,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | MTA::X2                  | Unknown MTA #2                                    |
 | MTA::X3                  | Unknown MTA #3                                    |
 | MTA::X4                  | Unknown MTA #4 qmail clones(> v4.1.23)            |
+| MTA::X5                  | Unknown MTA #5 (> v4.11.0)                        |
 | MSP::DE::EinsUndEins     | 1&1: http://www.1and1.de                          |
 | MSP::DE::GMX             | GMX: http://www.gmx.net                           |
 | MSP::JP::Biglobe         | BIGLOBE: http://www.biglobe.ne.jp                 |
