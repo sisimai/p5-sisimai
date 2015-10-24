@@ -156,8 +156,8 @@ and Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 7800 lines  |
-| The number of tests in t/ directory            | 27365 tests   | 149300 tests|
+| LOC:Source lines of code                       | 18200 lines   | 7900 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 149800 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Coming soon |
 
@@ -182,8 +182,8 @@ and Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 7800行      |
-| テスト件数(t/ディレクトリ)                     | 27365件       | 149300件    |
+| LOC:ソースコードの行数                         | 18200行       | 7900行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 149800件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 準備中      |
 
@@ -222,7 +222,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | MTA::X2                  | Unknown MTA #2                                    |
 | MTA::X3                  | Unknown MTA #3                                    |
 | MTA::X4                  | Unknown MTA #4 qmail clones(> v4.1.23)            |
-| MTA::X5                  | Unknown MTA #5 (> v4.11.0)                        |
+| MTA::X5                  | Unknown MTA #5 (> v4.Y.Z )                        |
 | MSP::DE::EinsUndEins     | 1&1: http://www.1and1.de                          |
 | MSP::DE::GMX             | GMX: http://www.gmx.net                           |
 | MSP::JP::Biglobe         | BIGLOBE: http://www.biglobe.ne.jp                 |
@@ -280,8 +280,7 @@ page.
 | SystemFull     | Disk full on the destination host      | 宛先サーバのディスクが一杯       |
 | TooManyConn    | Connection rate limit exceeded         | 接続制限数を超過した             |
 | UserUnknown    | Recipient's address does not exist     | 宛先メールアドレスは存在しない   |
-| Vacation       | Auto replied message such as vacation  | 自動応答メッセージ(vacationなど) |
-|                | (implemented at v4.1.28)               | (v4.1.28から実装)                |
+| Vacation       | Auto replied message (> v4.1.28 )      | 自動応答メッセージ(> v4.1.28 )   |
 | Undefined      | Could not decide the error reason      | バウンスした理由は特定出来ず     |
 
 Sisimaiは上記のエラー25種を検出します。
@@ -356,8 +355,7 @@ AUTHOR | 作者
 
 COPYRIGHT | 著作権
 ------------------
-Copyright (C) 2014-2015 azumakuniyuki <perl.org@azumakuniyuki.org>,
-All Rights Reserved.
+Copyright (C) 2014-2015 azumakuniyuki, All Rights Reserved.
 
 LICENSE | ライセンス
 --------------------
