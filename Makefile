@@ -94,6 +94,9 @@ push:
 git-status:
 	git status
 
+fix-commit-message:
+	git commit --amend
+
 private-sample:
 	@test -n "$(E)" || ( echo 'Usage: make $@ E=/path/to/email' && exit 1 )
 	test -f $(E)
