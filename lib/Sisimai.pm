@@ -10,10 +10,10 @@ sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
 
 sub make {
-    # @Description  Wrapper method for parsing mailbox/maidir
-    # @Param <str>  (String) Path to mbox or Maildir/
-    # @Return       (Ref->Array) Parsed objects
-    #               (undef) Undef if the argument was wrong or an empty array
+    # Wrapper method for parsing mailbox or Maildir/
+    # @param    [String] argvs  Path to mbox or Maildir/
+    # @return   [Array]         Parsed objects
+    # @return   [Undef]         Undef if the argument was wrong or an empty array
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -41,9 +41,9 @@ sub make {
 }
 
 sub dump {
-    # @Description  Wrapper method to parse mailbox/maidir and dump as JSON
-    # @Param <str>  (String) Path to mbox or Maildir/
-    # @Return       (String) JSON text
+    # Wrapper method to parse mailbox/Maildir and dump as JSON
+    # @param    [String] path   Path to mbox or Maildir/
+    # @return   [String]        Parsed data as JSON text
     my $class = shift;
     my $argv0 = shift // return undef;
 
