@@ -6,19 +6,19 @@ use Class::Accessor::Lite;
 use Sisimai::RFC5322;
 
 my $roaccessors = [
-    'address',  # (String) Email address
-    'user',     # (String) local part of the email address
-    'host',     # (String) domain part of the email address
-    'verp',     # (String) VERP
-    'alias',    # (String) alias of the email address
+    'address',  # [String] Email address
+    'user',     # [String] local part of the email address
+    'host',     # [String] domain part of the email address
+    'verp',     # [String] VERP
+    'alias',    # [String] alias of the email address
 ];
 Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub undisclosed { 
-    # @Description  Return pseudo recipient or sender address
-    # @Param <str>  (String) 'r' or 's'
-    # @Return       (String) Pseudo recipient address or sender address
-    #               (undef) Undef when the $argvs is neither 'r' nor 's'
+    # Return pseudo recipient or sender address
+    # @param    [String] type   'r' or 's'
+    # @return   [String]        Pseudo recipient address or sender address
+    # @return   [Undef]         Undef when the $argvs is neither 'r' nor 's'
     my $class = shift;
     my $argvs = shift || return undef;
     my $local = '';
@@ -29,10 +29,10 @@ sub undisclosed {
 }
 
 sub new {
-    # @Description  Constructor of Sisimai::Address
-    # @Param <str>  (String) Email address
-    # @Return       (Sisimai::Address) Object
-    #               (undef) Undef when the email address was not valid.
+    # Constructor of Sisimai::Address
+    # @param <str>  [String] email      Email address
+    # @return       [Sisimai::Address]  Object
+    # @return       [Undef]             Undef when the email address was not valid.
     my $class = shift;
     my $email = shift // return undef;
     my $argvs = { 'address' => '', 'user' => '', 'host' => '', 'verp' => '', 'alias' => '' };
@@ -84,10 +84,10 @@ sub new {
 }
 
 sub parse {
-    # @Description  Email address parser
-    # @Param <ref>  (Ref->Array) [ String including email address ]
-    # @Return       (Ref->Array) Email address list
-    #               (undef) Undef when there is no email address in the argument
+    # Email address parser
+    # @param    [Array] email   String including email address
+    # @return   [Array]         Email address list
+    # @return   [Undef]         Undef when there is no email address in the argument
     my $class = shift;
     my $argvs = shift // return undef;
     my $email = undef;
@@ -115,9 +115,9 @@ sub parse {
 }
 
 sub s3s4 {
-    # @Description  Ruleset 3, and 4 of sendmail.cf
-    # @Param <str>  (String) Text including an email address
-    # @Return       (String) Email address without comment, brackets
+    # Runs like ruleset 3,4 of sendmail.cf
+    # @param    [String] email  Text including an email address
+    # @return   [String]        Email address without comment, brackets
     my $class = shift;
     my $input = shift // return undef;
 
@@ -172,9 +172,9 @@ sub s3s4 {
 }
 
 sub expand_verp {
-    # @Description  Expand VERP: Get the original recipient address from VERP
-    # @Param        (String) VERP
-    # @Return       (String) Email address
+    # Expand VERP: Get the original recipient address from VERP
+    # @param    [String] verp   VERP Address
+    # @return   [String]        Email address
     my $class = shift;
     my $email = shift // return undef;
     my $local = (split( '@', $email, 2 ) )[0];
@@ -190,14 +190,15 @@ sub expand_verp {
 }
 
 sub expand_alias {
-    # @Description  Expand alias: remove from '+' to '@'
-    # @Param        (String) Email address
-    # @Return       (String) Expanded email address
+    # Expand alias: remove from '+' to '@'
+    # @param    [String] email  Email alias string
+    # @return   [String]        Expanded email address
     my $class = shift;
     my $email = shift // return undef;
     my $alias = '';
 
     return '' unless Sisimai::RFC5322->is_emailaddress( $email );
+
     my @local = split( '@', $email );
     if( $local[0] =~ m/\A([-_\w]+?)[+].+\z/ ) {
         $alias = sprintf( "%s@%s", $1, $local[1] );
@@ -206,9 +207,8 @@ sub expand_alias {
 }
 
 sub TO_JSON {
-    # @Description  Instance method for JSON::encode()
-    # @Param        None
-    # @Return       (String) The value of "address" accessor
+    # Instance method for JSON::encode()
+    # @return   [String] The value of "address" accessor
     my $self = shift;
     return $self->address;
 }
