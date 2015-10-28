@@ -16,7 +16,7 @@ MTA::McAfee .............    0/0010  0.0000  McAfee Email Appliance
 MTA::MessagingServer ....   18/0021  1.0000  Oracle Communications Messaging Server
 MTA::Notes ..............    0/0010  0.0000  Lotus Notes
 MTA::OpenSMTPD ..........    5/0023  0.2778  OpenSMTPD
-MTA::Postfix ............  158/0175  1.0000  Postfix
+MTA::Postfix ............  161/0178  1.0000  Postfix
 MTA::Sendmail ...........  239/0224  0.9835  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    6/0008  1.0000  WebSense SurfControl
 MTA::V5sendmail .........    0/0377  0.0000  Sendmail version 5
@@ -24,8 +24,9 @@ MTA::X1 .................    0/0007  0.0000  Unknown MTA #1
 MTA::X2 .................    0/0045  0.0000  Unknown MTA #2
 MTA::X3 .................    0/0008  0.0000  Unknown MTA #3
 MTA::X4 .................    0/0027  0.0000  Unknown MTA #4 qmail clones
+MTA::X5 .................    2/0002  1.0000  Unknown MTA #5
 MTA::mFILTER ............    0/0009  0.0000  Digital Arts m-FILTER
-MTA::qmail ..............   50/0075  0.8197  qmail
+MTA::qmail ..............   50/0076  0.8065  qmail
 MSP::DE::EinsUndEins ....    0/0003  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0010  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
@@ -39,7 +40,7 @@ MSP::US::Aol ............    9/0012  1.0000  Aol Mail: http://www.aol.com
 MSP::US::Bigfoot ........    2/0002  1.0000  Bigfoot: http://www.bigfoot.com
 MSP::US::Facebook .......    3/0003  1.0000  Facebook: https://www.facebook.com
 MSP::US::Google .........   52/0057  1.0000  Google Gmail: https://mail.google.com
-MSP::US::Outlook ........   32/0038  1.0000  Microsoft Outlook.com: https://www.outlook.com/
+MSP::US::Outlook ........   29/0035  1.0000  Microsoft Outlook.com: https://www.outlook.com/
 MSP::US::ReceivingSES ...    0/0007  0.0000  AmazonSES(Receiving): http://aws.amazon.com/ses/
 MSP::US::SendGrid .......    0/0012  0.0000  SendGrid: http://sendgrid.com/
 MSP::US::Verizon ........    2/0002  1.0000  Verizon Wireless: http://www.verizonwireless.com
@@ -49,5 +50,5 @@ ARF .....................    9/0050  0.2812  Abuse Feedback Reporting Format
 RFC3464 .................  124/0269  0.4901  Fallback Module for MTAs
 RFC3834 .................    0/0004  0.0000  Detector for auto replied message
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13       972/1940  0.5010
- Sisimai 4.1.29           1940/1940  1.0000
+ bounceHammer 2.7.13       974/1943  0.5013
+ Sisimai 4.13.0           1943/1943  1.0000
