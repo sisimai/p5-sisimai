@@ -1,6 +1,7 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.Y.Z
+4.13.0  Thu,  5 Nov 2015
+    - Issue #85, Use Semantic Versioning from this release. 
     - Issue #84, Experimental implementation: New module Sisimai::MTA::X5 and
       added a sample email(x5-01.eml) for the module. Thanks to Masayoshi.M .
 
