@@ -43,6 +43,12 @@ Sisimai::MTA::InterScanMSS
   * mailman-2.1.15/tests/bounces/simple_15.txt
   * Copyright (C) 1989, 1991 Free Software Foundation, Inc. | GPLv2
 
+Sisimai::MTA::Notes
+-------------------
+* notes-04.eml
+  * [msg00154.html](http://osdir.com/ml/org.telecom.india-gii/2003-02/msg00154.html)
+  * Copyrighted (c) 2000-2015, but we're happy to let you use what you wish with attribution. OSDir.com
+
 Sisimai::MTA::Postfix
 ---------------------
 * postfix-18.eml
