@@ -19,7 +19,6 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { '1&1: http://www.1and1.de' }
 sub smtpagent   { 'DE::EinsUndEins' }
 
@@ -174,12 +173,6 @@ Sisimai::MSP::DE::EinsUndEins parses a bounce email which created by C<1&1>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::DE::EinsUndEins->version;
 
 =head2 C<B<description()>>
 

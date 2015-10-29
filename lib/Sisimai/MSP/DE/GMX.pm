@@ -18,7 +18,6 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'GMX: http://www.gmx.net' }
 sub smtpagent   { 'DE::GMX' }
 sub headerlist  {
@@ -202,12 +201,6 @@ Sisimai::MSP::DE::GMX parses a bounce email which created by C<GMX>. Methods in
 the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::DE::GMX->version;
 
 =head2 C<B<description()>>
 

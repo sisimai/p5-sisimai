@@ -18,7 +18,6 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Aol Mail: http://www.aol.com' }
 sub smtpagent   { 'US::Aol' }
 sub headerlist  { 
@@ -223,12 +222,6 @@ Sisimai::MSP::US::Aol parses a bounce email which created by C<Aol Mail>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::US::Aol->version;
 
 =head2 C<B<description()>>
 

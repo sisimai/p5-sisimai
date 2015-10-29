@@ -15,7 +15,6 @@ my $RxMSP = {
     },
 };
 
-sub version     { '4.1.0' }
 sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub smtpagent   { 'US::Verizon' }
 
@@ -305,12 +304,6 @@ Sisimai::MSP::US::Verizon parses a bounce email which created by C<Verizon
 Wireless>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::US::Verizon->version;
 
 =head2 C<B<description()>>
 

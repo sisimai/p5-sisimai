@@ -11,7 +11,6 @@ my $RxMSP = {
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Yandex.Mail: http://www.yandex.ru' }
 sub smtpagent   { 'RU::Yandex' }
 sub headerlist  { 
@@ -226,12 +225,6 @@ Sisimai::MSP::RU::Yandex parses a bounce email which created by C<Yandex.Mail>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::RU::Yandex->version;
 
 =head2 C<B<description()>>
 

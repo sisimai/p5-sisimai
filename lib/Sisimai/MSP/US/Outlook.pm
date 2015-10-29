@@ -19,7 +19,6 @@ my $RxErr = {
     'userunknown' => qr/Requested action not taken: mailbox unavailable/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Microsoft Outlook.com: https://www.outlook.com/' }
 sub smtpagent   { 'US::Outlook' }
 sub headerlist  { return [ 'X-Message-Delivery', 'X-Message-Info' ] }
@@ -229,12 +228,6 @@ Sisimai::MSP::US::Outlook parses a bounce email which created by C<Microsoft
 Outlook.com>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::US::Outlook->version;
 
 =head2 C<B<description()>>
 

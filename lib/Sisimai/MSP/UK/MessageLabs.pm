@@ -17,7 +17,6 @@ my $RxErr = {
     'userunknown' => qr/No[ ]such[ ]user/x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
 sub smtpagent   { 'UK::MessageLabs' }
 sub headerlist  { return [ 'X-Msg-Ref', 'X-Originating-IP' ] }
@@ -231,12 +230,6 @@ Symantec.cloud: formerly MessageLabs. Methods in the module are called from only
 Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::UK::MessageLabs->version;
 
 =head2 C<B<description()>>
 

@@ -17,7 +17,6 @@ my $RxErr = {
     'expired' => qr/Delivery[ ]expired/x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'AmazonSES(Sending): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::AmazonSES' }
 sub headerlist  { return [ 'X-AWS-Outgoing' ] }
@@ -241,12 +240,6 @@ Simple Email Service>. Methods in the module are called from only
 Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::US::AmazonSES->version;
 
 =head2 C<B<description()>>
 

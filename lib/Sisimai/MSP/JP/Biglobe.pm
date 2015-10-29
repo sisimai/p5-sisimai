@@ -27,7 +27,6 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
 sub smtpagent   { 'JP::Biglobe' }
 
@@ -189,12 +188,6 @@ Sisimai::MSP::JP::Biglobe parses a bounce email which created by C<BIGLOBE>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::JP::Biglobe->version;
 
 =head2 C<B<description()>>
 

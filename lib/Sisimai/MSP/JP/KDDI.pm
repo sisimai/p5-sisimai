@@ -31,7 +31,6 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
 
@@ -198,12 +197,6 @@ Sisimai::MSP::JP::KDDI parses a bounce email which created by C<au by KDDI>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::JP::KDDI->version;
 
 =head2 C<B<description()>>
 

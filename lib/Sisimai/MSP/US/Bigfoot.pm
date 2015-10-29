@@ -13,7 +13,6 @@ my $RxMSP = {
     'received'=> qr/\w+[.]bigfoot[.]com\b/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub smtpagent   { 'US::Bigfoot' }
 
@@ -229,12 +228,6 @@ Sisimai::MSP::US::Bigfoot parses a bounce email which created by C<Bigfoot>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::US::Bigfoot->version;
 
 =head2 C<B<description()>>
 

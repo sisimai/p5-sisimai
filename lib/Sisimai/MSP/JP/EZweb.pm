@@ -47,7 +47,6 @@ my $RxErr = {
     ],
 };
 
-sub version     { '4.1.0' }
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
@@ -288,12 +287,6 @@ Sisimai::MSP::JP::EZweb parses a bounce email which created by C<au EZweb>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::JP::EZweb->version;
 
 =head2 C<B<description()>>
 

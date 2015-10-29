@@ -21,7 +21,6 @@ my $RxErr = {
     'contenterror'  => qr/Message content rejected/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'AmazonSES(Receiving): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::ReceivingSES' }
 sub headerlist  { return [ 'X-SES-Outgoing', 'Feedback-ID' ] }
@@ -244,12 +243,6 @@ Simple Email Service>. Methods in the module are called from only
 Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::US::ReceivingSES->version;
 
 =head2 C<B<description()>>
 

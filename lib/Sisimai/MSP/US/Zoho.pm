@@ -21,7 +21,6 @@ my $RxSess = {
     'expired' => qr/Host not reachable/
 };
 
-sub version     { '4.1.0' }
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub smtpagent   { 'US::Zoho' }
 sub headerlist  { 
@@ -197,12 +196,6 @@ Sisimai::MSP::US::Zoho parses a bounce email which created by C<Zoho! MAIL>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MSP::US::Zoho->version;
 
 =head2 C<B<description()>>
 
