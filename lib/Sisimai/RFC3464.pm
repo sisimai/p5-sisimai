@@ -44,7 +44,6 @@ my $RxEMS = qr{(?>                                          # Subject:
     )
 }xi;
 
-sub version     { '4.0.26' };
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
@@ -492,12 +491,6 @@ Sisimai::RFC3464 is a class which called from called from only Sisimai::Message
 when other Sisimai::MTA::* modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::RFC3464->version;
 
 =head2 C<B<description()>>
 
