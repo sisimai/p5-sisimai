@@ -37,7 +37,6 @@ my $RxARF1 = {
     'subject'      => qr/complaint[ ]about[ ]message[ ]from[ ]/,
 };
 
-sub version     { return '4.0.13' }
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 
