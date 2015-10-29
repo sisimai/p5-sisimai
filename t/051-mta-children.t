@@ -8,7 +8,7 @@ use Module::Load;
 
 my $MethodNames = {
     'class' => [ 
-        'version', 'description', 'headerlist', 'scan',
+        'description', 'headerlist', 'scan',
         'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS',
     ],
     'object' => [],
@@ -232,7 +232,6 @@ for my $x ( keys %$R ) {
     can_ok $M, @{ $MethodNames->{'class'} };
 
     MAKE_TEST: {
-        $v = $M->version;     ok $v, $x.'->version = '.$v;
         $v = $M->description; ok $v, $x.'->description = '.$v;
         $v = $M->smtpagent;   ok $v, $x.'->smtpagent = '.$v;
 

@@ -72,7 +72,6 @@ for my $x ( keys %$R ) {
     use_ok $M;
 
     MAKE_TEST: {
-        $v = $M->version;     ok $v, $x.'->version = '.$v;
         $v = $M->description; ok $v, $x.'->description = '.$v;
 
         $M->scan, undef, $M.'->scan = undef';
