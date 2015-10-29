@@ -26,7 +26,6 @@ my $RxExcluding = {
     'to'      => qr/root[@]/,
 };
 
-sub version     { '4.0.0' };
 sub description { 'Detector for auto replied message' };
 sub smtpagent   { 'RFC3834' };
 sub headerlist  {
@@ -159,12 +158,6 @@ Sisimai::RFC3834 is a class which called from called from only Sisimai::Message
 when other Sisimai::MTA::* modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::RFC3834->version;
 
 =head2 C<B<description()>>
 
