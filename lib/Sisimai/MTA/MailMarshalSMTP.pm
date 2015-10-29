@@ -13,7 +13,6 @@ my $RxMTA = {
     'subject'  => qr/\AUndeliverable Mail: ["]/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Trustwave Secure Email Gateway' }
 sub smtpagent   { 'MailMarshalSMTP' }
 sub headerlist  { return [ 'X-Mailer' ] }
@@ -199,12 +198,6 @@ C<Trustwave> Secure Email Gateway: formerly MailMarshal SMTP. Methods in the
 module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::MailMarshalSMTP->version;
 
 =head2 C<B<description()>>
 

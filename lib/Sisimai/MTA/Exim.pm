@@ -108,7 +108,6 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -341,12 +340,6 @@ Sisimai::MTA::Exim parses a bounce email which created by C<Exim>. Methods in
 the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::Exim->version;
 
 =head2 C<B<description()>>
 

@@ -142,7 +142,6 @@ my $RxLDAP = {
 # userunknown + expired
 my $RxOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-sub version     { '4.1.1' }
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
 
@@ -353,12 +352,6 @@ Sisimai::MTA::qmail parses a bounce email which created by C<qmail>. Methods in
 the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::qmail->version;
 
 =head2 C<B<description()>>
 

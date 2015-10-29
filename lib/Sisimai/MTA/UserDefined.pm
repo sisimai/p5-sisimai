@@ -13,7 +13,6 @@ my $RxMTA = {
     'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
 };
 
-sub version     { '0.0.0' }
 sub description { 'Module decription' }
 sub smtpagent   { 'Module name' }
 sub headerlist  { return [ 'X-Some-UserDefined-Header' ] }
@@ -109,12 +108,6 @@ Sisimai::MTA::UserDefined is an example module as a template to implement your
 custom MTA module.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Your::Custom::MTA::Module->version;
 
 =head2 C<B<description()>>
 

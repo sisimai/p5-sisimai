@@ -20,7 +20,6 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Lotus Notes' }
 sub smtpagent   { 'Notes' }
 
@@ -199,12 +198,6 @@ Sisimai::MTA::Notes parses a bounce email which created by C<Lotus Notes
 Server>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::Notes->version;
 
 =head2 C<B<description()>>
 

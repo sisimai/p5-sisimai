@@ -15,7 +15,6 @@ my $RxMTA = {
     'x-mailer' => qr/\Am-FILTER\z/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Digital Arts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
 sub headerlist  { return [ 'X-Mailer' ] }
@@ -189,12 +188,6 @@ Sisimai::MTA::mFILTER parses a bounce email which created by C<Digital Arts
 m-FILTER>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::mFILTER->version;
 
 =head2 C<B<description()>>
 

@@ -20,7 +20,6 @@ my $RxMTA = {
     ],
 };
 
-sub version     { '4.1.0' }
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
 sub smtpagent   { 'InterScanMSS' }
 
@@ -166,12 +165,6 @@ InterScan Messaging Security Suite>. Methods in the module are called from only
 Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::InterScanMSS->version;
 
 =head2 C<B<description()>>
 

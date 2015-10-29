@@ -33,7 +33,6 @@ my $RxMTA = {
     'subject' => qr/\AReturned mail: [A-Z]/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Sendmail version 5' }
 sub smtpagent   { 'V5sendmail' }
 
@@ -230,12 +229,6 @@ Sisimai::MTA::V5sendmail parses a bounce email which created by C<Sendmail
 version 5>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::V5sendmail->version;
 
 =head2 C<B<description()>>
 

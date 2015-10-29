@@ -28,7 +28,6 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'IBM Domino Server' }
 sub smtpagent   { 'Domino' }
 
@@ -203,12 +202,6 @@ Sisimai::MTA::Domino parses a bounce email which created by IBM Domino Server.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::Domino->version;
 
 =head2 C<B<description()>>
 

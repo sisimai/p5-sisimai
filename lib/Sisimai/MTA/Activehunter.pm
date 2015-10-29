@@ -13,7 +13,6 @@ my $RxMTA = {
     'subject' => qr/FAILURE NOTICE :/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'TransWARE Active!hunter' };
 sub smtpagent   { 'Activehunter' }
 sub headerlist  { return [ 'X-AHMAILID' ] }
@@ -153,12 +152,6 @@ Sisimai::MTA::Activehunter parses a bounce email which created by C<TransWARE
 Active!hunter>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::Activehunter->version;
 
 =head2 C<B<description()>>
 

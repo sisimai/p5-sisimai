@@ -13,7 +13,6 @@ my $RxMTA = {
     'x-mailer' => qr/\ASurfControl E-mail Filter\z/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'WebSense SurfControl' }
 sub smtpagent   { 'SurfControl' }
 sub headerlist  { return [ 'X-SEF-Processed', 'X-Mailer' ] }
@@ -182,12 +181,6 @@ Sisimai::MTA::SurfControl parses a bounce email which created by C<WebSense
 SurfControl>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::SurfControl->version;
 
 =head2 C<B<description()>>
 

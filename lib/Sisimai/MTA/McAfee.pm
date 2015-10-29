@@ -21,7 +21,6 @@ my $RxErr = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'McAfee Email Appliance' }
 sub smtpagent   { 'McAfee' }
 sub headerlist  { return [ 'X-NAI-Header' ] }
@@ -192,12 +191,6 @@ Sisimai::MTA::McAfee parses a bounce email which created by C<McAfee Email
 Appliance>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::McAfee->version;
 
 =head2 C<B<description()>>
 

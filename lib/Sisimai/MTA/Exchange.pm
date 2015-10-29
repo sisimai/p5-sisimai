@@ -50,7 +50,6 @@ my $ErrorCodeTable = {
     ],
 };
 
-sub version     { '4.1.0' }
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
@@ -307,12 +306,6 @@ Sisimai::MTA::Exchange parses a bounce email which created by C<Microsoft
 Exchange Server>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::Exchange->version;
 
 =head2 C<B<description()>>
 

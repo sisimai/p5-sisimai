@@ -13,7 +13,6 @@ my $RxMTA = {
     'subject'  => qr/\AMessage delivery has failed\z/,
 };
 
-sub version     { '4.1.0' }
 sub description { 'MailFoundry' }
 sub smtpagent   { 'MailFoundry' }
 
@@ -168,12 +167,6 @@ Sisimai::MTA::MailFoundry parses a bounce email which created by C<MailFoundry>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::MailFoundry->version;
 
 =head2 C<B<description()>>
 

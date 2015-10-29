@@ -17,7 +17,6 @@ my $RxErr = {
     'hostunknown' => qr{Illegal[ ]host/domain[ ]name[ ]found}x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'Oracle Communications Messaging Server' }
 sub smtpagent   { 'MessagingServer' }
 
@@ -241,12 +240,6 @@ Communications Messaging Server> and C<Sun Java System Messaging Server>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::MessagingServer->version;
 
 =head2 C<B<description()>>
 

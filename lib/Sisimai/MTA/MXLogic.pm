@@ -61,7 +61,6 @@ my $RxSess = {
     }x,
 };
 
-sub version     { '4.1.0' }
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash', 'X-MXL-Hash' ] }
@@ -270,12 +269,6 @@ Sisimai::MTA::MXLogic parses a bounce email which created by C<McAfee SaaS
 Sisimai::Message.
 
 =head1 CLASS METHODS
-
-=head2 C<B<version()>>
-
-C<version()> returns the version number of this module.
-
-    print Sisimai::MTA::MXLogic->version;
 
 =head2 C<B<description()>>
 
