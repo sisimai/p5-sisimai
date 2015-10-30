@@ -11,6 +11,7 @@ sub SMTPCOMMAND    { return Sisimai::MTA->SMTPCOMMAND    }
 sub EOM            { return Sisimai::MTA->EOM            }
 sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
 sub LONGFIELDS     { return Sisimai::MTA->LONGFIELDS     }
+sub INDICATORS     { return Sisimai::MTA->INDICATORS     }
 sub RFC822HEADERS  { 
     my $class = shift;
     my $argvs = shift;

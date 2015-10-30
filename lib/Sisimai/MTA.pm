@@ -74,6 +74,13 @@ sub RFC822HEADERS {
     }
 }
 
+sub INDICATORS {
+    return {
+        'deliverystatus' => ( 1 << 1 ),
+        'message-rfc822' => ( 1 << 2 ),
+    };
+}
+
 sub smtpagent {
     # @Description  Return MTA name: Call smtpagent() in each child class
     # @Param        None
