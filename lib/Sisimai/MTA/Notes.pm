@@ -6,8 +6,8 @@ use warnings;
 use Encode;
 
 my $RxMTA = {
-    'begin'   => qr/\A[-]+\s+Failure Reasons\s+[-]+\z/,
-    'rfc822'  => qr/\A[-]+\s+Returned Message\s+[-]+\z/,
+    'begin'   => qr/\A[-]+[ ]+Failure Reasons[ ]+[-]+\z/,
+    'rfc822'  => qr/^[-]+[ ]+Returned Message[ ]+[-]+$/,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject' => qr/\AUndeliverable message/,
 };
@@ -18,6 +18,7 @@ my $RxErr = {
         |ディレクトリのリストにありません
         )
     }x,
+    'networkerror' => qr/Message has exceeded maximum hop count/,
 };
 
 sub description { 'Lotus Notes' }
@@ -40,6 +41,9 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $indicators = __PACKAGE__->INDICATORS;
+
     my $longfields = __PACKAGE__->LONGFIELDS;
     my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -51,19 +55,29 @@ sub scan {
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
+    require Sisimai::Address;
+
     for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         next unless length $e;
 
+        unless( $readcursor ) {
+            $readcursor = $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
+        }
+
+        unless( $readcursor & $indicators->{'message-rfc822'} ) {
+            $readcursor = $indicators->{'message-rfc822'} if $e =~ $RxMTA->{'rfc822'};
+        }
+
         unless( length $characters ) {
             # Get character set name
-            if( $mhead->{'content-type'} =~ m/\A.+;\s*charset=(.+)\z/ ) {
+            if( $mhead->{'content-type'} =~ m/\A.+;[ ]*charset=(.+)\z/ ) {
                 # Content-Type: text/plain; charset=ISO-2022-JP
                 $characters = lc $1;
             }
         }
 
-        if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
+        if( $readcursor & $indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
@@ -90,7 +104,8 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( $e =~ $RxMTA->{'begin'} ) .. ( $e =~ $RxMTA->{'rfc822'} );
+            next unless $readcursor & $indicators->{'deliverystatus'};
+
             # ------- Failure Reasons  --------
             # 
             # User not listed in public Name & Address Book
@@ -127,8 +142,9 @@ sub scan {
                         $s = $removedmsg;
                     }
 
-                    #$s = $removedmsg if $s =~ m/[^\x20-\x7e]/;
+                    # $s = $removedmsg if $s =~ m/[^\x20-\x7e]/;
                     $v->{'diagnosis'} .= $s;
+
                 } else {
                     # Error message does not include multi-byte character
                     $v->{'diagnosis'} .= $e;
@@ -141,12 +157,19 @@ sub scan {
         $p = $e;
         $e = '';
     }
+
+    unless( $recipients ) {
+        # Fallback: Get the recpient address from RFC822 part
+        if( $rfc822part =~ m/^To:[ ]*(.+)$/m ) {
+            $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
+            $recipients++ if $v->{'recipient'};
+        }
+    }
     return undef unless $recipients;
 
     require Sisimai::String;
     require Sisimai::RFC3463;
     require Sisimai::RFC5322;
-    require Sisimai::Address;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -175,7 +198,6 @@ sub scan {
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
 
     } # end of for()
-
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 
