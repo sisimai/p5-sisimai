@@ -388,6 +388,7 @@ sub rewrite {
         # 2. Sisimai::MTA::*
         # 3. Sisimai::MSP::*
         # 4. Sisimai::RFC3464
+        # 4. Sisimai::RFC3834
         #
         if( Sisimai::ARF->is_arf( $mailheader ) ) {
             # Feedback Loop message
