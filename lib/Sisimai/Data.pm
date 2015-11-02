@@ -183,6 +183,14 @@ sub make {
             # email if the address is not set at loop above.
             $p->{'addresser'} ||= $messageobj->{'header'}->{'to'}; 
 
+            if( $p->{'alias'} && Sisimai::RFC5322->is_emailaddress( $p->{'alias'} ) ) {
+                # Alias address should be the value of "recipient", Replace the
+                # value of recipient with the value of "alias".
+                my $w = $p->{'recipient'};
+                $p->{'recipient'} = $p->{'alias'};
+                $p->{'alias'} = $w;
+            }
+
         } # End of EMAIL_ADDRESS
         next unless $p->{'addresser'};
         next unless $p->{'recipient'};
@@ -470,7 +478,7 @@ address. Sisimai::Address object have the following accessors:
 =head2 C<alias> (I<String>)
 
 C<alias> is an alias address of the recipient. When the Original-Recipient: 
-field or C<expanded from 腦駈拾> string  did not exist in a bounce message, this 
+field or C<expanded from 閻ｦ鬧域鏡> string  did not exist in a bounce message, this 
 value is empty.
 
     Original-Recipient: rfc822;kijitora@example.org
