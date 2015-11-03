@@ -86,10 +86,12 @@ sub scan {
         for my $e ( @stripedtxt ) {
             # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
             unless( $readcursor ) {
+                # Beginning of the bounce message or delivery status part
                 $readcursor = $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
             }
 
             unless( $readcursor & $indicators->{'message-rfc822'} ) {
+                # Beginning of the original message part
                 $readcursor = $indicators->{'message-rfc822'} if $e =~ $RxMTA->{'rfc822'};
             }
 
@@ -185,10 +187,12 @@ sub scan {
         for my $e ( @stripedtxt ) {
             # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
             unless( $readcursor ) {
+                # Beginning of the bounce message or delivery status part
                 $readcursor = $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
             }
 
             unless( $readcursor & $indicators->{'message-rfc822'} ) {
+                # Beginning of the original message part
                 $readcursor = $indicators->{'message-rfc822'} if $e =~ $RxMTA->{'rfc822'};
             }
 
