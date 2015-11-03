@@ -37,6 +37,9 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $indicators = __PACKAGE__->INDICATORS;
+
     my $longfields = __PACKAGE__->LONGFIELDS;
     my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -58,7 +61,15 @@ sub scan {
         # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
-        if( ( $e =~ $RxMSP->{'rfc822'} ) .. ( $e =~ $RxMSP->{'endof'} ) ) {
+        unless( $readcursor ) {
+            $readcursor = $indicators->{'deliverystatus'} if $e =~ $RxMSP->{'begin'};
+        }
+
+        unless( $readcursor & $indicators->{'message-rfc822'} ) {
+            $readcursor = $indicators->{'message-rfc822'} if $e =~ $RxMSP->{'rfc822'};
+        }
+
+        if( $readcursor & $indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
@@ -85,7 +96,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( $e =~ $RxMSP->{'begin'} ) .. ( $e =~ $RxMSP->{'rfc822'} );
+            next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
 
             if( $connvalues == scalar( keys %$connheader ) ) {
