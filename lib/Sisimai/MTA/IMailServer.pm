@@ -59,6 +59,9 @@ sub scan {
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $previousfn = '';    # (String) Previous field name
 
+    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $indicators = __PACKAGE__->INDICATORS;
+
     my $longfields = __PACKAGE__->LONGFIELDS;
     my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -70,7 +73,15 @@ sub scan {
 
     for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        if( ( $e =~ $RxMTA->{'rfc822'} ) .. ( $e =~ $RxMTA->{'endof'} ) ) {
+        unless( $readcursor ) {
+            $readcursor = $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
+        }
+
+        unless( $readcursor & $indicators->{'message-rfc822'} ) {
+            $readcursor = $indicators->{'message-rfc822'} if $e =~ $RxMTA->{'rfc822'};
+        }
+
+        if( $readcursor & $indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
@@ -97,7 +108,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            last if $e =~ $RxMTA->{'rfc822'};
+            last if $readcursor & $indicators->{'message-rfc822'};
 
             # Unknown user: kijitora@example.com
             #
