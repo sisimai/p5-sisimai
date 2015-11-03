@@ -7,7 +7,6 @@ use warnings;
 my $RxMTA = {
     'from'     => qr/InterScan MSS/,
     'begin'    => qr|\AContent-type: text/plain|,
-    'error'    => qr//,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'rfc822'   => qr|\AContent-type: message/rfc822|,
     'received' => qr/[ ][(]InterScanMSS[)][ ]with[ ]/,
