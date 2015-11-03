@@ -193,6 +193,8 @@ my $R = {
         '01183' => qr/suspend/,
         '01184' => qr/filtered/,
         '01185' => qr/expired/,
+        '01186' => qr/securityerror/,
+        '01187' => qr/securityerror/,
     },
     'Postfix' => {
         '01001' => qr/filtered/,
