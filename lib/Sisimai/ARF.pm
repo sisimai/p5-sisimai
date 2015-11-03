@@ -89,6 +89,9 @@ sub scan {
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
 
+    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $indicators = Sisimai::MTA->INDICATORS;
+
     my $longfields = Sisimai::MTA->LONGFIELDS;
     my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -136,7 +139,17 @@ sub scan {
     #
     for my $e ( @stripedtxt ) {
         # Read each line between $RxARF0->{'begin'} and $RxARF0->{'rfc822'}.
-        if( ( $e =~ $RxARF0->{'rfc822'} ) .. ( $e =~ $RxARF0->{'endof'} ) ) {
+        unless( $readcursor ) {
+            # Beginning of the bounce message or delivery status part
+            $readcursor = $indicators->{'deliverystatus'} if $e =~ $RxARF0->{'begin'};
+        }
+
+        unless( $readcursor & $indicators->{'message-rfc822'} ) {
+            # Beginning of the original message part
+            $readcursor = $indicators->{'message-rfc822'} if $e =~ $RxARF0->{'rfc822'};
+        }
+
+        if( $readcursor & $indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
             if( $e =~ m/X-HmXmrOriginalRecipient:\s*(.+)\z/ ) {
                 # Microsoft ARF: original recipient.
@@ -173,7 +186,7 @@ sub scan {
 
         } else {
             # Before "message/rfc822"
-            next unless ( $e =~ $RxARF0->{'begin'} ) .. ( $e =~ $RxARF0->{'rfc822'} );
+            next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
 
             # Feedback-Type: abuse
