@@ -59,8 +59,6 @@ sub scan {
 
     for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        next unless length $e;
-
         unless( $readcursor ) {
             $readcursor = $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
         }
