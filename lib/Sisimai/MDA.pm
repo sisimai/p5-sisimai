@@ -85,10 +85,17 @@ my $RxErr = {
 };
 
 sub scan { 
-    # @Description  Parse message body and return reason and text
-    # @Param <ref>  (Ref->Hash) Message Header
-    # @Param <ref>  (Ref->Scalar) Message body
-    # @Return       (Ref->Hash) Error reason and error text
+    # Parse message body and return reason and text
+    # @param         [Hash] mhead       Message header of a bounce email
+    # @options mhead [String] from      From header
+    # @options mhead [String] date      Date header
+    # @options mhead [String] subject   Subject header
+    # @options mhead [Array]  received  Received headers
+    # @options mhead [String] others    Other required headers
+    # @param         [String] mbody     Message body of a bounce email
+    # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
+    #                                   or Undef if it failed to parse or the
+    #                                   arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -98,9 +105,9 @@ sub scan {
     return undef unless ref( $mbody ) eq 'SCALAR';
     return undef unless length $$mbody;
 
-    my $agentname0 = '';    # (String) MDA name
-    my $reasonname = '';    # (String) Error reason
-    my $bouncemesg = '';    # (String) Error message
+    my $agentname0 = '';    # [String] MDA name
+    my $reasonname = '';    # [String] Error reason
+    my $bouncemesg = '';    # [String] Error message
     my @stripedtxt = split( "\n", $$mbody );
     my @linebuffer = ();
 

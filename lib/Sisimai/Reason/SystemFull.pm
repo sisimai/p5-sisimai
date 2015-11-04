@@ -5,6 +5,11 @@ use warnings;
 
 sub text  { 'systemfull' }
 sub match {
+    # Try to match that the given text and regular expressions
+    # @param    [String] argvs  String to be matched with regular expressions
+    # @return   [Integer]       0: Did not match
+    #                           1: Matched
+    # @since v4.0.0
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?:

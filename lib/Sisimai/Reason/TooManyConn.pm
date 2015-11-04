@@ -5,6 +5,11 @@ use warnings;
 
 sub text  { 'toomanyconn' }
 sub match {
+    # Try to match that the given text and regular expressions
+    # @param    [String] argvs  String to be matched with regular expressions
+    # @return   [Integer]       0: Did not match
+    #                           1: Matched
+    # @since v4.1.26
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?>
@@ -25,11 +30,12 @@ sub match {
 }
 
 sub true {
-    # @Description  Blocked due to that connection rate limit exceeded
-    # @Param <obj>  (Sisimai::Data) Object
-    # @Return       (Integer) 1 = too many connections(blocked)
-    #               (Integer) 0 = not many connections
-    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    # Blocked due to that connection rate limit exceeded
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: Too many connections(blocked)
+    #                                   0: Not many connections
+    # @since v4.1.26
+    # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
 

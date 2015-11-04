@@ -208,10 +208,10 @@ my $SMTPErrorSet = {
 };
 
 sub get {
-    # @Description  Detect bounce reason from Google Apps
-    # @Param <obj>  (Sisimai::Data) Parsed email object
-    # @Return       (String) Bounce reason for Google Apps
-    # @See          https://support.google.com/a/answer/3726730?hl=en
+    # Detect bounce reason from Google Apps
+    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @return   [String]                The bounce reason for Google Apps
+    # @see      https://support.google.com/a/answer/3726730?hl=en
     my $class = shift;
     my $argvs = shift // return undef;
 

@@ -5,9 +5,8 @@ use strict;
 use warnings;
 
 sub TO_JSON {
-    # @Description  Instance method for JSON::encode()
-    # @Param        None
-    # @Return       (Integer) Machine time
+    # Instance method for JSON::encode()
+    # @return   [Integer] Machine time
     my $self = shift;
     return $self->epoch;
 }

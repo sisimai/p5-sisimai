@@ -6,11 +6,12 @@ use warnings;
 sub text  { 'onhold' }
 sub match { return 0 }
 sub true  {
-    # @Description  On hold, Could not decide the bounce reason...
-    # @Param <obj>  (Sisimai::Data) Object
-    # @Return       (Integer) 1 = Status code is C<onhold>
-    #               (Integer) 0 = is not C<onhold>
-    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    # On hold, Could not decide the bounce reason...
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: Status code is "onhold"
+    #                                   0: is not "onhold"
+    # @since v4.1.28
+    # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
 

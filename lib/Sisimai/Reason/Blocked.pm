@@ -5,6 +5,11 @@ use warnings;
 
 sub text  { 'blocked' }
 sub match {
+    # Try to match that the given text and regular expressions
+    # @param    [String] argvs  String to be matched with regular expressions
+    # @return   [Integer]       0: Did not match
+    #                           1: Matched
+    # @since v4.0.0
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?>
@@ -61,11 +66,12 @@ sub match {
 }
 
 sub true {
-    # @Description  Blocked due to client IP address or hostname
-    # @Param <obj>  (Sisimai::Data) Object
-    # @Return       (Integer) 1 = is blocked
-    #               (Integer) 0 = is not blocked by the client
-    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    # Blocked due to client IP address or hostname
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: is blocked
+    #           [Integer]               0: is not blocked by the client
+    # @see      http://www.ietf.org/rfc/rfc2822.txt
+    # @since v4.0.0
     my $class = shift;
     my $argvs = shift // return undef;
 

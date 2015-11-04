@@ -5,7 +5,11 @@ use warnings;
 
 sub text  { 'spamdetected' }
 sub match {
-    # Rejected due to spam content in the message
+    # Try to match that the given text and regular expressions
+    # @param    [String] argvs  String to be matched with regular expressions
+    # @return   [Integer]       0: Did not match
+    #                           1: Matched
+    # @since v4.1.19
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?>
@@ -118,11 +122,12 @@ sub match {
 }
 
 sub true {
-    # @Description  Rejected due to spam content in the message
-    # @Param <obj>  (Sisimai::Data) Object
-    # @Return       (Integer) 1 = rejected
-    #               (Integer) 0 = is not rejected due to spam
-    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    # Rejected due to spam content in the message
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: rejected due to spam
+    #                                   0: is not rejected due to spam
+    # @since v4.1.19
+    # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
 

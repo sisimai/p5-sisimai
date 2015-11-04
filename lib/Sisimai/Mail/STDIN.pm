@@ -6,21 +6,20 @@ use Class::Accessor::Lite;
 use IO::Handle;
 
 my $roaccessors = [
-    'path',     # (String) path to mbox
-    'name',     # (String) file name of the mbox
-    'size',     # (Integer) File size of the mbox
+    'path',     # [String]  Path to mbox
+    'name',     # [String]  File name of the mbox
+    'size',     # [Integer] File size of the mbox
 ];
 my $rwaccessors = [
-    'offset',   # (Integer) Offset position for seeking
-    'handle',   # (IO::File) File handle
+    'offset',   # [Integer]  Offset position for seeking
+    'handle',   # [IO::File] File handle
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub new {
-    # @Description  Constructor of Sisimai::Mail::STDIN
-    # @Param        <None>
-    # @Return       (Sisimai::Mail::STDIN) Object
+    # Constructor of Sisimai::Mail::STDIN
+    # @return   [Sisimai::Mail::STDIN] Object
     my $class = shift;
     my $sdtin = undef;
     my $param = { 
@@ -37,9 +36,8 @@ sub new {
 }
 
 sub read {
-    # @Description  mbox reader, works as a iterator.
-    # @Param
-    # @Return       (String) Contents of mbox
+    # Mbox reader, works as a iterator.
+    # @return   [String] Contents of mbox
     my $self = shift;
 
     my $readhandle = $self->{'handle'};

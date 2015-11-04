@@ -346,12 +346,16 @@ sub standardcode { return $StandardCode };
 sub internalcode { return $InternalCode };
 
 sub status {
-    # @Description  Reason string -> status code
-    # @Param <str>  (String) Reason
-    # @Param <char> (Character) bounce type; t = temporary or p = permanent(default)
-    # @Param <char> (Character) code type; i = internal code or s = standard code(default)
-    # @Return       (String) D.S.N.
-    #               (String) Empty = Invalid reason name
+    # Convert from the reason string to the status code
+    # @param    [String] rname  Reason name
+    # @param    [String] btype  Character of error types
+    #                           't': Temporary error
+    #                           'p': Permanent error (default)
+    # @param    [String] ctype  Character for code(D.S.N.) types
+    #                           'i': Internal code
+    #                           's': Standard code(default)
+    # @return   [String]        D.S.N. or empty if the 1st argument is missing
+    # @see      reason
     my $class = shift;
     my $rname = shift || return '';
     my $btype = shift || 'p';
@@ -365,10 +369,10 @@ sub status {
 }
 
 sub reason {
-    # @Description  Status code -> Reason string
-    # @Param <str>  (String) Status code(DSN)
-    # @Return       (String) Reason name
-    #               (String) Empty = Reason does not exist
+    # Convert from the status code to the reason string
+    # @param    [String] state  Status code(DSN)
+    # @return   [String]        Reason name or empty if the first argument did
+    #                           not match with values in Sisimai's reason list
     my $class = shift;
     my $state = shift || return '';
 
@@ -390,10 +394,10 @@ sub reason {
 }
 
 sub getdsn {
-    # @Description  Get D.S.N. code from given string including D.S.N.
-    # @Param <str>  (String) String including D.S.N.
-    # @Return       (String) D.S.N.
-    #               (String) Empty = There is no D.S.N.
+    # Get D.S.N. code value from given string including D.S.N.
+    # @param    [String] rtext  String including D.S.N.
+    # @return   [String]        D.S.N. or empty string if the first agument did
+    #                           not include D.S.N.
     my $class = shift;
     my $rtext = shift || return '';
 
@@ -414,10 +418,11 @@ sub getdsn {
 }
 
 sub is_softbounce {
-    # @Description  Softbounce or not
-    # @Param <str>  (String) String including SMTP Status code
-    # @Return       (Integer) 1 = Soft bounce, 0 = Hard bounce
-    #               (Integer) -1 = May not be bounce ?
+    # Check softbounce or not
+    # @param    [String] argvs  String including SMTP Status code
+    # @return   [Integer]        1: Soft bounce
+    #                            0: Hard bounce
+    #                           -1: May not be bounce ?
     my $class = shift;
     my $argvs = shift || return -1;
     my $value = -1;

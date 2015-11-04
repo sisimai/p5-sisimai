@@ -48,10 +48,17 @@ sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 
 sub scan {
-    # @Description  Detect an error for RFC3464
-    # @Param <ref>  (Ref->Hash) Message header
-    # @Param <ref>  (Ref->String) Message body
-    # @Return       (Ref->Array) Bounce data list
+    # Detect an error for RFC3464
+    # @param         [Hash] mhead       Message header of a bounce email
+    # @options mhead [String] from      From header
+    # @options mhead [String] date      Date header
+    # @options mhead [String] subject   Subject header
+    # @options mhead [Array]  received  Received headers
+    # @options mhead [String] others    Other required headers
+    # @param         [String] mbody     Message body of a bounce email
+    # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
+    #                                   or Undef if it failed to parse or the
+    #                                   arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;

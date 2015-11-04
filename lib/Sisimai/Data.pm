@@ -16,36 +16,36 @@ use Sisimai::Time;
 use Sisimai::DateTime;
 
 my $rwaccessors = [
-    'token',            # (String) Message token/MD5 Hex digest value
-    'lhost',            # (String) local host name/Local MTA
-    'rhost',            # (String) Remote host name/Remote MTA
-    'alias',            # (String) Alias of the recipient address
-    'listid',           # (String) List-Id header of each ML
-    'reason',           # (String) Bounce reason
-    'action',           # (String) The value of Action: header
-    'subject',          # (String) UTF-8 Subject text
-    'timestamp',        # (Sisimai::Time) Date: header in the original message
-    'addresser',        # (Sisimai::Address) From address
-    'recipient',        # (Sisimai::Address) Recipient address which bounced
-    'messageid',        # (String) Message-Id: header
-    'replycode',        # (String) SMTP Reply Code
-    'smtpagent',        # (String) MTA name
-    'softbounce',       # (Integer) 1 = Soft bounce, 0 = Hard bounce, -1 = ?
-    'smtpcommand',      # (String) The last SMTP command
-    'destination',      # (String) The domain part of the "recipinet"
-    'senderdomain',     # (String) The domain part of the "addresser"
-    'feedbacktype',     # (String) Feedback Type
-    'diagnosticcode',   # (String) Diagnostic-Code: Header
-    'diagnostictype',   # (String) The 1st part of Diagnostic-Code: Header
-    'deliverystatus',   # (String) Delivery Status(DSN)
-    'timezoneoffset',   # (Integer) Time zone offset(seconds)
+    'token',            # [String] Message token/MD5 Hex digest value
+    'lhost',            # [String] local host name/Local MTA
+    'rhost',            # [String] Remote host name/Remote MTA
+    'alias',            # [String] Alias of the recipient address
+    'listid',           # [String] List-Id header of each ML
+    'reason',           # [String] Bounce reason
+    'action',           # [String] The value of Action: header
+    'subject',          # [String] UTF-8 Subject text
+    'timestamp',        # [Sisimai::Time] Date: header in the original message
+    'addresser',        # [Sisimai::Address] From address
+    'recipient',        # [Sisimai::Address] Recipient address which bounced
+    'messageid',        # [String] Message-Id: header
+    'replycode',        # [String] SMTP Reply Code
+    'smtpagent',        # [String] MTA name
+    'softbounce',       # [Integer] 1 = Soft bounce, 0 = Hard bounce, -1 = ?
+    'smtpcommand',      # [String] The last SMTP command
+    'destination',      # [String] The domain part of the "recipinet"
+    'senderdomain',     # [String] The domain part of the "addresser"
+    'feedbacktype',     # [String] Feedback Type
+    'diagnosticcode',   # [String] Diagnostic-Code: Header
+    'diagnostictype',   # [String] The 1st part of Diagnostic-Code: Header
+    'deliverystatus',   # [String] Delivery Status(DSN)
+    'timezoneoffset',   # [Integer] Time zone offset(seconds)
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 
 sub new {
-    # @Description  Constructor of Sisimai::Data
-    # @Param <ref>  (Ref->Hash) Data
-    # @Return       (Sisimai::Data) Structured email data
+    # Constructor of Sisimai::Data
+    # @param    [Hash] argvs    Data
+    # @return   [Sisimai::Data] Structured email data
     my $class = shift;
     my $argvs = { @_ };
     my $thing = {};
@@ -101,9 +101,11 @@ sub new {
 }
 
 sub make {
-    # @Description  Another constructor of Sisimai::Data
-    # @Param <ref>  (Hash) Data and orders
-    # @Return       (Ref->Array) List of Sisimai::Data
+    # Another constructor of Sisimai::Data
+    # @param        [Hash] argvs Data and orders
+    # @option argvs [Sisimai::Message] data Object
+    # @return       [Array, Undef] List of Sisimai::Data or Undef if the argument
+    #                              (data) is not Sisimai::Message object
     my $class = shift;
     my $argvs = { @_ };
 
@@ -345,9 +347,8 @@ sub make {
 }
 
 sub damn {
-    # @Description  Convert from object to hash reference
-    # @Param        <None>
-    # @Return       (Ref->Hash) Data in Hash reference
+    # Convert from object to hash reference
+    # @return   [Hash] Data in Hash reference
     my $self = shift;
     my $data = undef;
 
@@ -374,9 +375,10 @@ sub damn {
 }
 
 sub dump {
-    # @Description  Data dumper
-    # @Param <str>  (String) Data format: json, yaml
-    # @Return       (String) Dumped data
+    # Data dumper
+    # @param    [String] argv   Data format: json, yaml
+    # @return   [String, Undef] Dumped data or Undef if the value of first
+    #                           argument is neither "json" nor "yaml"
     my $self = shift;
     my $argv = shift || 'json';
 

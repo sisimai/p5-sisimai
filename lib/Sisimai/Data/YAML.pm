@@ -4,9 +4,10 @@ use strict;
 use warnings;
 
 sub dump {
-    # @Description  Data dumper(YAML)
-    # @Param <obj>  (Sisimai::Data) Object
-    # @Return       (String) Dumped data
+    # Data dumper(YAML)
+    # @param    [Sisimai::Data] argvs   Object
+    # @return   [String, Undef]         Dumped data or Undef if the argument is
+    #                                   missing
     my $class = shift;
     my $argvs = shift // return undef;
 

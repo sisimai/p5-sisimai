@@ -6,9 +6,10 @@ use MIME::Base64 ();
 use MIME::QuotedPrint ();
 
 sub is_mimeencoded {
-    # @Description  Check that the argument is MIME-Encoded string or not
-    # @Param <str>  (Ref->Scalar) Reference to string
-    # @Return       (Integer) 0 = not MIME Encoded, 1 = MIME Encoded string
+    # Check that the argument is MIME-Encoded string or not
+    # @param    [String] argvs  String to be checked
+    # @return   [Integer]       0: Not MIME encoded string
+    #                           1: MIME encoded string
     my $class = shift;
     my $argvs = shift || return 0;
 
@@ -21,9 +22,9 @@ sub is_mimeencoded {
 }
 
 sub mimedecode {
-    # @Description  Decode MIME-Encoded string
-    # @Param <ref>  (Ref->Array) Reference to an array including MIME-Encoded text
-    # @Return       (String) MIME-Decoded text
+    # Decode MIME-Encoded string
+    # @param    [Array] argvs   Reference to an array including MIME-Encoded text
+    # @return   [String]        MIME-Decoded text
     my $class = shift;
     my $argvs = shift;
 
@@ -86,12 +87,12 @@ sub mimedecode {
 }
 
 sub boundary {
-    # @Description  Get boundary string
-    # @Param <str>  (String) The value of Content-Type header
-    # @Param <flg>  (Integer) -1 = boundary string
-    #                          0 = start of boundary
-    #                          1 = end of boundary
-    # @Return       (String) Boundary string
+    # Get boundary string
+    # @param    [String]  argvs The value of Content-Type header
+    # @param    [Integer] start -1: boundary string itself
+    #                            0: Start of boundary
+    #                            1: End of boundary
+    # @return   [String] Boundary string
     my $class = shift;
     my $argvs = shift || return undef;
     my $start = shift // -1;

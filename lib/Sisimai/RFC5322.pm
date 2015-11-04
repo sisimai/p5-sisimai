@@ -31,9 +31,10 @@ BUILD_REGULAR_EXPRESSIONS: {
 }
 
 sub is_emailaddress {
-    # @Description  Check that the argument is an email address or not
-    # @Param        (String) Email address
-    # @Return       (Integer) 0 = not email address, 1 = email address
+    # Check that the argument is an email address or not
+    # @param    [String] email  Email address string
+    # @return   [Integer]       0: Not email address
+    #                           1: Email address
     my $class = shift;
     my $email = shift // return 0;
 
@@ -43,9 +44,10 @@ sub is_emailaddress {
 }
 
 sub is_domainpart {
-    # @Description  Check that the argument is an domain part of email address or not
-    # @Param        (String) Domain part of the email address
-    # @Return       (Integer) 0 = not domain part, 1 = Valid domain part
+    # Check that the argument is an domain part of email address or not
+    # @param    [String] dpart  Domain part of the email address
+    # @return   [Integer]       0: Not domain part
+    #                           1: Valid domain part
     my $class = shift;
     my $dpart = shift // return 0;
 
@@ -56,9 +58,10 @@ sub is_domainpart {
 }
 
 sub is_mailerdaemon {
-    # @Description  Check that the argument is mailer-daemon or not
-    # @Param        (String) Email address
-    # @Return       (Integer) 0 = not mailer-daemon, 1 = mailer-daemon
+    # Check that the argument is mailer-daemon or not
+    # @param    [String] email  Email address
+    # @return   [Integer]       0: Not mailer-daemon
+    #                           1: Mailer-daemon
     my $class = shift;
     my $email = shift // return 0;
     my $rxmds = qr/(?:
@@ -73,9 +76,9 @@ sub is_mailerdaemon {
 }
 
 sub received {
-    # @Description  Convert Received header to structured data
-    # @Param <str>  (String) Received header
-    # @Return       (Ref->Array) Data
+    # Convert Received headers to a structured data
+    # @param    [String] argvs  Received header
+    # @return   [Array]         Received header as a structured data
     my $class = shift;
     my $argvs = shift || return [];
     my $hosts = [];

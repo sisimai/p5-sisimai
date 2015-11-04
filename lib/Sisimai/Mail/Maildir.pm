@@ -7,22 +7,22 @@ use IO::Dir;
 use IO::File;
 
 my $roaccessors = [
-    'dir',      # (String) path to Maildir/
+    'dir',      # [String] Path to Maildir/
 ];
 my $rwaccessors = [
-    'path',     # (String) path to each file 
-    'file',     # (String) file name of a mail in the Maildir/
-    'inodes',   # (Ref->Array) i-node list of files in the Maildir/
-    'handle',   # (IO::File) File handle
+    'path',     # [String] Path to each file 
+    'file',     # [String] File name of a mail in the Maildir/
+    'inodes',   # [Array]  i-node List of files in the Maildir/
+    'handle',   # [IO::File] File handle
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub new {
-    # @Description  Constructor of Sisimai::Mail::Maildir
-    # @Param <str>  (String) Path to Maildir/
-    # @Return       (Sisimai::Mail::Maildir) Object
-    #               (undef) Undef if the argument is not a directory or does not exist
+    # Constructor of Sisimai::Mail::Maildir
+    # @param    [String] argvs                 Path to Maildir/
+    # @return   [Sisimai::Mail::Maildir,Undef] Object or Undef if the argument is
+    #                                          not a directory or does not exist
     my $class = shift;
     my $argvs = shift // return undef;
     my $param = { 'inodes' => [] };
@@ -39,9 +39,8 @@ sub new {
 }
 
 sub read {
-    # @Description  Maildir reader, works as a iterator.
-    # @Param
-    # @Return       (String) Contents of file in Maildir/
+    # Maildir reader, works as a iterator.
+    # @return       [String] Contents of file in Maildir/
     my $self = shift;
 
     return undef unless defined $self->{'dir'};

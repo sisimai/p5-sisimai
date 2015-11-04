@@ -7,23 +7,23 @@ use File::Basename qw(basename dirname);
 use IO::File;
 
 my $roaccessors = [
-    'dir',      # (String) Directory name of the mbox
-    'file',     # (String) file name of the mbox
-    'path',     # (String) path to mbox
-    'size',     # (Integer) File size of the mbox
+    'dir',      # [String]  Directory name of the mbox
+    'file',     # [String]  File name of the mbox
+    'path',     # [String]  Path to mbox
+    'size',     # [Integer] File size of the mbox
 ];
 my $rwaccessors = [
-    'offset',   # (Integer) Offset position for seeking
-    'handle',   # (IO::File) File handle
+    'offset',   # [Integer]  Offset position for seeking
+    'handle',   # [IO::File] File handle
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub new {
-    # @Description  Constructor of Sisimai::Mail::Mbox
-    # @Param <str>  (String) Path to mbox
-    # @Return       (Sisimai::Mail::Mbox) Object
-    #               (undef) Undef if the argument is not a file or does not exist
+    # Constructor of Sisimai::Mail::Mbox
+    # @param    [String] argvs          Path to mbox
+    # @return   [Sisimai::Mail::Mbox]   Object or Undef if the argument is not 
+    #                                   a file or does not exist
     my $class = shift;
     my $argvs = shift // return undef;
     my $param = { 'offset' => 0 };
@@ -40,9 +40,8 @@ sub new {
 }
 
 sub read {
-    # @Description  mbox reader, works as a iterator.
-    # @Param
-    # @Return       (String) Contents of mbox
+    # Mbox reader, works as a iterator.
+    # @return   [String] Contents of mbox
     my $self = shift;
 
     my $seekoffset = $self->{'offset'} // 0;

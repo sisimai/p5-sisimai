@@ -59,10 +59,10 @@ use warnings;
 #       555  MAIL FROM/RCPT TO parameters not recognized or not implemented
 #
 sub getrc {
-    # @Description  Get SMTP Reply Code from given string
-    # @Param <str>  (String) String
-    # @Return       (String) SMTP Reply Code
-    #               (String) Empty = There is no SMTP reply code
+    # Get SMTP Reply Code from the given string
+    # @param    [String] rtext  String including SMTP Reply Code like 550
+    # @return   [String]        SMTP Reply Code or empty if the first argument
+    #                           did not include SMTP Reply Code value
     my $class = shift;
     my $rtext = shift || return '';
     my $rcode = '';

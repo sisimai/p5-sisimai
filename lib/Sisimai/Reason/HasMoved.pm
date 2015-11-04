@@ -5,6 +5,11 @@ use warnings;
 
 sub text  { 'hasmoved' }
 sub match {
+    # Try to match that the given text and regular expressions
+    # @param    [String] argvs  String to be matched with regular expressions
+    # @return   [Integer]       0: Did not match
+    #                           1: Matched
+    # @since v4.1.25
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr/address[ ].+[ ]has[ ]been[ ]replaced[ ]by[ ]/ix;
@@ -14,11 +19,12 @@ sub match {
 }
 
 sub true {
-    # @Description  Whether the address is "userunknown" or not
-    # @Param <obj>  (Sisimai::Data) Object
-    # @Return       (Integer) 1 = is unknown user
-    #               (Integer) 0 = is not unknown user.
-    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    # Whether the address has moved or not
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: The address has moved
+    #                                   0: Has not moved
+    # @since v4.1.25
+    # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -58,7 +64,7 @@ the value of Status: field in a bounce email is C<5.1.6>.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<systemfull>.
+C<text()> returns string: C<hasmoved>.
 
     print Sisimai::Reason::HasMoved->text;  # hasmoved
 

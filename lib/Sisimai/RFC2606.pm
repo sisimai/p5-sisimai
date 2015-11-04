@@ -3,11 +3,11 @@ use strict;
 use warnings;
 
 sub is_reserved {
-    # @Description  Whether domain part is Reserved or not
-    # @Param <str>  (String) Domain part
-    # @Return       (Integer) 1 = is Reserved TLD
-    #               (Integer) 0 = is not
-    # @See Also     http://www.ietf.org/rfc/rfc2606.txt
+    # Whether domain part is Reserved or not
+    # @param    [String] dpart  Domain part
+    # @return   [Integer]       1: is Reserved top level domain
+    #                           0: is NOT reserved top level domain
+    # @see      http://www.ietf.org/rfc/rfc2606.txt
     my $class = shift;
     my $dpart = shift || return 0;
 

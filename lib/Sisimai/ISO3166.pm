@@ -252,11 +252,13 @@ my $CCTLD = {
 };
 
 sub get {
-    # @Description  Returns a country code
-    # @Param <str>  (String) ccTLD string
-    # @Param <str>  (String) 'alpha-2' or 'alpha-3' or 'numeric' or 'shortname'
-    # @Return       (String) data
-    #               (String) '' = did not match
+    # Returns a country code
+    # @param    [String] ccltd  ccTLD string
+    # @param    [String] alpha  'alpha-2' or 'alpha-3' or 'numeric' or 'shortname'
+    # @return   [String]        ccTLD string or empty string if it did not match
+    # @example
+    #   get('uk')           #=> GB
+    #   get('jp','alpha-3') #=> JPN
     my $class = shift;
     my $cctld = shift || return undef;
     my $alpha = shift || 'alpha-2';

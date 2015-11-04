@@ -9,16 +9,16 @@ my $RhostClass = {
 };
 
 sub list {
-    # @Description  Retrun remote host list
-    # @Param        <None>
-    # @Return       (Ref->Array) List
+    # Retrun the list of remote hosts Sisimai support
+    # @return   [Array] Remote host list
     return [ keys %$RhostClass ];
 }
 
 sub match {
-    # @Description  The rhost is listed in $RhostClass or not
-    # @Param <str>  (String) Remote host name
-    # @Return       (Integer) 0 = did not match, 1 = match
+    # The value of "rhost" is listed in $RhostClass or not
+    # @param    [String] argvs  Remote host name
+    # @return   [Integer]       0: did not match
+    #                           1: match
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -28,9 +28,9 @@ sub match {
 }
 
 sub get {
-    # @Description  Detect bounce reason from certain remote hosts
-    # @Param <obj>  (Sisimai::Data) Parsed email object
-    # @Return       (String) Bounce reason
+    # Detect the bounce reason from certain remote hosts
+    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @return   [String]                The value of bounce reason
     my $class = shift;
     my $argvs = shift // return undef;
 

@@ -188,10 +188,13 @@ my $TimeZoneAbbr = {
 };
 
 sub to_second {
-    # @Description  Convert to second
-    # @Param <str>  (String) Digit and a unit of time
-    # @Return       (Integer) n = seconds
-    #               (Integer) 0 = 0 or invalid unit of time
+    # Convert to second
+    # @param    [String] argvs  Digit and a unit of time
+    # @return   [Integer]       n: seconds
+    #                           0: 0 or invalid unit of time
+    # @example  Get the value of seconds
+    #   to_second('1d') #=> 86400
+    #   to_second('2h') #=>  7200
     my $class = shift;
     my $argvs = shift || return 0;
 
@@ -220,9 +223,12 @@ sub to_second {
 }
 
 sub monthname {
-    # @Description  Month name list
-    # @Param <flg>  (Integer) require full name
-    # @Return       (Ref->Array) Month name
+    # Month name list
+    # @param    [Integer] argvs  Require full name or not
+    # @return   [Array, String]  Month name list or month name
+    # @example  Get the names of each month
+    #   monthname()  #=> [ 'Jan', 'Feb', ... ]
+    #   monthname(1) #=> [ 'January', 'February', 'March', ... ]
     my $class = shift;
     my $argvs = shift // 0;
     my $value = $argvs ? 'full' : 'abbr';
@@ -232,9 +238,12 @@ sub monthname {
 }
 
 sub dayofweek {
-    # @Description  List of day of week
-    # @Param <flg>  (Integer) require full name
-    # @Return       (Ref|Array) list of day of week
+    # List of day of week
+    # @param    [Integer] argvs Require full name
+    # @return   [Array, String] List of day of week or day of week
+    # @example  Get the names of each day of week
+    #   dayofweek()  #=> [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ]
+    #   dayofweek(1) #=> [ 'Sunday', 'Monday', 'Tuesday', ... ]
     my $class = shift;
     my $argvs = shift // 0;
     my $value = $argvs ? 'full' : 'abbr';
@@ -244,9 +253,12 @@ sub dayofweek {
 }
 
 sub hourname {
-    # @Description  Hour name list
-    # @Param <flg>  (Integer) require full name
-    # @Return       (Ref|Array) Month name
+    # Hour name list
+    # @param    [Integer] argvs Require full name
+    # @return   [Array, String] Month name
+    # @example  Get the names of each hour
+    #   hourname()  #=> [ 0, 1, 2, ... 23 ]
+    #   hourname(1) #=> [ 'Midnight', 1, 2, ... 'Morning', 7, ... 'Noon', ... 23 ]
     my $class = shift;
     my $argvs = shift // 1;
     my $value = $argvs ? 'full' : 'abbr';
@@ -256,10 +268,13 @@ sub hourname {
 }
 
 sub o2d {
-    # @Description  Convert from date offset to date string
-    # @Param <int>  (Integer) Offset
-    # @Param <del>  (Character) Delimiter
-    # @Return       (String) String
+    # Convert from date offset to date string
+    # @param    [Integer] argv1 Offset of
+    # @param    [String]  argv2 Delimiter character: default is '-'
+    # @return   [String]        Date string
+    # @example  Get the value of n days before(today is 2015/11/04)
+    #   o2d(1)      #=> 2015-11-03
+    #   o2d(2,'/')  #=> 2015/11/02
     my $class = shift;
     my $argv1 = shift // 0;
     my $argv2 = shift // '-';
@@ -281,26 +296,29 @@ sub o2d {
 }
 
 sub parse {
-    # @Description  Parse date string; strptime() wrapper
-    # @Param <str>  (String) Date string
-    # @Return       (String) Converted date string
-    # @See          http://en.wikipedia.org/wiki/ISO_8601
-    # @See          http://www.ietf.org/rfc/rfc3339.txt
+    # Parse date string; strptime() wrapper
+    # @param    [String] argvs  Date string
+    # @return   [String]        Converted date string
+    # @see      http://en.wikipedia.org/wiki/ISO_8601
+    # @see      http://www.ietf.org/rfc/rfc3339.txt
+    # @example  Parse date string and convert to generic format string
+    #   parse("2015-11-03T23:34:45 Tue")    #=> Tue, 3 Nov 2015 23:34:45 +0900
+    #   parse("Tue, Nov 3 2015 2:2:2")      #=> Tue, 3 Nov 2015 02:02:02 +0900
     my $class = shift;
     my $argvs = shift || return undef;
 
     my $datestring = $argvs; $datestring =~ s{[,](\d+)}{, $1};  # Thu,13 -> Thu, 13
     my @timetokens = split( ' ', $datestring );
-    my $parseddate = '';    # (String) Canonified Date/Time string
-    my $afternoon1 = 0;     # (Integer) After noon flag
+    my $parseddate = '';    # [String]  Canonified Date/Time string
+    my $afternoon1 = 0;     # [Integer] After noon flag
     my $altervalue = {};
     my $v = {
-        'Y' => undef,   # (Integer) Year
-        'M' => undef,   # (String) Month Abbr.
-        'd' => undef,   # (Integer) Day
-        'a' => undef,   # (String) Day of week, Abbr.
-        'T' => undef,   # (String) Time
-        'z' => undef,   # (Integer) Timezone offset
+        'Y' => undef,   # [Integer] Year
+        'M' => undef,   # [String]  Month Abbr.
+        'd' => undef,   # [Integer] Day
+        'a' => undef,   # [String]  Day of week, Abbr.
+        'T' => undef,   # [String]  Time
+        'z' => undef,   # [Integer] Timezone offset
     };
 
     while( my $p = shift @timetokens ) {
@@ -449,20 +467,25 @@ sub parse {
 }
 
 sub abbr2tz {
-    # @Description  Abbreviation -> Tiemzone
-    # @Param <str>  (String) Abbr. e.g.) JST, GMT, PDT
-    # @Return       (String) +0900, +0000, -0600
-    #               (undef) invalid format
+    # Abbreviation -> Tiemzone
+    # @param    [String] argvs  Abbr. e.g.) JST, GMT, PDT
+    # @return   [String, Undef] +0900, +0000, -0600 or Undef if the argument is
+    #                           invalid format or not supported abbreviation
+    # @example  Get the timezone string of "JST"
+    #   abbr2tz('JST')  #=> '+0900'
     my $class = shift;
     my $argvs = shift || return undef;
     return $TimeZoneAbbr->{ $argvs };
 }
 
 sub tz2second {
-    # @Description  Convert to second
-    # @Param <str>  (String) Timezone string e.g) +0900
-    # @Return       (Integer) n  = seconds
-    #               (undef) invalid format
+    # Convert to second
+    # @param    [String] argvs  Timezone string e.g) +0900
+    # @return   [Integer,Undef] n: seconds or Undef it the argument is invalid
+    #                           format string
+    # @see      second2tz
+    # @example  Convert '+0900' to seconds
+    #   tz2second('+0900')  #=> 32400
     my $class = shift;
     my $argvs = shift || return undef;
     my $digit = {};
@@ -490,9 +513,12 @@ sub tz2second {
 }
 
 sub second2tz {
-    # @Description  Convert to Timezone string
-    # @Param <int>  (Integer) Second
-    # @Return       (String) Timezone offset string
+    # Convert to Timezone string
+    # @param    [Integer] argvs Second to be converted
+    # @return   [String]        Timezone offset string
+    # @see      tz2second
+    # @example  Get timezone offset string of specified seconds
+    #   second2tz(12345)    #=> '+0325'
     my $class = shift;
     my $argvs = shift // return '+0000';
     my $digit = { 'operator' => '+' };

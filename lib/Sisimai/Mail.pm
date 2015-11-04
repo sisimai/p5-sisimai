@@ -6,20 +6,19 @@ use Class::Accessor::Lite;
 use Module::Load '';
 
 my $roaccessors = [
-    'path',     # (String) path to mbox or Maildir/
-    'type',     # (String) Data type: mailbox, maildir, or stdin
+    'path',     # [String] path to mbox or Maildir/
+    'type',     # [String] Data type: mailbox, maildir, or stdin
 ];
 my $rwaccessors = [
-    'mail',     # (Object) ::Mbox or ::Maildir
+    'mail',     # [Sisimai::Mail::Mbox, Sisimai::Mail::Maildir] Object
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub new {
-    # @Description  Constructor of Sisimai::Mail
-    # @Param <str>  (String) Path to mbox or Maildir/
-    # @Return       (Sisimai::Mail) Object
-    #               (undef) Undef if the argument was wrong
+    # Constructor of Sisimai::Mail
+    # @param    [String] argvs         Path to mbox or Maildir/
+    # @return   [Sisimai::Mail, Undef] Object or Undef if the argument was wrong
     my $class = shift;
     my $argvs = shift;
     my $klass = undef;
@@ -59,9 +58,8 @@ sub new {
 }
 
 sub read {
-    # @Description  mbox/Maildir reader, works as a iterator.
-    # @Param        <None>
-    # @Return       (String) Contents of mbox/Maildir
+    # Mbox/Maildir reader, works as a iterator.
+    # @return   [String] Contents of mbox/Maildir
     my $self = shift;
     my $mail = $self->{'mail'};
 
@@ -70,9 +68,9 @@ sub read {
 }
 
 sub close {
-    # @Description  Close the handle
-    # @Param        <None>
-    # @Return
+    # Close the handle
+    # @return   [Integer] 0: Mail handle is not defined
+    #                     1: Successfully closed the handle
     my $self = shift;
     return 0 unless $self->{'mail'}->{'handle'};
 

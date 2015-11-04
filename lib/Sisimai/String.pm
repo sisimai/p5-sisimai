@@ -5,14 +5,14 @@ use warnings;
 use Digest::SHA;
 
 sub token {
-    # @Description  Create message token from addresser and recipient 
-    # @Param        (String) Sender address
-    # @Param        (String) Recipient address
-    # @Param        (Integer) Machine time of the email bounce
-    # @Return       (String) Message token(MD5 hex digest)
-    #               (String) Blank/failed to create token
-    # @See          http://en.wikipedia.org/wiki/ASCII
-    #               http://search.cpan.org/~gaas/Digest-MD5-2.39/MD5.pm
+    # Create the message token from an addresser and a recipient
+    # @param    [String] addr1  A sender's email address
+    # @param    [String] addr2  A recipient's email address
+    # @param    [Integer] epoch Machine time of the email bounce
+    # @return   [String]        Message token(MD5 hex digest) or empty string 
+    #                           if the any argument is missing
+    # @see       http://en.wikipedia.org/wiki/ASCII
+    # @see       http://search.cpan.org/~gaas/Digest-MD5-2.39/MD5.pm
     my $class = shift || return '';
     my $addr1 = shift || return '';
     my $addr2 = shift || return '';
@@ -24,10 +24,10 @@ sub token {
 }
 
 sub is_8bit {
-    # @Description  8bit text or not
-    # @Param <ref>  (Ref->Scalar) String
-    # @Return       0 = ASCII Characters only
-    #               1 = Including 8bit character
+    # The argument is 8-bit text or not
+    # @param    [String] argvs  Any string to be checked
+    # @return   [Integer]       0: ASCII Characters only
+    #                           1: Including 8-bit character
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -38,9 +38,11 @@ sub is_8bit {
 }
 
 sub sweep {
-    # @Description  Clean the string out
-    # @Param <ref>  (Scalar) String
-    # @Return       (Scalar) String cleaned out
+    # Clean the string out
+    # @param    [String] argvs  String to be cleaned
+    # @return   [Scalar]        Cleaned out string
+    # @example  Clean up text
+    #   sweep('  neko ') #=> 'neko'
     my $class = shift;
     my $argvs = shift // return undef;
 

@@ -5,7 +5,11 @@ use warnings;
 
 sub text  { 'rejected' }
 sub match {
-    # Rejected due to envelope from address
+    # Try to match that the given text and regular expressions
+    # @param    [String] argvs  String to be matched with regular expressions
+    # @return   [Integer]       0: Did not match
+    #                           1: Matched
+    # @since v4.0.0
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?>
@@ -46,11 +50,12 @@ sub match {
 }
 
 sub true {
-    # @Description  Rejected by the envelope sender address or not
-    # @Param <obj>  (Sisimai::Data) Object
-    # @Return       (Integer) 1 = is rejected
-    #               (Integer) 0 = is not rejected by the sender
-    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    # Rejected by the envelope sender address or not
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: is rejected
+    #                                   0: is not rejected by the sender
+    # @since v4.0.0
+    # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
 

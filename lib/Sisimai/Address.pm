@@ -17,8 +17,8 @@ Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 sub undisclosed { 
     # Return pseudo recipient or sender address
     # @param    [String] type   'r' or 's'
-    # @return   [String]        Pseudo recipient address or sender address
-    # @return   [Undef]         Undef when the $argvs is neither 'r' nor 's'
+    # @return   [String, Undef] Pseudo recipient address or sender address or
+    #                           Undef when the $argvs is neither 'r' nor 's'
     my $class = shift;
     my $argvs = shift || return undef;
     my $local = '';
@@ -30,9 +30,9 @@ sub undisclosed {
 
 sub new {
     # Constructor of Sisimai::Address
-    # @param <str>  [String] email      Email address
-    # @return       [Sisimai::Address]  Object
-    # @return       [Undef]             Undef when the email address was not valid.
+    # @param <str>  [String] email            Email address
+    # @return       [Sisimai::Address, Undef] Object or Undef when the email 
+    #                                         address was not valid.
     my $class = shift;
     my $email = shift // return undef;
     my $argvs = { 'address' => '', 'user' => '', 'host' => '', 'verp' => '', 'alias' => '' };
@@ -85,9 +85,11 @@ sub new {
 
 sub parse {
     # Email address parser
-    # @param    [Array] email   String including email address
-    # @return   [Array]         Email address list
-    # @return   [Undef]         Undef when there is no email address in the argument
+    # @param    [Array] argvs   String including email address
+    # @return   [Array, Undef]  Email address list or Undef when there is no 
+    #                           email address in the argument
+    # @example  Parse email address
+    #   parse( [ 'Neko <neko@example.cat>' ] )  #=> [ 'neko@example.cat' ]
     my $class = shift;
     my $argvs = shift // return undef;
     my $email = undef;
@@ -118,6 +120,8 @@ sub s3s4 {
     # Runs like ruleset 3,4 of sendmail.cf
     # @param    [String] email  Text including an email address
     # @return   [String]        Email address without comment, brackets
+    # @example  Parse email address
+    #   s3s4( '<neko@example.cat>' ) #=> 'neko@example.cat'
     my $class = shift;
     my $input = shift // return undef;
 
@@ -175,6 +179,8 @@ sub expand_verp {
     # Expand VERP: Get the original recipient address from VERP
     # @param    [String] verp   VERP Address
     # @return   [String]        Email address
+    # @example  Expand VERP address
+    #   expand_verp('bounce+neko=example.jp@example.org') #=> 'neko@example.jp'
     my $class = shift;
     my $email = shift // return undef;
     my $local = (split( '@', $email, 2 ) )[0];
@@ -193,6 +199,8 @@ sub expand_alias {
     # Expand alias: remove from '+' to '@'
     # @param    [String] email  Email alias string
     # @return   [String]        Expanded email address
+    # @example  Expand alias
+    #   expand_alias('neko+straycat@example.jp') #=> 'neko@example.jp'
     my $class = shift;
     my $email = shift // return undef;
     my $alias = '';

@@ -9,10 +9,10 @@ use Sisimai::MTA;
 use Sisimai::MSP;
 
 my $rwaccessors = [
-    'from',             # (String) UNIX From line
-    'header',           # (Ref->Hash) Header part of a email
-    'ds',               # (Ref->Array) Parsed data by Sisimai::MTA::*
-    'rfc822',           # (String) Header part of the original message
+    'from',             # [String] UNIX From line
+    'header',           # [Hash]   Header part of a email
+    'ds',               # [Array]  Parsed data by Sisimai::MTA::*
+    'rfc822',           # [String] Header part of the original message
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 
@@ -24,9 +24,8 @@ my $ExtModules = [];
 sub ENDOFEMAIL { '__END_OF_EMAIL_MESSAGE__' };
 
 sub makeheaders {
-    # @Description  Make email header list
-    # @Param <none> None
-    # @Return       (Ref->Array) Header list to be parsed
+    # Make email header list
+    # @return   [Array] Header list to be parsed
     my $class = shift;
 
     # Load email headers from each MTA,MSP module
@@ -79,9 +78,11 @@ sub makeheaders {
 }
 
 sub new {
-    # @Description  Constructor of Sisimai::Message
-    # @Param <str>  (String) Email text
-    # @Return       (Sisimai::Message) Structured email data
+    # Constructor of Sisimai::Message
+    # @param         [Hash] argvs       Email text data
+    # @options argvs [String] data      Entire email message
+    # @return        [Sisimai::Message] Structured email data or Undef if each
+    #                                   value of the arguments are missing
     my $class = shift;
     my $argvs = { @_ };
     my $email = $argvs->{'data'} // '';
@@ -112,9 +113,10 @@ sub new {
 }
 
 sub resolve {
-    # @Description  Resolve the email message into data structure(body,header)
-    # @Param <ref>  (Ref->Hash) email text in "data" key
-    # @Return       (Ref->Hash) Resolved data structure
+    # Resolve the email message into data structure(body,header)
+    # @param         [Hash] argvs   Email data
+    # @options argvs [String] data  Entire email message
+    # @return        [Hash]         Resolved data structure
     my $class = shift;
     my $argvs = { @_ };
     my $email = $argvs->{'data'};
@@ -164,6 +166,7 @@ sub resolve {
     }
 
     EMAIL_PROCESSING: {
+        # Processes: 0(split), 1(initialize), 2(text to hash), 3(rewrite body)
         my $endofheads = 0;     # Flag: The end of the email header
         my $getstarted = 0;     # Flag: The beginning of the email header
         my $first5byte = '';
@@ -353,10 +356,15 @@ sub resolve {
 }
 
 sub rewrite {
-    # @Description  Break the header of the message, and return its body
-    # @Param <ref>  (Ref->Hash) Processing message entity.
-    # @Param <ref>  (Ref->String) Message body
-    # @Return       (Ref->Array) List of headers
+    # Break the header of the message, and return its body
+    # @param               [Hash] argvs    Processing message entity.
+    # @param options argvs [Hash] mail     Email message entity
+    # @param options mail  [String] from   From line of mbox
+    # @param options mail  [Hash]   header Email header data
+    # @param options mail  [String] rfc822 Original message part
+    # @param options mail  [Array]  ds     Delivery status list(parsed data)
+    # @param options argvs [String] body   Email message body
+    # @return              [Hash]          Parsed and structured bounce mails
     my $class = shift;
     my $argvs = { @_ };
 

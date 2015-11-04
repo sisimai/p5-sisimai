@@ -5,15 +5,16 @@ use warnings;
 use Module::Load '';
 
 sub retry { 
+    # Reason list better to retry detecting an error reason
+    # @return   [Array] Reason list
     return [ 
         'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror'
     ]
 }
 
 sub index {
-    # @Description  Reason list
-    # @Param        <None>
-    # @Return       (Ref->Array) List
+    # All the error reason list Sisimai support
+    # @return   [Array] Reason list
     return [ qw|
         Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
         MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold 
@@ -23,9 +24,11 @@ sub index {
 }
 
 sub get {
-    # @Description  Detect bounce reason
-    # @Param <obj>  (Sisimai::Data) Parsed email object
-    # @Return       (String) Bounce reason
+    # Detect the bounce reason
+    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @return   [String, Undef]         Bounce reason or Undef if the argument
+    #                                   is missing or invalid object
+    # @see anotherone
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -84,9 +87,11 @@ sub get {
 }
 
 sub anotherone {
-    # @Description  Detect bounce reason
-    # @Param <obj>  (Sisimai::Data) Parsed email object
-    # @Return       (String) Bounce reason
+    # Detect the other bounce reason, fall back method for get()
+    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @return   [String, Undef]         Bounce reason or Undef if the argument
+    #                                   is missing or invalid object
+    # @see get
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -153,9 +158,9 @@ sub anotherone {
 }
 
 sub match {
-    # @Description  Detect bounce reason from given text
-    # @Param <str>  (String) Error message
-    # @Return       (String) Bounce reason
+    # Detect the bounce reason from given text
+    # @param    [String] argvs  Error message
+    # @return   [String]        Bounce reason
     my $class = shift;
     my $argvs = shift // return undef;
 

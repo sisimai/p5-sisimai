@@ -3,10 +3,22 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub description { '' }
-sub headerlist  { [] }
+sub description {
+    # @abstract Description of MTA
+    # @return   [String] Description of MTA module
+    return '';
+}
+
+sub headerlist {
+    # @abstract Header list required by each MTA module
+    # @return   [Array] Header list
+    return [];
+}
 
 sub SMTPCOMMAND {
+    # Detector for SMTP commands in a bounce mail message
+    # @private
+    # @return   [Hash] SMTP command regular expressions
     return {
         'helo' => qr/\b(?:HELO|EHLO)\b/,
         'mail' => qr/\bMAIL F(?:ROM|rom)\b/,
@@ -14,8 +26,16 @@ sub SMTPCOMMAND {
         'data' => qr/\bDATA\b/,
     };
 }
-sub EOM { '__END_OF_EMAIL_MESSAGE__' };
+sub EOM { 
+    # End of email message as a sentinel for parsing bounce messages
+    # @private
+    # @return   [String] Fixed length string like a constant
+    return '__END_OF_EMAIL_MESSAGE__';
+}
 sub DELIVERYSTATUS {
+    # Data structure for parsed bounce messages
+    # @private
+    # @return [Hash] Data structure for delivery status
     return {
         'spec'         => '',   # Protocl specification
         'date'         => '',   # The value of Last-Attempt-Date header
@@ -36,10 +56,16 @@ sub DELIVERYSTATUS {
 
 sub LONGFIELDS {
     # Fields that might be long
+    # @private
+    # @return   [Array] Long filed(email header) list
     return [ 'To', 'From', 'Subject' ];
 }
 
 sub RFC822HEADERS {
+    # Grouped RFC822 headers
+    # @private
+    # @param    [String] group  Header group name
+    # @return   [Array]         Header list
     my $class = shift;
     my $group = shift // '';
     my $heads = {
@@ -75,6 +101,10 @@ sub RFC822HEADERS {
 }
 
 sub INDICATORS {
+    # Flags for position variable for
+    # @private
+    # @return   [Hash] Position flag data
+    # @since    v4.13.0
     return {
         'deliverystatus' => ( 1 << 1 ),
         'message-rfc822' => ( 1 << 2 ),
@@ -82,17 +112,15 @@ sub INDICATORS {
 }
 
 sub smtpagent {
-    # @Description  Return MTA name: Call smtpagent() in each child class
-    # @Param        None
-    # @Return       (String) MTA name
+    # @abstract Return MTA name: Call smtpagent() in each child class
+    # @return   [String] MTA name
     my $class = shift; 
     return shift // 'null';
 }
 
 sub index {
-    # @Description  MTA list
-    # @Param        None
-    # @Return       (Ref->Array) MTA list with order
+    # MTA list
+    # @return   [Array] MTA list with order
     my $class = shift;
     my $index = [
         'Sendmail', 'Postfix', 'qmail', 'OpenSMTPD', 'Exim', 'Courier',
@@ -106,10 +134,17 @@ sub index {
 }
 
 sub scan {
-    # @Description  Detect an error
-    # @Param <ref>  (Ref->Hash) Message header
-    # @Param <ref>  (Ref->String) Message body
-    # @Return       (Ref->Hash) Bounce data list and message/rfc822 part
+    # @abstract      Detect an error
+    # @param         [Hash] mhead       Message header of a bounce email
+    # @options mhead [String] from      From header
+    # @options mhead [String] date      Date header
+    # @options mhead [String] subject   Subject header
+    # @options mhead [Array]  received  Received headers
+    # @options mhead [String] others    Other required headers
+    # @param         [String] mbody     Message body of a bounce email
+    # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
+    #                                   or Undef if it failed to parse or the
+    #                                   arguments are missing
     return '';
 }
 

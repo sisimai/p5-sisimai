@@ -5,6 +5,11 @@ use warnings;
 
 sub text  { 'mesgtoobig' }
 sub match {
+    # Try to match that the given text and regular expressions
+    # @param    [String] argvs  String to be matched with regular expressions
+    # @return   [Integer]       0: Did not match
+    #                           1: Matched
+    # @since v4.0.0
     my $class = shift;
     my $argvs = shift // return undef;
     my $regex = qr{(?>
@@ -30,11 +35,12 @@ sub match {
 }
 
 sub true {
-    # @Description  The message size is too big for the remote host
-    # @Param <obj>  (Sisimai::Data) Object
-    # @Return       (Integer) 1 = is too big message size
-    #               (Integer) 0 = is not big
-    # @See          http://www.ietf.org/rfc/rfc2822.txt
+    # The message size is too big for the remote host
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: is too big message size
+    #                                   0: is not big
+    # @since v4.0.0
+    # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
 
