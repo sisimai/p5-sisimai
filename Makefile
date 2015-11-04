@@ -25,11 +25,11 @@ GIT   := /usr/bin/git
 
 .DEFAULT_GOAL = git-status
 BH_LATESTVER := 2.7.13p1
-EMAIL_PARSER := ./tmp/emparser
+EMAIL_PARSER := ./sbin/emparser
 EMAIL_SAMPLE := ./tmp/sample
 BENCHMARKDIR := ./tmp/benchmark
-FOR_EMPARSER := ./tmp/data
-PARSERLOGDIR := ./tmp/log
+FOR_EMPARSER := ./var/data
+PARSERLOGDIR := ./var/log
 FOR_MAKETEST := ./eg/maildir-as-a-sample/new
 CRLF_SAMPLES := ./eg/maildir-as-a-sample/dos
 CRFORMATMAIL := ./eg/maildir-as-a-sample/mac
