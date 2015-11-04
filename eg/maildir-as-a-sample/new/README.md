@@ -31,6 +31,14 @@ Sisimai::MTA::Exim
   * [44.eml](https://github.com/prasad83/node-bounce-handler/blob/master/eml/44.eml)
   * Copyright (c) 2014 prasad83 | The MIT License
 
+* exim-12.eml
+  * [0224.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0224.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-13.eml
+  * [0237.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0237.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
 Sisimai::MTA::IMailServer
 -------------------------
 * imailserver-05.eml
