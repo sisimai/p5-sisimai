@@ -97,6 +97,8 @@ my $R = {
         '09' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/hostunknown/ },
         '10' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/suspend/ },
         '11' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/ },
+        '12' => { 'status' => qr/\A[45][.]0[.]\d+\z/, 'reason' => qr/(?:hostunknown|expired|undefined)/ },
+        '13' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/(?:onhold|undefined)/ },
     },
     'Courier' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
