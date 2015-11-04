@@ -4,6 +4,7 @@
 /bin
 /blib
 /sbin
+/var
 
 # Carton releated files
 /carton.lock
