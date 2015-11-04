@@ -29,6 +29,7 @@ use warnings;
 #
 my $RxMTA = {
     'from'      => qr/\AMail Delivery System/,
+    'alias'     => qr/\A[ ]+an[ ]undisclosed[ ]address\z/,
     'rfc822'    => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
     'begin'     => qr/\AThis message was created automatically by mail delivery software[.]/,
     'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
@@ -59,6 +60,7 @@ my $RxExpr = qr{(?:
     #                 "after this message arrived";
     |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
     |all[ ]hosts[ ]have[ ]been[ ]failing[ ]for[ ]a[ ]long[ ]time[ ]and[ ]were[ ]last[ ]tried
+    |Delay[ ]reason:[ ]
     )
 }x;
 
@@ -208,8 +210,12 @@ sub scan {
                 # deliver.c:6811|  "recipients. This is a permanent error. The following address(es) failed:\n");
                 $v->{'softbounce'} = 0;
 
-            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s\t]+[.][a-zA-Z]+)\z/ ) {
+            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s\t]+[.][a-zA-Z]+)\z/ || $e =~ $RxMTA->{'alias'} ) {
                 #   kijitora@example.jp
+                #
+                # deliver.c:4549|  printed = US"an undisclosed address";
+                #   an undisclosed address
+                #     (generated from kijitora@example.jp)
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -217,6 +223,10 @@ sub scan {
                 }
                 $v->{'recipient'} = $1;
                 $recipients++;
+
+            } elsif( $e =~ m/\A[ ]+[(]generated[ ]from[ ](.+)[)]\z/ ) {
+                #     (generated from kijitora@example.jp)
+                $v->{'alias'} = $1;
 
             } elsif( scalar @$dscontents == $recipients ) {
                 # Error message
@@ -237,7 +247,15 @@ sub scan {
         $e = '';
     }
 
-    unless( $recipients ) {
+    if( $recipients ) {
+        # Check "an undisclosed address", "unroutable address"
+        for my $q ( @$dscontents ) {
+            # Replace the recipient address with the value of "alias"
+            next unless $q->{'alias'};
+            $q->{'recipient'} ||= $q->{'alias'};
+        }
+
+    } else {
         # Fallback for getting recipient addresses
         if( defined $mhead->{'x-failed-recipients'} ) {
             # X-Failed-Recipients: kijitora@example.jp
@@ -328,7 +346,11 @@ sub scan {
                     }
 
                     last if $e->{'reason'};
-                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $RxExpr;
+                    if( $e->{'diagnosis'} =~ $RxExpr ) {
+                        # The reason "expired"
+                        $e->{'reason'} = 'expired';
+                        $e->{'softbounce'} = 1;
+                    }
                 }
                 last;
             }
