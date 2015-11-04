@@ -10,7 +10,7 @@ my $publicfile = [
     './eg/cannot-parse-yet',
     './eg/reason-is-undefined',
 ];
-my $privatefile = './tmp/data';
+my $privatefile = './var/data';
 
 PUBLIC_SAMPLES: {
     for my $d ( @$publicfile ) {

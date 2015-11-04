@@ -296,7 +296,7 @@ my $R = {
 for my $x ( keys %$R ) {
     # Check each MTA module
     my $M = 'Sisimai::MSP::'.$x;
-    my $d = './tmp/data/'.lc($x); $d =~ s/::/-/;
+    my $d = './var/data/'.lc($x); $d =~ s/::/-/;
 
     Module::Load::load( $M );
     use_ok $M;
@@ -309,7 +309,7 @@ for my $x ( keys %$R ) {
 
         opendir( $h, $d );
         while( my $e = readdir $h ) {
-            # Open email in tmp/data directory
+            # Open email in var/data directory
             next if $e eq '.';
             next if $e eq '..';
 
