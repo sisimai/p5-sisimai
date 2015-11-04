@@ -24,7 +24,7 @@ MP    := /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 GIT   := /usr/bin/git
 
 .DEFAULT_GOAL = git-status
-BH_LATESTVER := 2.7.13
+BH_LATESTVER := 2.7.13p1
 EMAIL_PARSER := ./tmp/emparser
 EMAIL_SAMPLE := ./tmp/sample
 BENCHMARKDIR := ./tmp/benchmark
@@ -194,7 +194,7 @@ update-analytical-precision-table: sample
 				sisimai_cmd | getline sisimai_ver; \
 				close(sisimai_cmd); \
 				printf(" %s %4d/%04d  %0.4f\n %s %s %9s %4d/%04d  %0.4f\n", \
-					"bounceHammer $(BH_LATESTVER)     ", x, y, x / y, \
+					"bounceHammer $(BH_LATESTVER)   ", x, y, x / y, \
 					"Sisimai", sisimai_ver, " ", y, y, 1 ); \
 			} ' \
 			>> $(PRECISIONTAB)
