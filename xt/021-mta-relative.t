@@ -35,7 +35,6 @@ my $R = {
         '01007' => qr/onhold/,
         '01008' => qr/expired/,
         '01009' => qr/userunknown/,
-        '01010' => qr/onhold/,
         '01011' => qr/hostunknown/,
         '01012' => qr/filtered/,
         '01013' => qr/filtered/,

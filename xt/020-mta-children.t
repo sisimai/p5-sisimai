@@ -492,6 +492,7 @@ my $R = {
         '01075' => qr/userunknown/,
         '01076' => qr/userunknown/,
         '01077' => qr/suspend/,
+        '01078' => qr/undefined/,
     },
     'Courier' => {
         '01001' => qr/filtered/,
