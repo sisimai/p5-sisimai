@@ -1,9 +1,22 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.13.0  Thu,  5 Nov 2015
-    - Issue #85, Use Semantic Versioning from this release. 
+4.13.0  Thu,  5 Nov 2015 16:11:12 +0900 (JST)
+    - Issue #85, Use Semantic Versioning from this release. New version number
+      is v4.13.0 <= v4.1.30.
     - Issue #84, Experimental implementation: New module Sisimai::MTA::X5 and
       added a sample email(x5-01.eml) for the module. Thanks to Masayoshi.M .
+    - Issue #86, Removed unused version() method from the following modules:
+      Sisimai::RFC3464, Sisimai::RFC3834, Sisimai::ARF, Sisimai::MTA::*, and
+      Sisimai::MSP::*::*.
+    - Issue #88, #89: fixed Sisimai::MTA::Notes and added notes-04.eml.
+    - Issue #90, #91: fixed code around Sisimai::Data->alias().
+    - Improved codes of Sisimai::MTA::*, Sisimai::MSP::*, Sisimai::RFC3464 and
+      Sisimai::ARF as a precaution against serious bug reported on issue #89.
+    - Improved codes and serious bug fix for issue #89 have made Sisimai 1.10
+      times faster than before.
+    - Issue #92, All the methods have YARD format comment.
+    - Issue #93, #94: Fixed bug and improved code for getting alias address and
+      setting the error reason in Sisimai::MTA::Exim.
 
 4.1.29  Tue,  6 Oct 2015 10:55:00 +0900 (JST)
     - Issue #83, New MTA module implemented as "Sisimai::MSP::US::ReceivingSES".
