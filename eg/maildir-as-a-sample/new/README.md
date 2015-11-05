@@ -39,6 +39,42 @@ Sisimai::MTA::Exim
   * [0237.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0237.CALLER)
   * Copyright (c) 1995 - 2012 University of Cambridge.
 
+* exim-14.eml
+  * [9001.CALLER](https://github.com/Exim/exim/blob/master/test/mail/9001.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-15.eml
+  * [0536.oksender](https://github.com/Exim/exim/blob/master/test/mail/0536.oksender)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-16.eml
+  * [0522.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0522.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-17.eml
+  * [0310.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0310.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-18.eml
+  * [0280.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0280.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-19.eml
+  * [0174.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0174.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-20.eml
+  * [0531.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0531.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-21.eml
+  * [0461.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0461.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
+* exim-22.eml
+  * [0321.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0321.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
 Sisimai::MTA::IMailServer
 -------------------------
 * imailserver-05.eml
