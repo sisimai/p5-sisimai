@@ -21,8 +21,11 @@ my $RxRFC = {
 };
 
 my $RxExcluding = {
-    'subject' => qr/SECURITY information for /, # sudo
-    'from'    => qr/root[@]/,
+    'subject' => qr/(?:
+                  SECURITY[ ]information[ ]for  # sudo
+                 |Mail[ ]failure[ ][-]          # Exim
+                 )/x,
+    'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/i,
     'to'      => qr/root[@]/,
 };
 
