@@ -156,10 +156,10 @@ and Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 7900 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 149800 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8400 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 152000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
-| Support Contract provided by Developer         | Available     | Coming soon |
+| Support Contract provided by Developer         | Available     | Contact Us  |
 
 1. Implement yourself with using DBI or any O/R Mapper you like
 2. See ./ANALYTICAL-PRECISION
@@ -182,10 +182,10 @@ and Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 7900行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 149800件    |
+| LOC:ソースコードの行数                         | 18200行       | 8400行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 152000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
-| 開発会社によるサポート契約                     | 提供中        | 準備中      |
+| 開発会社によるサポート契約                     | 提供中        | 問合せ      |
 
 1. DBIまたは好きなORMを使って自由に実装してください
 2. ./ANALYTICAL-PRECISIONを参照
