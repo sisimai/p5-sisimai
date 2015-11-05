@@ -103,8 +103,8 @@ private-sample:
 	$(EMAIL_PARSER) $(E)
 	@echo
 	@while true; do \
-		d=`$(EMAIL_PARSER) -Fjson ./$(E) | jq -M '.[].smtpagent' | tr '[A-Z]' '[a-z]' \
-			| sed -e 's/"//g' -e 's/::/-/g'`; \
+		d=`$(EMAIL_PARSER) -Fjson ./$(E) | jq -M '.[].smtpagent' | head -1 \
+			| tr '[A-Z]' '[a-z]' | sed -e 's/"//g' -e 's/::/-/g'`; \
 		if [ -d "$(FOR_EMPARSER)/$$d" ]; then \
 			latestfile=`ls -1 $(FOR_EMPARSER)/$$d/*.eml | tail -1`; \
 			curr_index=`basename $$latestfile | cut -d'-' -f1`; \
