@@ -1,4 +1,4 @@
- bounceHammer 2.7.13
+ bounceHammer 2.7.13p1
  MTA MODULE NAME          CAN PARSE   RATIO   NOTES
 -------------------------------------------------------------------------------
 MTA::Activehunter .......    0/0009  0.0000  TransWARE Active!hunter
@@ -6,7 +6,7 @@ MTA::ApacheJames ........    1/0006  0.1667  Java Apache Mail Enterprise Server
 MTA::Courier ............   13/0015  1.0000  Courier MTA
 MTA::Domino .............    7/0013  0.6364  IBM Domino Server
 MTA::Exchange ...........    1/0050  0.0303  Microsoft Exchange Server
-MTA::Exim ...............   77/0090  0.9625  Exim
+MTA::Exim ...............   97/0113  0.9417  Exim
 MTA::IMailServer ........    0/0039  0.0000  IPSWITCH IMail Server
 MTA::InterScanMSS .......    0/0007  0.0000  Trend Micro InterScan Messaging Security Suite
 MTA::MXLogic ............    0/0013  0.0000  McAfee SaaS
@@ -14,10 +14,10 @@ MTA::MailFoundry ........    0/0007  0.0000  MailFoundry
 MTA::MailMarshalSMTP ....    0/0003  0.0000  Trustwave Secure Email Gateway
 MTA::McAfee .............    0/0010  0.0000  McAfee Email Appliance
 MTA::MessagingServer ....   18/0021  1.0000  Oracle Communications Messaging Server
-MTA::Notes ..............    0/0010  0.0000  Lotus Notes
+MTA::Notes ..............    0/0011  0.0000  Lotus Notes
 MTA::OpenSMTPD ..........    5/0023  0.2778  OpenSMTPD
 MTA::Postfix ............  161/0178  1.0000  Postfix
-MTA::Sendmail ...........  239/0224  0.9835  V8Sendmail: /usr/sbin/sendmail
+MTA::Sendmail ...........  243/0228  0.9838  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    6/0008  1.0000  WebSense SurfControl
 MTA::V5sendmail .........    0/0377  0.0000  Sendmail version 5
 MTA::X1 .................    0/0007  0.0000  Unknown MTA #1
@@ -26,13 +26,13 @@ MTA::X3 .................    0/0008  0.0000  Unknown MTA #3
 MTA::X4 .................    0/0027  0.0000  Unknown MTA #4 qmail clones
 MTA::X5 .................    2/0002  1.0000  Unknown MTA #5
 MTA::mFILTER ............    0/0009  0.0000  Digital Arts m-FILTER
-MTA::qmail ..............   50/0076  0.8065  qmail
+MTA::qmail ..............   51/0076  0.8226  qmail
 MSP::DE::EinsUndEins ....    0/0003  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0010  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
 MSP::JP::EZweb ..........  129/0124  1.0000  au EZweb: http://www.au.kddi.com/mobile/
 MSP::JP::KDDI ...........    6/0006  1.0000  au by KDDI: http://www.au.kddi.com
-MSP::RU::MailRu .........    0/0018  0.0000  @mail.ru: https://mail.ru
+MSP::RU::MailRu .........    0/0010  0.0000  @mail.ru: https://mail.ru
 MSP::RU::Yandex .........    4/0007  1.0000  Yandex.Mail: http://www.yandex.ru
 MSP::UK::MessageLabs ....    2/0002  1.0000  Symantec.cloud http://www.messagelabs.com
 MSP::US::AmazonSES ......   18/0018  1.0000  AmazonSES(Sending): http://aws.amazon.com/ses/
@@ -50,5 +50,5 @@ ARF .....................    9/0050  0.2812  Abuse Feedback Reporting Format
 RFC3464 .................  124/0269  0.4901  Fallback Module for MTAs
 RFC3834 .................    0/0004  0.0000  Detector for auto replied message
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13       974/1943  0.5013
- Sisimai 4.13.0           1943/1943  1.0000
+ bounceHammer 2.7.13p1     999/1963  0.5089
+ Sisimai 4.13.0           1963/1963  1.0000
