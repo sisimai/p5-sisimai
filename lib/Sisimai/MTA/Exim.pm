@@ -49,6 +49,8 @@ my $RxComm = [
     # transports/smtp.c:837|  string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
+    qr/LMTP error after ([A-Za-z]{4})/,
+    qr/LMTP error after end of ([A-Za-z]{4})/,
 ];
 
 my $RxExpr = qr{(?:
@@ -103,6 +105,7 @@ my $RxSess = {
          delivery[ ]to[ ](?:file|pipe)[ ]forbidden
         # transports/pipe.c:1156|  addr->user_message = US"local delivery failed";
         |local[ ]delivery[ ]failed
+        |LMTP[ ]error[ ]after[ ]
         )
     }x,
     'contenterror' => qr{
@@ -345,8 +348,8 @@ sub scan {
                         $e->{'reason'} = $r;
                         last(SESSION);
                     }
-
                     last if $e->{'reason'};
+
                     if( $e->{'diagnosis'} =~ $RxExpr ) {
                         # The reason "expired"
                         $e->{'reason'} = 'expired';
