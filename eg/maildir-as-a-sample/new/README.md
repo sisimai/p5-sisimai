@@ -83,6 +83,10 @@ Sisimai::MTA::Exim
   * [0136.forwarder](https://github.com/Exim/exim/blob/master/test/mail/0136.forwarder)
   * Copyright (c) 1995 - 2012 University of Cambridge.
 
+* exim-25.eml
+  * [0233.me](https://github.com/Exim/exim/blob/master/test/mail/0233.me)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
 Sisimai::MTA::IMailServer
 -------------------------
 * imailserver-05.eml
