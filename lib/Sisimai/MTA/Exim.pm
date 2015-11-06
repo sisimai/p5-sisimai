@@ -188,7 +188,10 @@ sub scan {
         last if $e =~ $RxMTA->{'endof'};
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
+            if( $e =~ $RxMTA->{'begin'} ) {
+                $readcursor |= $indicators->{'deliverystatus'};
+                next unless $e =~ $RxMTA->{'frozen'};
+            }
         }
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
