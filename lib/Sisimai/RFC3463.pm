@@ -311,6 +311,7 @@ my $InternalCode = {
         'mailboxfull'   => [ '4.0.922' ],
         'exceedlimit'   => [ '4.0.923' ],
         'systemfull'    => [ '4.0.931' ],
+        'systemerror'   => [ '4.0.935' ],
         'toomanyconn'   => [ '4.0.945' ],
         'expired'       => [ '4.0.947' ],
         'suspend'       => [ '4.0.990' ],
