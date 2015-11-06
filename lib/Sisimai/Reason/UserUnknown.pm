@@ -17,6 +17,7 @@ sub match {
         |[#]5[.]1[.]1[ ]bad[ ]address
         |[<].+[>][ ]not[ ]found
         |address[ ]does[ ]not[ ]exist
+        |address[ ]unknown
         |archived[ ]recipient
         |BAD[-_\s]RECIPIENT
         |destination[ ]addresses[ ]were[ ]unknown
@@ -67,6 +68,7 @@ sub match {
             |does[ ]not[ ]exist(?:[ ]on[ ]this[ ]system)?
             |is[ ]not[ ]local
             |not[ ]found
+            |not[ ]OK
             |unknown
             )
         |requested[ ]action[ ]not[ ]taken:[ ]mailbox[ ]unavailable
