@@ -31,13 +31,20 @@ my $RxMTA = {
     'from'      => qr/\AMail Delivery System/,
     'alias'     => qr/\A[ ]+an[ ]undisclosed[ ]address\z/,
     'rfc822'    => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
-    'begin'     => qr/\AThis message was created automatically by mail delivery software[.]/,
+    'begin'     => qr{\A(?>
+                     This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
+                    |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
+                    |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
+                    )
+                   }x,
     'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'frozen'    => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
     'subject'   => qr{(?:
          Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
         |Warning:[ ]message[ ].+[ ]delayed[ ]+
         |Delivery[ ]Status[ ]Notification
         |Mail[ ]failure
+        |Message[ ]frozen
         )
     }x,
     'message-id' => qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
@@ -63,7 +70,12 @@ my $RxExpr = qr{(?:
     #                 "after this message arrived";
     |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
     |all[ ]hosts[ ]have[ ]been[ ]failing[ ]for[ ]a[ ]long[ ]time[ ]and[ ]were[ ]last[ ]tried
+    # deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
     |Delay[ ]reason:[ ]
+    # deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
+    # receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
+    # receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
+    |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival[ ]by[ ])
     )
 }x;
 
@@ -151,14 +163,25 @@ sub scan {
     my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
+    my $boundary00 = '';    # (String) Boundary string
+    my $rxboundary = undef; # (String) Regular expression for matching with the boundary
 
     my $v = undef;
     my $p = '';
+
     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     $rfc822head = __PACKAGE__->RFC822HEADERS;
+    if( $mhead->{'content-type'} ) {
+        # Get the boundary string and set regular expression for matching with
+        # the boundary string.
+        require Sisimai::MIME;
+        $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
+        $rxboundary = qr/\A[-]{2}$boundary00\z/ if length $boundary00;
+    }
 
     for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        last if $e =~ $RxMTA->{'endof'};
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
             $readcursor |= $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
@@ -214,8 +237,9 @@ sub scan {
                 # deliver.c:6811|  "recipients. This is a permanent error. The following address(es) failed:\n");
                 $v->{'softbounce'} = 0;
 
-            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s\t]+[.][a-zA-Z]+)\z/ || $e =~ $RxMTA->{'alias'} ) {
+            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s\t]+[.][a-zA-Z]+)(:.+)?\z/ || $e =~ $RxMTA->{'alias'} ) {
                 #   kijitora@example.jp
+                #   sabineko@example.jp: forced freeze
                 #
                 # deliver.c:4549|  printed = US"an undisclosed address";
                 #   an undisclosed address
@@ -238,10 +262,17 @@ sub scan {
                 $v->{'diagnosis'} .= $e.' ';
 
             } else {
-                # Error message when email address above does not include '@'
-                # and domain part.
-                next unless $e =~ m/\A\s{4}/;
-                $v->{'alterrors'} .= $e.' ';
+                if( $e =~ $RxMTA->{'frozen'} ) {
+                    # Message *** has been frozen by the system filter.
+                    # Message *** was frozen on arrival by ACL.
+                    $v->{'alterrors'} .= $e.' ';
+
+                } else {
+                    # Error message when email address above does not include '@'
+                    # and domain part.
+                    next unless $e =~ m/\A\s{4}/;
+                    $v->{'alterrors'} .= $e.' ';
+                }
             }
         } # End of if: rfc822
 
