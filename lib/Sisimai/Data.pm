@@ -96,6 +96,7 @@ sub new {
         );
         $thing->{ $_ } = $argvs->{ $_ } // '' for @v;
         $thing->{'replycode'} = Sisimai::RFC5321->getrc( $argvs->{'diagnosticcode'} );
+        $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
     }
     return bless( $thing, __PACKAGE__ );
 }
