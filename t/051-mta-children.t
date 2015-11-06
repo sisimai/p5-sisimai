@@ -105,9 +105,11 @@ my $R = {
         '17' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
         '18' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/hostunknown/ },
         '19' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/networkerror/ },
-        '20' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+        '20' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/(?:expired|systemerror)/ },
         '21' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
         '22' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/systemerror/ },
+        '23' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
+        '24' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
     },
     'Courier' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
