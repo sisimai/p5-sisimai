@@ -512,6 +512,8 @@ my $R = {
         '01095' => qr/undefined/,
         '01096' => qr/onhold/,
         '01097' => qr/(?:hostunknown|networkerror)/,
+        '01098' => qr/expired/,
+        '01099' => qr/expired/,
     },
     'Courier' => {
         '01001' => qr/filtered/,
