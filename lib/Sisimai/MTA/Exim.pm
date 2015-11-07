@@ -34,7 +34,7 @@ my $RxMTA = {
                      [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message.+headers[.][ ][-]+
                     |Content-Type:[ ]*message/rfc822
                     )\z
-                   }xi,
+                   }x,
     'begin'     => qr{\A(?>
                      This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
                     |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
