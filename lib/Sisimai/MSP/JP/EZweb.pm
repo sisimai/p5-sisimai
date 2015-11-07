@@ -16,11 +16,8 @@ my $RxMSP = {
         |[<][^ ]+[@][^ ]+[>]\z
         )
     }x,
-    'rfc822'     => [
-        # Do not rewrite this regular expressions with /x switch.
-        qr/\A[-]{50}/,
-        qr|\AContent-Type: message/rfc822\z|,
-    ],
+    'rfc822'     => qr#\A(?:[-]{50}|Content-Type:[ ]*message/rfc822)#,
+    'boundary'   => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
     'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
@@ -109,7 +106,8 @@ sub scan {
 
     my $rxboundary = Sisimai::MIME->boundary( $mhead->{'content-type'}, 1 );
     my @rxmessages = ();
-    push @{ $RxMSP->{'rfc822'} }, qr|\A$rxboundary\z| if length $rxboundary;
+
+    $RxMSP->{'boundary'} = qr|\A$rxboundary\z| if length $rxboundary;
     map { push @rxmessages, @{ $RxErr->{ $_ } } } ( keys %$RxErr );
 
     for my $e ( @stripedtxt ) {
@@ -121,7 +119,8 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } ) {
+            if( $e =~ $RxMSP->{'rfc822'} || $e =~ $RxMSP->{'boundary'} ) {
+                # if( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
