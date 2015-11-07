@@ -91,6 +91,10 @@ Sisimai::MTA::Exim
   * [0015.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0015.CALLER)
   * Copyright (c) 1995 - 2012 University of Cambridge.
 
+* exim-27.eml
+  * [0211.CALLER](https://github.com/Exim/exim/blob/master/test/mail/0211.CALLER)
+  * Copyright (c) 1995 - 2012 University of Cambridge.
+
 Sisimai::MTA::IMailServer
 -------------------------
 * imailserver-05.eml
