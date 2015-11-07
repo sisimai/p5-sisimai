@@ -14,7 +14,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     is $PackageName->text, 'expired', '->text = expired';
-    ok $PackageName->match('400 4.4.7 Delivery time Expired');
+    ok $PackageName->match('400 4.4.7 Delivery time expired');
     is $PackageName->true, undef, '->true = undef';
 }
 
