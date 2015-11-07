@@ -39,6 +39,7 @@ my $RxMTA = {
                      This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
                     |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
                     |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
+                    |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
                     )
                    }x,
     'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
@@ -49,6 +50,7 @@ my $RxMTA = {
         |Delivery[ ]Status[ ]Notification
         |Mail[ ]failure
         |Message[ ]frozen
+        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
         )
     }x,
     'message-id' => qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
