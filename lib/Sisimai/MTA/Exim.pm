@@ -377,12 +377,36 @@ sub scan {
         $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 
+        unless( $e->{'diagnosis'} ) {
+            # Empty Diagnostic-Code: or error message
+            if( $boundary00 ) {
+                # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
+                # Content-type: message/delivery-status
+                #
+                # Reporting-MTA: dns; the.local.host.name
+                #
+                # Action: failed
+                # Final-Recipient: rfc822;/a/b/c
+                # Status: 5.0.0
+                #
+                # Action: failed
+                # Final-Recipient: rfc822;|/p/q/r
+                # Status: 5.0.0
+                $e->{'diagnosis'} = $dscontents->[0]->{'diagnosis'} || '';
+                if( $dscontents->[0]->{'alterrors'} ) {
+                    # The value of "alterrors" is also copied
+                    $e->{'alterrors'} = $dscontents->[0]->{'alterrors'};
+                }
+            }
+        }
+
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
             if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+
             } else {
                 # Check the both value and try to match 
                 if( length( $e->{'diagnosis'} ) < length( $e->{'alterrors'} ) ) {
