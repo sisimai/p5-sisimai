@@ -113,6 +113,7 @@ my $R = {
         '25' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
         '26' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/mailererror/ },
         '27' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/blocked/ },
+        '28' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailererror/ },
     },
     'Courier' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
