@@ -393,6 +393,8 @@ sub scan {
                 # Final-Recipient: rfc822;|/p/q/r
                 # Status: 5.0.0
                 $e->{'diagnosis'} = $dscontents->[0]->{'diagnosis'} || '';
+                $e->{'spec'}    ||= $dscontents->[0]->{'spec'};
+
                 if( $dscontents->[0]->{'alterrors'} ) {
                     # The value of "alterrors" is also copied
                     $e->{'alterrors'} = $dscontents->[0]->{'alterrors'};
