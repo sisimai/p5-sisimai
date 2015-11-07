@@ -105,7 +105,7 @@ sub scan {
 
             # Your message:
             #    From:    originalsender@example.com
-            #    Subject: IIdentifica巽達o
+            #    Subject: IIdentifica蟾ｽ驕俳
             #
             # Could not be delivered because of
             #

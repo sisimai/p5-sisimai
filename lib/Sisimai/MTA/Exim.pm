@@ -188,6 +188,7 @@ sub scan {
     for my $e ( @stripedtxt ) {
         # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
         last if $e =~ $RxMTA->{'endof'};
+
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
             if( $e =~ $RxMTA->{'begin'} ) {

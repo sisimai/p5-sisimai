@@ -123,6 +123,7 @@ sub scan {
             # Beginning of the original message part
             if( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } ) {
                 $readcursor |= $indicators->{'message-rfc822'};
+                next;
             }
         }
 

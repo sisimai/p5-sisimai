@@ -211,7 +211,10 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            $readcursor |= $indicators->{'message-rfc822'} if $e =~ $RxMSP->{'rfc822'};
+            if( $e =~ $RxMSP->{'rfc822'} ) {
+                $readcursor |= $indicators->{'message-rfc822'};
+                next;
+            }
         }
 
         if( $readcursor & $indicators->{'message-rfc822'} ) {

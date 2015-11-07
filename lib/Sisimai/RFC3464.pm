@@ -100,12 +100,18 @@ sub scan {
         # Read each line between $RxRFC->{'begin'} and $RxRFC->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $RxRFC->{'begin'};
+            if( $e =~ $RxRFC->{'begin'} ) {
+                $readcursor |= $indicators->{'deliverystatus'};
+                next;
+            }
         }
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            $readcursor |= $indicators->{'message-rfc822'} if $e =~ $RxRFC->{'rfc822'};
+            if( $e =~ $RxRFC->{'rfc822'} ) {
+                $readcursor |= $indicators->{'message-rfc822'};
+                next;
+            }
         }
 
         if( $readcursor & $indicators->{'message-rfc822'} ) {
