@@ -520,6 +520,7 @@ my $R = {
         '01103' => qr/undefined/,
         '01104' => qr/mailererror/,
         '01105' => qr/mailererror/,
+        '01106' => qr/onhold/,
     },
     'Courier' => {
         '01001' => qr/filtered/,
