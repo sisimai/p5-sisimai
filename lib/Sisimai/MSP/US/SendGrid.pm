@@ -16,7 +16,7 @@ my $RxMSP = {
 
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
-sub headerlist  { return [ 'Return-Path' ] }
+sub headerlist  { return [ 'Return-Path', 'X-Mailer' ] }
 
 sub scan {
     # Detect an error from SendGrid
