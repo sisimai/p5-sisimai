@@ -5,7 +5,7 @@ use Sisimai::Message;
 
 my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
-    'class' => [ 'new', 'makeheaders', 'resolve', 'rewrite', 'ENDOFEMAIL' ],
+    'class' => [ 'new', 'resolve', 'rewrite', 'ENDOFEMAIL' ],
     'object' => [ 'from', 'header', 'ds', 'rfc822' ],
 };
 my $SampleEmail = './eg/mbox-as-a-sample';
@@ -35,8 +35,11 @@ MAKE_TEST: {
 
     $p = $PackageName->new( 
             'data' => $mailastext, 
-            'mtalist' => [ 'Sendmail', 'Postfix', 'qmail', 'Exchange' ], 
-            'msplist' => [ 'US::Google', 'US::Verizon' ]
+            'order' => [ 
+                'Sisimai::MTA::Sendmail', 'Sisimai::MTA::Postfix', 
+                'Sisimai::MTA::qmail', 'Sisimai::MTA::Exchange', 
+                'Sisimai::MSP::US::Google', 'Sisimai::MSP::US::Verizon',
+            ]
          );
 
     for my $e ( @{ $p->ds } ) {
