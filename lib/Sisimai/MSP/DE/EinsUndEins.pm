@@ -4,16 +4,18 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
+my $Re0 = {
     'from'    => qr/\A["]Mail Delivery System["]/,
+    'subject' => qr/\AMail delivery failed: returning message to sender\z/,
+};
+my $Re1 = {
     'begin'   => qr/\AThis message was created automatically by mail delivery software/,
     'error'   => qr/\AFor the following reason:/,
     'rfc822'  => qr/\A--- The header of the original message is following/,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\AMail delivery failed: returning message to sender\z/,
 };
 
-my $RxSess = {
+my $ReFailure = {
     'mesgtoobig' => qr{
         Mail[ ]size[ ]limit[ ]exceeded
     }x,
@@ -39,8 +41,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}    =~ $RxMSP->{'from'};
-    return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -61,12 +63,12 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -74,7 +76,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -130,7 +132,7 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ $RxMSP->{'error'} ) {
+            } elsif( $e =~ $Re1->{'error'} ) {
                 # For the following reason:
                 $v->{'diagnosis'} = $e;
 
@@ -164,12 +166,12 @@ sub scan {
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
 
-        $e->{'diagnosis'} =~ s/\A$RxMSP->{'error'}//g;
+        $e->{'diagnosis'} =~ s/\A$Re1->{'error'}//g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxSess ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

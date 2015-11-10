@@ -4,7 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
+my $Re0 = {
     'received' => qr/by .+[.]vtext[.]com /,
     'vtext.com' => {
         'from' => qr/\Apost_master[@]vtext[.]com\z/,
@@ -38,9 +38,9 @@ sub scan {
 
     while(1) {
         # Check the value of "From" header
-        last unless grep { $_ =~ $RxMSP->{'received'} } @{ $mhead->{'received'} };
-        $vtext = 1 if $mhead->{'from'} =~ $RxMSP->{'vtext.com'}->{'from'};
-        $vtext = 0 if $mhead->{'from'} =~ $RxMSP->{'vzwpix.com'}->{'from'};
+        last unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+        $vtext = 1 if $mhead->{'from'} =~ $Re0->{'vtext.com'}->{'from'};
+        $vtext = 0 if $mhead->{'from'} =~ $Re0->{'vzwpix.com'}->{'from'};
         last;
     }
     return undef unless defined $vtext;
@@ -60,8 +60,8 @@ sub scan {
     my $senderaddr = '';    # (String) Sender address in the message body
     my $subjecttxt = '';    # (String) Subject of the original message
 
-    my $RxMTA      = {};    # (Ref->Hash) Delimiter patterns
-    my $RxErr      = {};    # (Ref->Hash) Error message patterns
+    my $Re1      = {};    # (Ref->Hash) Delimiter patterns
+    my $ReFailure      = {};    # (Ref->Hash) Error message patterns
     my $boundary00 = '';    # (String) Boundary string
 
     my $v = undef;
@@ -74,13 +74,13 @@ sub scan {
 
     if( $vtext == 1 ) {
         # vtext.com
-        $RxMTA = {
+        $Re1 = {
             'begin'  => qr/\AError:\s/,
             'rfc822' => qr/\A__BOUNDARY_STRING_HERE__\z/,
             'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
         };
 
-        $RxErr = {
+        $ReFailure = {
             'userunknown' => qr{
                 # The attempted recipient address does not exist.
                 550[ ][-][ ]Requested[ ]action[ ]not[ ]taken:[ ]no[ ]such[ ]user[ ]here
@@ -89,13 +89,13 @@ sub scan {
 
         $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
-        $RxMTA->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
+        $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
 
         for my $e ( @stripedtxt ) {
-            # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+            # Read each line between $Re0->{'begin'} and $Re0->{'rfc822'}.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                if( $e =~ $RxMTA->{'begin'} ) {
+                if( $e =~ $Re1->{'begin'} ) {
                     $readcursor |= $indicators->{'deliverystatus'};
                     next;
                 }
@@ -103,7 +103,7 @@ sub scan {
 
             unless( $readcursor & $indicators->{'message-rfc822'} ) {
                 # Beginning of the original message part
-                if( $e =~ $RxMTA->{'rfc822'} ) {
+                if( $e =~ $Re1->{'rfc822'} ) {
                     $readcursor |= $indicators->{'message-rfc822'};
                     next;
                 }
@@ -182,13 +182,13 @@ sub scan {
 
     } else {
         # vzwpix.com
-        $RxMTA = {
+        $Re1 = {
             'begin'  => qr/\AMessage could not be delivered to mobile/,
             'rfc822' => qr/\A__BOUNDARY_STRING_HERE__\z/,
             'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
         };
 
-        $RxErr = {
+        $ReFailure = {
             'userunknown' => qr{
                 No[ ]valid[ ]recipients[ ]for[ ]this[ ]MM
             }x,
@@ -196,13 +196,13 @@ sub scan {
 
         $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
-        $RxMTA->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
+        $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
 
         for my $e ( @stripedtxt ) {
-            # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+            # Read each line between $Re0->{'begin'} and $Re0->{'rfc822'}.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                if( $e =~ $RxMTA->{'begin'} ) {
+                if( $e =~ $Re1->{'begin'} ) {
                     $readcursor |= $indicators->{'deliverystatus'};
                     next;
                 }
@@ -210,7 +210,7 @@ sub scan {
 
             unless( $readcursor & $indicators->{'message-rfc822'} ) {
                 # Beginning of the original message part
-                if( $e =~ $RxMTA->{'rfc822'} ) {
+                if( $e =~ $Re1->{'rfc822'} ) {
                     $readcursor |= $indicators->{'message-rfc822'};
                     next;
                 }
@@ -312,9 +312,9 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

@@ -4,20 +4,22 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
-    'from'    => qr/mailer-daemon[@]mail[.]zoho[.]com\z/,
-    'begin'   => qr/\AThis message was created automatically by mail delivery/,
-    'rfc822'  => qr/\AReceived:\s*from mail[.]zoho[.]com/,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr{\A(?:
-         Undelivered[ ]Mail[ ]Returned[ ]to[ ]Sender
-        |Mail[ ]Delivery[ ]Status[ ]Notification
-        )
-    }x,
-    'x-mailer'=> qr/\AZoho Mail\z/,
+my $Re0 = {
+    'from'     => qr/mailer-daemon[@]mail[.]zoho[.]com\z/,
+    'subject'  => qr{\A(?:
+                     Undelivered[ ]Mail[ ]Returned[ ]to[ ]Sender
+                    |Mail[ ]Delivery[ ]Status[ ]Notification
+                    )
+                  }x,
+    'x-mailer' => qr/\AZoho Mail\z/,
+};
+my $Re1 = {
+    'begin'  => qr/\AThis message was created automatically by mail delivery/,
+    'rfc822' => qr/\AReceived:\s*from mail[.]zoho[.]com/,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $RxSess = {
+my $ReFailure = {
     'expired' => qr/Host not reachable/
 };
 
@@ -44,9 +46,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}     =~ $RxMSP->{'from'};
-    return undef unless $mhead->{'subject'}  =~ $RxMSP->{'subject'};
-    return undef unless $mhead->{'x-mailer'} =~ $RxMSP->{'x-mailer'};
+    return undef unless $mhead->{'from'}     =~ $Re0->{'from'};
+    return undef unless $mhead->{'subject'}  =~ $Re0->{'subject'};
+    return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -68,12 +70,12 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -81,7 +83,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -191,9 +193,9 @@ sub scan {
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxSess ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

@@ -4,17 +4,19 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
-    'from'    => qr/postmaster[@]/,
-    'begin'   => qr/\AThis is an automatically generated Delivery Status Notification/,
-    'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => qr|\AContent-Type: message/rfc822\z|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/Delivery Status Notification/,
-    'received'=> qr/.+[.]hotmail[.]com\b/,
+my $Re0 = {
+    'from'     => qr/postmaster[@]/,
+    'subject'  => qr/Delivery Status Notification/,
+    'received' => qr/.+[.]hotmail[.]com\b/,
+};
+my $Re1 = {
+    'begin'  => qr/\AThis is an automatically generated Delivery Status Notification/,
+    'error'  => qr/\A[.]+ while talking to .+[:]\z/,
+    'rfc822' => qr|\AContent-Type: message/rfc822\z|,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'hostunknown' => qr/The mail could not be delivered to the recipient because the domain is not reachable/,
     'userunknown' => qr/Requested action not taken: mailbox unavailable/,
 };
@@ -41,10 +43,10 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match++ if $mhead->{'subject'} =~ $RxMSP->{'subject'};
+    $match++ if $mhead->{'subject'} =~ $Re0->{'subject'};
     $match++ if $mhead->{'x-message-delivery'};
     $match++ if $mhead->{'x-message-info'};
-    $match++ if grep { $_ =~ $RxMSP->{'received'} } @{ $mhead->{'received'} };
+    $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef if $match < 2;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -71,10 +73,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -82,7 +84,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -220,9 +222,9 @@ sub scan {
             }
         }
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

@@ -4,12 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
-    'from'    => qr//,
+my $Re0 = {
+    'subject' => qr/\AFailure Notice\z/,
+};
+my $Re1 = {
     'begin'   => qr/\ASorry, we were unable to deliver your message/,
     'rfc822'  => qr/\A--- Below this line is a copy of the message[.]\z/,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\AFailure Notice\z/,
 };
 
 sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
@@ -36,7 +37,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-originating-ip'};
-    return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -57,12 +58,12 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -70,7 +71,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
