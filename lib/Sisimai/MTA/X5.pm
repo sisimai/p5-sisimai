@@ -4,12 +4,14 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
-    'from'     => qr/\bTWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0\b/,
-    'to'       => qr/\bNotificationRecipients\b/,
+my $Re0 = {
+    'from' => qr/\bTWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0\b/,
+    'to'   => qr/\bNotificationRecipients\b/,
+};
+my $Re1 = {
     'begin'    => qr|\AContent-Type: message/delivery-status|,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'rfc822'   => qr|\AContent-Type: message/rfc822|,
+    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 sub description { 'Unknown MTA #5' }
@@ -34,10 +36,10 @@ sub scan {
     my $match = 0;
 
     # To: "NotificationRecipients" <...>
-    $match++ if defined $mhead->{'to'} && $mhead->{'to'} =~ $RxMTA->{'to'};
+    $match++ if defined $mhead->{'to'} && $mhead->{'to'} =~ $Re0->{'to'};
 
     require Sisimai::MIME;
-    if( $mhead->{'from'} =~ $RxMTA->{'from'} ) {
+    if( $mhead->{'from'} =~ $Re0->{'from'} ) {
         # From: "=?iso-2022-jp?B?TWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0=?=" <...>
         #       Mail Delivery Subsystem
         for my $f ( split( ' ', $mhead->{'from'} ) ) {
@@ -75,10 +77,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -86,7 +88,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }

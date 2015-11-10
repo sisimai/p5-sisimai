@@ -4,13 +4,15 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
+    'subject'  => qr/\AUndeliverable Mail: ["]/,
+};
+my $Re1 = {
     'begin'    => qr/\AYour message:\z/,
     'rfc822'   => undef,
     'error'    => qr/\ACould not be delivered because of\z/,
     'rcpts'    => qr/\AThe following recipients were affected:/,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject'  => qr/\AUndeliverable Mail: ["]/,
 };
 
 sub description { 'Trustwave Secure Email Gateway' }
@@ -34,7 +36,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
     require Sisimai::MIME;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -58,19 +60,19 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
-    $RxMTA->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
-    $RxMTA->{'rfc822'} = qr/\A\s*[+]+\s*\z/ unless $RxMTA->{'rfc822'};
+    $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
+    $Re1->{'rfc822'} = qr/\A\s*[+]+\s*\z/ unless $Re1->{'rfc822'};
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
         }
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            $readcursor |= $indicators->{'message-rfc822'} if $e =~ $RxMTA->{'rfc822'};
+            $readcursor |= $indicators->{'message-rfc822'} if $e =~ $Re1->{'rfc822'};
         }
 
         if( $readcursor & $indicators->{'message-rfc822'} ) {
@@ -101,7 +103,7 @@ sub scan {
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $indicators->{'deliverystatus'};
-            last if $e =~ $RxMTA->{'rfc822'};
+            last if $e =~ $Re1->{'rfc822'};
 
             # Your message:
             #    From:    originalsender@example.com
@@ -128,7 +130,7 @@ sub scan {
 
             } else {
                 # Get error message lines
-                if( $e =~ $RxMTA->{'error'} ) {
+                if( $e =~ $Re1->{'error'} ) {
                     # Could not be delivered because of
                     #
                     # 550 5.1.1 User unknown
@@ -136,7 +138,7 @@ sub scan {
 
                 } elsif( length $v->{'diagnosis'} && $endoferror == 0 ) {
                     # Append error messages
-                    $endoferror = 1 if $e =~ $RxMTA->{'rcpts'};
+                    $endoferror = 1 if $e =~ $Re1->{'rcpts'};
                     next if $endoferror;
 
                     $v->{'diagnosis'} .= ' '.$e;

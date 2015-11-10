@@ -4,11 +4,8 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
     'from'     => qr/InterScan MSS/,
-    'begin'    => qr|\AContent-type: text/plain|,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822'   => qr|\AContent-type: message/rfc822|,
     'received' => qr/[ ][(]InterScanMSS[)][ ]with[ ]/,
     'subject'  => [
         'Mail could not be delivered',
@@ -17,6 +14,11 @@ my $RxMTA = {
         # メール配信に失敗しました
         '=?iso-2022-jp?B?GyRCJWEhPCVrR1s/LiRLPDpHVCQ3JF4kNyQ/GyhCDQo=?=',
     ],
+};
+my $Re1 = {
+    'begin'  => qr|\AContent-type: text/plain|,
+    'rfc822' => qr|\AContent-type: message/rfc822|,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
@@ -40,8 +42,8 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if $mhead->{'from'} =~ $RxMTA->{'from'};
-    $match = 1 if grep { $mhead->{'subject'} eq $_ } @{ $RxMTA->{'subject'} };
+    $match = 1 if $mhead->{'from'} =~ $Re0->{'from'};
+    $match = 1 if grep { $mhead->{'subject'} eq $_ } @{ $Re0->{'subject'} };
     return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -63,10 +65,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -74,7 +76,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }

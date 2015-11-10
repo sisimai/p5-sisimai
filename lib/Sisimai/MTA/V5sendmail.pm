@@ -4,6 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+my $Re0 = {
+    'from'    => qr/\AMail Delivery Subsystem/,
+    'subject' => qr/\AReturned mail: [A-Z]/,
+};
 # Error text regular expressions which defined in src/savemail.c
 #   savemail.c:485| (void) fflush(stdout);
 #   savemail.c:486| p = queuename(e->e_parent, 'x');
@@ -20,8 +24,7 @@ use warnings;
 #   savemail.c:497|   while (fgets(buf, sizeof buf, xfile) != NULL)
 #   savemail.c:498|       putline(buf, fp, m);
 #   savemail.c:499|   (void) fclose(xfile);
-my $RxMTA = {
-    'from'    => qr/\AMail Delivery Subsystem/,
+my $Re1 = {
     'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
     'rfc822'  => qr{\A\s+-----\s(?:
@@ -30,7 +33,6 @@ my $RxMTA = {
         )\s-----
     }x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\AReturned mail: [A-Z]/,
 };
 
 sub description { 'Sendmail version 5' }
@@ -53,7 +55,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -77,10 +79,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -88,7 +90,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -161,7 +163,7 @@ sub scan {
             } else {
                 # Detect SMTP session error or connection error
                 next if $v->{'sessionerr'};
-                if( $e =~ $RxMTA->{'error'} ) { 
+                if( $e =~ $Re1->{'error'} ) { 
                     # ----- Transcript of session follows -----
                     # ... while talking to mta.example.org.:
                     $v->{'sessionerr'} = 1;

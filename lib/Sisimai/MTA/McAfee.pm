@@ -4,16 +4,18 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
+    'x-nai'   => qr/Modified by McAfee /,
+    'subject' => qr/\ADelivery Status\z/,
+};
+my $Re1 = {
     'begin'   => qr/[-]+ The following addresses had delivery problems [-]+\z/,
     'error'   => qr|\AContent-Type: [^ ]+/[^ ]+; name="deliveryproblems[.]txt"|,
     'rfc822'  => qr|\AContent-Type: message/rfc822\z|,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'x-nai'   => qr/Modified by McAfee /,
-    'subject' => qr/\ADelivery Status\z/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'userunknown' => qr{(?:
          User[ ][(].+[@].+[)][ ]unknown[.]
         |550[ ]Unknown[ ]user[ ][^ ]+[@][^ ]+
@@ -43,8 +45,8 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-nai-header'};
-    return undef unless $mhead->{'x-nai-header'} =~ $RxMTA->{'x-nai'};
-    return undef unless $mhead->{'subject'}      =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'x-nai-header'} =~ $Re0->{'x-nai'};
+    return undef unless $mhead->{'subject'}      =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -68,10 +70,10 @@ sub scan {
     require Sisimai::Address;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -79,7 +81,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -186,9 +188,9 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} || $diagnostic );
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

@@ -4,16 +4,18 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
+    'subject'  => qr/\ADelivery Notification: /,
+    'received' => qr/[ ][(]MessagingServer[)][ ]with[ ]/,
+    'boundary' => qr/Boundary_[(]ID_.+[)]/,
+};
+my $Re1 = {
     'begin'    => qr/\AThis report relates to a message you sent with the following header fields:/,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'rfc822'   => qr!\A(?:Content-type:\s*message/rfc822|Return-path:\s*)!x,
-    'subject'  => qr/\ADelivery Notification: /,
-    'boundary' => qr/Boundary_[(]ID_.+[)]/,
-    'received' => qr/[ ][(]MessagingServer[)][ ]with[ ]/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'hostunknown' => qr{Illegal[ ]host/domain[ ]name[ ]found}x,
 };
 
@@ -38,8 +40,8 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if $mhead->{'content-type'} =~ $RxMTA->{'boundary'};
-    $match = 1 if $mhead->{'subject'}      =~ $RxMTA->{'subject'};
+    $match = 1 if $mhead->{'content-type'} =~ $Re0->{'boundary'};
+    $match = 1 if $mhead->{'subject'}      =~ $Re0->{'subject'};
     return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -63,10 +65,10 @@ sub scan {
     require Sisimai::Address;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -74,7 +76,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -226,9 +228,9 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

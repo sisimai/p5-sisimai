@@ -4,7 +4,12 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
+    'subject'    => qr/\A\[BOUNCE\]\z/,
+    'received'   => qr/JAMES SMTP Server/,
+    'message-id' => qr/\d+[.]JavaMail[.].+[@]/,
+};
+my $Re1 = {
     # apache-james-2.3.2/src/java/org/apache/james/transport/mailets/
     #   AbstractNotify.java|124:  out.println("Error message below:");
     #   AbstractNotify.java|128:  out.println("Message details:");
@@ -12,9 +17,6 @@ my $RxMTA = {
     'error'      => qr/\AError message below:\z/,
     'rfc822'     => qr|\AContent-Type: message/rfc822|,
     'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject'    => qr/\A\[BOUNCE\]\z/,
-    'received'   => qr/JAMES SMTP Server/,
-    'message-id' => qr/\d+[.]JavaMail[.].+[@]/,
 };
 
 sub description { 'Java Apache Mail Enterprise Server' }
@@ -38,9 +40,9 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if $mhead->{'subject'} =~ $RxMTA->{'subject'};
-    $match = 1 if( defined $mhead->{'message-id'} && $mhead->{'message-id'} =~ $RxMTA->{'message-id'} );
-    $match = 1 if grep { $_ =~ $RxMTA->{'received'} } @{ $mhead->{'received'} };
+    $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match = 1 if( defined $mhead->{'message-id'} && $mhead->{'message-id'} =~ $Re0->{'message-id'} );
+    $match = 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -65,10 +67,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -76,7 +78,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -162,7 +164,7 @@ sub scan {
                 } else {
                     # Error message below:
                     # 550 - Requested action not taken: no such user here
-                    $v->{'diagnosis'} = $e if $e =~ $RxMTA->{'error'};
+                    $v->{'diagnosis'} = $e if $e =~ $Re1->{'error'};
                 }
             }
         } # End of if: rfc822

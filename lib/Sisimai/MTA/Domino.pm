@@ -4,14 +4,16 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
-    'begin'     => qr/\AYour message/,
-    'rfc822'    => qr|\AContent-Type: message/delivery-status\z|,
-    'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject'   => qr/\ADELIVERY FAILURE:/,
+my $Re0 = {
+    'subject' => qr/\ADELIVERY FAILURE:/,
+};
+my $Re1 = {
+    'begin'   => qr/\AYour message/,
+    'rfc822'  => qr|\AContent-Type: message/delivery-status\z|,
+    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'userunknown' => qr{(?>
          not[ ]listed[ ]in[ ](?:
              Domino[ ]Directory
@@ -48,7 +50,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -72,12 +74,12 @@ sub scan {
     require Sisimai::Address;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         next unless length $e;
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -85,7 +87,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -189,9 +191,9 @@ sub scan {
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'recipient'} = Sisimai::Address->s3s4( $e->{'recipient'} );
 
-        for my $r ( keys %$RxErr ) {
+        for my $r ( keys %$ReFailure ) {
             # Check each regular expression of Domino error messages
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             my $s = Sisimai::RFC3463->status( $r, 'p', 'i' );
             $e->{'status'} = $s if length $s;

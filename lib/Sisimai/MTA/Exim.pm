@@ -4,6 +4,21 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+my $Re0 = {
+    'from'      => qr/\AMail Delivery System/,
+    'subject'   => qr{(?:
+         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
+        |Warning:[ ]message[ ].+[ ]delayed[ ]+
+        |Delivery[ ]Status[ ]Notification
+        |Mail[ ]failure
+        |Message[ ]frozen
+        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
+        )
+    }x,
+    'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
+    # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
+};
+
 # Error text regular expressions which defined in exim/src/deliver.c
 #
 # deliver.c:6292| fprintf(f,
@@ -26,38 +41,25 @@ use warnings;
 # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
 # deliver.c:6425|          else fprintf(f,
 # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
-#
-my $RxMTA = {
-    'from'      => qr/\AMail Delivery System/,
-    'alias'     => qr/\A([ ]+an[ ]undisclosed[ ]address)\z/,
-    'rfc822'    => qr{\A(?:
+my $Re1 = {
+    'alias'  => qr/\A([ ]+an[ ]undisclosed[ ]address)\z/,
+    'frozen' => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
+    'rfc822' => qr{\A(?:
                      [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message.+headers[.][ ][-]+
                     |Content-Type:[ ]*message/rfc822
                     )\z
-                   }x,
-    'begin'     => qr{\A(?>
+                }x,
+    'begin'  => qr{\A(?>
                      This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
                     |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
                     |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
                     |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
                     )
                    }x,
-    'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'frozen'    => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
-    'subject'   => qr{(?:
-         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
-        |Warning:[ ]message[ ].+[ ]delayed[ ]+
-        |Delivery[ ]Status[ ]Notification
-        |Mail[ ]failure
-        |Message[ ]frozen
-        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
-        )
-    }x,
-    'message-id' => qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
-    # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $RxComm = [
+my $ReCommand = [
     # transports/smtp.c:564|  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
     # transports/smtp.c:837|  string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
@@ -66,26 +68,7 @@ my $RxComm = [
     qr/LMTP error after end of ([A-Za-z]{4})/,
 ];
 
-my $RxExpr = qr{(?:
-    # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
-     retry[ ]timeout[ ]exceeded
-    # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
-    |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
-    # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
-    # smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
-    #                 "after this message arrived";
-    |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
-    |all[ ]hosts[ ]have[ ]been[ ]failing[ ]for[ ]a[ ]long[ ]time[ ]and[ ]were[ ]last[ ]tried
-    # deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
-    |Delay[ ]reason:[ ]
-    # deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
-    # receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
-    # receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
-    |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival[ ]by[ ])
-    )
-}x;
-
-my $RxSess = {
+my $ReFailure = {
     # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
     'userunknown' => qr{
         # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
@@ -132,6 +115,25 @@ my $RxSess = {
     }x,
 };
 
+my $ReDelayed = qr{(?:
+    # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
+     retry[ ]timeout[ ]exceeded
+    # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
+    |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
+    # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
+    # smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
+    #                 "after this message arrived";
+    |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
+    |all[ ]hosts[ ]have[ ]been[ ]failing[ ]for[ ]a[ ]long[ ]time[ ]and[ ]were[ ]last[ ]tried
+    # deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
+    |Delay[ ]reason:[ ]
+    # deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
+    # receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
+    # receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
+    |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival[ ]by[ ])
+    )
+}x;
+
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
@@ -153,8 +155,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
-    return undef unless $mhead->{'from'}    =~ $RxMTA->{'from'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -186,20 +188,20 @@ sub scan {
     }
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
-        last if $e =~ $RxMTA->{'endof'};
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        last if $e =~ $Re1->{'endof'};
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
-                next unless $e =~ $RxMTA->{'frozen'};
+                next unless $e =~ $Re1->{'frozen'};
             }
         }
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -250,7 +252,7 @@ sub scan {
                 # deliver.c:6811|  "recipients. This is a permanent error. The following address(es) failed:\n");
                 $v->{'softbounce'} = 0;
 
-            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s\t]+[.][a-zA-Z]+)(:.+)?\z/ || $e =~ $RxMTA->{'alias'} ) {
+            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s\t]+[.][a-zA-Z]+)(:.+)?\z/ || $e =~ $Re1->{'alias'} ) {
                 #   kijitora@example.jp
                 #   sabineko@example.jp: forced freeze
                 #
@@ -275,7 +277,7 @@ sub scan {
             } else {
                 next unless length $e;
 
-                if( $e =~ $RxMTA->{'frozen'} ) {
+                if( $e =~ $Re1->{'frozen'} ) {
                     # Message *** has been frozen by the system filter.
                     # Message *** was frozen on arrival by ACL.
                     $v->{'alterrors'} .= $e.' ';
@@ -447,7 +449,7 @@ sub scan {
 
         if( ! $e->{'command'} ) {
             # Get the SMTP command name for the session
-            SMTP: for my $r ( @$RxComm ) {
+            SMTP: for my $r ( @$ReCommand ) {
                 # Verify each regular expression of SMTP commands
                 next unless $e->{'diagnosis'} =~ $r;
                 $e->{'command'} = uc $1;
@@ -467,15 +469,15 @@ sub scan {
 
                 } else {
                     # Verify each regular expression of session errors
-                    SESSION: for my $r ( keys %$RxSess ) {
+                    SESSION: for my $r ( keys %$ReFailure ) {
                         # Check each regular expression
-                        next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+                        next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
                         $e->{'reason'} = $r;
                         last(SESSION);
                     }
                     last if $e->{'reason'};
 
-                    if( $e->{'diagnosis'} =~ $RxExpr ) {
+                    if( $e->{'diagnosis'} =~ $ReDelayed ) {
                         # The reason "expired"
                         $e->{'reason'} = 'expired';
                     }

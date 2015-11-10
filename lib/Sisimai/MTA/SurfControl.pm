@@ -4,13 +4,15 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
     'from'     => qr/ [(]Mail Delivery System[)]\z/,
+    'x-mailer' => qr/\ASurfControl E-mail Filter\z/,
+};
+my $Re1 = {
     'begin'    => qr/\AYour message could not be sent[.]\z/,
     'error'    => qr/\AFailed to send to identified host,\z/,
     'rfc822'   => qr|\AContent-Type: message/rfc822\z|,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'x-mailer' => qr/\ASurfControl E-mail Filter\z/,
 };
 
 sub description { 'WebSense SurfControl' }
@@ -36,7 +38,7 @@ sub scan {
 
     return undef unless $mhead->{'x-sef-processed'};
     return undef unless $mhead->{'x-mailer'};
-    return undef unless $mhead->{'x-mailer'} =~ $RxMTA->{'x-mailer'};
+    return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -57,10 +59,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -68,7 +70,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }

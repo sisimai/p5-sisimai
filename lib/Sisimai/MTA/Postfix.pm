@@ -5,8 +5,11 @@ use strict;
 use warnings;
 
 # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
-my $RxMTA = {
-    'from'  => qr/ [(]Mail Delivery System[)]\z/,
+my $Re0 = {
+    'from'    => qr/ [(]Mail Delivery System[)]\z/,
+    'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
+};
+my $Re1 = {
     'begin' => qr{\A(?>
          [ ]+The[ ](?:
              Postfix[ ](?:
@@ -27,7 +30,6 @@ my $RxMTA = {
     }x,
     'rfc822'  => qr!\AContent-Type:\s*(?:message/rfc822|text/rfc822-headers)\z!x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
 };
 
 sub description { 'Postfix' }
@@ -60,7 +62,7 @@ sub scan {
     # by Postfix e.g.)
     #   From: MAILER-DAEMON (Mail Delivery System)
     #   Subject: Undelivered Mail Returned to Sender
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my @commandset = ();    # (Array) ``in reply to * command'' list
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -88,10 +90,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -99,7 +101,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
