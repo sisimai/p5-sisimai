@@ -69,6 +69,8 @@ my $R = {
         '01002' => qr/mailboxfull/,
         '01003' => qr/mailboxfull/,
         '01004' => qr/mailboxfull/,
+        '01005' => qr/filtered/,
+        '01006' => qr/filtered/,
     },
     'US::AmazonSES' => {
         '01001' => qr/mailboxfull/,
