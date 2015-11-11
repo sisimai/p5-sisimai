@@ -62,6 +62,7 @@ my $ReFailure = {
 sub description { '@mail.ru: https://mail.ru' }
 sub smtpagent   { 'RU::MailRu' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from @mail.ru

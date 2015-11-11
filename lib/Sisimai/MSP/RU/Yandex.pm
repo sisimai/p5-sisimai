@@ -15,9 +15,8 @@ my $Re1 = {
 
 sub description { 'Yandex.Mail: http://www.yandex.ru' }
 sub smtpagent   { 'RU::Yandex' }
-sub headerlist  { 
-    return [ 'X-Yandex-Front', 'X-Yandex-TimeMark', 'X-Yandex-Uniq' ]
-}
+sub headerlist  { return [ 'X-Yandex-Front', 'X-Yandex-TimeMark', 'X-Yandex-Uniq' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Yandex.Mail
