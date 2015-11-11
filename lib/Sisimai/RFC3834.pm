@@ -83,7 +83,7 @@ sub scan {
     require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
-    my @stripedtxt = split( "\n", $$mbody );
+    my @hasdivided = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
     my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
@@ -114,7 +114,7 @@ sub scan {
 
     BODY_PARSER: {
         # Get vacation message
-        for my $e ( @stripedtxt ) {
+        for my $e ( @hasdivided ) {
             # Read the first 5 lines except a blank line
             unless( length $e ) {
                 # Check a blank line

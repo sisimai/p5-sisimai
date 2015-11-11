@@ -110,13 +110,13 @@ sub scan {
     my $agentname0 = '';    # [String] MDA name
     my $reasonname = '';    # [String] Error reason
     my $bouncemesg = '';    # [String] Error message
-    my @stripedtxt = split( "\n", $$mbody );
+    my @hasdivided = split( "\n", $$mbody );
     my @linebuffer = ();
 
     for my $e ( keys %$Re1 ) {
         # Detect MDA from error string in the message body.
         @linebuffer = ();
-        for my $f ( @stripedtxt ) {
+        for my $f ( @hasdivided ) {
             # Check each line with each MDA's symbol regular expression.
             next if( $agentname0 eq '' && $f !~ $Re1->{ $e } );
             $agentname0 ||= $e;
