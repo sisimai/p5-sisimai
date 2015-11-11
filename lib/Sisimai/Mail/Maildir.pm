@@ -63,7 +63,6 @@ sub read {
             $emailindir =~ y{/}{}s;
             next unless -f $emailindir;
             next unless -s $emailindir;
-            next unless -T $emailindir;
             next unless -r $emailindir;
 
             # Get inode number of the file
