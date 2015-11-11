@@ -26,8 +26,9 @@ my $Re2 = {
     'to'      => qr/root[@]/,
 };
 
-sub description { 'Detector for auto replied message' };
-sub smtpagent   { 'RFC3834' };
+sub description { 'Detector for auto replied message' }
+sub smtpagent   { 'RFC3834' }
+sub pattern     { return $Re0 }
 sub headerlist  {
     return [
         'Auto-Submitted',
