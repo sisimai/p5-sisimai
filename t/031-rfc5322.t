@@ -6,6 +6,7 @@ use Sisimai::RFC5322;
 my $PackageName = 'Sisimai::RFC5322';
 my $MethodNames = {
     'class' => [ 
+        'HEADERFIELDS', 'LONGFIELDS',
         'is_emailaddress', 'is_domainpart', 'is_mailerdaemon', 'received'
     ],
     'object' => [],
@@ -15,6 +16,42 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
+    my $r = undef;
+
+    $r = $PackageName->HEADERFIELDS();
+    isa_ok $r, 'HASH';
+    for my $e ( keys %$r ) {
+        ok length $e, $e;
+        like $e, qr/\A[a-z-]+\z/;
+        is $r->{ $e }, 1, $e.' = '.1;
+    }
+
+    $r = $PackageName->HEADERFIELDS('date');
+    isa_ok $r, 'ARRAY';
+    for my $e ( @$r ) {
+        ok length $e, $e;
+        like $e, qr/\A[A-Za-z-]+\z/;
+    }
+
+    $r = $PackageName->HEADERFIELDS('neko');
+    isa_ok $r, 'HASH';
+    for my $e ( keys %$r ) {
+        isa_ok $r->{ $e }, 'ARRAY';
+        ok scalar @{ $r->{ $e } }, $e.' = '.scalar @{ $r->{ $e } };
+        for my $f ( @{ $r->{ $e } } ) {
+            ok length $f, $e.'/'.$f;
+            like $f, qr/\A[A-Za-z-]+\z/;
+        }
+    }
+
+    $r = $PackageName->LONGFIELDS;
+    isa_ok $r, 'HASH';
+    for my $e ( keys %$r ) {
+        ok length $e, $e;
+        like $e, qr/\A[a-z-]+\z/;
+        is $r->{ $e }, 1, $e.' = '.1;
+    }
+
     my $emailaddrs = [
         'neko@example.jp',
         'neko+nyaa@example.jp',
