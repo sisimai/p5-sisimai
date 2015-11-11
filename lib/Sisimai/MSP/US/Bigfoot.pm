@@ -17,6 +17,7 @@ my $Re1 = {
 
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub smtpagent   { 'US::Bigfoot' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Bigfoot

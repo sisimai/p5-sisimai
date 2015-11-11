@@ -25,9 +25,8 @@ my $ReFailure = {
 
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub smtpagent   { 'US::Zoho' }
-sub headerlist  { 
-    return [ 'X-Mailer', 'X-ZohoMail' ],
-}
+sub headerlist  { return [ 'X-Mailer', 'X-ZohoMail' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Zoho Mail

@@ -18,6 +18,7 @@ my $Re1 = {
 sub description { 'Module decription' }
 sub smtpagent   { 'Module name' }
 sub headerlist  { return [ 'X-Some-UserDefined-Header' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # @abstract      UserDefined MTA module

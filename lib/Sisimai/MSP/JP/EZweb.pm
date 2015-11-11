@@ -49,6 +49,7 @@ my $ReFailure = {
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from EZweb

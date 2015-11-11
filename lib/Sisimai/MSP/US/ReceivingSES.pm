@@ -26,6 +26,7 @@ my $ReFailure = {
 sub description { 'AmazonSES(Receiving): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::ReceivingSES' }
 sub headerlist  { return [ 'X-SES-Outgoing', 'Feedback-ID' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Amazon SES/Receiving

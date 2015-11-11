@@ -54,6 +54,7 @@ my $ErrorCodeTable = {
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Microsoft Exchange Server

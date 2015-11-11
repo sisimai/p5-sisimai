@@ -24,6 +24,7 @@ my $ReFailure = {
 sub description { 'Microsoft Outlook.com: https://www.outlook.com/' }
 sub smtpagent   { 'US::Outlook' }
 sub headerlist  { return [ 'X-Message-Delivery', 'X-Message-Info' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Microsoft Outlook.com

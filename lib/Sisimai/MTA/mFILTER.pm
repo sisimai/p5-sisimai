@@ -20,6 +20,7 @@ my $Re1 = {
 sub description { 'Digital Arts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
 sub headerlist  { return [ 'X-Mailer' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from DigitalArts m-FILTER

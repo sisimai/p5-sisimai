@@ -22,9 +22,8 @@ my $ReFailure = {
 
 sub description { 'Aol Mail: http://www.aol.com' }
 sub smtpagent   { 'US::Aol' }
-sub headerlist  { 
-    return [ 'X-BounceIO-Id', 'X-AOL-IP' ]
-}
+sub headerlist  { return [ 'X-BounceIO-Id', 'X-AOL-IP' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Aol Mail

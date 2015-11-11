@@ -34,6 +34,7 @@ my $Re1 = {
 
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Postfix

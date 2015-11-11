@@ -21,6 +21,7 @@ my $Re1 = {
 
 sub description { 'Java Apache Mail Enterprise Server' }
 sub smtpagent   { 'ApacheJames' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from ApacheJames

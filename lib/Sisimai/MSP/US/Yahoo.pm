@@ -15,9 +15,8 @@ my $Re1 = {
 
 sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 sub smtpagent   { 'US::Yahoo' }
-sub headerlist  { 
-    return [ 'X-Originating-IP', 'X-YahooFilteredBulk', 'X-YMailISG' ]
-}
+sub headerlist  { return [ 'X-Originating-IP', 'X-YahooFilteredBulk', 'X-YMailISG' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Yahoo! MAIL

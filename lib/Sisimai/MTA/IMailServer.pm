@@ -40,6 +40,7 @@ my $ReFailure = {
 sub description { 'IPSWITCH IMail Server' }
 sub smtpagent   { 'IMailServer' }
 sub headerlist  { return [ 'X-Mailer' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from IMailServer

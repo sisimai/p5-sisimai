@@ -37,6 +37,7 @@ my $Re1 = {
 
 sub description { 'Sendmail version 5' }
 sub smtpagent   { 'V5sendmail' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from V5sendmail

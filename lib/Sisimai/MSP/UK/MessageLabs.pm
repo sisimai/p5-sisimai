@@ -22,6 +22,7 @@ my $ReFailure = {
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
 sub smtpagent   { 'UK::MessageLabs' }
 sub headerlist  { return [ 'X-Msg-Ref', 'X-Originating-IP' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from MessageLabs.com

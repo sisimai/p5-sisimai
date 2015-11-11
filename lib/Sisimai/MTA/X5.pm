@@ -16,6 +16,7 @@ my $Re1 = {
 
 sub description { 'Unknown MTA #5' }
 sub smtpagent   { 'X5' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Unknown MTA #5

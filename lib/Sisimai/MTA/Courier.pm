@@ -50,6 +50,7 @@ my $ReDelayed = {
 
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Courier MTA

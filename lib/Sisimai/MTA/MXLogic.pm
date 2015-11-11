@@ -66,6 +66,7 @@ my $ReFailure = {
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash', 'X-MXL-Hash' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from MXLogic

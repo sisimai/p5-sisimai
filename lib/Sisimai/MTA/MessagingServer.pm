@@ -21,6 +21,7 @@ my $ReFailure = {
 
 sub description { 'Oracle Communications Messaging Server' }
 sub smtpagent   { 'MessagingServer' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Oracle Communications Messaging Server

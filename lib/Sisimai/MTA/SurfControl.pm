@@ -18,6 +18,7 @@ my $Re1 = {
 sub description { 'WebSense SurfControl' }
 sub smtpagent   { 'SurfControl' }
 sub headerlist  { return [ 'X-SEF-Processed', 'X-Mailer' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from SurfControl

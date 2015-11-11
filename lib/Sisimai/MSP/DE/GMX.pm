@@ -22,9 +22,8 @@ my $ReFailure = {
 
 sub description { 'GMX: http://www.gmx.net' }
 sub smtpagent   { 'DE::GMX' }
-sub headerlist  {
-    return [ 'Envelope-To', 'X-GMX-Antispam', 'X-GMX-Antivirus' ]
-}
+sub headerlist  { return [ 'Envelope-To', 'X-GMX-Antispam', 'X-GMX-Antivirus' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from GMX and mail.com

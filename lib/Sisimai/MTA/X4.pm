@@ -170,6 +170,7 @@ my $ReDelayed = qr{
 
 sub description { 'Unknown MTA #4 qmail clones' }
 sub smtpagent   { 'X4' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Unknown MTA #4, qmail clones

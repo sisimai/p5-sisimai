@@ -18,6 +18,7 @@ my $Re1 = {
 sub description { 'TransWARE Active!hunter' };
 sub smtpagent   { 'Activehunter' }
 sub headerlist  { return [ 'X-AHMAILID' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from TransWARE Active!hunter

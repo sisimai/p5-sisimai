@@ -17,6 +17,16 @@ my $Re0 = {
 
 sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub smtpagent   { 'US::Verizon' }
+sub pattern     { 
+    return {
+        'from'    => qr{(?:
+                         \Apost_master[@]vtext[.]com
+                        |[<]?sysadmin[@].+[.]vzwpix[.]com[>]?
+                        )\z
+                     }x,
+        'subject' => $Re0->{'vzwpix.com'}->{'subject'},
+    };
+}
 
 sub scan {
     # Detect an error from Verizon

@@ -79,6 +79,7 @@ my $ReFailure = {
 
 sub description { 'OpenSMTPD' }
 sub smtpagent   { 'OpenSMTPD' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from OpenSMTPD

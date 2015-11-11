@@ -26,6 +26,7 @@ my $ReFailure = {
 sub description { 'McAfee Email Appliance' }
 sub smtpagent   { 'McAfee' }
 sub headerlist  { return [ 'X-NAI-Header' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from McAfee

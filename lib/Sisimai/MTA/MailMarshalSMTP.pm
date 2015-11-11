@@ -18,6 +18,7 @@ my $Re1 = {
 sub description { 'Trustwave Secure Email Gateway' }
 sub smtpagent   { 'MailMarshalSMTP' }
 sub headerlist  { return [ 'X-Mailer' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from MailMarshalSMTP

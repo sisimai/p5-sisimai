@@ -25,6 +25,7 @@ my $ReFailure = {
 
 sub description { 'Lotus Notes' }
 sub smtpagent   { 'Notes' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Lotus Notes

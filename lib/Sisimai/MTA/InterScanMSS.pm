@@ -23,6 +23,7 @@ my $Re1 = {
 
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
 sub smtpagent   { 'InterScanMSS' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from InterScanMSS

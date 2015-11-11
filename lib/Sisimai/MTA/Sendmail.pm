@@ -22,6 +22,7 @@ my $Re1 = {
 
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub smtpagent   { 'Sendmail' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Sendmail

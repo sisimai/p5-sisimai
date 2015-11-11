@@ -17,6 +17,7 @@ my $Re1 = {
 
 sub description { 'MailFoundry' }
 sub smtpagent   { 'MailFoundry' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from MailFoundry

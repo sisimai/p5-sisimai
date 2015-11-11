@@ -26,6 +26,7 @@ my $ReFailure = {
 
 sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
 sub smtpagent   { 'JP::Biglobe' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Biglobe

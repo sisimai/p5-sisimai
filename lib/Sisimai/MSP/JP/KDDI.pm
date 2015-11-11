@@ -35,6 +35,7 @@ my $ReFailure = {
 
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from KDDI

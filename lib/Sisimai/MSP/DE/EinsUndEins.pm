@@ -23,6 +23,7 @@ my $ReFailure = {
 
 sub description { '1&1: http://www.1and1.de' }
 sub smtpagent   { 'DE::EinsUndEins' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from 1&1

@@ -137,6 +137,7 @@ my $ReDelayed = qr{(?:
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Exim
