@@ -49,17 +49,21 @@ sub scan {
         $match = 1 if $mhead->{'x-some-userdefined-header'};
     }
     return undef unless $match;
+    require Sisimai::RFC5322;
 
     # 2. Parse message body($mbody) of the bounce message. See some modules in
     #    lib/Sisimai/MTA or lib/Sisimai/MSP directory to implement codes.
     #
-    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
+    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+    my @stripedtxt = split( "\n", $$mbody );
+    my $indicators = __PACKAGE__->INDICATORS;
+    my $longfields = Sisimai::RFC5322->LONGFIELDS;
+    my $rfc822head = Sisimai::RFC5322->HEADERFIELDS;
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
-    my $recipients = 0;     # (Integer) The number of recipient addresses in the bounce message
-
-    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-    $rfc822head = __PACKAGE__->RFC822HEADERS;
+    my $previousfn = '';    # (String) Previous field name
+    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     # The following code is dummy to be passed "make test".
     $recipients = 1;

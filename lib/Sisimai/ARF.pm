@@ -39,13 +39,6 @@ sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
 sub pattern     { return $Re0 }
 
-sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
-sub RFC822HEADERS  { 
-    my $class = shift;
-    my $argvs = shift;
-    return Sisimai::MTA->RFC822HEADERS( $argvs );
-}
-
 sub is_arf {
     # Email is a Feedback-Loop message or not
     # @param    [String] argvs  The value of "Content-Type" header
@@ -91,17 +84,19 @@ sub scan {
 
     return undef unless is_arf( undef, $mhead );
 
-    my $dscontents = [];    # [Array] SMTP session errors: message/delivery-status
-    my $rfc822head = undef; # [Array] Required header list in message/rfc822 part
-    my $rfc822part = '';    # [String] message/rfc822-headers part
-    my $previousfn = '';    # [String] Previous field name
+    require Sisimai::RFC5322;
+    require Sisimai::Address;
 
-    my $readcursor = 0;     # [Integer] Points the current cursor position
-    my $indicators = Sisimai::MTA->INDICATORS;
-
-    my $longfields = Sisimai::MTA->LONGFIELDS;
+    my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
     my @stripedtxt = split( "\n", $$mbody );
-    my $recipients = 0;     # [Integer] The number of 'Final-Recipient' header
+    my $indicators = Sisimai::MTA->INDICATORS;
+    my $longfields = Sisimai::RFC5322->LONGFIELDS;
+    my $rfc822head = Sisimai::RFC5322->HEADERFIELDS;
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
+    my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $previousfn = '';    # (String) Previous field name
+    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $rcptintext = '';    # [String] Recipient address in the message body
     my $remotename = '';    # [String] The value of "Reporting-MTA"
     my $commandtxt = '';    # [String] SMTP Command name begin with the string '>>>'
@@ -120,10 +115,7 @@ sub scan {
 
     my $v = undef;
     my $p = '';
-    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-    $rfc822head = __PACKAGE__->RFC822HEADERS;
 
-    require Sisimai::Address;
     # 3.1.  Required Fields
     #
     #   The following report header fields MUST appear exactly once:
@@ -182,17 +174,18 @@ sub scan {
                 # Get required headers only
                 my $lhs = $1;
                 my $rhs = $2;
+                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { lc( $lhs ) eq lc( $_ ) } @$rfc822head;
+                next unless exists $rfc822head->{ $whs };
 
-                $previousfn  = $lhs;
+                $previousfn  = lc $lhs;
                 $rfc822part .= $e."\n";
                 $rcptintext  = $rhs if $lhs eq 'To';
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
-                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
+                $rfc822part .= $e."\n" if exists $longfields->{ $previousfn };
                 next if length $e;
                 $rcptintext .= $e if $previousfn eq 'To';
             }
@@ -219,7 +212,7 @@ sub scan {
                 # Redacted-Address: localpart@
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
                     $v = $dscontents->[ -1 ];
                 }
                 $v->{'recipient'} = Sisimai::Address->s3s4( $1 );

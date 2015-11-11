@@ -60,27 +60,23 @@ sub scan {
     $match++ if $mhead->{'received'} =~ $Re0->{'received'};
     return undef unless $match;
 
-    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
-    my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
-    my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
-    my $previousfn = '';    # (String) Previous field name
+    require Sisimai::RFC5322;
+    require Sisimai::String;
+    require Sisimai::Address;
 
-    my $readcursor = 0;     # (Integer) Points the current cursor position
-    my $indicators = __PACKAGE__->INDICATORS;
-
-    my $longfields = __PACKAGE__->LONGFIELDS;
+    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @stripedtxt = split( "\n", $$mbody );
+    my $indicators = __PACKAGE__->INDICATORS;
+    my $longfields = Sisimai::RFC5322->LONGFIELDS;
+    my $rfc822head = Sisimai::RFC5322->HEADERFIELDS;
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
+    my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $previousfn = '';    # (String) Previous field name
+    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     my $v = undef;
     my $p = '';
-    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-    $rfc822head = __PACKAGE__->RFC822HEADERS;
-
-    require Sisimai::String;
-    require Sisimai::RFC5322;
-    require Sisimai::Address;
 
     for my $e ( @stripedtxt ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -108,21 +104,21 @@ sub scan {
                 my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
+                next unless exists $rfc822head->{ $whs };
 
-                $previousfn  = $lhs;
+                $previousfn  = lc $lhs;
                 $rfc822part .= $e."\n";
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
-                next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
+                next if $rfc822next->{ $previousfn };
+                $rfc822part .= $e."\n" if exists $longfields->{ $previousfn };
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless grep { $previousfn eq $_ } @$longfields;
+                next unless exists $longfields->{ $previousfn };
                 next if length $e;
-                $rfc822next->{ lc $previousfn } = 1;
+                $rfc822next->{ $previousfn } = 1;
             }
 
         } else {
