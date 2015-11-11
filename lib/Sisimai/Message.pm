@@ -17,6 +17,7 @@ my $rwaccessors = [
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 
+my $ReDetector = {}; # Sisimai::Order->pattern;
 my $DefaultMTA = Sisimai::Order->default;
 my $ExtHeaders = Sisimai::Order->headers;
 my $ToBeLoaded = [];
@@ -112,7 +113,7 @@ sub resolve {
         my $bodystring = '';
         my $bouncedata = undef;
         my $rfc822part = undef;
-        my $tryonfirst = undef;
+        my $tryonfirst = [];
 
         # 0. Split email data to headers and a body part.
         SPLIT_EMAIL: for my $e ( split( "\n", $email ) ) {
@@ -152,7 +153,7 @@ sub resolve {
             my $multiheads = { 'received' => 1 };
             my $ignorelist = { 'dkim-signature' => 1 };
             my $allheaders = {};
-               $tryonfirst = [];
+            my $modulelist = [];
 
             map { $allheaders->{ $_ } = 1 } ( @HeaderList, @RFC3834Set, keys %$ExtHeaders );
             map { $processing->{'header'}->{ $_ } = undef } @HeaderList;
@@ -179,7 +180,15 @@ sub resolve {
                     } else {
                         if( $ExtHeaders->{ $currheader } ) {
                             # MTA specific header
-                            unshift @$tryonfirst, keys %{ $ExtHeaders->{ $currheader } };
+                            push @$modulelist, keys %{ $ExtHeaders->{ $currheader } };
+
+                        } elsif( 0 && $currheader eq 'subject' ) {
+                            # Try to match with regular expressions of subject header
+                            for my $r ( keys %{ $ReDetector->{'subject'} } ) {
+                                next unless $rhs =~ $r;
+                                push @$modulelist, @{ $ReDetector->{'subject'}->{ $r } };
+                                last;
+                            }
                         }
                         $processing->{'header'}->{ $currheader } = $rhs;
                     }
@@ -197,6 +206,9 @@ sub resolve {
                     }
                 }
             } # End of for(SPLIT_HEADERS)
+
+            # Reverse sort: MTA -> MSP
+            @$tryonfirst = reverse sort @$modulelist;
         }
 
         REWRITE_BODY: {
@@ -366,7 +378,7 @@ sub rewrite {
             last(SCANNER) if $scannedset;
         }
 
-        TRY_ON_FIRST: for my $r ( @$tryonfirst ) {
+        TRY_ON_FIRST: while( my $r = shift @$tryonfirst ) {
             # Try MTA module candidates which are detected from MTA specific
             # mail headers on first
             next if exists $haveloaded->{ $r };

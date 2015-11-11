@@ -6,12 +6,16 @@ use Module::Load;
 use Sisimai::MTA;
 use Sisimai::MSP;
 
+my $DefaultOrder = __PACKAGE__->default;
+my $PatternTable = undef;
+
 sub default {
     # Make default order of MTA/MSP modules to be loaded
     # @return   [Array] Default order list of MTA/MSP modules
     my $class = shift;
     my $order = [];
 
+    return $DefaultOrder if ref $DefaultOrder eq 'ARRAY';
     push @$order, map { 'Sisimai::MTA::'.$_ } @{ Sisimai::MTA->index() };
     push @$order, map { 'Sisimai::MSP::'.$_ } @{ Sisimai::MSP->index() };
     return $order;
@@ -22,38 +26,48 @@ sub headers {
     # @return   [Hash] Header list to be parsed
     # @private
     my $class = shift;
+    my $order = __PACKAGE__->default;
+    my $heads = {};
+    my $skips = { 'return-path' => 1 };
 
-    # Load email headers from each MTA,MSP module
-    my @mtaclasses = ();
-    my $mtaheaders = {};
-    my $ignorelist = { 'return-path' => 1 };
-
-    push @mtaclasses, map { 'Sisimai::MTA::'.$_ } @{ Sisimai::MTA->index };
-    push @mtaclasses, map { 'Sisimai::MSP::'.$_ } @{ Sisimai::MSP->index };
-
-    LOAD_MODULES: for my $e ( @mtaclasses ) {
-        # Load MTA/MSP modules
+    LOAD_MODULES: for my $e ( @$order ) {
+        # Load email headers from each MTA,MSP module
         eval { Module::Load::load $e };
         next if $@;
 
         for my $v ( @{ $e->headerlist } ) {
             # Get header name which required each MTA/MSP module
             my $q = lc $v;
-            next if exists $ignorelist->{ $q };
-            $mtaheaders->{ $q }->{ $e } = 1;
+            next if exists $skips->{ $q };
+            $heads->{ $q }->{ $e } = 1;
         }
     }
-    return $mtaheaders;
+    return $heads;
 }
 
 sub pattern {
     # Make patterns for deciding optimized MTA/MSP order
     # @return   [Hash] Pattern based MTA/MSP module table
     my $class = shift;
-    my $table = {
-        'subject' => undef,
-        'from'    => undef,
-    };
+    my $order = __PACKAGE__->default;
+    my $table = { 'subject' => {}, 'from' => {} };
+
+    LOAD_PATTENS: for my $e ( @$order ) {
+        # Load pattens defined in $Re0
+        eval { Module::Load::load $e };
+        next if $@;
+
+        my $p = $e->pattern;
+        next unless keys %$p;
+
+        for my $f ( keys %$table ) {
+            # Subject, From, ...
+            next unless exists $p->{ $f };
+            $table->{ $f }->{ $p->{ $f } } //= [];
+            push @{ $table->{ $f }->{ $p->{ $f } } }, $e;
+        }
+    }
+
     return $table;
 }
 
