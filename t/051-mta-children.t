@@ -9,7 +9,7 @@ use Module::Load;
 my $DebugOnlyTo = '';
 my $MethodNames = {
     'class' => [ 
-        'description', 'headerlist', 'scan',
+        'description', 'headerlist', 'scan', 'pattern',
         'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS',
     ],
     'object' => [],
@@ -255,6 +255,7 @@ for my $x ( keys %$R ) {
     MAKE_TEST: {
         $v = $M->description; ok $v, $x.'->description = '.$v;
         $v = $M->smtpagent;   ok $v, $x.'->smtpagent = '.$v;
+        $v = $M->pattern;     ok keys %$v; isa_ok $v, 'HASH';
 
         $M->scan, undef, $M.'->scan = undef';
 
