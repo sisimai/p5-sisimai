@@ -6,19 +6,8 @@ use warnings;
 
 # http://www.courier-mta.org/courierdsn.html
 # courier/module.dsn/dsn*.txt
-my $RxMTA = {
-    #'from' => qr{Courier mail server at },
-    'begin'      => qr{(?:
-         DELAYS[ ]IN[ ]DELIVERING[ ]YOUR[ ]MESSAGE
-        |UNDELIVERABLE[ ]MAIL
-        )
-    }x,
-    'rfc822'     => qr{\AContent-Type:[ ]*(?:
-         message/rfc822
-        |text/rfc822-headers
-        )\z
-    }x,
-    'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+my $Re0 = {
+    'from'       => qr/Courier mail server at /,
     'subject'    => qr{(?:
          NOTICE:[ ]mail[ ]delivery[ ]status[.]
         |WARNING:[ ]delayed[ ]mail[.]
@@ -26,8 +15,21 @@ my $RxMTA = {
     }x,
     'message-id' => qr/\A[<]courier[.][0-9A-F]+[.]/,
 };
+my $Re1 = {
+    'begin'  => qr{(?:
+         DELAYS[ ]IN[ ]DELIVERING[ ]YOUR[ ]MESSAGE
+        |UNDELIVERABLE[ ]MAIL
+        )
+    }x,
+    'rfc822' => qr{\AContent-Type:[ ]*(?:
+         message/rfc822
+        |text/rfc822-headers
+        )\z
+    }x,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
 
-my $RxErr = {
+my $ReFailure = {
     'hostunknown' => qr{
         # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
         \ANo[ ]such[ ]domain[.]\z
@@ -39,7 +41,7 @@ my $RxErr = {
     }x,
 };
 
-my $RxTmp = {
+my $ReDelayed = {
     'networkerror' => qr{
         # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
         \ADNS[ ]lookup[ ]failed[.]\z
@@ -48,6 +50,7 @@ my $RxTmp = {
 
 sub description { 'Courier MTA' }
 sub smtpagent   { 'Courier' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Courier MTA
@@ -67,10 +70,10 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
     if( defined $mhead->{'message-id'} ) {
         # Message-ID: <courier.4D025E3A.00001792@5jo.example.org>
-        $match = 1 if $mhead->{'message-id'} =~ $RxMTA->{'message-id'};
+        $match = 1 if $mhead->{'message-id'} =~ $Re0->{'message-id'};
     }
     return undef unless $match;
 
@@ -100,10 +103,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -111,7 +114,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -275,18 +278,18 @@ sub scan {
         }
 
         SESSION: while(1) {
-            HARD_E: for my $r ( keys %$RxErr ) {
+            HARD_E: for my $r ( keys %$ReFailure ) {
                 # Verify each regular expression of session errors
-                next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+                next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
                 $e->{'reason'} = $r;
                 $e->{'softbounce'} = 0;
                 last(HARD_E);
             }
             last if $e->{'reason'};
 
-            SOFT_E: for my $r ( keys %$RxTmp ) {
+            SOFT_E: for my $r ( keys %$ReDelayed ) {
                 # Verify each regular expression of session errors
-                next unless $e->{'diagnosis'} =~ $RxTmp->{ $r };
+                next unless $e->{'diagnosis'} =~ $ReDelayed->{ $r };
                 $e->{'reason'} = $r;
                 $e->{'softbounce'} = 1;
                 last(SOFT_E);

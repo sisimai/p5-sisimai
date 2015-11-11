@@ -3,7 +3,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMDA = {
+my $Re0 = {
+    'from' => qr/\A(?:Mail Delivery Subsystem|MAILER-DAEMON|postmaster)/i,
+};
+my $Re1 = {
     # dovecot/src/deliver/deliver.c
     # 11: #define DEFAULT_MAIL_REJECTION_HUMAN_REASON \
     # 12: "Your message to <%t> was automatically rejected:%n%r"
@@ -16,8 +19,7 @@ my $RxMDA = {
 };
 
 # dovecot/src/deliver/mail-send.c:94
-my $RxFrom = qr/\A(?:Mail Delivery Subsystem|MAILER-DAEMON|postmaster)/i;
-my $RxErr = {
+my $ReFailure = {
     'dovecot' => {
         'userunknown' => [
             qr/\AMailbox doesn't exist: /i,
@@ -101,7 +103,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless ref( $mhead ) eq 'HASH';
-    return undef unless $mhead->{'from'} =~ $RxFrom;
+    return undef unless $mhead->{'from'} =~ $Re0->{'from'};
     return undef unless ref( $mbody ) eq 'SCALAR';
     return undef unless length $$mbody;
 
@@ -111,12 +113,12 @@ sub scan {
     my @stripedtxt = split( "\n", $$mbody );
     my @linebuffer = ();
 
-    for my $e ( keys %$RxMDA ) {
+    for my $e ( keys %$Re1 ) {
         # Detect MDA from error string in the message body.
         @linebuffer = ();
         for my $f ( @stripedtxt ) {
             # Check each line with each MDA's symbol regular expression.
-            next if( $agentname0 eq '' && $f !~ $RxMDA->{ $e } );
+            next if( $agentname0 eq '' && $f !~ $Re1->{ $e } );
             $agentname0 ||= $e;
             push @linebuffer, $f;
             last unless length $f;
@@ -128,11 +130,11 @@ sub scan {
     return undef unless $agentname0;
     return undef unless scalar @linebuffer;
 
-    for my $e ( keys %{ $RxErr->{ $agentname0 } } ) {
+    for my $e ( keys %{ $ReFailure->{ $agentname0 } } ) {
         # Detect an error reason from message patterns of the MDA.
         for my $f ( @linebuffer ) {
 
-            next unless grep { $f =~ $_ } @{ $RxErr->{ $agentname0 }->{ $e } };
+            next unless grep { $f =~ $_ } @{ $ReFailure->{ $agentname0 }->{ $e } };
             $reasonname = $e;
             $bouncemesg = $f;
             last;

@@ -4,22 +4,24 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
+my $Re0 = {
     'from'       => qr/no-reply[@].+[.]dion[.]ne[.]jp/,
     'reply-to'   => qr/\Afrom\s+\w+[.]auone[-]net[.]jp\s/,
     'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
     'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    'begin'      => qr/\AYour[ ]mail[ ](?:
-                         sent[ ]on:?[ ][A-Z][a-z]{2}[,]
-                        |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
-                        )
-                    /x,
-    'rfc822'     => qr|\AContent-Type: message/rfc822\z|,
-    'error'      => qr/Could not be delivered to:? /,
-    'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
+my $Re1 = {
+    'begin' => qr/\AYour[ ]mail[ ](?:
+                     sent[ ]on:?[ ][A-Z][a-z]{2}[,]
+                    |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
+                    )
+               /x,
+    'rfc822' => qr|\AContent-Type: message/rfc822\z|,
+    'error'  => qr/Could not be delivered to:? /,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'mailboxfull' => qr{
         As[ ]their[ ]mailbox[ ]is[ ]full
     }x,
@@ -33,6 +35,7 @@ my $RxErr = {
 
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub smtpagent   { 'JP::KDDI' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from KDDI
@@ -52,9 +55,9 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match++ if $mhead->{'from'} =~ $RxMSP->{'from'};
-    $match++ if $mhead->{'reply-to'} && $mhead->{'reply-to'} =~ $RxMSP->{'reply-to'};
-    $match++ if $mhead->{'received'} =~ $RxMSP->{'received'};
+    $match++ if $mhead->{'from'} =~ $Re0->{'from'};
+    $match++ if $mhead->{'reply-to'} && $mhead->{'reply-to'} =~ $Re0->{'reply-to'};
+    $match++ if $mhead->{'received'} =~ $Re0->{'received'};
     return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -80,10 +83,10 @@ sub scan {
     require Sisimai::Address;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -91,7 +94,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -188,9 +191,9 @@ sub scan {
 
             } else {
                 # SMTP command is not RCPT
-                SESSION: for my $r ( keys %$RxErr ) {
+                SESSION: for my $r ( keys %$ReFailure ) {
                     # Verify each regular expression of session errors
-                    next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
                     $e->{'reason'} = $r;
                     last;
                 }

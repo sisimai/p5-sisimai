@@ -4,19 +4,22 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
+my $Re0 = {
     'from'        => qr/\AMAILER-DAEMON\z/,
-    'begin'       => qr/\AThis is an automatically generated message from SendGrid[.]\z/,
-    'error'       => qr/\AIf you require assistance with this, please contact SendGrid support[.]\z/,
-    'rfc822'      => qr|\AContent-Type: message/rfc822|,
-    'endof'       => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'return-path' => qr/\A[<]apps[@]sendgrid[.]net[>]\z/,
     'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
+};
+my $Re1 = {
+    'begin'  => qr/\AThis is an automatically generated message from SendGrid[.]\z/,
+    'error'  => qr/\AIf you require assistance with this, please contact SendGrid support[.]\z/,
+    'rfc822' => qr|\AContent-Type: message/rfc822|,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
-sub headerlist  { return [ 'Return-Path' ] }
+sub headerlist  { return [ 'Return-Path', 'X-Mailer' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from SendGrid
@@ -35,9 +38,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'}     =~ $RxMSP->{'subject'};
+    return undef unless $mhead->{'subject'}     =~ $Re0->{'subject'};
     return undef unless $mhead->{'return-path'};
-    return undef unless $mhead->{'return-path'} =~ $RxMSP->{'return-path'};
+    return undef unless $mhead->{'return-path'} =~ $Re0->{'return-path'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -65,10 +68,10 @@ sub scan {
     require Sisimai::DateTime;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -76,7 +79,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }

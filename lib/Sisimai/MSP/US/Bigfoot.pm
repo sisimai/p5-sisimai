@@ -4,17 +4,20 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
-    'from'    => qr/[@]bigfoot[.]com[>]/,
-    'begin'   => qr/\A\s+[-]+\s*Transcript of session follows/,
-    'rfc822'  => qr|\AContent-Type: message/partial|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\AReturned mail: /,
-    'received'=> qr/\w+[.]bigfoot[.]com\b/,
+my $Re0 = {
+    'from'     => qr/[@]bigfoot[.]com[>]/,
+    'subject'  => qr/\AReturned mail: /,
+    'received' => qr/\w+[.]bigfoot[.]com\b/,
+};
+my $Re1 = {
+    'begin'  => qr/\A\s+[-]+\s*Transcript of session follows/,
+    'rfc822' => qr|\AContent-Type: message/partial|,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub smtpagent   { 'US::Bigfoot' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Bigfoot
@@ -34,9 +37,9 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    # $match = 1 if $mhead->{'subject'} =~ $RxMSP->{'subject'};
-    $match = 1 if $mhead->{'from'} =~ $RxMSP->{'from'};
-    $match = 1 if grep { $_ =~ $RxMSP->{'received'} } @{ $mhead->{'received'} };
+    # $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match = 1 if $mhead->{'from'} =~ $Re0->{'from'};
+    $match = 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -66,12 +69,12 @@ sub scan {
 
     require Sisimai::Address;
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -79,7 +82,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }

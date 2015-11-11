@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use Sisimai::MTA;
 
-sub description    { '' }
-sub headerlist     { [] }
 sub SMTPCOMMAND    { return Sisimai::MTA->SMTPCOMMAND    }
 sub EOM            { return Sisimai::MTA->EOM            }
 sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
@@ -16,13 +14,10 @@ sub RFC822HEADERS  {
     my $argvs = shift;
     return Sisimai::MTA->RFC822HEADERS( $argvs );
 }
-
-sub smtpagent {
-    # Return MSP name: Call smtpagent() in each child class
-    # @return   [String] MSP name
-    my $class = shift; 
-    return shift // 'null';
-}
+sub smtpagent      { return Sisimai::MTA->smtpagent      }
+sub description    { return '' }
+sub headerlist     { return [] }
+sub pattern        { return {} }
 
 sub index {
     # MSP list

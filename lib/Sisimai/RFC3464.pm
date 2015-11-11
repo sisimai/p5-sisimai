@@ -4,7 +4,22 @@ use strict;
 use warnings;
 
 # http://tools.ietf.org/html/rfc3464
-my $RxRFC = {
+my $Re0 = {
+    'from'        => qr/\b(?:postmaster|mailer-daemon|root)[@]/i,
+    'return-path' => qr/(?:[<][>]|mailer-daemon)/i,
+    'subject'     => qr{(?>
+                         delivery[ ](?:failed|failure|report)
+                        |failure[ ]notice
+                        |mail[ ](?:delivery|error)
+                        |non[-]delivery
+                        |returned[ ]mail
+                        |undeliverable[ ]mail
+                        |Warning:[ ]
+                        )
+                     }xi,
+};
+
+my $Re1 = {
     'begin'  => qr{\A(?>
          Content-Type:[ ]*(?:
               message/delivery-status
@@ -22,30 +37,13 @@ my $RxRFC = {
         |Return-Path:[ ]*[<].+[>]\z
         )\z
     }xi,
-    'error'  => qr{\A(?:
-         [45]\d\d\s+
-        |[<][^@]+[@][^@]+[>]:?\s+
-        )
-    }xi,
+    'error'  => qr/\A(?:[45]\d\d\s+|[<][^@]+[@][^@]+[>]:?\s+)/i,
+    'command'=> qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
 };
-
-# Regular expressions for BODY_PARSER_FOR_FALLBACK block.
-my $RxCmd = qr{[ ](RCPT|MAIL|DATA)[ ]+command\b};            # SMTP Command
-my $RxEMF = qr{\b(?:postmaster|mailer-daemon|root)[@]}i;    # From:
-my $RxEMR = qr{(?:[<][>]|mailer-daemon)}i;                  # Return-Path:
-my $RxEMS = qr{(?>                                          # Subject:
-     delivery[ ](?:failed|failure|report)
-    |failure[ ]notice
-    |mail[ ](?:delivery|error)
-    |non[-]delivery
-    |returned[ ]mail
-    |undeliverable[ ]mail
-    |Warning:[ ]
-    )
-}xi;
 
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error for RFC3464
@@ -97,10 +95,10 @@ sub scan {
     $rfc822head = Sisimai::MTA->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxRFC->{'begin'} and $RxRFC->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxRFC->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -108,7 +106,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxRFC->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -326,7 +324,7 @@ sub scan {
                     } else {
                         # Get error message
                         next if $e =~ m/\A[ -]+/;
-                        next unless $e =~ $RxRFC->{'error'};
+                        next unless $e =~ $Re1->{'error'};
 
                         # 500 User Unknown
                         # <kijitora@example.jp> Unknown
@@ -346,11 +344,11 @@ sub scan {
         # Fallback, parse entire message body
         unless( $recipients ) {
             # Failed to get a recipient address at code above
-            $match = 1 if $mhead->{'from'}        =~ $RxEMF;
-            $match = 1 if $mhead->{'subject'}     =~ $RxEMS;
+            $match = 1 if $mhead->{'from'}    =~ $Re0->{'from'};
+            $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
             if( defined $mhead->{'return-path'} ) {
                 # Check the value of Return-Path of the message
-                $match = 1 if $mhead->{'return-path'} =~ $RxEMR;
+                $match = 1 if $mhead->{'return-path'} =~ $Re0->{'return-path'};
             }
             last unless $match;
 
@@ -421,8 +419,8 @@ sub scan {
             my $b = $dscontents->[ -1 ];
             for my $e ( split( "\n", $$mbody ) ) {
                 # Get the recipient's email address and error messages.
-                last if $e =~ $RxRFC->{'endof'};
-                last if $e =~ $RxRFC->{'rfc822'};
+                last if $e =~ $Re1->{'endof'};
+                last if $e =~ $Re1->{'rfc822'};
                 last if $e =~ $RxEnd;
 
                 next unless length $e;
@@ -484,7 +482,7 @@ sub scan {
             $e->{'agent'} = __PACKAGE__->smtpagent;
         }
         $e->{'status'} ||= Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
-        $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $RxCmd;
+        $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $Re1->{'command'};
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.

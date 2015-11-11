@@ -4,20 +4,23 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
     'from'     => qr/\AMailer Daemon [<]MAILER-DAEMON[@]/,
+    'subject'  => qr/\Afailure notice\z/,
+    'x-mailer' => qr/\Am-FILTER\z/,
+};
+my $Re1 = {
     'begin'    => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/,
     'error'    => qr/\A-------server message\z/,
     'command'  => qr/\A-------SMTP command\z/,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'rfc822'   => qr/\A-------original (?:message|mail info)\z/,
-    'subject'  => qr/\Afailure notice\z/,
-    'x-mailer' => qr/\Am-FILTER\z/,
+    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 sub description { 'Digital Arts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
 sub headerlist  { return [ 'X-Mailer' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from DigitalArts m-FILTER
@@ -37,8 +40,8 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless defined $mhead->{'x-mailer'};
-    return undef unless $mhead->{'x-mailer'} =~ $RxMTA->{'x-mailer'};
-    return undef unless $mhead->{'subject'}  =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
+    return undef unless $mhead->{'subject'}  =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -60,15 +63,15 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $RxMTA->{'begin'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
         }
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -140,11 +143,11 @@ sub scan {
 
             } else {
                 # Get error message and SMTP command
-                if( $e =~ $RxMTA->{'error'} ) {
+                if( $e =~ $Re1->{'error'} ) {
                     # -------server message
                     $markingset->{'diagnosis'} = 1;
 
-                } elsif( $e =~ $RxMTA->{'command'} ) {
+                } elsif( $e =~ $Re1->{'command'} ) {
                     # -------SMTP command
                     $markingset->{'command'} = 1;
 

@@ -4,17 +4,20 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
-    'begin'    => qr/\AThis is a MIME encoded message\z/,
-    'error'    => qr/\ADelivery failed for the following reason:\z/,
-    'rfc822'   => qr|\AContent-Type: message/rfc822\z|,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'received' => qr/[(]MAILFOUNDRY[)] id /,
+my $Re0 = {
     'subject'  => qr/\AMessage delivery has failed\z/,
+    'received' => qr/[(]MAILFOUNDRY[)] id /,
+};
+my $Re1 = {
+    'begin'  => qr/\AThis is a MIME encoded message\z/,
+    'error'  => qr/\ADelivery failed for the following reason:\z/,
+    'rfc822' => qr|\AContent-Type: message/rfc822\z|,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 sub description { 'MailFoundry' }
 sub smtpagent   { 'MailFoundry' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from MailFoundry
@@ -33,8 +36,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
-    return undef unless grep { $_ =~ $RxMTA->{'received'} } @{ $mhead->{'received'} };
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -55,10 +58,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -66,7 +69,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -121,7 +124,7 @@ sub scan {
 
             } else {
                 # Error message
-                if( $e =~ $RxMTA->{'error'} ) {
+                if( $e =~ $Re1->{'error'} ) {
                     # Delivery failed for the following reason:
                     $v->{'diagnosis'} = $e;
 

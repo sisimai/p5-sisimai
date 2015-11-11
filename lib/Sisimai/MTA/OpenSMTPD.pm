@@ -4,6 +4,11 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+my $Re0 = {
+    'from'     => qr/\AMailer Daemon [<][^ ]+[@]/,
+    'subject'  => qr/\ADelivery status notification/,
+    'received' => qr/[ ][(]OpenSMTPD[)][ ]with[ ]/,
+};
 # http://www.openbsd.org/cgi-bin/man.cgi?query=smtpd&sektion=8
 # opensmtpd-5.4.2p1/smtpd/
 #   bounce.c/317:#define NOTICE_INTRO \
@@ -29,16 +34,13 @@ use warnings;
 #   bounce.c/337:const char *notice_relay =
 #   bounce.c/338:    "    Your message was relayed to these recipients.\n\n";
 #   bounce.c/339:
-my $RxMTA = {
-    'from'     => qr/\AMailer Daemon [<][^ ]+[@]/,
-    'begin'    => qr/\A\s*This is the MAILER-DAEMON, please DO NOT REPLY to this e-mail[.]\z/,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822'   => qr/\A\s*Below is a copy of the original message:\z/,
-    'subject'  => qr/\ADelivery status notification/,
-    'received' => qr/[ ][(]OpenSMTPD[)][ ]with[ ]/,
+my $Re1 = {
+    'begin'  => qr/\A\s*This is the MAILER-DAEMON, please DO NOT REPLY to this e-mail[.]\z/,
+    'rfc822' => qr/\A\s*Below is a copy of the original message:\z/,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'expired' => qr{
         # smtpd/queue.c:221|  envelope_set_errormsg(&evp, "Envelope expired");
         Envelope[ ]expired
@@ -77,6 +79,7 @@ my $RxErr = {
 
 sub description { 'OpenSMTPD' }
 sub smtpagent   { 'OpenSMTPD' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from OpenSMTPD
@@ -95,9 +98,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
-    return undef unless $mhead->{'from'}    =~ $RxMTA->{'from'};
-    return undef unless grep { $_ =~ $RxMTA->{'received'} } @{ $mhead->{'received'} };
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+    return undef unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -118,10 +121,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -129,7 +132,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -213,9 +216,9 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

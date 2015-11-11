@@ -3,18 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub description {
-    # @abstract Description of MTA
-    # @return   [String] Description of MTA module
-    return '';
-}
-
-sub headerlist {
-    # @abstract Header list required by each MTA module
-    # @return   [Array] Header list
-    return [];
-}
-
 sub SMTPCOMMAND {
     # Detector for SMTP commands in a bounce mail message
     # @private
@@ -111,13 +99,6 @@ sub INDICATORS {
     };
 }
 
-sub smtpagent {
-    # @abstract Return MTA name: Call smtpagent() in each child class
-    # @return   [String] MTA name
-    my $class = shift; 
-    return shift // 'null';
-}
-
 sub index {
     # MTA list
     # @return   [Array] MTA list with order
@@ -131,6 +112,31 @@ sub index {
     ];
 
     return $index;
+}
+
+sub smtpagent {
+    # @abstract Return MTA name: Call smtpagent() in each child class
+    # @return   [String] MTA name
+    my $class = shift; 
+    return shift // 'null';
+}
+
+sub description {
+    # @abstract Description of MTA
+    # @return   [String] Description of MTA module
+    return '';
+}
+
+sub headerlist {
+    # @abstract Header list required by each MTA module
+    # @return   [Array] Header list
+    return [];
+}
+
+sub pattern { 
+    # @abstract Patterns for detecting MTA
+    # @return   [Hash] Pattern table
+    return {};
 }
 
 sub scan {

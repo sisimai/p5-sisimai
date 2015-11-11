@@ -4,21 +4,18 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
-    'begin'   => qr/\A   ----- The following addresses had delivery problems -----\z/,
-    'error'   => qr/\A   ----- Non-delivered information -----\z/,
-    'rfc822'  => qr|\AContent-Type: message/rfc822\z|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+my $Re0 = {
     'subject' => qr/\AReturned mail:/,
-    'from'    => [
-        'postmaster@biglobe.ne.jp',
-        'postmaster@inacatv.ne.jp',
-        'postmaster@tmtv.ne.jp',
-        'postmaster@ttv.ne.jp',
-    ],
+    'from'    => qr/postmaster[@](?:biglobe|inacatv|tmtv|ttv)[.]ne[.]jp/,
+};
+my $Re1 = {
+    'begin'  => qr/\A   ----- The following addresses had delivery problems -----\z/,
+    'error'  => qr/\A   ----- Non-delivered information -----\z/,
+    'rfc822' => qr|\AContent-Type: message/rfc822\z|,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'filtered' => qr{
         Mail[ ]Delivery[ ]Failed[.]+[ ]User[ ]unknown
     }x,
@@ -29,6 +26,7 @@ my $RxErr = {
 
 sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
 sub smtpagent   { 'JP::Biglobe' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Biglobe
@@ -47,8 +45,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless grep { $mhead->{'from'} eq $_ } @{ $RxMSP->{'from'} };
-    return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -72,10 +70,10 @@ sub scan {
     require Sisimai::Address;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -83,7 +81,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -180,9 +178,9 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

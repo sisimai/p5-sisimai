@@ -6,7 +6,8 @@ use Class::Accessor::Lite;
 use Module::Load '';
 use Sisimai::ARF;
 use Sisimai::MTA;
-use Sisimai::MSP;
+use Sisimai::Order;
+use Sisimai::RFC3834;
 
 my $rwaccessors = [
     'from',             # [String] UNIX From line
@@ -16,66 +17,15 @@ my $rwaccessors = [
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 
-my $DefaultMTA = Sisimai::MTA->index;
-my $DefaultMSP = Sisimai::MSP->index;
-my @HeaderList = @{ __PACKAGE__->makeheaders };
-my $ExtModules = [];
+my $ReDetector = {}; # Sisimai::Order->pattern;
+my $DefaultMTA = Sisimai::Order->default;
+my $ExtHeaders = Sisimai::Order->headers;
+my $ToBeLoaded = [];
+my @RFC3834Set = ( map { lc $_ } @{ Sisimai::RFC3834->headerlist } );
+my @HeaderList = ( 'from', 'to', 'date', 'subject', 'content-type', 'reply-to',
+                   'message-id', 'received', 'return-path' );
 
 sub ENDOFEMAIL { '__END_OF_EMAIL_MESSAGE__' };
-
-sub makeheaders {
-    # Make email header list
-    # @return   [Array] Header list to be parsed
-    my $class = shift;
-
-    # Load email headers from each MTA,MSP module
-    my @mtaclasses = map { 'Sisimai::MTA::'.$_ } @$DefaultMTA;
-    my @mspclasses = map { 'Sisimai::MSP::'.$_ } @$DefaultMSP;
-    my $headerlist = [
-        'from', 'to', 'date', 'subject', 'content-type', 'reply-to',
-        'message-id', 'received'
-    ];
-
-    MTA_MODULES: for my $e ( @mtaclasses ) {
-        # Load MTA modules saved in lib/Sisimai/MTA directory
-        eval { Module::Load::load $e };
-        next if $@;
-
-        for my $v ( @{ $e->headerlist } ) {
-            # Get header name which required each MTA module
-            my $q = lc $v;
-            next if grep { $q eq $_ } @$headerlist;
-            push @$headerlist, $q;
-        }
-    }
-
-    MSP_MODULES: for my $e ( @mspclasses ) {
-        # Load MSP modules saved in lib/Sisimai/MSP directory
-        eval { Module::Load::load $e };
-        next if $@;
-
-        for my $v ( @{ $e->headerlist } ) {
-            # Get header name which required each MSP module
-            my $q = lc $v;
-            next if grep { $q eq $_ } @$headerlist;
-            push @$headerlist, $q;
-        }
-    }
-
-    OTHERS: for my $e ( qw|Sisimai::RFC3834| ) {
-        # Load MTA modules saved in lib/Sisimai directory
-        eval { Module::Load::load $e };
-        next if $@;
-
-        for my $v ( @{ $e->headerlist } ) {
-            # Get header name which required each MTA module
-            my $q = lc $v;
-            next if grep { $q eq $_ } @$headerlist;
-            push @$headerlist, $q;
-        }
-    }
-    return $headerlist;
-}
 
 sub new {
     # Constructor of Sisimai::Message
@@ -92,7 +42,7 @@ sub new {
     my $messageobj = undef;
     my $parameters = undef;
 
-    for my $e ( 'load', 'mtalist', 'msplist' ) {
+    for my $e ( 'load', 'order' ) {
         # Order of MTA, MSP modules
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
@@ -124,17 +74,14 @@ sub resolve {
     my $processing = { 'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [] };
     my $methodargv = {};
     my @mtamodules = ();
-    my @mspmodules = ();
 
-    for my $e ( 'load', 'mtalist', 'msplist' ) {
+    for my $e ( 'load', 'order' ) {
         # The order of MTA modules specified by user
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
         next unless scalar @{ $argvs->{ $e } };
 
-        push @mtamodules, @{ $argvs->{'mtalist'} } if $e eq 'mtalist';
-        push @mspmodules, @{ $argvs->{'msplist'} } if $e eq 'msplist';
-
+        push @mtamodules, @{ $argvs->{'order'} } if $e eq 'order';
         next unless $e eq 'load';
 
         # Load user defined MTA module
@@ -145,11 +92,9 @@ sub resolve {
 
             for my $w ( @{ $v->headerlist } ) {
                 # Get header name which required user defined MTA module
-                my $q = lc $w;
-                next if grep { $q eq $_ } @HeaderList;
-                unshift @HeaderList, $q;
+                $ExtHeaders->{ lc $w }->{ $v } = 1;
             }
-            push @$ExtModules, $v;
+            push @$ToBeLoaded, $v;
         }
     }
 
@@ -157,12 +102,6 @@ sub resolve {
         # Append the custom order of MTA modules
         next if grep { $e eq $_ } @$DefaultMTA;
         unshift @$DefaultMTA, $e;
-    }
-
-    for my $e ( @mspmodules ) {
-        # Append the custom order of MTA modules
-        next if grep { $e eq $_ } @$DefaultMSP;
-        unshift @$DefaultMSP, $e;
     }
 
     EMAIL_PROCESSING: {
@@ -174,6 +113,7 @@ sub resolve {
         my $bodystring = '';
         my $bouncedata = undef;
         my $rfc822part = undef;
+        my $tryonfirst = [];
 
         # 0. Split email data to headers and a body part.
         SPLIT_EMAIL: for my $e ( split( "\n", $email ) ) {
@@ -210,23 +150,27 @@ sub resolve {
         CONVERT_HEADER: {
             # 2. Convert email headers from text to hash reference
             my $currheader = '';
-            my @multiheads = ( 'Received' );
-            my @ignorelist = ( 'DKIM-Signature' );
+            my $multiheads = { 'received' => 1 };
+            my $ignorelist = { 'dkim-signature' => 1 };
+            my $allheaders = {};
+            my $modulelist = [];
 
+            map { $allheaders->{ $_ } = 1 } ( @HeaderList, @RFC3834Set, keys %$ExtHeaders );
             map { $processing->{'header'}->{ $_ } = undef } @HeaderList;
-            map { $processing->{'header'}->{ lc $_ } = [] } @multiheads;
+            map { $processing->{'header'}->{ lc $_ } = [] } keys %$multiheads;
 
             SPLIT_HEADERS: for my $e ( split( "\n", $mailheader ) ) {
-
+                # Convert email headers to hash
                 if( $e =~ m/\A([^ ]+?)[:][ ]*(.+?)\z/ ) {
                     # split the line into a header name and a header content
                     my $lhs = $1;
                     my $rhs = $2;
 
                     $currheader = lc $lhs;
-                    next unless grep { $currheader eq $_ } @HeaderList;
+                    next unless exists $allheaders->{ $currheader };
 
-                    if( grep { $currheader eq lc $_ } @multiheads ) {
+                    if( exists $multiheads->{ $currheader } ) {
+                        # if( grep { $currheader eq lc $_ } @multiheads ) {
                         # Such as 'Received' header, there are multiple headers
                         # in a single email message.
                         $rhs =~ y/\t/ /;
@@ -234,12 +178,24 @@ sub resolve {
                         push @{ $processing->{'header'}->{ $currheader } }, $rhs;
 
                     } else {
+                        if( $ExtHeaders->{ $currheader } ) {
+                            # MTA specific header
+                            push @$modulelist, keys %{ $ExtHeaders->{ $currheader } };
+
+                        } elsif( 0 && $currheader eq 'subject' ) {
+                            # Try to match with regular expressions of subject header
+                            for my $r ( keys %{ $ReDetector->{'subject'} } ) {
+                                next unless $rhs =~ $r;
+                                push @$modulelist, @{ $ReDetector->{'subject'}->{ $r } };
+                                last;
+                            }
+                        }
                         $processing->{'header'}->{ $currheader } = $rhs;
                     }
 
                 } elsif( $e =~ m/\A[\s\t]+(.+?)\z/ ) {
                     # Ignore header?
-                    next if grep { $currheader eq lc $_ } @ignorelist;
+                    next if exists $ignorelist->{ $currheader };
 
                     # Header line continued from the previous line
                     if( ref $processing->{'header'}->{ $currheader } eq 'ARRAY' ) {
@@ -250,12 +206,19 @@ sub resolve {
                     }
                 }
             } # End of for(SPLIT_HEADERS)
+
+            # Reverse sort: MTA -> MSP
+            @$tryonfirst = reverse sort @$modulelist;
         }
 
         REWRITE_BODY: {
             # 3. Rewrite message body for detecting the bounce reason
             $bodystring .= Sisimai::MTA->EOM;
-            $methodargv  = { 'mail' => $processing, 'body' => \$bodystring };
+            $methodargv  = { 
+                'mail' => $processing, 
+                'body' => \$bodystring, 
+                'load' => $tryonfirst,
+            };
             $bouncedata  = __PACKAGE__->rewrite( %$methodargv );
         }
 
@@ -370,6 +333,8 @@ sub rewrite {
 
     my $mesgentity = $argvs->{'mail'} || return '';
     my $bodystring = $argvs->{'body'} || return '';
+    my $tryonfirst = $argvs->{'load'} || [];
+    my $haveloaded = {};
     my $mailheader = $mesgentity->{'header'};
     my $scannedset = undef;
 
@@ -393,10 +358,11 @@ sub rewrite {
 
     SCANNER: while(1) {
         # 1. Sisimai::ARF 
-        # 2. Sisimai::MTA::*
-        # 3. Sisimai::MSP::*
-        # 4. Sisimai::RFC3464
-        # 4. Sisimai::RFC3834
+        # 2. User-Defined Module
+        # 3. MTA Module Candidates to be tried on first
+        # 4. Sisimai::MTA::* and MSP::*
+        # 5. Sisimai::RFC3464
+        # 6. Sisimai::RFC3834
         #
         if( Sisimai::ARF->is_arf( $mailheader ) ) {
             # Feedback Loop message
@@ -404,30 +370,32 @@ sub rewrite {
             last(SCANNER) if $scannedset;
         }
 
-        EXT: for my $r ( @$ExtModules ) {
+        USER_DEFINED: for my $r ( @$ToBeLoaded ) {
             # Call user defined MTA modules
+            next if exists $haveloaded->{ $r };
             $scannedset = $r->scan( $mailheader, $bodystring );
-            last(EXT) if $scannedset;
+            $haveloaded->{ $r } = 1;
+            last(SCANNER) if $scannedset;
         }
-        last(SCANNER) if $scannedset;
 
-        MTA: for my $r ( @$DefaultMTA ) {
-            # Pre-process email headers of a bounce message in standard format.
-            # Famous MTAs, such as Sendmail, Postfix, and qmail...
-            my $v = 'Sisimai::MTA::'.$r;
-            $scannedset = $v->scan( $mailheader, $bodystring );
-            last(MTA) if $scannedset;
+        TRY_ON_FIRST: while( my $r = shift @$tryonfirst ) {
+            # Try MTA module candidates which are detected from MTA specific
+            # mail headers on first
+            next if exists $haveloaded->{ $r };
+            $scannedset = $r->scan( $mailheader, $bodystring );
+            $haveloaded->{ $r } = 1;
+            last(SCANNER) if $scannedset;
         }
-        last(SCANNER) if $scannedset;
 
-        MSP: for my $r ( @$DefaultMSP ) {
+        DEFAULT_LIST: for my $r ( @$DefaultMTA ) {
             # Pre-process email headers of a bounce message in standard format.
-            # Famous MSP: Mail Service Providers.
-            my $v = 'Sisimai::MSP::'.$r;
-            $scannedset = $v->scan( $mailheader, $bodystring );
-            last(MSP) if $scannedset;
+            # Famous MTAs, such as Sendmail, Postfix, and qmail... and Famous
+            # MSP: Mail Service Providers.
+            next if exists $haveloaded->{ $r };
+            $scannedset = $r->scan( $mailheader, $bodystring );
+            $haveloaded->{ $r } = 1;
+            last(SCANNER) if $scannedset;
         }
-        last(SCANNER) if $scannedset;
 
         # When the all of Sisimai::MTA::* modules did not return bounce data,
         # call Sisimai::RFC3464;

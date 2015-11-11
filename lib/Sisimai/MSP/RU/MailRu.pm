@@ -5,22 +5,24 @@ use strict;
 use warnings;
 
 # Based on Sisimai::MTA::Exim
-my $RxMSP = {
+my $Re0 = {
     'from'      => qr/[<]?mailer-daemon[@].*mail[.]ru[>]?/i,
-    'rfc822'    => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
-    'begin'     => qr/\AThis message was created automatically by mail delivery software[.]/,
-    'endof'     => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
     'subject'   => qr/Mail failure[.]\z/,
     'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].*mail[.]ru[>]\z/,
     # Message-Id: <E1P1YNN-0003AD-Ga@*.mail.ru>
 };
+my $Re1 = {
+    'rfc822' => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
+    'begin'  => qr/\AThis message was created automatically by mail delivery software[.]/,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
 
-my $RxComm = [
+my $ReCommand = [
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
 ];
 
-my $RxSess = {
+my $ReFailure = {
     'expired' => qr{(?:
          retry[ ]timeout[ ]exceeded
         |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
@@ -78,9 +80,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'}    =~ $RxMSP->{'subject'};
-    return undef unless $mhead->{'from'}       =~ $RxMSP->{'from'};
-    return undef unless $mhead->{'message-id'} =~ $RxMSP->{'message-id'};
+    return undef unless $mhead->{'subject'}    =~ $Re0->{'subject'};
+    return undef unless $mhead->{'from'}       =~ $Re0->{'from'};
+    return undef unless $mhead->{'message-id'} =~ $Re0->{'message-id'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -102,10 +104,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -113,7 +115,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -265,7 +267,7 @@ sub scan {
 
         if( ! $e->{'command'} ) {
             # Get the SMTP command name for the session
-            SMTP: for my $r ( @$RxComm ) {
+            SMTP: for my $r ( @$ReCommand ) {
                 # Verify each regular expression of SMTP commands
                 next unless $e->{'diagnosis'} =~ $r;
                 $e->{'command'} = uc $1;
@@ -284,9 +286,9 @@ sub scan {
 
                 } else {
 
-                    SESSION: for my $r ( keys %$RxSess ) {
+                    SESSION: for my $r ( keys %$ReFailure ) {
                         # Verify each regular expression of session errors
-                        next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+                        next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
                         $e->{'reason'} = $r;
                         last;
                     }

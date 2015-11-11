@@ -4,22 +4,25 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
+my $Re0 = {
     'from'    => qr/MAILER-DAEMON[@]messagelabs[.]com/,
+    'subject' => qr/\AMail Delivery Failure/,
+};
+my $Re1 = {
     'begin'   => qr|\AContent-Type: message/delivery-status|,
     'error'   => qr/\AReason:\s*(.+)\z/,
     'rfc822'  => qr|\AContent-Type: text/rfc822-headers\z|,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\AMail Delivery Failure/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'userunknown' => qr/No[ ]such[ ]user/x,
 };
 
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
 sub smtpagent   { 'UK::MessageLabs' }
 sub headerlist  { return [ 'X-Msg-Ref', 'X-Originating-IP' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from MessageLabs.com
@@ -38,8 +41,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}    =~ $RxMSP->{'from'};
-    return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -65,10 +68,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -76,7 +79,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -221,9 +224,9 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

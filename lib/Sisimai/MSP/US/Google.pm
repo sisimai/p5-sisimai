@@ -4,8 +4,11 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
+my $Re0 = {
     'from'    => qr/[@]googlemail[.]com[>]?\z/,
+    'subject' => qr/Delivery[ ]Status[ ]Notification/,
+};
+my $Re1 = {
     'begin'   => qr/Delivery to the following recipient/,
     'start'   => qr/Technical details of (?:permanent|temporary) failure:/,
     'error'   => qr/The error that the other server returned was:/,
@@ -15,10 +18,9 @@ my $RxMSP = {
         )\z
     }x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/Delivery[ ]Status[ ]Notification/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'expired' => qr{(?:
          DNS[ ]Error:[ ]Could[ ]not[ ]contact[ ]DNS[ ]servers
         |Delivery[ ]to[ ]the[ ]following[ ]recipient[ ]has[ ]been[ ]delayed
@@ -109,6 +111,7 @@ my $StateTable = {
 sub description { 'Google Gmail: https://mail.google.com' }
 sub smtpagent   { 'US::Google' }
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Google Gmail
@@ -174,8 +177,8 @@ sub scan {
     #   The error that the other server returned was:
     #   550 5.1.1 <userunknown@example.jp>... User Unknown
     #
-    return undef unless $mhead->{'from'}    =~ $RxMSP->{'from'};
-    return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -201,17 +204,17 @@ sub scan {
     require Sisimai::Address;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $RxMSP->{'begin'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
         }
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -348,9 +351,9 @@ sub scan {
 
         } else {
             # No state code
-            SESSION: for my $r ( keys %$RxErr ) {
+            SESSION: for my $r ( keys %$ReFailure ) {
                 # Verify each regular expression of session errors
-                next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+                next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
                 $e->{'reason'} = $r;
                 last;
             }

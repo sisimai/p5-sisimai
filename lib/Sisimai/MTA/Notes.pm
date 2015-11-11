@@ -5,14 +5,16 @@ use strict;
 use warnings;
 use Encode;
 
-my $RxMTA = {
+my $Re0 = {
+    'subject' => qr/\AUndeliverable message/,
+};
+my $Re1 = {
     'begin'   => qr/\A[-]+[ ]+Failure Reasons[ ]+[-]+\z/,
     'rfc822'  => qr/^[-]+[ ]+Returned Message[ ]+[-]+$/,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\AUndeliverable message/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'userunknown' => qr{(?:
          User[ ]not[ ]listed[ ]in[ ]public[ ]Name[ ][&][ ]Address[ ]Book
         |ディレクトリのリストにありません
@@ -23,6 +25,7 @@ my $RxErr = {
 
 sub description { 'Lotus Notes' }
 sub smtpagent   { 'Notes' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Lotus Notes
@@ -41,7 +44,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -66,10 +69,10 @@ sub scan {
     require Sisimai::Address;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -77,7 +80,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -198,9 +201,9 @@ sub scan {
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'recipient'} = Sisimai::Address->s3s4( $e->{'recipient'} );
 
-        for my $r ( keys %$RxErr ) {
+        for my $r ( keys %$ReFailure ) {
             # Check each regular expression of Notes error messages
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
 
             my $s = Sisimai::RFC3463->status( $r, 'p', 'i' );

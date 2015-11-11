@@ -5,11 +5,8 @@ use strict;
 use warnings;
 
 # Based on Sisimai::MTA::Exim
-my $RxMTA = {
-    'from'    => qr/\AMail Delivery System/,
-    'rfc822'  => qr/\AIncluded is a copy of the message header:\z/,
-    'begin'   => qr/\AThis message was created automatically by mail delivery software[.]\z/,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+my $Re0 = {
+    'from'      => qr/\AMail Delivery System/,
     'subject'   => qr{(?:
          Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
         |Warning:[ ]message[ ].+[ ]delayed[ ]+
@@ -18,13 +15,18 @@ my $RxMTA = {
     }x,
     'message-id' => qr/\A[<]mxl[~][0-9a-f]+/,
 };
+my $Re1 = {
+    'rfc822' => qr/\AIncluded is a copy of the message header:\z/,
+    'begin'  => qr/\AThis message was created automatically by mail delivery software[.]\z/,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
 
-my $RxComm = [
+my $ReCommand = [
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
 ];
 
-my $RxSess = {
+my $ReFailure = {
     'expired' => qr{(?:
          retry[ ]timeout[ ]exceeded
         |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
@@ -64,6 +66,7 @@ my $RxSess = {
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
 sub headerlist  { return [ 'X-MXL-NoteHash', 'X-MXL-Hash' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from MXLogic
@@ -85,8 +88,8 @@ sub scan {
 
     $match = 1 if defined $mhead->{'x-mxl-hash'};
     $match = 1 if defined $mhead->{'x-mxl-notehash'};
-    $match = 1 if $mhead->{'subject'} =~ $RxMTA->{'subject'};
-    $match = 1 if $mhead->{'from'}    =~ $RxMTA->{'from'};
+    $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match = 1 if $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -109,10 +112,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -120,7 +123,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -236,7 +239,7 @@ sub scan {
 
             COMMAND: while(1) {
                 # Get the SMTP command name for the session
-                SMTP: for my $r ( @$RxComm ) {
+                SMTP: for my $r ( @$ReCommand ) {
                     # Verify each regular expression of SMTP commands
                     next unless $e->{'diagnosis'} =~ $r;
                     $e->{'command'} = uc $1;
@@ -257,9 +260,9 @@ sub scan {
 
                 } else {
 
-                    SESSION: for my $r ( keys %$RxSess ) {
+                    SESSION: for my $r ( keys %$ReFailure ) {
                         # Verify each regular expression of session errors
-                        next unless $e->{'diagnosis'} =~ $RxSess->{ $r };
+                        next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
                         $e->{'reason'} = $r;
                         last;
                     }

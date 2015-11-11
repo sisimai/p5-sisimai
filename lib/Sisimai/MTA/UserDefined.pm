@@ -4,18 +4,21 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
     'from'    => qr/\AMail Delivery Subsystem/,
+    'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
+};
+my $Re1 = {
     'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
 };
 
 sub description { 'Module decription' }
 sub smtpagent   { 'Module name' }
 sub headerlist  { return [ 'X-Some-UserDefined-Header' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # @abstract      UserDefined MTA module
@@ -41,8 +44,8 @@ sub scan {
     #   - Did not matched:          return undef;
     #
     MATCH: {
-        $match = 1 if $mhead->{'subject'} =~ $RxMTA->{'subject'};
-        $match = 1 if $mhead->{'from'}    =~ $RxMTA->{'from'};
+        $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+        $match = 1 if $mhead->{'from'}    =~ $Re0->{'from'};
         $match = 1 if $mhead->{'x-some-userdefined-header'};
     }
     return undef unless $match;

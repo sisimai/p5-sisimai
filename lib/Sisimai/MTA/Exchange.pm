@@ -4,22 +4,23 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
-    'begin'    => qr/\AYour message/,
-    'error'    => qr/\Adid not reach the following recipient[(]s[)]:/,
-    'rfc822'   => qr|\AContent-Type: message/rfc822|,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+my $Re0 = {
     # X-Mailer: Internet Mail Service (5.0.1461.28)
     # X-Mailer: Microsoft Exchange Server Internet Mail Connector Version ...
-    'x-mailer' => qr{\A(?:
+    'x-mailer'  => qr{\A(?:
          Internet[ ]Mail[ ]Service[ ][(][\d.]+[)]\z
         |Microsoft[ ]Exchange[ ]Server[ ]Internet[ ]Mail[ ]Connector
         )
     }x,
-    'x-mimeole'=> qr/\AProduced By Microsoft Exchange/,
-
+    'x-mimeole' => qr/\AProduced By Microsoft Exchange/,
     # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
-    'received' => qr/\Aby .+ with Internet Mail Service [(][\d.]+[)]/,
+    'received'  => qr/\Aby .+ with Internet Mail Service [(][\d.]+[)]/,
+};
+my $Re1 = {
+    'begin'  => qr/\AYour message/,
+    'error'  => qr/\Adid not reach the following recipient[(]s[)]:/,
+    'rfc822' => qr|\AContent-Type: message/rfc822|,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 my $ErrorCodeTable = {
@@ -53,6 +54,7 @@ my $ErrorCodeTable = {
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Microsoft Exchange Server
@@ -78,20 +80,20 @@ sub scan {
         if( defined $mhead->{'x-mailer'} ) {
             # X-Mailer:  Microsoft Exchange Server Internet Mail Connector Version 4.0.994.63
             # X-Mailer: Internet Mail Service (5.5.2232.9)
-            $match = 1 if $mhead->{'x-mailer'} =~ $RxMTA->{'x-mailer'};
+            $match = 1 if $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
             last if $match;
         }
 
         if( defined $mhead->{'x-mimeole'} ) {
             # X-MimeOLE: Produced By Microsoft Exchange V6.5
-            $match = 1 if $mhead->{'x-mimeole'} =~ $RxMTA->{'x-mimeole'};
+            $match = 1 if $mhead->{'x-mimeole'} =~ $Re0->{'x-mimeole'};
             last if $match;
         }
 
         last unless scalar @{ $mhead->{'received'} };
         for my $e ( @{ $mhead->{'received'} } ) {
             # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
-            next unless $e =~ $RxMTA->{'received'};
+            next unless $e =~ $Re0->{'received'};
             $match = 1;
             last(EXCHANGE_OR_NOT);
         }
@@ -125,10 +127,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -136,7 +138,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }

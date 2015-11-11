@@ -4,24 +4,26 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
+my $Re0 = {
     'from'       => qr/[<]?(?>postmaster[@]ezweb[.]ne[.]jp)[>]?/i,
     'subject'    => qr/\AMail System Error - Returned Mail\z/,
     'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
     'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    'begin'      => qr{\A(?:
+};
+my $Re1 = {
+    'begin'    => qr{\A(?:
          The[ ]user[(]s[)][ ]
         |Your[ ]message[ ]
         |Each[ ]of[ ]the[ ]following
         |[<][^ ]+[@][^ ]+[>]\z
         )
     }x,
-    'rfc822'     => qr#\A(?:[-]{50}|Content-Type:[ ]*message/rfc822)#,
-    'boundary'   => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
-    'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'rfc822'   => qr#\A(?:[-]{50}|Content-Type:[ ]*message/rfc822)#,
+    'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
+    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $RxErr = {
+my $ReFailure = {
     #'notaccept' => [
     #    qr/The following recipients did not receive this message:/,
     #],
@@ -47,6 +49,7 @@ my $RxErr = {
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
 sub headerlist  { return [ 'X-SPASIGN' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from EZweb
@@ -73,11 +76,11 @@ sub scan {
     #   Received: from ezweb.ne.jp (wmflb12na02.ezweb.ne.jp [222.15.69.197])
     #   Received: from nmomta.auone-net.jp ([aaa.bbb.ccc.ddd]) by ...
     #
-    $match++ if $mhead->{'from'}     =~ $RxMSP->{'from'};
-    $match++ if $mhead->{'subject'}  =~ $RxMSP->{'subject'};
-    $match++ if $mhead->{'received'} =~ $RxMSP->{'received'};
+    $match++ if $mhead->{'from'}     =~ $Re0->{'from'};
+    $match++ if $mhead->{'subject'}  =~ $Re0->{'subject'};
+    $match++ if $mhead->{'received'} =~ $Re0->{'received'};
     if( defined $mhead->{'message-id'} ) {
-        $match++ if $mhead->{'message-id'} =~ $RxMSP->{'message-id'};
+        $match++ if $mhead->{'message-id'} =~ $Re0->{'message-id'};
     }
     return undef if $match < 2;
 
@@ -107,20 +110,19 @@ sub scan {
     my $rxboundary = Sisimai::MIME->boundary( $mhead->{'content-type'}, 1 );
     my @rxmessages = ();
 
-    $RxMSP->{'boundary'} = qr|\A$rxboundary\z| if length $rxboundary;
-    map { push @rxmessages, @{ $RxErr->{ $_ } } } ( keys %$RxErr );
+    $Re1->{'boundary'} = qr|\A$rxboundary\z| if length $rxboundary;
+    map { push @rxmessages, @{ $ReFailure->{ $_ } } } ( keys %$ReFailure );
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $RxMSP->{'begin'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
         }
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} || $e =~ $RxMSP->{'boundary'} ) {
-                # if( grep { $e =~ $_ } @{ $RxMSP->{'rfc822'} } ) {
+            if( $e =~ $Re1->{'rfc822'} || $e =~ $Re1->{'boundary'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -264,9 +266,9 @@ sub scan {
 
             } else {
                 # SMTP command is not RCPT
-                SESSION: for my $r ( keys %$RxErr ) {
+                SESSION: for my $r ( keys %$ReFailure ) {
                     # Verify each regular expression of session errors
-                    PATTERN: for my $rr ( @{ $RxErr->{ $r } } ) {
+                    PATTERN: for my $rr ( @{ $ReFailure->{ $r } } ) {
                         # Check each regular expression
                         next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
                         $e->{'reason'} = $r;

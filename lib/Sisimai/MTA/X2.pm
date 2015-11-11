@@ -4,20 +4,23 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
+my $Re0 = {
     'from'     => qr/MAILER-DAEMON[@]/,
-    'begin'    => qr/\AUnable to deliver message to the following address/,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822'   => qr/\A--- Original message follows/,
     'subject'  => qr{\A(?>
          Delivery[ ]failure
         |fail(?:ure|ed)[ ]delivery
         )
     }x,
 };
+my $Re1 = {
+    'begin'    => qr/\AUnable to deliver message to the following address/,
+    'rfc822'   => qr/\A--- Original message follows/,
+    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
 
 sub description { 'Unknown MTA #2' }
 sub smtpagent   { 'X2' }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Unknown MTA #2
@@ -36,8 +39,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}    =~ $RxMTA->{'from'};
-    return undef unless $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -59,10 +62,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -70,7 +73,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }

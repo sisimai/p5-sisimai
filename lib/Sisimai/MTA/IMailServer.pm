@@ -4,15 +4,17 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMTA = {
-    'begin'    => qr/\A\z/,    # Blank line
-    'rfc822'   => qr/\AOriginal message follows[.]\z/,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+my $Re0 = {
     'x-mailer' => qr/\A[<]SMTP32 v[\d.]+[>]\z/,
     'subject'  => qr/\AUndeliverable Mail\z/,
 };
+my $Re1 = {
+    'begin'  => qr/\A\z/,    # Blank line
+    'rfc822' => qr/\AOriginal message follows[.]\z/,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
 
-my $RxErr = {
+my $ReFailure = {
     'hostunknown' => qr{
         Unknown[ ]host
     },
@@ -38,6 +40,7 @@ my $RxErr = {
 sub description { 'IPSWITCH IMail Server' }
 sub smtpagent   { 'IMailServer' }
 sub headerlist  { return [ 'X-Mailer' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from IMailServer
@@ -57,8 +60,8 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if( defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} =~ $RxMTA->{'x-mailer'} );
-    $match = 1 if $mhead->{'subject'} =~ $RxMTA->{'subject'};
+    $match = 1 if( defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'} );
+    $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
     return undef unless $match;
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
@@ -80,10 +83,10 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMTA->{'begin'} and $RxMTA->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMTA->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -91,7 +94,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMTA->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -177,9 +180,9 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }

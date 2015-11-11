@@ -4,15 +4,17 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RxMSP = {
+my $Re0 = {
     'from'    => qr/\APostmaster [<]Postmaster[@]AOL[.]com[>]\z/,
+    'subject' => qr/\AUndeliverable: /,
+};
+my $Re1 = {
     'begin'   => qr|\AContent-Type: message/delivery-status|,
     'rfc822'  => qr|\AContent-Type: message/rfc822|,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'subject' => qr/\AUndeliverable: /,
 };
 
-my $RxErr = {
+my $ReFailure = {
     'hostunknown' => qr{
         Host[ ]or[ ]domain[ ]name[ ]not[ ]found
     }x,
@@ -20,9 +22,8 @@ my $RxErr = {
 
 sub description { 'Aol Mail: http://www.aol.com' }
 sub smtpagent   { 'US::Aol' }
-sub headerlist  { 
-    return [ 'X-BounceIO-Id', 'X-AOL-IP' ]
-}
+sub headerlist  { return [ 'X-BounceIO-Id', 'X-AOL-IP' ] }
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error from Aol Mail
@@ -42,8 +43,8 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-aol-ip'};
-    return undef unless $mhead->{'subject'} =~ $RxMSP->{'subject'};
-    return undef unless $mhead->{'from'}    =~ $RxMSP->{'from'};
+    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
 
     my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
     my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
@@ -69,12 +70,12 @@ sub scan {
     $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     for my $e ( @stripedtxt ) {
-        # Read each line between $RxMSP->{'begin'} and $RxMSP->{'rfc822'}.
+        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         $e =~ s{=\d+\z}{};
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $RxMSP->{'begin'} ) {
+            if( $e =~ $Re1->{'begin'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -82,7 +83,7 @@ sub scan {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $RxMSP->{'rfc822'} ) {
+            if( $e =~ $Re1->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -211,9 +212,9 @@ sub scan {
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        SESSION: for my $r ( keys %$RxErr ) {
+        SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $RxErr->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
             last;
         }
