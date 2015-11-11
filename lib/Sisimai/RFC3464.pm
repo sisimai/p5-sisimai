@@ -43,6 +43,7 @@ my $Re1 = {
 
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
+sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error for RFC3464

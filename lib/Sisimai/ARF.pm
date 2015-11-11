@@ -37,6 +37,7 @@ my $Re1 = {
 
 sub description { return 'Abuse Feedback Reporting Format' }
 sub headerlist  { return [] }
+sub pattern     { return $Re0 }
 
 sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
 sub RFC822HEADERS  { 
