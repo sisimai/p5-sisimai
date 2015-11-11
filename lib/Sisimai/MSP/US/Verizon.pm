@@ -60,7 +60,7 @@ sub scan {
     require Sisimai::Address;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-    my @stripedtxt = split( "\n", $$mbody );
+    my @hasdivided = split( "\n", $$mbody );
     my $indicators = __PACKAGE__->INDICATORS;
     my $longfields = Sisimai::RFC5322->LONGFIELDS;
     my $rfc822head = Sisimai::RFC5322->HEADERFIELDS;
@@ -98,7 +98,7 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
 
-        for my $e ( @stripedtxt ) {
+        for my $e ( @hasdivided ) {
             # Read each line between $Re0->{'begin'} and $Re0->{'rfc822'}.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
@@ -205,7 +205,7 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
 
-        for my $e ( @stripedtxt ) {
+        for my $e ( @hasdivided ) {
             # Read each line between $Re0->{'begin'} and $Re0->{'rfc822'}.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part

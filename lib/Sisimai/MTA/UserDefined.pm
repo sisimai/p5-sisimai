@@ -55,7 +55,7 @@ sub scan {
     #    lib/Sisimai/MTA or lib/Sisimai/MSP directory to implement codes.
     #
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-    my @stripedtxt = split( "\n", $$mbody );
+    my @hasdivided = split( "\n", $$mbody );
     my $indicators = __PACKAGE__->INDICATORS;
     my $longfields = Sisimai::RFC5322->LONGFIELDS;
     my $rfc822head = Sisimai::RFC5322->HEADERFIELDS;

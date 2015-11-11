@@ -71,7 +71,7 @@ sub scan {
     require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
-    my @stripedtxt = split( "\n", $$mbody );
+    my @hasdivided = split( "\n", $$mbody );
     my $indicators = Sisimai::MTA->INDICATORS;
     my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
     my $longfields = Sisimai::RFC5322->LONGFIELDS;
@@ -90,7 +90,7 @@ sub scan {
     my $v = undef;
     my $p = '';
 
-    for my $e ( @stripedtxt ) {
+    for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
