@@ -2,6 +2,7 @@ package Sisimai::MTA;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::RFC5322;
 
 sub SMTPCOMMAND {
     # Detector for SMTP commands in a bounce mail message
@@ -45,47 +46,21 @@ sub DELIVERYSTATUS {
 sub LONGFIELDS {
     # Fields that might be long
     # @private
-    # @return   [Array] Long filed(email header) list
-    return [ 'To', 'From', 'Subject' ];
+    # @deprecated
+    # @return   [Hash] Long filed(email header) list
+    return [ keys %{ Sisimai::RFC5322->LONGFIELDS } ];
 }
 
-sub RFC822HEADERS {
+sub RFC822HEADERS { 
     # Grouped RFC822 headers
     # @private
-    # @param    [String] group  Header group name
-    # @return   [Array]         Header list
+    # @deprecated
+    # @param    [String] group  RFC822 Header group name
+    # @return   [Array,Hash]    RFC822 Header list
     my $class = shift;
-    my $group = shift // '';
-    my $heads = {
-        'messageid' => [ 'Message-Id' ],
-        'subject'   => [ 'Subject' ],
-        'listid'    => [ 'List-Id' ],
-        'date'      => [ 'Date', 'Posted-Date', 'Posted', 'Resent-Date', ],
-        'addresser' => [ 
-            'From', 'Return-Path', 'Reply-To', 'Errors-To', 'Reverse-Path', 
-            'X-Postfix-Sender', 'Envelope-From', 'X-Envelope-From',
-        ],
-        'recipient' => [ 
-            'To', 'Delivered-To', 'Forward-Path', 'Envelope-To',
-            'X-Envelope-To', 'Resent-To', 'Apparently-To'
-        ],
-    };
-
-    if( length $group ) {
-        # The 1st argument specified
-        return $heads->{ $group } if exists $heads->{ $group };
-
-        # Return all the values when the group name does not exist
-        return $heads;
-
-    } else {
-        # Flatten hash reference then return array reference
-        my $lists = [];
-        for my $e ( keys %$heads ) {
-            push @$lists, @{ $heads->{ $e } };
-        }
-        return $lists;
-    }
+    my $group = shift // return [ keys %{ Sisimai::RFC5322->HEADERFIELDS } ];
+    my $index = Sisimai::RFC5322->HEADERFIELDS( $group );
+    return $index;
 }
 
 sub INDICATORS {

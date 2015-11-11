@@ -3,17 +3,25 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::MTA;
+use Sisimai::RFC5322;
 
 sub SMTPCOMMAND    { return Sisimai::MTA->SMTPCOMMAND    }
 sub EOM            { return Sisimai::MTA->EOM            }
 sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
 sub LONGFIELDS     { return Sisimai::MTA->LONGFIELDS     }
 sub INDICATORS     { return Sisimai::MTA->INDICATORS     }
-sub RFC822HEADERS  { 
+sub RFC822HEADERS { 
+    # Grouped RFC822 headers
+    # @private
+    # @deprecated
+    # @param    [String] group  RFC822 Header group name
+    # @return   [Array,Hash]    RFC822 Header list
     my $class = shift;
-    my $argvs = shift;
-    return Sisimai::MTA->RFC822HEADERS( $argvs );
+    my $group = shift // return [ keys %{ Sisimai::RFC5322->HEADERFIELDS } ];
+    my $index = Sisimai::RFC5322->HEADERFIELDS( $group );
+    return $index;
 }
+
 sub smtpagent      { return Sisimai::MTA->smtpagent      }
 sub description    { return '' }
 sub headerlist     { return [] }
