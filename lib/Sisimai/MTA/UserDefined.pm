@@ -15,6 +15,10 @@ my $Re1 = {
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
+my $Indicators = __PACKAGE__->INDICATORS;
+my $LongFields = Sisimai::RFC5322->LONGFIELDS;
+my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
+
 sub description { 'Module decription' }
 sub smtpagent   { 'Module name' }
 sub headerlist  { return [ 'X-Some-UserDefined-Header' ] }
@@ -56,9 +60,6 @@ sub scan {
     #
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
-    my $indicators = __PACKAGE__->INDICATORS;
-    my $longfields = Sisimai::RFC5322->LONGFIELDS;
-    my $rfc822head = Sisimai::RFC5322->HEADERFIELDS;
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name

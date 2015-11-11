@@ -23,6 +23,10 @@ my $ReFailure = {
     'networkerror' => qr/Message has exceeded maximum hop count/,
 };
 
+my $Indicators = __PACKAGE__->INDICATORS;
+my $LongFields = Sisimai::RFC5322->LONGFIELDS;
+my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
+
 sub description { 'Lotus Notes' }
 sub smtpagent   { 'Notes' }
 sub pattern     { return $Re0 }
@@ -51,9 +55,6 @@ sub scan {
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
-    my $indicators = __PACKAGE__->INDICATORS;
-    my $longfields = Sisimai::RFC5322->LONGFIELDS;
-    my $rfc822head = Sisimai::RFC5322->HEADERFIELDS;
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
@@ -70,15 +71,15 @@ sub scan {
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
             if( $e =~ $Re1->{'begin'} ) {
-                $readcursor |= $indicators->{'deliverystatus'};
+                $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
         }
 
-        unless( $readcursor & $indicators->{'message-rfc822'} ) {
+        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
             if( $e =~ $Re1->{'rfc822'} ) {
-                $readcursor |= $indicators->{'message-rfc822'};
+                $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
         }
@@ -91,7 +92,7 @@ sub scan {
             }
         }
 
-        if( $readcursor & $indicators->{'message-rfc822'} ) {
+        if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
@@ -99,7 +100,7 @@ sub scan {
                 my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless exists $rfc822head->{ $whs };
+                next unless exists $RFC822Head->{ $whs };
 
                 $previousfn  = lc $lhs;
                 $rfc822part .= $e."\n";
@@ -107,18 +108,18 @@ sub scan {
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
-                $rfc822part .= $e."\n" if exists $longfields->{ $previousfn };
+                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless exists $longfields->{ $previousfn };
+                next unless exists $LongFields->{ $previousfn };
                 next if length $e;
                 $rfc822next->{ $previousfn } = 1;
             }
 
         } else {
             # Before "message/rfc822"
-            next unless $readcursor & $indicators->{'deliverystatus'};
+            next unless $readcursor & $Indicators->{'deliverystatus'};
 
             # ------- Failure Reasons  --------
             # 
