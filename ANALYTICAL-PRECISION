@@ -2,11 +2,11 @@
  MTA MODULE NAME          CAN PARSE   RATIO   NOTES
 -------------------------------------------------------------------------------
 MTA::Activehunter .......    0/0009  0.0000  TransWARE Active!hunter
-MTA::ApacheJames ........    1/0006  0.1667  Java Apache Mail Enterprise Server
+MTA::ApacheJames ........    0/0006  0.0000  Java Apache Mail Enterprise Server
 MTA::Courier ............   13/0015  1.0000  Courier MTA
 MTA::Domino .............    7/0013  0.6364  IBM Domino Server
 MTA::Exchange ...........    1/0050  0.0303  Microsoft Exchange Server
-MTA::Exim ...............   97/0113  0.9417  Exim
+MTA::Exim ...............  144/0174  0.8944  Exim
 MTA::IMailServer ........    0/0039  0.0000  IPSWITCH IMail Server
 MTA::InterScanMSS .......    0/0007  0.0000  Trend Micro InterScan Messaging Security Suite
 MTA::MXLogic ............    0/0013  0.0000  McAfee SaaS
@@ -29,7 +29,7 @@ MTA::mFILTER ............    0/0009  0.0000  Digital Arts m-FILTER
 MTA::qmail ..............   51/0076  0.8226  qmail
 MSP::DE::EinsUndEins ....    0/0003  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0010  0.0000  GMX: http://www.gmx.net
-MSP::JP::Biglobe ........    5/0005  1.0000  BIGLOBE: http://www.biglobe.ne.jp
+MSP::JP::Biglobe ........    5/0007  0.7143  BIGLOBE: http://www.biglobe.ne.jp
 MSP::JP::EZweb ..........  129/0124  1.0000  au EZweb: http://www.au.kddi.com/mobile/
 MSP::JP::KDDI ...........    6/0006  1.0000  au by KDDI: http://www.au.kddi.com
 MSP::RU::MailRu .........    0/0010  0.0000  @mail.ru: https://mail.ru
@@ -47,8 +47,8 @@ MSP::US::Verizon ........    2/0002  1.0000  Verizon Wireless: http://www.verizo
 MSP::US::Yahoo ..........    0/0009  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0011  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    9/0050  0.2812  Abuse Feedback Reporting Format
-RFC3464 .................  124/0269  0.4901  Fallback Module for MTAs
+RFC3464 .................  123/0268  0.4881  Fallback Module for MTAs
 RFC3834 .................    0/0004  0.0000  Detector for auto replied message
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13p1     999/1963  0.5089
- Sisimai 4.13.0           1963/1963  1.0000
+ bounceHammer 2.7.13p1    1044/2025  0.5156
+ Sisimai 4.13.1           2025/2025  1.0000
