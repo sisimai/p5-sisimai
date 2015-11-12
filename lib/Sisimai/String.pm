@@ -4,6 +4,13 @@ use strict;
 use warnings;
 use Digest::SHA;
 
+sub EOM {
+    # End of email message as a sentinel for parsing bounce messages
+    # @private
+    # @return   [String] Fixed length string like a constant
+    return '__END_OF_EMAIL_MESSAGE__';
+}
+
 sub token {
     # Create the message token from an addresser and a recipient
     # @param    [String] addr1  A sender's email address
