@@ -26,6 +26,7 @@ sub headers {
     # Make email header list in each MTA module
     # @return   [Hash] Header list to be parsed
     # @private
+    # @since v4.13.1
     my $class = shift;
     my $order = __PACKAGE__->default;
     my $heads = {};
@@ -44,32 +45,6 @@ sub headers {
         }
     }
     return $heads;
-}
-
-sub pattern {
-    # Make patterns for deciding optimized MTA/MSP order
-    # @return   [Hash] Pattern based MTA/MSP module table
-    my $class = shift;
-    my $order = __PACKAGE__->default;
-    my $table = { 'subject' => {}, 'from' => {} };
-
-    LOAD_PATTENS: for my $e ( @$order ) {
-        # Load pattens defined in $Re0
-        eval { Module::Load::load $e };
-        next if $@;
-
-        my $p = $e->pattern;
-        next unless keys %$p;
-
-        for my $f ( keys %$table ) {
-            # Subject, From, ...
-            next unless exists $p->{ $f };
-            $table->{ $f }->{ $p->{ $f } } //= [];
-            push @{ $table->{ $f }->{ $p->{ $f } } }, $e;
-        }
-    }
-
-    return $table;
 }
 
 1;
