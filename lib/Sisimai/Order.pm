@@ -12,6 +12,7 @@ my $PatternTable = undef;
 sub default {
     # Make default order of MTA/MSP modules to be loaded
     # @return   [Array] Default order list of MTA/MSP modules
+    # @since v4.13.1
     my $class = shift;
     my $order = [];
 
