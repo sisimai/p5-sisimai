@@ -42,6 +42,14 @@ my $rwaccessors = [
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 
+my $EndOfEmail = Sisimai::String->EOM;
+my $RetryIndex = Sisimai::Reason->retry;
+my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS('all');
+my $AddrHeader = {
+    'addresser' => $RFC822Head->{'addresser'},
+    'recipient' => $RFC822Head->{'recipient'},
+};
+
 sub new {
     # Constructor of Sisimai::Data
     # @param    [Hash] argvs    Data
@@ -117,7 +125,6 @@ sub make {
     my $rfc822data = $messageobj->rfc822;
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
-    my $endofemail = '';
     my $rxcommands = qr/\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
 
     return undef unless $messageobj->ds;
@@ -142,12 +149,10 @@ sub make {
             # If the order is empty, use default order.
             if( not scalar @{ $fieldorder->{ $e } } ) {
                 # Load default order of each accessor.
-                Module::Load::load 'Sisimai::MTA';
-                $fieldorder->{ $e } = Sisimai::MTA->RFC822HEADERS( $e );
+                $fieldorder->{ $e } = $AddrHeader->{ $e };
             }
         }
     }
-    $endofemail = Sisimai::MTA->EOM();
 
     LOOP_DELIVERY_STATUS: for my $e ( @{ $messageobj->ds } ) {
         # Create parameters for new() constructor.
@@ -207,7 +212,7 @@ sub make {
             push @datevalues, $e->{'date'} if $e->{'date'};
 
             # Date information did not exist in message/delivery-status part,...
-            for my $f ( @{ Sisimai::MTA->RFC822HEADERS('date') } ) {
+            for my $f ( @{ $RFC822Head->{'date'} } ) {
                 # Get the value of Date header or other date related header.
                 next unless $rfc822data->{ lc $f };
                 push @datevalues, $rfc822data->{ lc $f };
@@ -281,7 +286,7 @@ sub make {
 
             CHECK_DELIVERY_STATUS_VALUE: {
                 # Cleanup the value of "Diagnostic-Code:" header
-                $p->{'diagnosticcode'} =~ s/\s+$endofemail//;
+                $p->{'diagnosticcode'} =~ s/\s+$EndOfEmail//;
                 my $v = Sisimai::RFC3463->getdsn( $p->{'diagnosticcode'} );
                 if( $v =~ m/\A[45][.][1-9][.][1-9]\z/ ) {
                     # Use the DSN value in Diagnostic-Code:
@@ -296,7 +301,7 @@ sub make {
         $o = __PACKAGE__->new( %$p );
         next unless defined $o;
 
-        if( $o->reason eq '' || grep { $o->reason eq $_ } @{ Sisimai::Reason->retry } ) {
+        if( $o->reason eq '' || grep { $o->reason eq $_ } @$RetryIndex ) {
             # Decide the reason of email bounce
             if( Sisimai::Rhost->match( $o->rhost ) ) {
                 # Remote host dependent error
