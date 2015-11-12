@@ -71,9 +71,9 @@ sub read {
             next if grep { $emailinode == $_ } @{ $self->{'inodes'} };
 
             $filehandle = IO::File->new( $emailindir, 'r' );
-            while( my $f = <$filehandle> ) {
+            while( <$filehandle> ) {
                 # Concatenate the contents of each file
-                $readbuffer .= $f;
+                $readbuffer .= $_;
             }
             $filehandle->close;
 
