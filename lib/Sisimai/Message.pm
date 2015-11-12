@@ -5,9 +5,10 @@ use warnings;
 use Class::Accessor::Lite;
 use Module::Load '';
 use Sisimai::ARF;
-use Sisimai::MTA;
 use Sisimai::Order;
+use Sisimai::String;
 use Sisimai::RFC3834;
+use Sisimai::RFC5322;
 
 my $rwaccessors = [
     'from',             # [String] UNIX From line
@@ -17,16 +18,22 @@ my $rwaccessors = [
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 
-my $ReDetector = {}; # Sisimai::Order->pattern;
+my $EndOfEmail = Sisimai::String->EOM;
 my $DefaultMTA = Sisimai::Order->default;
 my $ExtHeaders = Sisimai::Order->headers;
 my $ToBeLoaded = [];
+my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 my @RFC3834Set = ( map { lc $_ } @{ Sisimai::RFC3834->headerlist } );
 my @HeaderList = ( 'from', 'to', 'date', 'subject', 'content-type', 'reply-to',
                    'message-id', 'received', 'return-path' );
+my $MultiHeads = { 'received' => 1 };
+my $IgnoreList = { 'dkim-signature' => 1 };
+my $Indicators = { 
+    'begin' => ( 1 << 1 ),
+    'endof' => ( 1 << 2 ),
+};
 
 sub ENDOFEMAIL { '__END_OF_EMAIL_MESSAGE__' };
-
 sub new {
     # Constructor of Sisimai::Message
     # @param         [Hash] argvs       Email text data
@@ -106,22 +113,27 @@ sub resolve {
 
     EMAIL_PROCESSING: {
         # Processes: 0(split), 1(initialize), 2(text to hash), 3(rewrite body)
-        my $endofheads = 0;     # Flag: The end of the email header
-        my $getstarted = 0;     # Flag: The beginning of the email header
-        my $first5byte = '';
+        my $readcursor = 0;
+        my @hasdivided = split( "\n", $email );
         my $mailheader = '';
         my $bodystring = '';
+        my $first5byte = '';
         my $bouncedata = undef;
         my $rfc822part = undef;
         my $tryonfirst = [];
 
+        if( substr( $hasdivided[0], 0, 5 ) eq 'From ' ) {
+            # From MAILER-DAEMON Tue Feb 11 00:00:00 2014
+            $first5byte =  shift @hasdivided;
+            $first5byte =~ y{\r\n}{}d;
+        }
+
         # 0. Split email data to headers and a body part.
-        SPLIT_EMAIL: for my $e ( split( "\n", $email ) ) {
+        SPLIT_EMAIL: for my $e ( @hasdivided ) {
             # use split() instead of regular expression.
             $e =~ y{\r\n}{}d;
-            $first5byte ||= $e if substr( $e, 0, 5 ) eq 'From ';
 
-            if( $endofheads ) {
+            if( $readcursor & $Indicators->{'endof'} ) {
                 # The body part of the email
                 $bodystring .= $e."\n";
 
@@ -130,16 +142,15 @@ sub resolve {
                 # appeare yet.
                 if( length $e == 0 ) {
                     # Blank line, it is a boundary of headers and a body part
-                    $endofheads = 1 if $getstarted;
+                    $readcursor |= $Indicators->{'endof'} if $readcursor & $Indicators->{'begin'};
 
                 } else {
                     # The header part of the email
                     $mailheader .= $e."\n";
-                    $getstarted  = 1;
+                    $readcursor |= $Indicators->{'begin'};
                 }
             }
         }
-
         return undef unless length $mailheader;
         return undef unless length $bodystring;
 
@@ -150,14 +161,12 @@ sub resolve {
         CONVERT_HEADER: {
             # 2. Convert email headers from text to hash reference
             my $currheader = '';
-            my $multiheads = { 'received' => 1 };
-            my $ignorelist = { 'dkim-signature' => 1 };
             my $allheaders = {};
             my $modulelist = [];
 
             map { $allheaders->{ $_ } = 1 } ( @HeaderList, @RFC3834Set, keys %$ExtHeaders );
             map { $processing->{'header'}->{ $_ } = undef } @HeaderList;
-            map { $processing->{'header'}->{ lc $_ } = [] } keys %$multiheads;
+            map { $processing->{'header'}->{ lc $_ } = [] } keys %$MultiHeads;
 
             SPLIT_HEADERS: for my $e ( split( "\n", $mailheader ) ) {
                 # Convert email headers to hash
@@ -169,8 +178,7 @@ sub resolve {
                     $currheader = lc $lhs;
                     next unless exists $allheaders->{ $currheader };
 
-                    if( exists $multiheads->{ $currheader } ) {
-                        # if( grep { $currheader eq lc $_ } @multiheads ) {
+                    if( exists $MultiHeads->{ $currheader } ) {
                         # Such as 'Received' header, there are multiple headers
                         # in a single email message.
                         $rhs =~ y/\t/ /;
@@ -181,21 +189,13 @@ sub resolve {
                         if( $ExtHeaders->{ $currheader } ) {
                             # MTA specific header
                             push @$modulelist, keys %{ $ExtHeaders->{ $currheader } };
-
-                        } elsif( 0 && $currheader eq 'subject' ) {
-                            # Try to match with regular expressions of subject header
-                            for my $r ( keys %{ $ReDetector->{'subject'} } ) {
-                                next unless $rhs =~ $r;
-                                push @$modulelist, @{ $ReDetector->{'subject'}->{ $r } };
-                                last;
-                            }
                         }
                         $processing->{'header'}->{ $currheader } = $rhs;
                     }
 
                 } elsif( $e =~ m/\A[\s\t]+(.+?)\z/ ) {
                     # Ignore header?
-                    next if exists $ignorelist->{ $currheader };
+                    next if exists $IgnoreList->{ $currheader };
 
                     # Header line continued from the previous line
                     if( ref $processing->{'header'}->{ $currheader } eq 'ARRAY' ) {
@@ -213,7 +213,7 @@ sub resolve {
 
         REWRITE_BODY: {
             # 3. Rewrite message body for detecting the bounce reason
-            $bodystring .= Sisimai::MTA->EOM;
+            $bodystring .= $EndOfEmail;
             $methodargv  = { 
                 'mail' => $processing, 
                 'body' => \$bodystring, 
@@ -229,7 +229,6 @@ sub resolve {
 
         REWRITE_RFC822_PART: {
             # Rewrite headers of the original message in the body part
-            require Sisimai::String;
             require Sisimai::MIME;
 
             # Convert from string to hash reference
@@ -237,7 +236,6 @@ sub resolve {
                $v =~ s/^[>]+[ ]//mg;
 
             my @rfc822text = split( "\n", $v );
-            my $rfc822head = Sisimai::MTA->RFC822HEADERS;
             my $previousfn = ''; # Previous field name
             my $borderline = '__MIME_ENCODED_BOUNDARY__';
             my $mimeborder = {};
@@ -250,7 +248,8 @@ sub resolve {
                     my $rhs = $2;
 
                     $previousfn = '';
-                    next unless grep { $lhs eq lc $_ } @$rfc822head;
+
+                    next unless exists $RFC822Head->{ $lhs };
                     $previousfn = $lhs;
                     $rfc822part->{ $previousfn } //= $rhs;
 
@@ -327,6 +326,7 @@ sub rewrite {
     # @param options mail  [String] rfc822 Original message part
     # @param options mail  [Array]  ds     Delivery status list(parsed data)
     # @param options argvs [String] body   Email message body
+    # @param options argvs [Array] load    MTA/MSP module list to load on first
     # @return              [Hash]          Parsed and structured bounce mails
     my $class = shift;
     my $argvs = { @_ };
