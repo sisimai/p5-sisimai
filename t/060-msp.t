@@ -7,8 +7,7 @@ my $PackageName = 'Sisimai::MSP';
 my $MethodNames = {
     'class' => [ 
         'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
-        'SMTPCOMMAND', 'DELIVERYSTATUS', 'LONGFIELDS', 'INDICATORS',
-        'RFC822HEADERS', 'EOM',
+        'SMTPCOMMAND', 'DELIVERYSTATUS', 'LONGFIELDS', 'INDICATORS', 'RFC822HEADERS'
     ],
     'object' => [],
 };
@@ -20,7 +19,6 @@ MAKE_TEST: {
     ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
     is $PackageName->scan, '', '->scan';
-    is $PackageName->EOM, '__END_OF_EMAIL_MESSAGE__';
 
     isa_ok $PackageName->index, 'ARRAY';
     isa_ok $PackageName->headerlist, 'ARRAY';
