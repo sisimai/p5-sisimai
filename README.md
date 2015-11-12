@@ -137,7 +137,7 @@ Sisimai Specification | シシマイの仕様
 
 Differences between ver.2 and Sisimai | 新旧の違い
 --------------------------------------------------
-The following table show the differences between version 2 (bounceHammer 2.7.13)
+The following table show the differences between ver.2 (bounceHammer 2.7.13p1)
 and Sisimai.
 
 | Features                                       | bounceHammer  | Sisimai     |
@@ -147,8 +147,8 @@ and Sisimai.
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | Included      | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A[1]      |
-| Analytical precision ratio(2000 files)[2]      | 0.50          | 1.00        |
-| The speed of parsing email(2000 files)         | 7.07s         | 4.70s       |
+| Analytical precision ratio(2000 emails)[2]     | 0.52          | 1.00        |
+| The speed of parsing email(2000 emails)        | 7.07s         | 4.10s       |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
@@ -156,15 +156,16 @@ and Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 8400 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 152000 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8800 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 157500 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Contact Us  |
 
 1. Implement yourself with using DBI or any O/R Mapper you like
 2. See ./ANALYTICAL-PRECISION
 
-公開中のbouncehammer version 2.7.13とSisimai(シシマイ)は下記のような違いがあります。
+公開中のbouncehammer version 2.7.13p1とSisimai(シシマイ)は下記のような違いが
+あります。
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
@@ -173,8 +174,8 @@ and Sisimai.
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(同梱)  |
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し[1]     |
-| 解析精度の割合(2000通)[2]                      | 0.50          | 1.00        |
-| メール解析速度(2000通)                         | 7.07秒        | 4.70秒      |
+| 解析精度の割合(2000通のメール)[2]              | 0.52          | 1.00        |
+| メール解析速度(2000通のメール)                 | 7.07秒        | 4.10秒      |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件解析可能|
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
@@ -182,8 +183,8 @@ and Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 8400行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 152000件    |
+| LOC:ソースコードの行数                         | 18200行       | 8800行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 157500件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 問合せ      |
 
@@ -222,7 +223,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 | MTA::X2                  | Unknown MTA #2                                    |
 | MTA::X3                  | Unknown MTA #3                                    |
 | MTA::X4                  | Unknown MTA #4 qmail clones(> v4.1.23)            |
-| MTA::X5                  | Unknown MTA #5 (> v4.Y.Z )                        |
+| MTA::X5                  | Unknown MTA #5 (> v4.13.0 )                       |
 | MSP::DE::EinsUndEins     | 1&1: http://www.1and1.de                          |
 | MSP::DE::GMX             | GMX: http://www.gmx.net                           |
 | MSP::JP::Biglobe         | BIGLOBE: http://www.biglobe.ne.jp                 |
