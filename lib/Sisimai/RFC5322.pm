@@ -30,6 +30,48 @@ BUILD_REGULAR_EXPRESSIONS: {
     $Rx->{'domain'}  = qr/$domain/o;
 }
 
+my $HEADERINDEX = {};
+my $HEADERTABLE = {
+    'messageid' => [ 'Message-Id' ],
+    'subject'   => [ 'Subject' ],
+    'listid'    => [ 'List-Id' ],
+    'date'      => [ 'Date', 'Posted-Date', 'Posted', 'Resent-Date', ],
+    'addresser' => [ 
+        'From', 'Return-Path', 'Reply-To', 'Errors-To', 'Reverse-Path', 
+        'X-Postfix-Sender', 'Envelope-From', 'X-Envelope-From',
+    ],
+    'recipient' => [ 
+        'To', 'Delivered-To', 'Forward-Path', 'Envelope-To',
+        'X-Envelope-To', 'Resent-To', 'Apparently-To'
+    ],
+};
+
+BUILD_FLATTEN_RFC822HEADER_LIST: {
+    # Convert $HEADER: hash reference to flatten hash reference for being
+    # called from Sisimai::MTA::*
+    for my $v ( values %$HEADERTABLE ) {
+        $HEADERINDEX->{ lc $_ } = 1 for @$v;
+    }
+}
+
+sub HEADERFIELDS {
+    # Grouped RFC822 headers
+    # @private
+    # @param    [String] group  RFC822 Header group name
+    # @return   [Array,Hash]    RFC822 Header list
+    my $class = shift;
+    my $group = shift || return $HEADERINDEX;
+    return $HEADERTABLE->{ $group } if exists $HEADERTABLE->{ $group };
+    return $HEADERTABLE;
+}
+
+sub LONGFIELDS {
+    # Fields that might be long
+    # @private
+    # @return   [Hash] Long filed(email header) list
+    return { 'to' => 1, 'from' => 1, 'subject' => 1 };
+}
+
 sub is_emailaddress {
     # Check that the argument is an email address or not
     # @param    [String] email  Email address string

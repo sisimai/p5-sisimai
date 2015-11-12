@@ -15,6 +15,10 @@ my $Re0 = {
     },
 };
 
+my $Indicators = __PACKAGE__->INDICATORS;
+my $LongFields = Sisimai::RFC5322->LONGFIELDS;
+my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
+
 sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub smtpagent   { 'US::Verizon' }
 sub pattern     { 
@@ -55,32 +59,26 @@ sub scan {
     }
     return undef unless defined $vtext;
 
-    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
-    my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
+    require Sisimai::RFC5322;
+    require Sisimai::MIME;
+    require Sisimai::Address;
+
+    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+    my @hasdivided = split( "\n", $$mbody );
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $rfc822next = {};    # (Ref->Hash) Check flag for the end of headers in rfc822 part
     my $previousfn = '';    # (String) Previous field name
-
     my $readcursor = 0;     # (Integer) Points the current cursor position
-    my $indicators = __PACKAGE__->INDICATORS;
-
-    my $longfields = __PACKAGE__->LONGFIELDS;
-    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $senderaddr = '';    # (String) Sender address in the message body
     my $subjecttxt = '';    # (String) Subject of the original message
 
-    my $Re1      = {};    # (Ref->Hash) Delimiter patterns
-    my $ReFailure      = {};    # (Ref->Hash) Error message patterns
+    my $Re1        = {};    # (Ref->Hash) Delimiter patterns
+    my $ReFailure  = {};    # (Ref->Hash) Error message patterns
     my $boundary00 = '';    # (String) Boundary string
 
     my $v = undef;
     my $p = '';
-    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-    $rfc822head = __PACKAGE__->RFC822HEADERS;
-
-    require Sisimai::MIME;
-    require Sisimai::Address;
 
     if( $vtext == 1 ) {
         # vtext.com
@@ -101,25 +99,25 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
 
-        for my $e ( @stripedtxt ) {
+        for my $e ( @hasdivided ) {
             # Read each line between $Re0->{'begin'} and $Re0->{'rfc822'}.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
                 if( $e =~ $Re1->{'begin'} ) {
-                    $readcursor |= $indicators->{'deliverystatus'};
+                    $readcursor |= $Indicators->{'deliverystatus'};
                     next;
                 }
             }
 
-            unless( $readcursor & $indicators->{'message-rfc822'} ) {
+            unless( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # Beginning of the original message part
                 if( $e =~ $Re1->{'rfc822'} ) {
-                    $readcursor |= $indicators->{'message-rfc822'};
+                    $readcursor |= $Indicators->{'message-rfc822'};
                     next;
                 }
             }
 
-            if( $readcursor & $indicators->{'message-rfc822'} ) {
+            if( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # After "message/rfc822"
                 if( $e =~ m/\A\s\s([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                     # Get required headers only
@@ -127,26 +125,26 @@ sub scan {
                     my $whs = lc $lhs;
 
                     $previousfn = '';
-                    next unless grep { $whs eq lc( $_ ) } @$rfc822head;
+                    next unless exists $RFC822Head->{ $whs };
 
-                    $previousfn  = $lhs;
+                    $previousfn  = lc $lhs;
                     $rfc822part .= $e."\n";
 
                 } elsif( $e =~ m/\A[\s\t]+/ ) {
                     # Continued line from the previous line
-                    next if $rfc822next->{ lc $previousfn };
-                    $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
+                    next if $rfc822next->{ $previousfn };
+                    $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
 
                 } else {
                     # Check the end of headers in rfc822 part
-                    next unless grep { $previousfn eq $_ } @$longfields;
+                    next unless exists $LongFields->{ $previousfn };
                     next if length $e;
-                    $rfc822next->{ lc $previousfn } = 1;
+                    $rfc822next->{ $previousfn } = 1;
                 }
 
             } else {
                 # Before "message/rfc822"
-                next unless $readcursor & $indicators->{'deliverystatus'};
+                next unless $readcursor & $Indicators->{'deliverystatus'};
                 next unless length $e;
 
                 $v = $dscontents->[ -1 ];
@@ -208,25 +206,25 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
 
-        for my $e ( @stripedtxt ) {
+        for my $e ( @hasdivided ) {
             # Read each line between $Re0->{'begin'} and $Re0->{'rfc822'}.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
                 if( $e =~ $Re1->{'begin'} ) {
-                    $readcursor |= $indicators->{'deliverystatus'};
+                    $readcursor |= $Indicators->{'deliverystatus'};
                     next;
                 }
             }
 
-            unless( $readcursor & $indicators->{'message-rfc822'} ) {
+            unless( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # Beginning of the original message part
                 if( $e =~ $Re1->{'rfc822'} ) {
-                    $readcursor |= $indicators->{'message-rfc822'};
+                    $readcursor |= $Indicators->{'message-rfc822'};
                     next;
                 }
             }
 
-            if( $readcursor & $indicators->{'message-rfc822'} ) {
+            if( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # After "message/rfc822"
                 if( $e =~ m/\A\s\s([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                     # Get required headers only
@@ -235,26 +233,26 @@ sub scan {
                     my $whs = lc $lhs;
 
                     $previousfn = '';
-                    next unless grep { $whs eq lc( $_ ) } @$rfc822head;
+                    next unless exists $RFC822Head->{ $whs };
 
-                    $previousfn  = $lhs;
+                    $previousfn  = lc $lhs;
                     $rfc822part .= $e."\n";
 
                 } elsif( $e =~ m/\A[\s\t]+/ ) {
                     # Continued line from the previous line
-                    next if $rfc822next->{ lc $previousfn };
-                    $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
+                    next if $rfc822next->{ $previousfn };
+                    $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
 
                 } else {
                     # Check the end of headers in rfc822 part
-                    next unless grep { $previousfn eq $_ } @$longfields;
+                    next unless exists $LongFields->{ $previousfn };
                     next if length $e;
-                    $rfc822next->{ lc $previousfn } = 1;
+                    $rfc822next->{ $previousfn } = 1;
                 }
 
             } else {
                 # Before "message/rfc822"
-                next unless $readcursor & $indicators->{'deliverystatus'};
+                next unless $readcursor & $Indicators->{'deliverystatus'};
                 next unless length $e;
 
                 $v = $dscontents->[ -1 ];
@@ -308,7 +306,6 @@ sub scan {
 
     require Sisimai::String;
     require Sisimai::RFC3463;
-    require Sisimai::RFC5322;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.

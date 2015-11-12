@@ -4,12 +4,12 @@ use strict;
 use warnings;
 use Module::Load '';
 
+my $RetryReasons = __PACKAGE__->retry;
+
 sub retry { 
     # Reason list better to retry detecting an error reason
     # @return   [Array] Reason list
-    return [ 
-        'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror'
-    ]
+    return [ 'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror' ];
 }
 
 sub index {
@@ -34,7 +34,7 @@ sub get {
 
     return undef unless ref $argvs eq 'Sisimai::Data';
 
-    unless( grep { $argvs->reason eq $_ } @{ __PACKAGE__->retry } ) {
+    unless( grep { $argvs->reason eq $_ } @$RetryReasons ) {
         # Return reason text already decided except reason match with the 
         # regular expression of ->retry() method.
         return $argvs->reason if length $argvs->reason;
@@ -107,8 +107,6 @@ sub anotherone {
         'NetworkError', 'Suspend', 'Expired', 'ContentError',
         'SystemFull', 'NotAccept', 'MailerError',
     ];
-    my $retryingto = __PACKAGE__->retry;
-    push @$retryingto, 'userunknown';
 
     require Sisimai::RFC3463;
     for my $e ( 'temporary', 'permanent' ) {
@@ -116,7 +114,8 @@ sub anotherone {
         last if $reasontext;
     }
 
-    if( $reasontext eq '' || grep { $reasontext eq $_ } @$retryingto ) {
+    if( $reasontext eq '' || $reasontext eq 'userunknown' ||
+        grep { $reasontext eq $_ } @$RetryReasons ) {
         # Could not decide the reason by the value of Status:
         for my $e ( @$classorder ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes

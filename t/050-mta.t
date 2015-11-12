@@ -6,9 +6,8 @@ use Sisimai::MTA;
 my $PackageName = 'Sisimai::MTA';
 my $MethodNames = {
     'class' => [ 
-        'description', 'headerlist', 'scan', 'smtpagent', 'index',
-        'SMTPCOMMAND', 'DELIVERYSTATUS', 'LONGFIELDS', 'INDICATORS',
-        'RFC822HEADERS', 'EOM',
+        'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
+        'SMTPCOMMAND', 'DELIVERYSTATUS', 'LONGFIELDS', 'INDICATORS', 'RFC822HEADERS'
     ],
     'object' => [],
 };
@@ -20,10 +19,10 @@ MAKE_TEST: {
     ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
     is $PackageName->scan, '', '->scan';
-    is $PackageName->EOM, '__END_OF_EMAIL_MESSAGE__';
 
     isa_ok $PackageName->index, 'ARRAY';
     isa_ok $PackageName->headerlist, 'ARRAY';
+    isa_ok $PackageName->pattern, 'HASH';
     isa_ok $PackageName->SMTPCOMMAND, 'HASH';
     isa_ok $PackageName->DELIVERYSTATUS, 'HASH';
     isa_ok $PackageName->LONGFIELDS, 'ARRAY';

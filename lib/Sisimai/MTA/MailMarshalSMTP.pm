@@ -15,6 +15,10 @@ my $Re1 = {
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
+my $Indicators = __PACKAGE__->INDICATORS;
+my $LongFields = Sisimai::RFC5322->LONGFIELDS;
+my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
+
 sub description { 'Trustwave Secure Email Gateway' }
 sub smtpagent   { 'MailMarshalSMTP' }
 sub headerlist  { return [ 'X-Mailer' ] }
@@ -39,44 +43,38 @@ sub scan {
 
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
     require Sisimai::MIME;
+    require Sisimai::RFC5322;
 
-    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
-    my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
-    my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+    my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
+    my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
-
     my $readcursor = 0;     # (Integer) Points the current cursor position
-    my $indicators = __PACKAGE__->INDICATORS;
-
-    my $longfields = __PACKAGE__->LONGFIELDS;
-    my @stripedtxt = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $boundary00 = '';    # (String) Boundary string
     my $endoferror = 0;     # (Integer) Flag for the end of error message
 
     my $v = undef;
     my $p = '';
-    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-    $rfc822head = __PACKAGE__->RFC822HEADERS;
 
     $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
     $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
     $Re1->{'rfc822'} = qr/\A\s*[+]+\s*\z/ unless $Re1->{'rfc822'};
 
-    for my $e ( @stripedtxt ) {
+    for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
+            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
         }
 
-        unless( $readcursor & $indicators->{'message-rfc822'} ) {
+        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            $readcursor |= $indicators->{'message-rfc822'} if $e =~ $Re1->{'rfc822'};
+            $readcursor |= $Indicators->{'message-rfc822'} if $e =~ $Re1->{'rfc822'};
         }
 
-        if( $readcursor & $indicators->{'message-rfc822'} ) {
+        if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
@@ -84,26 +82,26 @@ sub scan {
                 my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
+                next unless exists $RFC822Head->{ $whs };
 
-                $previousfn  = $lhs;
+                $previousfn  = lc $lhs;
                 $rfc822part .= $e."\n";
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
-                next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
+                next if $rfc822next->{ $previousfn };
+                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless grep { $previousfn eq $_ } @$longfields;
+                next unless exists $LongFields->{ $previousfn };
                 next if length $e;
-                $rfc822next->{ lc $previousfn } = 1;
+                $rfc822next->{ $previousfn } = 1;
             }
 
         } else {
             # Before "message/rfc822"
-            next unless $readcursor & $indicators->{'deliverystatus'};
+            next unless $readcursor & $Indicators->{'deliverystatus'};
             last if $e =~ $Re1->{'rfc822'};
 
             # Your message:
@@ -180,7 +178,6 @@ sub scan {
     return undef unless $recipients;
     require Sisimai::String;
     require Sisimai::RFC3463;
-    require Sisimai::RFC5322;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.

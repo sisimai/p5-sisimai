@@ -1,5 +1,15 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.13.1
+    - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
+    - Improved code Sisimai::MTA::Exim to get the reason and the SMTP command
+      from LMTP error message.
+    - Improved error message patterns at the following modules: UserUnknown,
+      Rejected, and Blocked.
+    - Issue #96, Improved Sisimai::MTA::Exim for parsing "Frozen message".
+    - Issue #107, Improved slow regular expression in Sisimai::MSP::JP::EZweb.
+    - Issue #114, Merged MTA Order Optimization.
+
 4.13.0  Thu,  5 Nov 2015 16:11:12 +0900 (JST)
     - Issue #85, Use Semantic Versioning from this release. New version number
       is v4.13.0 <= v4.1.30.

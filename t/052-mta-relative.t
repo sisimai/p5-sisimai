@@ -73,6 +73,7 @@ for my $x ( keys %$R ) {
 
     MAKE_TEST: {
         $v = $M->description; ok $v, $x.'->description = '.$v;
+        $v = $M->pattern;     ok keys %$v; isa_ok $v, 'HASH';
 
         $M->scan, undef, $M.'->scan = undef';
 

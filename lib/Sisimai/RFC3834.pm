@@ -4,23 +4,20 @@ use strict;
 use warnings;
 
 # http://tools.ietf.org/html/rfc3834
-my $RxRFC = {
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'header' => {
-        # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
-        'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/i,
-        # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
-        'x-auto-response-suppress' => qr/(?:OOF|AutoReply)/i,
-        'precedence' => qr/\Aauto_reply\z/,
-        'subject' => qr/\A(?:
-             Auto:
-            |Out[ ]of[ ]Office:
-            )
-        /xi,
-    },
+my $Re0 = {
+    # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
+    'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/i,
+    # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
+    'x-auto-response-suppress' => qr/(?:OOF|AutoReply)/i,
+    'precedence' => qr/\Aauto_reply\z/,
+    'subject' => qr/\A(?:
+         Auto:
+        |Out[ ]of[ ]Office:
+        )
+    /xi,
 };
-
-my $RxExcluding = {
+my $Re1 = { 'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/ };
+my $Re2 = {
     'subject' => qr/(?:
                   SECURITY[ ]information[ ]for  # sudo
                  |Mail[ ]failure[ ][-]          # Exim
@@ -29,8 +26,9 @@ my $RxExcluding = {
     'to'      => qr/root[@]/,
 };
 
-sub description { 'Detector for auto replied message' };
-sub smtpagent   { 'RFC3834' };
+sub description { 'Detector for auto replied message' }
+sub smtpagent   { 'RFC3834' }
+sub pattern     { return $Re0 }
 sub headerlist  {
     return [
         'Auto-Submitted',
@@ -61,21 +59,21 @@ sub scan {
     return undef unless keys %$mhead;
     return undef unless ref $mbody eq 'SCALAR';
 
-    DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$RxExcluding ) {
+    DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$Re2 ) {
         # Exclude message from root@
         next unless exists $mhead->{ $e };
         next unless defined $mhead->{ $e };
-        next unless $mhead->{ $e } =~ $RxExcluding->{ $e };
+        next unless $mhead->{ $e } =~ $Re2->{ $e };
         $leave = 1;
         last;
     }
     return undef if $leave;
 
-    DETECT_AUTO_REPLY_MESSAGE: for my $e ( keys %{ $RxRFC->{'header'} } ) {
+    DETECT_AUTO_REPLY_MESSAGE: for my $e ( keys %$Re0 ) {
         # RFC3834 Auto-Submitted and other headers
         next unless exists $mhead->{ $e };
         next unless defined $mhead->{ $e };
-        next unless $mhead->{ $e } =~ $RxRFC->{'header'}->{ $e };
+        next unless $mhead->{ $e } =~ $Re0->{ $e };
         $match++;
         last;
     }
@@ -83,17 +81,17 @@ sub scan {
 
     require Sisimai::MTA;
     require Sisimai::Address;
+    require Sisimai::RFC5322;
 
-    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
-    my @stripedtxt = split( "\n", $$mbody );
+    my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+    my @hasdivided = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
     my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
     my $blanklines = 0;     # (Integer) Counter for countinuous blank lines
+
     my $v = undef;
     my $p = '';
-
-    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
     $v = $dscontents->[ -1 ];
 
     RECIPIENT_ADDRESS: {
@@ -117,7 +115,7 @@ sub scan {
 
     BODY_PARSER: {
         # Get vacation message
-        for my $e ( @stripedtxt ) {
+        for my $e ( @hasdivided ) {
             # Read the first 5 lines except a blank line
             unless( length $e ) {
                 # Check a blank line
@@ -132,9 +130,7 @@ sub scan {
         }
         $v->{'diagnosis'} ||= $mhead->{'subject'};
     }
-
     require Sisimai::String;
-    require Sisimai::RFC5322;
 
     $v->{'diagnosis'} = Sisimai::String->sweep( $v->{'diagnosis'} );
     $v->{'reason'}    = 'vacation';

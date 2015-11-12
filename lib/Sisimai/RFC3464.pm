@@ -2,6 +2,8 @@ package Sisimai::RFC3464;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::MTA;
+use Sisimai::RFC5322;
 
 # http://tools.ietf.org/html/rfc3464
 my $Re0 = {
@@ -41,6 +43,10 @@ my $Re1 = {
     'command'=> qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
 };
 
+my $Indicators = Sisimai::MTA->INDICATORS;
+my $LongFields = Sisimai::RFC5322->LONGFIELDS;
+my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
+
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
 sub pattern     { return $Re0 }
@@ -65,23 +71,16 @@ sub scan {
     return undef unless keys %$mhead;
     return undef unless ref $mbody eq 'SCALAR';
 
-    require Sisimai::MTA;
     require Sisimai::MDA;
     require Sisimai::Address;
-    require Sisimai::RFC5322;
 
-    my $dscontents = [];    # (Ref->Array) SMTP session errors: message/delivery-status
-    my $rfc822head = undef; # (Ref->Array) Required header list in message/rfc822 part
-    my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
-    my $previousfn = '';    # (String) Previous field name
-
-    my $readcursor = 0;     # (Integer) Points the current cursor position
-    my $indicators = Sisimai::MTA->INDICATORS;
-
-    my $longfields = Sisimai::MTA->LONGFIELDS;
+    my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+    my @hasdivided = split( "\n", $$mbody );
     my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
-    my @stripedtxt = split( "\n", $$mbody );
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
+    my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $previousfn = '';    # (String) Previous field name
+    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connheader = {
         'date'    => '',    # The value of Arrival-Date header
@@ -91,28 +90,26 @@ sub scan {
 
     my $v = undef;
     my $p = '';
-    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
-    $rfc822head = Sisimai::MTA->RFC822HEADERS;
 
-    for my $e ( @stripedtxt ) {
+    for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
             if( $e =~ $Re1->{'begin'} ) {
-                $readcursor |= $indicators->{'deliverystatus'};
+                $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
         }
 
-        unless( $readcursor & $indicators->{'message-rfc822'} ) {
+        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
             if( $e =~ $Re1->{'rfc822'} ) {
-                $readcursor |= $indicators->{'message-rfc822'};
+                $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
         }
 
-        if( $readcursor & $indicators->{'message-rfc822'} ) {
+        if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
@@ -121,26 +118,26 @@ sub scan {
                 my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless grep { $whs eq lc( $_ ) } @$rfc822head;
+                next unless exists $RFC822Head->{ $whs };
 
-                $previousfn  = $lhs;
+                $previousfn  = lc $lhs;
                 $rfc822part .= $e."\n";
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
-                next if $rfc822next->{ lc $previousfn };
-                $rfc822part .= $e."\n" if grep { $previousfn eq $_ } @$longfields;
+                next if $rfc822next->{ $previousfn };
+                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
 
             } else {
                 # Check the end of headers in rfc822 part
-                next unless grep { $previousfn eq $_ } @$longfields;
+                next unless exists $LongFields->{ $previousfn };
                 next if length $e;
-                $rfc822next->{ lc $previousfn } = 1;
+                $rfc822next->{ $previousfn } = 1;
             }
 
         } else {
             # Before "message/rfc822"
-            next unless $readcursor & $indicators->{'deliverystatus'};
+            next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
             $v = $dscontents->[ -1 ];
