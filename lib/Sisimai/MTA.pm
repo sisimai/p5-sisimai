@@ -15,10 +15,14 @@ sub SMTPCOMMAND {
         'data' => qr/\bDATA\b/,
     };
 }
-sub EOM { 
+sub EOM {
     # End of email message as a sentinel for parsing bounce messages
     # @private
+    # @deprecated
     # @return   [String] Fixed length string like a constant
+    my $class = shift;
+    my $klass = 'Sisimai::String';
+    warn sprintf( "***warning: %s->EOM deprecated method. Use %s->EOM() instead.", $class, $klass );
     return '__END_OF_EMAIL_MESSAGE__';
 }
 sub DELIVERYSTATUS {
