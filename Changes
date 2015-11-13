@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.13.1
+4.13.1  Tue, 17 Nov 2015
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
     - Improved code Sisimai::MTA::Exim to get the reason and the SMTP command
       from LMTP error message.
