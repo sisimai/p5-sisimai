@@ -27,11 +27,6 @@ my $ReCommand = [
 ];
 
 my $ReFailure = {
-    'expired' => qr{(?:
-         retry[ ]timeout[ ]exceeded
-        |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
-        )
-    }x,
     'userunknown' => qr{
         user[ ]not[ ]found
     }x,
@@ -56,12 +51,23 @@ my $ReFailure = {
     'systemerror' => qr{(?>
          delivery[ ]to[ ](?:file|pipe)[ ]forbidden
         |local[ ]delivery[ ]failed
+        |LMTP[ ]error[ ]after[ ]
         )
     }x,
     'contenterror' => qr{
-        Too[ ]many[ ]["]Received["][ ]headers[ ]
+        Too[ ]many[ ]["]Received["][ ]headers
     }x,
 };
+
+my $ReDelayed = qr{(?:
+     retry[ ]timeout[ ]exceeded
+    |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
+    |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
+    |all[ ]hosts[ ]have[ ]been[ ]failing[ ]for[ ]a[ ]long[ ]time[ ]and[ ]were[ ]last[ ]tried
+    |Delay[ ]reason:[ ]
+    |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival[ ]by[ ])
+    )
+}x;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $LongFields = Sisimai::RFC5322->LONGFIELDS;
@@ -233,7 +239,7 @@ sub scan {
         }
 
         if( ! $e->{'command'} ) {
-
+            # Get the SMTP command name for the session
             COMMAND: while(1) {
                 # Get the SMTP command name for the session
                 SMTP: for my $r ( @$ReCommand ) {
@@ -256,12 +262,18 @@ sub scan {
                     $e->{'reason'} = 'blocked';
 
                 } else {
-
+                    # Verify each regular expression of session errors
                     SESSION: for my $r ( keys %$ReFailure ) {
-                        # Verify each regular expression of session errors
+                        # Check each regular expression
                         next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
                         $e->{'reason'} = $r;
                         last;
+                    }
+                    last if $e->{'reason'};
+
+                    if( $e->{'diagnosis'} =~ $ReDelayed ) {
+                        # The reason "expired"
+                        $e->{'reason'} = 'expired';
                     }
                 }
                 last;
