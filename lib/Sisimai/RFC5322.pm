@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 # Regular expression of valid RFC-5322 email address(<addr-spec>)
-my $Rx = { 'rfc5322' => undef, 'ignored' => undef, 'domain' => undef, };
+my $Re = { 'rfc5322' => undef, 'ignored' => undef, 'domain' => undef, };
 
 BUILD_REGULAR_EXPRESSIONS: {
     # See http://www.ietf.org/rfc/rfc5322.txt
@@ -25,9 +25,9 @@ BUILD_REGULAR_EXPRESSIONS: {
     my $local_part     = qr/(?:$dot_atom|$quoted_string)/o;
     my $domain         = qr/(?:$dot_atom|$domain_literal)/o;
 
-    $Rx->{'rfc5322'} = qr/$local_part[@]$domain/o;
-    $Rx->{'ignored'} = qr/$local_part[.]*[@]$domain/o;
-    $Rx->{'domain'}  = qr/$domain/o;
+    $Re->{'rfc5322'} = qr/$local_part[@]$domain/o;
+    $Re->{'ignored'} = qr/$local_part[.]*[@]$domain/o;
+    $Re->{'domain'}  = qr/$domain/o;
 }
 
 my $HEADERINDEX = {};
@@ -81,7 +81,7 @@ sub is_emailaddress {
     my $email = shift // return 0;
 
     return 0 if $email =~ m/(?:[\x00-\x1f]|\x1f)/;
-    return 1 if $email =~ $Rx->{'ignored'};
+    return 1 if $email =~ $Re->{'ignored'};
     return 0;
 }
 
@@ -95,7 +95,7 @@ sub is_domainpart {
 
     return 0 if $dpart =~ m/(?:[\x00-\x1f]|\x1f)/;
     return 0 if $dpart =~ m/[@]/;
-    return 1 if $dpart =~ $Rx->{'domain'};
+    return 1 if $dpart =~ $Re->{'domain'};
     return 0;
 }
 
