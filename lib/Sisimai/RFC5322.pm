@@ -56,7 +56,6 @@ BUILD_FLATTEN_RFC822HEADER_LIST: {
 
 sub HEADERFIELDS {
     # Grouped RFC822 headers
-    # @private
     # @param    [String] group  RFC822 Header group name
     # @return   [Array,Hash]    RFC822 Header list
     my $class = shift;
@@ -67,7 +66,6 @@ sub HEADERFIELDS {
 
 sub LONGFIELDS {
     # Fields that might be long
-    # @private
     # @return   [Hash] Long filed(email header) list
     return { 'to' => 1, 'from' => 1, 'subject' => 1 };
 }
