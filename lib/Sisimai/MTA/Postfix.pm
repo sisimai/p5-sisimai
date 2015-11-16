@@ -68,7 +68,6 @@ sub scan {
     #   From: MAILER-DAEMON (Mail Delivery System)
     #   Subject: Undelivered Mail Returned to Sender
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

@@ -59,7 +59,6 @@ sub scan {
     }
     return undef unless defined $vtext;
 
-    require Sisimai::RFC5322;
     require Sisimai::MIME;
     require Sisimai::Address;
 

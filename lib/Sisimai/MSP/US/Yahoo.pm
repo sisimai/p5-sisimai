@@ -19,7 +19,12 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 sub smtpagent   { 'US::Yahoo' }
-sub headerlist  { return [ 'X-Originating-IP', 'X-YahooFilteredBulk', 'X-YMailISG' ] }
+
+# X-YMailISG: YtyUVyYWLDsbDh...
+# X-YMail-JAS: Pb65aU4VM1mei...
+# X-YMail-OSG: bTIbpDEVM1lHz...
+# X-Originating-IP: [192.0.2.9]
+sub headerlist  { return [ 'X-YMailISG' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -39,9 +44,10 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'x-originating-ip'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    require Sisimai::RFC5322;
+    return undef unless $mhead->{'x-ymailisg'};
+    if( 0 ) {
+        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

@@ -19,7 +19,7 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Yandex.Mail: http://www.yandex.ru' }
 sub smtpagent   { 'RU::Yandex' }
-sub headerlist  { return [ 'X-Yandex-Front', 'X-Yandex-TimeMark', 'X-Yandex-Uniq' ] }
+sub headerlist  { return [ 'X-Yandex-Uniq' ] } # 'X-Yandex-Front', 'X-Yandex-TimeMark', 
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -41,7 +41,6 @@ sub scan {
 
     return undef unless $mhead->{'x-yandex-uniq'};
     return undef unless $mhead->{'from'} =~ $Re0->{'from'};
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

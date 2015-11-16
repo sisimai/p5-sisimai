@@ -105,7 +105,6 @@ sub scan {
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
     return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

@@ -25,7 +25,13 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
 sub smtpagent   { 'UK::MessageLabs' }
-sub headerlist  { return [ 'X-Msg-Ref', 'X-Originating-IP' ] }
+
+# X-Msg-Ref: server-11.tower-143.messagelabs.com!1419367175!36473369!1
+# X-Originating-IP: [10.245.230.38]
+# X-StarScan-Received:
+# X-StarScan-Version: 6.12.5; banners=-,-,-
+# X-VirusChecked: Checked
+sub headerlist  { return [ 'X-Msg-Ref' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -45,9 +51,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    return undef unless defined $mhead->{'x-msg-ref'};
     return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

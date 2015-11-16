@@ -73,13 +73,14 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
+    $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
     if( defined $mhead->{'message-id'} ) {
         # Message-ID: <courier.4D025E3A.00001792@5jo.example.org>
-        $match = 1 if $mhead->{'message-id'} =~ $Re0->{'message-id'};
+        $match ||= 1 if $mhead->{'message-id'} =~ $Re0->{'message-id'};
     }
     return undef unless $match;
-    require Sisimai::RFC5322;
+
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };

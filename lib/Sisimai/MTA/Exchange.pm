@@ -57,7 +57,7 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
-sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-Mailer', 'X-MimeOLE' ] };
+sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-MimeOLE' ] };
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -78,19 +78,21 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if defined $mhead->{'x-ms-embedded-report'};
+    $match ||= 1 if defined $mhead->{'x-ms-embedded-report'};
     EXCHANGE_OR_NOT: while( 1 ) {
         # Check the value of X-Mailer header
+        last if $match;
+
         if( defined $mhead->{'x-mailer'} ) {
             # X-Mailer:  Microsoft Exchange Server Internet Mail Connector Version 4.0.994.63
             # X-Mailer: Internet Mail Service (5.5.2232.9)
-            $match = 1 if $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
+            $match ||= 1 if $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
             last if $match;
         }
 
         if( defined $mhead->{'x-mimeole'} ) {
             # X-MimeOLE: Produced By Microsoft Exchange V6.5
-            $match = 1 if $mhead->{'x-mimeole'} =~ $Re0->{'x-mimeole'};
+            $match ||= 1 if $mhead->{'x-mimeole'} =~ $Re0->{'x-mimeole'};
             last if $match;
         }
 
@@ -104,7 +106,6 @@ sub scan {
         last;
     }
     return undef unless $match;
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

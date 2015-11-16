@@ -59,12 +59,11 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match++ if $mhead->{'from'} =~ $Re0->{'from'};
-    $match++ if $mhead->{'reply-to'} && $mhead->{'reply-to'} =~ $Re0->{'reply-to'};
-    $match++ if $mhead->{'received'} =~ $Re0->{'received'};
+    $match ||= 1 if $mhead->{'from'} =~ $Re0->{'from'};
+    $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} =~ $Re0->{'reply-to'};
+    $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
 
-    require Sisimai::RFC5322;
     require Sisimai::String;
     require Sisimai::Address;
 

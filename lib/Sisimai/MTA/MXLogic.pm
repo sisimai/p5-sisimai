@@ -75,7 +75,11 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'McAfee SaaS' }
 sub smtpagent   { 'MXLogic' }
-sub headerlist  { return [ 'X-MXL-NoteHash', 'X-MXL-Hash' ] }
+
+# X-MX-Bounce: mta/src/queue/bounce
+# X-MXL-NoteHash: ffffffffffffffff-0000000000000000000000000000000000000000
+# X-MXL-Hash: 4c9d4d411993da17-bbd4212b6c887f6c23bab7db4bd87ef5edc00758
+sub headerlist  { return [ 'X-MXL-NoteHash', 'X-MXL-Hash', 'X-MX-Bounce' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -96,12 +100,12 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if defined $mhead->{'x-mxl-hash'};
-    $match = 1 if defined $mhead->{'x-mxl-notehash'};
-    $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-    $match = 1 if $mhead->{'from'}    =~ $Re0->{'from'};
+    $match ||= 1 if defined $mhead->{'x-mx-bounce'};
+    $match ||= 1 if defined $mhead->{'x-mxl-hash'};
+    $match ||= 1 if defined $mhead->{'x-mxl-notehash'};
+    $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $match;
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

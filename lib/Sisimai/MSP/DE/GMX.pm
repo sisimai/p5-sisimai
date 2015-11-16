@@ -26,7 +26,11 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'GMX: http://www.gmx.net' }
 sub smtpagent   { 'DE::GMX' }
-sub headerlist  { return [ 'Envelope-To', 'X-GMX-Antispam', 'X-GMX-Antivirus' ] }
+
+# Envelope-To: <kijitora@mail.example.com>
+# X-GMX-Antispam: 0 (Mail was not recognized as spam); Detail=V3;
+# X-GMX-Antivirus: 0 (no virus found)
+sub headerlist  { return [ 'X-GMX-Antispam' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -46,10 +50,11 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'envelope-to'};
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    require Sisimai::RFC5322;
+    return undef unless defined $mhead->{'x-gmx-antispam'};
+    if( 0 ) {
+        return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

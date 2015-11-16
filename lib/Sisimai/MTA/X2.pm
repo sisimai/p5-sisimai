@@ -45,7 +45,6 @@ sub scan {
 
     return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

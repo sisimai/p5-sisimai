@@ -85,10 +85,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'}    =~ $Re0->{'subject'};
     return undef unless $mhead->{'from'}       =~ $Re0->{'from'};
+    return undef unless $mhead->{'subject'}    =~ $Re0->{'subject'};
     return undef unless $mhead->{'message-id'} =~ $Re0->{'message-id'};
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

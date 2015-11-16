@@ -26,7 +26,18 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Aol Mail: http://www.aol.com' }
 sub smtpagent   { 'US::Aol' }
-sub headerlist  { return [ 'X-BounceIO-Id', 'X-AOL-IP' ] }
+
+# X-AOL-IP: 192.0.2.135
+# X-AOL-VSS-INFO: 5600.1067/98281
+# X-AOL-VSS-CODE: clean
+# x-aol-sid: 3039ac1afc14546fb98a0945
+# X-AOL-SCOLL-EIL: 1
+# x-aol-global-disposition: G
+# x-aol-sid: 3039ac1afd4d546fb97d75c6
+# X-BounceIO-Id: 9D38DE46-21BC-4309-83E1-5F0D788EFF1F.1_0
+# X-Outbound-Mail-Relay-Queue-ID: 07391702BF4DC
+# X-Outbound-Mail-Relay-Sender: rfc822; shironeko@aol.example.jp
+sub headerlist  { return [ 'X-AOL-IP' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -47,9 +58,10 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-aol-ip'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    require Sisimai::RFC5322;
+    if( 0 ) {
+        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+        return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

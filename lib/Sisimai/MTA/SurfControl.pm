@@ -21,6 +21,10 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'WebSense SurfControl' }
 sub smtpagent   { 'SurfControl' }
+
+# X-SEF-ZeroHour-RefID: fgs=000000000
+# X-SEF-Processed: 0_0_0_000__2010_04_29_23_34_45
+# X-Mailer: SurfControl E-mail Filter
 sub headerlist  { return [ 'X-SEF-Processed', 'X-Mailer' ] }
 sub pattern     { return $Re0 }
 
@@ -44,7 +48,6 @@ sub scan {
     return undef unless $mhead->{'x-sef-processed'};
     return undef unless $mhead->{'x-mailer'};
     return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
