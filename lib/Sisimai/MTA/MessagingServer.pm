@@ -45,11 +45,10 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if $mhead->{'content-type'} =~ $Re0->{'boundary'};
-    $match = 1 if $mhead->{'subject'}      =~ $Re0->{'subject'};
+    $match ||= 1 if $mhead->{'content-type'} =~ $Re0->{'boundary'};
+    $match ||= 1 if $mhead->{'subject'}      =~ $Re0->{'subject'};
     return undef unless $match;
 
-    require Sisimai::RFC5322;
     require Sisimai::Address;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;

@@ -88,7 +88,6 @@ sub scan {
     }
     return undef if $match < 2;
 
-    require Sisimai::RFC5322;
     require Sisimai::MIME;
     require Sisimai::String;
     require Sisimai::Address;

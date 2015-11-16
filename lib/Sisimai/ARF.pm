@@ -3,6 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::MTA;
+use Sisimai::RFC5322;
 
 my $Re0 = {
     'content-type' => qr|multipart/mixed|,
@@ -66,7 +67,6 @@ sub is_arf {
             $match = 1;
         }
     }
-
     return $match;
 }
 
@@ -88,7 +88,6 @@ sub scan {
 
     return undef unless is_arf( undef, $mhead );
 
-    require Sisimai::RFC5322;
     require Sisimai::Address;
 
     my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;

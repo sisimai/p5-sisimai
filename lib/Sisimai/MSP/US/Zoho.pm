@@ -29,7 +29,11 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub smtpagent   { 'US::Zoho' }
-sub headerlist  { return [ 'X-Mailer', 'X-ZohoMail' ] }
+
+# X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
+# X-Zoho-Virus-Status: 2
+# X-Mailer: Zoho Mail
+sub headerlist  { return [ 'X-ZohoMail' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -49,9 +53,12 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}     =~ $Re0->{'from'};
-    return undef unless $mhead->{'subject'}  =~ $Re0->{'subject'};
-    return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
+    return undef unless $mhead->{'x-zohomail'};
+    if( 0 ) {
+        return undef unless $mhead->{'from'}     =~ $Re0->{'from'};
+        return undef unless $mhead->{'subject'}  =~ $Re0->{'subject'};
+        return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
+    }
     require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;

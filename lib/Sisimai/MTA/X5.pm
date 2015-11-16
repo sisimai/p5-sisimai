@@ -60,9 +60,7 @@ sub scan {
         my $s = Sisimai::MIME->mimedecode( [ $mhead->{'subject'} ] );
         $match++ if $s =~ m/Mail Delivery Subsystem/;
     }
-
     return undef if $match < 2;
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

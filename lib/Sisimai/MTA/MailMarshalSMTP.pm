@@ -43,7 +43,6 @@ sub scan {
 
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
     require Sisimai::MIME;
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

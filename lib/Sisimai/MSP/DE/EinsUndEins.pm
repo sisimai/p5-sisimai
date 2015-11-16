@@ -27,6 +27,9 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { '1&1: http://www.1and1.de' }
 sub smtpagent   { 'DE::EinsUndEins' }
+
+# X-UI-Out-Filterresults: unknown:0;
+# sub headerlist  { return [ 'X-UI-Out-Filterresults' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -48,7 +51,6 @@ sub scan {
 
     return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

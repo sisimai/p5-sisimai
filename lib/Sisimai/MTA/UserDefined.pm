@@ -48,12 +48,11 @@ sub scan {
     #   - Did not matched:          return undef;
     #
     MATCH: {
-        $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-        $match = 1 if $mhead->{'from'}    =~ $Re0->{'from'};
-        $match = 1 if $mhead->{'x-some-userdefined-header'};
+        $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+        $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
+        $match ||= 1 if $mhead->{'x-some-userdefined-header'};
     }
     return undef unless $match;
-    require Sisimai::RFC5322;
 
     # 2. Parse message body($mbody) of the bounce message. See some modules in
     #    lib/Sisimai/MTA or lib/Sisimai/MSP directory to implement codes.

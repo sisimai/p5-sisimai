@@ -64,10 +64,9 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match = 1 if( defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'} );
-    $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match ||= 1 if( defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'} );
     return undef unless $match;
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

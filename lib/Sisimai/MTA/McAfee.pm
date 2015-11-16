@@ -49,11 +49,10 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'x-nai-header'};
+    return undef unless defined $mhead->{'x-nai-header'};
     return undef unless $mhead->{'x-nai-header'} =~ $Re0->{'x-nai'};
     return undef unless $mhead->{'subject'}      =~ $Re0->{'subject'};
 
-    require Sisimai::RFC5322;
     require Sisimai::Address;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;

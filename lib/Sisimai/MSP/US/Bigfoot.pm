@@ -41,11 +41,12 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    # $match = 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-    $match = 1 if $mhead->{'from'} =~ $Re0->{'from'};
-    $match = 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    if( 0 ) {
+        $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    }
+    $match ||= 1 if $mhead->{'from'} =~ $Re0->{'from'};
+    $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 my $Re0 = {
-    'subject'  => qr/\Afailure notice/,
+    'subject'  => qr/\Afailure notice/i,
     'received' => qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+(?:for[ ]+bounce|from[ ]+network)[)]/,
 };
 #  qmail-remote.c:248|    if (code >= 500) {
@@ -174,10 +174,9 @@ sub scan {
     # by qmail, see http://cr.yp.to/qmail.html
     #   e.g.) Received: (qmail 12345 invoked for bounce); 29 Apr 2009 12:34:56 -0000
     #         Subject: failure notice
-    $match = 1 if lc( $mhead->{'subject'} ) =~ $Re0->{'subject'};
-    $match = 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

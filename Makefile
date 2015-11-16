@@ -28,9 +28,9 @@ BH_LATESTVER := 2.7.13p1
 EMAIL_PARSER := ./sbin/emparser
 EMAIL_SAMPLE := ./tmp/sample
 BENCHMARKDIR := ./tmp/benchmark
-FOR_EMPARSER := ./var/data
+DEVELSAMPLES := ./var/data
 PARSERLOGDIR := ./var/log
-FOR_MAKETEST := ./eg/maildir-as-a-sample/new
+PUBLICSAMPLE := ./eg/maildir-as-a-sample/new
 CRLF_SAMPLES := ./eg/maildir-as-a-sample/dos
 CRFORMATMAIL := ./eg/maildir-as-a-sample/mac
 MAILBOX_FILE := ./eg/mbox-as-a-sample
@@ -105,18 +105,18 @@ private-sample:
 	@while true; do \
 		d=`$(EMAIL_PARSER) -Fjson ./$(E) | jq -M '.[].smtpagent' | head -1 \
 			| tr '[A-Z]' '[a-z]' | sed -e 's/"//g' -e 's/::/-/g'`; \
-		if [ -d "$(FOR_EMPARSER)/$$d" ]; then \
-			latestfile=`ls -1 $(FOR_EMPARSER)/$$d/*.eml | tail -1`; \
+		if [ -d "$(DEVELSAMPLES)/$$d" ]; then \
+			latestfile=`ls -1 $(DEVELSAMPLES)/$$d/*.eml | tail -1`; \
 			curr_index=`basename $$latestfile | cut -d'-' -f1`; \
 			next_index=`echo $$curr_index + 1 | bc`; \
 		else \
-			$(MAKEDIR) $(FOR_EMPARSER)/$$d; \
+			$(MAKEDIR) $(DEVELSAMPLES)/$$d; \
 			next_index=1001; \
 		fi; \
 		hash_value=`md5 -q $(E)`; \
 		printf "[%05d] %s %s\n" $$next_index $$hash_value \
 			`$(EMAIL_PARSER) -Fjson ./$(SAMPLE) | jq -M '.[].reason'`; \
-		mv -v $(E) $(FOR_EMPARSER)/$$d/0$${next_index}-$${hash_value}.eml; \
+		mv -v $(E) $(DEVELSAMPLES)/$$d/0$${next_index}-$${hash_value}.eml; \
 		break; \
 	done
 
@@ -263,7 +263,7 @@ mta-module-table:
 	done
 
 update-sample-emails:
-	for v in `find $(FOR_MAKETEST) -name '*-01.eml' -type f`; do \
+	for v in `find $(PUBLICSAMPLE) -name '*-01.eml' -type f`; do \
 		f="`basename $$v`" ;\
 		nkf -Lw $$v > $(CRLF_SAMPLES)/$$f ;\
 		nkf -Lm $$v > $(CRFORMATMAIL)/$$f ;\
@@ -273,29 +273,29 @@ sample:
 	for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
 		MTA=`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
 		$(MKDIR) $(EMAIL_SAMPLE)/$$MTA ;\
-		$(CP) $(FOR_MAKETEST)/$$MTA-*.eml $(EMAIL_SAMPLE)/$$MTA/ ;\
-		$(CP) $(FOR_EMPARSER)/$$MTA/* $(EMAIL_SAMPLE)/$$MTA/ ;\
+		$(CP) $(PUBLICSAMPLE)/$$MTA-*.eml $(EMAIL_SAMPLE)/$$MTA/ ;\
+		$(CP) $(DEVELSAMPLES)/$$MTA/* $(EMAIL_SAMPLE)/$$MTA/ ;\
 	done
 	for c in `$(LS) $(MSPMODULEDIR)`; do \
 		for v in `$(LS) $(MSPMODULEDIR)/$$c/*.pm`; do \
 			DIR=`echo $$c | tr '[A-Z]' '[a-z]' | tr -d '/'` ;\
 			MSP="`echo $$v | cut -d/ -f6 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 			$(MKDIR) $(EMAIL_SAMPLE)/$$DIR-$$MSP ;\
-			$(CP) $(FOR_MAKETEST)/$$DIR-$$MSP-*.eml $(EMAIL_SAMPLE)/$$DIR-$$MSP/ ;\
-			$(CP) $(FOR_EMPARSER)/$$DIR-$$MSP/* $(EMAIL_SAMPLE)/$$DIR-$$MSP/ ;\
+			$(CP) $(PUBLICSAMPLE)/$$DIR-$$MSP-*.eml $(EMAIL_SAMPLE)/$$DIR-$$MSP/ ;\
+			$(CP) $(DEVELSAMPLES)/$$DIR-$$MSP/* $(EMAIL_SAMPLE)/$$DIR-$$MSP/ ;\
 		done ;\
 	done
 	for v in arf rfc3464 rfc3834; do \
 		$(MKDIR) $(EMAIL_SAMPLE)/$$v ;\
-		$(CP) $(FOR_MAKETEST)/$$v*.eml $(EMAIL_SAMPLE)/$$v/ ;\
-		$(CP) $(FOR_EMPARSER)/$$v/* $(EMAIL_SAMPLE)/$$v/ ;\
+		$(CP) $(PUBLICSAMPLE)/$$v*.eml $(EMAIL_SAMPLE)/$$v/ ;\
+		$(CP) $(DEVELSAMPLES)/$$v/* $(EMAIL_SAMPLE)/$$v/ ;\
 	done
 
 parser-log:
 	$(MKDIR) $(PARSERLOGDIR)
-	for v in `$(LS) $(FOR_EMPARSER)`; do \
+	for v in `$(LS) $(DEVELSAMPLES)`; do \
 		$(CP) /dev/null $(PARSERLOGDIR)/$$v.log; \
-		for r in `find $(FOR_EMPARSER)/$$v -type f -name '*.eml'`; do \
+		for r in `find $(DEVELSAMPLES)/$$v -type f -name '*.eml'`; do \
 			echo $$r; \
 			echo $$r >> $(PARSERLOGDIR)/$$v.log; \
 			$(EMAIL_PARSER) -Fddp $$r | grep -E 'reason|diagnosticcode|deliverystatus' >> $(PARSERLOGDIR)/$$v.log; \
@@ -311,6 +311,19 @@ benchmark-mbox: sample
 	$(MKDIR) -p $(BENCHMARKDIR)
 	$(CP) `find $(EMAIL_SAMPLE) -type f` $(BENCHMARKDIR)/
 
+header-content-list: sample
+	/bin/cp /dev/null ./subject-list
+	/bin/cp /dev/null ./senders-list
+	for v in `ls -1 $(EMAIL_SAMPLE) | grep -v rfc | grep -v arf`; do \
+		for w in `find $(EMAIL_SAMPLE)/$$v -type f`; do \
+			grep '^Subject:' $$w | head -1 | sed -e "s/^Subject:/[$$v]/g" >> ./subject-list; \
+			grep '^From: ' $$w | head -1 | sed -e "s/^From:/[$$v]/g" >> ./senders-list; \
+		done; \
+	done
+	cat subject-list | sort | uniq > tmp/subject-list
+	cat senders-list | sort | uniq > tmp/senders-list
+	rm ./subject-list ./senders-list
+
 loc:
 	@ for v in `find lib -type f -name '*.pm'`; do \
 		x=`wc -l $$v | awk '{ print $$1 }'`; \
@@ -325,4 +338,5 @@ clean:
 	$(RM) -r ./build
 	$(RM) -r $(EMAIL_SAMPLE)
 	$(RM) -r $(BENCHMARKDIR)
+	$(RM) -f tmp/subject-list
 

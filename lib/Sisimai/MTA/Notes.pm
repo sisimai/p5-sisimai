@@ -50,7 +50,6 @@ sub scan {
 
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
-    require Sisimai::RFC5322;
     require Sisimai::Address;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;

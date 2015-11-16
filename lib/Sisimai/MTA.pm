@@ -83,13 +83,12 @@ sub index {
     # @return   [Array] MTA list with order
     my $class = shift;
     my $index = [
-        'Sendmail', 'Postfix', 'qmail', 'OpenSMTPD', 'Exim', 'Courier',
-        'Exchange', 'MessagingServer', 'V5sendmail', 'ApacheJames', 'McAfee', 
-        'Domino', 'Notes', 'MXLogic', 'MailFoundry', 'IMailServer', 'mFILTER', 
+        'Sendmail', 'Postfix', 'qmail', 'Exim', 'Courier', 'OpenSMTPD', 
+        'Exchange', 'MessagingServer', 'Domino', 'Notes', 'ApacheJames', 
+        'McAfee', 'MXLogic', 'MailFoundry', 'IMailServer', 'mFILTER', 
         'Activehunter', 'InterScanMSS', 'SurfControl', 'MailMarshalSMTP',
-        'X1', 'X2', 'X3', 'X4', 'X5',
+        'X1', 'X2', 'X3', 'X4', 'X5', 'V5sendmail', 
     ];
-
     return $index;
 }
 

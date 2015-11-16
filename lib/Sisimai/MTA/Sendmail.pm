@@ -51,7 +51,6 @@ sub scan {
         # Do not execute this code if the bounce mail is a forwarded message.
         return undef unless $mhead->{'from'} =~ $Re0->{'from'};
     }
-    require Sisimai::RFC5322;
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

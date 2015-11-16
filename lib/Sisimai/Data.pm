@@ -58,28 +58,28 @@ sub new {
     my $argvs = { @_ };
     my $thing = {};
 
-    EMAIL_ADDRESS: {
-        # Create email address object
-        my $x0 = Sisimai::Address->parse( [ $argvs->{'addresser'} ] );
-        my $y0 = Sisimai::Address->parse( [ $argvs->{'recipient'} ] );
+    # Create email address object
+    my $x0 = Sisimai::Address->parse( [ $argvs->{'addresser'} ] );
+    my $y0 = Sisimai::Address->parse( [ $argvs->{'recipient'} ] );
+    my $v0 = undef;
+    my @v1 = ();
 
-        if( ref $x0 eq 'ARRAY' ) {
-            my $v = Sisimai::Address->new( shift @$x0 );
+    if( ref $x0 eq 'ARRAY' ) {
+        $v0 = Sisimai::Address->new( shift @$x0 );
 
-            if( ref $v eq 'Sisimai::Address' ) {
-                $thing->{'addresser'} = $v;
-                $thing->{'senderdomain'} = $v->host;
-            }
+        if( ref $v0 eq 'Sisimai::Address' ) {
+            $thing->{'addresser'} = $v0;
+            $thing->{'senderdomain'} = $v0->host;
         }
+    }
 
-        if( ref $y0 eq 'ARRAY' ) {
-            my $v = Sisimai::Address->new( shift @$y0 );
+    if( ref $y0 eq 'ARRAY' ) {
+        $v0 = Sisimai::Address->new( shift @$y0 );
 
-            if( ref $v eq 'Sisimai::Address' ) {
-                $thing->{'recipient'} = $v;
-                $thing->{'destination'} = $v->host;
-                $thing->{'alias'} = $argvs->{'alias'};
-            }
+        if( ref $v0 eq 'Sisimai::Address' ) {
+            $thing->{'recipient'} = $v0;
+            $thing->{'destination'} = $v0->host;
+            $thing->{'alias'} = $argvs->{'alias'};
         }
     }
     return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
@@ -90,22 +90,19 @@ sub new {
                             $thing->{'recipient'}->address,
                             $argvs->{'timestamp'} );
 
-    TIMESTAMP: {
-        # Create Sisimai::Time object
-        $thing->{'timestamp'} = localtime Sisimai::Time->new( $argvs->{'timestamp'} );
-        $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
-    }
+    # Create Sisimai::Time object
+    $thing->{'timestamp'} = localtime Sisimai::Time->new( $argvs->{'timestamp'} );
+    $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
 
-    OTHER_VALUES: {
-        my @v = ( 
-            'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
-            'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
-            'smtpcommand', 'feedbacktype', 'action', 'softbounce',
-        );
-        $thing->{ $_ } = $argvs->{ $_ } // '' for @v;
-        $thing->{'replycode'} = Sisimai::RFC5321->getrc( $argvs->{'diagnosticcode'} );
-        $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
-    }
+    @v1 = ( 
+        'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
+        'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
+        'smtpcommand', 'feedbacktype', 'action', 'softbounce',
+    );
+    $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
+    $thing->{'replycode'} = Sisimai::RFC5321->getrc( $argvs->{'diagnosticcode'} );
+    $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
+
     return bless( $thing, __PACKAGE__ );
 }
 
@@ -126,31 +123,29 @@ sub make {
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
     my $rxcommands = qr/\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
+    my $givenorder = $argvs->{'order'} ? $argvs->{'order'} : {};
 
     return undef unless $messageobj->ds;
     return undef unless $messageobj->rfc822;
 
-    ORDER_OF_HEADERS: {
-        # Decide the order of email headers: user specified or system default.
-        my $o = exists $argvs->{'order'} ? $argvs->{'order'} : {};
-        if( ref $o eq 'HASH' && scalar keys %$o ) {
-            # If the order of headers for searching is specified, use the order
-            # for detecting an email address.
-            for my $e ( 'recipient', 'addresser' ) {
-                # The order should be "Array Reference".
-                next unless $o->{ $e };
-                next unless ref $o->{ $e } eq 'ARRAY';
-                next unless scalar @{ $o->{ $e } };
-                push @{ $fieldorder->{ $e } }, @{ $o->{ $e } };
-            }
-        }
-
+    # Decide the order of email headers: user specified or system default.
+    if( ref $givenorder eq 'HASH' && scalar keys %$givenorder ) {
+        # If the order of headers for searching is specified, use the order
+        # for detecting an email address.
         for my $e ( 'recipient', 'addresser' ) {
-            # If the order is empty, use default order.
-            if( not scalar @{ $fieldorder->{ $e } } ) {
-                # Load default order of each accessor.
-                $fieldorder->{ $e } = $AddrHeader->{ $e };
-            }
+            # The order should be "Array Reference".
+            next unless $givenorder->{ $e };
+            next unless ref $givenorder->{ $e } eq 'ARRAY';
+            next unless scalar @{ $givenorder->{ $e } };
+            push @{ $fieldorder->{ $e } }, @{ $givenorder->{ $e } };
+        }
+    }
+
+    for my $e ( 'recipient', 'addresser' ) {
+        # If the order is empty, use default order.
+        if( not scalar @{ $fieldorder->{ $e } } ) {
+            # Load default order of each accessor.
+            $fieldorder->{ $e } = $AddrHeader->{ $e };
         }
     }
 

@@ -29,7 +29,7 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'AmazonSES(Receiving): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::ReceivingSES' }
-sub headerlist  { return [ 'X-SES-Outgoing', 'Feedback-ID' ] }
+sub headerlist  { return [ 'X-SES-Outgoing' ] } # 'Feedback-ID'
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -49,11 +49,12 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
     return undef unless $mhead->{'x-ses-outgoing'};
-    return undef unless $mhead->{'feedback-id'};
-    return undef unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
-    require Sisimai::RFC5322;
+    if( 0 ) {
+        # return undef unless $mhead->{'feedback-id'};
+        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+        return undef unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );

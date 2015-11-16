@@ -25,6 +25,10 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'AmazonSES(Sending): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::AmazonSES' }
+
+# X-SenderID: Sendmail Sender-ID Filter v1.0.0 nijo.example.jp p7V3i843003008
+# X-Original-To: 000001321defbd2a-788e31c8-2be1-422f-a8d4-cf7765cc9ed7-000000@email-bounces.amazonses.com
+# X-AWS-Outgoing: 199.255.192.156
 sub headerlist  { return [ 'X-AWS-Outgoing' ] }
 sub pattern     { return $Re0 }
 
@@ -46,9 +50,10 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-aws-outgoing'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    require Sisimai::RFC5322;
+    if( 0 ) {
+        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+        return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
+    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
