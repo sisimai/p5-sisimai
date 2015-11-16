@@ -32,14 +32,12 @@ sub index {
     # @return   [Array] MSP list with order
     my $class = shift;
     my $index = [
-        'US::Google', 'US::Yahoo', 'US::Aol', 'US::Outlook',
-        'US::AmazonSES', 'US::SendGrid',
-        'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
-        'US::Verizon', 'RU::MailRu', 'RU::Yandex', 'DE::GMX', 'DE::EinsUndEins',
-        'US::Zoho', 'US::Bigfoot', 'US::Facebook', 'UK::MessageLabs',
+        'US::Google', 'US::Yahoo', 'US::Aol', 'US::Outlook', 'US::AmazonSES', 
+        'US::SendGrid', 'US::Verizon', 'RU::MailRu', 'RU::Yandex', 'DE::GMX', 
+        'US::Bigfoot', 'US::Facebook', 'US::Zoho', 'DE::EinsUndEins',
+        'UK::MessageLabs', 'JP::EZweb', 'JP::KDDI', 'JP::Biglobe',
         'US::ReceivingSES',
     ];
-
     return $index;
 }
 
