@@ -30,6 +30,7 @@ sub smtpagent   { 'DE::GMX' }
 # Envelope-To: <kijitora@mail.example.com>
 # X-GMX-Antispam: 0 (Mail was not recognized as spam); Detail=V3;
 # X-GMX-Antivirus: 0 (no virus found)
+# X-UI-Out-Filterresults: unknown:0;
 sub headerlist  { return [ 'X-GMX-Antispam' ] }
 sub pattern     { return $Re0 }
 
