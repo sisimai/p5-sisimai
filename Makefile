@@ -17,8 +17,11 @@ PROVE := prove -Ilib --timer
 MINIL := minil
 CP    := cp
 RM    := rm -f
-GIT   := /usr/bin/git
+
 .DEFAULT_GOAL = git-status
+REPOS_TARGETS = git-status git-push git-commit-amend git-tag-list git-diff \
+				git-reset-soft git-rm-cached git-branch
+STATS_TARGETS = profile private-sample update-analytical-precision-table loc
 
 # -----------------------------------------------------------------------------
 .PHONY: clean
@@ -56,18 +59,19 @@ dist:
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
 	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<github.com\@azumakuniyuki.org>|' META.json
 
-push:
-	@ for v in `git remote show | grep -v origin`; do \
-		printf "[%s]\n" $$v; \
-		$(GIT) push --tags $$v master; \
-	done
+$(REPOS_TARGETS):
+	$(MAKE) -f Repository.mk $@
 
-git-status:
-	git status
+$(STATS_TARGETS):
+	$(MAKE) -f Statistics.mk $@
 
-fix-commit-message:
-	git commit --amend
+diff push branch:
+	@$(MAKE) git-$@
+fix-commit-message: git-commit-amend
+cancel-the-latest-commit: git-reset-soft
+remove-added-file: git-rm-cached
 
 clean:
-	$(MAKE) -f Development.mk clean
+	$(MAKE) -f Repository.mk clean
+	$(MAKE) -f Statistics.mk clean
 
