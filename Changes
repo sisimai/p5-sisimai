@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.13.1  Tue, 17 Nov 2015
+4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
     - Improved code Sisimai::MTA::Exim to get the reason and the SMTP command
       from LMTP error message.
@@ -9,10 +9,10 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Issue #96, Improved Sisimai::MTA::Exim for parsing "Frozen message".
     - Issue #101, Improved code for getting DSN value in Sisimai::MTA::Exim.
     - Issue #107, Improved slow regular expression in Sisimai::MSP::JP::EZweb.
-    - Issue #114 (MTA Order Optimization) and Issue #116 (Performance tunings)
-      are merged. These improvements that were taught from two white cats in my
-      dream on November 7, and have made Sisimai 1.15 times faster. Thanks to
-      sensible white cats.
+    - Issue #114 (MTA Order Optimization) issue #116 (Performance tunings), and
+      issue #118 (Regular expression across the MTA modules) are merged. These
+      improvements that were taught from two white cats in my dream on Nov. 7,
+      and have made Sisimai 1.15 times faster. Thanks to sensible white cats.
 
 4.13.0  Thu,  5 Nov 2015 16:11:12 +0900 (JST)
     - Issue #85, Use Semantic Versioning from this release. New version number
