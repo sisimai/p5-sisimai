@@ -59,11 +59,12 @@ MAKE_TEST: {
         'Shironeko Nyanko <shironeko@example.jp>',
         '=?UTF-8?B?55m954yr?= <shironeko@example.co.jp>',
     ];
-    my $isnotaddrs = [
-        'neko',
-        'neko%example.jp',
+    my $isnotaddrs = [ 'neko', 'neko%example.jp', ];
+    my $postmaster = [ 
+        'mailer-daemon@example.jp', 
+        'MAILER-DAEMON@example.cat',
+        'Mailer-Daemon <postmaster@example.org>',
     ];
-    my $postmaster = 'mailer-daemon@example.jp';
 
     for my $e ( @$emailaddrs ) {
         ok $PackageName->is_emailaddress( $e ), '->is_emailaddress('.$e.') = 1';
@@ -82,8 +83,9 @@ MAKE_TEST: {
     is $PackageName->is_domainpart( ')' ), 0, '->is_domainpart()) = 0';
     is $PackageName->is_domainpart( ';' ), 0, '->is_domainpart(;) = 0';
 
-    ok $PackageName->is_mailerdaemon( $postmaster ), '->is_mailerdaemon('.$postmaster.') = 1';
-
+    for my $e ( @$postmaster ) {
+        is $PackageName->is_mailerdaemon( $e ), 1, '->is_mailerdaemon('.$e.') = 1';
+    }
     for my $e ( @$emailaddrs ) {
         is $PackageName->is_mailerdaemon( $e ), 0, '->is_mailerdaemon('.$e.') = 0';
     }
