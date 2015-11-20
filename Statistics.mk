@@ -40,7 +40,7 @@ private-sample:
 	$(EMAIL_PARSER) $(E)
 	@echo
 	@while true; do \
-		d=`$(EMAIL_PARSER) -Fjson ./$(E) | jq -M '.[].smtpagent' | head -1 \
+		d=`$(EMAIL_PARSER) -Fjson $(E) | jq -M '.[].smtpagent' | head -1 \
 			| tr '[A-Z]' '[a-z]' | sed -e 's/"//g' -e 's/::/-/g'`; \
 		if [ -d "$(DEVEL_SAMPLE)/$$d" ]; then \
 			latestfile=`ls -1 $(DEVEL_SAMPLE)/$$d/*.eml | tail -1`; \
