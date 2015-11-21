@@ -16,15 +16,15 @@ Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub undisclosed { 
     # Return pseudo recipient or sender address
-    # @param    [String] type   'r' or 's'
+    # @param    [String] atype  Address type: 'r' or 's'
     # @return   [String, Undef] Pseudo recipient address or sender address or
-    #                           Undef when the $argvs is neither 'r' nor 's'
+    #                           Undef when the $argv1 is neither 'r' nor 's'
     my $class = shift;
-    my $argvs = shift || return undef;
+    my $atype = shift || return undef;
     my $local = '';
 
-    return undef unless $argvs =~ m/\A(?:r|s)\z/;
-    $local = $argvs eq 'r' ? 'recipient' : 'sender';
+    return undef unless $atype =~ m/\A(?:r|s)\z/;
+    $local = $atype eq 'r' ? 'recipient' : 'sender';
     return sprintf( "undisclosed-%s-in-headers%sdummy-domain.invalid", $local, '@' );
 }
 
@@ -35,7 +35,7 @@ sub new {
     #                                         address was not valid.
     my $class = shift;
     my $email = shift // return undef;
-    my $argvs = { 'address' => '', 'user' => '', 'host' => '', 'verp' => '', 'alias' => '' };
+    my $thing = { 'address' => '', 'user' => '', 'host' => '', 'verp' => '', 'alias' => '' };
 
     if( $email =~ m/\A([^@]+)[@]([^@]+)\z/ ) {
         # Get the local part and the domain part from the email address
@@ -60,23 +60,23 @@ sub new {
             my @addrL = split( '@', $addr1 );
             if( $alias ) {
                 # The email address is an alias
-                $argvs->{'alias'} = $addr0;
+                $thing->{'alias'} = $addr0;
 
             } else {
                 # The email address is a VERP
-                $argvs->{'verp'}  = $addr0;
+                $thing->{'verp'}  = $addr0;
             }
-            $argvs->{'user'} = $addrL[0];
-            $argvs->{'host'} = $addrL[1];
+            $thing->{'user'} = $addrL[0];
+            $thing->{'host'} = $addrL[1];
 
         } else {
             # The email address is neither VERP nor alias.
-            $argvs->{'user'} = $lpart;
-            $argvs->{'host'} = $dpart;
+            $thing->{'user'} = $lpart;
+            $thing->{'host'} = $dpart;
         }
-        $argvs->{'address'} = sprintf( "%s@%s", $argvs->{'user'}, $argvs->{'host'} );
+        $thing->{'address'} = sprintf( "%s@%s", $thing->{'user'}, $thing->{'host'} );
 
-        return bless( $argvs, __PACKAGE__ );
+        return bless( $thing, __PACKAGE__ );
 
     } else {
         return undef;
@@ -85,7 +85,7 @@ sub new {
 
 sub parse {
     # Email address parser
-    # @param    [Array] argvs   String including email address
+    # @param    [Array] argvs   List of strings including email address
     # @return   [Array, Undef]  Email address list or Undef when there is no 
     #                           email address in the argument
     # @example  Parse email address

@@ -46,21 +46,22 @@ sub pattern     { return $Re0 }
 
 sub is_arf {
     # Email is a Feedback-Loop message or not
-    # @param    [String] argvs  The value of "Content-Type" header
+    # @param    [Hash] heads    Email header including "Content-Type", "From",
+    #                           and "Subject" field
     # @return   [Integer]       1: Feedback Loop
     #                           0: is not Feedback loop
     my $class = shift;
-    my $argvs = shift || return 0;
+    my $heads = shift || return 0;
     my $match = 0;
 
-    if( $argvs->{'content-type'} =~ $Re0->{'report-type'} ) {
+    if( $heads->{'content-type'} =~ $Re0->{'report-type'} ) {
         # Content-Type: multipart/report; report-type=feedback-report; ...
         $match = 1;
 
-    } elsif( $argvs->{'content-type'} =~ $Re0->{'content-type'} ) {
+    } elsif( $heads->{'content-type'} =~ $Re0->{'content-type'} ) {
         # Microsoft (Hotmail, MSN, Live, Outlook) uses its own report format.
         # Amazon SES Complaints bounces
-        if( $argvs->{'from'} =~ $Re0->{'from'} && $argvs->{'subject'} =~ $Re0->{'subject'} ) {
+        if( $heads->{'from'} =~ $Re0->{'from'} && $heads->{'subject'} =~ $Re0->{'subject'} ) {
             # From: staff@hotmail.com
             # From: complaints@email-abuse.amazonses.com
             # Subject: complaint about message from 192.0.2.1

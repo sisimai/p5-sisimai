@@ -6,12 +6,12 @@ use warnings;
 sub text  { 'systemerror' }
 sub match {
     # Try to match that the given text and regular expressions
-    # @param    [String] argvs  String to be matched with regular expressions
+    # @param    [String] argv1  String to be matched with regular expressions
     # @return   [Integer]       0: Did not match
     #                           1: Matched
     # @since v4.0.0
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
     my $regex = qr{(?>
          can[']t[ ]create[ ]user[ ]output[ ]file
         |Internal[ ](?:
@@ -39,7 +39,7 @@ sub match {
         )
     }ix;
 
-    return 1 if $argvs =~ $regex;
+    return 1 if $argv1 =~ $regex;
     return 0;
 }
 

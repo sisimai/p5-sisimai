@@ -11,13 +11,13 @@ sub is_mimeencoded {
     # @return   [Integer]       0: Not MIME encoded string
     #                           1: MIME encoded string
     my $class = shift;
-    my $argvs = shift || return 0;
+    my $argv1 = shift || return 0;
 
-    return undef unless ref $argvs;
-    return undef unless ref $argvs eq 'SCALAR';
-    $$argvs =~ y/"//d;
+    return undef unless ref $argv1;
+    return undef unless ref $argv1 eq 'SCALAR';
+    $$argv1 =~ y/"//d;
 
-    return 1 if $$argvs =~ m{[\s\t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=\s*\z};
+    return 1 if $$argv1 =~ m{[\s\t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=\s*\z};
     return 0;
 }
 
@@ -94,11 +94,11 @@ sub boundary {
     #                            1: End of boundary
     # @return   [String] Boundary string
     my $class = shift;
-    my $argvs = shift || return undef;
+    my $argv1 = shift || return undef;
     my $start = shift // -1;
     my $value = '';
 
-    if( $argvs =~ m/\bboundary=([^ ]+)/ ) {
+    if( $argv1 =~ m/\bboundary=([^ ]+)/ ) {
         # Content-Type: multipart/mixed; boundary=Apple-Mail-5--931376066
         # Content-Type: multipart/report; report-type=delivery-status;
 	    #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"

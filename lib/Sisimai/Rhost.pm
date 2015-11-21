@@ -16,14 +16,14 @@ sub list {
 
 sub match {
     # The value of "rhost" is listed in $RhostClass or not
-    # @param    [String] argvs  Remote host name
+    # @param    [String] argv1  Remote host name
     # @return   [Integer]       0: did not match
     #                           1: match
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $rhost = shift // return undef;
 
-    return 0 unless length $argvs;
-    return 1 if exists $RhostClass->{ lc $argvs };
+    return 0 unless length $rhost;
+    return 1 if exists $RhostClass->{ lc $rhost };
     return 0;
 }
 

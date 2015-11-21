@@ -32,35 +32,35 @@ sub token {
 
 sub is_8bit {
     # The argument is 8-bit text or not
-    # @param    [String] argvs  Any string to be checked
+    # @param    [String] argv1  Any string to be checked
     # @return   [Integer]       0: ASCII Characters only
     #                           1: Including 8-bit character
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
 
-    return undef unless ref $argvs;
-    return undef unless ref $argvs eq 'SCALAR';
-    return 1 unless $$argvs =~ m/\A[\x00-\x7f]+\z/;
+    return undef unless ref $argv1;
+    return undef unless ref $argv1 eq 'SCALAR';
+    return 1 unless $$argv1 =~ m/\A[\x00-\x7f]+\z/;
     return 0;
 }
 
 sub sweep {
     # Clean the string out
-    # @param    [String] argvs  String to be cleaned
+    # @param    [String] argv1  String to be cleaned
     # @return   [Scalar]        Cleaned out string
     # @example  Clean up text
     #   sweep('  neko ') #=> 'neko'
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
 
-    chomp $argvs;
-    $argvs =~ y{ }{}s;
-    $argvs =~ s{\t}{}g;
-    $argvs =~ s{\A }{}g;
-    $argvs =~ s{ \z}{}g;
-    $argvs =~ s{ [-]{2,}[^\s].+\z}{};
+    chomp $argv1;
+    $argv1 =~ y{ }{}s;
+    $argv1 =~ s{\t}{}g;
+    $argv1 =~ s{\A }{}g;
+    $argv1 =~ s{ \z}{}g;
+    $argv1 =~ s{ [-]{2,}[^\s].+\z}{};
 
-    return $argvs;
+    return $argv1;
 }
 
 1;

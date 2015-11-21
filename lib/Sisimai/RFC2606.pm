@@ -4,17 +4,17 @@ use warnings;
 
 sub is_reserved {
     # Whether domain part is Reserved or not
-    # @param    [String] dpart  Domain part
+    # @param    [String] argv1  Domain part
     # @return   [Integer]       1: is Reserved top level domain
     #                           0: is NOT reserved top level domain
     # @see      http://www.ietf.org/rfc/rfc2606.txt
     my $class = shift;
-    my $dpart = shift || return 0;
+    my $argv1 = shift || return 0;
 
-    return 1 if $dpart =~ m/[.](?:test|example|invalid|localhost)\z/;
-    return 1 if $dpart =~ m/example[.](?:com|net|org)\z/;
-    return 1 if $dpart =~ m/example[.]jp\z/;
-    return 1 if $dpart =~ m/example[.](?:ac|ad|co|ed|go|gr|lg|ne|or)[.]jp\z/;
+    return 1 if $argv1 =~ m/[.](?:test|example|invalid|localhost)\z/;
+    return 1 if $argv1 =~ m/example[.](?:com|net|org)\z/;
+    return 1 if $argv1 =~ m/example[.]jp\z/;
+    return 1 if $argv1 =~ m/example[.](?:ac|ad|co|ed|go|gr|lg|ne|or)[.]jp\z/;
     return 0;
 }
 

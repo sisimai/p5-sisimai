@@ -108,10 +108,10 @@ sub new {
 
 sub make {
     # Another constructor of Sisimai::Data
-    # @param        [Hash] argvs Data and orders
-    # @option argvs [Sisimai::Message] data Object
-    # @return       [Array, Undef] List of Sisimai::Data or Undef if the argument
-    #                              (data) is not Sisimai::Message object
+    # @param        [Hash] argvs       Data and orders
+    # @option argvs [Sisimai::Message] Data Object
+    # @return       [Array, Undef]     List of Sisimai::Data or Undef if the 
+    #                                  argument is not Sisimai::Message object
     my $class = shift;
     my $argvs = { @_ };
 
@@ -377,16 +377,16 @@ sub damn {
 
 sub dump {
     # Data dumper
-    # @param    [String] argv   Data format: json, yaml
+    # @param    [String] type   Data format: json, yaml
     # @return   [String, Undef] Dumped data or Undef if the value of first
     #                           argument is neither "json" nor "yaml"
     my $self = shift;
-    my $argv = shift || 'json';
+    my $type = shift || 'json';
 
-    return undef unless $argv =~ m/\A(?:json|yaml)\z/;
+    return undef unless $type =~ m/\A(?:json|yaml)\z/;
 
     my $dumpeddata = '';
-    my $referclass = sprintf( "Sisimai::Data::%s", uc $argv );
+    my $referclass = sprintf( "Sisimai::Data::%s", uc $type );
 
     eval { Module::Load::load $referclass };
     $dumpeddata = $referclass->dump( $self );

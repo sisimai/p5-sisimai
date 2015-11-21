@@ -420,19 +420,19 @@ sub getdsn {
 
 sub is_softbounce {
     # Check softbounce or not
-    # @param    [String] argvs  String including SMTP Status code
+    # @param    [String] argv1  String including SMTP Status code
     # @return   [Integer]        1: Soft bounce
     #                            0: Hard bounce
     #                           -1: May not be bounce ?
     my $class = shift;
-    my $argvs = shift || return -1;
+    my $argv1 = shift || return -1;
     my $value = -1;
     my $first = -1;
 
-    if( $argvs =~ m/\b([245])\d\d\b/ ) {
+    if( $argv1 =~ m/\b([245])\d\d\b/ ) {
         $first = $1;
 
-    } elsif( $argvs =~ m/\b([245])[.][0-9][.]\d+\b/ ) {
+    } elsif( $argv1 =~ m/\b([245])[.][0-9][.]\d+\b/ ) {
         $first = $1;
     }
 
@@ -444,11 +444,11 @@ sub is_softbounce {
 
     } else {
         # Check with regular expression
-        if( $argvs =~ m/temporar/i ) {
+        if( $argv1 =~ m/temporar/i ) {
             # Temporary failure
             $value = 1;
 
-        } elsif( $argvs =~ m/permanent/i ) {
+        } elsif( $argv1 =~ m/permanent/i ) {
             # Permanently failure
             $value = 0;
 

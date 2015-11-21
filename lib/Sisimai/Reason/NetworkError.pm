@@ -6,12 +6,12 @@ use warnings;
 sub text  { 'networkerror' }
 sub match {
     # Try to match that the given text and regular expressions
-    # @param    [String] argvs  String to be matched with regular expressions
+    # @param    [String] argv1  String to be matched with regular expressions
     # @return   [Integer]       0: Did not match
     #                           1: Matched
     # @since v4.1.12
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
     my $regex = qr{(?:
          DNS[ ]records[ ]for[ ]the[ ]destination[ ]computer[ ]could[ ]not[ ]be[ ]found
         |Hop[ ]count[ ]exceeded[ ]-[ ]possible[ ]mail[ ]loop
@@ -26,7 +26,7 @@ sub match {
         )
     }ix;
 
-    return 1 if $argvs =~ $regex;
+    return 1 if $argv1 =~ $regex;
     return 0;
 }
 

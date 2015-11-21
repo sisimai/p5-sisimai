@@ -189,26 +189,26 @@ my $TimeZoneAbbr = {
 
 sub to_second {
     # Convert to second
-    # @param    [String] argvs  Digit and a unit of time
+    # @param    [String] value  Digit and a unit of time
     # @return   [Integer]       n: seconds
     #                           0: 0 or invalid unit of time
     # @example  Get the value of seconds
     #   to_second('1d') #=> 86400
     #   to_second('2h') #=>  7200
     my $class = shift;
-    my $argvs = shift || return 0;
+    my $value = shift || return 0;
 
     my $getseconds = 0;
     my $unitoftime = [ keys %$TimeUnit ];
     my $mathconsts = [ keys %$MathematicalConstant ];
 
-    if( $argvs =~ m/\A(\d+|\d+[.]\d+)([@$unitoftime])?\z/o ) {
+    if( $value =~ m/\A(\d+|\d+[.]\d+)([@$unitoftime])?\z/o ) {
         # 1d, 1.5w
         my $n = $1;
         my $u = $2 // 'd';
         $getseconds = $n * $TimeUnit->{ $u };
 
-    } elsif( $argvs =~ m/\A(\d+|\d+[.]\d+)?([@$mathconsts])([@$unitoftime])?\z/o ) {
+    } elsif( $value =~ m/\A(\d+|\d+[.]\d+)?([@$mathconsts])([@$unitoftime])?\z/o ) {
         # 1pd, 1.5pw
         my $n = $1 // 1;
         my $m = $MathematicalConstant->{ $2 } // 0;
@@ -269,7 +269,7 @@ sub hourname {
 
 sub o2d {
     # Convert from date offset to date string
-    # @param    [Integer] argv1 Offset of
+    # @param    [Integer] argv1 Offset of the timezone
     # @param    [String]  argv2 Delimiter character: default is '-'
     # @return   [String]        Date string
     # @example  Get the value of n days before(today is 2015/11/04)

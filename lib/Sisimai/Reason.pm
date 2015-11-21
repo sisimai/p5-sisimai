@@ -158,10 +158,10 @@ sub anotherone {
 
 sub match {
     # Detect the bounce reason from given text
-    # @param    [String] argvs  Error message
+    # @param    [String] argv1  Error message
     # @return   [String]        Bounce reason
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
 
     require Sisimai::RFC3463;
 
@@ -176,8 +176,8 @@ sub match {
         'SystemFull', 'NotAccept', 'MailerError', 'NoRelaying', 'OnHold',
     ];
 
-    $statuscode = Sisimai::RFC3463->getdsn( $argvs ) || '';
-    $typestring = uc( $1 ) if $argvs =~ m/\A(SMTP|X-.+);/i;
+    $statuscode = Sisimai::RFC3463->getdsn( $argv1 ) || '';
+    $typestring = uc( $1 ) if $argv1 =~ m/\A(SMTP|X-.+);/i;
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( @$classorder ) {
@@ -186,7 +186,7 @@ sub match {
         my $p = 'Sisimai::Reason::'.$e;
         Module::Load::load( $p );
 
-        next unless $p->match( $argvs );
+        next unless $p->match( $argv1 );
         $reasontext = $p->text;
         last;
     }

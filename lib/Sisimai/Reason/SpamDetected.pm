@@ -6,12 +6,12 @@ use warnings;
 sub text  { 'spamdetected' }
 sub match {
     # Try to match that the given text and regular expressions
-    # @param    [String] argvs  String to be matched with regular expressions
+    # @param    [String] argv1  String to be matched with regular expressions
     # @return   [Integer]       0: Did not match
     #                           1: Matched
     # @since v4.1.19
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
     my $regex = qr{(?>
          ["]The[ ]mail[ ]server[ ]detected[ ]your[ ]message[ ]as[ ]spam[ ]and[ ]
             has[ ]prevented[ ]delivery[.]["]    # CPanel/Exim with SA rejections on
@@ -117,7 +117,7 @@ sub match {
         )
     }xi;
 
-    return 1 if $argvs =~ $regex;
+    return 1 if $argv1 =~ $regex;
     return 0;
 }
 

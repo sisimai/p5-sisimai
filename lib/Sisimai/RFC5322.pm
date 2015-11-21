@@ -117,10 +117,10 @@ sub is_mailerdaemon {
 
 sub received {
     # Convert Received headers to a structured data
-    # @param    [String] argvs  Received header
+    # @param    [String] argv1  Received header
     # @return   [Array]         Received header as a structured data
     my $class = shift;
-    my $argvs = shift || return [];
+    my $argv1 = shift || return [];
     my $hosts = [];
     my $value = {
         'from' => '',
@@ -128,16 +128,16 @@ sub received {
     };
 
     # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
-    return [] if $argvs =~ m/qmail\s+.+invoked\s+/;
+    return [] if $argv1 =~ m/qmail\s+.+invoked\s+/;
 
-    if( $argvs =~ m/\Afrom\s+(.+)\s+by\s+([^ ]+)/ ) {
+    if( $argv1 =~ m/\Afrom\s+(.+)\s+by\s+([^ ]+)/ ) {
         # Received: from localhost (localhost)
         #   by nijo.example.jp (V8/cf) id s1QB5ma0018057;
         #   Wed, 26 Feb 2014 06:05:48 -0500
         $value->{'from'} = $1;
         $value->{'by'}   = $2;
 
-    } elsif( $argvs =~ m/\bby\s+([^ ]+)(.+)/ ) {
+    } elsif( $argv1 =~ m/\bby\s+([^ ]+)(.+)/ ) {
         # Received: by 10.70.22.98 with SMTP id c2mr1838265pdf.3; Fri, 18 Jul 2014
         #   00:31:02 -0700 (PDT)
         $value->{'from'} = $1.$2;
