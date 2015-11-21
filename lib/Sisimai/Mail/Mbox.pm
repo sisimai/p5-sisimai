@@ -21,20 +21,20 @@ Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub new {
     # Constructor of Sisimai::Mail::Mbox
-    # @param    [String] argvs          Path to mbox
+    # @param    [String] argv1          Path to mbox
     # @return   [Sisimai::Mail::Mbox]   Object or Undef if the argument is not 
     #                                   a file or does not exist
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
     my $param = { 'offset' => 0 };
 
-    return undef unless -f $argvs;
+    return undef unless -f $argv1;
 
-    $param->{'dir'}    = File::Basename::dirname $argvs;
-    $param->{'path'}   = $argvs;
-    $param->{'size'}   = -s $argvs;
-    $param->{'file'}   = File::Basename::basename $argvs;
-    $param->{'handle'} = IO::File->new( $argvs, 'r' );
+    $param->{'dir'}    = File::Basename::dirname $argv1;
+    $param->{'path'}   = $argv1;
+    $param->{'size'}   = -s $argv1;
+    $param->{'file'}   = File::Basename::basename $argv1;
+    $param->{'handle'} = IO::File->new( $argv1, 'r' );
 
     return bless( $param, __PACKAGE__ );
 }

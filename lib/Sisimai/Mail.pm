@@ -17,33 +17,33 @@ Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub new {
     # Constructor of Sisimai::Mail
-    # @param    [String] argvs         Path to mbox or Maildir/
+    # @param    [String] argv1         Path to mbox or Maildir/
     # @return   [Sisimai::Mail, Undef] Object or Undef if the argument was wrong
     my $class = shift;
-    my $argvs = shift;
+    my $argv1 = shift;
     my $klass = undef;
     my $param = { 
         'type' => '', 
         'mail' => undef,
-        'path' => $argvs,
+        'path' => $argv1,
     };
 
-    $param->{'path'} = $argvs;
+    $param->{'path'} = $argv1;
 
     # The argumenet is a mailbox or a Maildir/.
-    if( -f $argvs ) {
-        # The argument is a file, it is an mbox
+    if( -f $argv1 ) {
+        # The argument is a file, it is an mbox or email file in Maildir/
         $klass = sprintf( "%s::Mbox", __PACKAGE__ );
         $param->{'type'} = 'mailbox';
 
-    } elsif( -d $argvs ) {
+    } elsif( -d $argv1 ) {
         # The agument is not a file, it is a Maildir/
         $klass = sprintf( "%s::Maildir", __PACKAGE__ );
         $param->{'type'} = 'maildir';
 
     } else {
-        # The argument neither a mailbox nor a Maildir/.
-        if( ref($argvs) =~ m/\A(?:GLOB|IO::Handle)\z/ || $argvs eq '<STDIN>' ) {
+        # The argumen1 neither a mailbox nor a Maildir/.
+        if( ref($argv1) =~ m/\A(?:GLOB|IO::Handle)\z/ || $argv1 eq '<STDIN>' ) {
             # Read from STDIN
             $klass = sprintf( "%s::STDIN", __PACKAGE__ );
             $param->{'type'} = 'stdin';
@@ -52,13 +52,13 @@ sub new {
 
     return undef unless $klass;
     Module::Load::load $klass;
-    $param->{'mail'} = $klass->new( $argvs );
+    $param->{'mail'} = $klass->new( $argv1 );
 
     return bless( $param, __PACKAGE__ );
 }
 
 sub read {
-    # Mbox/Maildir reader, works as a iterator.
+    # Mbox/Maildir reader, works as an iterator.
     # @return   [String] Contents of mbox/Maildir
     my $self = shift;
     my $mail = $self->{'mail'};
