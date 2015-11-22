@@ -22,15 +22,12 @@ sub new {
     # @return   [Sisimai::Mail::STDIN] Object
     my $class = shift;
     my $param = { 
-        'wait'   => 60,
+        'path'   => '<STDIN>',
+        'name'   => '<STDIN>',
+        'size'   => undef,
         'offset' => 0,
+        'handle' => IO::Handle->new->fdopen( fileno(STDIN), 'r' ),
     };
-
-    $param->{'path'}   = '<STDIN>';
-    $param->{'name'}   = '<STDIN>';
-    $param->{'size'}   = undef;
-    $param->{'handle'} = IO::Handle->new->fdopen( fileno(STDIN), 'r' );
-
     return bless( $param, __PACKAGE__ );
 }
 
