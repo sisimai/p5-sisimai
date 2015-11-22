@@ -1,5 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.13.2
+    - Issue #110, #122 Code for reading email files in a directory is improved
+      and got faster than before: merged Pull-Request #123.
+
 4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
     - Improved code Sisimai::MTA::Exim to get the reason and the SMTP command
