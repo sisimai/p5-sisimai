@@ -21,7 +21,6 @@ sub new {
     # Constructor of Sisimai::Mail::STDIN
     # @return   [Sisimai::Mail::STDIN] Object
     my $class = shift;
-    my $sdtin = undef;
     my $param = { 
         'wait'   => 60,
         'offset' => 0,
