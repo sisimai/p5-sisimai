@@ -114,8 +114,10 @@ sub resolve {
 
     EMAIL_PROCESSING: {
         # Processes: 0(split), 1(initialize), 2(text to hash), 3(rewrite body)
-        my $readcursor = 0;
         my @hasdivided = split( "\n", $email );
+        return {} unless scalar @hasdivided;
+
+        my $readcursor = 0;
         my $mailheader = '';
         my $bodystring = '';
         my $first5byte = '';
