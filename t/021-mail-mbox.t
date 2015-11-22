@@ -26,7 +26,7 @@ MAKE_TEST: {
         is $mailbox->dir, './eg', '->dir = ./eg';
         is $mailbox->path, $SampleEmail, '->path = '.$SampleEmail;
         is $mailbox->file, 'mbox-as-a-sample', '->file = mbox-as-a-sample';
-        is $mailbox->size, -s $SampleEmail, '->size = 94515';
+        is $mailbox->size, -s $SampleEmail, '->size = 96906';
         isa_ok $mailbox->handle, 'IO::File';
         is $mailbox->offset, 0, '->offset = 0';
 
