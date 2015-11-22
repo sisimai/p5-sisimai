@@ -25,16 +25,16 @@ sub new {
     #                                          not a directory or does not exist
     my $class = shift;
     my $argvs = shift // return undef;
-    my $param = { 'inodes' => [] };
 
     return undef unless -d $argvs;
 
-    $param->{'dir'}    = $argvs;
-    $param->{'file'}   = undef;
-    $param->{'path'}   = undef;
-    $param->{'inodes'} = [];
-    $param->{'handle'} = IO::Dir->new( $argvs );
-
+    my $param = {
+        'dir'    => $argvs,
+        'file'   => undef,
+        'path'   => undef,
+        'inodes' => {},
+        'handle' => IO::Dir->new( $argvs ),
+    };
     return bless( $param, __PACKAGE__ );
 }
 
@@ -68,7 +68,7 @@ sub read {
             # Get inode number of the file
             $self->{'path'} = $emailindir;
             $emailinode = [ stat $emailindir ]->[1];
-            next if grep { $emailinode == $_ } @{ $self->{'inodes'} };
+            next if exists $self->{'inodes'}->{ $emailinode };
 
             $filehandle = IO::File->new( $emailindir, 'r' );
             while( <$filehandle> ) {
@@ -77,7 +77,7 @@ sub read {
             }
             $filehandle->close;
 
-            push @{ $self->{'inodes'} }, $emailinode;
+            $self->{'inodes'}->{ $emailinode } = 1;
             $self->{'file'} = $r;
 
             last;

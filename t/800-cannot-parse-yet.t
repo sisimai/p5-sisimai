@@ -19,18 +19,18 @@ MAKE_TEST: {
         isa_ok $maildir, 'Sisimai::Mail::Maildir';
         is $maildir->dir, $CannotParse, '->dir = '.$maildir->dir;
         is $maildir->file, undef, '->file = ""';
-        isa_ok $maildir->inodes, 'ARRAY';
+        isa_ok $maildir->inodes, 'HASH';
         isa_ok $maildir->handle, 'IO::Dir';
 
         while( my $r = $maildir->read ) {
             ok length $r, 'maildir->read('.( $emindex + 1 ).')';
             ok length $maildir->file, '->file = '.$maildir->file;
             ok $maildir->path, '->path = '.$maildir->path;
-            ok scalar @{ $maildir->inodes };
+            ok scalar keys %{ $maildir->inodes };
             $emindex++;
         }
         ok $emindex > 0;
-        is $emindex, scalar @{ $maildir->inodes };
+        is $emindex, scalar keys %{ $maildir->inodes };
     }
 
     MESSAGE: {
