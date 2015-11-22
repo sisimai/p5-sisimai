@@ -58,7 +58,7 @@ sub read {
 
         seek( $filehandle, $seekoffset, 0 );
         while( my $r = <$filehandle> ) {
-            # Read an email from the mailbox file
+            # Read the UNIX mbox file from 'From ' to the next 'From '
             last if( length $readbuffer && substr( $r, 0, 5 ) eq 'From ' );
             $readbuffer .= $r;
         }
