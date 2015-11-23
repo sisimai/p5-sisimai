@@ -71,10 +71,7 @@ sub read {
             next if exists $self->{'inodes'}->{ $emailinode };
 
             $filehandle = IO::File->new( $emailindir, 'r' );
-            while( <$filehandle> ) {
-                # Concatenate the contents of each file
-                $readbuffer .= $_;
-            }
+            $readbuffer = do { local $/; <$filehandle> };
             $filehandle->close;
 
             $self->{'inodes'}->{ $emailinode } = 1;
