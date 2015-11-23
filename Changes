@@ -3,6 +3,11 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
 4.13.2
     - Issue #110, #122 Code for reading email files in a directory is improved
       and got faster than before: merged Pull-Request #123.
+    - Fixed bug reported at issue #124: warning message: `use of uninitialized
+      value in substr at` is displayed when Sisimai::Message->resolve() method 
+      parses an UNIX mbox which begins from blank line.
+    - Merged Pull-Request #125, filehandle will not be closed until EOF of each
+      UNIX mbox in Sisimai::Mail::Mbox->read() method.
 
 4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
