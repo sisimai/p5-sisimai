@@ -8,6 +8,8 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       parses an UNIX mbox which begins from blank line.
     - Merged Pull-Request #125, filehandle will not be closed until EOF of each
       UNIX mbox in Sisimai::Mail::Mbox->read() method.
+    - Merged Pull-Request #126, replace while(<$f>) with do {block for reading
+      each email file in the directory at Sisimai::Mail::Maildir->read method.
 
 4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
