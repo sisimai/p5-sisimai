@@ -51,20 +51,20 @@ sub read {
     return undef unless defined $self->{'path'};
     return undef unless -f $self->{'path'};
     return undef unless -T $self->{'path'};
+    return undef unless $self->{'offset'} < $self->{'size'};
 
     eval {
         $seekoffset = 0 if $seekoffset < 0;
-        $filehandle = IO::File->new( $self->{'path'}, 'r' ) unless eof $filehandle;
-
         seek( $filehandle, $seekoffset, 0 );
+
         while( my $r = <$filehandle> ) {
             # Read the UNIX mbox file from 'From ' to the next 'From '
             last if( length $readbuffer && substr( $r, 0, 5 ) eq 'From ' );
             $readbuffer .= $r;
         }
-        $filehandle->close;
         $seekoffset += length $readbuffer;
         $self->{'offset'} = $seekoffset;
+        $filehandle->close unless $seekoffset < $self->{'size'};
     };
     return $readbuffer;
 }
