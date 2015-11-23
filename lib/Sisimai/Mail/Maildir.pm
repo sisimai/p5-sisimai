@@ -11,9 +11,9 @@ my $roaccessors = [
 ];
 my $rwaccessors = [
     'path',     # [String] Path to each file 
-    'file',     # [String] File name of a mail in the Maildir/
+    'file',     # [String] Each file name of a mail in the Maildir/
     'inodes',   # [Array]  i-node List of files in the Maildir/
-    'handle',   # [IO::File] File handle
+    'handle',   # [IO::Dir] Directory handle
 ];
 Class::Accessor::Lite->mk_accessors( @$rwaccessors );
 Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
