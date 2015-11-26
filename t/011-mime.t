@@ -6,7 +6,7 @@ use Encode;
 
 my $PackageName = 'Sisimai::MIME';
 my $MethodNames = {
-    'class' => [ 'is_mimeencoded', 'mimedecode', 'boundary' ],
+    'class' => [ 'is_mimeencoded', 'mimedecode', 'boundary', 'qprintd', 'base64d' ],
     'object' => [],
 };
 
@@ -63,6 +63,13 @@ MAKE_TEST: {
         chomp $v;
         ok length $v, '->mimedecode = '.$v;
     }
+
+    # Base64, Quoted-Printable
+    $z = '44Gr44KD44O844KT';
+    $y = 'にゃーん';
+    is $PackageName->base64d( \$z ), $y, '->base64d = '.$y;
+    is $PackageName->qprintd( \'=4e=65=6b=6f' ), 'Neko', '->qprintd = Neko';
+
 
     my $r = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
     my $b = 'Apple-Mail-1-526612466';
