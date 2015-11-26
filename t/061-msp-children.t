@@ -28,6 +28,7 @@ my $R = {
         '11' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
         '12' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/ },
         '13' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+        '14' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
     },
     'JP::KDDI' => {
         '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
