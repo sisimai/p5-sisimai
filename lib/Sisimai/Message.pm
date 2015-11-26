@@ -26,7 +26,8 @@ my $ToBeLoaded = [];
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 my @RFC3834Set = ( map { lc $_ } @{ Sisimai::RFC3834->headerlist } );
 my @HeaderList = ( 'from', 'to', 'date', 'subject', 'content-type', 'reply-to',
-                   'message-id', 'received', 'return-path', 'x-mailer' );
+                   'message-id', 'received', 'content-transfer-encoding', 
+                   'return-path', 'x-mailer' );
 my $MultiHeads = { 'received' => 1 };
 my $IgnoreList = { 'dkim-signature' => 1 };
 my $Indicators = { 
@@ -226,10 +227,34 @@ sub resolve {
                     }
                 }
             }
-        }
+        } # End of CONVERT_HEADER:
+
+        MIME_DECODE: {
+            # 3. Decode BASE64 Encoded message body
+            my $ctv = lc( $processing->{'header'}->{'content-type'} || '' );
+            my $cte = lc( $processing->{'header'}->{'content-transfer-encoding'} || '' );
+
+            if( $cte eq 'base64' || $cte eq 'quoted-printable' ) {
+                # Content-Transfer-Encoding: base64
+                # Content-Transfer-Encoding: quoted-printable
+                if( $ctv =~ m|text/plain;| ) {
+                    # Content-Type: text/plain; charset=UTF-8
+                    require Sisimai::MIME;
+
+                    if( $cte eq 'base64' ) {
+                        # Content-Transfer-Encoding: base64
+                        $bodystring = Sisimai::MIME->base64d( \$bodystring );
+
+                    } else {
+                        # Content-Transfer-Encoding: quoted-printable
+                        $bodystring = Sisimai::MIME->qprintd( \$bodystring );
+                    }
+                }
+            }
+        } # End of MIME_DECODE:
 
         REWRITE_BODY: {
-            # 3. Rewrite message body for detecting the bounce reason
+            # 4. Rewrite message body for detecting the bounce reason
             $bodystring .= $EndOfEmail;
             $methodargv  = { 
                 'mail' => $processing, 

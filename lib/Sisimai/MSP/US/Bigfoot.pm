@@ -69,8 +69,6 @@ sub scan {
     require Sisimai::Address;
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
-        $e =~ s{=\d+\z}{};
-
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
             if( $e =~ $Re1->{'begin'} ) {
