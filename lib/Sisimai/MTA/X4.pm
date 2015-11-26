@@ -24,6 +24,8 @@ my $Re0 = {
 my $Re1 = {
     'begin'  => qr{\A(?>
                      He/Her[ ]is[ ]not.+[ ]user
+                    |Hi[.][ ].+[ ]unable[ ]to[ ]deliver[ ]your[ ]message[ ]to[ ]
+                        the[ ]following[ ]addresses
                     |Su[ ]mensaje[ ]no[ ]pudo[ ]ser[ ]entregado
                     |This[ ]is[ ]the[ ](?:
                          machine[ ]generated[ ]message[ ]from[ ]mail[ ]service
