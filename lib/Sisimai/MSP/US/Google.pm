@@ -201,8 +201,6 @@ sub scan {
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
-        $e =~ s{=\d+\z}{};
-
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
             $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
@@ -286,17 +284,7 @@ sub scan {
                     # Technical details of temporary failure: 
                     $v->{'softbounce'} = $1 eq 'permanent' ? 0 : 1;
                 }
-
-                if( $e =~ m/=\z/ ) {
-                    # Google tried to deliver your message, but it was rejected by the recipient =
-                    # domain. We recommend contacting the other email provider for further inform=
-                    $e =~ s{=\z}{};
-                    $v->{'diagnosis'} .= $e;
-
-                } else {
-                    # No "=" character at the end of the line
-                    $v->{'diagnosis'} .= $e.' ';
-                }
+                $v->{'diagnosis'} .= $e.' ';
             }
         } # End of if: rfc822
 
