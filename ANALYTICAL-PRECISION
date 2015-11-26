@@ -17,7 +17,7 @@ MTA::MessagingServer ....   18/0021  1.0000  Oracle Communications Messaging Ser
 MTA::Notes ..............    0/0011  0.0000  Lotus Notes
 MTA::OpenSMTPD ..........    5/0023  0.2778  OpenSMTPD
 MTA::Postfix ............  161/0178  1.0000  Postfix
-MTA::Sendmail ...........  241/0226  0.9837  V8Sendmail: /usr/sbin/sendmail
+MTA::Sendmail ...........  242/0227  0.9837  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    6/0008  1.0000  WebSense SurfControl
 MTA::V5sendmail .........    0/0377  0.0000  Sendmail version 5
 MTA::X1 .................    0/0007  0.0000  Unknown MTA #1
@@ -26,7 +26,7 @@ MTA::X3 .................    0/0008  0.0000  Unknown MTA #3
 MTA::X4 .................    0/0027  0.0000  Unknown MTA #4 qmail clones
 MTA::X5 .................    2/0002  1.0000  Unknown MTA #5
 MTA::mFILTER ............    0/0009  0.0000  Digital Arts m-FILTER
-MTA::qmail ..............   51/0076  0.8226  qmail
+MTA::qmail ..............   50/0076  0.8065  qmail
 MSP::DE::EinsUndEins ....    0/0003  0.0000  1&1: http://www.1and1.de
 MSP::DE::GMX ............    0/0010  0.0000  GMX: http://www.gmx.net
 MSP::JP::Biglobe ........    5/0007  0.7143  BIGLOBE: http://www.biglobe.ne.jp
@@ -39,7 +39,7 @@ MSP::US::AmazonSES ......   18/0018  1.0000  AmazonSES(Sending): http://aws.amaz
 MSP::US::Aol ............   18/0021  1.0000  Aol Mail: http://www.aol.com
 MSP::US::Bigfoot ........    2/0002  1.0000  Bigfoot: http://www.bigfoot.com
 MSP::US::Facebook .......    3/0003  1.0000  Facebook: https://www.facebook.com
-MSP::US::Google .........   52/0057  1.0000  Google Gmail: https://mail.google.com
+MSP::US::Google .........   54/0058  0.9818  Google Gmail: https://mail.google.com
 MSP::US::Outlook ........   29/0035  1.0000  Microsoft Outlook.com: https://www.outlook.com/
 MSP::US::ReceivingSES ...    0/0007  0.0000  AmazonSES(Receiving): http://aws.amazon.com/ses/
 MSP::US::SendGrid .......    0/0012  0.0000  SendGrid: http://sendgrid.com/
@@ -50,5 +50,5 @@ ARF .....................    9/0050  0.2812  Abuse Feedback Reporting Format
 RFC3464 .................  116/0259  0.4774  Fallback Module for MTAs
 RFC3834 .................    0/0004  0.0000  Detector for auto replied message
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13p1    1044/2023  0.5161
- Sisimai 4.13.1           2023/2023  1.0000
+ bounceHammer 2.7.13p1    1046/2025  0.5165
+ Sisimai 4.13.2           2025/2025  1.0000
