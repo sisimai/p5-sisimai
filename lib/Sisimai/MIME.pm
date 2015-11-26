@@ -86,6 +86,36 @@ sub mimedecode {
     return $utf8decoded1;
 }
 
+sub qprintd {
+    # Decode MIME Quoted-Printable Encoded string
+    # @param               [String] argvs   MIME Encoded text
+    # @return              [String]         MIME Decoded text
+    my $class = shift;
+    my $argvs = shift // return undef;
+
+    return undef unless ref $argvs;
+    return undef unless ref $argvs eq 'SCALAR';
+    return MIME::QuotedPrint::decode( $$argvs );
+}
+
+sub base64d {
+    # Decode MIME BASE64 Encoded string
+    # @param               [String] argvs   MIME Encoded text
+    # @return              [String]         MIME-Decoded text
+    my $class = shift;
+    my $argvs = shift // return undef;
+    my $plain = undef;
+
+    return undef unless ref $argvs;
+    return undef unless ref $argvs eq 'SCALAR';
+
+    if( $$argvs =~ m|([+/=0-9A-Za-z\r\n]+)| ) {
+        # Decode BASE64
+        $plain = MIME::Base64::decode( $1 );
+    }
+    return $plain;
+}
+
 sub boundary {
     # Get boundary string
     # @param    [String]  argvs The value of Content-Type header
