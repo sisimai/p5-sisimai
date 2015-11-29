@@ -1,6 +1,7 @@
 package Sisimai::RFC3463;
 use strict;
 use warnings;
+use Sisimai::SMTP::Status;
 
 # http://www.ietf.org/rfc/rfc1893.txt
 # http://www.ietf.org/rfc/rfc3463.txt
@@ -357,16 +358,13 @@ sub status {
     #                           's': Standard code(default)
     # @return   [String]        D.S.N. or empty if the 1st argument is missing
     # @see      reason
+    # @deprecated use Sisimai::SMTP::Status->code() method instead
     my $class = shift;
-    my $rname = shift || return '';
+    my $rname = shift || '';
     my $btype = shift || 'p';
-    my $ctype = shift || 's';
-    my $codes = undef;
 
-    $btype = $btype eq 't' ? 'temporary' : 'permanent';
-    $codes = $ctype eq 'i' ? $InternalCode : $StandardCode;
-
-    return $codes->{ $btype }->{ $rname }->[0] || '';
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP::Status->code() instead.");
+    return Sisimai::SMTP::Status->code( $rname, $btype eq 't' ? 1 : 0 );
 }
 
 sub reason {
@@ -374,24 +372,12 @@ sub reason {
     # @param    [String] state  Status code(DSN)
     # @return   [String]        Reason name or empty if the first argument did
     #                           not match with values in Sisimai's reason list
+    # @deprecated use Sisimai::SMTP::Status->name() method instead
     my $class = shift;
-    my $state = shift || return '';
+    my $state = shift || '';
 
-    return '' unless $state =~ m{\A[45][.]\d[.]\d+\z};
-
-    my $reasonname = '';
-    my $softorhard = substr( $state, 0, 1 ) == 4 ? 'temporary' : 'permanent';
-    my $mappedcode = substr( $state, 4, 3 ) > 800 
-                        ? $InternalCode->{ $softorhard }
-                        : $StandardCode->{ $softorhard };
-
-    for my $r ( keys %$mappedcode ) {
-        # Search the status code
-        next unless grep { $state eq $_ } @{ $mappedcode->{ $r } };
-        $reasonname = $r;
-        last;
-    }
-    return $reasonname;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP::Status->name() instead.");
+    return Sisimai::SMTP::Status->name($state);
 }
 
 sub getdsn {
@@ -399,23 +385,12 @@ sub getdsn {
     # @param    [String] rtext  String including D.S.N.
     # @return   [String]        D.S.N. or empty string if the first agument did
     #                           not include D.S.N.
+    # @deprecated use Sisimai::SMTP::Status->find() method instead
     my $class = shift;
-    my $rtext = shift || return '';
+    my $rtext = shift || '';
 
-    my $deliverysn = '';
-    my $regularexp = [
-        qr/[ ]?[(][#]([45][.]\d[.]\d+)[)]?[ ]?/,    # #5.5.1
-        qr/\b\d{3}[-\s][#]?([45][.]\d[.]\d+)\b/,    # 550-5.1.1 OR 550 5.5.1
-        qr/\b([45][.]\d[.]\d+)\b/,                  # 5.5.1
-    ];
-
-    for my $e ( @$regularexp ) {
-        # Get the value of D.S.N. in the text
-        next unless $rtext =~ $e;
-        $deliverysn = $1;
-        last;
-    }
-    return $deliverysn;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP::Status->find() instead.");
+    return Sisimai::SMTP::Status->name($rtext);
 }
 
 sub is_softbounce {
@@ -424,41 +399,10 @@ sub is_softbounce {
     # @return   [Integer]        1: Soft bounce
     #                            0: Hard bounce
     #                           -1: May not be bounce ?
+    # @deprecated use Sisimai::SMTP->is_softbounce() method instead
     my $class = shift;
-    my $argv1 = shift || return -1;
-    my $value = -1;
-    my $first = -1;
-
-    if( $argv1 =~ m/\b([245])\d\d\b/ ) {
-        $first = $1;
-
-    } elsif( $argv1 =~ m/\b([245])[.][0-9][.]\d+\b/ ) {
-        $first = $1;
-    }
-
-    if( $first == 4 ) {
-        $value = 1;
-
-    } elsif( $first == 5 ) {
-        $value = 0;
-
-    } else {
-        # Check with regular expression
-        if( $argv1 =~ m/temporar/i ) {
-            # Temporary failure
-            $value = 1;
-
-        } elsif( $argv1 =~ m/permanent/i ) {
-            # Permanently failure
-            $value = 0;
-
-        } else {
-            # Did not decide
-            $value = -1;
-        }
-    }
-
-    return $value;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP::Status->is_softbounce() instead.");
+    return Sisimai::SMTP::Status->is_softbounce(shift);
 }
 
 1;
@@ -468,7 +412,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::RFC3463 - D.S.N. related utilities
+Sisimai::RFC3463 - D.S.N. related utilities (Obsolete)
 
 =head1 SYNOPSIS
 
@@ -482,6 +426,9 @@ Sisimai::RFC3463 - D.S.N. related utilities
 Sisimai::RFC3463 is utilities for getting D.S.N. value from error reason text,
 getting the reason from D.S.N. value, and getting D.S.N. from the text including
 D.S.N.
+
+This class has been obsoleted from Sisimai 4.14.0, use Sisimai::SMPT::Status
+module instead.
 
 =head1 CLASS METHODS
 

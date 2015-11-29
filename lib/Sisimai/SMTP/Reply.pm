@@ -1,7 +1,8 @@
-package Sisimai::RFC5321;
+package Sisimai::SMTP::Reply;
+use parent 'Sisimai::SMTP';
+use feature ':5.10';
 use strict;
 use warnings;
-use Sisimai::SMTP::Reply;
 
 # http://www.ietf.org/rfc/rfc5321.txt
 #   4.2.1.  Reply Code Severities and Theory
@@ -59,16 +60,19 @@ use Sisimai::SMTP::Reply;
 #            response, "No SMTP service here")
 #       555  MAIL FROM/RCPT TO parameters not recognized or not implemented
 #
-sub getrc {
-    # Get SMTP Reply Code from the given string
-    # @param    [String] rtext  String including SMTP Reply Code like 550
-    # @return   [String]        SMTP Reply Code or empty if the first argument
+sub find {
+    # Get an SMTP reply code from the given string
+    # @param    [String] argv1  String including SMTP reply code like 550
+    # @return   [String]        SMTP reply code or empty if the first argument
     #                           did not include SMTP Reply Code value
-    # @deprecated use Sisimai::SMTP::Reply->find() method instead
+    # @since v4.14.0
     my $class = shift;
+    my $argv1 = shift || return '';
+    my $value = '';
 
-    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP::Reply->find() instead.");
-    return Sisimai::SMTP::Reply->find(shift);
+    return ''   if $argv1 =~ m/X-Unix;/i;
+    $value = $1 if $argv1 =~ m/\b([45][0-5][0-9])\b/;
+    return $value;
 }
 
 1;
@@ -78,29 +82,27 @@ __END__
 
 =head1 NAME
 
-Sisimai::RFC5321 - SMTP Reply code related class (Obsolete)
+Sisimai::SMTP::Reply - SMTP reply code related class
 
 =head1 SYNOPSIS
 
-    use Sisimai::RFC5321;
-    print Sisimai::RFC5321->getrc('550 5.1.1 Unknown user');  # 550
+    use Sisimai::SMTP::Reply;
+    print Sisimai::SMTP::Rely->find('550 5.1.1 Unknown user');  # 550
 
 =head1 DESCRIPTION
 
-Sisimai::RFC5321 is utilities for getting SMTP Reply Code value from error 
-message text.
-
-This class has been obsoleted from Sisimai 4.14.0, use Sisimai::SMPT::Reply
-module instead.
+Sisimai::SMTP::Reply is utilities for getting SMTP reply code value from given
+error message text.
 
 =head1 CLASS METHODS
 
-=head2 C<B<getrc( I<String> )>>
+=head2 C<B<find(I<String>)>>
 
-C<getrc()> returns a SMTP Reply Code value.
+C<find()> returns an SMTP reply code value.
 
-    print Sisimai::RFC5321->getrc('5.0.0');                   # ''
-    print Sisimai::RFC5321->getrc('550 5.1.1 User unknown');  # 550
+    print Sisimai::SMTP::Reply->find('5.0.0');                  # ''
+    print Sisimai::SMTP::Reply->find('550 5.1.1 User unknown'); # 550
+    print Sisimai::SMTP::Reply->find('421 Delivery Expired');   # 421
 
 =head1 AUTHOR
 
