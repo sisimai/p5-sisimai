@@ -145,13 +145,19 @@ sub anotherone {
         }
 
         if( not $reasontext ) {
-            # Check the value of SMTP command
-            if( $commandtxt =~ m/\A(?:EHLO|HELO)\z/ ) {
-                # Rejected at connection or after EHLO|HELO
-                $reasontext = 'blocked';
+            # Check the value of Action: field, first
+            if( $argvs->action eq 'delayed' ) {
+                # Action: delayed
+                $reasontext = 'expired';
+
+            } else {
+                # Check the value of SMTP command
+                if( $commandtxt =~ m/\A(?:EHLO|HELO)\z/ ) {
+                    # Rejected at connection or after EHLO|HELO
+                    $reasontext = 'blocked';
+                }
             }
         }
-
     }
     return $reasontext;
 }
