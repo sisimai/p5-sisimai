@@ -35,11 +35,11 @@ sub true {
     return undef unless length $statuscode;
     return 1 if $argvs->reason eq $reasontext;
 
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
     my $diagnostic = $argvs->diagnosticcode // '';
     my $v = 0;
 
-    if( Sisimai::RFC3463->reason( $statuscode ) eq $reasontext ) {
+    if( Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext ) {
         # Delivery status code points C<exceedlimit>.
         # Status: 5.2.3
         # Diagnostic-Code: SMTP; 552 5.2.3 Message size exceeds fixed maximum message size

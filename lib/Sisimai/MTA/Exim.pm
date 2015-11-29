@@ -371,8 +371,8 @@ sub scan {
     }
 
     require Sisimai::String;
-    require Sisimai::RFC3463;
-    require Sisimai::RFC5321;
+    require Sisimai::SMTP::Reply;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -493,8 +493,8 @@ sub scan {
             #   Diagnostic-Code: smtp; 450 TEMPERROR: retry timeout exceeded
             # The value of "Status:" indicates permanent error but the value
             # of SMTP reply code in Diagnostic-Code: field is "TEMPERROR"!!!!
-            my $sv = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} ) || '';
-            my $rv = Sisimai::RFC5321->getrc( $e->{'diagnosis'} )  || '';
+            my $sv = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+            my $rv = Sisimai::SMTP::Reply->find( $e->{'diagnosis'} );
             my $s1 = 0; # First character of Status as integer
             my $r1 = 0; # First character of SMTP reply code as integer
             my $v1 = 0;
@@ -507,11 +507,11 @@ sub scan {
                     $r1 = substr( $rv, 0, 1 );
                     if( $r1 == 4 ) {
                         # Get the internal DSN(temporary error)
-                        $sv = Sisimai::RFC3463->status( $e->{'reason'}, 't', 'i' );
+                        $sv = Sisimai::SMTP::Status->code( $e->{'reason'}, 1 );
 
                     } elsif( $r1 == 5 ) {
                         # Get the internal DSN(permanent error)
-                        $sv = Sisimai::RFC3463->status( $e->{'reason'}, 'p', 'i' );
+                        $sv = Sisimai::SMTP::Status->code( $e->{'reason'}, 0 );
                     }
                 }
             }
@@ -542,12 +542,12 @@ sub scan {
                 # Neither Status nor SMTP reply code exist
                 if( $e->{'reason'} =~ m/\A(?:expired|mailboxfull)/ ) {
                     # Set pseudo DSN (temporary error)
-                    $sv = Sisimai::RFC3463->status( $e->{'reason'}, 't', 'i' );
+                    $sv = Sisimai::SMTP::Status->code( $e->{'reason'}, 1 );
                     $e->{'softbounce'} = 1;
 
                 } else {
                     # Set pseudo DSN (permanent error)
-                    $sv = Sisimai::RFC3463->status( $e->{'reason'}, 'p', 'i' );
+                    $sv = Sisimai::SMTP::Status->code( $e->{'reason'}, 0 );
                     $e->{'softbounce'} = 0;
                 }
             }

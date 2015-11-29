@@ -259,7 +259,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -296,7 +296,7 @@ sub scan {
 
         if( ! $e->{'status'} || $e->{'status'} =~ m/\d[.]0[.]0\z/ ) {
             # Get the status code from the respnse of remote MTA.
-            my $f = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+            my $f = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
             $e->{'status'} = $f if length $f;
         }
         $e->{'spec'}      = '' unless $e->{'spec'} =~ m/\A(?:SMTP|X-UNIX)\z/;

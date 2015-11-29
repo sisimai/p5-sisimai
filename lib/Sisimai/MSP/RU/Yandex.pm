@@ -199,7 +199,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -218,7 +218,7 @@ sub scan {
 
         if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
-            my $r = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+            my $r = Sisimai::SMTP::Status->getdsn( $e->{'diagnosis'} );
             $e->{'status'} = $r if length $r;
         }
 

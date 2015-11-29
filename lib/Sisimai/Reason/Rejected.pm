@@ -67,11 +67,11 @@ sub true {
     return undef unless length $statuscode;
     return 1 if $argvs->reason eq $reasontext;
 
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
     my $diagnostic = $argvs->diagnosticcode // '';
     my $v = 0;
 
-    if( Sisimai::RFC3463->reason( $statuscode ) eq $reasontext ) {
+    if( Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext ) {
         # Delivery status code points C<rejected>.
         $v = 1;
 

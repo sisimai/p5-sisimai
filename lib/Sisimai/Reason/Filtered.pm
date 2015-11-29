@@ -49,7 +49,7 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
     require Sisimai::Reason::UserUnknown;
     my $statuscode = $argvs->deliverystatus // '';
     my $commandtxt = $argvs->smtpcommand // '';
@@ -59,7 +59,7 @@ sub true {
     my $v = 0;
 
     $diagnostic = $argvs->diagnosticcode // '';
-    $tempreason = Sisimai::RFC3463->reason( $statuscode );
+    $tempreason = Sisimai::SMTP::Status->name( $statuscode );
     return 0 if $tempreason eq 'suspend';
 
     if( $tempreason eq $reasontext ) {

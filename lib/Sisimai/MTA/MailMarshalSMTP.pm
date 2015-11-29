@@ -176,7 +176,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -189,7 +189,7 @@ sub scan {
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
-        $e->{'status'}    = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'spec'}      = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
 

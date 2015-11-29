@@ -174,6 +174,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
+    require Sisimai::SMTP::Status;
 
     unless( $rfc822part =~ m/\bSubject:/ ) {
         # Set the value of $subjecttxt as a Subject if there is no original
@@ -192,7 +193,7 @@ sub scan {
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} || $diagnostic );
-        $e->{'status'}    = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

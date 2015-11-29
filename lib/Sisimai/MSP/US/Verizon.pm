@@ -304,7 +304,7 @@ sub scan {
     $rfc822part .= sprintf( "Subject: %s\n", $subjecttxt ) unless $rfc822part =~ m/\bSubject: /;
 
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -325,7 +325,7 @@ sub scan {
             last;
         }
 
-        $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
 

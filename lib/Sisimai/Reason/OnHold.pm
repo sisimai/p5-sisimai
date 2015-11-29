@@ -22,8 +22,8 @@ sub true  {
     return undef unless length $statuscode;
     return 1 if $argvs->reason eq $reasontext;
 
-    require Sisimai::RFC3463;
-    return 1 if Sisimai::RFC3463->reason( $statuscode ) eq $reasontext;
+    require Sisimai::SMTP::Status;
+    return 1 if Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext;
 }
 
 1;

@@ -47,7 +47,7 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
     my $reasontext = __PACKAGE__->text;
     my $tempreason = '';
@@ -55,7 +55,7 @@ sub true {
     my $v = 0;
 
     $diagnostic = $argvs->diagnosticcode // '';
-    $tempreason = Sisimai::RFC3463->reason( $statuscode ) if $statuscode;
+    $tempreason = Sisimai::SMTP::Status->name( $statuscode ) if $statuscode;
 
     if( $tempreason eq $reasontext ) {
         # Delivery status code points "mesgtoobig".
