@@ -61,7 +61,7 @@ sub get {
         }
     }
 
-    if( not $reasontext ) {
+    if( not $reasontext || $reasontext eq 'undefined' ) {
         # Bounce reason is not detected yet.
         while( 1 ) {
             # Check with other patterns
@@ -78,8 +78,11 @@ sub get {
             last;
         }
 
-        $reasontext ||= 'expired' if $argvs->action eq 'delayed';
-        $reasontext ||= 'onhold'  if length $argvs->diagnosticcode;
+        if( $reasontext eq 'undefined' || $reasontext eq '' ) {
+            # Action: delayed => "expired"
+            $reasontext ||= 'expired' if $argvs->action eq 'delayed';
+            $reasontext ||= 'onhold'  if length $argvs->diagnosticcode;
+        }
         $reasontext ||= 'undefined';
     }
 
@@ -108,11 +111,8 @@ sub anotherone {
         'SystemFull', 'NotAccept', 'MailerError',
     ];
 
-    require Sisimai::RFC3463;
-    for my $e ( 'temporary', 'permanent' ) {
-        $reasontext = Sisimai::RFC3463->reason( $statuscode, $e );
-        last if $reasontext;
-    }
+    require Sisimai::SMTP::Status;
+    $reasontext = Sisimai::SMTP::Status->name( $statuscode );
 
     if( $reasontext eq '' || $reasontext eq 'userunknown' ||
         grep { $reasontext eq $_ } @$RetryReasons ) {
@@ -145,13 +145,19 @@ sub anotherone {
         }
 
         if( not $reasontext ) {
-            # Check the value of SMTP command
-            if( $commandtxt =~ m/\A(?:EHLO|HELO)\z/ ) {
-                # Rejected at connection or after EHLO|HELO
-                $reasontext = 'blocked';
+            # Check the value of Action: field, first
+            if( $argvs->action eq 'delayed' ) {
+                # Action: delayed
+                $reasontext = 'expired';
+
+            } else {
+                # Check the value of SMTP command
+                if( $commandtxt =~ m/\A(?:EHLO|HELO)\z/ ) {
+                    # Rejected at connection or after EHLO|HELO
+                    $reasontext = 'blocked';
+                }
             }
         }
-
     }
     return $reasontext;
 }
@@ -163,7 +169,7 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
 
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     my $reasontext = '';
     my $statuscode = '';
@@ -176,7 +182,7 @@ sub match {
         'SystemFull', 'NotAccept', 'MailerError', 'NoRelaying', 'OnHold',
     ];
 
-    $statuscode = Sisimai::RFC3463->getdsn( $argv1 ) || '';
+    $statuscode = Sisimai::SMTP::Status->find( $argv1 );
     $typestring = uc( $1 ) if $argv1 =~ m/\A(SMTP|X-.+);/i;
 
     # Diagnostic-Code: SMTP; ... or empty value
@@ -199,7 +205,7 @@ sub match {
         }
         else {
             # Detect the bounce reason from "Status:" code
-            $reasontext = Sisimai::RFC3463->reason( $statuscode ) || 'undefined';
+            $reasontext = Sisimai::SMTP::Status->name( $statuscode ) || 'undefined';
         }
     }
 

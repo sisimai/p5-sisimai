@@ -182,7 +182,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -204,7 +204,7 @@ sub scan {
             last;
         }
 
-        $e->{'status'} =  Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        $e->{'status'} =  Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'spec'} ||= 'SMTP';
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }

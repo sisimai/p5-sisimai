@@ -182,7 +182,7 @@ sub scan {
     return undef unless $recipients;
 
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -202,7 +202,7 @@ sub scan {
             next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
 
-            my $s = Sisimai::RFC3463->status( $r, 'p', 'i' );
+            my $s = Sisimai::SMTP::Status->code( $r );
             $e->{'status'} = $s if length $s;
             last;
         }

@@ -203,7 +203,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -225,7 +225,7 @@ sub scan {
         if( $e->{'status'} =~ m/[45][.]0[.]0/ ) {
             # Get the value of D.S.N. from the error message or the value of
             # Diagnostic-Code header.
-            my $r = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+            my $r = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
             $e->{'status'} = $r if length $r;
         }
 
@@ -235,7 +235,7 @@ sub scan {
             if( ! $e->{'status'} || $e->{'status'} =~ m/[45][.]0[.]0/ ) {
                 # Set pseudo Status code value if the value of Status is not
                 # defined or 4.0.0 or 5.0.0.
-                my $r = Sisimai::RFC3463->status( 'expired', 'p', 'i' );
+                my $r = Sisimai::SMTP::Status->code('expired');
                 $e->{'status'} = $r if length $r;
             }
         } 

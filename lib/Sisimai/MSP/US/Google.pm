@@ -296,7 +296,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -343,13 +343,13 @@ sub scan {
             }
         }
 
-        $e->{'status'} = Sisimai::RFC3463->getdsn( $e->{'diagnosis'} );
+        $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
 
         if( $e->{'reason'} ) {
             # Set pseudo status code
             if( $e->{'status'} =~ m/\A[45][.][1-7][.][1-9]\z/ ) {
                 # Override bounce reason 
-                $e->{'reason'} = Sisimai::RFC3463->reason( $e->{'status'} );
+                $e->{'reason'} = Sisimai::SMTP::Status->name( $e->{'status'} );
 
             } 
         }

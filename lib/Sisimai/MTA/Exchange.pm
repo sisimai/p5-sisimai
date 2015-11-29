@@ -258,7 +258,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
 
@@ -279,7 +279,7 @@ sub scan {
             for my $r ( keys %$ErrorCodeTable ) {
                 next unless grep { $c eq $_ } @{ $ErrorCodeTable->{ $r } };
                 $e->{'reason'} = $r;
-                $s = Sisimai::RFC3463->status( $r, 'p', 'i' );
+                $s = Sisimai::SMTP::Status->code( $r );
                 $e->{'status'} = $s if length $s;
                 last;
             }

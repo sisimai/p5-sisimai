@@ -126,7 +126,7 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
     my $prematches = [ 'NoRelaying', 'Blocked', 'MailboxFull', 'HasMoved' ];
     my $matchother = 0;
     my $statuscode = $argvs->deliverystatus // '';
@@ -135,7 +135,7 @@ sub true {
     my $diagnostic = '';
     my $v = 0;
 
-    $tempreason = Sisimai::RFC3463->reason( $statuscode ) if $statuscode;
+    $tempreason = Sisimai::SMTP::Status->name( $statuscode ) if $statuscode;
     $diagnostic = $argvs->diagnosticcode // '';
     return 0 if $tempreason eq 'suspend';
 

@@ -42,14 +42,14 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
-    require Sisimai::RFC3463;
+    require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
     my $reasontext = __PACKAGE__->text;
     my $tempreason = '';
     my $diagnostic = '';
     my $v = 0;
 
-    $tempreason = Sisimai::RFC3463->reason( $statuscode ) if $statuscode;
+    $tempreason = Sisimai::SMTP::Status->name( $statuscode ) if $statuscode;
     $diagnostic = $argvs->diagnosticcode // '';
 
     if( $tempreason eq $reasontext ) {

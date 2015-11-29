@@ -6,9 +6,9 @@ use Class::Accessor::Lite;
 use Module::Load '';
 
 use Sisimai::Address;
-use Sisimai::RFC3463;
 use Sisimai::RFC5322;
-use Sisimai::RFC5321;
+use Sisimai::SMTP::Reply;
+use Sisimai::SMTP::Status;
 use Sisimai::String;
 use Sisimai::Reason;
 use Sisimai::Rhost;
@@ -100,7 +100,7 @@ sub new {
         'smtpcommand', 'feedbacktype', 'action', 'softbounce',
     );
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
-    $thing->{'replycode'} = Sisimai::RFC5321->getrc( $argvs->{'diagnosticcode'} );
+    $thing->{'replycode'} = Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
     $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
 
     return bless( $thing, __PACKAGE__ );
@@ -282,7 +282,7 @@ sub make {
             CHECK_DELIVERY_STATUS_VALUE: {
                 # Cleanup the value of "Diagnostic-Code:" header
                 $p->{'diagnosticcode'} =~ s/\s+$EndOfEmail//;
-                my $v = Sisimai::RFC3463->getdsn( $p->{'diagnosticcode'} );
+                my $v = Sisimai::SMTP::Status->find( $p->{'diagnosticcode'} );
                 if( $v =~ m/\A[45][.][1-9][.][1-9]\z/ ) {
                     # Use the DSN value in Diagnostic-Code:
                     $p->{'deliverystatus'} = $v;
@@ -315,7 +315,7 @@ sub make {
                 for my $v ( 'deliverystatus',  'diagnosticcode' ) {
                     # Set the value of softbounce
                     next unless length $p->{ $v };
-                    $o->softbounce( Sisimai::RFC3463->is_softbounce( $p->{ $v } ) );
+                    $o->softbounce( Sisimai::SMTP::Status->is_softbounce( $p->{ $v } ) );
                     last if $o->softbounce > -1;
                 }
                 $o->softbounce(-1) unless length $o->softbounce;
@@ -326,13 +326,13 @@ sub make {
                 my $pdsv = undef; # Pseudo delivery status value
                 my $torp = undef; # Temporary or Permanent
 
-                $torp = $o->softbounce == 1 ? 't' : 'p';
-                $pdsv = Sisimai::RFC3463->status( $o->reason, $torp, 'i' );
+                $torp = $o->softbounce == 1 ? 1 : 0;
+                $pdsv = Sisimai::SMTP::Status->code( $o->reason, $torp );
 
                 if( length $pdsv ) {
                     # Set the value of "deliverystatus" and "softbounce".
                     $o->deliverystatus( $pdsv );
-                    $o->softbounce( Sisimai::RFC3463->is_softbounce( $pdsv ) ) if $o->softbounce < 0;
+                    $o->softbounce( Sisimai::SMTP::Status->is_softbounce( $pdsv ) ) if $o->softbounce < 0;
                 }
             }
         } else {
