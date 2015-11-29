@@ -127,9 +127,9 @@ sub s3s4 {
 
     return $input if ref $input;
 
-    # "=?ISO-2022-JP?B?....?="<user@example.jp>
     # no space character between " and < .
-    $input =~ s/(.)"</$1" </;
+    $input =~ s/(.)"</$1" </;       # "=?ISO-2022-JP?B?....?="<user@example.jp>, 
+    $input =~ s/(.)[?]=</$1?= </;   # =?ISO-2022-JP?B?....?=<user@example.jp>
 
     my $canon = '';
     my @addrs = ();
