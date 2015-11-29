@@ -18,9 +18,11 @@ MAKE_TEST: {
 
     for my $e ( @$arerfc2606 ) {
         is $PackageName->is_reserved( $e ), 1, '->is_reserved('.$e.') = 1';
+        is $PackageName->is_reserved( 'neko@'.$e ), 1, '->is_reserved(neko@'.$e.') = 1';
     }
     for my $e ( @$notrfc2606 ) {
         is $PackageName->is_reserved( $e ), 0, '->is_reserved('.$e.') = 0';
+        is $PackageName->is_reserved( 'example.jp@'.$e ), 0, '->is_reserved(example.jp@'.$e.') = 0';
     }
 }
 
