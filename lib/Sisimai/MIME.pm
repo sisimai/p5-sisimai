@@ -166,22 +166,38 @@ Sisimai::MIME is MIME Utilities for C<Sisimai>.
 
 =head1 CLASS METHODS
 
-=head2 C<B<is_mimeencoded( I<Scalar Reference> )>>
+=head2 C<B<is_mimeencoded(I<Scalar Reference>)>>
 
 C<is_mimeencoded()> returns that the argument is MIME-Encoded string or not.
 
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
     my $v = Sisimai::MIME->is_mimeencoded( \$e );  # 1
 
-=head2 C<B<mimedecode( I<Array-Ref> )>>
+=head2 C<B<mimedecode(I<Array-Ref>)>>
 
 C<mimedecode()> is a decoder method for getting the original string from MIME
-Encoded string.
+Encoded string in email headers.
 
     my $r = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
     my $v = Sisimai::MIME->mimedecode( [ $r ] );
 
-=head2 C<B<boundary( I<String> )>>
+=head2 C<B<base64d(I<\String>)>>
+
+C<base64d> is a decoder method for getting the orinal string from MIME Base564
+encoded string.
+
+    my $r = '44Gr44KD44O844KT';
+    my $v = Sisimai::MIME->base64d(\$r);
+
+=head2 C<B<qprintd(I<\String>)>>
+
+C<qprintd> is a decoder method for getting the orinal string from MIME Quoted-
+printable encoded string.
+
+    my $r = '=4e=65=6b=6f';
+    my $v = Sisimai::MIME->qprintd(\$r);
+
+=head2 C<B<boundary(I<String>)>>
 
 C<boundary()> returns a boundary string from the value of Content-Type header.
 
