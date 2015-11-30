@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.13.2
+4.14.0
     - Issue #110, #122 Code for reading email files in a directory is improved
       and got faster than before: merged Pull-Request #123.
     - Fixed bug reported at issue #124: warning message: `use of uninitialized
@@ -10,6 +10,10 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       UNIX mbox in Sisimai::Mail::Mbox->read() method.
     - Merged Pull-Request #126, replace while(<$f>) with do {block for reading
       each email file in the directory at Sisimai::Mail::Maildir->read method.
+    - Merged Pull-Request #132, Resolve issue #127: Sisimai cannot parse a mail
+      which message body is MIME encoded. Thanks to @mrwushu.
+    - Issue #134, expiredSisimai::RFC3463 and Sisimai::RFC5321 have been obsoleted but
+      are not removed. Use Sisimai::SMTP::Status, Sisimai::SMTP::Reply instead. 
 
 4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
