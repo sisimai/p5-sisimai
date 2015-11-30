@@ -146,8 +146,8 @@ sub anotherone {
 
         if( not $reasontext ) {
             # Check the value of Action: field, first
-            if( $argvs->action eq 'delayed' ) {
-                # Action: delayed
+            if( $argvs->action =~ /\A(?:delayed|expired)/ ) {
+                # Action: delayed, expired
                 $reasontext = 'expired';
 
             } else {
