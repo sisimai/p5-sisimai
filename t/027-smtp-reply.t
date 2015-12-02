@@ -5,7 +5,7 @@ use Sisimai::SMTP::Reply;
 
 my $PackageName = 'Sisimai::SMTP::Reply';
 my $MethodNames = {
-    'class' => [ 'find', 'is_softbounce' ],
+    'class' => [ 'find' ],
     'object' => [],
 };
 
@@ -97,9 +97,6 @@ MAKE_TEST: {
         $v = $PackageName->find( $e );
         ok $e, 'Error message text = '.$e;
         like $v, qr/\A[2345][0-5][0-9]\z/, 'SMTP Reply Code = '.$v;
-
-        $v = $PackageName->is_softbounce( $e );
-        like $v, qr/\A[01]\z/, '->is_softbounce() returns '.$v;
     }
 }
 

@@ -5,7 +5,7 @@ use Sisimai::SMTP::Status;
 
 my $PackageName = 'Sisimai::SMTP::Status';
 my $MethodNames = {
-    'class' => [ 'code', 'name', 'find', 'is_softbounce' ],
+    'class' => [ 'code', 'name', 'find' ],
     'object' => [],
 };
 
@@ -63,12 +63,6 @@ MAKE_TEST: {
     for my $e ( @$smtperrors ) {
         $v = $PackageName->find( $e );
         like $v, qr/\A[45][.]\d[.]\d\z/, '->find() returns '.$v;
-    }
-
-    is $PackageName->is_softbounce(), -1, '->is_softbounce() = -1';
-    for my $e ( @$smtperrors ) {
-        $v = $PackageName->is_softbounce( $e );
-        like $v, qr/\A[01]\z/, '->is_softbounce() returns '.$v;
     }
 }
 
