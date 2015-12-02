@@ -3,6 +3,18 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+sub command {
+    # Detector for SMTP commands in a bounce mail message
+    # @private
+    # @return   [Hash] SMTP command regular expressions
+    return {
+        'helo' => qr/\b(?:HELO|EHLO)\b/,
+        'mail' => qr/\bMAIL F(?:ROM|rom)\b/,
+        'rcpt' => qr/\bRCPT T[Oo]\b/,
+        'data' => qr/\bDATA\b/,
+    };
+}
+
 sub is_softbounce {
     # Check softbounce or not
     # @param    [String] argv1  String including SMTP Status code

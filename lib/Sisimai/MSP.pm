@@ -5,7 +5,6 @@ use warnings;
 use Sisimai::MTA;
 use Sisimai::RFC5322;
 
-sub SMTPCOMMAND    { return Sisimai::MTA->SMTPCOMMAND    }
 sub EOM            { return Sisimai::MTA->EOM            }
 sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
 sub LONGFIELDS     { return Sisimai::MTA->LONGFIELDS     }

@@ -4,17 +4,6 @@ use strict;
 use warnings;
 use Sisimai::RFC5322;
 
-sub SMTPCOMMAND {
-    # Detector for SMTP commands in a bounce mail message
-    # @private
-    # @return   [Hash] SMTP command regular expressions
-    return {
-        'helo' => qr/\b(?:HELO|EHLO)\b/,
-        'mail' => qr/\bMAIL F(?:ROM|rom)\b/,
-        'rcpt' => qr/\bRCPT T[Oo]\b/,
-        'data' => qr/\bDATA\b/,
-    };
-}
 sub EOM {
     # End of email message as a sentinel for parsing bounce messages
     # @private

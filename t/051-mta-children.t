@@ -10,7 +10,7 @@ my $DebugOnlyTo = '';
 my $MethodNames = {
     'class' => [ 
         'description', 'headerlist', 'scan', 'pattern',
-        'SMTPCOMMAND', 'DELIVERYSTATUS', 'RFC822HEADERS',
+        'DELIVERYSTATUS', 'RFC822HEADERS',
     ],
     'object' => [],
 };

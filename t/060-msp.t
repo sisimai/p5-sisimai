@@ -7,7 +7,7 @@ my $PackageName = 'Sisimai::MSP';
 my $MethodNames = {
     'class' => [ 
         'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
-        'SMTPCOMMAND', 'DELIVERYSTATUS', 'LONGFIELDS', 'INDICATORS', 'RFC822HEADERS'
+        'DELIVERYSTATUS', 'LONGFIELDS', 'INDICATORS', 'RFC822HEADERS'
     ],
     'object' => [],
 };
@@ -23,7 +23,6 @@ MAKE_TEST: {
     isa_ok $PackageName->index, 'ARRAY';
     isa_ok $PackageName->headerlist, 'ARRAY';
     isa_ok $PackageName->pattern, 'HASH';
-    isa_ok $PackageName->SMTPCOMMAND, 'HASH';
     isa_ok $PackageName->DELIVERYSTATUS, 'HASH';
     isa_ok $PackageName->LONGFIELDS, 'ARRAY';
     isa_ok $PackageName->INDICATORS, 'HASH';
