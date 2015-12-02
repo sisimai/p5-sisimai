@@ -12,7 +12,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       each email file in the directory at Sisimai::Mail::Maildir->read method.
     - Merged Pull-Request #132, Resolve issue #127: Sisimai cannot parse a mail
       which message body is MIME encoded. Thanks to @mrwushu.
-    - Issue #134, expiredSisimai::RFC3463 and Sisimai::RFC5321 have been obsoleted but
+    - Issue #134, Sisimai::RFC3463 and Sisimai::RFC5321 have been obsoleted but
       are not removed. Use Sisimai::SMTP::Status, Sisimai::SMTP::Reply instead. 
 
 4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
