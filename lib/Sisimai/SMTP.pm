@@ -14,7 +14,7 @@ sub is_softbounce {
     my $argv1 = shift || return -1;
 
     my $classvalue = -1;
-    my $softorhard = -1;
+    my $softbounce = -1;
 
     if( $argv1 =~ m/\b([245])\d\d\b/ ) {
         # SMTP reply code: 550, 421
@@ -27,30 +27,30 @@ sub is_softbounce {
 
     if( $classvalue == 4 ) {
         # Soft bounce, Persistent transient error
-        $softorhard = 1;
+        $softbounce = 1;
 
     } elsif( $classvalue == 5 ) {
         # Hard bounce, Permanent error
-        $softorhard = 0;
+        $softbounce = 0;
 
     } else {
         # Check with regular expression
         if( $argv1 =~ m/(?:temporar|persistent)/i ) {
             # Temporary failure
-            $softorhard = 1;
+            $softbounce = 1;
 
         } elsif( $argv1 =~ m/permanent/i ) {
             # Permanently failure
-            $softorhard = 0;
+            $softbounce = 0;
 
         } else {
             # did not find information to decide that it is a soft bounce
             # or a hard bounce.
-            $softorhard = -1;
+            $softbounce = -1;
         }
     }
 
-    return $softorhard;
+    return $softbounce;
 }
 
 1;
