@@ -7,7 +7,7 @@ use MIME::QuotedPrint ();
 
 sub is_mimeencoded {
     # Check that the argument is MIME-Encoded string or not
-    # @param    [String] argvs  String to be checked
+    # @param    [String] argv1  String to be checked
     # @return   [Integer]       0: Not MIME encoded string
     #                           1: MIME encoded string
     my $class = shift;
@@ -88,28 +88,28 @@ sub mimedecode {
 
 sub qprintd {
     # Decode MIME Quoted-Printable Encoded string
-    # @param               [String] argvs   MIME Encoded text
-    # @return              [String]         MIME Decoded text
+    # @param    [String] argv1   MIME Encoded text
+    # @return   [String]         MIME Decoded text
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
 
-    return undef unless ref $argvs;
-    return undef unless ref $argvs eq 'SCALAR';
-    return MIME::QuotedPrint::decode( $$argvs );
+    return undef unless ref $argv1;
+    return undef unless ref $argv1 eq 'SCALAR';
+    return MIME::QuotedPrint::decode( $$argv1 );
 }
 
 sub base64d {
     # Decode MIME BASE64 Encoded string
-    # @param               [String] argvs   MIME Encoded text
-    # @return              [String]         MIME-Decoded text
+    # @param    [String] argv1   MIME Encoded text
+    # @return   [String]         MIME-Decoded text
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv1 = shift // return undef;
     my $plain = undef;
 
-    return undef unless ref $argvs;
-    return undef unless ref $argvs eq 'SCALAR';
+    return undef unless ref $argv1;
+    return undef unless ref $argv1 eq 'SCALAR';
 
-    if( $$argvs =~ m|([+/=0-9A-Za-z\r\n]+)| ) {
+    if( $$argv1 =~ m|([+/=0-9A-Za-z\r\n]+)| ) {
         # Decode BASE64
         $plain = MIME::Base64::decode( $1 );
     }
@@ -118,7 +118,7 @@ sub base64d {
 
 sub boundary {
     # Get boundary string
-    # @param    [String]  argvs The value of Content-Type header
+    # @param    [String]  argv1 The value of Content-Type header
     # @param    [Integer] start -1: boundary string itself
     #                            0: Start of boundary
     #                            1: End of boundary
@@ -131,7 +131,7 @@ sub boundary {
     if( $argv1 =~ m/\bboundary=([^ ]+)/ ) {
         # Content-Type: multipart/mixed; boundary=Apple-Mail-5--931376066
         # Content-Type: multipart/report; report-type=delivery-status;
-	    #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"
+        #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"
         $value =  $1;
         $value =~ y/"'//d;
     }
