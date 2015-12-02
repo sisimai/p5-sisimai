@@ -127,6 +127,7 @@ sub make {
 
     return undef unless $messageobj->ds;
     return undef unless $messageobj->rfc822;
+    require Sisimai::SMTP;
 
     # Decide the order of email headers: user specified or system default.
     if( ref $givenorder eq 'HASH' && scalar keys %$givenorder ) {
@@ -315,7 +316,7 @@ sub make {
                 for my $v ( 'deliverystatus',  'diagnosticcode' ) {
                     # Set the value of softbounce
                     next unless length $p->{ $v };
-                    $o->softbounce( Sisimai::SMTP::Status->is_softbounce( $p->{ $v } ) );
+                    $o->softbounce( Sisimai::SMTP->is_softbounce( $p->{ $v } ) );
                     last if $o->softbounce > -1;
                 }
                 $o->softbounce(-1) unless length $o->softbounce;
@@ -332,7 +333,7 @@ sub make {
                 if( length $pdsv ) {
                     # Set the value of "deliverystatus" and "softbounce".
                     $o->deliverystatus( $pdsv );
-                    $o->softbounce( Sisimai::SMTP::Status->is_softbounce( $pdsv ) ) if $o->softbounce < 0;
+                    $o->softbounce( Sisimai::SMTP->is_softbounce( $pdsv ) ) if $o->softbounce < 0;
                 }
             }
         } else {

@@ -401,8 +401,9 @@ sub is_softbounce {
     #                           -1: May not be bounce ?
     # @deprecated use Sisimai::SMTP->is_softbounce() method instead
     my $class = shift;
-    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP::Status->is_softbounce() instead.");
-    return Sisimai::SMTP::Status->is_softbounce(shift);
+    require Sisimai::SMTP;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP->is_softbounce() instead.");
+    return Sisimai::SMTP->is_softbounce(shift);
 }
 
 1;
