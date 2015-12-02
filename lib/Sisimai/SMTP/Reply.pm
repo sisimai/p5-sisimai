@@ -1,5 +1,4 @@
 package Sisimai::SMTP::Reply;
-use parent 'Sisimai::SMTP';
 use feature ':5.10';
 use strict;
 use warnings;
