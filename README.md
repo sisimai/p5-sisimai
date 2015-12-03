@@ -342,7 +342,7 @@ Other Information | その他の情報
 Related Sites | 関連サイト
 --------------------------
 
-* __http://libsisimai.org/__ | [Sisimai — A successor to bounceHammer, Library to parse error mails](http://libsisimai.org/)
+* __libsisimai.org__ | [Sisimai — A successor to bounceHammer, Library to parse error mails](http://libsisimai.org/)
 * __GitHub__ | [github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 
