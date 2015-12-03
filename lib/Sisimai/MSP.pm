@@ -23,21 +23,30 @@ sub SMTPCOMMAND {
     warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP->command() instead.");
     return Sisimai::SMTP->command;
 }
-sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
-sub LONGFIELDS     { return Sisimai::MTA->LONGFIELDS     }
-sub INDICATORS     { return Sisimai::MTA->INDICATORS     }
-sub RFC822HEADERS { 
-    # Grouped RFC822 headers
+
+sub LONGFIELDS {
+    # Fields that might be long
+    # @return   [Hash] Long filed(email header) list
     # @private
     # @deprecated
-    # @param    [String] group  RFC822 Header group name
-    # @return   [Array,Hash]    RFC822 Header list
-    my $class = shift;
-    my $group = shift // return [ keys %{ Sisimai::RFC5322->HEADERFIELDS } ];
-    my $index = Sisimai::RFC5322->HEADERFIELDS( $group );
-    return $index;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::RFC5322->LONGFIELDS() instead.");
+    return Sisimai::RFC5322->LONGFIELDS;
 }
 
+sub RFC822HEADERS { 
+    # Grouped RFC822 headers
+    # @param    [String] group  RFC822 Header group name
+    # @return   [Array,Hash]    RFC822 Header list
+    # @private
+    # @deprecated
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::RFC5322->HEADERFIELDS() instead.");
+    my $class = shift;
+    my $group = shift // return [ keys %{ Sisimai::RFC5322->HEADERFIELDS } ];
+    return Sisimai::RFC5322->HEADERFIELDS( $group );
+}
+
+sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
+sub INDICATORS     { return Sisimai::MTA->INDICATORS     }
 sub smtpagent      { return Sisimai::MTA->smtpagent      }
 sub description    { return '' }
 sub headerlist     { return [] }

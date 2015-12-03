@@ -8,10 +8,7 @@ use Module::Load;
 
 my $DebugOnlyTo = '';
 my $MethodNames = {
-    'class' => [ 
-        'description', 'headerlist', 'scan', 'pattern',
-        'DELIVERYSTATUS', 'RFC822HEADERS',
-    ],
+    'class' => [ 'description', 'headerlist', 'scan', 'pattern', 'DELIVERYSTATUS' ],
     'object' => [],
 };
 my $R = {

@@ -7,7 +7,7 @@ my $PackageName = 'Sisimai::MTA';
 my $MethodNames = {
     'class' => [ 
         'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
-        'DELIVERYSTATUS', 'LONGFIELDS', 'INDICATORS', 'RFC822HEADERS'
+        'DELIVERYSTATUS', 'INDICATORS',
     ],
     'object' => [],
 };
@@ -24,10 +24,6 @@ MAKE_TEST: {
     isa_ok $PackageName->headerlist, 'ARRAY';
     isa_ok $PackageName->pattern, 'HASH';
     isa_ok $PackageName->DELIVERYSTATUS, 'HASH';
-    isa_ok $PackageName->LONGFIELDS, 'ARRAY';
     isa_ok $PackageName->INDICATORS, 'HASH';
-    isa_ok $PackageName->RFC822HEADERS, 'ARRAY';
-    isa_ok $PackageName->RFC822HEADERS('date'), 'ARRAY';
-    isa_ok $PackageName->RFC822HEADERS('neko'), 'HASH';
 }
 done_testing;

@@ -22,6 +22,39 @@ sub SMTPCOMMAND {
     warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP->command() instead.");
     return Sisimai::SMTP->command;
 }
+
+sub LONGFIELDS {
+    # Fields that might be long
+    # @return   [Hash] Long filed(email header) list
+    # @private
+    # @deprecated
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::RFC5322->LONGFIELDS() instead.");
+    return Sisimai::RFC5322->LONGFIELDS;
+}
+
+sub RFC822HEADERS { 
+    # Grouped RFC822 headers
+    # @param    [String] group  RFC822 Header group name
+    # @return   [Array,Hash]    RFC822 Header list
+    # @private
+    # @deprecated
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::RFC5322->HEADERFIELDS() instead.");
+    my $class = shift;
+    my $group = shift // return [ keys %{ Sisimai::RFC5322->HEADERFIELDS } ];
+    return Sisimai::RFC5322->HEADERFIELDS( $group );
+}
+
+sub INDICATORS {
+    # Flags for position variable for
+    # @private
+    # @return   [Hash] Position flag data
+    # @since    v4.13.0
+    return {
+        'deliverystatus' => ( 1 << 1 ),
+        'message-rfc822' => ( 1 << 2 ),
+    };
+}
+
 sub DELIVERYSTATUS {
     # Data structure for parsed bounce messages
     # @private
@@ -41,37 +74,6 @@ sub DELIVERYSTATUS {
         'recipient'    => '',   # The value of Final-Recipient header
         'softbounce'   => '',   # Soft bounce or not
         'feedbacktype' => '',   # FeedBack Type
-    };
-}
-
-sub LONGFIELDS {
-    # Fields that might be long
-    # @private
-    # @deprecated
-    # @return   [Hash] Long filed(email header) list
-    return [ keys %{ Sisimai::RFC5322->LONGFIELDS } ];
-}
-
-sub RFC822HEADERS { 
-    # Grouped RFC822 headers
-    # @private
-    # @deprecated
-    # @param    [String] group  RFC822 Header group name
-    # @return   [Array,Hash]    RFC822 Header list
-    my $class = shift;
-    my $group = shift // return [ keys %{ Sisimai::RFC5322->HEADERFIELDS } ];
-    my $index = Sisimai::RFC5322->HEADERFIELDS( $group );
-    return $index;
-}
-
-sub INDICATORS {
-    # Flags for position variable for
-    # @private
-    # @return   [Hash] Position flag data
-    # @since    v4.13.0
-    return {
-        'deliverystatus' => ( 1 << 1 ),
-        'message-rfc822' => ( 1 << 2 ),
     };
 }
 
