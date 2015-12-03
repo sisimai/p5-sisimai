@@ -57,7 +57,7 @@ sub new {
 
         if( length $addr1 ) {
             # The email address is VERP or alias
-            my @addrL = split( '@', $addr1 );
+            my @addrs = split( '@', $addr1 );
             if( $alias ) {
                 # The email address is an alias
                 $thing->{'alias'} = $addr0;
@@ -66,8 +66,8 @@ sub new {
                 # The email address is a VERP
                 $thing->{'verp'}  = $addr0;
             }
-            $thing->{'user'} = $addrL[0];
-            $thing->{'host'} = $addrL[1];
+            $thing->{'user'} = $addrs[0];
+            $thing->{'host'} = $addrs[1];
 
         } else {
             # The email address is neither VERP nor alias.
@@ -92,9 +92,7 @@ sub parse {
     #   parse( [ 'Neko <neko@example.cat>' ] )  #=> [ 'neko@example.cat' ]
     my $class = shift;
     my $argvs = shift // return undef;
-    my $email = undef;
     my $addrs = [];
-
     return undef unless ref( $argvs ) eq 'ARRAY';
 
     PARSE_ARRAY: for my $e ( @$argvs ) {
