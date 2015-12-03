@@ -6,13 +6,21 @@ use Sisimai::RFC5322;
 
 sub EOM {
     # End of email message as a sentinel for parsing bounce messages
+    # @return   [String] Fixed length string like a constant
     # @private
     # @deprecated
-    # @return   [String] Fixed length string like a constant
-    my $class = shift;
-    my $klass = 'Sisimai::String';
-    warn sprintf( "***warning: %s->EOM deprecated method. Use %s->EOM() instead.", $class, $klass );
-    return '__END_OF_EMAIL_MESSAGE__';
+    require Sisimai::String;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::String->EOM() instead.");
+    return Sisimai::String->EOM;
+}
+sub SMTPCOMMAND {
+    # Detector for SMTP commands in a bounce mail message
+    # @return   [Hash] SMTP command regular expressions
+    # @private
+    # @deprecated
+    require Sisimai::SMTP;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP->command() instead.");
+    return Sisimai::SMTP->command;
 }
 sub DELIVERYSTATUS {
     # Data structure for parsed bounce messages

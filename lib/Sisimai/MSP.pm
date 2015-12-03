@@ -5,7 +5,24 @@ use warnings;
 use Sisimai::MTA;
 use Sisimai::RFC5322;
 
-sub EOM            { return Sisimai::MTA->EOM            }
+sub EOM {
+    # End of email message as a sentinel for parsing bounce messages
+    # @return   [String] Fixed length string like a constant
+    # @private
+    # @deprecated
+    require Sisimai::String;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::String->EOM() instead.");
+    return Sisimai::String->EOM;
+}
+sub SMTPCOMMAND {
+    # Detector for SMTP commands in a bounce mail message
+    # @return   [Hash] SMTP command regular expressions
+    # @private
+    # @deprecated
+    require Sisimai::SMTP;
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP->command() instead.");
+    return Sisimai::SMTP->command;
+}
 sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
 sub LONGFIELDS     { return Sisimai::MTA->LONGFIELDS     }
 sub INDICATORS     { return Sisimai::MTA->INDICATORS     }
