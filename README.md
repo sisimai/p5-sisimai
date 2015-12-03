@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/azumakuniyuki/p5-Sisimai/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/azumakuniyuki/p5-Sisimai.svg?branch=master)](https://travis-ci.org/azumakuniyuki/p5-Sisimai) 
 [![Coverage Status](https://img.shields.io/coveralls/azumakuniyuki/p5-Sisimai.svg)](https://coveralls.io/r/azumakuniyuki/p5-Sisimai)
 
@@ -156,8 +157,8 @@ and Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 9000 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 157700 tests|
+| LOC:Source lines of code                       | 18200 lines   | 9100 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 158500 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | Available     | Contact Us  |
 
@@ -183,8 +184,8 @@ and Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 9000行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 157700件    |
+| LOC:ソースコードの行数                         | 18200行       | 9100行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 158500件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 提供中        | 問合せ      |
 
