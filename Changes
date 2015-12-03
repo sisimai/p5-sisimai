@@ -14,6 +14,11 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       which message body is MIME encoded. Thanks to @mrwushu.
     - Issue #134, Sisimai::RFC3463 and Sisimai::RFC5321 have been obsoleted but
       are not removed. Use Sisimai::SMTP::Status, Sisimai::SMTP::Reply instead. 
+    - Sisimai::MTA->SMTPCOMMAND has been obsoleted. Use Sisimai::SMTP->command
+      instead, issue #136.
+    - Sisimai::MTA->LONGFIELDS and Sisimai::MTA->RFC822HEADERS are obsoleted.
+      Use Sisimai::RFC5322->LONGFIELDS() and Sisimai::RFC5322->HEADERFIELDS()
+      instead.
 
 4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
