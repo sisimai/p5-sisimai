@@ -116,7 +116,7 @@ sub parse {
 
 sub s3s4 {
     # Runs like ruleset 3,4 of sendmail.cf
-    # @param    [String] email  Text including an email address
+    # @param    [String] input  Text including an email address
     # @return   [String]        Email address without comment, brackets
     # @example  Parse email address
     #   s3s4( '<neko@example.cat>' ) #=> 'neko@example.cat'
@@ -175,7 +175,7 @@ sub s3s4 {
 
 sub expand_verp {
     # Expand VERP: Get the original recipient address from VERP
-    # @param    [String] verp   VERP Address
+    # @param    [String] email  VERP Address
     # @return   [String]        Email address
     # @example  Expand VERP address
     #   expand_verp('bounce+neko=example.jp@example.org') #=> 'neko@example.jp'
