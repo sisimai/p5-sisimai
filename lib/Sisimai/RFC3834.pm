@@ -89,10 +89,7 @@ sub scan {
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
     my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
     my $blanklines = 0;     # (Integer) Counter for countinuous blank lines
-
-    my $v = undef;
-    my $p = '';
-    $v = $dscontents->[ -1 ];
+    my $v = $dscontents->[ -1 ];
 
     RECIPIENT_ADDRESS: {
         # Try to get the address of the recipient
