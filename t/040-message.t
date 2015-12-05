@@ -5,14 +5,16 @@ use Sisimai::Message;
 
 my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
-    'class' => [ 'new', 'resolve', 'rewrite', 'ENDOFEMAIL' ],
+    'class' => [ 
+        'new', 'resolve', 'rewrite', 'divideup', 'headers', 'takeapart',
+        'makeorder',
+    ],
     'object' => [ 'from', 'header', 'ds', 'rfc822' ],
 };
 my $SampleEmail = './eg/mbox-as-a-sample';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
-is $PackageName->ENDOFEMAIL, '__END_OF_EMAIL_MESSAGE__';
 
 MAKE_TEST: {
     use IO::File;
