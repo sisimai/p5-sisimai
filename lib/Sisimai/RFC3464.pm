@@ -349,7 +349,7 @@ sub scan {
             }
             last unless $match;
 
-            my $RxSkip = qr{(?>
+            my $ReSkip = qr{(?>
                  \A[-]+=
                 |\A[\s\t]+\z
                 |\A\s*--
@@ -362,7 +362,7 @@ sub scan {
                 )
             }xi;
 
-            my $RxEnd  = qr{(?:
+            my $ReStop  = qr{(?:
                  \AContent-Type:[ ]message/delivery-status
                 |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
                 |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
@@ -384,7 +384,7 @@ sub scan {
                 )
             }xi;
 
-            my $RxAddr = qr{(?:
+            my $ReAddr = qr{(?:
                  \A\s*
                 |\A["].+["]\s*
                 |\A\s*Recipient:\s*
@@ -418,13 +418,13 @@ sub scan {
                 # Get the recipient's email address and error messages.
                 last if $e =~ $Re1->{'endof'};
                 last if $e =~ $Re1->{'rfc822'};
-                last if $e =~ $RxEnd;
+                last if $e =~ $ReStop;
 
                 next unless length $e;
-                next if $e =~ $RxSkip;
+                next if $e =~ $ReSkip;
                 next if $e =~ m/\A[*]/;
 
-                if( $e =~ $RxAddr ) {
+                if( $e =~ $ReAddr ) {
                     # May be an email address
                     my $x = $b->{'recipient'} || '';
                     my $y = Sisimai::Address->s3s4( $1 );
