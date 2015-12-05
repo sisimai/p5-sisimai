@@ -34,6 +34,9 @@ git-diff:
 git-branch:
 	$(GIT) branch -a
 
+git-branch-delete:
+	$(GIT) branch --merged | grep '^ ' | grep -v 'master' | xargs $(GIT) branch -d
+
 git-commit-amend:
 	$(GIT) commit --amend
 
