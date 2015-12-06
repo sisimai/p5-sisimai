@@ -182,7 +182,6 @@ sub by {
     # Get regular expression patterns for specified field
     # @param    [String] group  Group name for "ORDER BY"
     # @return   [Hash]          Pattern table for the group
-    # @private
     # @since v4.13.2
     my $class = shift;
     my $group = shift || return undef;
@@ -206,7 +205,6 @@ sub default {
 sub another {
     # Make MTA/MSP module list as a spare
     # @return   [Array] Ordered module list
-    # @private
     # @since v4.13.1
     return [ 
         @$AnotherList1, @$AnotherList2, @$AnotherList3, 
@@ -217,7 +215,6 @@ sub another {
 sub headers {
     # Make email header list in each MTA module
     # @return   [Hash] Header list to be parsed
-    # @private
     # @since v4.13.1
     my $class = shift;
     my $order = __PACKAGE__->default;
