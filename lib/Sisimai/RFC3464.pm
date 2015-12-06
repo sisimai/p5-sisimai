@@ -339,112 +339,111 @@ sub scan {
 
     BODY_PARSER_FOR_FALLBACK: {
         # Fallback, parse entire message body
-        unless( $recipients ) {
-            # Failed to get a recipient address at code above
-            $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
-            $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-            if( defined $mhead->{'return-path'} ) {
-                # Check the value of Return-Path of the message
-                $match ||= 1 if $mhead->{'return-path'} =~ $Re0->{'return-path'};
-            }
-            last unless $match;
+        last if $recipients;
 
-            my $ReSkip = qr{(?>
-                 \A[-]+=
-                |\A[\s\t]+\z
-                |\A\s*--
-                |\A\s+[=]\d+
-                |\AHi[ ][!]
-                |Content-(?:Description|Disposition|Transfer-Encoding|Type):[ ]
-                |(?:name|charset)=
-                |--\z
-                |:[ ]--------
-                )
-            }xi;
+        # Failed to get a recipient address at code above
+        $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
+        $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+        if( defined $mhead->{'return-path'} ) {
+            # Check the value of Return-Path of the message
+            $match ||= 1 if $mhead->{'return-path'} =~ $Re0->{'return-path'};
+        }
+        last unless $match;
 
-            my $ReStop  = qr{(?:
-                 \AContent-Type:[ ]message/delivery-status
-                |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
-                |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
-                |\AReceived:\s*
-                |\AReceived-From-MTA:\s*
-                |\AReporting-MTA:\s*
-                |\AReturn-Path:\s*
-                |\AA[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
-                |Attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
-                |Below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
-                |Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
-                |Message[ ]contains[ ].+[ ]file[ ]attachments
-                |Message[ ]text[ ]follows:[ ]
-                |Original[ ]message[ ]follows
-                |The[ ]attachment[ ]contains[ ]the[ ]original[ ]mail[ ]headers
-                |The[ ]first[ ]\d+[ ]lines[ ]
-                |Unsent[ ]Message[ ]below
-                |Your[ ]message[ ]reads[ ][(]in[ ]part[)]:
-                )
-            }xi;
+        my $re_skip = qr{(?>
+             \A[-]+=
+            |\A[\s\t]+\z
+            |\A\s*--
+            |\A\s+[=]\d+
+            |\AHi[ ][!]
+            |Content-(?:Description|Disposition|Transfer-Encoding|Type):[ ]
+            |(?:name|charset)=
+            |--\z
+            |:[ ]--------
+            )
+        }xi;
 
-            my $ReAddr = qr{(?:
-                 \A\s*
-                |\A["].+["]\s*
-                |\A\s*Recipient:\s*
-                |\A[ ]*Address:[ ]
-                |addressed[ ]to[ ]
-                |Could[ ]not[ ]be[ ]delivered[ ]to:[ ]
-                |delivered[ ]to[ ]+
-                |delivery[ ]failed:[ ]
-                |Did[ ]not[ ]reach[ ]the[ ]following[ ]recipient:[ ]
-                |Error-for:[ ]+
-                |Failed[ ]Recipient:[ ]
-                |Failed[ ]to[ ]deliver[ ]to[ ]
-                |generated[ ]from[ ]
-                |Intended[ ]recipient:[ ]
-                |Mailbox[ ]is[ ]full:[ ]
-                |RCPT[ ]To:
-                |SMTP[ ]Server[ ][<].+[>][ ]rejected[ ]recipient[ ]
-                |The[ ]following[ ]recipients[ ]returned[ ]permanent[ ]errors:[ ]
-                |The[ ]following[ ]message[ ]to[ ]
-                |Unknown[ ]User:[ ]
-                |undeliverable[ ]to[ ]
-                |Undeliverable[ ]Address:[ ]*
-                |You[ ]sent[ ]mail[ ]to[ ]
-                |Your[ ]message[ ]to[ ]
-                )
-                ['"]?[<]?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
-            }xi;
+        my $re_stop  = qr{(?:
+             \AContent-Type:[ ]message/delivery-status
+            |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
+            |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
+            |\AReceived:\s*
+            |\AReceived-From-MTA:\s*
+            |\AReporting-MTA:\s*
+            |\AReturn-Path:\s*
+            |\AA[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
+            |Attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
+            |Below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
+            |Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
+            |Message[ ]contains[ ].+[ ]file[ ]attachments
+            |Message[ ]text[ ]follows:[ ]
+            |Original[ ]message[ ]follows
+            |The[ ]attachment[ ]contains[ ]the[ ]original[ ]mail[ ]headers
+            |The[ ]first[ ]\d+[ ]lines[ ]
+            |Unsent[ ]Message[ ]below
+            |Your[ ]message[ ]reads[ ][(]in[ ]part[)]:
+            )
+        }xi;
 
-            my $b = $dscontents->[ -1 ];
-            for my $e ( split( "\n", $$mbody ) ) {
-                # Get the recipient's email address and error messages.
-                last if $e =~ $Re1->{'endof'};
-                last if $e =~ $Re1->{'rfc822'};
-                last if $e =~ $ReStop;
+        my $re_addr = qr{(?:
+             \A\s*
+            |\A["].+["]\s*
+            |\A\s*Recipient:\s*
+            |\A[ ]*Address:[ ]
+            |addressed[ ]to[ ]
+            |Could[ ]not[ ]be[ ]delivered[ ]to:[ ]
+            |delivered[ ]to[ ]+
+            |delivery[ ]failed:[ ]
+            |Did[ ]not[ ]reach[ ]the[ ]following[ ]recipient:[ ]
+            |Error-for:[ ]+
+            |Failed[ ]Recipient:[ ]
+            |Failed[ ]to[ ]deliver[ ]to[ ]
+            |generated[ ]from[ ]
+            |Intended[ ]recipient:[ ]
+            |Mailbox[ ]is[ ]full:[ ]
+            |RCPT[ ]To:
+            |SMTP[ ]Server[ ][<].+[>][ ]rejected[ ]recipient[ ]
+            |The[ ]following[ ]recipients[ ]returned[ ]permanent[ ]errors:[ ]
+            |The[ ]following[ ]message[ ]to[ ]
+            |Unknown[ ]User:[ ]
+            |undeliverable[ ]to[ ]
+            |Undeliverable[ ]Address:[ ]*
+            |You[ ]sent[ ]mail[ ]to[ ]
+            |Your[ ]message[ ]to[ ]
+            )
+            ['"]?[<]?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
+        }xi;
 
-                next unless length $e;
-                next if $e =~ $ReSkip;
-                next if $e =~ m/\A[*]/;
+        my $b = $dscontents->[ -1 ];
+        for my $e ( split( "\n", $$mbody ) ) {
+            # Get the recipient's email address and error messages.
+            last if $e =~ $Re1->{'endof'};
+            last if $e =~ $Re1->{'rfc822'};
+            last if $e =~ $re_stop;
 
-                if( $e =~ $ReAddr ) {
-                    # May be an email address
-                    my $x = $b->{'recipient'} || '';
-                    my $y = Sisimai::Address->s3s4( $1 );
+            next unless length $e;
+            next if $e =~ $re_skip;
+            next if $e =~ m/\A[*]/;
 
-                    if( length $x && $x ne $y ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
-                        $b = $dscontents->[ -1 ];
-                    }
-                    $b->{'recipient'} = $y;
-                    $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
-                    $recipients++;
+            if( $e =~ $re_addr ) {
+                # May be an email address
+                my $x = $b->{'recipient'} || '';
+                my $y = Sisimai::Address->s3s4( $1 );
 
-                } elsif( $e =~ m/[(]expanded[ ]from:[ ]([^@]+[@][^@]+)[)]/ ) {
-                    # (expanded from: neko@example.jp)
-                    $b->{'alias'} = Sisimai::Address->s3s4( $1 );
-
+                if( length $x && $x ne $y ) {
+                    # There are multiple recipient addresses in the message body.
+                    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+                    $b = $dscontents->[ -1 ];
                 }
-                $b->{'diagnosis'} .= ' '.$e;
+                $b->{'recipient'} = $y;
+                $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
+                $recipients++;
+
+            } elsif( $e =~ m/[(]expanded[ ]from:[ ]([^@]+[@][^@]+)[)]/ ) {
+                # (expanded from: neko@example.jp)
+                $b->{'alias'} = Sisimai::Address->s3s4( $1 );
             }
+            $b->{'diagnosis'} .= ' '.$e;
         }
     }
 
