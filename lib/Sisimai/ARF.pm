@@ -272,7 +272,7 @@ sub scan {
         $commondata->{'diagnosis'} .= ' '.$arfheaders->{'authres'}
     }
 
-    unless ( $recipients ) {
+    unless( $recipients ) {
         # Insert pseudo recipient address when there is no valid recipient
         # address in the message.
         $dscontents->[ -1 ]->{'recipient'} = Sisimai::Address->undisclosed('r');
@@ -287,7 +287,7 @@ sub scan {
         }
     }
 
-    if ( $mhead->{'subject'} =~ /complaint about message from ((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))/ ) {
+    if( $mhead->{'subject'} =~ /complaint about message from ((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))/ ) {
         # Microsoft ARF: remote host address.
         $arfheaders->{'rhost'} = $1;
         $commondata->{'diagnosis'} = sprintf( 
@@ -295,9 +295,7 @@ sub scan {
             $arfheaders->{'rhost'}, $mhead->{'date'} );
     }
 
-    require Sisimai::RFC5322;
     for my $e ( @$dscontents ) {
-
         if( $e->{'recipient'} =~ m/\A[^ ]+[@]\z/ ) {
             # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
             $e->{'recipient'} = Sisimai::Address->s3s4( $rcptintext );
