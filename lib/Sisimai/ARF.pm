@@ -186,7 +186,7 @@ sub scan {
                 # Continued line from the previous line
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
                 next if length $e;
-                $rcptintext .= $e if $previousfn eq 'To';
+                $rcptintext .= $e if $previousfn eq 'to';
             }
 
         } else {
