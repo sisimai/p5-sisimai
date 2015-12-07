@@ -156,7 +156,7 @@ sub scan {
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
-            if( $e =~ m/X-HmXmrOriginalRecipient:\s*(.+)\z/ ) {
+            if( $e =~ m/X-HmXmrOriginalRecipient:[ ]*(.+)\z/ ) {
                 # Microsoft ARF: original recipient.
                 $dscontents->[ -1 ]->{'recipient'} = Sisimai::Address->s3s4( $1 );
                 $recipients++;
@@ -166,7 +166,7 @@ sub scan {
                 $arfheaders->{'feedbacktype'} = 'abuse';
                 $arfheaders->{'agent'} = 'Microsoft Junk Mail Reporting Program';
             
-            } elsif( $e =~ m/\AFrom:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\AFrom:[ ]*(.+)\z/ ) {
                 # Microsoft ARF: original sender.
                 $commondata->{'from'} ||= Sisimai::Address->s3s4( $1 );
             
@@ -182,7 +182,7 @@ sub scan {
                 $rfc822part .= $e."\n";
                 $rcptintext  = $rhs if $lhs eq 'to';
 
-            } elsif( $e =~ m/\A[\s\t]+/ ) {
+            } elsif( $e =~ m/\A\s+/ ) {
                 # Continued line from the previous line
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
                 next if length $e;
@@ -203,8 +203,8 @@ sub scan {
             # Source-IP: 192.0.2.1
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\AOriginal-Rcpt-To:\s+[<]?(.+)[>]?\z/ ||
-                $e =~ m/\ARedacted-Address:\s([^ ].+[@])\z/ ) {
+            if( $e =~ m/\AOriginal-Rcpt-To:[ ]+[<]?(.+)[>]?\z/ ||
+                $e =~ m/\ARedacted-Address:[ ]([^ ].+[@])\z/ ) {
                 # Original-Rcpt-To header field is optional and may appear any
                 # number of times as appropriate:
                 # Original-Rcpt-To: <user@example.com>
@@ -217,12 +217,12 @@ sub scan {
                 $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
                 $recipients++;
 
-            } elsif( $e =~ m/\AFeedback-Type:\s*([^ ]+)\z/ ) {
+            } elsif( $e =~ m/\AFeedback-Type:[ ]*([^ ]+)\z/ ) {
                 # The header field MUST appear exactly once.
                 # Feedback-Type: abuse
                 $arfheaders->{'feedbacktype'} = $1;
 
-            } elsif( $e =~ m/\AAuthentication-Results:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\AAuthentication-Results:[ ]*(.+)\z/ ) {
                 # "Authentication-Results" indicates the result of one or more
                 # authentication checks run by the report generator.
                 #
@@ -230,12 +230,12 @@ sub scan {
                 #   spf=fail smtp.mail=somespammer@example.com
                 $arfheaders->{'authres'} = $1;
 
-            } elsif( $e =~ m/\AUser-Agent:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\AUser-Agent:[ ]*(.+)\z/ ) {
                 # The header field MUST appear exactly once.
                 # User-Agent: SomeGenerator/1.0
                 $arfheaders->{'agent'} = $1;
 
-            } elsif( $e =~ m/\A(?:Received|Arrival)-Date:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\A(?:Received|Arrival)-Date:[ ]*(.+)\z/ ) {
                 # Arrival-Date header is optional and MUST NOT appear more than
                 # once.
                 # Received-Date: Thu, 29 Apr 2010 00:00:00 JST
@@ -247,12 +247,12 @@ sub scan {
                 # Reporting-MTA: dns; mx.example.jp
                 $commondata->{'rhost'} = $1;
 
-            } elsif( $e =~ m/\ASource-IP:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\ASource-IP:[ ]*(.+)\z/ ) {
                 # The header is optional and MUST NOT appear more than once.
                 # Source-IP: 192.0.2.45
                 $arfheaders->{'rhost'} = $1;
             
-            } elsif( $e =~ m/\AOriginal-Mail-From:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\AOriginal-Mail-From:[ ]*(.+)\z/ ) {
                 # the header is optional and MUST NOT appear more than once.
                 # Original-Mail-From: <somespammer@example.net>
                 $commondata->{'from'} ||= Sisimai::Address->s3s4( $1 );
