@@ -41,6 +41,7 @@ my $LongFields = Sisimai::RFC5322->LONGFIELDS;
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { return 'Abuse Feedback Reporting Format' }
+sub smtpagent   { 'Feeback-Loop' }
 sub headerlist  { return [] }
 sub pattern     { return $Re0 }
 
@@ -72,7 +73,7 @@ sub is_arf {
 }
 
 sub scan {
-    # Detect an error for FeedBack Loop
+    # Detect an error for Feedback Loop
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header
@@ -98,24 +99,22 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $rcptintext = '';    # [String] Recipient address in the message body
-    my $remotename = '';    # [String] The value of "Reporting-MTA"
-    my $commandtxt = '';    # [String] SMTP Command name begin with the string '>>>'
+    my $rcptintext = '';    # (String) Recipient address in the message body
+    my $remotename = '';    # (String) The value of "Reporting-MTA"
+    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $commondata = {
         'diagnosis'    => '',   # Error message
         'from'         => '',   # Original-Mail-From:
         'rhost'        => '',   # Reporting-MTA:
     };
     my $arfheaders = {
-        'feedbacktype' => '',   # FeedBack-Type:
+        'feedbacktype' => '',   # Feedback-Type:
         'rhost'        => '',   # Source-IP:
         'agent'        => '',   # User-Agent:
         'date'         => '',   # Arrival-Date:
         'authres'      => '',   # Authentication-Results:
     };
-
     my $v = undef;
-    my $p = '';
 
     # 3.1.  Required Fields
     #
@@ -268,11 +267,6 @@ sub scan {
             }
 
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     if (($arfheaders->{'feedbacktype'} eq 'auth-failure' ) && $arfheaders->{'authres'}) {
@@ -338,7 +332,7 @@ sub scan {
         $e->{'action'}  = 'failed';
         $e->{'reason'}  = 'feedback';
         $e->{'command'} = '';
-        $e->{'agent'}   = 'FeedBack-Loop';
+        $e->{'agent'} ||= __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
@@ -361,7 +355,7 @@ Do not use this class directly, use Sisimai::ARF.
 
 =head1 DESCRIPTION
 
-Sisimai::ARF is a parser for email returned as a FeedBack Loop report message.
+Sisimai::ARF is a parser for email returned as a Feedback Loop report message.
 
 =head1 FEEDBACK TYPES
 
