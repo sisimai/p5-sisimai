@@ -172,16 +172,15 @@ sub scan {
             
             } elsif( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
-                my $lhs = $1;
+                my $lhs = lc $1;
                 my $rhs = $2;
-                my $whs = lc $lhs;
 
                 $previousfn = '';
-                next unless exists $RFC822Head->{ $whs };
+                next unless exists $RFC822Head->{ $lhs };
 
-                $previousfn  = lc $lhs;
+                $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
-                $rcptintext  = $rhs if $lhs eq 'To';
+                $rcptintext  = $rhs if $lhs eq 'to';
 
             } elsif( $e =~ m/\A[\s\t]+/ ) {
                 # Continued line from the previous line
@@ -265,7 +264,6 @@ sub scan {
                 #   Thu, 29 Apr 2010 00:00:00 +0900 (JST)
                 $commondata->{'diagnosis'} = $e;
             }
-
         } # End of if: rfc822
     }
 
