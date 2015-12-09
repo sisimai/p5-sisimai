@@ -159,7 +159,6 @@ my $R = {
         '01144' => qr/filtered/,
         '01145' => qr/mailboxfull/,
         '01146' => qr/mailboxfull/,
-        '01147' => qr/spamdetected/,
         '01148' => qr/mailboxfull/,
         '01149' => qr/expired/,
         '01150' => qr/mailboxfull/,
