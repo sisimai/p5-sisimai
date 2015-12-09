@@ -153,6 +153,7 @@ sub divideup {
     my $email = shift // return {};
 
     my $readcursor = 0;
+    my $pseudofrom = 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
     my @hasdivided = split( "\n", $$email );
     return {} unless scalar @hasdivided;
@@ -189,13 +190,13 @@ sub divideup {
     return {} unless length $aftersplit->{'header'};
     return {} unless length $aftersplit->{'body'};
 
-    $aftersplit->{'from'} ||= 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
+    $aftersplit->{'from'} ||= $pseudofrom;
     return $aftersplit;
 }
 
 sub headers {
     # Convert email headers from text to hash reference
-    # @param         [String] email  Email header data
+    # @param         [String] heads  Email header data
     # @return        [Hash]          Structured email header data
     my $class = shift;
     my $heads = shift || return undef;
@@ -276,14 +277,16 @@ sub makeorder {
 
 sub takeapart {
     # Take each email header in the original message apart
+    # @param         [String] heads The original message header
+    # @return        [Hash]         Structured message headers
     my $class = shift;
-    my $argvs = shift || return {};
+    my $heads = shift || return {};
 
     # Convert from string to hash reference
-    my $v =  $$argvs; $v =~ s/^[>]+[ ]//mg;
+    $$heads =~ s/^[>]+[ ]//mg;
 
     my $takenapart = {};
-    my @hasdivided = split( "\n", $v );
+    my @hasdivided = split( "\n", $$heads );
     my $previousfn = ''; # Previous field name
     my $borderline = '__MIME_ENCODED_BOUNDARY__';
     my $mimeborder = {};
