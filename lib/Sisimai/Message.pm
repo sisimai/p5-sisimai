@@ -168,6 +168,8 @@ sub divideup {
     SPLIT_EMAIL: for my $e ( @hasdivided ) {
         # use split() instead of regular expression.
         $e =~ y{\r\n}{}d;
+        $e =~ s/\A[ \t]+\z//;
+        $e =~ s/[ \t]+\z//;
 
         if( $readcursor & $Indicators->{'endof'} ) {
             # The body part of the email
