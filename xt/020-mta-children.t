@@ -673,6 +673,10 @@ my $R = {
         '01030' => qr/hostunknown/,
         '01031' => qr/hostunknown/,
         '01032' => qr/undefined/,
+        '01033' => qr/userunknown/,
+        '01034' => qr/userunknown/,
+        '01035' => qr/spamdetected/,
+        '01036' => qr/spamdetected/,
     },
     'mFILTER' => {
         '01001' => qr/filtered/,
