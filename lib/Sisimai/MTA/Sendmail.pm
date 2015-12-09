@@ -95,16 +95,14 @@ sub scan {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
-                my $lhs = $1;
-                my $whs = lc $lhs;
-
+                my $lhs = lc $1;
                 $previousfn = '';
-                next unless exists $RFC822Head->{ $whs };
+                next unless exists $RFC822Head->{ $lhs };
 
-                $previousfn  = lc $lhs;
+                $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A[\s\t]+/ ) {
+            } elsif( $e =~ m/\A\s+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -173,7 +171,6 @@ sub scan {
                     } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
-                        $e = 'Diagnostic-Code: '.$e;
                     }
                 }
 
@@ -219,10 +216,10 @@ sub scan {
                     # Detect SMTP session error or connection error
                     next if $sessionerr;
                     if( $e =~ $Re1->{'error'} ) { 
-                      # ----- Transcript of session follows -----
-                       # ... while talking to mta.example.org.:
-                       $sessionerr = 1;
-                       next;
+                        # ----- Transcript of session follows -----
+                        # ... while talking to mta.example.org.:
+                        $sessionerr = 1;
+                        next;
                     }
 
                     if( $e =~ m/\A[<](.+)[>][.]+ (.+)\z/ ) {
@@ -256,7 +253,7 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = '';
+        # $e = '';
     }
 
     return undef unless $recipients;
