@@ -10,8 +10,21 @@ my $Re0 = {
 };
 my $Re1 = {
     'begin'  => qr/\A\z/,    # Blank line
+    'error'  => qr/Body of message generated response:/,
     'rfc822' => qr/\AOriginal message follows[.]\z/,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
+
+my $ReSMTP = {
+    'conn' => qr{(?:
+         SMTP[ ]connection[ ]failed,
+        |Unexpected[ ]connection[ ]response[ ]from[ ]server:
+        )
+    },
+    'ehlo' => qr|Unexpected response to EHLO/HELO:|,
+    'mail' => qr|Server response to MAIL FROM:|,
+    'rcpt' => qr|Additional RCPT TO generated following response:|,
+    'data' => qr|DATA command generated response:|,
 };
 
 my $ReFailure = {
@@ -131,15 +144,15 @@ sub scan {
             # Original message follows.
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A(.+)[:]\s*([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ m/\A(.+)[ ](.+)[:]\s*([^ ]+[@][^ ]+)\z/ ) {
                 # Unknown user: kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[ -1 ];
                 }
-                $v->{'diagnosis'} = $1;
-                $v->{'recipient'} = $2;
+                $v->{'diagnosis'} = $1.' '.$2;
+                $v->{'recipient'} = $3;
                 $recipients++;
 
             } elsif( $e =~ m/\Aundeliverable[ ]+to[ ]+(.+)\z/ ) {
@@ -151,6 +164,14 @@ sub scan {
                 }
                 $v->{'recipient'} = $1;
                 $recipients++;
+
+            } else {
+                # Other error message text
+                $v->{'alterrors'} .= ' '.$e if length $v->{'alterrors'};
+                if( $e =~ $Re1->{'error'} ) {
+                    # Body of message generated response:
+                    $v->{'alterrors'} = $e;
+                }
             }
         } # End of if: rfc822
 
@@ -174,7 +195,21 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
+
+        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+            # Copy alternative error message
+            $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
+            $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+            delete $e->{'alterrors'};
+        }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+
+        COMMAND: for my $r ( keys %$ReSMTP ) {
+            # Detect SMTP command from the message
+            next unless $e->{'diagnosis'} =~ $ReSMTP->{ $r };
+            $e->{'command'} = uc $r;
+            last;
+        }
 
         SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
