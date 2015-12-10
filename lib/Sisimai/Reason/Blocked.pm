@@ -86,7 +86,7 @@ sub true {
     my $diagnostic = '';
     my $v = 0;
 
-    $tempreason = Sisimai::SMTP::Status->name( $statuscode ) if $statuscode;
+    $tempreason = Sisimai::SMTP::Status->name( $statuscode );
     $diagnostic = $argvs->diagnosticcode // '';
 
     if( $tempreason eq $reasontext ) {
