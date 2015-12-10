@@ -35,7 +35,6 @@ MAKE_TEST: {
     }
 
     MATCH: {
-        my $emindex = 0;
         my $msglist = [
             q|smtp; 550 5.1.1 <kijitora@example.co.jp>... User Unknown|,
             q|smtp; 550 Unknown user kijitora@example.jp|,
@@ -134,7 +133,6 @@ MAKE_TEST: {
 
         for my $e ( @$msglist ) {
             my $v = Sisimai::Reason->match( $e );
-            $emindex++;
             ok $e, 'Diagnostic-Code: '.$e;
             ok $v, 'Detected reason: '.$v;
         }
