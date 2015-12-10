@@ -183,7 +183,7 @@ Encoded string in email headers.
 
 =head2 C<B<base64d(I<\String>)>>
 
-C<base64d> is a decoder method for getting the orinal string from MIME Base564
+C<base64d> is a decoder method for getting the original string from MIME Base564
 encoded string.
 
     my $r = '44Gr44KD44O844KT';
@@ -191,7 +191,7 @@ encoded string.
 
 =head2 C<B<qprintd(I<\String>)>>
 
-C<qprintd> is a decoder method for getting the orinal string from MIME Quoted-
+C<qprintd> is a decoder method for getting the original string from MIME Quoted-
 printable encoded string.
 
     my $r = '=4e=65=6b=6f';
