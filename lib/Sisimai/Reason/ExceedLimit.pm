@@ -40,7 +40,7 @@ sub true {
     my $v = 0;
 
     if( Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext ) {
-        # Delivery status code points C<exceedlimit>.
+        # Delivery status code points "exceedlimit".
         # Status: 5.2.3
         # Diagnostic-Code: SMTP; 552 5.2.3 Message size exceeds fixed maximum message size
         $v = 1;
