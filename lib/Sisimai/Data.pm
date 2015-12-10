@@ -117,7 +117,10 @@ sub make {
 
     return undef unless exists $argvs->{'data'};
     return undef unless ref $argvs->{'data'} eq 'Sisimai::Message';
+    return undef unless $argvs->{'data'}->ds;
+    return undef unless $argvs->{'data'}->rfc822;
 
+    require Sisimai::SMTP;
     my $messageobj = $argvs->{'data'};
     my $rfc822data = $messageobj->rfc822;
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
@@ -125,15 +128,11 @@ sub make {
     my $rxcommands = qr/\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
     my $givenorder = $argvs->{'order'} ? $argvs->{'order'} : {};
 
-    return undef unless $messageobj->ds;
-    return undef unless $messageobj->rfc822;
-    require Sisimai::SMTP;
-
     # Decide the order of email headers: user specified or system default.
     if( ref $givenorder eq 'HASH' && scalar keys %$givenorder ) {
         # If the order of headers for searching is specified, use the order
         # for detecting an email address.
-        for my $e ( 'recipient', 'addresser' ) {
+        for my $e ( keys %$fieldorder ) {
             # The order should be "Array Reference".
             next unless $givenorder->{ $e };
             next unless ref $givenorder->{ $e } eq 'ARRAY';
@@ -142,7 +141,7 @@ sub make {
         }
     }
 
-    for my $e ( 'recipient', 'addresser' ) {
+    for my $e ( keys %$fieldorder ) {
         # If the order is empty, use default order.
         if( not scalar @{ $fieldorder->{ $e } } ) {
             # Load default order of each accessor.
@@ -245,19 +244,18 @@ sub make {
         next unless $p->{'timestamp'};
 
         OTHER_TEXT_HEADERS: {
-            # Remove square brackets and curly brackets from the host variable
-            map { $p->{ $_ } =~ y/[]()//d } ( 'rhost', 'lhost' ); 
+            for my $v ( 'rhost', 'lhost' ) {
+                $p->{ $v } =~ y/[]()//d;    # Remove square brackets and curly brackets from the host variable
+                $p->{ $v } =~ s/\A.+=//;    # Remove string before "="
 
-            # Remove string before "="
-            map { $p->{ $_ } =~ s/\A.+=// } ( 'rhost', 'lhost' );
-
-            for my $e ( 'rhost', 'lhost' ) {
                 # Check space character in each value
-                if( $p->{ $e } =~ m/ / ) {
+                if( $p->{ $v } =~ m/ / ) {
                     # Get the first element
-                    $p->{ $e } = (split( ' ', $p->{ $e }, 2 ))[0];
+                    $p->{ $v } = (split( ' ', $p->{ $v }, 2 ))[0];
                 }
             }
+
+            # Subject: header of the original message
             $p->{'subject'} = $rfc822data->{'subject'} // '';
 
             # The value of "List-Id" header
@@ -266,14 +264,14 @@ sub make {
                 # Get the value of List-Id header
                 if( $p->{'listid'} =~ m/\A.*([<].+[>]).*\z/ ) {
                     # List name <list-id@example.org>
-                    $p->{'listid'} =  $1 
+                    $p->{'listid'} = $1 
                 }
                 $p->{'listid'} =~ y/<>//d;
                 $p->{'listid'} =  '' if $p->{'listid'} =~ m/ /;
             }
 
             # The value of "Message-Id" header
-            $p->{'messageid'} =  $rfc822data->{'message-id'} // '';
+            $p->{'messageid'} = $rfc822data->{'message-id'} // '';
             if( length $p->{'messageid'} ) {
                 # Remove angle brackets
                 $p->{'messageid'} =  $1 if $p->{'messageid'} =~ m/\A([^ ]+)[ ].*/;
@@ -313,7 +311,7 @@ sub make {
             # not have the value of "deliverystatus".
             unless( length $o->softbounce ) {
                 # The value is not set yet
-                for my $v ( 'deliverystatus',  'diagnosticcode' ) {
+                for my $v ( 'deliverystatus', 'diagnosticcode' ) {
                     # Set the value of softbounce
                     next unless length $p->{ $v };
                     $o->softbounce( Sisimai::SMTP->is_softbounce( $p->{ $v } ) );
