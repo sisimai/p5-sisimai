@@ -34,8 +34,8 @@ sub match {
 sub true { 
     # Rejected email due to header format of the email
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is blocked
-    #                                   0: is not blocked by the client
+    # @return   [Integer]               1: rejected due to content error
+    #                                   0: is not content error
     # @see      http://www.ietf.org/rfc/rfc2822.txt
     return undef;
 }
