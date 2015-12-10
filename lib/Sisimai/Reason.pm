@@ -202,13 +202,12 @@ sub match {
         if( $typestring eq 'X-UNIX' ) {
             # X-Unix; ...
             $reasontext = 'mailererror';
-        }
-        else {
+
+        } else {
             # Detect the bounce reason from "Status:" code
             $reasontext = Sisimai::SMTP::Status->name( $statuscode ) || 'undefined';
         }
     }
-
     return $reasontext;
 }
 
