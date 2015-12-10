@@ -50,6 +50,7 @@ sub true {
     return undef unless length $statuscode;
     return 1 if $argvs->reason eq $reasontext;
     return 1 if __PACKAGE__->match( $argvs->diagnosticcode // '' );
+    return 0
 }
 
 1;
