@@ -88,7 +88,7 @@ Sisimai::SMTP is a parent class of Sisimai::SMTP::Status and Sisimai::SMTP::Repl
 =head2 C<B<is_softbounce(I<String>)>>
 
 C<is_softbounce()> returns 1 if the string includes SMTP reply code like 421,
-550 or SMTP status code like 5.1.1, 4.4.7. The return value is 1: softbounce,
+550 or SMTP status code like 5.1.1, 4.4.7. The return value is 1: soft bounce,
 0: hard bounce, -1: did not find information to decide that it is a soft bounce
 or a hard bounce.
 
