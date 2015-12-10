@@ -80,9 +80,9 @@ sub match {
             |no[ ]mailbox[ ]here[ ]by[ ]that[ ]name
             )
         |the[ ](?:
-              following[ ]recipients[ ]was[ ]undeliverable
-             |user[']s[ ]email[ ]name[ ]is[ ]not[ ]found
-             )
+             following[ ]recipients[ ]was[ ]undeliverable
+            |user[']s[ ]email[ ]name[ ]is[ ]not[ ]found
+            )
         |this[ ](?:
              address[ ]no[ ]longer[ ]accepts[ ]mail
             |email[ ]address[ ]is[ ]wrong[ ]or[ ]no[ ]longer[ ]valid
