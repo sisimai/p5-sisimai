@@ -49,10 +49,10 @@ Sisimai::Reason::Expired - Bounce reason is C<expired> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Expired checks the bounce reason is C<expired> or not.  This 
+Sisimai::Reason::Expired checks the bounce reason is C<expired> or not. This
 class is called only Sisimai::Reason class.
 
-This is the error that delivery time has expired due to connection failure or 
+This is the error that delivery time has expired due to connection failure or
 network error and the message you sent has been in the queue for long time.
 
 =head1 CLASS METHODS
