@@ -21,6 +21,12 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       are not removed. Use Sisimai::SMTP::Status, Sisimai::SMTP::Reply instead. 
     - Merged Pull-Request #138, some code blocks in Sisimai::Message->resolve()
       have been divided into some methods.
+    - Fixed bug at issue #142, Sisimai can not parse an email that TAB or Space
+      character exists at the end of each line. Thanks to M Miyamoto.
+    - Fixed bug at issue #144, support date format like "Thursday, Apr 29, ..".
+    - Improved code of Sisimai::MTA::IMailServer for support more error message
+      patterns: issue #143.
+    - Issue #145 Code improvements: back port from Ruby version of Sisimai.
 
 4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
