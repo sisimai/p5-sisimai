@@ -55,7 +55,7 @@ This class is called only Sisimai::Reason class.
 This is the error that a destination mail server has rejected email due to 
 header format of the email like the following. Sisimai will set C<contenterror>
 to the reason of email bounce if the value of Status: field in a bounce email 
-is C<5.6.*>.
+is "5.6.*".
 
 =over 
 
