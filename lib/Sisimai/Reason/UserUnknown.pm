@@ -130,13 +130,11 @@ sub true {
     my $prematches = [ 'NoRelaying', 'Blocked', 'MailboxFull', 'HasMoved' ];
     my $matchother = 0;
     my $statuscode = $argvs->deliverystatus // '';
+    my $diagnostic = $argvs->diagnosticcode // '';
+    my $tempreason = Sisimai::SMTP::Status->name( $statuscode );
     my $reasontext = __PACKAGE__->text;
-    my $tempreason = '';
-    my $diagnostic = '';
     my $v = 0;
 
-    $tempreason = Sisimai::SMTP::Status->name( $statuscode ) if $statuscode;
-    $diagnostic = $argvs->diagnosticcode // '';
     return 0 if $tempreason eq 'suspend';
 
     if( $tempreason eq $reasontext ) {

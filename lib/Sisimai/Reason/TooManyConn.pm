@@ -18,7 +18,7 @@ sub match {
         |no[ ]IPs[ ]available[ ][-][ ].+[ ]exceeds[ ]per[-]domain[ ]connection[ ]limit[ ]for
         |Too[ ]many[ ](?:
              connections
-            |connections[ ]from[ ]your[ ]host[.]    # Microsoft 
+            |connections[ ]from[ ]your[ ]host[.]    # Microsoft
             |concurrent[ ]SMTP[ ]connections        # Microsoft
             |SMTP[ ]sessions[ ]for[ ]this[ ]host    # Sendmail(daemon.c)
             )
@@ -44,16 +44,13 @@ sub true {
 
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
+    my $diagnostic = $argvs->diagnosticcode // '';
+    my $tempreason = Sisimai::SMTP::Status->name( $statuscode );
     my $reasontext = __PACKAGE__->text;
-    my $tempreason = '';
-    my $diagnostic = '';
     my $v = 0;
 
-    $tempreason = Sisimai::SMTP::Status->name( $statuscode ) if $statuscode;
-    $diagnostic = $argvs->diagnosticcode // '';
-
     if( $tempreason eq $reasontext ) {
-        # Delivery status code points "blocked".
+        # Delivery status code points "toomanyconn".
         $v = 1;
 
     } else {
