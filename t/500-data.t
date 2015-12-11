@@ -65,6 +65,8 @@ MAKE_TEST: {
 
             ok length $e->diagnosticcode, 'diagnosticcode = '.$e->diagnosticcode;
             ok length $e->diagnostictype, 'diagnostictype = '.$e->diagnostictype;
+            is $e->diagnostictype, 'SMTP', 'diagnostictype = '.$e->diagnostictype;
+
             like $e->deliverystatus, qr/\A\d+[.]\d+[.]\d\z/, 'deliverystatus = '.$e->deliverystatus;
             like $e->timezoneoffset, qr/\A[+-]\d+\z/, 'timezoneoffset = '.$e->timezoneoffset;
             like $e->replycode, qr/\A[2345][0-5][0-9]\z/, 'replycode = '.$e->replycode;
