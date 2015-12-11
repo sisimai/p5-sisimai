@@ -49,13 +49,10 @@ sub true {
 
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
+    my $diagnostic = $argvs->diagnosticcode // '';
+    my $tempreason = Sisimai::SMTP::Status->name( $statuscode );
     my $reasontext = __PACKAGE__->text;
-    my $tempreason = '';
-    my $diagnostic = '';
     my $v = 0;
-
-    $diagnostic = $argvs->diagnosticcode // '';
-    $tempreason = Sisimai::SMTP::Status->name( $statuscode ) if $statuscode;
 
     if( $tempreason eq $reasontext ) {
         # Delivery status code points "mesgtoobig".
