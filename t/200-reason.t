@@ -8,7 +8,6 @@ my $MethodNames = {
     'class' => [ 'get', 'retry', 'index', 'match' ],
     'object' => [],
 };
-my $SampleMails = './eg/maildir-as-a-sample';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
