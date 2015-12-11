@@ -58,6 +58,8 @@ MAKE_TEST: {
             is $e->recipient->host, $e->destination, 'destination = '.$e->destination;
 
             ok length $e->messageid, 'messageid = '.$e->messageid;
+            like $e->messageid, qr/\A.+[@].+/, 'messageid = '.$e->messageid;
+
             is $e->smtpagent, 'Sendmail', 'smtpagent = '.$e->smtpagent;
             is $e->smtpcommand, 'DATA', 'smtpcommand = '.$e->smtpcommand;
 
