@@ -30,7 +30,14 @@ sub match {
     return 0;
 }
 
-sub true { return undef };
+sub true {
+    # The bounce reason is network error or not
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: is network error
+    #                                   0: is not network error
+    # @see http://www.ietf.org/rfc/rfc2822.txt
+    return undef;
+}
 
 1;
 __END__
