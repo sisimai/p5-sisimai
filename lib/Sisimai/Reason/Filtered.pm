@@ -51,15 +51,13 @@ sub true {
 
     require Sisimai::SMTP::Status;
     require Sisimai::Reason::UserUnknown;
-    my $statuscode = $argvs->deliverystatus // '';
     my $commandtxt = $argvs->smtpcommand // '';
+    my $statuscode = $argvs->deliverystatus // '';
+    my $diagnostic = $argvs->diagnosticcode // '';
+    my $tempreason = Sisimai::SMTP::Status->name( $statuscode );
     my $reasontext = __PACKAGE__->text;
-    my $tempreason = '';
-    my $diagnostic = '';
     my $v = 0;
 
-    $diagnostic = $argvs->diagnosticcode // '';
-    $tempreason = Sisimai::SMTP::Status->name( $statuscode );
     return 0 if $tempreason eq 'suspend';
 
     if( $tempreason eq $reasontext ) {
@@ -69,11 +67,9 @@ sub true {
 
             $v = 1 
         }
-
     } else {
         # Check the value of Diagnostic-Code and the last SMTP command
-        my $c = $argvs->smtpcommand;
-        if( $c ne 'RCPT' && $c ne 'MAIL' ) {
+        if( $commandtxt ne 'RCPT' && $commandtxt ne 'MAIL' ) {
             # Check the last SMTP command of the session. 
             if( __PACKAGE__->match( $diagnostic ) ) {
                 # Matched with a pattern in this class
