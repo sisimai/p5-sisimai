@@ -44,12 +44,11 @@ sub true {
 
     return undef unless ref $argvs eq 'Sisimai::Data';
     my $currreason = $argvs->reason // '';
-    my $reasontext = __PACKAGE__->text;
+    my $reexcludes = qr/\A(?:securityerror|systemerror|undefined)\z/;
 
     if( $currreason ) {
         # Do not overwrite the reason
-        my $rxnr = qr/\A(?:securityerror|systemerror|undefined)\z/;
-        return 0 if $currreason =~ $rxnr;
+        return 0 if $currreason =~ $reexcludes;
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
