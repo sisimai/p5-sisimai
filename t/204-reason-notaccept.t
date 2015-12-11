@@ -14,7 +14,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     is $PackageName->text, 'notaccept', '->text = notaccept';
-    ok $PackageName->match('SMTP protocol returned a permanent error');
+    ok $PackageName->match('556 SMTP protocol returned a permanent error');
     is $PackageName->true, undef, '->true = undef';
 }
 
