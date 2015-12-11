@@ -22,7 +22,14 @@ sub match {
     return 0;
 }
 
-sub true { return undef };
+sub true {
+    # The bounce reason is system full or not
+    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @return   [Integer]               1: is system full
+    #                                   0: is not system full
+    # @see http://www.ietf.org/rfc/rfc2822.txt
+    return undef;
+}
 
 1;
 __END__
