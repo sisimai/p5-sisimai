@@ -143,7 +143,7 @@ sub true {
     my $v = 0;
 
     if( Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext ) {
-        # Delivery status code points "rejected".
+        # Delivery status code points "spamdetected".
         $v = 1;
 
     } else {
@@ -161,8 +161,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::SpamDetected - Bounce reason is C<rejected> due to Spam content in 
-the message or not.
+Sisimai::Reason::SpamDetected - Bounce reason is C<spamdetected> due to Spam 
+content in the message or not.
 
 =head1 SYNOPSIS
 
@@ -171,7 +171,7 @@ the message or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SpamDetected checks the bounce reason is C<rejected> due to 
+Sisimai::Reason::SpamDetected checks the bounce reason is C<spamdetected> due to 
 Spam content in the message or not. This class is called only Sisimai::Reason 
 class.
 
