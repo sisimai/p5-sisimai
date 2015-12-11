@@ -14,7 +14,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     is $PackageName->text, 'exceedlimit', '->text = exceedlimit';
-    is $PackageName->match, undef;
+    ok $PackageName->match('5.2.3 Message too large');
     is $PackageName->true, undef, '->true = undef';
 }
 
