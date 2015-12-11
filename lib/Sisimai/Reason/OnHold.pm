@@ -4,7 +4,15 @@ use strict;
 use warnings;
 
 sub text  { 'onhold' }
-sub match { return 0 }
+sub match { 
+    # Try to match that the given text and regular expressions
+    # @param    [String] argv1  String to be matched with regular expressions
+    # @return   [Integer]       0: Did not match
+    #                           1: Matched
+    # @since v4.0.0
+    return 0;
+}
+
 sub true  {
     # On hold, Could not decide the bounce reason...
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
