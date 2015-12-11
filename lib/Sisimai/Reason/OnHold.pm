@@ -32,6 +32,7 @@ sub true  {
 
     require Sisimai::SMTP::Status;
     return 1 if Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext;
+    return 0
 }
 
 1;
