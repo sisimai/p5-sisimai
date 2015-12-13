@@ -13,15 +13,16 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
+    my $rs = {
+        '01' => { 'status' => qr/\A5[.]2[.]1\z/, 'reason' => qr/suspend/ },
+    };
     is $PackageName->get, undef;
 
     use Sisimai::Mail;
+    use Sisimai::Data;
     use Sisimai::Message;
 
-    my $c = 0;
-
-    PARSE_EACH_MAIL: for my $n ( 1..20 ) {
-
+    PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
         my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/google-apps-%02d.eml", $n );
         my $mailbox = Sisimai::Mail->new( $emailfn );
         my $mtahost = 'aspmx.l.google.com';
@@ -39,7 +40,7 @@ MAKE_TEST: {
             for my $e ( @{ $p->ds } ) {
                 is $e->{'spec'}, 'SMTP', '->spec = SMTP';
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
-                like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
+                like $e->{'status'}, $rs->{ $n }->{'status'}, '->status = '.$e->{'status'};
                 like $e->{'command'}, qr/[A-Z]{4}/, '->command = '.$e->{'command'};
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
@@ -49,10 +50,13 @@ MAKE_TEST: {
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
                 is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
             }
-            $c++;
+
+            my $v = Sisimai::Data->make( 'data' => $p );
+            for my $e ( @$v ) {
+                like $e->reason, $rs->{ $n }->{'reason'}, '->reason = '.$e->reason;
+            }
         }
     }
-    ok $c, 'the number of emails = '.$c;
 }
 
 done_testing;
