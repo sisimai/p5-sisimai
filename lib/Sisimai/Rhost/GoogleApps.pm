@@ -26,9 +26,7 @@ my $SMTPErrorSet = {
         },
         {
             'reason' => 'suspend',
-            'regexp' => [
-                qr/The email account that you tried to reach is disabled[.]/,
-            ],
+            'regexp' => [ qr/The email account that you tried to reach is disabled[.]/ ],
         },
     ],
     'X.2.2' => [
