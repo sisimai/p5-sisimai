@@ -41,7 +41,7 @@ sub smtpagent   { 'Postfix' }
 sub pattern     { return $Re0 }
 
 sub scan {
-    # Detect an error from Postfix
+    # Parse bounce messages from Postfix
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header
@@ -57,16 +57,6 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    #  ____           _    __ _      
-    # |  _ \ ___  ___| |_ / _(_)_  __
-    # | |_) / _ \/ __| __| |_| \ \/ /
-    # |  __/ (_) \__ \ |_|  _| |>  < 
-    # |_|   \___/|___/\__|_| |_/_/\_\
-    #                                
-    # Pre-Process email headers and the body part of the message which generated
-    # by Postfix e.g.)
-    #   From: MAILER-DAEMON (Mail Delivery System)
-    #   Subject: Undelivered Mail Returned to Sender
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -145,7 +135,7 @@ sub scan {
                 # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*rfc822;[ ]*(.+)\z/ ) {
+                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -187,13 +177,11 @@ sub scan {
                     $v->{'date'} = $1;
 
                 } else {
-
                     if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
-                        $v->{'diagnosis'} = $2;
-
                         $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
+                        $v->{'diagnosis'} = $2;
 
                     } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
@@ -266,7 +254,6 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = '';
     }
 
     unless( $recipients ) {
@@ -277,8 +264,8 @@ sub scan {
             $recipients++;
         }
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP;
     require Sisimai::SMTP::Status;
