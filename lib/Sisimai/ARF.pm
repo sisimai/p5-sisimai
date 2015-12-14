@@ -251,12 +251,12 @@ sub scan {
                 # The header is optional and MUST NOT appear more than once.
                 # Source-IP: 192.0.2.45
                 $arfheaders->{'rhost'} = $1;
-            
+
             } elsif( $e =~ m/\AOriginal-Mail-From:[ ]*(.+)\z/ ) {
                 # the header is optional and MUST NOT appear more than once.
                 # Original-Mail-From: <somespammer@example.net>
                 $commondata->{'from'} ||= Sisimai::Address->s3s4( $1 );
-            
+
             } elsif( $e =~ $Re1->{'begin'} ) {
                 # This is an email abuse report for an email message with the 
                 #   message-id of 0000-000000000000000000000000000000000@mx 
@@ -267,7 +267,7 @@ sub scan {
         } # End of if: rfc822
     }
 
-    if (($arfheaders->{'feedbacktype'} eq 'auth-failure' ) && $arfheaders->{'authres'}) {
+    if( ($arfheaders->{'feedbacktype'} eq 'auth-failure' ) && $arfheaders->{'authres'} ) {
         # Append the value of Authentication-Results header
         $commondata->{'diagnosis'} .= ' '.$arfheaders->{'authres'}
     }
@@ -300,7 +300,7 @@ sub scan {
             # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
             $e->{'recipient'} = Sisimai::Address->s3s4( $rcptintext );
         }
-        map {  $e->{ $_ } ||= $arfheaders->{ $_ } } keys %$arfheaders;
+        map { $e->{ $_ }  ||= $arfheaders->{ $_ } } keys %$arfheaders;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
         $e->{'date'}      ||= $mhead->{'date'};
 
