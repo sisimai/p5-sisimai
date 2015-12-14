@@ -181,7 +181,7 @@ sub scan {
                         $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
