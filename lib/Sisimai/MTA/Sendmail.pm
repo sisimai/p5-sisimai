@@ -29,7 +29,7 @@ sub smtpagent   { 'Sendmail' }
 sub pattern     { return $Re0 }
 
 sub scan {
-    # Detect an error from Sendmail
+    # Parse bounce messages from Sendmail
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header
@@ -171,6 +171,7 @@ sub scan {
                     } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
+                        $e = 'Diagnostic-Code: '.$e;
                     }
                 }
 
@@ -253,7 +254,6 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        # $e = '';
     }
 
     return undef unless $recipients;
