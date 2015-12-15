@@ -118,7 +118,7 @@ for my $x ( keys %$R ) {
                             sprintf( "[%s] %s->feedbacktype = %s", $n, $x, $e->{'feedbacktype'} );
                     }
 
-                    unless( $x =~ m/\AmFILTER\z/ ) {
+                    unless( $x eq 'mFILTER' ) {
                         # mFILTER => m-FILTER
                         if( $x eq 'RFC3464' ) {
                             # X4 is qmail clone
