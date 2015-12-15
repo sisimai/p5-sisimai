@@ -100,7 +100,7 @@ sub new {
         'smtpcommand', 'feedbacktype', 'action', 'softbounce',
     );
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
-    $thing->{'replycode'} = Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
+    $thing->{'replycode'}  = Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
     $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
 
     return bless( $thing, __PACKAGE__ );
