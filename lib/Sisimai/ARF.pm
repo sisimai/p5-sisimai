@@ -301,6 +301,8 @@ sub scan {
             $e->{'recipient'} = Sisimai::Address->s3s4( $rcptintext );
         }
         map { $e->{ $_ }  ||= $arfheaders->{ $_ } } keys %$arfheaders;
+        delete $e->{'authres'};
+        $e->{'softbounce'}  = -1;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
         $e->{'date'}      ||= $mhead->{'date'};
 
