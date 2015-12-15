@@ -298,7 +298,7 @@ sub scan {
             my $r = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
             $e->{'status'} = $r if length $r;
         }
-        $e->{'softbounce'} = Sisimai::SMTP->is_softbounce( $e->{'status'} );
+        # $e->{'softbounce'} = Sisimai::SMTP->is_softbounce( $e->{'status'} );
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
