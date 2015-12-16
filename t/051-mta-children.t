@@ -304,7 +304,7 @@ for my $x ( keys %$R ) {
                     }
 
                     # Check the value of the following variables
-                    if( $x =~ m/\AmFILTER\z/ ) {
+                    if( $x eq 'mFILTER' ) {
                         # mFILTER => m-FILTER
                         is $e->{'agent'}, 'm-FILTER', sprintf( "[%s] %s->agent = %s", $g, $x, $e->{'agent'} );
 
