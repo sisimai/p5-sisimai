@@ -6,8 +6,8 @@ use Sisimai::Mail;
 use Sisimai::Message;
 use Module::Load;
 
-my $X = qr/\A(?:RFC3464|dovecot|mail[.]local|procmail|maildrop|vpopmail|vmailmgr)/;
-my $R = {
+my $MDAPatterns = qr/\A(?:RFC3464|dovecot|mail[.]local|procmail|maildrop|vpopmail|vmailmgr)/;
+my $MTARelative = {
     'RFC3464' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/mailboxfull/, 'agent' => qr/dovecot/ },
         '02' => { 'status' => qr/\A[45][.]0[.]\d+\z/, 'reason' => qr/(?:undefined|filtered|expired)/, 'agent' => qr/RFC3464/ },
@@ -61,7 +61,7 @@ my $R = {
     },
 };
 
-for my $x ( keys %$R ) {
+for my $x ( keys %$MTARelative ) {
     # Check each MTA module
     my $M = 'Sisimai::'.$x;
     my $v = undef;
@@ -77,7 +77,7 @@ for my $x ( keys %$R ) {
 
         $M->scan, undef, $M.'->scan = undef';
 
-        PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $R->{ $x } } ) {
+        PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $MTARelative->{ $x } } ) {
             # Open email in eg/ directory
             my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/%s-%02d.eml", lc($x), $i );
             my $mailbox = Sisimai::Mail->new( $emailfn );
@@ -114,7 +114,7 @@ for my $x ( keys %$R ) {
                     # Check the value of the following variables
                     if( $x eq 'ARF' ) {
                         # Check the value of "feedbacktype"
-                        like $e->{'feedbacktype'}, $R->{'ARF'}->{ $n }->{'feedbacktype'}, 
+                        like $e->{'feedbacktype'}, $MTARelative->{'ARF'}->{ $n }->{'feedbacktype'}, 
                             sprintf( "[%s] %s->feedbacktype = %s", $n, $x, $e->{'feedbacktype'} );
                     }
 
@@ -122,7 +122,7 @@ for my $x ( keys %$R ) {
                         # mFILTER => m-FILTER
                         if( $x eq 'RFC3464' ) {
                             # X4 is qmail clone
-                            like $e->{'agent'}, $X, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
+                            like $e->{'agent'}, $MDAPatterns, sprintf( "[%s] %s->agent = %s", $n, $x, $e->{'agent'} );
 
                         } else {
                             # Other MTA modules
@@ -199,13 +199,13 @@ for my $x ( keys %$R ) {
 
                     like $e->replycode,      qr/\A(?:[45]\d\d|)\z/,          sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
                     like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
-                    like $e->deliverystatus, $R->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
-                    like $e->reason,         $R->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );
+                    like $e->deliverystatus, $MTARelative->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
+                    like $e->reason,         $MTARelative->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );
                     like $e->token,          qr/\A([0-9a-f]{40})\z/,         sprintf( "[%s] %s->token = %s", $n, $x, $e->token );
 
                     if( $x eq 'ARF' ) {
                         # Check the value of "feedbacktype"
-                        like $e->feedbacktype, $R->{'ARF'}->{ $n }->{'feedbacktype'}, 
+                        like $e->feedbacktype, $MTARelative->{'ARF'}->{ $n }->{'feedbacktype'}, 
                             sprintf( "[%s] %s->feedbacktype = %s", $n, $x, $e->feedbacktype );
                     }
 

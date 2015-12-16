@@ -11,7 +11,7 @@ my $MethodNames = {
     'class' => [ 'description', 'headerlist', 'scan', 'pattern', 'DELIVERYSTATUS' ],
     'object' => [],
 };
-my $R = {
+my $MTAChildren = {
     'Sendmail' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
         '02' => { 'status' => qr/\A5[.][12][.]1\z/, 'reason' => qr/(?:userunknown|filtered)/ },
@@ -238,7 +238,7 @@ my $R = {
     }
 };
 
-for my $x ( keys %$R ) {
+for my $x ( keys %$MTAChildren ) {
     # Check each MTA module
     my $M = 'Sisimai::MTA::'.$x;
     my $v = undef;
@@ -257,7 +257,7 @@ for my $x ( keys %$R ) {
 
         $M->scan, undef, $M.'->scan = undef';
 
-        PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $R->{ $x } } ) {
+        PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $MTAChildren->{ $x } } ) {
             # Open email in eg/ directory
             if( length $DebugOnlyTo ) {
                 $c = 1;
@@ -383,8 +383,8 @@ for my $x ( keys %$R ) {
 
                     like $e->replycode,      qr/\A(?:[45]\d\d|)\z/,          sprintf( "[%s] %s->replycode = %s", $g, $x, $e->replycode );
                     like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $g, $x, $e->timezoneoffset );
-                    like $e->deliverystatus, $R->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $g, $x, $e->deliverystatus );
-                    like $e->reason,         $R->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $g, $x, $e->reason );
+                    like $e->deliverystatus, $MTAChildren->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $g, $x, $e->deliverystatus );
+                    like $e->reason,         $MTAChildren->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $g, $x, $e->reason );
                     like $e->token,          qr/\A([0-9a-f]{40})\z/,         sprintf( "[%s] %s->token = %s", $g, $x, $e->token );
 
                     unlike $e->deliverystatus,qr/[ ]/, sprintf( "[%s] %s->deliverystatus = %s", $g, $x, $e->deliverystatus );
