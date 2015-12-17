@@ -88,8 +88,8 @@ my $ReFailure = {
     'mailboxfull' => qr{(?:
         # transports/appendfile.c:2567|  addr->user_message = US"mailbox is full";
          mailbox[ ]is[ ]full:?
-        # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "$                          
-        # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);$
+        # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "
+        # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);
         |error:[ ]quota[ ]exceed
         )
     }x,
