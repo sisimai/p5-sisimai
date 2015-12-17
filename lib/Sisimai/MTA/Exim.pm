@@ -435,33 +435,29 @@ sub scan {
                 last;
             }
 
-            REASON: while(1) {
-                # Detect the reason of bounce
-                if( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
-                    # HELO | Connected to 192.0.2.135 but my name was rejected.
-                    $e->{'reason'} = 'blocked';
+            # Detect the reason of bounce
+            if( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
+                # HELO | Connected to 192.0.2.135 but my name was rejected.
+                $e->{'reason'} = 'blocked';
 
-                } elsif( $e->{'command'} eq 'MAIL' ) {
-                    # MAIL | Connected to 192.0.2.135 but sender was rejected.
-                    # $e->{'reason'} = 'rejected';
-                    $e->{'reason'} = 'onhold';
+            } elsif( $e->{'command'} eq 'MAIL' ) {
+                # MAIL | Connected to 192.0.2.135 but sender was rejected.
+                # $e->{'reason'} = 'rejected';
+                $e->{'reason'} = 'onhold';
 
-                } else {
-                    # Verify each regular expression of session errors
-                    SESSION: for my $r ( keys %$ReFailure ) {
-                        # Check each regular expression
-                        next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
-                        $e->{'reason'} = $r;
-                        last(SESSION);
-                    }
-                    last if $e->{'reason'};
-
-                    if( $e->{'diagnosis'} =~ $ReDelayed ) {
-                        # The reason "expired"
-                        $e->{'reason'} = 'expired';
-                    }
+            } else {
+                # Verify each regular expression of session errors
+                SESSION: for my $r ( keys %$ReFailure ) {
+                    # Check each regular expression
+                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                    $e->{'reason'} = $r;
+                    last;
                 }
-                last;
+
+                unless( $e->{'reason'} ) {
+                    # The reason "expired"
+                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelayed;
+                }
             }
         }
 
