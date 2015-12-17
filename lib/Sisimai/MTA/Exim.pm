@@ -165,9 +165,7 @@ sub scan {
     my $localhost0 = '';    # (String) Local MTA
     my $boundary00 = '';    # (String) Boundary string
     my $rxboundary = undef; # (String) Regular expression for matching with the boundary
-
     my $v = undef;
-    my $p = '';
 
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
@@ -317,11 +315,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     if( $recipients ) {
