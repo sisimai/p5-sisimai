@@ -187,11 +187,6 @@ sub scan {
                 $recipients++;
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;
