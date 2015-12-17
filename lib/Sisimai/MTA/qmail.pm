@@ -212,7 +212,6 @@ sub scan {
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
                 my $lhs = lc $1;
-
                 $previousfn = '';
                 next unless exists $RFC822Head->{ $lhs };
 
