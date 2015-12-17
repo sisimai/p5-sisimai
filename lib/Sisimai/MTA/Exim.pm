@@ -68,68 +68,60 @@ my $ReCommand = [
     qr/LMTP error after end of ([A-Za-z]{4})/,
 ];
 
+# find exim/ -type f -exec grep 'message = US' {} /dev/null \;
 my $ReFailure = {
-    # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
-    'userunknown' => qr{
-        # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
-        user[ ]not[ ]found
-    }x,
+    # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
+    'userunknown' => qr/user[ ]not[ ]found/x,
+    # transports/smtp.c:3524|  addr->message = US"all host address lookups failed permanently";
+    # routers/dnslookup.c:331|  addr->message = US"all relevant MX records point to non-existent hosts";
+    # route.c:1826|  uschar *message = US"Unrouteable address";
     'hostunknown' => qr{(?>
          all[ ](?:
-            # transports/smtp.c:3524|  addr->message = US"all host address lookups failed permanently";
              host[ ]address[ ]lookups[ ]failed[ ]permanently
-            # routers/dnslookup.c:331|  addr->message = US"all relevant MX records point to non-existent hosts";
             |relevant[ ]MX[ ]records[ ]point[ ]to[ ]non[-]existent[ ]hosts
             )
-        # route.c:1826|  uschar *message = US"Unrouteable address";
         |Unrouteable[ ]address
         )
     }x,
-    'mailboxfull' => qr{(?:
-        # transports/appendfile.c:2567|  addr->user_message = US"mailbox is full";
-         mailbox[ ]is[ ]full:?
-        # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "
-        # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);
-        |error:[ ]quota[ ]exceed
-        )
-    }x,
+    # transports/appendfile.c:2567|  addr->user_message = US"mailbox is full";
+    # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "
+    # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);
+    'mailboxfull' => qr/(?:mailbox[ ]is[ ]full:?|error:[ ]quota[ ]exceed)/x,
+    # routers/dnslookup.c:328|  addr->message = US"an MX or SRV record indicated no SMTP service";
+    # transports/smtp.c:3502|  addr->message = US"no host found for existing SMTP connection";
     'notaccept' => qr{(?:
-        # routers/dnslookup.c:328|  addr->message = US"an MX or SRV record indicated no SMTP service";
          an[ ]MX[ ]or[ ]SRV[ ]record[ ]indicated[ ]no[ ]SMTP[ ]service
-        # transports/smtp.c:3502|  addr->message = US"no host found for existing SMTP connection";
         |no[ ]host[ ]found[ ]for[ ]existing[ ]SMTP[ ]connection
         )
     }x,
+    # deliver.c:5614|  addr->message = US"delivery to file forbidden";
+    # deliver.c:5624|  addr->message = US"delivery to pipe forbidden";
+    # transports/pipe.c:1156|  addr->user_message = US"local delivery failed";
     'systemerror' => qr{(?>
-        # deliver.c:5614|  addr->message = US"delivery to file forbidden";
-        # deliver.c:5624|  addr->message = US"delivery to pipe forbidden";
          delivery[ ]to[ ](?:file|pipe)[ ]forbidden
-        # transports/pipe.c:1156|  addr->user_message = US"local delivery failed";
         |local[ ]delivery[ ]failed
         |LMTP[ ]error[ ]after[ ]
         )
     }x,
-    'contenterror' => qr{
-        # deliver.c:5425|  new->message = US"Too many \"Received\" headers - suspected mail loop";
-        Too[ ]many[ ]["]Received["][ ]headers
-    }x,
+    # deliver.c:5425|  new->message = US"Too many \"Received\" headers - suspected mail loop";
+    'contenterror' => qr/Too[ ]many[ ]["]Received["][ ]headers/x,
 };
 
+# retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
+# deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
+# smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
+# smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
+#                 "after this message arrived";
+# deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
+# deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
+# receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
+# receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
 my $ReDelayed = qr{(?:
-    # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
      retry[ ]timeout[ ]exceeded
-    # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
     |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
-    # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
-    # smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
-    #                 "after this message arrived";
     |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
     |all[ ]hosts[ ]have[ ]been[ ]failing[ ]for[ ]a[ ]long[ ]time[ ]and[ ]were[ ]last[ ]tried
-    # deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
     |Delay[ ]reason:[ ]
-    # deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
-    # receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
-    # receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
     |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival[ ]by[ ])
     )
 }x;
