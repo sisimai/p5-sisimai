@@ -15,7 +15,7 @@ my $Re0 = {
         |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
         )
     }x,
-    'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
+    #'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
     # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
 };
 
