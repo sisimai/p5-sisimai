@@ -281,7 +281,6 @@ sub scan {
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( ! $e->{'command'} ) {
-
             COMMAND: while(1) {
                 # Get the SMTP command name for the session
                 SMTP: for my $r ( keys %$ReSMTP ) {
@@ -297,51 +296,47 @@ sub scan {
             }
         }
 
-        REASON: while(1) {
-            # Detect the reason of bounce
-            if( $e->{'command'} eq 'MAIL' ) {
-                # MAIL | Connected to 192.0.2.135 but sender was rejected.
-                $e->{'reason'} = 'rejected';
+        # Detect the reason of bounce
+        if( $e->{'command'} eq 'MAIL' ) {
+            # MAIL | Connected to 192.0.2.135 but sender was rejected.
+            $e->{'reason'} = 'rejected';
 
-            } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
-                # HELO | Connected to 192.0.2.135 but my name was rejected.
-                $e->{'reason'} = 'blocked';
+        } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
+            # HELO | Connected to 192.0.2.135 but my name was rejected.
+            $e->{'reason'} = 'blocked';
+
+        } else {
+            # Try to match with each error message in the table
+            if( $e->{'diagnosis'} =~ $ReOnHold ) {
+                # To decide the reason require pattern match with 
+                # Sisimai::Reason::* modules
+                $e->{'reason'} = 'onhold';
 
             } else {
-                # Try to match with each error message in the table
-                if( $e->{'diagnosis'} =~ $ReOnHold ) {
-                    # To decide the reason require pattern match with 
-                    # Sisimai::Reason::* modules
-                    $e->{'reason'} = 'onhold';
-
-                } else {
-
-                    SESSION: for my $r ( keys %$ReFailure ) {
-                        # Verify each regular expression of session errors
-                        if( $e->{'alterrors'} ) {
-                            # Check the value of "alterrors"
-                            next unless $e->{'alterrors'} =~ $ReFailure->{ $r };
-                            $e->{'reason'} = $r;
-                        }
-                        last(SESSION) if $e->{'reason'};
-
-                        next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                SESSION: for my $r ( keys %$ReFailure ) {
+                    # Verify each regular expression of session errors
+                    if( $e->{'alterrors'} ) {
+                        # Check the value of "alterrors"
+                        next unless $e->{'alterrors'} =~ $ReFailure->{ $r };
                         $e->{'reason'} = $r;
-                        last(SESSION);
                     }
+                    last(SESSION) if $e->{'reason'};
 
-                    LDAP: for my $r ( keys %$ReLDAP ) {
-                        # Verify each regular expression of LDAP errors
-                        next unless $e->{'diagnosis'} =~ $ReLDAP->{ $r };
-                        $e->{'reason'} = $r;
-                        last(LDAP);
-                    }
-
-                    last if $e->{'reason'};
-                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelayed;
+                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                    $e->{'reason'} = $r;
+                    last(SESSION);
                 }
+
+                LDAP: for my $r ( keys %$ReLDAP ) {
+                    # Verify each regular expression of LDAP errors
+                    next unless $e->{'diagnosis'} =~ $ReLDAP->{ $r };
+                    $e->{'reason'} = $r;
+                    last(LDAP);
+                }
+
+                last if $e->{'reason'};
+                $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelayed;
             }
-            last;
         }
 
         $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
