@@ -463,7 +463,7 @@ sub parse {
 
     # Build date string
     #   Thu, 29 Apr 2004 10:01:11 +0900
-    $parseddate = sprintf( "%s, %d %s %d %s %s", $v->{'a'}, $v->{'d'}, 
+    $parseddate = sprintf( "%s, %s %s %s %s %s", $v->{'a'}, $v->{'d'}, 
                     $v->{'M'}, $v->{'Y'}, $v->{'T'}, $v->{'z'} );
     return $parseddate;
 }
