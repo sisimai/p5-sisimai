@@ -105,7 +105,6 @@ my $MTAChildren = {
         '19' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/networkerror/ },
         '20' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/(?:expired|systemerror)/ },
         '21' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '22' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/systemerror/ },
         '23' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
         '24' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
         '25' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
@@ -269,6 +268,7 @@ for my $x ( keys %$MTAChildren ) {
 
             $n = sprintf( "%02d", $i );
             next unless defined $mailbox;
+            next unless $MTAChildren->{ $x }->{ $n };
             ok -f $emailfn, sprintf( "[%s] %s/email = %s", $n, $M,$emailfn );
 
             while( my $r = $mailbox->read ) {
