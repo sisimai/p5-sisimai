@@ -186,8 +186,8 @@ sub scan {
             # Check each regular expression of Domino error messages
             next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
-            my $s = Sisimai::SMTP::Status->code( $r, 0 );
-            $e->{'status'} = $s if length $s;
+            my $pseudostatus = Sisimai::SMTP::Status->code( $r, 0 );
+            $e->{'status'} = $pseudostatus if length $pseudostatus;
             last;
         }
 
