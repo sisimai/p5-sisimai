@@ -30,20 +30,20 @@ my $Re1 = {
 };
 
 my $ReFailure = {
+    # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
     'hostunknown' => qr{
-        # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
         \ANo[ ]such[ ]domain[.]\z
     }x,
+    # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
+    # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
     'systemerror' => qr{
-        # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
-        # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
         \AThis[ ]domain's[ ]DNS[ ]violates[ ]RFC[ ]1035[.]\z
     }x,
 };
 
 my $ReDelayed = {
+    # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
     'networkerror' => qr{
-        # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
         \ADNS[ ]lookup[ ]failed[.]\z
     },
 };
