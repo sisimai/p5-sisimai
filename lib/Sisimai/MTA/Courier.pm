@@ -269,25 +269,22 @@ sub scan {
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
 
-        SESSION: while(1) {
-            HARD_E: for my $r ( keys %$ReFailure ) {
-                # Verify each regular expression of session errors
-                next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
-                $e->{'reason'} = $r;
-                $e->{'softbounce'} = 0;
-                last(HARD_E);
-            }
-            last if $e->{'reason'};
+        HARD_E: for my $r ( keys %$ReFailure ) {
+            # Verify each regular expression of session errors
+            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            $e->{'reason'} = $r;
+            $e->{'softbounce'} = 0;
+            last;
+        }
 
+        unless( $e->{'reason'} ) {
             SOFT_E: for my $r ( keys %$ReDelayed ) {
                 # Verify each regular expression of session errors
                 next unless $e->{'diagnosis'} =~ $ReDelayed->{ $r };
                 $e->{'reason'} = $r;
                 $e->{'softbounce'} = 1;
-                last(SOFT_E);
+                last;
             }
-
-            last;
         }
 
         if( ! $e->{'status'} || $e->{'status'} =~ m/\d[.]0[.]0\z/ ) {
