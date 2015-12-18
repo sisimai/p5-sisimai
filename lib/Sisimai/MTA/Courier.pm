@@ -224,7 +224,6 @@ sub scan {
                 # ---------------------------------------------------------------------------
                 if( $e =~ m/\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
                     # >>> DATA
-                    next if $connheader->{'command'};
                     next if $commandtxt;
                     $commandtxt = $1;
 
