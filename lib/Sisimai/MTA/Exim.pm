@@ -333,7 +333,7 @@ sub scan {
         if( defined $mhead->{'x-failed-recipients'} ) {
             # X-Failed-Recipients: kijitora@example.jp
             my @rcptinhead = split( ',', $mhead->{'x-failed-recipients'} );
-            map { $_ =~ y/ //d } @rcptinhead;
+            map { $_ =~ s/\A[ ]+//; $_ =~ s/[ ]+\z// } @rcptinhead;
             $recipients = scalar @rcptinhead;
 
             for my $e ( @rcptinhead ) {
