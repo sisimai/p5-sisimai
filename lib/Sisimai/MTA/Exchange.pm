@@ -264,18 +264,19 @@ sub scan {
 
         if( $e->{'diagnosis'} =~ m{\AMSEXCH:.+\s*[(]([0-9A-F]{8})[)]\s*(.*)\z} ) {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
-            my $c = $1;
-            my $d = $2;
-            my $s = '';
+            my $capturedcode = $1;
+            my $errormessage = $2;
+            my $pseudostatus = '';
 
             for my $r ( keys %$ErrorCodeTable ) {
-                next unless grep { $c eq $_ } @{ $ErrorCodeTable->{ $r } };
+                # Find captured code from the error code table
+                next unless grep { $capturedcode eq $_ } @{ $ErrorCodeTable->{ $r } };
                 $e->{'reason'} = $r;
-                $s = Sisimai::SMTP::Status->code( $r );
-                $e->{'status'} = $s if length $s;
+                $pseudostatus = Sisimai::SMTP::Status->code( $r );
+                $e->{'status'} = $pseudostatus if length $pseudostatus;
                 last;
             }
-            $e->{'diagnosis'} = $d;
+            $e->{'diagnosis'} = $errormessage;
         }
 
         unless( $e->{'reason'} ) {
