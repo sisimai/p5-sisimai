@@ -133,7 +133,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r = $mhead->{'received'};
