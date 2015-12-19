@@ -53,9 +53,7 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $boundary00 = '';    # (String) Boundary string
     my $endoferror = 0;     # (Integer) Flag for the end of error message
-
     my $v = undef;
-    my $p = '';
 
     $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
     $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
@@ -164,13 +162,8 @@ sub scan {
                         $v->{'rhost'} = $1;
                     }
                 }
-            } 
+            }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;
