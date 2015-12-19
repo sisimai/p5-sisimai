@@ -124,7 +124,7 @@ sub scan {
             #
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m{\A[<]([^ ]+[@][^ ]+)[>][\s\t]+[(](.+)[)]\z} ) {
+            if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\s+[(](.+)[)]\z/ ) {
                 # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -154,7 +154,7 @@ sub scan {
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
 
-                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\t+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
