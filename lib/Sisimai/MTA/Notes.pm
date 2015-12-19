@@ -61,9 +61,7 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $characters = '';    # (String) Character set name of the bounce mail
     my $removedmsg = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';
-
     my $v = undef;
-    my $p = '';
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -163,11 +161,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     unless( $recipients ) {
