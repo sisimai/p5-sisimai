@@ -50,7 +50,6 @@ sub scan {
     return undef unless $match;
 
     require Sisimai::Address;
-
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
@@ -58,9 +57,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-
     my $v = undef;
-    my $p = '';
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -200,11 +197,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;
