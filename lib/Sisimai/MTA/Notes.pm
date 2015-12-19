@@ -176,14 +176,13 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
         $e->{'agent'} = __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'recipient'} = Sisimai::Address->s3s4( $e->{'recipient'} );
