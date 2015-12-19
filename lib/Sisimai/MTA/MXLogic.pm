@@ -235,43 +235,35 @@ sub scan {
 
         if( ! $e->{'command'} ) {
             # Get the SMTP command name for the session
-            COMMAND: while(1) {
-                # Get the SMTP command name for the session
-                SMTP: for my $r ( @$ReCommand ) {
-                    # Verify each regular expression of SMTP commands
-                    next unless $e->{'diagnosis'} =~ $r;
-                    $e->{'command'} = uc $1;
-                    last(COMMAND);
-                }
+            SMTP: for my $r ( @$ReCommand ) {
+                # Verify each regular expression of SMTP commands
+                next unless $e->{'diagnosis'} =~ $r;
+                $e->{'command'} = uc $1;
                 last;
             }
 
-            REASON: while(1) {
-                # Detect the reason of bounce
-                if( $e->{'command'} eq 'MAIL' ) {
-                    # MAIL | Connected to 192.0.2.135 but sender was rejected.
-                    $e->{'reason'} = 'rejected';
+            # Detect the reason of bounce
+            if( $e->{'command'} eq 'MAIL' ) {
+                # MAIL | Connected to 192.0.2.135 but sender was rejected.
+                $e->{'reason'} = 'rejected';
 
-                } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
-                    # HELO | Connected to 192.0.2.135 but my name was rejected.
-                    $e->{'reason'} = 'blocked';
+            } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
+                # HELO | Connected to 192.0.2.135 but my name was rejected.
+                $e->{'reason'} = 'blocked';
 
-                } else {
-                    # Verify each regular expression of session errors
-                    SESSION: for my $r ( keys %$ReFailure ) {
-                        # Check each regular expression
-                        next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
-                        $e->{'reason'} = $r;
-                        last;
-                    }
-                    last if $e->{'reason'};
-
-                    if( $e->{'diagnosis'} =~ $ReDelayed ) {
-                        # The reason "expired"
-                        $e->{'reason'} = 'expired';
-                    }
+            } else {
+                # Verify each regular expression of session errors
+                SESSION: for my $r ( keys %$ReFailure ) {
+                    # Check each regular expression
+                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                    $e->{'reason'} = $r;
+                    last;
                 }
-                last;
+
+                unless( $e->{'reason'} ) {
+                    # The reason "expired"
+                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelayed;
+                }
             }
         }
 
