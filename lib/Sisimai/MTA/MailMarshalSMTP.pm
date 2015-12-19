@@ -77,16 +77,15 @@ sub scan {
             # After "message/rfc822"
             if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                 # Get required headers only
-                my $lhs = $1;
-                my $whs = lc $lhs;
+                my $lhs = lc $1;
 
                 $previousfn = '';
-                next unless exists $RFC822Head->{ $whs };
+                next unless exists $RFC822Head->{ $lhs };
 
-                $previousfn  = lc $lhs;
+                $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A[\s\t]+/ ) {
+            } elsif( $e =~ m/\A\s+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
