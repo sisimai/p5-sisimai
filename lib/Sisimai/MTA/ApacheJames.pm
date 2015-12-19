@@ -13,10 +13,10 @@ my $Re1 = {
     # apache-james-2.3.2/src/java/org/apache/james/transport/mailets/
     #   AbstractNotify.java|124:  out.println("Error message below:");
     #   AbstractNotify.java|128:  out.println("Message details:");
-    'begin'      => qr/\AContent-Disposition:[ ]inline/,
-    'error'      => qr/\AError message below:\z/,
-    'rfc822'     => qr|\AContent-Type: message/rfc822|,
-    'endof'      => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'begin'  => qr/\AContent-Disposition:[ ]inline/,
+    'error'  => qr/\AError message below:\z/,
+    'rfc822' => qr|\AContent-Type: message/rfc822|,
+    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 my $LongFields = Sisimai::RFC5322->LONGFIELDS;
