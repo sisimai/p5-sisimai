@@ -227,8 +227,7 @@ sub scan {
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {
                     # Get localhost and remote host name from Received header.
-                    my $r = $mhead->{'received'};
-                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received( $mhead->{'received'}->[-1] ) };
                 }
             }
         }
