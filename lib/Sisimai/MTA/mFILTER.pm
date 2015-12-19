@@ -165,11 +165,11 @@ sub scan {
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            my $x = Sisimai::RFC5322->received( $r->[-1] );
+            my $rheads = $mhead->{'received'};
+            my $rhosts = Sisimai::RFC5322->received( $rheads->[-1] );
 
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            for my $ee ( @$x ) {
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $rheads->[0] ) };
+            for my $ee ( @$rhosts ) {
                 # Avoid "... by m-FILTER"
                 next unless $ee =~ m/[.]/;
                 $e->{'rhost'} = $ee;
