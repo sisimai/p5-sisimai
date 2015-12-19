@@ -59,9 +59,7 @@ sub scan {
     my $diagnostic = '';    # (String) Alternative diagnostic message
     my $subjecttxt = undef; # (String) Alternative Subject text
     my $gotmessage = -1;    # (Integer) Flag for error message
-
     my $v = undef;
-    my $p = '';
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -163,11 +161,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;
