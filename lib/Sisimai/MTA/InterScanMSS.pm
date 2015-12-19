@@ -57,9 +57,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-
     my $v = undef;
-    my $p = '';
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -115,15 +113,14 @@ sub scan {
                 $e =~ m/\A.+[<>]{3}\s+.+[<]([^ ]+[@][^ ]+)[>]/ ) {
                 # Sent <<< RCPT TO:<kijitora@example.co.jp>
                 # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
-                my $r = $1;
-                if( length $v->{'recipient'} && $r ne $v->{'recipient'} ) {
+                my $cr = $1;
+                if( length $v->{'recipient'} && $cr ne $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[ -1 ];
                 }
-                $v->{'recipient'} = $r;
+                $v->{'recipient'} = $cr;
                 $recipients = scalar @$dscontents;
-
             }
 
             if( $e =~ m/\ASent\s+[<]{3}\s+([A-Z]{4})\s/ ) {
@@ -135,11 +132,6 @@ sub scan {
                 $v->{'diagnosis'} = $1;
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;
