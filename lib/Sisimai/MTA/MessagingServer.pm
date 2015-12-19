@@ -155,16 +155,15 @@ sub scan {
             } elsif( $e =~ m/\A\s+Remote system:\s*dns;([^ ]+)\s*([^ ]+)\s*.+\z/ ) {
                 #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25)
                 #     (6jo.example.jp ESMTP SENDMAIL-VM)
-                my $r = $1; # remote host
-                my $s = $2; # smtp session
+                my $remotehost = $1; # remote host
+                my $sessionlog = $2; # smtp session
+                $v->{'rhost'} = $remotehost;
 
-                $v->{'rhost'} = $r;
-
-                if( $s =~ m/\A[(]TCP|(.+)|\d+|(.+)|\d+[)]/ ) {
+                if( $sessionlog =~ m/\A[(]TCP|(.+)|\d+|(.+)|\d+[)]/ ) {
                     # The value does not include ".", use IP address instead.
                     # (TCP|17.111.174.67|47323|192.0.2.225|25)
                     $v->{'lhost'} = $1;
-                    $v->{'rhost'} = $2 unless $r =~ m/[^.]+[.][^.]+/;
+                    $v->{'rhost'} = $2 unless $remotehost =~ m/[^.]+[.][^.]+/;
                 }
 
             } else {
@@ -191,9 +190,9 @@ sub scan {
 
                 } elsif( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns;mr21p30im-asmtp004.me.com (tcp-daemon)
-                    my $l = $1;
-                    $v->{'lhost'} ||= $l;
-                    $v->{'lhost'}   = $l unless $v->{'lhost'} =~ m/[^.]+[.][^ ]+/;
+                    my $localhost = $1;
+                    $v->{'lhost'} ||= $localhost;
+                    $v->{'lhost'}   = $localhost unless $v->{'lhost'} =~ m/[^.]+[.][^ ]+/;
                 }
             }
         } # End of if: rfc822
@@ -204,7 +203,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
         $e->{'agent'} = __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
@@ -224,8 +222,8 @@ sub scan {
 
         if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
-            my $r = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-            $e->{'status'} = $r if length $r;
+            my $pseudostatus = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+            $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
