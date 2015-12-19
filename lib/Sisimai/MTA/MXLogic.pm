@@ -115,9 +115,7 @@ sub scan {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
-
     my $v = undef;
-    my $p = '';
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -199,11 +197,6 @@ sub scan {
                 $v->{'diagnosis'} .= $e.' ';
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
     return undef unless $recipients;
 
