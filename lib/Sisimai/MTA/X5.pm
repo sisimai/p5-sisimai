@@ -172,7 +172,6 @@ sub scan {
                 $rfc822next->{ $previousfn } = 1;
             }
         }
-
     } continue {
         # Save the current line for the next loop
         $p = $e;
@@ -197,7 +196,6 @@ sub scan {
         $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'spec'}      = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
-
     } # end of for()
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
