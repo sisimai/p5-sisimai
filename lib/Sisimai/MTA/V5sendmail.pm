@@ -136,8 +136,8 @@ sub scan {
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[ -1 ];
                 }
-                $v->{'recipient'}  = $1;
-                $v->{'diagnosis'}  = $2;
+                $v->{'recipient'} = $1;
+                $v->{'diagnosis'} = $2;
 
                 if( $responding[ $recipients ] ) {
                     # Concatenate the response of the server and error message
