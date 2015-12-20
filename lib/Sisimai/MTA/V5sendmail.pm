@@ -173,7 +173,7 @@ sub scan {
 
         } # End of if: rfc822
     }
-    return unless $readcursor & $Indicators->{'message-rfc822'};
+    return undef unless $readcursor & $Indicators->{'message-rfc822'};
 
     unless( $recipients ) {
         # Get the recipient address from the original message
