@@ -72,6 +72,7 @@ sub scan {
     my @responding = ();    # (Array) Responses from remote server
     my @commandset = ();    # (Array) SMTP command which is sent to remote server
     my $anotherset = {};    # (Ref->Hash) Another error information
+    my $errorindex = -1;
     my $v = undef;
 
     for my $e ( @hasdivided ) {
@@ -183,13 +184,10 @@ sub scan {
         }
     }
     return undef unless $recipients;
-
     require Sisimai::String;
 
-    my $n = -1;
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        $n++;
+        $errorindex++;
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
@@ -200,7 +198,7 @@ sub scan {
 
         $e->{'spec'}  ||= 'SMTP';
         $e->{'agent'}   = __PACKAGE__->smtpagent;
-        $e->{'command'} = $commandset[ $n ] || '';
+        $e->{'command'} = $commandset[ $errorindex ] || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
@@ -208,7 +206,7 @@ sub scan {
 
         } else {
             # Set server response as a error message
-            $e->{'diagnosis'} ||= $responding[ $n ];
+            $e->{'diagnosis'} ||= $responding[ $errorindex ];
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
