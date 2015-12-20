@@ -50,9 +50,7 @@ sub scan {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $datestring = '';    # (String) Date string
-
     my $v = undef;
-    my $p = '';
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -124,11 +122,6 @@ sub scan {
                 $datestring = $1;
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;
@@ -136,7 +129,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
         $e->{'agent'} = __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
@@ -150,7 +142,6 @@ sub scan {
         $e->{'spec'}      = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'date'}      = $datestring || '';
-
     } # end of for()
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
