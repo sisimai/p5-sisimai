@@ -61,6 +61,7 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $characters = '';    # (String) Character set name of the bounce mail
     my $removedmsg = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';
+    my $encodedmsg = '';
     my $v = undef;
 
     for my $e ( @hasdivided ) {
@@ -139,21 +140,20 @@ sub scan {
 
                 if( $e =~ m/[^\x20-\x7e]/ ) {
                     # Error message is not ISO-8859-1
-                    my $s = $e;
+                    $encodedmsg = $e;
                     if( length $characters ) {
                         # Try to convert string
-                        eval { Encode::from_to( $s, $characters, 'utf8' ); };
+                        eval { Encode::from_to( $encodedmsg, $characters, 'utf8' ); };
                         if( $@ ) {
                             # Failed to convert
-                            $s = $removedmsg;
+                            $encodedmsg = $removedmsg;
                         }
 
                     } else {
-                        $s = $removedmsg;
+                        # No character set in Content-Type header
+                        $encodedmsg = $removedmsg;
                     }
-
-                    # $s = $removedmsg if $s =~ m/[^\x20-\x7e]/;
-                    $v->{'diagnosis'} .= $s;
+                    $v->{'diagnosis'} .= $encodedmsg;
 
                 } else {
                     # Error message does not include multi-byte character
@@ -192,8 +192,8 @@ sub scan {
             next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
 
-            my $s = Sisimai::SMTP::Status->code( $r );
-            $e->{'status'} = $s if length $s;
+            my $pseudostatus = Sisimai::SMTP::Status->code( $r );
+            $e->{'status'} = $pseudostatus if length $pseudostatus;
             last;
         }
 
