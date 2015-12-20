@@ -6,10 +6,10 @@ use warnings;
 
 my $Re0 = {
     'subject'  => qr{\A(?:
-          failure[ ]notice
-         |Permanent[ ]Delivery[ ]Failure
-         )
-        }xi,
+         failure[ ]notice
+        |Permanent[ ]Delivery[ ]Failure
+        )
+    }xi,
     'received' => qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+for[ ]+bounce[)]/,
 };
 #  qmail-remote.c:248|    if (code >= 500) {
@@ -24,8 +24,7 @@ my $Re0 = {
 my $Re1 = {
     'begin'  => qr{\A(?>
          He/Her[ ]is[ ]not.+[ ]user
-        |Hi[.][ ].+[ ]unable[ ]to[ ]deliver[ ]your[ ]message[ ]to[ ]
-            the[ ]following[ ]addresses
+        |Hi[.][ ].+[ ]unable[ ]to[ ]deliver[ ]your[ ]message[ ]to[ ]the[ ]following[ ]addresses
         |Su[ ]mensaje[ ]no[ ]pudo[ ]ser[ ]entregado
         |This[ ]is[ ]the[ ](?:
              machine[ ]generated[ ]message[ ]from[ ]mail[ ]service
@@ -51,33 +50,25 @@ my $Re1 = {
 };
 
 my $ReSMTP = {
-    'conn'  => qr{
-        # Error text regular expressions which defined in qmail-remote.c
-        # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
-        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]greeting[ ]failed[.]
-    }x,
-    'ehlo' => qr{
-        # qmail-remote.c:231|  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
-        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]my[ ]name[ ]was[ ]rejected[.]
-    }x,
-    'mail'  => qr{
-        # qmail-remote.c:238|  if (code >= 500) quit("DConnected to "," but sender was rejected");
-        # reason = rejected
-        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]sender[ ]was[ ]rejected[.]
-    }x,
-    'rcpt'  => qr{
-        # qmail-remote.c:249|  out("h"); outhost(); out(" does not like recipient.\n");
-        # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
-        # reason = userunknown
-        (?:Error:)?.+[ ]does[ ]not[ ]like[ ]recipient[.]
-    },
+    # Error text regular expressions which defined in qmail-remote.c
+    # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
+    'conn'  => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]greeting[ ]failed[.]/x,
+    # qmail-remote.c:231|  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
+    'ehlo'  => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]my[ ]name[ ]was[ ]rejected[.]/x,
+    # qmail-remote.c:238|  if (code >= 500) quit("DConnected to "," but sender was rejected");
+    # reason = rejected
+    'mail'  => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]sender[ ]was[ ]rejected[.]/x,
+    # qmail-remote.c:249|  out("h"); outhost(); out(" does not like recipient.\n");
+    # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
+    # reason = userunknown
+    'rcpt'  => qr/(?:Error:)?.+[ ]does[ ]not[ ]like[ ]recipient[.]/x,
+    # qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
+    # qmail-remote.c:266|  if (code >= 400) quit("Z"," failed on DATA command");
+    # qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
+    # qmail-remote.c:272|  if (code >= 400) quit("Z"," failed after I sent the message");
     'data'  => qr{(?:
          (?:Error:)?.+[ ]failed[ ]on[ ]DATA[ ]command[.]
-        # qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
-        # qmail-remote.c:266|  if (code >= 400) quit("Z"," failed on DATA command");
         |(?:Error:)?.+[ ]failed[ ]after[ ]I[ ]sent[ ]the[ ]message[.]
-        # qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
-        # qmail-remote.c:272|  if (code >= 400) quit("Z"," failed after I sent the message");
         )
     }x,
 };
@@ -104,10 +95,10 @@ my $ReLDAP = {
         |Permanent[ ]error[ ]while[ ]executing[ ]qmail[-]forward    # 5.4.4
         |Temporary[ ](?:
              error[ ](?:
-                 in[ ]automatic[ ]homedir[ ]creation            # 4.3.0 or 5.3.0
-                |while[ ]executing[ ]qmail[-]forward            # 4.4.4
+                 in[ ]automatic[ ]homedir[ ]creation    # 4.3.0 or 5.3.0
+                |while[ ]executing[ ]qmail[-]forward    # 4.4.4
                 )
-            |failure[ ]in[ ]LDAP[ ]lookup                       # 4.4.3
+            |failure[ ]in[ ]LDAP[ ]lookup               # 4.4.3
             )
         |Unable[ ]to[ ](?:
              contact[ ]LDAP[ ]server                            # 4.4.3
@@ -118,36 +109,27 @@ my $ReLDAP = {
 };
 
 # userunknown + expired
-my $ReOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
+my $ReOnHold  = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-my $ReCommand = qr/
-    # qmail-remote-fallback.patch
-    Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]
-/x;
+# qmail-remote-fallback.patch
+my $ReCommand = qr/Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]/x;
 
 my $ReSession = {
-    # 'onhold' => qr//,
+    # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
+    # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
     'userunknown' => qr{(?:
-        # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
          no[ ]mailbox[ ]here[ ]by[ ]that[ ]name
-        # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
         |[ ]does[ ]not[ ]like[ ]recipient[.]
         )
     }x,
-    'mailboxfull' => qr{
-        # error_str.c:192|  X(EDQUOT,"disk quota exceeded")
-        disk[ ]quota[ ]exceeded
-    }x,
-    'mesgtoobig' => qr{
-        # qmail-qmtpd.c:233| ... result = "Dsorry, that message size exceeds my databytes limit (#5.3.4)";
-        # qmail-smtpd.c:391| ... out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return;
-        Message[ ]size[ ]exceeds[ ]fixed[ ]maximum[ ]message[ ]size:
-    }x,
-    'hostunknown' => qr{
-        # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie();
-        # qmail-remote.c:78|  Sorry, I couldn't find any host named ");
-        \ASorry[,][ ]I[ ]couldn[']t[ ]find[ ]any[ ]host[ ]
-    }x,
+    # error_str.c:192|  X(EDQUOT,"disk quota exceeded")
+    'mailboxfull' => qr/disk[ ]quota[ ]exceeded/x,
+    # qmail-qmtpd.c:233| ... result = "Dsorry, that message size exceeds my databytes limit (#5.3.4)";
+    # qmail-smtpd.c:391| ... out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return;
+    'mesgtoobig'  => qr/Message[ ]size[ ]exceeds[ ]fixed[ ]maximum[ ]message[ ]size:/x,
+    # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie();
+    # qmail-remote.c:78|  Sorry, I couldn't find any host named ");
+    'hostunknown' => qr/\ASorry[,][ ]I[ ]couldn[']t[ ]find[ ]any[ ]host[ ]/x,
     'systemerror' => qr{(?>
          bad[ ]interpreter:[ ]No[ ]such[ ]file[ ]or[ ]directory
         |system[ ]error
@@ -161,14 +143,11 @@ my $ReSession = {
             or[ ]A[ ]for[ ]that[ ]host
         )
     }x,
-    'systemfull' => 
-        qr/Requested action not taken: mailbox unavailable [(]not enough free space[)]/,
+    'systemfull' => qr/Requested action not taken: mailbox unavailable [(]not enough free space[)]/,
 };
 
-my $ReDelayed = qr{
-    # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
-    this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z
-}x;
+# qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
+my $ReDelayed = qr{this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z}x;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $LongFields = Sisimai::RFC5322->LONGFIELDS;
