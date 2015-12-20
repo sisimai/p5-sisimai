@@ -199,8 +199,7 @@ sub scan {
 
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-
-    } # end of for()
+    }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 

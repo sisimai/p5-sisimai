@@ -193,8 +193,7 @@ sub make {
                 $p->{'recipient'} = $p->{'alias'};
                 $p->{'alias'} = $w;
             }
-
-        } # End of EMAIL_ADDRESS
+        }
         next unless $p->{'addresser'};
         next unless $p->{'recipient'};
 

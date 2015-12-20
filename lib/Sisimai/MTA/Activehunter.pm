@@ -145,7 +145,7 @@ sub scan {
         $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'agent'}     = __PACKAGE__->smtpagent;
 
-    } # end of for()
+    }
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

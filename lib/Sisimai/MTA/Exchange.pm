@@ -292,10 +292,8 @@ sub scan {
         $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'agent'}  = __PACKAGE__->smtpagent;
-
         delete $e->{'msexch'};
-
-    } # end of for()
+    }
 
     if( length( $rfc822part ) == 0 ) {
         # When original message does not included in the bounce message

@@ -170,7 +170,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
         $e->{'agent'} = __PACKAGE__->smtpagent;
 
         if( scalar @{ $mhead->{'received'} } ) {
@@ -198,8 +197,7 @@ sub scan {
             # Fallback: Add the value of Subject as a Subject header
             $rfc822part .= sprintf( "Subject: %s\n", $subjecttxt );
         }
-
-    } # end of for()
+    }
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
