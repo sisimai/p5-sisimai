@@ -27,7 +27,8 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Improved code of Sisimai::MTA::IMailServer for support more error message
       patterns: issue #143.
     - Issue #145 Code improvements: back port from Ruby version of Sisimai.
-    - Fix bug in code to detect SMTP command in Sisimai::MTA::X4.
+    - Fix bug in regular expression to detect SMTP command in Sisimai::MTA::X4
+      and Sisimai::MTA::qmail.
 
 4.13.1  Tue, 17 Nov 2015 14:13:10 +0900 (JST)
     - Issue #95, Add some sample emails for Sisimai::MTA::Exim.
