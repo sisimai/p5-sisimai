@@ -113,8 +113,7 @@ my $ReOnHold  = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been 
 
 # qmail-remote-fallback.patch
 my $ReCommand = qr/Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]/x;
-
-my $ReSession = {
+my $ReFailure = {
     # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
     # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
     'userunknown' => qr{(?:
@@ -317,16 +316,16 @@ sub scan {
                 $e->{'reason'} = 'onhold';
 
             } else {
-                SESSION: for my $r ( keys %$ReSession ) {
+                SESSION: for my $r ( keys %$ReFailure ) {
                     # Verify each regular expression of session errors
                     if( $e->{'alterrors'} ) {
                         # Check the value of "alterrors"
-                        next unless $e->{'alterrors'} =~ $ReSession->{ $r };
+                        next unless $e->{'alterrors'} =~ $ReFailure->{ $r };
                         $e->{'reason'} = $r;
                     }
                     last if $e->{'reason'};
 
-                    next unless $e->{'diagnosis'} =~ $ReSession->{ $r };
+                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
                     $e->{'reason'} = $r;
                     last;
                 }

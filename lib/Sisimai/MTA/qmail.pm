@@ -92,36 +92,26 @@ my $ReLDAP = {
 };
 
 # userunknown + expired
-my $ReOnHold = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
+my $ReOnHold  = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
 
-my $ReCommand = qr/
-    # qmail-remote-fallback.patch
-    Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]
-/x;
-
+# qmail-remote-fallback.patch
+my $ReCommand = qr/Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]/x;
 my $ReFailure = {
-    # 'onhold' => qr//,
+    # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
+    # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
     'userunknown' => qr{(?:
-        # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
          no[ ]mailbox[ ]here[ ]by[ ]that[ ]name
-        # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
         |[ ]does[ ]not[ ]like[ ]recipient[.]
         )
     }x,
-    'mailboxfull' => qr{
-        # error_str.c:192|  X(EDQUOT,"disk quota exceeded")
-        disk[ ]quota[ ]exceeded
-    }x,
-    'mesgtoobig' => qr{
-        # qmail-qmtpd.c:233| ... result = "Dsorry, that message size exceeds my databytes limit (#5.3.4)";
-        # qmail-smtpd.c:391| ... out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return;
-        Message[ ]size[ ]exceeds[ ]fixed[ ]maximum[ ]message[ ]size:
-    }x,
-    'hostunknown' => qr{
-        # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie();
-        # qmail-remote.c:78|  Sorry, I couldn't find any host named ");
-        \ASorry[,][ ]I[ ]couldn[']t[ ]find[ ]any[ ]host[ ]
-    }x,
+    # error_str.c:192|  X(EDQUOT,"disk quota exceeded")
+    'mailboxfull' => qr/disk[ ]quota[ ]exceeded/x,
+    # qmail-qmtpd.c:233| ... result = "Dsorry, that message size exceeds my databytes limit (#5.3.4)";
+    # qmail-smtpd.c:391| ... out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return;
+    'mesgtoobig' => qr/Message[ ]size[ ]exceeds[ ]fixed[ ]maximum[ ]message[ ]size:/x,
+    # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie();
+    # qmail-remote.c:78|  Sorry, I couldn't find any host named ");
+    'hostunknown' => qr/\ASorry[,][ ]I[ ]couldn[']t[ ]find[ ]any[ ]host[ ]/x,
     'systemerror' => qr{(?>
          bad[ ]interpreter:[ ]No[ ]such[ ]file[ ]or[ ]directory
         |system[ ]error
@@ -135,14 +125,11 @@ my $ReFailure = {
             or[ ]A[ ]for[ ]that[ ]host
         )
     }x,
-    'systemfull' => 
-        qr/Requested action not taken: mailbox unavailable [(]not enough free space[)]/,
+    'systemfull' => qr/Requested action not taken: mailbox unavailable [(]not enough free space[)]/,
 };
 
-my $ReDelayed = qr{
-    # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
-    this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z
-}x;
+# qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
+my $ReDelayed  = qr/this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z/x;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $LongFields = Sisimai::RFC5322->LONGFIELDS;
