@@ -286,67 +286,64 @@ sub scan {
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( ! $e->{'command'} ) {
+            # Get the SMTP command name for the session
+            SMTP: for my $r ( keys %$ReSMTP ) {
+                # Verify each regular expression of SMTP commands
+                next unless $e->{'diagnosis'} =~ $ReSMTP->{ $r };
+                $e->{'command'} = uc $r;
+                last;
+            }
 
-            COMMAND: while(1) {
-                # Get the SMTP command name for the session
-                SMTP: for my $r ( keys %$ReSMTP ) {
-                    # Verify each regular expression of SMTP commands
-                    next unless $e->{'diagnosis'} =~ $ReSMTP->{ $r };
-                    $e->{'command'} = uc $r;
-                    last(COMMAND);
-                }
-
+            unless( $e->{'command'} ) {
                 # Verify each regular expression of patches
                 $e->{'command'} = uc $1 if $e->{'diagnosis'} =~ $ReCommand;
-                last;
             }
         }
 
-        REASON: while(1) {
-            # Detect the reason of bounce
-            if( $e->{'command'} eq 'MAIL' ) {
-                # MAIL | Connected to 192.0.2.135 but sender was rejected.
-                $e->{'reason'} = 'rejected';
+        # Detect the reason of bounce
+        if( $e->{'command'} eq 'MAIL' ) {
+            # MAIL | Connected to 192.0.2.135 but sender was rejected.
+            $e->{'reason'} = 'rejected';
 
-            } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
-                # HELO | Connected to 192.0.2.135 but my name was rejected.
-                $e->{'reason'} = 'blocked';
+        } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
+            # HELO | Connected to 192.0.2.135 but my name was rejected.
+            $e->{'reason'} = 'blocked';
+
+        } else {
+            # Try to match with each error message in the table
+            if( $e->{'diagnosis'} =~ $ReOnHold ) {
+                # To decide the reason require pattern match with 
+                # Sisimai::Reason::* modules
+                $e->{'reason'} = 'onhold';
 
             } else {
-                # Try to match with each error message in the table
-                if( $e->{'diagnosis'} =~ $ReOnHold ) {
-                    # To decide the reason require pattern match with 
-                    # Sisimai::Reason::* modules
-                    $e->{'reason'} = 'onhold';
-
-                } else {
-
-                    SESSION: for my $r ( keys %$ReSession ) {
-                        # Verify each regular expression of session errors
-                        if( $e->{'alterrors'} ) {
-                            # Check the value of "alterrors"
-                            next unless $e->{'alterrors'} =~ $ReSession->{ $r };
-                            $e->{'reason'} = $r;
-                        }
-                        last(SESSION) if $e->{'reason'};
-
-                        next unless $e->{'diagnosis'} =~ $ReSession->{ $r };
+                SESSION: for my $r ( keys %$ReSession ) {
+                    # Verify each regular expression of session errors
+                    if( $e->{'alterrors'} ) {
+                        # Check the value of "alterrors"
+                        next unless $e->{'alterrors'} =~ $ReSession->{ $r };
                         $e->{'reason'} = $r;
-                        last(SESSION);
                     }
+                    last if $e->{'reason'};
 
+                    next unless $e->{'diagnosis'} =~ $ReSession->{ $r };
+                    $e->{'reason'} = $r;
+                    last;
+                }
+
+                unless( $e->{'reason'} ) {
                     LDAP: for my $r ( keys %$ReLDAP ) {
                         # Verify each regular expression of LDAP errors
                         next unless $e->{'diagnosis'} =~ $ReLDAP->{ $r };
                         $e->{'reason'} = $r;
-                        last(LDAP);
+                        last;
                     }
+                }
 
-                    last if $e->{'reason'};
+                unless( $e->{'reason'} ) {
                     $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelayed;
                 }
             }
-            last;
         }
 
         $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
