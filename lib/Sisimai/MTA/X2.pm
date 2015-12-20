@@ -53,7 +53,6 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $datestring = '';
 
     my $v = undef;
     my $p = '';
@@ -153,8 +152,6 @@ sub scan {
         $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'spec'}      = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
-        $e->{'date'}      = $datestring || '';
-
     } # end of for()
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
