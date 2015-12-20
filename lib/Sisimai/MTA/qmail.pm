@@ -25,33 +25,25 @@ my $Re1 = {
 };
 
 my $ReSMTP = {
-    'conn'  => qr{
-        # Error text regular expressions which defined in qmail-remote.c
-        # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
-        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]greeting[ ]failed[.]
-    }x,
-    'ehlo' => qr{
-        # qmail-remote.c:231|  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
-        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]my[ ]name[ ]was[ ]rejected[.]
-    }x,
-    'mail'  => qr{
-        # qmail-remote.c:238|  if (code >= 500) quit("DConnected to "," but sender was rejected");
-        # reason = rejected
-        (?:Error:)?Connected[ ]to[ ].+[ ]but[ ]sender[ ]was[ ]rejected[.]
-    }x,
-    'rcpt'  => qr{
-        # qmail-remote.c:249|  out("h"); outhost(); out(" does not like recipient.\n");
-        # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
-        # reason = userunknown
-        (?:Error:)?.+[ ]does[ ]not[ ]like[ ]recipient[.]
-    },
+    # Error text regular expressions which defined in qmail-remote.c
+    # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
+    'conn'  => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]greeting[ ]failed[.]/x,
+    # qmail-remote.c:231|  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
+    'ehlo' => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]my[ ]name[ ]was[ ]rejected[.]/x,
+    # qmail-remote.c:238|  if (code >= 500) quit("DConnected to "," but sender was rejected");
+    # reason = rejected
+    'mail'  => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]sender[ ]was[ ]rejected[.]/x,
+    # qmail-remote.c:249|  out("h"); outhost(); out(" does not like recipient.\n");
+    # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
+    # reason = userunknown
+    'rcpt'  => qr/(?:Error:)?.+[ ]does[ ]not[ ]like[ ]recipient[.]/x,
+    # qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
+    # qmail-remote.c:266|  if (code >= 400) quit("Z"," failed on DATA command");
+    # qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
+    # qmail-remote.c:272|  if (code >= 400) quit("Z"," failed after I sent the message");
     'data'  => qr{(?:
          (?:Error:)?.+[ ]failed[ ]on[ ]DATA[ ]command[.]
-        # qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
-        # qmail-remote.c:266|  if (code >= 400) quit("Z"," failed on DATA command");
         |(?:Error:)?.+[ ]failed[ ]after[ ]I[ ]sent[ ]the[ ]message[.]
-        # qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
-        # qmail-remote.c:272|  if (code >= 400) quit("Z"," failed after I sent the message");
         )
     }x,
 };
