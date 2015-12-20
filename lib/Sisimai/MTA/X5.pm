@@ -39,6 +39,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
+    my $plain = '';
 
     # To: "NotificationRecipients" <...>
     $match++ if defined $mhead->{'to'} && $mhead->{'to'} =~ $Re0->{'to'};
@@ -57,8 +58,8 @@ sub scan {
 
     if( Sisimai::MIME->is_mimeencoded( \$mhead->{'subject'} ) ) {
         # Subject: =?iso-2022-jp?B?UmV0dXJuZWQgbWFpbDogVXNlciB1bmtub3du?=
-        my $s = Sisimai::MIME->mimedecode( [ $mhead->{'subject'} ] );
-        $match++ if $s =~ m/Mail Delivery Subsystem/;
+        $plain = Sisimai::MIME->mimedecode( [ $mhead->{'subject'} ] );
+        $match++ if $plain =~ m/Mail Delivery Subsystem/;
     }
     return undef if $match < 2;
 
@@ -92,7 +93,7 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Before "message/rfc822"
             next unless length $e;
             $v = $dscontents->[ -1 ];
 
