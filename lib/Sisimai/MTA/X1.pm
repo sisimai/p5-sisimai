@@ -5,13 +5,13 @@ use strict;
 use warnings;
 
 my $Re0 = {
-    'from'     => qr/["]Mail Deliver System["] /,
-    'subject'  => qr/\AReturned Mail: /,
+    'from'    => qr/["]Mail Deliver System["] /,
+    'subject' => qr/\AReturned Mail: /,
 };
 my $Re1 = {
-    'begin'    => qr/\AThe original message was received at (.+)\z/,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822'   => qr/\AReceived: from \d+[.]\d+[.]\d+[.]\d/,
+    'begin'   => qr/\AThe original message was received at (.+)\z/,
+    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'rfc822'  => qr/\AReceived: from \d+[.]\d+[.]\d+[.]\d/,
 };
 
 my $Indicators = __PACKAGE__->INDICATORS;
@@ -49,7 +49,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $datestring = '';
+    my $datestring = '';    # (String) Date string
 
     my $v = undef;
     my $p = '';
@@ -173,7 +173,7 @@ Sisimai::MTA::X1 - bounce mail parser class for C<X1>.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::X1 parses a bounce email which created by Unknown MTA #1.  Methods
+Sisimai::MTA::X1 parses a bounce email which created by Unknown MTA #1. Methods
 in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
