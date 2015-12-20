@@ -6,10 +6,10 @@ use warnings;
 
 my $Re0 = {
     'subject'  => qr{\A(?:
-                      failure[ ]notice
-                     |Permanent[ ]Delivery[ ]Failure
-                     )
-                    }xi,
+          failure[ ]notice
+         |Permanent[ ]Delivery[ ]Failure
+         )
+        }xi,
     'received' => qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+for[ ]+bounce[)]/,
 };
 #  qmail-remote.c:248|    if (code >= 500) {
@@ -23,28 +23,28 @@ my $Re0 = {
 # MTA module for qmail clones
 my $Re1 = {
     'begin'  => qr{\A(?>
-                     He/Her[ ]is[ ]not.+[ ]user
-                    |Hi[.][ ].+[ ]unable[ ]to[ ]deliver[ ]your[ ]message[ ]to[ ]
-                        the[ ]following[ ]addresses
-                    |Su[ ]mensaje[ ]no[ ]pudo[ ]ser[ ]entregado
-                    |This[ ]is[ ]the[ ](?:
-                         machine[ ]generated[ ]message[ ]from[ ]mail[ ]service
-                        |mail[ ]delivery[ ]agent[ ]at
-                        )
-                    |Unable[ ]to[ ]deliver[ ]message[ ]to[ ]the[ ]following[ ]address
-                    |Unfortunately,[ ]your[ ]mail[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]address:
-                    |Your[ ](?:
-                         mail[ ]message[ ]to[ ]the[ ]following[ ]address
-                        |message[ ]to[ ]the[ ]following[ ]addresses
-                        )
-                    |We're[ ]sorry[.]
-                    )
-                }ix,
+         He/Her[ ]is[ ]not.+[ ]user
+        |Hi[.][ ].+[ ]unable[ ]to[ ]deliver[ ]your[ ]message[ ]to[ ]
+            the[ ]following[ ]addresses
+        |Su[ ]mensaje[ ]no[ ]pudo[ ]ser[ ]entregado
+        |This[ ]is[ ]the[ ](?:
+             machine[ ]generated[ ]message[ ]from[ ]mail[ ]service
+            |mail[ ]delivery[ ]agent[ ]at
+            )
+        |Unable[ ]to[ ]deliver[ ]message[ ]to[ ]the[ ]following[ ]address
+        |Unfortunately,[ ]your[ ]mail[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]address:
+        |Your[ ](?:
+             mail[ ]message[ ]to[ ]the[ ]following[ ]address
+            |message[ ]to[ ]the[ ]following[ ]addresses
+            )
+        |We're[ ]sorry[.]
+        )
+    }ix,
     'rfc822' => qr{\A(?:
-                     ---[ ]Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message[.]
-                    |---[ ]Original[ ]message[ ]follows[.]
-                    )
-                }xi,
+         ---[ ]Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message[.]
+        |---[ ]Original[ ]message[ ]follows[.]
+        )
+    }xi,
     'error'  => qr/\ARemote host said:/,
     'sorry'  => qr/\A[Ss]orry[,.][ ]/,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
