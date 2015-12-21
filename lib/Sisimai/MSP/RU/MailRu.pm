@@ -168,7 +168,7 @@ sub scan {
                 # recipients. This is a permanent error. The following address(es) failed:
                 $v->{'softbounce'} = 0;
 
-            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s]+[.][a-zA-Z]+)\z/ ) {
+            } elsif( $e =~ m/\A\s+([^\s]+[@][^\s]+[.][a-zA-Z]+)\z/ ) {
                 #   kijitora@example.jp
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
