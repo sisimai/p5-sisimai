@@ -99,9 +99,7 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-
     my $v = undef;
-    my $p = '';
 
     my $rxboundary = Sisimai::MIME->boundary( $mhead->{'content-type'}, 1 );
     my @rxmessages = ();
@@ -215,11 +213,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;

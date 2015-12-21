@@ -182,7 +182,6 @@ sub scan {
                         $e = 'Diagnostic-Code: '.$e;
                     }
                 }
-
             } else {
                 # Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
                 # Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
@@ -200,11 +199,9 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;
