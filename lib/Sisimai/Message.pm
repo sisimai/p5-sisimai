@@ -152,10 +152,14 @@ sub divideup {
     my $class = shift;
     my $email = shift // return {};
 
+    my @hasdivided = undef;
     my $readcursor = 0;
     my $pseudofrom = 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
-    my @hasdivided = split( "\n", $$email );
+
+    $$email =~ s/[ \t]+$//gm; 
+    $$email =~ s/^[ \t]+$//gm;
+    @hasdivided = split( "\n", $$email );
     return {} unless scalar @hasdivided;
 
     if( substr( $hasdivided[0], 0, 5 ) eq 'From ' ) {
@@ -164,12 +168,9 @@ sub divideup {
         $aftersplit->{'from'} =~ y{\r\n}{}d;
     }
 
-    # Split email data to headers and a body part.
     SPLIT_EMAIL: for my $e ( @hasdivided ) {
-        # use split() instead of regular expression.
-        $e =~ y{\r\n}{}d;
-        $e =~ s/\A[ \t]+\z//;
-        $e =~ s/[ \t]+\z//;
+        # Split email data to headers and a body part.
+        $e =~ y/\r\n//d;
 
         if( $readcursor & $Indicators->{'endof'} ) {
             # The body part of the email
@@ -237,7 +238,7 @@ sub headers {
                 $structured->{ $currheader } = $rhs;
             }
 
-        } elsif( $e =~ m/\A\s+(.+?)\z/ ) {
+        } elsif( $e =~ m/\A[ \t]+(.+?)\z/ ) {
             # Ignore header?
             next if exists $IgnoreList->{ $currheader };
 
@@ -411,7 +412,7 @@ sub rewrite {
     # Check whether or not the message is a bounce mail.
     # Pre-Process email body if it is a forwarded bounce message.
     # Get the original text when the subject begins from 'fwd:' or 'fw:'
-    if( $mailheader->{'subject'} =~ m/\A\s*fwd?:/i ) {
+    if( $mailheader->{'subject'} =~ m/\A[ \t]*fwd?:/i ) {
         # Delete quoted strings, quote symbols(>)
         $$bodystring =~ s/^[>]+[ ]//gm;
         $$bodystring =~ s/^[>]$//gm;
