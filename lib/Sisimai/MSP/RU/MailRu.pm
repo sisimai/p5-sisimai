@@ -130,7 +130,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A[\s\t]+/ ) {
+            } elsif( $e =~ m/\A\s+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -171,7 +171,7 @@ sub scan {
                 # recipients. This is a permanent error. The following address(es) failed:
                 $v->{'softbounce'} = 0;
 
-            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s\t]+[.][a-zA-Z]+)\z/ ) {
+            } elsif( $e =~ m/\A\s+([^\s\t]+[@][^\s]+[.][a-zA-Z]+)\z/ ) {
                 #   kijitora@example.jp
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
