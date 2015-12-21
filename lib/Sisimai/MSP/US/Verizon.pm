@@ -75,9 +75,7 @@ sub scan {
     my $Re1        = {};    # (Ref->Hash) Delimiter patterns
     my $ReFailure  = {};    # (Ref->Hash) Error message patterns
     my $boundary00 = '';    # (String) Boundary string
-
     my $v = undef;
-    my $p = '';
 
     if( $vtext == 1 ) {
         # vtext.com
@@ -178,11 +176,6 @@ sub scan {
                     }
                 }
             } # End of if: rfc822
-
-        } continue {
-            # Save the current line for the next loop
-            $p = $e;
-            $e = '';
         }
 
     } else {
@@ -284,11 +277,6 @@ sub scan {
                     }
                 }
             } # End of if: rfc822
-
-        } continue {
-            # Save the current line for the next loop
-            $p = $e;
-            $e = undef;
         }
     }
 
