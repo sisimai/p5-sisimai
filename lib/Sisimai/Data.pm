@@ -225,7 +225,7 @@ sub make {
 
             if( defined $datestring ) {
                 # Get the value of timezone offset from $datestring
-                if( $datestring =~ m/\A(.+)\s+([-+]\d{4})\z/ ) {
+                if( $datestring =~ m/\A(.+)[ ]+([-+]\d{4})\z/ ) {
                     # Wed, 26 Feb 2014 06:05:48 -0500
                     $datestring = $1;
                     $zoneoffset = Sisimai::DateTime->tz2second($2);
@@ -279,7 +279,7 @@ sub make {
 
             CHECK_DELIVERY_STATUS_VALUE: {
                 # Cleanup the value of "Diagnostic-Code:" header
-                $p->{'diagnosticcode'} =~ s/\s+$EndOfEmail//;
+                $p->{'diagnosticcode'} =~ s/[ \t]+$EndOfEmail//;
                 my $v = Sisimai::SMTP::Status->find( $p->{'diagnosticcode'} );
                 if( $v =~ m/\A[45][.][1-9][.][1-9]\z/ ) {
                     # Use the DSN value in Diagnostic-Code:
