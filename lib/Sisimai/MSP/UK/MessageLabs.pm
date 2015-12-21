@@ -111,7 +111,6 @@ sub scan {
                 next if length $e;
                 $rfc822next->{ $previousfn } = 1;
             }
-
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};

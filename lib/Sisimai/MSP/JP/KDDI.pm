@@ -137,7 +137,6 @@ sub scan {
                     $v->{'recipient'} = $r;
                     $recipients++;
                 }
-
             } elsif( $e =~ m/Your mail sent on: (.+)\z/ ) {
                 # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
                 $v->{'date'} = $1;
@@ -153,9 +152,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        $e->{'agent'} = __PACKAGE__->smtpagent;
-
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r = $mhead->{'received'};
@@ -189,8 +185,8 @@ sub scan {
         $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-
-    } # end of for()
+        $e->{'agent'}  = __PACKAGE__->smtpagent;
+    }
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

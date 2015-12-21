@@ -106,7 +106,6 @@ sub scan {
                 next if length $e;
                 $rfc822next->{ $previousfn } = 1;
             }
-
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -176,8 +175,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r = $mhead->{'received'};
