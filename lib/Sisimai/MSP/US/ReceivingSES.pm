@@ -198,7 +198,6 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
-        $e = '';
     }
 
     return undef unless $recipients;
