@@ -119,7 +119,6 @@ sub scan {
                 next if length $e;
                 $rfc822next->{ $previousfn } = 1;
             }
-
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -169,7 +168,6 @@ sub scan {
                         $e = 'Diagnostic-Code: '.$e;
                     }
                 }
-
             } else {
                 # Content-Type: message/delivery-status
                 # Content-Transfer-Encoding: 7bit
@@ -192,7 +190,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
     } continue {
         # Save the current line for the next loop
         $p = $e;
@@ -212,7 +209,6 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
-
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 

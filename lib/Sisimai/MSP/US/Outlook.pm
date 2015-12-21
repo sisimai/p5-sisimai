@@ -111,7 +111,6 @@ sub scan {
                 next if length $e;
                 $rfc822next->{ $previousfn } = 1;
             }
-
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -161,7 +160,6 @@ sub scan {
                         $e = 'Diagnostic-Code: '.$e;
                     }
                 }
-
             } else {
                 # Reporting-MTA: dns;BLU004-OMC3S13.hotmail.example.com
                 # Received-From-MTA: dns;BLU436-SMTP66
@@ -180,7 +178,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
     } continue {
         # Save the current line for the next loop
         $p = $e;

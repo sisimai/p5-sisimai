@@ -98,7 +98,6 @@ sub scan {
                 next if length $e;
                 $rfc822next->{ $previousfn } = 1;
             }
-
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -121,7 +120,6 @@ sub scan {
                 $recipients++;
 
             } else {
-
                 if( $e =~ m/\ARemote host said:/ ) {
                     # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
                     $v->{'diagnosis'} = $e;
@@ -157,15 +155,12 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r = $mhead->{'received'};
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
             $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
         }
-
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 

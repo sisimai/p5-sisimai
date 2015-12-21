@@ -157,7 +157,6 @@ sub scan {
                 next if length $e;
                 $rfc822next->{ $previousfn } = 1;
             }
-
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -214,7 +213,6 @@ sub scan {
                         $e = 'Diagnostic-Code: '.$e;
                     }
                 }
-
             } else {
                 if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
@@ -229,9 +227,7 @@ sub scan {
                     $connvalues++;
                 }
             }
-
         } # End of if: rfc822
-
     } continue {
         # Save the current line for the next loop
         $p = $e;
@@ -243,7 +239,6 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'rhost'} ||= $connheader->{'rhost'};
 
         if( scalar @{ $mhead->{'received'} } ) {
@@ -294,9 +289,8 @@ sub scan {
         $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-
-    } # end of for()
-
+        $e->{'agent'}  = __PACKAGE__->smtpagent;
+    }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 

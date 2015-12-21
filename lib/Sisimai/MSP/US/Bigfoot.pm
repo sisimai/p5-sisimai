@@ -157,7 +157,6 @@ sub scan {
                         $e = 'Diagnostic-Code: '.$e;
                     }
                 }
-
             } else {
                 #    ----- Transcript of session follows -----
                 # >>> RCPT TO:<destinaion@example.net>
@@ -196,7 +195,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
     } continue {
         # Save the current line for the next loop
         $p = $e;
