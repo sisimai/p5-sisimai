@@ -120,13 +120,11 @@ sub scan {
                 # After "message/rfc822"
                 if( $e =~ m/\A\s\s([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                     # Get required headers only
-                    my $lhs = $1;
-                    my $whs = lc $lhs;
-
+                    my $lhs = lc $1;
                     $previousfn = '';
-                    next unless exists $RFC822Head->{ $whs };
+                    next unless exists $RFC822Head->{ $lhs };
 
-                    $previousfn  = lc $lhs;
+                    $previousfn  = $lhs;
                     $rfc822part .= $e."\n";
 
                 } elsif( $e =~ m/\A[\s\t]+/ ) {
@@ -227,14 +225,11 @@ sub scan {
                 # After "message/rfc822"
                 if( $e =~ m/\A\s\s([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                     # Get required headers only
-                    my $lhs = $1;
-                    my $rhs = $2;
-                    my $whs = lc $lhs;
-
+                    my $lhs = lc $1;
                     $previousfn = '';
-                    next unless exists $RFC822Head->{ $whs };
+                    next unless exists $RFC822Head->{ $lhs };
 
-                    $previousfn  = lc $lhs;
+                    $previousfn  = $lhs;
                     $rfc822part .= $e."\n";
 
                 } elsif( $e =~ m/\A[\s\t]+/ ) {
