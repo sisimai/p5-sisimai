@@ -237,7 +237,7 @@ sub headers {
                 $structured->{ $currheader } = $rhs;
             }
 
-        } elsif( $e =~ m/\A[\s\t]+(.+?)\z/ ) {
+        } elsif( $e =~ m/\A\s+(.+?)\z/ ) {
             # Ignore header?
             next if exists $IgnoreList->{ $currheader };
 
@@ -308,7 +308,7 @@ sub takeapart {
 
         } else {
             # Continued line from the previous line
-            next unless $e =~ m/\A[\s\t]+/;
+            next unless $e =~ m/\A\s+/;
             next unless $previousfn;
 
             # Concatenate the line if it is the value of required header
