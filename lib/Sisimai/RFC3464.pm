@@ -123,7 +123,7 @@ sub scan {
                 $previousfn  = lc $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A[\s\t]+/ ) {
+            } elsif( $e =~ m/\A\s+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -271,7 +271,7 @@ sub scan {
                     # Diagnostic-Code: 554 ...
                     $v->{'diagnosis'} = $1;
 
-                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[\s\t]+(.+)\z/ ) {
+                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
@@ -352,7 +352,7 @@ sub scan {
 
         my $re_skip = qr{(?>
              \A[-]+=
-            |\A[\s\t]+\z
+            |\A\s+\z
             |\A\s*--
             |\A\s+[=]\d+
             |\AHi[ ][!]
@@ -411,7 +411,7 @@ sub scan {
             |You[ ]sent[ ]mail[ ]to[ ]
             |Your[ ]message[ ]to[ ]
             )
-            ['"]?[<]?([^\s\t\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
+            ['"]?[<]?([^\s\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
         }xi;
 
         my $b = $dscontents->[ -1 ];
