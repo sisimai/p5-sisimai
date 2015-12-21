@@ -84,7 +84,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -109,7 +109,7 @@ sub scan {
             # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A[>]{3}\s+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
+            if( $e =~ m/\A[>]{3}[ \t]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
                 # >>> kijitora@example.org <kijitora@example.org>
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.

@@ -15,7 +15,7 @@ my $Re0 = {
 };
 my $Re1 = {
     'begin'  => qr/\AThis message was created automatically by mail delivery/,
-    'rfc822' => qr/\AReceived:\s*from mail[.]zoho[.]com/,
+    'rfc822' => qr/\AReceived:[ \t]*from mail[.]zoho[.]com/,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
@@ -100,7 +100,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -129,7 +129,7 @@ sub scan {
             # shironeko@example.org Invalid Address, ERROR_CODE :550, ERROR_CODE :Requested action not taken: mailbox unavailable
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A([^ ]+[@][^ ]+)\s+(.+)\z/ ) {
+            if( $e =~ m/\A([^ ]+[@][^ ]+)[ \t]+(.+)\z/ ) {
                 # kijitora@example.co.jp Invalid Address, ERROR_CODE :550, ERROR_CODE :5.1.=
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.

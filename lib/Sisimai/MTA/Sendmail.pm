@@ -14,7 +14,7 @@ my $Re0 = {
 #   savemail.c:1042|  goto writeerr;
 #
 my $Re1 = {
-    'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
+    'begin'   => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
@@ -46,7 +46,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    unless( $mhead->{'subject'} =~ m/\A\s*Fwd?:/i ) {
+    unless( $mhead->{'subject'} =~ m/\A[ \t]*Fwd?:/i ) {
         # Fwd: Returned mail: see transcript for details
         # Do not execute this code if the bounce mail is a forwarded message.
         return undef unless $mhead->{'from'} =~ $Re0->{'from'};
@@ -102,7 +102,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -168,7 +168,7 @@ sub scan {
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -232,8 +232,8 @@ sub scan {
                         # ----- Transcript of session follows -----
                         # Message could not be delivered for too long
                         # Message will be deleted from queue
-                        next if $e =~ m/\A\s*[-]+/;
-                        if( $e =~ m/\A[45]\d\d\s([45][.]\d[.]\d)\s.+/ ) {
+                        next if $e =~ m/\A[ \t]*[-]+/;
+                        if( $e =~ m/\A[45]\d\d[ \t]([45][.]\d[.]\d)[ \t].+/ ) {
                             # 550 5.1.2 <kijitora@example.org>... Message
                             #
                             # DBI connect('dbname=...')
@@ -277,7 +277,7 @@ sub scan {
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
-            $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ m/\A\s+\z/;
+            $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ m/\A[ \t]+\z/;
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
 
             if( $e->{'diagnosis'} =~ m/\A\d+\z/ ) {

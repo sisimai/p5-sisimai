@@ -309,7 +309,7 @@ sub takeapart {
 
         } else {
             # Continued line from the previous line
-            next unless $e =~ m/\A\s+/;
+            next unless $e =~ m/\A[ \t]+/;
             next unless $previousfn;
 
             # Concatenate the line if it is the value of required header

@@ -14,7 +14,7 @@ my $Re1 = {
     'error'   => qr/The error that the other server returned was:/,
     'rfc822'  => qr{\A(?:
          -----[ ]Original[ ]message[ ]-----
-        |\s*-----[ ]Message[ ]header[ ]follows[ ]-----
+        |[ \t]*-----[ ]Message[ ]header[ ]follows[ ]-----
         )\z
     }x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
@@ -226,7 +226,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -259,7 +259,7 @@ sub scan {
             #
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A\s+([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ m/\A[ \t]+([^ ]+[@][^ ]+)\z/ ) {
                 # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -293,7 +293,7 @@ sub scan {
 
         unless( $e->{'rhost'} ) {
             # Get the value of remote host
-            if( $e->{'diagnosis'} =~ m/\s+by\s+([^ ]+)[.]\s+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
+            if( $e->{'diagnosis'} =~ m/[ \t]+by[ \t]+([^ ]+)[.][ \t]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
                 # Google tried to deliver your message, but it was rejected by # the server 
                 # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
                 my $x = $1;

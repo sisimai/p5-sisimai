@@ -6,7 +6,7 @@ use warnings;
 
 my $Re0 = {
     'from'       => qr/no-reply[@].+[.]dion[.]ne[.]jp/,
-    'reply-to'   => qr/\Afrom\s+\w+[.]auone[-]net[.]jp\s/,
+    'reply-to'   => qr/\Afrom[ \t]+\w+[.]auone[-]net[.]jp[ \t]/,
     'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
     'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
 };
@@ -105,7 +105,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -122,7 +122,7 @@ sub scan {
             next unless length $e;
 
             $v = $dscontents->[ -1 ];
-            if( $e =~ m/\A\s+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
+            if( $e =~ m/\A[ \t]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
                 # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
                 #     Could not be delivered to: <******@**.***.**>
                 #     As their mailbox is full.
@@ -143,7 +143,7 @@ sub scan {
 
             } else {
                 #     As their mailbox is full.
-                $v->{'diagnosis'} .= $e.' ' if $e =~ m/\A\s+/;
+                $v->{'diagnosis'} .= $e.' ' if $e =~ m/\A[ \t]+/;
             }
         } # End of if: rfc822
     }

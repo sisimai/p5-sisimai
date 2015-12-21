@@ -128,7 +128,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -164,11 +164,11 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\s*This is a permanent error[.]\s*/ ) {
+            if( $e =~ m/[ \t]*This is a permanent error[.][ \t]*/ ) {
                 # recipients. This is a permanent error. The following address(es) failed:
                 $v->{'softbounce'} = 0;
 
-            } elsif( $e =~ m/\A\s+([^\s]+[@][^\s]+[.][a-zA-Z]+)\z/ ) {
+            } elsif( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)\z/ ) {
                 #   kijitora@example.jp
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -186,7 +186,7 @@ sub scan {
             } else {
                 # Error message when email address above does not include '@'
                 # and domain part.
-                next unless $e =~ m/\A\s{4}/;
+                next unless $e =~ m/\A[ \t]{4}/;
                 $v->{'alterrors'} .= $e.' ';
             }
         } # End of if: rfc822
@@ -213,7 +213,7 @@ sub scan {
     if( scalar @{ $mhead->{'received'} } ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ m/from\s([^ ]+) /;
+        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ m/from[ \t]([^ ]+) /;
     }
 
     require Sisimai::String;
@@ -237,7 +237,7 @@ sub scan {
 
         if( ! $e->{'rhost'} ) {
             # Get the remote host name
-            if( $e->{'diagnosis'} =~ m/host\s+([^\s]+)\s\[.+\]:\s/ ) {
+            if( $e->{'diagnosis'} =~ m/host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/ ) {
                 # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
                 $e->{'rhost'} = $1;
             }

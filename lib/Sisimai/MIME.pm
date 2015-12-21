@@ -17,7 +17,7 @@ sub is_mimeencoded {
     return undef unless ref $argv1 eq 'SCALAR';
     $$argv1 =~ y/"//d;
 
-    return 1 if $$argv1 =~ m{\s*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=\s*\z};
+    return 1 if $$argv1 =~ m{[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=[ \t]*\z};
     return 0;
 }
 
@@ -40,8 +40,8 @@ sub mimedecode {
 
     for my $e ( @$argvs ) {
         # Check and decode each element
-        $e =~ s/\A\s+//g;
-        $e =~ s/\s+\z//g;
+        $e =~ s/\A[ \t]+//g;
+        $e =~ s/[ \t]+\z//g;
         $e =~ y/"//d;
 
         if( __PACKAGE__->is_mimeencoded( \$e ) ) {

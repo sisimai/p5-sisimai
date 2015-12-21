@@ -146,7 +146,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -173,11 +173,11 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\s*This is a permanent error[.]\s*/ ) {
+            if( $e =~ m/[ \t]*This is a permanent error[.][ \t]*/ ) {
                 # deliver.c:6811|  "recipients. This is a permanent error. The following address(es) failed:\n");
                 $v->{'softbounce'} = 0;
 
-            } elsif( $e =~ m/\A\s*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
+            } elsif( $e =~ m/\A[ \t]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
                 # A message that you have sent could not be delivered to one or more
                 # recipients.  This is a permanent error.  The following address failed:
                 #
@@ -203,7 +203,7 @@ sub scan {
     if( scalar @{ $mhead->{'received'} } ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ m/from\s([^ ]+) /;
+        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ m/from[ \t]([^ ]+) /;
     }
 
     require Sisimai::String;
@@ -219,7 +219,7 @@ sub scan {
 
         if( ! $e->{'rhost'} ) {
             # Get the remote host name
-            if( $e->{'diagnosis'} =~ m/host\s+([^\s]+)\s\[.+\]:\s/ ) {
+            if( $e->{'diagnosis'} =~ m/host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/ ) {
                 # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
                 $e->{'rhost'} = $1;
             }

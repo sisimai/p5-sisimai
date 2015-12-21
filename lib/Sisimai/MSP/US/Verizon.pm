@@ -80,7 +80,7 @@ sub scan {
     if( $vtext == 1 ) {
         # vtext.com
         $Re1 = {
-            'begin'  => qr/\AError:\s/,
+            'begin'  => qr/\AError:[ \t]/,
             'rfc822' => qr/\A__BOUNDARY_STRING_HERE__\z/,
             'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
         };
@@ -116,7 +116,7 @@ sub scan {
 
             if( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # After "message/rfc822"
-                if( $e =~ m/\A\s\s([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
+                if( $e =~ m/\A[ ][ ]([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
                     # Get required headers only
                     my $lhs = lc $1;
                     $previousfn = '';
@@ -125,7 +125,7 @@ sub scan {
                     $previousfn  = $lhs;
                     $rfc822part .= $e."\n";
 
-                } elsif( $e =~ m/\A\s+/ ) {
+                } elsif( $e =~ m/\A[ \t]+/ ) {
                     # Continued line from the previous line
                     next if $rfc822next->{ $previousfn };
                     $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -143,7 +143,7 @@ sub scan {
 
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\A\s+RCPT TO: (.*)\z/ ) {
+                if( $e =~ m/\A[ \t]+RCPT TO: (.*)\z/ ) {
                     # Message details:
                     #   Subject: Test message
                     #   Sent date: Wed Jun 12 02:21:53 GMT 2013
@@ -159,17 +159,17 @@ sub scan {
                     $recipients++;
                     next;
 
-                } elsif( $e =~ m/\A\s+MAIL FROM:\s(.+)\z/ ) {
+                } elsif( $e =~ m/\A[ \t]+MAIL FROM:[ \t](.+)\z/ ) {
                     #   MAIL FROM: *******@hg.example.com
                     $senderaddr ||= $1;
 
-                } elsif( $e =~ m/\A\s+Subject:\s(.+)\z/ ) {
+                } elsif( $e =~ m/\A[ \t]+Subject:[ \t](.+)\z/ ) {
                     #   Subject:
                     $subjecttxt ||= $1;
 
                 } else {
 
-                    if( $e =~ m/\A(\d{3})\s[-]\s(.*)\z/ ) {
+                    if( $e =~ m/\A(\d{3})[ \t][-][ \t](.*)\z/ ) {
                         # 550 - Requested action not taken: no such user here
                         $v->{'diagnosis'} = $e;
                     }
@@ -214,7 +214,7 @@ sub scan {
 
             if( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # After "message/rfc822"
-                if( $e =~ m/\A\s\s([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+                if( $e =~ m/\A[ ][ ]([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                     # Get required headers only
                     my $lhs = lc $1;
                     $previousfn = '';
@@ -223,7 +223,7 @@ sub scan {
                     $previousfn  = $lhs;
                     $rfc822part .= $e."\n";
 
-                } elsif( $e =~ m/\A\s+/ ) {
+                } elsif( $e =~ m/\A[ \t]+/ ) {
                     # Continued line from the previous line
                     next if $rfc822next->{ $previousfn };
                     $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -241,7 +241,7 @@ sub scan {
 
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\ATo:\s+(.*)\z/ ) {
+                if( $e =~ m/\ATo:[ \t]+(.*)\z/ ) {
                     # Original Message:
                     # From: kijitora <kijitora@example.jp>
                     # To: 0000000000@vzwpix.com
@@ -257,17 +257,17 @@ sub scan {
                     $recipients++;
                     next;
 
-                } elsif( $e =~ m/\AFrom:\s(.+)\z/ ) {
+                } elsif( $e =~ m/\AFrom:[ \t](.+)\z/ ) {
                     # From: kijitora <kijitora@example.jp>
                     $senderaddr ||= Sisimai::Address->s3s4( $1 );
 
-                } elsif( $e =~ m/\ASubject:\s(.+)\z/ ) {
+                } elsif( $e =~ m/\ASubject:[ \t](.+)\z/ ) {
                     #   Subject:
                     $subjecttxt ||= $1;
 
                 } else {
 
-                    if( $e =~ m/\AError:\s+(.+)\z/ ) {
+                    if( $e =~ m/\AError:[ \t]+(.+)\z/ ) {
                         # Message could not be delivered to mobile.
                         # Error: No valid recipients for this MM
                         $v->{'diagnosis'} = $e;

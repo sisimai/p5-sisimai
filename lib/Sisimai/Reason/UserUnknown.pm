@@ -19,7 +19,7 @@ sub match {
         |address[ ]does[ ]not[ ]exist
         |address[ ]unknown
         |archived[ ]recipient
-        |BAD[-_\s]RECIPIENT
+        |BAD[-_ \t]RECIPIENT
         |destination[ ]addresses[ ]were[ ]unknown
         |destination[ ]server[ ]rejected[ ]recipients
         |email[ ]address[ ]does[ ]not[ ]exist

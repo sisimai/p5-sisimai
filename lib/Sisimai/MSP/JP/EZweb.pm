@@ -133,7 +133,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -152,7 +152,7 @@ sub scan {
             $v = $dscontents->[ -1 ];
             if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
                 $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
-                $e =~ m/\A\s+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
+                $e =~ m/\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
                 # The user(s) account is disabled.
                 #
                 # <***@ezweb.ne.jp>: 550 user unknown (in reply to RCPT TO command)
@@ -195,7 +195,7 @@ sub scan {
 
             } else {
                 next if Sisimai::String->is_8bit( \$e );
-                if( $e =~ m/\A\s+[>]{3}\s+([A-Z]{4})/ ) {
+                if( $e =~ m/\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
                     #    >>> RCPT TO:<******@ezweb.ne.jp>
                     $v->{'command'} = $1;
 

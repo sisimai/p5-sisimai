@@ -9,7 +9,7 @@ my $Re0 = {
     'subject'  => qr/\ADelivery status notification/,
 };
 my $Re1 = {
-    'begin'    => qr/\A\s+This is an automatically generated Delivery Status Notification/,
+    'begin'    => qr/\A[ \t]+This is an automatically generated Delivery Status Notification/,
     'rfc822'   => qr|\AContent-Type: message/rfc822|,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
@@ -80,7 +80,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -114,7 +114,7 @@ sub scan {
             # ============================================================================
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A\s+[*]\s([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ m/\A[ \t]+[*][ \t]([^ ]+[@][^ ]+)\z/ ) {
                 #   * kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -126,7 +126,7 @@ sub scan {
 
             } else {
                 # Detect error message
-                if( $e =~ m/\ASMTP:([^ ]+)\s(.+)\z/ ) {
+                if( $e =~ m/\ASMTP:([^ ]+)[ \t](.+)\z/ ) {
                     # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
                     $v->{'command'} = uc $1;
                     $v->{'diagnosis'} = $2;

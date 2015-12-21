@@ -39,7 +39,7 @@ my $Re1 = {
         |Return-Path:[ ]*[<].+[>]\z
         )\z
     }xi,
-    'error'  => qr/\A(?:[45]\d\d\s+|[<][^@]+[@][^@]+[>]:?\s+)/i,
+    'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/i,
     'command'=> qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
 };
 
@@ -120,7 +120,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -171,7 +171,7 @@ sub scan {
 
             } elsif( $e =~ m/\A[Xx]-[Aa]ctual-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                 # X-Actual-Recipient: 
-                if( $1 =~ m/\s+/ ) {
+                if( $1 =~ m/[ \t]+/ ) {
                     # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
 
                 } else {
@@ -268,7 +268,7 @@ sub scan {
                     # Diagnostic-Code: 554 ...
                     $v->{'diagnosis'} = $1;
 
-                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
+                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
@@ -362,10 +362,10 @@ sub scan {
              \AContent-Type:[ ]message/delivery-status
             |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
             |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
-            |\AReceived:\s*
-            |\AReceived-From-MTA:\s*
-            |\AReporting-MTA:\s*
-            |\AReturn-Path:\s*
+            |\AReceived:[ \t]*
+            |\AReceived-From-MTA:[ \t]*
+            |\AReporting-MTA:[ \t]*
+            |\AReturn-Path:[ \t]*
             |\AA[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
             |Attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
             |Below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
@@ -383,7 +383,7 @@ sub scan {
         my $re_addr = qr{(?:
              \A\s*
             |\A["].+["]\s*
-            |\A\s*Recipient:\s*
+            |\A[ \t]*Recipient:[ \t]*
             |\A[ ]*Address:[ ]
             |addressed[ ]to[ ]
             |Could[ ]not[ ]be[ ]delivered[ ]to:[ ]

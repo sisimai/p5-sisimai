@@ -12,7 +12,7 @@ my $Re0 = {
 my $Re1 = {
     'begin'    => qr/\AThis report relates to a message you sent with the following header fields:/,
     'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822'   => qr!\A(?:Content-type:\s*message/rfc822|Return-path:\s*)!x,
+    'rfc822'   => qr!\A(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)!x,
 };
 
 my $ReFailure = {
@@ -88,7 +88,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -125,7 +125,7 @@ sub scan {
             #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25) (6jo.example.jp ESMTP SENDMAIL-VM)
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A\s+Recipient address:\s*([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ m/\A[ \t]+Recipient address:[ \t]*([^ ]+[@][^ ]+)\z/ ) {
                 #   Recipient address: kijitora@example.jp
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -135,24 +135,24 @@ sub scan {
                 $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
                 $recipients++;
 
-            } elsif( $e =~ m/\A\s+Original address:\s*([^ ]+[@][^ ]+)\z/ ) {
+            } elsif( $e =~ m/\A[ \t]+Original address:[ \t]*([^ ]+[@][^ ]+)\z/ ) {
                 #   Original address: kijitora@example.jp
                 $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
 
-            } elsif( $e =~ m/\A\s+Date:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\A[ \t]+Date:[ \t]*(.+)\z/ ) {
                 #   Date: Fri, 21 Nov 2014 23:34:45 +0900
                 $v->{'date'} = $1;
 
-            } elsif( $e =~ m/\A\s+Reason:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\A[ \t]+Reason:[ \t]*(.+)\z/ ) {
                 #   Reason: Remote SMTP server has rejected address
                 $v->{'diagnosis'} = $1;
 
-            } elsif( $e =~ m/\A\s+Diagnostic code:\s*([^ ]+);(.+)\z/ ) {
+            } elsif( $e =~ m/\A[ \t]+Diagnostic code:[ \t]*([^ ]+);(.+)\z/ ) {
                 #   Diagnostic code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
                 $v->{'spec'} = uc $1;
                 $v->{'diagnosis'} = $2;
 
-            } elsif( $e =~ m/\A\s+Remote system:\s*dns;([^ ]+)\s*([^ ]+)\s*.+\z/ ) {
+            } elsif( $e =~ m/\A[ \t]+Remote system:[ \t]*dns;([^ ]+)[ \t]*([^ ]+)[ \t]*.+\z/ ) {
                 #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25)
                 #     (6jo.example.jp ESMTP SENDMAIL-VM)
                 my $remotehost = $1; # remote host
@@ -179,7 +179,7 @@ sub scan {
                 #  (6jo.example.jp ESMTP SENDMAIL-VM)
                 # Diagnostic-code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
                 #
-                if( $e =~ m/\A[Ss]tatus:\s*(\d[.]\d[.]\d)\s*[(](.+)[)]\z/ ) {
+                if( $e =~ m/\A[Ss]tatus:[ \t]*(\d[.]\d[.]\d)[ \t]*[(](.+)[)]\z/ ) {
                     # Status: 5.1.1 (Remote SMTP server has rejected address)
                     $v->{'status'} = $1;
                     $v->{'diagnosis'} ||= $2;

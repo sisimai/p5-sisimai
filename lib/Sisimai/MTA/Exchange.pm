@@ -153,7 +153,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
                 next if $rfc822next->{ $previousfn };
@@ -185,8 +185,8 @@ sub scan {
                 #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
                 $v = $dscontents->[ -1 ];
 
-                if( $e =~ m/\A\s*([^ ]+[@][^ ]+) on\s*.*\z/ ||
-                    $e =~ m/\A\s*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on\s*.*\z/ ) {
+                if( $e =~ m/\A[ \t]*([^ ]+[@][^ ]+) on[ \t]*.*\z/ ||
+                    $e =~ m/\A[ \t]*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on[ \t]*.*\z/ ) {
                     # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
                     #   kijitora@example.com on 4/29/99 9:19:59 AM
                     if( length $v->{'recipient'} ) {
@@ -198,7 +198,7 @@ sub scan {
                     $v->{'msexch'} = 0;
                     $recipients++;
 
-                } elsif( $e =~ m/\A\s+(MSEXCH:.+)\z/ ) {
+                } elsif( $e =~ m/\A[ \t]+(MSEXCH:.+)\z/ ) {
                     #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
                     $v->{'diagnosis'} .= $1;
 
@@ -224,20 +224,20 @@ sub scan {
                 #  Subject: ...
                 #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
                 #
-                if( $e =~ m/\A\s+To:\s+(.+)\z/ ) {
+                if( $e =~ m/\A[ \t]+To:[ \t]+(.+)\z/ ) {
                     #  To:      shironeko@example.jp
                     next if length $connheader->{'to'};
                     $connheader->{'to'} = $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\A\s+Subject:\s+(.+)\z/ ) {
+                } elsif( $e =~ m/\A[ \t]+Subject:[ \t]+(.+)\z/ ) {
                     #  Subject: ...
                     next if length $connheader->{'subject'};
                     $connheader->{'subject'} = $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\A\s+Sent:\s+([A-Z][a-z]{2},.+[-+]\d{4})\z/ ||
-                         $e =~ m|\A\s+Sent:\s+(\d+[/]\d+[/]\d+\s+\d+:\d+:\d+\s.+)|) {
+                } elsif( $e =~ m/\A[ \t]+Sent:[ \t]+([A-Z][a-z]{2},.+[-+]\d{4})\z/ ||
+                         $e =~ m|\A[ \t]+Sent:[ \t]+(\d+[/]\d+[/]\d+[ \t]+\d+:\d+:\d+[ \t].+)|) {
                     #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
                     #  Sent:    4/29/99 9:19:59 AM
                     next if length $connheader->{'date'};
@@ -262,7 +262,7 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        if( $e->{'diagnosis'} =~ m{\AMSEXCH:.+\s*[(]([0-9A-F]{8})[)]\s*(.*)\z} ) {
+        if( $e->{'diagnosis'} =~ m{\AMSEXCH:.+[ \t]*[(]([0-9A-F]{8})[)][ \t]*(.*)\z} ) {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
             my $capturedcode = $1;
             my $errormessage = $2;

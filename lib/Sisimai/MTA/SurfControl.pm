@@ -89,7 +89,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -117,7 +117,7 @@ sub scan {
             # --- Message non-deliverable.
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\AAddressed To:\s*([^ ]+?[@][^ ]+?)\z/ ) {
+            if( $e =~ m/\AAddressed To:[ \t]*([^ ]+?[@][^ ]+?)\z/ ) {
                 # Addressed To: kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -127,11 +127,11 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ m/\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[\s,]/ ) {
+            } elsif( $e =~ m/\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ \t,]/ ) {
                 # Thu 29 Apr 2010 23:34:45 +0900
                 $v->{'date'} = $e;
 
-            } elsif( $e =~ m/\A[^ ]+[@][^ ]+:\s*\[(\d+[.]\d+[.]\d+[.]\d)\],\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\A[^ ]+[@][^ ]+:[ \t]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ \t]*(.+)\z/ ) {
                 # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
                 $v->{'rhost'} = $1;
                 $v->{'diagnosis'} = $2;
@@ -143,7 +143,7 @@ sub scan {
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
 
-                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
+                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;

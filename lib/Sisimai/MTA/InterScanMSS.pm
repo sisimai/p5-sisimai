@@ -88,7 +88,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -109,8 +109,8 @@ sub scan {
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A.+[<>]{3}\s+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
-                $e =~ m/\A.+[<>]{3}\s+.+[<]([^ ]+[@][^ ]+)[>]/ ) {
+            if( $e =~ m/\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
+                $e =~ m/\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/ ) {
                 # Sent <<< RCPT TO:<kijitora@example.co.jp>
                 # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
                 my $cr = $1;
@@ -123,11 +123,11 @@ sub scan {
                 $recipients = scalar @$dscontents;
             }
 
-            if( $e =~ m/\ASent\s+[<]{3}\s+([A-Z]{4})\s/ ) {
+            if( $e =~ m/\ASent[ \t]+[<]{3}[ \t]+([A-Z]{4})[ \t]/ ) {
                 # Sent <<< RCPT TO:<kijitora@example.co.jp>
                 $v->{'command'} = $1
 
-            } elsif( $e =~ m/\AReceived\s+[>]{3}\s+(\d{3}\s+.+)\z/ ) {
+            } elsif( $e =~ m/\AReceived[ \t]+[>]{3}[ \t]+(\d{3}[ \t]+.+)\z/ ) {
                 # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
                 $v->{'diagnosis'} = $1;
             }

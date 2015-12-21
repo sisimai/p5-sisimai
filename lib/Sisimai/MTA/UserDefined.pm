@@ -9,7 +9,7 @@ my $Re0 = {
     'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
 };
 my $Re1 = {
-    'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
+    'begin'   => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,

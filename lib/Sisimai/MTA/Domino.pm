@@ -103,7 +103,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -142,7 +142,7 @@ sub scan {
                 $v->{'recipient'} ||= $e;
                 $recipients++;
 
-            } elsif( $e =~ m/\A\s\s([^ ]+[@][^ ]+)\z/ ) {
+            } elsif( $e =~ m/\A[ ][ ]([^ ]+[@][^ ]+)\z/ ) {
                 # Continued from the line "was not delivered to:"
                 #   kijitora@example.net
                 $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
@@ -157,7 +157,7 @@ sub scan {
                     # Error message, continued from the line "because:"
                     $v->{'diagnosis'} = $e;
 
-                } elsif( $e =~ m/\A\s\sSubject: (.+)\z/ ) {
+                } elsif( $e =~ m/\A[ ][ ]Subject: (.+)\z/ ) {
                     #   Subject: Nyaa
                     $subjecttxt = $1;
                 }

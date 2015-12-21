@@ -95,7 +95,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -143,7 +143,7 @@ sub scan {
                 # SMTP error from remote server after RCPT command:
                 $v->{'command'} = $1;
 
-            } elsif( $e =~ m/\Ahost:\s*(.+)\z/ ) {
+            } elsif( $e =~ m/\Ahost:[ \t]*(.+)\z/ ) {
                 # host: mx.example.jp
                 $v->{'rhost'} = $1;
 

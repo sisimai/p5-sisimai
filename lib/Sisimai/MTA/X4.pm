@@ -109,7 +109,7 @@ my $ReLDAP = {
 };
 
 # userunknown + expired
-my $ReOnHold  = qr/\A[^ ]+ does not like recipient[.]\s+.+this message has been in the queue too long[.]\z/;
+my $ReOnHold  = qr/\A[^ ]+ does not like recipient[.][ \t]+.+this message has been in the queue too long[.]\z/;
 
 # qmail-remote-fallback.patch
 my $ReCommand = qr/Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]/x;
@@ -220,7 +220,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -247,7 +247,7 @@ sub scan {
                 # This is a permanent error; I've given up. Sorry it didn't work out.
                 $v->{'softbounce'} = 0;
 
-            } elsif( $e =~ m/\A(?:To[ ]*:)?[<](.+[@].+)[>]:\s*\z/ ) {
+            } elsif( $e =~ m/\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ \t]*\z/ ) {
                 # <kijitora@example.jp>:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.

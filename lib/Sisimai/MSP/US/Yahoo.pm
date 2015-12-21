@@ -87,7 +87,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -109,7 +109,7 @@ sub scan {
             # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A[<](.+[@].+)[>]:\s*\z/ ) {
+            if( $e =~ m/\A[<](.+[@].+)[>]:[ \t]*\z/ ) {
                 # <kijitora@example.org>:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.

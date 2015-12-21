@@ -88,7 +88,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -146,7 +146,7 @@ sub scan {
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -175,11 +175,11 @@ sub scan {
                     # <kijitora@example.jp>: host mx.example.jp[192.0.2.153] said: 550
                     #    5.1.1 <kijitora@example.jp>... User Unknown (in reply to RCPT TO
                     #    command)
-                    if( $e =~ m/\s[(]in reply to .*([A-Z]{4}).*/ ) {
+                    if( $e =~ m/[ \t][(]in reply to .*([A-Z]{4}).*/ ) {
                         # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                         push @commandset, $1;
 
-                    } elsif( $e =~ m/([A-Z]{4})\s*.*command[)]\z/ ) {
+                    } elsif( $e =~ m/([A-Z]{4})[ \t]*.*command[)]\z/ ) {
                         # to MAIL command)
                         push @commandset, $1;
                     }

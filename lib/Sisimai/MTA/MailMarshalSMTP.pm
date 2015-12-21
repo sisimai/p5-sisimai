@@ -57,7 +57,7 @@ sub scan {
 
     $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
     $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
-    $Re1->{'rfc822'} = qr/\A\s*[+]+\s*\z/ unless $Re1->{'rfc822'};
+    $Re1->{'rfc822'} = qr/\A[ \t]*[+]+[ \t]*\z/ unless $Re1->{'rfc822'};
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -83,7 +83,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -112,7 +112,7 @@ sub scan {
             #    dummyuser@blabla.xxxxxxxxxxxx.com
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A\s{4}([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ m/\A[ \t]{4}([^ ]+[@][^ ]+)\z/ ) {
                 # The following recipients were affected: 
                 #    dummyuser@blabla.xxxxxxxxxxxx.com
                 if( length $v->{'recipient'} ) {
@@ -147,17 +147,17 @@ sub scan {
                     # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
                     # MessageName:        <B549996730000.000000000001.0003.mml>
                     # Last-Attempt-Date:  <16:21:07 seg, 22 Dezembro 2014>
-                    if( $e =~ m/\AOriginal Sender:\s+[<](.+)[>]\z/ ) {
+                    if( $e =~ m/\AOriginal Sender:[ \t]+[<](.+)[>]\z/ ) {
                         # Original Sender:    <originalsender@example.com>
                         # Use this line instead of "From" header of the original
                         # message.
                         $rfc822part .= sprintf("From: %s\n", $1 );
 
-                    } elsif( $e =~ m/\ASender-MTA:\s+[<](.+)[>]\z/ ) {
+                    } elsif( $e =~ m/\ASender-MTA:[ \t]+[<](.+)[>]\z/ ) {
                         # Sender-MTA:         <10.11.12.13>
                         $v->{'lhost'} = $1;
 
-                    } elsif( $e =~ m/\AReporting-MTA:\s+[<](.+)[>]\z/ ) {
+                    } elsif( $e =~ m/\AReporting-MTA:[ \t]+[<](.+)[>]\z/ ) {
                         # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
                         $v->{'rhost'} = $1;
                     }

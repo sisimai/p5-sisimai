@@ -128,16 +128,16 @@ sub received {
     };
 
     # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
-    return [] if $argv1 =~ m/qmail\s+.+invoked\s+/;
+    return [] if $argv1 =~ m/qmail[ \t]+.+invoked[ \t]+/;
 
-    if( $argv1 =~ m/\Afrom\s+(.+)\s+by\s+([^ ]+)/ ) {
+    if( $argv1 =~ m/\Afrom[ \t]+(.+)[ \t]+by[ \t]+([^ ]+)/ ) {
         # Received: from localhost (localhost)
         #   by nijo.example.jp (V8/cf) id s1QB5ma0018057;
         #   Wed, 26 Feb 2014 06:05:48 -0500
         $value->{'from'} = $1;
         $value->{'by'}   = $2;
 
-    } elsif( $argv1 =~ m/\bby\s+([^ ]+)(.+)/ ) {
+    } elsif( $argv1 =~ m/\bby[ \t]+([^ ]+)(.+)/ ) {
         # Received: by 10.70.22.98 with SMTP id c2mr1838265pdf.3; Fri, 18 Jul 2014
         #   00:31:02 -0700 (PDT)
         $value->{'from'} = $1.$2;

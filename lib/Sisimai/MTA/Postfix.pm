@@ -17,8 +17,8 @@ my $Re1 = {
                 |on[ ].+[ ]program\z    # The Postfix on <os name> program
                 )
             |\w+[ ]Postfix[ ]program\z  # The <name> Postfix program
-            |mail\ssystem\z             # The mail system
-            |\w+\sprogram\z             # The <custmized-name> program
+            |mail[ \t]system\z             # The mail system
+            |\w+[ \t]program\z             # The <custmized-name> program
             )
         |This[ ]is[ ]the[ ](?:
              Postfix[ ]program          # This is the Postfix program
@@ -28,7 +28,7 @@ my $Re1 = {
             )
         )
     }x,
-    'rfc822'  => qr!\AContent-Type:\s*(?:message/rfc822|text/rfc822-headers)\z!x,
+    'rfc822'  => qr!\AContent-Type:[ \t]*(?:message/rfc822|text/rfc822-headers)\z!x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
@@ -106,7 +106,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -181,7 +181,7 @@ sub scan {
                         $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -197,11 +197,11 @@ sub scan {
                 # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                 # command)
-                if( $e =~ m/\s[(]in reply to ([A-Z]{4}).*/ ) {
+                if( $e =~ m/[ \t][(]in reply to ([A-Z]{4}).*/ ) {
                     # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                     push @commandset, $1;
 
-                } elsif( $e =~ m/([A-Z]{4})\s*.*command[)]\z/ ) {
+                } elsif( $e =~ m/([A-Z]{4})[ \t]*.*command[)]\z/ ) {
                     # to MAIL command)
                     push @commandset, $1;
 
@@ -225,7 +225,7 @@ sub scan {
 
                     } else {
                         # Alternative error message and recipient
-                        if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:\s*(.+)\z/ ) {
+                        if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ \t]*(.+)\z/ ) {
                             # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
                             $anotherset->{'recipient'} = $1;
                             $anotherset->{'alias'}     = $2;
@@ -239,7 +239,7 @@ sub scan {
                         } else {
                             # Get error message continued from the previous line
                             next unless $anotherset->{'diagnosis'};
-                            if( $e =~ m/\A\s{4}(.+)\z/ ) {
+                            if( $e =~ m/\A[ \t]{4}(.+)\z/ ) {
                                 #    host mx.example.jp said:...
                                 $anotherset->{'diagnosis'} .= ' '.$e;
                             }

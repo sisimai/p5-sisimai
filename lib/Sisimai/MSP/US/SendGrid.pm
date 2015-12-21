@@ -93,7 +93,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -143,7 +143,7 @@ sub scan {
                         # Diagnostic-Code: 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'diagnosis'} = $1;
 
-                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\s+(.+)\z/ ) {
+                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -208,7 +208,7 @@ sub scan {
 
         } else {
             # Get the value of SMTP status code as a pseudo D.S.N.
-            if( $e->{'diagnosis'} =~ m/\b([45])\d\d\s*/ ) {
+            if( $e->{'diagnosis'} =~ m/\b([45])\d\d[ \t]*/ ) {
                 # 4xx or 5xx
                 $e->{'softbounce'} = 1 if $1 == 4;
                 $e->{'status'} = sprintf( "%d.0.0", $1 );

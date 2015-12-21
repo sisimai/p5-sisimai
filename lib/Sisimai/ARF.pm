@@ -182,7 +182,7 @@ sub scan {
                 $rfc822part .= $e."\n";
                 $rcptintext  = $rhs if $lhs eq 'to';
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
                 next if length $e;

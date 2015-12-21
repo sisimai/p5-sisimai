@@ -25,12 +25,12 @@ my $Re0 = {
 #   savemail.c:498|       putline(buf, fp, m);
 #   savemail.c:499|   (void) fclose(xfile);
 my $Re1 = {
-    'begin'   => qr/\A\s+[-]+ Transcript of session follows [-]+\z/,
+    'begin'   => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => qr{\A\s+-----\s(?:
+    'rfc822'  => qr{\A[ \t]+-----[ \t](?:
          Unsent[ ]message[ ]follows
         |No[ ]message[ ]was[ ]collected
-        )\s-----
+        )[ \t]-----
     }x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
@@ -104,7 +104,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
 
-            } elsif( $e =~ m/\A\s+/ ) {
+            } elsif( $e =~ m/\A[ \t]+/ ) {
                 # Continued line from the previous line
                 next if $rfc822next->{ $previousfn };
                 $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
@@ -129,7 +129,7 @@ sub scan {
             # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A\d{3}\s+[<]([^ ]+[@][^ ]+)[>][.]{3}\s*(.+)\z/ ) {
+            if( $e =~ m/\A\d{3}[ \t]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ \t]*(.+)\z/ ) {
                 # 550 <kijitora@example.org>... User unknown
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -145,7 +145,7 @@ sub scan {
                 }
                 $recipients++;
 
-            } elsif( $e =~ m/\A[>]{3}\s*([A-Z]{4})\s*/ ) {
+            } elsif( $e =~ m/\A[>]{3}[ \t]*([A-Z]{4})[ \t]*/ ) {
                 # >>> RCPT To:<kijitora@example.org>
                 $commandset[ $recipients ] = $1;
 
@@ -165,7 +165,7 @@ sub scan {
                     next;
                 }
 
-                if( $e =~ m/\A\d{3}\s+.+[.]{3}\s*(.+)\z/ ) {
+                if( $e =~ m/\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/ ) {
                     # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
                     $anotherset->{'diagnosis'} = $1;
                 }
