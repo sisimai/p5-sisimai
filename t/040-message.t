@@ -6,7 +6,7 @@ use Sisimai::Message;
 my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
     'class' => [ 
-        'new', 'resolve', 'rewrite', 'divideup', 'headers', 'takeapart',
+        'new', 'resolve', 'parse', 'divideup', 'headers', 'takeapart',
         'makeorder',
     ],
     'object' => [ 'from', 'header', 'ds', 'rfc822' ],

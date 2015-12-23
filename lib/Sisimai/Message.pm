@@ -131,7 +131,7 @@ sub resolve {
 
     # 4. Rewrite message body for detecting the bounce reason
     my $methodargv = { 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
-    my $bouncedata = __PACKAGE__->rewrite( %$methodargv );
+    my $bouncedata = __PACKAGE__->parse( %$methodargv );
 
     return undef unless $bouncedata;
     return undef unless keys %$bouncedata;
@@ -364,8 +364,8 @@ sub takeapart {
     return $takenapart;
 }
 
-sub rewrite {
-    # Break the header of the message, and return its body
+sub parse {
+    # Parse bounce mail with each MTA/MSP module
     # @param               [Hash] argvs    Processing message entity.
     # @param options argvs [Hash] mail     Email message entity
     # @param options mail  [String] from   From line of mbox
@@ -388,7 +388,7 @@ sub rewrite {
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
 
-    # Decode BASE64 Encoded message body, rewrite.
+    # Decode BASE64 Encoded message body
     my $mesgformat = lc( $mailheader->{'content-type'} || '' );
     my $ctencoding = lc( $mailheader->{'content-transfer-encoding'} || '' );
 
