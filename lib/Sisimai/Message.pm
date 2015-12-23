@@ -60,7 +60,7 @@ sub new {
         $methodargv->{ $e } = $argvs->{ $e };
     }
 
-    $parameters = __PACKAGE__->resolve( %$methodargv );
+    $parameters = __PACKAGE__->make( %$methodargv );
     return undef unless $parameters->{'ds'};
 
     $messageobj = {
@@ -72,8 +72,8 @@ sub new {
     return bless( $messageobj, __PACKAGE__ );
 }
 
-sub resolve {
-    # Resolve the email message into data structure: a body part and headers
+sub make {
+    # Make data structure from the email message(a body part and headers)
     # @param         [Hash] argvs   Email data
     # @options argvs [String] data  Entire email message
     # @return        [Hash]         Resolved data structure

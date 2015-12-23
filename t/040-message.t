@@ -5,8 +5,8 @@ use Sisimai::Message;
 
 my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
-    'class' => [ 
-        'new', 'resolve', 'parse', 'divideup', 'headers', 'takeapart',
+    'class' => [
+        'new', 'make', 'parse', 'divideup', 'headers', 'takeapart',
         'makeorder',
     ],
     'object' => [ 'from', 'header', 'ds', 'rfc822' ],
