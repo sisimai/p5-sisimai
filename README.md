@@ -346,7 +346,7 @@ Related Sites | 関連サイト
 * __GitHub__ | [github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 * __CPAN Testers Reports__ | [CPAN Testers Reports: Reports for Sisimai](http://cpantesters.org/distro/S/Sisimai.html)
-* __Ruby verson__ | [Ruby version of Sisimai(Under the development)](https://github.com/azumakuniyuki/rb-Sisimai)
+* __Ruby verson__ | [Ruby version of Sisimai(Under the development)](https://github.com/sisimai/rb-Sisimai)
 
 SEE ALSO | 参考サイト
 ---------------------
