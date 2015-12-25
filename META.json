@@ -60,21 +60,23 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/azumakuniyuki/p5-Sisimai/issues"
+         "web" : "https://github.com/sisimai/p5-Sisimai/issues"
       },
       "homepage" : "http://libsisimai.org/",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/azumakuniyuki/p5-Sisimai.git",
-         "web" : "https://github.com/azumakuniyuki/p5-Sisimai"
+         "url" : "git://github.com/sisimai/p5-Sisimai.git",
+         "web" : "https://github.com/sisimai/p5-Sisimai"
       }
    },
-   "version" : "4.13.1",
+   "version" : "4.14.0",
    "x_contributors" : [
       "jcbf <underspell@gmail.com>",
       "Jonathan Leroy <jonathan@inikup.com>",
-      "azumakuniyuki <github.com@azumakuniyuki.org>",
+      "azumakuniyuki <azumakuniyuki@gmail.com>",
+      "0xcdcdcdcd <0xcdcdcdcd@gmail.com>",
+      "azuma, kuniyuki <azumakuniyuki@users.noreply.github.com>",
       "azumakuniyuki <perl.org@azumakuniyuki.org>",
-      "azuma, kuniyuki <azumakuniyuki@users.noreply.github.com>"
+      "azumakuniyuki <azumakuniyuki+github.com@gmail.com>"
    ]
 }
