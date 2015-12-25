@@ -50,14 +50,12 @@ release-test:
 	$(MAKE) clean
 	$(MINIL) test
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
-	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<github.com\@azumakuniyuki.org>|' META.json
 
 dist:
 	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
 	$(MAKE) clean
 	$(MINIL) dist
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
-	$(PERL) -i -ple 's|<az.+ki[@]gmail.com>|<github.com\@azumakuniyuki.org>|' META.json
 
 $(REPOS_TARGETS):
 	$(MAKE) -f Repository.mk $@
