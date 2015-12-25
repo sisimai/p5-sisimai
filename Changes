@@ -1,11 +1,14 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.14.0
+4.14.0  Fri, 25 Dec 2015 11:04:14 +0900 (JST)
+    - Repository URL has been changed to https://github.com/sisimai/p5-Sisimai
     - Sisimai::MTA->SMTPCOMMAND has been obsoleted. Use Sisimai::SMTP->command
       instead, issue #136.
     - Sisimai::MTA->LONGFIELDS and Sisimai::MTA->RFC822HEADERS are obsoleted.
       Use Sisimai::RFC5322->LONGFIELDS() and Sisimai::RFC5322->HEADERFIELDS()
       instead.
+    - Change internal method names of Sisimai::Message/rewrite() begins parse(),
+      resolve() begins make().
     - Issue #110, #122 Code for reading email files in a directory is improved
       and got faster than before: merged Pull-Request #123.
     - Fixed bug reported at issue #124: warning message: `use of uninitialized
