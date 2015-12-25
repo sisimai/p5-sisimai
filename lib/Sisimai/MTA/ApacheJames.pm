@@ -231,8 +231,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki E<lt>perl.org@azumakuniyuki.orgE<gt>,
-All Rights Reserved.
+Copyright (C) 2015 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
