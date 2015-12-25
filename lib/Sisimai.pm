@@ -144,7 +144,7 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 
 =head1 REPOSITORY
 
-L<https://github.com/azumakuniyuki/p5-Sisimai> - Sisimai on GitHub
+L<https://github.com/sisimai/p5-Sisimai> - Sisimai on GitHub
 
 =head1 WEB SITE
 
