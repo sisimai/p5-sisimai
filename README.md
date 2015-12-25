@@ -1,8 +1,8 @@
-[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/azumakuniyuki/p5-Sisimai/blob/master/LICENSE)
-[![Coverage Status](https://img.shields.io/coveralls/azumakuniyuki/p5-Sisimai.svg)](https://coveralls.io/r/azumakuniyuki/p5-Sisimai)
-[![Build Status](https://travis-ci.org/azumakuniyuki/p5-Sisimai.svg?branch=master)](https://travis-ci.org/azumakuniyuki/p5-Sisimai) 
+[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-Sisimai/blob/master/LICENSE)
+[![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
+[![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.22-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.13.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.14.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 ![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
 
@@ -56,7 +56,7 @@ Install | インストール
 ```shell
 % sudo cpanm Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.13.1.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.14.0.tar.gz ... OK
 ...
 1 distribution installed
 % perldoc -l Sisimai
@@ -67,11 +67,11 @@ Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.13.1.tar.gz ... OK
 
 ```shell
 % cd /usr/local/src
-% git clone https://github.com/azumakuniyuki/p5-Sisimai.git
+% git clone https://github.com/sisimai/p5-Sisimai.git
 % cd ./p5-Sisimai
 % sudo make install-from-local
 --> Working on .
-Configuring Sisimai-4.13.1 ... OK
+Configuring Sisimai-4.14.0 ... OK
 1 distribution installed
 ```
 
@@ -343,7 +343,7 @@ Related Sites | 関連サイト
 --------------------------
 
 * __libsisimai.org__ | [Sisimai — A successor to bounceHammer, Library to parse error mails](http://libsisimai.org/)
-* __GitHub__ | [github.com/azumakuniyuki/p5-Sisimai](https://github.com/azumakuniyuki/p5-Sisimai)
+* __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 * __CPAN Testers Reports__ | [CPAN Testers Reports: Reports for Sisimai](http://cpantesters.org/distro/S/Sisimai.html)
 * __Ruby verson__ | [Ruby version of Sisimai(Under the development)](https://github.com/sisimai/rb-Sisimai)
