@@ -328,11 +328,11 @@ More details about data structure are available at available at
 Emails could not be parsed | 解析出来ないメール
 -----------------------------------------------
 __Bounce mails__ which could not be parsed by Sisimai are saved in the directory
-`set-of-emails/to-be-debugged-because/cannot-parse-yet`. If you find any bounce
-email cannot be parsed using Sisimai, please add the email into the directory
+`set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet`. If you find any
+bounce email cannot be parsed using Sisimai, please add the email into the directory
 and send Pull-Request to this repository.
 
-解析出来ない__バウンスメール__は`set-of-emails/to-be-debugged-because/cannot-parse-yet`
+解析出来ない__バウンスメール__は`set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet`
 ディレクトリにはいっています。もしもSisimaiで解析出来ないメールを見つけたら、
 このディレクトリに追加してPull-Requestを送ってください。
 
