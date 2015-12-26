@@ -1,5 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.14.1  Sat, 26 Dec 2015 20:00:00 +0900 (JST)
+    - eg/ directory has been renamed and sample email files have been moved to
+      github.com/set-of-emails repository as master data, issue #153.
+
 4.14.0  Fri, 25 Dec 2015 11:04:14 +0900 (JST)
     - Repository URL has been changed to https://github.com/sisimai/p5-Sisimai
     - Sisimai::MTA->SMTPCOMMAND has been obsoleted. Use Sisimai::SMTP->command
