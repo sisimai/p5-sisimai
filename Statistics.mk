@@ -24,10 +24,10 @@ MTARELATIVES := ARF RFC3464 RFC3834
 EMAIL_PARSER := ./sbin/emparser
 EMAIL_SAMPLE := ./tmp/sample
 DEVEL_SAMPLE := ./var/data
-PUBLICSAMPLE := ./eg/maildir-as-a-sample/new
-CRLF_SAMPLES := ./eg/maildir-as-a-sample/dos
-CRFORMATMAIL := ./eg/maildir-as-a-sample/mac
-MAILBOX_FILE := ./eg/mbox-as-a-sample
+PUBLICSAMPLE := ./set-of-emails/maildir/bsd
+CRLF_SAMPLES := ./set-of-emails/maildir/dos
+CRFORMATMAIL := ./set-of-emails/maildir/mac
+MAILBOX_FILE := ./set-of-emails/mailbox/mbox-0
 INDEX_LENGTH := 24
 DESCR_LENGTH := 48
 
