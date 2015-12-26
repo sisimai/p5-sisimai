@@ -463,7 +463,7 @@ sub scan {
 
         STATUS: {
             # Prefer the value of smtp reply code in Diagnostic-Code:
-            # See eg/maildir-as-a-sample/new/exim-20.eml
+            # See set-of-emails/maildir/bsd/exim-20.eml
             #   Action: failed
             #   Final-Recipient: rfc822;userx@test.ex
             #   Status: 5.0.0
