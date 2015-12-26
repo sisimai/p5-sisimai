@@ -966,7 +966,7 @@ for my $x ( keys %$R ) {
             $n = $e; $n =~ s/\A(\d+)[-].*[.]eml/$1/;
 
             while( my $r = $mailbox->read ) {
-                # Parse each email in eg/ directory
+                # Parse each email in set-of-emails/ directory
                 my $p = Sisimai::Message->new( 'data' => $r );
                 my $v = Sisimai::Data->make( 'data' => $p );
                 my $y = undef;

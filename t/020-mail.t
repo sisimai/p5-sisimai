@@ -9,11 +9,11 @@ my $MethodNames = {
     'object' => [ 'path', 'type', 'mail', 'read', 'close' ],
 };
 my $SampleEmail = {
-    'mailbox' => './eg/mbox-as-a-sample',
-    'maildir' => './eg/maildir-as-a-sample/cur',
+    'mailbox' => './set-of-emails/mailbox/mbox-0',
+    'maildir' => './set-of-emails/maildir/err',
 };
 my $IsNotBounce = {
-    'maildir' => './eg/maildir-as-a-sample/tmp',
+    'maildir' => './set-of-emails/maildir/not',
 };
 
 use_ok $PackageName;

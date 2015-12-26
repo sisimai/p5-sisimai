@@ -4,11 +4,11 @@ use IO::File;
 
 my $checkuntil = 2;
 my $publicfile = [
-    './eg/maildir-as-a-sample/cur',
-    './eg/maildir-as-a-sample/new',
-    './eg/maildir-as-a-sample/dos',
-    './eg/cannot-parse-yet',
-    './eg/reason-is-undefined',
+    './set-of-emails/maildir/err',
+    './set-of-emails/maildir/bsd',
+    './set-of-emails/maildir/dos',
+    './set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet',
+    './set-of-emails/to-be-debugged-because/reason-is-undefined',
 ];
 my $privatefile = './var/data';
 

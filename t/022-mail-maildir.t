@@ -8,7 +8,7 @@ my $MethodNames = {
     'class' => [ 'new' ],
     'object' => [ 'path', 'dir', 'file', 'inodes', 'handle', 'read' ],
 };
-my $SampleEmail = './eg/maildir-as-a-sample/new';
+my $SampleEmail = './set-of-emails/maildir/bsd';
 my $NewInstance = $PackageName->new( $SampleEmail );
 
 use_ok $PackageName;

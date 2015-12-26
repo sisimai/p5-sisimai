@@ -145,9 +145,9 @@ for my $x ( keys %$R ) {
         $M->scan, undef, $M.'->scan = undef';
 
         PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $R->{ $x } } ) {
-            # Open email in eg/ directory
+            # Open email in set-of-emails/ directory
             my $prefix1 = lc $x; $prefix1 =~ s/::/-/;
-            my $emailfn = sprintf( "./eg/maildir-as-a-sample/new/%s-%02d.eml", $prefix1, $i );
+            my $emailfn = sprintf( "./set-of-emails/maildir/bsd/%s-%02d.eml", $prefix1, $i );
             my $mailbox = Sisimai::Mail->new( $emailfn );
 
             $n = sprintf( "%02d", $i );
@@ -155,7 +155,7 @@ for my $x ( keys %$R ) {
             ok -f $emailfn, sprintf( "[%s] %s/email = %s", $n, $M,$emailfn );
 
             while( my $r = $mailbox->read ) {
-                # Parse each email in eg/ directory
+                # Parse each email in set-of-emails/maildir/bsd directory
                 my $p = Sisimai::Message->new( 'data' => $r );
                 my $o = undef;
 

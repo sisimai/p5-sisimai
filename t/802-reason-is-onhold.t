@@ -4,7 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai;
 
 my $PackageName = 'Sisimai';
-my $UndefinedES = './eg/reason-is-onhold';
+my $UndefinedES = './set-of-emails/to-be-debugged-because/reason-is-onhold';
 
 MAKE_TEST: {
 

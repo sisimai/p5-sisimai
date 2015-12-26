@@ -9,7 +9,7 @@ my $MethodNames = {
     'class' => [ 'new' ],
     'object' => [ 'path', 'name', 'size', 'handle', 'offset', 'read' ],
 };
-my $SampleEmail = './eg/mbox-as-a-sample';
+my $SampleEmail = './set-of-emails/mailbox/mbox-0';
 my $NewInstance = $PackageName->new();
 
 use_ok $PackageName;

@@ -20,7 +20,7 @@ MAKE_TEST: {
 
     is $PackageName->dump('json'), undef;
 
-    my $file = './eg/maildir-as-a-sample/new/sendmail-02.eml';
+    my $file = './set-of-emails/maildir/bsd/sendmail-02.eml';
     my $mail = Sisimai::Mail->new( $file );
     my $mesg = undef;
     my $data = undef;

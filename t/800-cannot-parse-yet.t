@@ -2,7 +2,7 @@ use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
 
-my $CannotParse = './eg/cannot-parse-yet';
+my $CannotParse = './set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet';
 
 MAKE_TEST: {
     SISIMAI: {

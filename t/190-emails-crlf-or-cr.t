@@ -5,8 +5,8 @@ use Sisimai;
 
 my $PackageName = 'Sisimai';
 my $SampleEmail = {
-    'dos' => './eg/maildir-as-a-sample/dos',
-    'mac' => './eg/maildir-as-a-sample/mac',
+    'dos' => './set-of-emails/maildir/dos',
+    'mac' => './set-of-emails/maildir/mac',
 };
 
 MAKE_TEST: {

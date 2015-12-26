@@ -8,7 +8,7 @@ my $MethodNames = {
     'class' => [ 'new' ],
     'object' => [ 'path', 'dir', 'file', 'size', 'handle', 'offset', 'read' ],
 };
-my $SampleEmail = './eg/mbox-as-a-sample';
+my $SampleEmail = './set-of-emails/mailbox/mbox-0';
 my $NewInstance = $PackageName->new( $SampleEmail );
 
 use_ok $PackageName;
@@ -23,9 +23,9 @@ MAKE_TEST: {
 
         isa_ok $mailbox, $PackageName;
         can_ok $mailbox, @{ $MethodNames->{'object'} };
-        is $mailbox->dir, './eg', '->dir = ./eg';
+        is $mailbox->dir, './set-of-emails/mailbox', '->dir = ./set-of-emails/mailbox';
         is $mailbox->path, $SampleEmail, '->path = '.$SampleEmail;
-        is $mailbox->file, 'mbox-as-a-sample', '->file = mbox-as-a-sample';
+        is $mailbox->file, 'mbox-0', '->file = mbox-0';
         is $mailbox->size, -s $SampleEmail, '->size = 96906';
         isa_ok $mailbox->handle, 'IO::File';
         is $mailbox->offset, 0, '->offset = 0';

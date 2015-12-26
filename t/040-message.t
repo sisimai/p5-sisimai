@@ -11,7 +11,7 @@ my $MethodNames = {
     ],
     'object' => [ 'from', 'header', 'ds', 'rfc822' ],
 };
-my $SampleEmail = './eg/mbox-as-a-sample';
+my $SampleEmail = './set-of-emails/mailbox/mbox-0';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };

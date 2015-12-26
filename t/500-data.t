@@ -18,7 +18,7 @@ MAKE_TEST: {
     is $PackageName->make, undef;
     is $PackageName->new, undef;
 
-    my $file = './eg/maildir-as-a-sample/new/sendmail-03.eml';
+    my $file = './set-of-emails/maildir/bsd/sendmail-03.eml';
     my $mail = Sisimai::Mail->new( $file );
     my $mesg = undef;
     my $data = undef;
@@ -79,7 +79,7 @@ MAKE_TEST: {
         }
     }
 
-    $file = './eg/maildir-as-a-sample/new/sendmail-04.eml';
+    $file = './set-of-emails/maildir/bsd/sendmail-04.eml';
     $mail = Sisimai::Mail->new( $file );
     $list = { 
         'recipient' => [ 'X-Failed-Recipient', 'To' ],
@@ -140,7 +140,7 @@ MAKE_TEST: {
         }
     }
 
-    $file = './eg/maildir-as-a-sample/tmp/is-not-bounce-01.eml';
+    $file = './set-of-emails/maildir/not/is-not-bounce-01.eml';
     $mail = Sisimai::Mail->new( $file );
 
     NOT_BOUNCE: while( my $r = $mail->read ){ 
