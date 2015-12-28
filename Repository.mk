@@ -8,8 +8,10 @@
 # -----------------------------------------------------------------------------
 SHELL := /bin/sh
 GIT   := /usr/bin/git
+CP    := cp
 B      = master
 V      = neko
+EMAILS = set-of-emails
 
 .DEFAULT_GOAL = git-status
 
@@ -54,6 +56,12 @@ git-rm-cached:
 
 git-reset-soft:
 	$(GIT) reset --soft HEAD^
+
+import-set-of-emails:
+	test -d $(EMAILS)
+	$(CP) -vRp ../$(EMAILS)/mailbox/* ./$(EMAILS)/mailbox/
+	$(CP) -vRp ../$(EMAILS)/maildir/* ./$(EMAILS)/maildir/
+	$(CP) -vRp ../$(EMAILS)/to-be-debugged-because/* ./$(EMAILS)/to-be-debugged-because/
 
 clean:
 
