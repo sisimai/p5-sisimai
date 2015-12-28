@@ -387,26 +387,26 @@ for my $x ( keys %$MTAChildren ) {
                     like $e->reason,         $MTAChildren->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $g, $x, $e->reason );
                     like $e->token,          qr/\A([0-9a-f]{40})\z/,         sprintf( "[%s] %s->token = %s", $g, $x, $e->token );
 
-                    unlike $e->deliverystatus,qr/[ ]/, sprintf( "[%s] %s->deliverystatus = %s", $g, $x, $e->deliverystatus );
-                    unlike $e->diagnostictype,qr/[ ]/, sprintf( "[%s] %s->diagnostictype = %s", $g, $x, $e->diagnostictype );
-                    unlike $e->smtpcommand,   qr/[ ]/, sprintf( "[%s] %s->smtpcommand = %s", $g, $x, $e->smtpcommand );
+                    unlike $e->deliverystatus,qr/[ \r]/, sprintf( "[%s] %s->deliverystatus = %s", $g, $x, $e->deliverystatus );
+                    unlike $e->diagnostictype,qr/[ \r]/, sprintf( "[%s] %s->diagnostictype = %s", $g, $x, $e->diagnostictype );
+                    unlike $e->smtpcommand,   qr/[ \r]/, sprintf( "[%s] %s->smtpcommand = %s", $g, $x, $e->smtpcommand );
 
-                    unlike $e->lhost,     qr/[ ]/, sprintf( "[%s] %s->lhost = %s", $g, $x, $e->lhost );
-                    unlike $e->rhost,     qr/[ ]/, sprintf( "[%s] %s->rhost = %s", $g, $x, $e->rhost );
-                    unlike $e->alias,     qr/[ ]/, sprintf( "[%s] %s->alias = %s", $g, $x, $e->alias );
-                    unlike $e->listid,    qr/[ ]/, sprintf( "[%s] %s->listid = %s", $g, $x, $e->listid );
-                    unlike $e->action,    qr/[ ]/, sprintf( "[%s] %s->action = %s", $g, $x, $e->action );
-                    unlike $e->messageid, qr/[ ]/, sprintf( "[%s] %s->messageid = %s", $g, $x, $e->messageid );
+                    unlike $e->lhost,     qr/[ \r]/, sprintf( "[%s] %s->lhost = %s", $g, $x, $e->lhost );
+                    unlike $e->rhost,     qr/[ \r]/, sprintf( "[%s] %s->rhost = %s", $g, $x, $e->rhost );
+                    unlike $e->alias,     qr/[ \r]/, sprintf( "[%s] %s->alias = %s", $g, $x, $e->alias );
+                    unlike $e->listid,    qr/[ \r]/, sprintf( "[%s] %s->listid = %s", $g, $x, $e->listid );
+                    unlike $e->action,    qr/[ \r]/, sprintf( "[%s] %s->action = %s", $g, $x, $e->action );
+                    unlike $e->messageid, qr/[ \r]/, sprintf( "[%s] %s->messageid = %s", $g, $x, $e->messageid );
 
-                    unlike $e->addresser->user, qr/[ ]/, sprintf( "[%s] %s->addresser->user = %s", $g, $x, $e->addresser->user );
-                    unlike $e->addresser->host, qr/[ ]/, sprintf( "[%s] %s->addresser->host = %s", $g, $x, $e->addresser->host );
-                    unlike $e->addresser->verp, qr/[ ]/, sprintf( "[%s] %s->addresser->verp = %s", $g, $x, $e->addresser->verp );
-                    unlike $e->addresser->alias,qr/[ ]/, sprintf( "[%s] %s->addresser->alias = %s", $g, $x, $e->addresser->alias );
+                    unlike $e->addresser->user, qr/[ \r]/, sprintf( "[%s] %s->addresser->user = %s", $g, $x, $e->addresser->user );
+                    unlike $e->addresser->host, qr/[ \r]/, sprintf( "[%s] %s->addresser->host = %s", $g, $x, $e->addresser->host );
+                    unlike $e->addresser->verp, qr/[ \r]/, sprintf( "[%s] %s->addresser->verp = %s", $g, $x, $e->addresser->verp );
+                    unlike $e->addresser->alias,qr/[ \r]/, sprintf( "[%s] %s->addresser->alias = %s", $g, $x, $e->addresser->alias );
 
-                    unlike $e->recipient->user, qr/[ ]/, sprintf( "[%s] %s->recipient->user = %s", $g, $x, $e->recipient->user );
-                    unlike $e->recipient->host, qr/[ ]/, sprintf( "[%s] %s->recipient->host = %s", $g, $x, $e->recipient->host );
-                    unlike $e->recipient->verp, qr/[ ]/, sprintf( "[%s] %s->recipient->verp = %s", $g, $x, $e->recipient->verp );
-                    unlike $e->recipient->alias,qr/[ ]/, sprintf( "[%s] %s->recipient->alias = %s", $g, $x, $e->recipient->alias );
+                    unlike $e->recipient->user, qr/[ \r]/, sprintf( "[%s] %s->recipient->user = %s", $g, $x, $e->recipient->user );
+                    unlike $e->recipient->host, qr/[ \r]/, sprintf( "[%s] %s->recipient->host = %s", $g, $x, $e->recipient->host );
+                    unlike $e->recipient->verp, qr/[ \r]/, sprintf( "[%s] %s->recipient->verp = %s", $g, $x, $e->recipient->verp );
+                    unlike $e->recipient->alias,qr/[ \r]/, sprintf( "[%s] %s->recipient->alias = %s", $g, $x, $e->recipient->alias );
                 }
                 $c++;
             }

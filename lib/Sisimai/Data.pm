@@ -99,7 +99,7 @@ sub new {
         'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
         'smtpcommand', 'feedbacktype', 'action', 'softbounce',
     );
-    $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
+    $thing->{ $_ } =  $argvs->{ $_ } // '' for @v1;
     $thing->{'replycode'}  = Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
     $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
 
@@ -246,6 +246,7 @@ sub make {
             for my $v ( 'rhost', 'lhost' ) {
                 $p->{ $v } =~ y/[]()//d;    # Remove square brackets and curly brackets from the host variable
                 $p->{ $v } =~ s/\A.+=//;    # Remove string before "="
+                $p->{ $v } =~ s/\r\z//g;    # Remove CR at the end of the value
 
                 # Check space character in each value
                 if( $p->{ $v } =~ m/ / ) {
@@ -255,7 +256,8 @@ sub make {
             }
 
             # Subject: header of the original message
-            $p->{'subject'} = $rfc822data->{'subject'} // '';
+            $p->{'subject'} =  $rfc822data->{'subject'} // '';
+            $p->{'subject'} =~ s/\r\z//g;
 
             # The value of "List-Id" header
             $p->{'listid'} =  $rfc822data->{'list-id'} // '';
@@ -266,6 +268,7 @@ sub make {
                     $p->{'listid'} = $1 
                 }
                 $p->{'listid'} =~ y/<>//d;
+                $p->{'listid'} =~ s/\r\z//g;
                 $p->{'listid'} =  '' if $p->{'listid'} =~ m/ /;
             }
 
@@ -275,11 +278,13 @@ sub make {
                 # Remove angle brackets
                 $p->{'messageid'} =  $1 if $p->{'messageid'} =~ m/\A([^ ]+)[ ].*/;
                 $p->{'messageid'} =~ y/<>//d;
+                $p->{'messageid'} =~ s/\r\z//g;
             }
 
             CHECK_DELIVERY_STATUS_VALUE: {
                 # Cleanup the value of "Diagnostic-Code:" header
                 $p->{'diagnosticcode'} =~ s/[ \t]+$EndOfEmail//;
+                $p->{'diagnosticcode'} =~ s/\r\z//g;
                 my $v = Sisimai::SMTP::Status->find( $p->{'diagnosticcode'} );
                 if( $v =~ m/\A[45][.][1-9][.][1-9]\z/ ) {
                     # Use the DSN value in Diagnostic-Code:
