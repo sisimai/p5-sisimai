@@ -1,5 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.14.2
+    - Issue #154 Fix bug: remove CR(\r) at the end of string in some properties
+      of Sisimai::Data before calling the constructor. Thanks to M Miyamoto.
+
 4.14.1  Sat, 26 Dec 2015 20:00:00 +0900 (JST)
     - eg/ directory has been renamed and sample email files have been moved to
       github.com/set-of-emails repository as master data, issue #153.
