@@ -10,7 +10,64 @@ my $MethodNames = {
     'class' => [ 'description', 'headerlist', 'scan', 'pattern', 'DELIVERYSTATUS' ],
     'object' => [],
 };
-my $R = {
+my $MSPChildren = {
+    'DE::EinsUndEins' => {
+        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mesgtoobig/ },
+    },
+    'DE::GMX' => {
+        '01' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
+        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
+        '04' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+    },
+    'JP::Biglobe' => {
+        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
+    },
+    'JP::EZweb' => {
+        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
+        '02' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/(?:suspend|undefined)/ },
+        '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/suspend/ },
+        '04' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
+        '05' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+    },
+    'JP::KDDI' => {
+        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
+        '02' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
+        '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
+    },
+    'RU::MailRu' => {
+        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '02' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
+        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
+        '04' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+    },
+    'RU::Yandex' => {
+        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '02' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
+        '03' => { 'status' => qr/\A4[.]4[.]1\z/, 'reason' => qr/expired/ },
+    },
+    'UK::MessageLabs' => {
+        '01' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/userunknown/ },
+    },
+    'US::AmazonSES' => {
+        '01' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/blocked/ },
+        '02' => { 'status' => qr/\A5[.]3[.]0\z/, 'reason' => qr/filtered/ },
+        '03' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
+        '04' => { 'status' => qr/\A5[.]4[.]7\z/, 'reason' => qr/expired/ },
+    },
+    'US::Aol' => {
+        '01' => { 'status' => qr/\A5[.]4[.]4\z/, 'reason' => qr/hostunknown/ },
+        '02' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
+        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:mailboxfull|userunknown)/ },
+        '04' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+    },
+    'US::Bigfoot' => {
+        '01' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/userunknown/ },
+    },
+    'US::Facebook' => {
+        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/filtered/ },
+        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+    },
     'US::Google' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
         '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
@@ -27,26 +84,14 @@ my $R = {
         '13' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
         '14' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
     },
-    'JP::KDDI' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
-        '02' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
-        '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
-    },
-    'US::Verizon' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
-    },
-    'US::Facebook' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/filtered/ },
+    'US::Outlook' => {
+        '01' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
         '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-    },
-    'JP::Biglobe' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
-    },
-    'US::AmazonSES' => {
-        '01' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/blocked/ },
-        '02' => { 'status' => qr/\A5[.]3[.]0\z/, 'reason' => qr/filtered/ },
-        '03' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '04' => { 'status' => qr/\A5[.]4[.]7\z/, 'reason' => qr/expired/ },
+        '03' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/hostunknown/ },
+        '04' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:mailboxfull|userunknown)/ },
+        '05' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/userunknown/ },
+        '06' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
+        '07' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
     },
     'US::ReceivingSES' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/filtered/ },
@@ -62,12 +107,8 @@ my $R = {
         '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
         '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
     },
-    'JP::EZweb' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
-        '02' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/(?:suspend|undefined)/ },
-        '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/suspend/ },
-        '04' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
-        '05' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+    'US::Verizon' => {
+        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
     },
     'US::Yahoo' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
@@ -76,38 +117,6 @@ my $R = {
         '04' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
         '05' => { 'status' => qr/\A5[.]2[.]1\z/, 'reason' => qr/filtered/ },
     },
-    'US::Aol' => {
-        '01' => { 'status' => qr/\A5[.]4[.]4\z/, 'reason' => qr/hostunknown/ },
-        '02' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:mailboxfull|userunknown)/ },
-        '04' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-    },
-    'US::Outlook' => {
-        '01' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '03' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/hostunknown/ },
-        '04' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:mailboxfull|userunknown)/ },
-        '05' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/userunknown/ },
-        '06' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
-        '07' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
-    },
-    'RU::MailRu' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
-        '04' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-    },
-    'DE::GMX' => {
-        '01' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
-        '04' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-    },
-    'RU::Yandex' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
-        '03' => { 'status' => qr/\A4[.]4[.]1\z/, 'reason' => qr/expired/ },
-    },
     'US::Zoho' => {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
         '02' => { 'status' => qr/\A5[.]2[.][12]\z/, 'reason' => qr/(?:mailboxfull|filtered)/ },
@@ -115,18 +124,9 @@ my $R = {
         '04' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
         '05' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
     },
-    'DE::EinsUndEins' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mesgtoobig/ },
-    },
-    'UK::MessageLabs' => {
-        '01' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/userunknown/ },
-    },
-    'US::Bigfoot' => {
-        '01' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/userunknown/ },
-    },
 };
 
-for my $x ( keys %$R ) {
+for my $x ( keys %$MSPChildren ) {
     # Check each MSP module
     my $M = 'Sisimai::MSP::'.$x;
     my $v = undef;
@@ -144,7 +144,7 @@ for my $x ( keys %$R ) {
 
         $M->scan, undef, $M.'->scan = undef';
 
-        PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $R->{ $x } } ) {
+        PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $MSPChildren->{ $x } } ) {
             # Open email in set-of-emails/ directory
             my $prefix1 = lc $x; $prefix1 =~ s/::/-/;
             my $emailfn = sprintf( "./set-of-emails/maildir/bsd/%s-%02d.eml", $prefix1, $i );
@@ -244,8 +244,8 @@ for my $x ( keys %$R ) {
 
                     like $e->replycode,      qr/\A(?:[45]\d\d|)\z/,          sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
                     like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
-                    like $e->deliverystatus, $R->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
-                    like $e->reason,         $R->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );
+                    like $e->deliverystatus, $MSPChildren->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
+                    like $e->reason,         $MSPChildren->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );
                     like $e->token,          qr/\A([0-9a-f]{40})\z/,         sprintf( "[%s] %s->token = %s", $n, $x, $e->token );
 
                     unlike $e->deliverystatus,qr/[ \r]/, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
