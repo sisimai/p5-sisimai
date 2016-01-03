@@ -16,12 +16,8 @@ my $Re1 = {
 };
 
 my $ReFailure = {
-    'filtered' => qr{
-        Mail[ ]Delivery[ ]Failed[.]+[ ]User[ ]unknown
-    }x,
-    'mailboxfull' => qr{
-        The[ ]number[ ]of[ ]messages[ ]in[ ]recipient's[ ]mailbox[ ]exceeded[ ]the[ ]local[ ]limit[.]
-    }x,
+    'filtered'    => qr/Mail Delivery Failed[.]+ User unknown/,
+    'mailboxfull' => qr/The number of messages in recipient's mailbox exceeded the local limit[.]/,
 };
 
 my $Indicators = __PACKAGE__->INDICATORS;
@@ -53,7 +49,6 @@ sub scan {
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     require Sisimai::Address;
-
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
@@ -140,7 +135,6 @@ sub scan {
                 }
 
             } else {
-
                 next if $e =~ m/\A[^\w]/;
                 $v->{'diagnosis'} .= $e.' ';
             }
@@ -219,7 +213,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

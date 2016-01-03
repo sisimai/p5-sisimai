@@ -16,9 +16,7 @@ my $Re1 = {
 };
 
 my $ReFailure = {
-    'mesgtoobig' => qr{
-        Mail[ ]size[ ]limit[ ]exceeded
-    }x,
+    'mesgtoobig' => qr/Mail[ ]size[ ]limit[ ]exceeded/x,
 };
 
 my $Indicators = __PACKAGE__->INDICATORS;
@@ -164,7 +162,7 @@ sub scan {
         }
 
         $e->{'status'} =  Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-        $e->{'spec'} ||= 'SMTP';
+        $e->{'spec'}   = 'SMTP';
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
@@ -213,7 +211,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
