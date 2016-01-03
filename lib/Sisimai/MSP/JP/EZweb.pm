@@ -99,11 +99,13 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    my $rxboundary = Sisimai::MIME->boundary( $mhead->{'content-type'}, 1 );
-    my @rxmessages = ();
-
-    $Re1->{'boundary'} = qr|\A$rxboundary\z| if length $rxboundary;
-    map { push @rxmessages, @{ $ReFailure->{ $_ } } } ( keys %$ReFailure );
+    if( $mhead->{'content-type'} ) {
+        # Get the boundary string and set regular expression for matching with
+        # the boundary string.
+        my $b0 = Sisimai::MIME->boundary( $mhead->{'content-type'}, 1 );
+        $Re1->{'boundary'} = qr|\A$b0\z| if length $b0;
+    }
+    my @rxmessages = (); map { push @rxmessages, @{ $ReFailure->{ $_ } } } ( keys %$ReFailure );
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
