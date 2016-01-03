@@ -24,9 +24,7 @@ my $Re1 = {
 };
 
 my $ReFailure = {
-    #'notaccept' => [
-    #    qr/The following recipients did not receive this message:/,
-    #],
+    #'notaccept' => [ qr/The following recipients did not receive this message:/ ],
     'mailboxfull' => [
         qr/The user[(]s[)] account is temporarily over quota/,
     ],
@@ -82,7 +80,7 @@ sub scan {
     #
     $match++ if $mhead->{'from'}     =~ $Re0->{'from'};
     $match++ if $mhead->{'subject'}  =~ $Re0->{'subject'};
-    $match++ if $mhead->{'received'} =~ $Re0->{'received'};
+    $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     if( defined $mhead->{'message-id'} ) {
         $match++ if $mhead->{'message-id'} =~ $Re0->{'message-id'};
     }
