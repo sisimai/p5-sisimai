@@ -86,7 +86,6 @@ sub scan {
     }
     return undef if $match < 2;
 
-    require Sisimai::MIME;
     require Sisimai::String;
     require Sisimai::Address;
 
@@ -102,6 +101,7 @@ sub scan {
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
+        require Sisimai::MIME;
         my $b0 = Sisimai::MIME->boundary( $mhead->{'content-type'}, 1 );
         $Re1->{'boundary'} = qr|\A$b0\z| if length $b0;
     }
