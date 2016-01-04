@@ -12,25 +12,19 @@ my $Re0 = {
 };
 my $Re1 = {
     'begin' => qr/\AYour[ ]mail[ ](?:
-                     sent[ ]on:?[ ][A-Z][a-z]{2}[,]
-                    |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
-                    )
-               /x,
+         sent[ ]on:?[ ][A-Z][a-z]{2}[,]
+        |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
+        )
+    /x,
     'rfc822' => qr|\AContent-Type: message/rfc822\z|,
     'error'  => qr/Could not be delivered to:? /,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 my $ReFailure = {
-    'mailboxfull' => qr{
-        As[ ]their[ ]mailbox[ ]is[ ]full
-    }x,
-    'norelaying' => qr{
-        Due[ ]to[ ]the[ ]following[ ]SMTP[ ]relay[ ]error
-    }x,
-    'hostunknown' => qr{
-        As[ ]the[ ]remote[ ]domain[ ]doesnt[ ]exist
-    }x,
+    'mailboxfull' => qr/As[ ]their[ ]mailbox[ ]is[ ]full/x,
+    'norelaying'  => qr/Due[ ]to[ ]the[ ]following[ ]SMTP[ ]relay[ ]error/x,
+    'hostunknown' => qr/As[ ]the[ ]remote[ ]domain[ ]doesnt[ ]exist/x,
 };
 
 my $Indicators = __PACKAGE__->INDICATORS;
