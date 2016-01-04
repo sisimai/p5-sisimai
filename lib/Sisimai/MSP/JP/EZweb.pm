@@ -149,21 +149,23 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
+            # The user(s) account is disabled.
+            #
+            # <***@ezweb.ne.jp>: 550 user unknown (in reply to RCPT TO command)
+            # 
+            #  -- OR --
+            # Each of the following recipients was rejected by a remote
+            # mail server.
+            #
+            #    Recipient: <******@ezweb.ne.jp>
+            #    >>> RCPT TO:<******@ezweb.ne.jp>
+            #    <<< 550 <******@ezweb.ne.jp>: User unknown
             $v = $dscontents->[ -1 ];
+
             if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
                 $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
                 $e =~ m/\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
-                # The user(s) account is disabled.
-                #
-                # <***@ezweb.ne.jp>: 550 user unknown (in reply to RCPT TO command)
-                # 
-                #  -- OR --
-                # Each of the following recipients was rejected by a remote
-                # mail server.
-                #
-                #    Recipient: <******@ezweb.ne.jp>
-                #    >>> RCPT TO:<******@ezweb.ne.jp>
-                #    <<< 550 <******@ezweb.ne.jp>: User unknown
+
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -175,6 +177,7 @@ sub scan {
                     $v->{'recipient'} = $r;
                     $recipients++;
                 }
+
             } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # Status: 5.1.1
                 # Status:5.2.0
