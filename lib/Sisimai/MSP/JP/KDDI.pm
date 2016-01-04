@@ -36,7 +36,7 @@ sub smtpagent   { 'JP::KDDI' }
 sub pattern     { return $Re0 }
 
 sub scan {
-    # Detect an error from KDDI
+    # Detect an error from au by KDDI
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header
