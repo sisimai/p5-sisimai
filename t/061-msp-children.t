@@ -200,7 +200,7 @@ for my $x ( keys %$MSPChildren ) {
                     for my $ee ( 'rhost', 'lhost' ) {
                         # Check rhost and lhost are valid hostname or not
                         next unless $e->{ $ee };
-                         next if $x =~ m/\A(?:RU::MailRu)\z/;
+                        next if $x =~ m/\A(?:RU::MailRu)\z/;
                         like $e->{ $ee }, qr/\A(?:localhost|.+[.].+)\z/, sprintf( "[%s] %s->%s = %s", $n, $x, $ee, $e->{ $ee } );
                     }
                 }
