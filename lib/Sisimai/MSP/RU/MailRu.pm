@@ -271,7 +271,6 @@ sub scan {
                     $e->{'reason'} = 'blocked';
 
                 } else {
-
                     SESSION: for my $r ( keys %$ReFailure ) {
                         # Verify each regular expression of session errors
                         next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
