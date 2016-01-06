@@ -19,7 +19,15 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Yandex.Mail: http://www.yandex.ru' }
 sub smtpagent   { 'RU::Yandex' }
-sub headerlist  { return [ 'X-Yandex-Uniq' ] } # 'X-Yandex-Front', 'X-Yandex-TimeMark', 
+
+# X-Yandex-Front: mxback1h.mail.yandex.net
+# X-Yandex-TimeMark: 1417885948
+# X-Yandex-Uniq: 92309766-f1c8-4bd4-92bc-657c75766587
+# X-Yandex-Spam: 1
+# X-Yandex-Forward: 10104c00ad0726da5f37374723b1e0c8
+# X-Yandex-Queue-ID: 367D79E130D
+# X-Yandex-Sender: rfc822; shironeko@yandex.example.com
+sub headerlist  { return [ 'X-Yandex-Uniq' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -265,7 +273,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
