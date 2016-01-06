@@ -296,7 +296,6 @@ sub takeapart {
 
     for my $e ( @hasdivided ) {
         # Header name as a key, The value of header as a value
-        # if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
         if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.*)\z/ ) {
             # Header
             my $lhs = lc $1;
