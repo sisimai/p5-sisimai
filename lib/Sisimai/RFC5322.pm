@@ -67,7 +67,8 @@ sub HEADERFIELDS {
 sub LONGFIELDS {
     # Fields that might be long
     # @return   [Hash] Long filed(email header) list
-    return { 'to' => 1, 'from' => 1, 'subject' => 1 };
+    # return { 'to' => 1, 'from' => 1, 'subject' => 1 };
+    return { 'to' => 1, 'from' => 1, 'subject' => 1, 'message-id' => 1 };
 }
 
 sub is_emailaddress {
