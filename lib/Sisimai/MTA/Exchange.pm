@@ -57,6 +57,10 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Microsoft Exchange Server' }
 sub smtpagent   { 'Exchange' }
+
+# X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
+# X-Mailer: Internet Mail Service (5.5.1960.3)
+# X-MS-Embedded-Report: 
 sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-MimeOLE' ] };
 sub pattern     { return $Re0 }
 
@@ -216,7 +220,6 @@ sub scan {
                         $v->{'alterrors'} .= ' '.$e;
                     }
                 }
-
             } else {
                 # Your message
                 #
@@ -253,7 +256,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r0 = $mhead->{'received'};
@@ -311,7 +313,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::Exchange - bounce mail parser class for C<Microsft Exchange 
+Sisimai::MTA::Exchange - bounce mail parser class for C<Microsft Exchange
 Server>.
 
 =head1 SYNOPSIS
@@ -348,7 +350,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
