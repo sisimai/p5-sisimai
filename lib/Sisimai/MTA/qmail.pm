@@ -245,14 +245,11 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        $e->{'agent'} = __PACKAGE__->smtpagent;
-
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
@@ -321,6 +318,7 @@ sub scan {
         $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'command'} ||= '';
+        $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
@@ -369,7 +367,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
