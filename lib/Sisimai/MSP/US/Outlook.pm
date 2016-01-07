@@ -27,6 +27,9 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Microsoft Outlook.com: https://www.outlook.com/' }
 sub smtpagent   { 'US::Outlook' }
+
+# X-Message-Delivery: Vj0xLjE7RD0wO0dEPTA7U0NMPTk7bD0xO3VzPTE=
+# X-Message-Info: AuEzbeVr9u5fkDpn2vR5iCu5wb6HBeY4iruBjnutBzpStnUabbM...
 sub headerlist  { return [ 'X-Message-Delivery', 'X-Message-Info' ] }
 sub pattern     { return $Re0 }
 
@@ -53,8 +56,8 @@ sub scan {
     $match++ if $mhead->{'x-message-info'};
     $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef if $match < 2;
-    require Sisimai::RFC5322;
 
+    require Sisimai::RFC5322;
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
@@ -193,9 +196,9 @@ sub scan {
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
 
         $e->{'spec'}    ||= 'SMTP';
@@ -274,7 +277,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
