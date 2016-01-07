@@ -53,11 +53,6 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-ses-outgoing'};
-    if( 0 ) {
-        # return undef unless $mhead->{'feedback-id'};
-        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-        return undef unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
-    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
