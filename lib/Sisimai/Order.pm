@@ -107,7 +107,6 @@ my $AnotherList9 = [
 #         'Sisimai::MTA::Exchange' => 1,
 #         'Sisimai::MTA::IMailServer' => 1,
 #         'Sisimai::MSP::US::Zoho' => 1,
-#         'Sisimai::MTA::MailMarshalSMTP' => 1
 #     },
 # };
 

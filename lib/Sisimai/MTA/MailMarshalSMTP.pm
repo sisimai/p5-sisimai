@@ -21,7 +21,6 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Trustwave Secure Email Gateway' }
 sub smtpagent   { 'MailMarshalSMTP' }
-sub headerlist  { return [ 'X-Mailer' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -233,7 +232,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
