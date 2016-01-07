@@ -23,6 +23,8 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Digital Arts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
+
+# X-Mailer: m-FILTER
 sub headerlist  { return [ 'X-Mailer' ] }
 sub pattern     { return $Re0 }
 
@@ -226,7 +228,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
