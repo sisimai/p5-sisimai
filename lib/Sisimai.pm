@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Load '';
 
-our $VERSION = '4.14.1';
+our $VERSION = '4.14.2';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
@@ -18,7 +18,6 @@ sub make {
     my $argvs = shift // return undef;
 
     require Sisimai::Mail;
-
     my $mail = Sisimai::Mail->new( $argvs );
     my $mesg = undef;
     my $data = undef;
@@ -150,13 +149,15 @@ L<https://github.com/sisimai/p5-Sisimai> - Sisimai on GitHub
 
 L<http://libsisimai.org/> - A successor to bounceHammer, Library to parse error mails.
 
+L<https://github.com/sisimai/rb-Sisimai> - Ruby version of Sisimai
+
 =head1 AUTHOR
 
 azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
