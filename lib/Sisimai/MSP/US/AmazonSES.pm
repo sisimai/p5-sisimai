@@ -202,25 +202,25 @@ sub scan {
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( $e->{'status'} =~ m/\A[45][.][01][.]0\z/ ) {
             # Get other D.S.N. value from the error message
-            my $r = '';
-            my $x = $e->{'diagnosis'};
+            my $pseudostatus = '';
+            my $errormessage = $e->{'diagnosis'};
 
             if( $e->{'diagnosis'} =~ m/["'](\d[.]\d[.]\d.+)['"]/ ) {
                 # 5.1.0 - Unknown address error 550-'5.7.1 ...
-                $x = $1;
+                $errormessage = $1;
             }
 
-            $r = Sisimai::SMTP::Status->find( $x );
-            $e->{'status'} = $r if length $r;
+            $pseudostatus = Sisimai::SMTP::Status->find( $errormessage );
+            $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
         SESSION: for my $r ( keys %$ReFailure ) {

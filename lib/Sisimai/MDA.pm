@@ -126,7 +126,6 @@ sub scan {
         push @linebuffer, $e;
         last unless length $e;
     }
-
     return undef unless $agentname0;
     return undef unless scalar @linebuffer;
 
@@ -193,7 +192,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

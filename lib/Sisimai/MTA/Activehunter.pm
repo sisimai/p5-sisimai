@@ -41,10 +41,6 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless defined $mhead->{'x-ahmailid'};
-    if( 0 ) {
-        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-        return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
@@ -135,9 +131,9 @@ sub scan {
     for my $e ( @$dscontents ) {
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
@@ -193,7 +189,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

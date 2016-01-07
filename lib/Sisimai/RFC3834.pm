@@ -18,10 +18,11 @@ my $Re0 = {
 };
 my $Re1 = { 'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/ };
 my $Re2 = {
-    'subject' => qr/(?:
-                  SECURITY[ ]information[ ]for  # sudo
-                 |Mail[ ]failure[ ][-]          # Exim
-                 )/x,
+    'subject' => qr{(?:
+          SECURITY[ ]information[ ]for  # sudo
+         |Mail[ ]failure[ ][-]          # Exim
+         )
+    }x,
     'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/i,
     'to'      => qr/root[@]/,
 };
@@ -95,7 +96,7 @@ sub scan {
         # Try to get the address of the recipient
         for my $e ( 'from', 'return-path' ) {
             # Get the recipient address
-            next unless exists $mhead->{ $e };
+            next unless exists  $mhead->{ $e };
             next unless defined $mhead->{ $e };
 
             $v->{'recipient'} = $mhead->{ $e };
@@ -137,9 +138,9 @@ sub scan {
 
     if( scalar @{ $mhead->{'received'} } ) {
         # Get localhost and remote host name from Received header.
-        my $r = $mhead->{'received'};
-        $v->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-        $v->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+        my $r0 = $mhead->{'received'};
+        $v->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+        $v->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
     }
     return { 'ds' => $dscontents, 'rfc822' => '' };
 }
@@ -186,7 +187,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
