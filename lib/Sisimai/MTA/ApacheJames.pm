@@ -231,7 +231,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
