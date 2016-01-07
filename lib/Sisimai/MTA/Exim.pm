@@ -45,17 +45,17 @@ my $Re1 = {
     'alias'  => qr/\A([ ]+an[ ]undisclosed[ ]address)\z/,
     'frozen' => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
     'rfc822' => qr{\A(?:
-                     [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message.+headers[.][ ][-]+
-                    |Content-Type:[ ]*message/rfc822
-                    )\z
-                }x,
+         [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message.+headers[.][ ][-]+
+        |Content-Type:[ ]*message/rfc822
+        )\z
+    }x,
     'begin'  => qr{\A(?>
-                     This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
-                    |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
-                    |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
-                    |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
-                    )
-                   }x,
+         This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
+        |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
+        |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
+        |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
+        )
+    }x,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
@@ -132,6 +132,8 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Exim' }
 sub smtpagent   { 'Exim' }
+
+# X-Failed-Recipients: kijitora@example.ed.jp
 sub headerlist  { return [ 'X-Failed-Recipients' ] }
 sub pattern     { return $Re0 }
 
@@ -420,8 +422,8 @@ sub scan {
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {
                     # Get localhost and remote host name from Received header.
-                    my $r = $mhead->{'received'};
-                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+                    my $r0 = $mhead->{'received'};
+                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
                 }
             }
         }
@@ -581,7 +583,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
