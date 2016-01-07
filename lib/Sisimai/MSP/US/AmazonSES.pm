@@ -14,7 +14,6 @@ my $Re1 = {
     'rfc822'  => qr|\Acontent-type: message/rfc822\z|,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
-
 my $ReFailure = {
     'expired' => qr/Delivery[ ]expired/x,
 };
@@ -50,10 +49,6 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-aws-outgoing'};
-    if( 0 ) {
-        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-        return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
@@ -64,9 +59,8 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
-        'rhost'   => '',    # The value of Reporting-MTA header
+        'lhost'   => '',    # The value of Reporting-MTA header
     };
-
     my $v = undef;
     my $p = '';
 
@@ -187,8 +181,8 @@ sub scan {
                 #
                 if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
-                    next if length $connheader->{'rhost'};
-                    $connheader->{'rhost'} = $1;
+                    next if length $connheader->{'lhost'};
+                    $connheader->{'lhost'} = $1;
                     $connvalues++;
                 }
             }
