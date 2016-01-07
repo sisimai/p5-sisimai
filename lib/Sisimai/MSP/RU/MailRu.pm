@@ -220,9 +220,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        $e->{'lhost'} ||= $localhost0;
-
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
@@ -245,11 +242,12 @@ sub scan {
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {
                     # Get localhost and remote host name from Received header.
-                    my $r = $mhead->{'received'};
-                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+                    my $r0 = $mhead->{'received'};
+                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
                 }
             }
         }
+        $e->{'lhost'} ||= $localhost0;
 
         if( ! $e->{'command'} ) {
             # Get the SMTP command name for the session
