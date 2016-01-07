@@ -10,15 +10,15 @@ my $Re0 = {
     'from'        => qr/\b(?:postmaster|mailer-daemon|root)[@]/i,
     'return-path' => qr/(?:[<][>]|mailer-daemon)/i,
     'subject'     => qr{(?>
-                         delivery[ ](?:failed|failure|report)
-                        |failure[ ]notice
-                        |mail[ ](?:delivery|error)
-                        |non[-]delivery
-                        |returned[ ]mail
-                        |undeliverable[ ]mail
-                        |Warning:[ ]
-                        )
-                     }xi,
+         delivery[ ](?:failed|failure|report)
+        |failure[ ]notice
+        |mail[ ](?:delivery|error)
+        |non[-]delivery
+        |returned[ ]mail
+        |undeliverable[ ]mail
+        |Warning:[ ]
+        )
+    }xi,
 };
 
 my $Re1 = {
