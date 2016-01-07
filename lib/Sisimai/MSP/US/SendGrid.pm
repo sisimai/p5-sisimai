@@ -22,6 +22,9 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub smtpagent   { 'US::SendGrid' }
+
+# Return-Path: <apps@sendgrid.net>
+# X-Mailer: MIME-tools 5.502 (Entity 5.502)
 sub headerlist  { return [ 'Return-Path', 'X-Mailer' ] }
 sub pattern     { return $Re0 }
 
@@ -47,7 +50,6 @@ sub scan {
     return undef unless $mhead->{'subject'}     =~ $Re0->{'subject'};
 
     require Sisimai::DateTime;
-
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
@@ -176,16 +178,16 @@ sub scan {
                 } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                     next if length $connheader->{'date'};
-                    my $r = $1;
+                    my $arrivaldate = $1;
 
                     if( $e =~ m/\A[Aa]rrival-[Dd]ate: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/ ) {
                         # Arrival-Date: 2011-08-12 01-05-05
-                        $r .= 'Thu, '.$3.' ';
-                        $r .= Sisimai::DateTime->monthname(0)->[ int($2) - 1 ];
-                        $r .= ' '.$1.' '.join( ':', $4, $5, $6 );
-                        $r .= ' '.Sisimai::DateTime->abbr2tz('CDT');
+                        $arrivaldate .= 'Thu, '.$3.' ';
+                        $arrivaldate .= Sisimai::DateTime->monthname(0)->[ int($2) - 1 ];
+                        $arrivaldate .= ' '.$1.' '.join( ':', $4, $5, $6 );
+                        $arrivaldate .= ' '.Sisimai::DateTime->abbr2tz('CDT');
                     }
-                    $connheader->{'date'} = $r;
+                    $connheader->{'date'} = $arrivaldate;
                     $connvalues++;
                 }
             }
@@ -218,8 +220,8 @@ sub scan {
         if( $e->{'status'} =~ m/[45][.]0[.]0/ ) {
             # Get the value of D.S.N. from the error message or the value of
             # Diagnostic-Code header.
-            my $r = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-            $e->{'status'} = $r if length $r;
+            my $pseudostatus = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+            $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
         if( $e->{'action'} eq 'expired' ) {
@@ -228,16 +230,16 @@ sub scan {
             if( ! $e->{'status'} || $e->{'status'} =~ m/[45][.]0[.]0/ ) {
                 # Set pseudo Status code value if the value of Status is not
                 # defined or 4.0.0 or 5.0.0.
-                my $r = Sisimai::SMTP::Status->code('expired');
-                $e->{'status'} = $r if length $r;
+                my $pseudostatus = Sisimai::SMTP::Status->code('expired');
+                $e->{'status'} = $pseudostatus if length $pseudostatus;
             }
         }
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
 
         $e->{'spec'}    ||= 'SMTP';
@@ -290,7 +292,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
