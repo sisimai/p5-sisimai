@@ -207,9 +207,9 @@ sub scan {
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
         $e->{'command'} ||= $commandtxt || '';
@@ -217,8 +217,8 @@ sub scan {
 
         if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
-            my $r = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-            $e->{'status'} = $r if length $r;
+            my $pseudostatus = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+            $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
         $e->{'spec'} ||= 'SMTP';
