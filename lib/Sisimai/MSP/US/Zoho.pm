@@ -7,10 +7,10 @@ use warnings;
 my $Re0 = {
     'from'     => qr/mailer-daemon[@]mail[.]zoho[.]com\z/,
     'subject'  => qr{\A(?:
-                     Undelivered[ ]Mail[ ]Returned[ ]to[ ]Sender
-                    |Mail[ ]Delivery[ ]Status[ ]Notification
-                    )
-                  }x,
+         Undelivered[ ]Mail[ ]Returned[ ]to[ ]Sender
+        |Mail[ ]Delivery[ ]Status[ ]Notification
+        )
+    }x,
     'x-mailer' => qr/\AZoho Mail\z/,
 };
 my $Re1 = {
