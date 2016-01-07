@@ -45,9 +45,6 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-ymailisg'};
-    if( 0 ) {
-        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
