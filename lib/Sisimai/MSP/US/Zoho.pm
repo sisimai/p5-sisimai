@@ -54,13 +54,8 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-zohomail'};
-    if( 0 ) {
-        return undef unless $mhead->{'from'}     =~ $Re0->{'from'};
-        return undef unless $mhead->{'subject'}  =~ $Re0->{'subject'};
-        return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
-    }
-    require Sisimai::RFC5322;
 
+    require Sisimai::RFC5322;
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
