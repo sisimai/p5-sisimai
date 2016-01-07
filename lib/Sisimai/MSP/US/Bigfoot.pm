@@ -41,9 +41,6 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    if( 0 ) {
-        $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-    }
     $match ||= 1 if $mhead->{'from'} =~ $Re0->{'from'};
     $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
@@ -273,7 +270,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
