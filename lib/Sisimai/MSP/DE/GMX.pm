@@ -50,10 +50,6 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless defined $mhead->{'x-gmx-antispam'};
-    if( 0 ) {
-        return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
@@ -175,9 +171,9 @@ sub scan {
     for my $e ( @$dscontents ) {
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
 
         $e->{'diagnosis'} =~ s{\\n}{ }g;
