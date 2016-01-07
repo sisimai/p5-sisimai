@@ -169,8 +169,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        $e->{'agent'} = __PACKAGE__->smtpagent;
-
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r0 = $mhead->{'received'};
@@ -181,6 +179,8 @@ sub scan {
         $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'spec'}      = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
+
     }
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
@@ -229,7 +229,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
