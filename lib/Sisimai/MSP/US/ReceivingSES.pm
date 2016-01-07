@@ -29,7 +29,10 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'AmazonSES(Receiving): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::ReceivingSES' }
-sub headerlist  { return [ 'X-SES-Outgoing' ] } # 'Feedback-ID'
+
+# X-SES-Outgoing: 2015.10.01-54.240.27.7
+# Feedback-ID: 1.us-west-2.HX6/J9OVlHTadQhEu1+wdF9DBj6n6Pa9sW5Y/0pSOi8=:AmazonSES
+sub headerlist  { return [ 'X-SES-Outgoing' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
