@@ -43,10 +43,9 @@ my $ReFailure = {
 
 my $ReDelayed = {
     # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
-    'networkerror' => qr{
-        \ADNS[ ]lookup[ ]failed[.]\z
-    },
+    'networkerror' => qr/\ADNS[ ]lookup[ ]failed[.]\z/,
 };
+
 my $Indicators = __PACKAGE__->INDICATORS;
 my $LongFields = Sisimai::RFC5322->LONGFIELDS;
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
@@ -202,7 +201,6 @@ sub scan {
                         $e = 'Diagnostic-Code: '.$e;
                     }
                 }
-
             } else {
                 # This is a delivery status notification from marutamachi.example.org,
                 # running the Courier mail server, version 0.65.2.
@@ -264,9 +262,9 @@ sub scan {
 
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
-            my $r = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r->[-1] ) };
+            my $r0 = $mhead->{'received'};
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
         }
 
         HARD_E: for my $r ( keys %$ReFailure ) {
@@ -278,7 +276,7 @@ sub scan {
         }
 
         unless( $e->{'reason'} ) {
-            SOFT_E: for my $r ( keys %$ReDelayed ) {
+            for my $r ( keys %$ReDelayed ) {
                 # Verify each regular expression of session errors
                 next unless $e->{'diagnosis'} =~ $ReDelayed->{ $r };
                 $e->{'reason'} = $r;
@@ -289,8 +287,8 @@ sub scan {
 
         if( ! $e->{'status'} || $e->{'status'} =~ m/\d[.]0[.]0\z/ ) {
             # Get the status code from the respnse of remote MTA.
-            my $f = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-            $e->{'status'} = $f if length $f;
+            my $pseudostatus = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+            $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
         $e->{'spec'}      = '' unless $e->{'spec'} =~ m/\A(?:SMTP|X-UNIX)\z/;
         $e->{'agent'}     = __PACKAGE__->smtpagent;
@@ -342,7 +340,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
