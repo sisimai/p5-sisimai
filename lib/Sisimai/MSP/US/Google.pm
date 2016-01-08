@@ -192,7 +192,6 @@ sub scan {
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $softbounce = 0;     # (Integer) 1 = Soft bounce
     my $statecode0 = 0;     # (Integer) The value of (state *) in the error message
     my $v = undef;
 
