@@ -295,14 +295,14 @@ sub scan {
             if( $e->{'diagnosis'} =~ m/[ \t]+by[ \t]+([^ ]+)[.][ \t]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
                 # Google tried to deliver your message, but it was rejected by # the server 
                 # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
-                my $x = $1;
-                my $y = $2;
-                if( $x =~ m/[-0-9a-zA-Z]+[.][a-zA-Z]+\z/ ) {
+                my $hostname = $1;
+                my $ipv4addr = $2;
+                if( $hostname =~ m/[-0-9a-zA-Z]+[.][a-zA-Z]+\z/ ) {
                     # Maybe valid hostname
-                    $e->{'rhost'} = $x;
+                    $e->{'rhost'} = $hostname;
                 } else {
                     # Use IP address instead
-                    $e->{'rhost'} = $y;
+                    $e->{'rhost'} = $ipv4addr;
                 }
             }
         }
