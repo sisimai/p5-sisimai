@@ -156,7 +156,6 @@ sub scan {
                     $v->{'date'} = $1;
 
                 } else {
-
                     if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <kijitora@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
