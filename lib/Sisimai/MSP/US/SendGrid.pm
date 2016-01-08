@@ -171,7 +171,7 @@ sub scan {
                 # X-SendGrid-QueueID: 959479146
                 # X-SendGrid-Sender: <bounces+61689-10be-kijitora=example.jp@sendgrid.info>
                 # Arrival-Date: 2012-12-31 23-59-59
-                if( $e =~ m{.+ in (?:End of )?([A-Z]{4}).*\z} ) {
+                if( $e =~ m/.+ in (?:End of )?([A-Z]{4}).*\z/ ) {
                     # in RCPT TO, in MAIL FROM, end of DATA
                     $commandtxt = $1;
 
