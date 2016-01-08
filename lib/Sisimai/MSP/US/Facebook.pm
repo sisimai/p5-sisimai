@@ -111,7 +111,7 @@ sub scan {
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
         'date'    => '',    # The value of Arrival-Date header
-        'rhost'   => '',    # The value of Reporting-MTA header
+        'lhost'   => '',    # The value of Reporting-MTA header
     };
 
     my $v = undef;
@@ -215,8 +215,8 @@ sub scan {
             } else {
                 if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
-                    next if $connheader->{'rhost'};
-                    $connheader->{'rhost'} = $1;
+                    next if $connheader->{'lhost'};
+                    $connheader->{'lhost'} = $1;
                     $connvalues++;
 
                 } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
@@ -237,7 +237,7 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        $e->{'rhost'} ||= $connheader->{'rhost'};
+        $e->{'lhost'} ||= $connheader->{'lhost'};
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $r0 = $mhead->{'received'};
