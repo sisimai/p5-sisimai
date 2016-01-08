@@ -15,9 +15,7 @@ my $Re1 = {
 };
 
 my $ReFailure = {
-    'hostunknown' => qr{
-        Host[ ]or[ ]domain[ ]name[ ]not[ ]found
-    }x,
+    'hostunknown' => qr/Host[ ]or[ ]domain[ ]name[ ]not[ ]found/,
 };
 
 my $Indicators = __PACKAGE__->INDICATORS;
@@ -58,10 +56,6 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-aol-ip'};
-    if( 0 ) {
-        return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-        return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    }
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
@@ -221,8 +215,8 @@ sub scan {
 
         if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
-            my $r = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-            $e->{'status'} = $r if length $r;
+            my $pseudostatus = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+            $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
         $e->{'spec'} ||= 'SMTP';
