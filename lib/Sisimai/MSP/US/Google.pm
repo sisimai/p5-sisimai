@@ -266,9 +266,9 @@ sub scan {
                     $v = $dscontents->[ -1 ];
                 }
 
-                my $r = Sisimai::Address->s3s4( $1 );
-                if( Sisimai::RFC5322->is_emailaddress( $r ) ) {
-                    $v->{'recipient'} = $r;
+                my $addr0 = Sisimai::Address->s3s4( $1 );
+                if( Sisimai::RFC5322->is_emailaddress( $addr0 ) ) {
+                    $v->{'recipient'} = $addr0;
                     $recipients++;
                 }
 
