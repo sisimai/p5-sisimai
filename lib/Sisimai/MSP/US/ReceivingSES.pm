@@ -64,7 +64,7 @@ sub scan {
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
         'date'  => '',      # The value of Arrival-Date header
-        'rhost' => '',      # The value of Reporting-MTA header
+        'lhost' => '',      # The value of Reporting-MTA header
     };
 
     my $v = undef;
@@ -178,8 +178,8 @@ sub scan {
                 # Reporting-MTA: dns; inbound-smtp.us-west-2.amazonaws.com
                 if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
-                    next if length $connheader->{'rhost'};
-                    $connheader->{'rhost'} = $1;
+                    next if length $connheader->{'lhost'};
+                    $connheader->{'lhost'} = $1;
                     $connvalues++;
 
                 } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
