@@ -23,11 +23,7 @@ sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub smtpagent   { 'US::Verizon' }
 sub pattern     { 
     return {
-        'from'    => qr{(?:
-             \Apost_master[@]vtext[.]com
-            |[<]?sysadmin[@].+[.]vzwpix[.]com[>]?
-            )\z
-        }x,
+        'from' => qr/[<]?(?:\Apost_master[@]vtext|sysadmin[@].+[.]vzwpix)[.]com[>]?\z/,
         'subject' => $Re0->{'vzwpix.com'}->{'subject'},
     };
 }
