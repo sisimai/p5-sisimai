@@ -135,20 +135,19 @@ sub scan {
                 next unless $readcursor & $Indicators->{'deliverystatus'};
                 next unless length $e;
 
+                # Message details:
+                #   Subject: Test message
+                #   Sent date: Wed Jun 12 02:21:53 GMT 2013
+                #   MAIL FROM: *******@hg.example.com
+                #   RCPT TO: *****@vtext.com
                 $v = $dscontents->[ -1 ];
 
                 if( $e =~ m/\A[ \t]+RCPT TO: (.*)\z/ ) {
-                    # Message details:
-                    #   Subject: Test message
-                    #   Sent date: Wed Jun 12 02:21:53 GMT 2013
-                    #   MAIL FROM: *******@hg.example.com
-                    #   RCPT TO: *****@vtext.com
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                         $v = $dscontents->[ -1 ];
                     }
-
                     $v->{'recipient'} = $1;
                     $recipients++;
                     next;
@@ -162,11 +161,8 @@ sub scan {
                     $subjecttxt ||= $1;
 
                 } else {
-
-                    if( $e =~ m/\A(\d{3})[ \t][-][ \t](.*)\z/ ) {
-                        # 550 - Requested action not taken: no such user here
-                        $v->{'diagnosis'} = $e;
-                    }
+                    # 550 - Requested action not taken: no such user here
+                    $v->{'diagnosis'} = $e if $e =~ m/\A(\d{3})[ \t][-][ \t](.*)\z/;
                 }
             } # End of if: rfc822
         }
@@ -232,20 +228,19 @@ sub scan {
                 next unless $readcursor & $Indicators->{'deliverystatus'};
                 next unless length $e;
 
+                # Original Message:
+                # From: kijitora <kijitora@example.jp>
+                # To: 0000000000@vzwpix.com
+                # Subject: test for bounce
+                # Date:  Wed, 20 Jun 2013 10:29:52 +0000
                 $v = $dscontents->[ -1 ];
 
                 if( $e =~ m/\ATo:[ \t]+(.*)\z/ ) {
-                    # Original Message:
-                    # From: kijitora <kijitora@example.jp>
-                    # To: 0000000000@vzwpix.com
-                    # Subject: test for bounce
-                    # Date:  Wed, 20 Jun 2013 10:29:52 +0000
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                         $v = $dscontents->[ -1 ];
                     }
-
                     $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
                     $recipients++;
                     next;
@@ -259,12 +254,9 @@ sub scan {
                     $subjecttxt ||= $1;
 
                 } else {
-
-                    if( $e =~ m/\AError:[ \t]+(.+)\z/ ) {
-                        # Message could not be delivered to mobile.
-                        # Error: No valid recipients for this MM
-                        $v->{'diagnosis'} = $e;
-                    }
+                    # Message could not be delivered to mobile.
+                    # Error: No valid recipients for this MM
+                    $v->{'diagnosis'} = $e if $e =~ m/\AError:[ \t]+(.+)\z/;
                 }
             } # End of if: rfc822
         }
