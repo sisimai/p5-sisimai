@@ -44,16 +44,16 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $vtext = undef;
+    my $match = -1;
 
     while(1) {
         # Check the value of "From" header
         last unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
-        $vtext = 1 if $mhead->{'from'} =~ $Re0->{'vtext.com'}->{'from'};
-        $vtext = 0 if $mhead->{'from'} =~ $Re0->{'vzwpix.com'}->{'from'};
+        $match = 1 if $mhead->{'from'} =~ $Re0->{'vtext.com'}->{'from'};
+        $match = 0 if $mhead->{'from'} =~ $Re0->{'vzwpix.com'}->{'from'};
         last;
     }
-    return undef unless defined $vtext;
+    return undef if $match < 0;
 
     require Sisimai::MIME;
     require Sisimai::Address;
@@ -72,14 +72,13 @@ sub scan {
     my $boundary00 = '';    # (String) Boundary string
     my $v = undef;
 
-    if( $vtext == 1 ) {
+    if( $match == 1 ) {
         # vtext.com
         $Re1 = {
             'begin'  => qr/\AError:[ \t]/,
             'rfc822' => qr/\A__BOUNDARY_STRING_HERE__\z/,
             'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
         };
-
         $ReFailure = {
             'userunknown' => qr{
                 # The attempted recipient address does not exist.
@@ -178,7 +177,6 @@ sub scan {
             'rfc822' => qr/\A__BOUNDARY_STRING_HERE__\z/,
             'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
         };
-
         $ReFailure = {
             'userunknown' => qr{
                 No[ ]valid[ ]recipients[ ]for[ ]this[ ]MM
