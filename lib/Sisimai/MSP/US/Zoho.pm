@@ -197,7 +197,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MSP::US::Zoho - bounce mail parser class for C<Zoho! MAIL>.
+Sisimai::MSP::US::Zoho - bounce mail parser class for C<Zoho Mail>.
 
 =head1 SYNOPSIS
 
