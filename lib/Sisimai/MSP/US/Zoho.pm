@@ -55,7 +55,6 @@ sub scan {
 
     return undef unless $mhead->{'x-zohomail'};
 
-    require Sisimai::RFC5322;
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
@@ -132,14 +131,14 @@ sub scan {
                     $v = $dscontents->[ -1 ];
                 }
                 $v->{'recipient'} = $1;
-                $recipients++;
+                $v->{'diagnosis'} = $2;
 
-                $v->{'diagnosis'} =  $2;
                 if( $v->{'diagnosis'} =~ m/=\z/ ) {
                     # Quoted printable
                     $v->{'diagnosis'} =~ s/=\z//;
                     $qprintable = 1;
                 }
+                $recipients++;
 
             } elsif( $e =~ m/\A\[Status: .+[<]([^ ]+[@][^ ]+)[>],/ ) {
                 # Expired
