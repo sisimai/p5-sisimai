@@ -149,9 +149,8 @@ sub scan {
                     $v = $dscontents->[ -1 ];
                 }
                 $v->{'recipient'} = $1;
-                $recipients++;
-
                 $v->{'diagnosis'} = $e;
+                $recipients++;
 
             } else {
                 # Continued line
