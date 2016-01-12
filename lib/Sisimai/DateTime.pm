@@ -313,7 +313,7 @@ sub parse {
     my @timetokens = split( ' ', $datestring );
     my $parseddate = '';    # [String]  Canonified Date/Time string
     my $afternoon1 = 0;     # [Integer] After noon flag
-    my $altervalue = {};
+    my $altervalue = {};    # [Hash] To store alternative values
     my $v = {
         'Y' => undef,   # [Integer] Year
         'M' => undef,   # [String]  Month Abbr.
