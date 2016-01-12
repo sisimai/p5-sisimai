@@ -86,10 +86,9 @@ MAKE_TEST: {
 
     for my $e ( 'maildir' ) {
         my $parseddata = $PackageName->make( $IsNotBounce->{ $e } );
-        is $parseddata, undef;
-
-        $parseddata = $PackageName->dump( $IsNotBounce->{ $e } );
-        is $parseddata, '[]';
+        my $jsonstring = $PackageName->dump( $IsNotBounce->{ $e } );
+        is $parseddata, undef, '->make = undef';
+        is $jsonstring, '[]', '->dump = "[]"';
     }
 }
 done_testing;
