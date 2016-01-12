@@ -29,68 +29,68 @@ MAKE_TEST: {
     is $PackageName->dump(undef), undef;
 
     for my $e ( 'mailbox', 'maildir' ) {
-
         MAKE: {
-            my $v = $PackageName->make( $SampleEmail->{ $e } );
-            isa_ok $v, 'ARRAY';
-            ok scalar @$v, 'entries = '.scalar @$v;
+            my $parseddata = $PackageName->make( $SampleEmail->{ $e } );
+            my $damnedhash = undef;
+            my $jsonstring = undef;
+            isa_ok $parseddata, 'ARRAY';
+            ok scalar @$parseddata, 'entries = '.scalar @$parseddata;
 
-            for my $r ( @$v ) {
-                isa_ok $r, 'Sisimai::Data';
-                isa_ok $r->timestamp, 'Sisimai::Time';
-                isa_ok $r->addresser, 'Sisimai::Address';
-                isa_ok $r->recipient, 'Sisimai::Address';
-                ok $r->addresser->address, '->addresser = '.$r->addresser->address;
-                ok $r->recipient->address, '->recipient = '.$r->recipient->address;
-                ok length $r->reason, '->reason = '.$r->reason;
-                ok defined $r->replycode, '->replycode = '.$r->replycode;
+            for my $ee ( @$parseddata ) {
+                isa_ok $ee, 'Sisimai::Data';
+                isa_ok $ee->timestamp, 'Sisimai::Time';
+                isa_ok $ee->addresser, 'Sisimai::Address';
+                isa_ok $ee->recipient, 'Sisimai::Address';
+                ok $ee->addresser->address, '->addresser = '.$ee->addresser->address;
+                ok $ee->recipient->address, '->recipient = '.$ee->recipient->address;
+                ok length  $ee->reason, '->reason = '.$ee->reason;
+                ok defined $ee->replycode, '->replycode = '.$ee->replycode;
 
-                my $h = $r->damn;
-                isa_ok $h, 'HASH';
-                ok scalar keys %$h;
-                is $h->{'recipient'}, $r->recipient->address, '->recipient = '.$h->{'recipient'};
-                is $h->{'addresser'}, $r->addresser->address, '->addresser = '.$h->{'addresser'};
+                $damnedhash = $ee->damn;
+                isa_ok $damnedhash, 'HASH';
+                ok scalar keys %$damnedhash;
+                is $damnedhash->{'recipient'}, $ee->recipient->address, '->recipient = '.$damnedhash->{'recipient'};
+                is $damnedhash->{'addresser'}, $ee->addresser->address, '->addresser = '.$damnedhash->{'addresser'};
 
-                for my $p ( keys %$h ) {
-                    next if ref $r->$p;
-                    next if $p eq 'subject';
-                    is $h->{ $p }, $r->$p, '->'.$p.' = '.$h->{ $p };
+                for my $eee ( keys %$damnedhash ) {
+                    next if ref $ee->$eee;
+                    next if $eee eq 'subject';
+                    is $damnedhash->{ $eee }, $ee->$eee, '->'.$eee.' = '.$damnedhash->{ $eee };
                 }
 
-                my $j = $r->dump('json');
-                ok length $j, 'length( dump("json") ) = '.length $j;
+                $jsonstring = $ee->dump('json');
+                ok length $jsonstring, 'length( dump("json") ) = '.length $jsonstring;
             }
         }
 
         DUMP: {
-            my $j = $PackageName->dump( $SampleEmail->{ $e } );
-            ok length $j;
-            utf8::encode $j if utf8::is_utf8 $j;
-
-            my $v = JSON::decode_json( $j );
-            my $k = [ qw|
+            my $jsonstring = $PackageName->dump( $SampleEmail->{ $e } );
+            my $perlobject = undef;
+            my $tobetested = [ qw|
                 addresser recipient senderdomain destination reason timestamp 
                 token smtpagent|
             ];
+            ok length $jsonstring;
+            utf8::encode $jsonstring if utf8::is_utf8 $jsonstring;
+            $perlobject = JSON::decode_json( $jsonstring );
 
-            isa_ok $v, 'ARRAY';
-            for my $p ( @$v ) {
-                isa_ok $p, 'HASH';
-                for my $x ( @$k ) {
-                    ok $p->{ $x }, $x.' = '.$p->{ $x };
+            isa_ok $perlobject, 'ARRAY';
+            for my $ee ( @$perlobject ) {
+                isa_ok $ee, 'HASH';
+                for my $eee ( @$tobetested ) {
+                    ok $ee->{ $eee }, $eee.' = '.$ee->{ $eee };
                 }
             }
         }
     }
 
     for my $e ( 'maildir' ) {
-        my $v = $PackageName->make( $IsNotBounce->{ $e } );
-        is $v, undef;
+        my $parseddata = $PackageName->make( $IsNotBounce->{ $e } );
+        is $parseddata, undef;
 
-        $v = $PackageName->dump( $IsNotBounce->{ $e } );
-        is $v, '[]';
+        $parseddata = $PackageName->dump( $IsNotBounce->{ $e } );
+        is $parseddata, '[]';
     }
-
 }
-
 done_testing;
+
