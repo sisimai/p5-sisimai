@@ -48,7 +48,6 @@ sub dump {
 
     my $parseddata = __PACKAGE__->make( $argv0 ) // [];
     my $jsonobject = undef;
-    my $dumpedtext = undef;
 
     # Dump as JSON
     Module::Load::load( 'JSON', '-convert_blessed_universally' );
