@@ -5,6 +5,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       of Sisimai::Data before calling the constructor. Thanks to M Miyamoto.
     - Issue #151 fix bug that the value of foled Message-Id field could not be
       found at pull-request #157. Thanks to @0xcdcdcdcd.
+    - Fix bug in code to get pseudo delivery status in Sisimai::MSP::RU::Yandex.
 
 4.14.1  Sat, 26 Dec 2015 20:00:00 +0900 (JST)
     - eg/ directory has been renamed and sample email files have been moved to
