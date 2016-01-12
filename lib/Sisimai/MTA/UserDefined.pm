@@ -4,10 +4,19 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+# $Re0 is a regular expression to match with message headers which are given as
+# the first argument of scan() method.
 my $Re0 = {
     'from'    => qr/\AMail Delivery Subsystem/,
     'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
 };
+
+# $Re1 is delimiter set of these sections:
+#   begin:  The first line of a bounce message to be parsed.
+#   error:  The first line of an error message to get an error reason, recipient
+#           addresses, or other bounce information.
+#   rfc822: The first line of the original message.
+#   endof:  Fixed string ``__END_OF_EMAIL_MESSAGE__''
 my $Re1 = {
     'begin'   => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
@@ -25,7 +34,7 @@ sub headerlist  { return [ 'X-Some-UserDefined-Header' ] }
 sub pattern     { return $Re0 }
 
 sub scan {
-    # @abstract      UserDefined MTA module
+    # @abstract      Template for User-Defined MTA module
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header
@@ -147,7 +156,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
