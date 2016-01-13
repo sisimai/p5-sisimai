@@ -4,6 +4,7 @@
 /bin
 /blib
 /sbin
+/set-of-emails/private
 /var
 
 # Carton releated files
