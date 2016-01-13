@@ -363,7 +363,7 @@ AUTHOR | 作者
 
 COPYRIGHT | 著作権
 ------------------
-Copyright (C) 2014-2015 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All Rights Reserved.
 
 LICENSE | ライセンス
 --------------------
