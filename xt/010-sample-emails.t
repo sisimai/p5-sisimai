@@ -10,7 +10,7 @@ my $publicfile = [
     './set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet',
     './set-of-emails/to-be-debugged-because/reason-is-undefined',
 ];
-my $privatefile = './var/data';
+my $privatefile = './set-of-emails/private';
 
 PUBLIC_SAMPLES: {
     for my $d ( @$publicfile ) {
