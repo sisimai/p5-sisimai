@@ -7,8 +7,8 @@ use warnings;
 # $Re0 is a regular expression to match with message headers which are given as
 # the first argument of scan() method.
 my $Re0 = {
-    'from'    => qr/\AMail Delivery Subsystem/,
-    'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
+    'from'    => qr/\AMail Sysmet/,
+    'subject' => qr/\AError Mail Report/,
 };
 
 # $Re1 is delimiter set of these sections:

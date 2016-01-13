@@ -18,7 +18,7 @@ MAKE_TEST: {
     is $PackageName->make, undef;
     is $PackageName->new, undef;
 
-    my $file = './set-of-emails/maildir/bsd/sendmail-01.eml';
+    my $file = './set-of-emails/mailbox/mbox-1';
     my $mail = Sisimai::Mail->new( $file );
     my $mesg = undef;
     my $data = undef;
