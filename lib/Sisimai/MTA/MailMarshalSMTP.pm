@@ -41,8 +41,9 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    require Sisimai::MIME;
 
+    require Sisimai::MIME;
+    require Sisimai::String;
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
@@ -55,8 +56,13 @@ sub scan {
     my $v = undef;
 
     $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
-    $Re1->{'rfc822'} = qr/\A[-]{2}$boundary00[-]{2}\z/ if length $boundary00;
-    $Re1->{'rfc822'} = qr/\A[ \t]*[+]+[ \t]*\z/ unless $Re1->{'rfc822'};
+    if( length $boundary00 ) {
+        # Convert to regular expression
+        $Re1->{'rfc822'} = Sisimai::String->to_regexp( '--'.$boundary00.'--' );
+
+    } else {
+        $Re1->{'rfc822'} = qr/\A[ \t]*[+]+[ \t]*\z/;
+    }
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -166,7 +172,6 @@ sub scan {
     }
 
     return undef unless $recipients;
-    require Sisimai::String;
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {

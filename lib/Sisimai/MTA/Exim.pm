@@ -157,6 +157,7 @@ sub scan {
     return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
+    require Sisimai::String;
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
@@ -174,7 +175,10 @@ sub scan {
         # the boundary string.
         require Sisimai::MIME;
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
-        $rxboundary = qr/\A[-]{2}$boundary00\z/ if length $boundary00;
+        if( length $boundary00 ) {
+            # Convert to regular expression
+            $rxboundary = Sisimai::String->to_regexp( '--'.$boundary00 );
+        }
     }
 
     for my $e ( @hasdivided ) {
@@ -354,7 +358,6 @@ sub scan {
         $localhost0 = $1 if $mhead->{'received'}->[-1] =~ m/from[ \t]([^ ]+) /;
     }
 
-    require Sisimai::String;
     require Sisimai::SMTP::Reply;
     require Sisimai::SMTP::Status;
 
