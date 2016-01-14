@@ -29,6 +29,7 @@ my $MSPChildren = {
         '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/suspend/ },
         '04' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
         '05' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+        '06' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
     },
     'JP::KDDI' => {
         '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
