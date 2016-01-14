@@ -191,6 +191,8 @@ my $MTAChildren = {
         '33' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/blocked/ },
         '34' => { 'status' => qr/\A5[.]7[.]0\z/, 'reason' => qr/securityerror/ },
         '35' => { 'status' => qr/\A5[.]7[.]13\z/, 'reason' => qr/suspend/ },
+        '36' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/blocked/ },
+        '37' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
     },
     'SurfControl' => {
         '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
