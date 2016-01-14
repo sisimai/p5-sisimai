@@ -5,13 +5,13 @@ From: Postmaster@ezweb.ne.jp
 Message-ID: <XXXXXXXXXX@XXXXXXXXXX.ezweb.ne.jp>
 Date: Fri, 8 Jan 2016 10:26:43 +0900
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="==_LD168/AvJO+++cQTU=/LDS"
+Content-Type: multipart/mixed; boundary="==_LD168/AvJO---cQTU=/LDS"
 Reply-To: Mail Administrator <Postmaster@ezweb.ne.jp>
 Subject: Mail System Error - Returned Mail
 
 This message is in MIME format.Since your mail reader does not understand this format, some or all of the message may not be legible
 
---==_LD168/AvJO+++cQTU=/LDS
+--==_LD168/AvJO---cQTU=/LDS
 Content-Type: text/plain; charset="ISO-2022-JP"
 Content-Transfer-Encoding: 7bit
 
@@ -30,4 +30,4 @@ mail server.
 
 
 
---==_LD168/AvJO+++cQTU=/LDS--
+--==_LD168/AvJO---cQTU=/LDS--
