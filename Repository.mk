@@ -11,6 +11,7 @@ GIT   := /usr/bin/git
 CP    := cp
 B      = master
 V      = neko
+RSYNC  = rsync -var
 EMAILS = set-of-emails
 
 .DEFAULT_GOAL = git-status
@@ -59,10 +60,11 @@ git-reset-soft:
 
 import-set-of-emails:
 	test -d $(EMAILS)
-	$(CP) -vRp ../$(EMAILS)/mailbox/* ./$(EMAILS)/mailbox/
-	$(CP) -vRp ../$(EMAILS)/maildir/* ./$(EMAILS)/maildir/
-	$(CP) -vRp ../$(EMAILS)/private/* ./$(EMAILS)/private/
-	$(CP) -vRp ../$(EMAILS)/to-be-debugged-because/* ./$(EMAILS)/to-be-debugged-because/
+	$(CP) -vRp ../$(EMAILS)/README.md $(EMAILS)/
+	$(RSYNC) ../$(EMAILS)/mailbox/ ./$(EMAILS)/mailbox/
+	$(RSYNC) ../$(EMAILS)/maildir/ ./$(EMAILS)/maildir/
+	$(RSYNC) ../$(EMAILS)/private/ ./$(EMAILS)/private/
+	$(RSYNC) ../$(EMAILS)/to-be-debugged-because/ ./$(EMAILS)/to-be-debugged-because/
 
 clean:
 
