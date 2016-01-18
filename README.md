@@ -152,6 +152,7 @@ and Sisimai.
 | Database schema for storing parsed bounce data | Available     | N/A[1]      |
 | Analytical precision ratio(2000 emails)[2]     | 0.52          | 1.00        |
 | The speed of parsing email(2000 emails)        | 7.07s         | 4.10s       |
+| The number of detectable bounce reasons        | 19            | 25          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
@@ -179,6 +180,7 @@ and Sisimai.
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し[1]     |
 | 解析精度の割合(2000通のメール)[2]              | 0.52          | 1.00        |
 | メール解析速度(2000通のメール)                 | 7.07秒        | 4.10秒      |
+| 検出可能なバウンス理由の数                     | 19            | 25          |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件解析可能|
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
