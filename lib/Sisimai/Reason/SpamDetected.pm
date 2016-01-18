@@ -68,7 +68,8 @@ sub match {
         |rule[ ]imposed[ ]as[ ].+is[ ]blacklisted[ ]on              # Mailmarshal RBLs
         |sending[ ]address[ ]not[ ]accepted[ ]due[ ]to[ ]spam[ ]filter
         |spam[ ](?:
-             blocked
+             .+[ ]exceeded
+            |blocked
             |check
             |content[ ]matched
             |detected
