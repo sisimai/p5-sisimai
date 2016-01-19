@@ -8,6 +8,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Fix bug in code to get pseudo delivery status in Sisimai::MSP::RU::Yandex.
     - Implement Sisimai::String->to_regexp() method to fix bug in code to build
       regular expression reported at pull-request #160, Thanks to @negachov.
+    - Improved message pattern of Sisimai::Reason::SpamDetected.
 
 4.14.1  Sat, 26 Dec 2015 20:00:00 +0900 (JST)
     - eg/ directory has been renamed and sample email files have been moved to
