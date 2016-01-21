@@ -31,7 +31,7 @@ Key Features | 主な特徴的機能
   * Support 19 major MSPs(Mail Service Providers) | 19種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
   * Can detect 25 error reasons | 25種類のエラー理由を検出
-* __Faster than bounceHammer version 2.7.X__ | __bounceHammer 2.7.Xよりも高速に解析__
+* __Faster than bounceHammer version 2.7.13p3__ | __bounceHammer 2.7.13p3よりも高速に解析__
   * About 1.7 times faster | 1.7倍程高速
 
 
@@ -140,7 +140,7 @@ Sisimai Specification | シシマイの仕様
 
 Differences between ver.2 and Sisimai | 新旧の違い
 --------------------------------------------------
-The following table show the differences between ver.2 (bounceHammer 2.7.13p1)
+The following table show the differences between ver.2 (bounceHammer 2.7.13p3)
 and Sisimai.
 
 | Features                                       | bounceHammer  | Sisimai     |
@@ -154,7 +154,7 @@ and Sisimai.
 | The speed of parsing email(2000 emails)        | 7.07s         | 4.10s       |
 | The number of detectable bounce reasons        | 19            | 25          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
-| Parse FeedBack Loop Message/ARF format mail    | N/A           | OK          |
+| Parse FeedBack Loop Message/ARF format mail    | Unable        | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
 | Output format of parsed data                   | YAML,JSON,CSV | JSON only   |
 | Easy to install                                | No            | Yes         |
@@ -168,7 +168,7 @@ and Sisimai.
 1. Implement yourself with using DBI or any O/R Mapper you like
 2. See ./ANALYTICAL-PRECISION
 
-公開中のbounceHammer version 2.7.13p1とSisimai(シシマイ)は下記のような違いが
+公開中のbounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違いが
 あります。
 
 | 機能                                           | bounceHammer  | Sisimai     |
@@ -345,11 +345,12 @@ Other Information | その他の情報
 Related Sites | 関連サイト
 --------------------------
 
-* __libsisimai.org__ | [Sisimai — A successor to bounceHammer, Library to parse error mails](http://libsisimai.org/)
+* __libSISIMAI.ORG__ | [Sisimai — The Successor To bounceHammer, Library to parse error mails](http://libsisimai.org/)
 * __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 * __CPAN Testers Reports__ | [CPAN Testers Reports: Reports for Sisimai](http://cpantesters.org/distro/S/Sisimai.html)
 * __Ruby verson__ | [Ruby version of Sisimai(Under the development)](https://github.com/sisimai/rb-Sisimai)
+* __bounceHammer.JP__ | [bounceHammer will be EOL on February 29, 2016](http://bouncehammer.jp/)
 
 SEE ALSO | 参考サイト
 ---------------------
