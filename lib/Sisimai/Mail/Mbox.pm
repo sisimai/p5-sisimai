@@ -34,7 +34,7 @@ sub new {
     $param->{'path'}   = $argv1;
     $param->{'size'}   = -s $argv1;
     $param->{'file'}   = File::Basename::basename $argv1;
-    $param->{'handle'} = IO::File->new( $argv1, 'r' );
+    $param->{'handle'} = ref $argv1 ? $argv1 : IO::File->new( $argv1, 'r' );
 
     return bless( $param, __PACKAGE__ );
 }
@@ -49,8 +49,11 @@ sub read {
     my $readbuffer = '';
 
     return undef unless defined $self->{'path'};
-    return undef unless -f $self->{'path'};
-    return undef unless -T $self->{'path'};
+    unless( ref $self->{'path'} ) {
+        # "path" is not IO::File object
+        return undef unless -f $self->{'path'};
+        return undef unless -T $self->{'path'};
+    }
     return undef unless $self->{'offset'} < $self->{'size'};
 
     eval {
