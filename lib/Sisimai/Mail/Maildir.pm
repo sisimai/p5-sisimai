@@ -20,20 +20,19 @@ Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
 
 sub new {
     # Constructor of Sisimai::Mail::Maildir
-    # @param    [String] argvs                 Path to Maildir/
+    # @param    [String] argv1                 Path to Maildir/
     # @return   [Sisimai::Mail::Maildir,Undef] Object or Undef if the argument is
     #                                          not a directory or does not exist
     my $class = shift;
-    my $argvs = shift // return undef;
-
-    return undef unless -d $argvs;
+    my $argv1 = shift // return undef;
+    return undef unless -d $argv1;
 
     my $param = {
-        'dir'    => $argvs,
+        'dir'    => $argv1,
         'file'   => undef,
         'path'   => undef,
         'inodes' => {},
-        'handle' => IO::Dir->new( $argvs ),
+        'handle' => IO::Dir->new( $argv1 ),
     };
     return bless( $param, __PACKAGE__ );
 }
