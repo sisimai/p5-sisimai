@@ -170,7 +170,7 @@ sub scan {
                 if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns;BLU004-OMC3S13.hotmail.example.com
                     next if length $connheader->{'lhost'};
-                    $connheader->{'lhost'} = $1;
+                    $connheader->{'lhost'} = lc $1;
                     $connvalues++;
 
                 } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {

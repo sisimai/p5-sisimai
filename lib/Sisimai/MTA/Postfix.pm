@@ -209,7 +209,7 @@ sub scan {
                     if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                         # Reporting-MTA: dns; mx.example.jp
                         next if $connheader->{'lhost'};
-                        $connheader->{'lhost'} = $1;
+                        $connheader->{'lhost'} = lc $1;
                         $connvalues++;
 
                     } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {

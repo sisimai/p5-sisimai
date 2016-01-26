@@ -287,7 +287,7 @@ sub scan {
                         #   a message to one or more recipients.  In all cases, the Reporting-MTA
                         #   is the MTA that attempted to perform the delivery, relay, or gateway
                         #   operation described in the DSN.  This field is required.
-                        $connheader->{'rhost'} ||= $1;
+                        $connheader->{'rhost'} ||= lc $1;
 
                     } elsif( $e =~ m/\A[Rr]eceived-[Ff]rom-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                         # 2.2.4 The Received-From-MTA DSN field
@@ -302,7 +302,7 @@ sub scan {
                         #   supplied in the HELO or EHLO command, and the network address used by
                         #   the SMTP client SHOULD be included as a comment enclosed in
                         #   parentheses.  (In this case, the MTA-name-type will be "dns".)
-                        $connheader->{'lhost'} = $1;
+                        $connheader->{'lhost'} = lc $1;
 
                     } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
                         # 2.2.5 The Arrival-Date DSN field

@@ -196,7 +196,7 @@ sub scan {
                 } elsif( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
                     next if length $connheader->{'rhost'};
-                    $connheader->{'rhost'} = $1;
+                    $connheader->{'rhost'} = lc $1;
                     $connvalues++;
 
                 } elsif( $e =~ m/\A[Rr]eceived-[Ff]rom-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
@@ -204,7 +204,7 @@ sub scan {
                     next if( exists $connheader->{'lhost'} && length $connheader->{'lhost'} );
 
                     # The value of "lhost" is optional
-                    $connheader->{'lhost'} = $1;
+                    $connheader->{'lhost'} = lc $1;
                     $connvalues++;
 
                 } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
