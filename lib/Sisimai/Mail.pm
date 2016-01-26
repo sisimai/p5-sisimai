@@ -28,8 +28,6 @@ sub new {
         'path' => $argv1,
     };
 
-    $param->{'path'} = $argv1;
-
     # The argumenet is a mailbox or a Maildir/.
     if( -f $argv1 ) {
         # The argument is a file, it is an mbox or email file in Maildir/
@@ -43,7 +41,7 @@ sub new {
 
     } else {
         # The argumen1 neither a mailbox nor a Maildir/.
-        if( ref($argv1) =~ m/\A(?:GLOB|IO::Handle)\z/ || $argv1 eq '<STDIN>' ) {
+        if( ref($argv1) eq 'GLOB' || $argv1 eq '<STDIN>' ) {
             # Read from STDIN
             $klass = sprintf( "%s::STDIN", __PACKAGE__ );
             $param->{'type'} = 'stdin';
