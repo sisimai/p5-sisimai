@@ -57,8 +57,8 @@ MAKE_TEST: {
             $filehandle = IO::File->new( $emailindir, 'r' );
             $mailastext = '';
 
-            while( my $r = <$filehandle> ) {
-                $mailastext .= $r;
+            while( my $f = <$filehandle> ) {
+                $mailastext .= $f;
             }
             $filehandle->close;
             ok length $mailastext, $emailindir.', size = '.length $mailastext;
