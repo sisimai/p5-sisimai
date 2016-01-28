@@ -59,8 +59,8 @@ PRIVATE_SAMPLES: {
 
         opendir( $dir1, $directory1 );
         while( my $f = readdir $dir1 ) {
-            next if $e eq '.';
-            next if $e eq '..';
+            next if $f eq '.';
+            next if $f eq '..';
 
             my $emailfn = sprintf( "%s/%s", $directory1, $f );
             my $lnindex = 0;
