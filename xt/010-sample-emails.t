@@ -55,7 +55,6 @@ PRIVATE_SAMPLES: {
 
         next if $e eq '.';
         next if $e eq '..';
-        my $tablemodel;
         my $directory1 = sprintf( "%s/%s", $privatefile, $e );
 
         opendir( $dir1, $directory1 );
