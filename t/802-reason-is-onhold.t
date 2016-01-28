@@ -4,11 +4,11 @@ use lib qw(./lib ./blib/lib);
 use Sisimai;
 
 my $PackageName = 'Sisimai';
-my $UndefinedES = './set-of-emails/to-be-debugged-because/reason-is-onhold';
+my $ThatsOnHold = './set-of-emails/to-be-debugged-because/reason-is-onhold';
 
 MAKE_TEST: {
 
-    my $v = $PackageName->make( $UndefinedES );
+    my $v = $PackageName->make( $ThatsOnHold );
     isa_ok $v, 'ARRAY';
     ok scalar @$v, 'entries = '.scalar @$v;
 
