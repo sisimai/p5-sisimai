@@ -321,9 +321,15 @@ for my $x ( keys %$R ) {
 
             while( my $r = $mailbox->read ) {
                 # Parse each email in set-of-emails/ directory
+                ok length $r;
+
                 my $p = Sisimai::Message->new( 'data' => $r );
                 my $v = Sisimai::Data->make( 'data' => $p );
                 my $y = undef;
+
+                # is ref($p), 'Sisimai::Message', sprintf( "[%s] %s/%s(Sisimai::Message)", $n, $e, $x );
+                # is ref($v), 'ARRAY', sprintf( "[%s] %s/%s(ARRAY)", $n, $e, $x );
+                # ok scalar @$v, sprintf( "[%s] %s/%s(%d)", $n, $e, $x, scalar @$v );
 
                 for my $ee ( @$v ) {
                     isa_ok $ee, 'Sisimai::Data';
