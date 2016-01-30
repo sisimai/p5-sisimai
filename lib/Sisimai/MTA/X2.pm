@@ -120,7 +120,7 @@ sub scan {
 
             } else {
                 # This user doesn't have a example.com account (kijitora@example.com) [0]
-                $v->{'diagnosis'} = ' '.$e;
+                $v->{'diagnosis'} .= ' '.$e;
             }
         } # End of if: rfc822
     }

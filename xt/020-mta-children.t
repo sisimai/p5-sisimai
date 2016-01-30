@@ -887,7 +887,7 @@ my $R = {
         '01005' => qr/filtered/,
     },
     'X2' => {
-        '01001' => qr/expired/,
+        '01001' => qr/norelaying/,
         '01002' => qr/filtered/,
         '01003' => qr/filtered/,
         '01004' => qr/(?:suspend|filtered)/,
