@@ -124,10 +124,16 @@ sub s3s4 {
     my $input = shift // return undef;
 
     return $input if ref $input;
+    unless( $input =~ /[ ]/ ) {
+        # There is no space characters
+        # no space character between " and < .
+        $input =~ s/(.)"</$1" </;           # "=?ISO-2022-JP?B?....?="<user@example.jp>, 
+        $input =~ s/(.)[?]=</$1?= </;       # =?ISO-2022-JP?B?....?=<user@example.jp>
 
-    # no space character between " and < .
-    $input =~ s/(.)"</$1" </;       # "=?ISO-2022-JP?B?....?="<user@example.jp>, 
-    $input =~ s/(.)[?]=</$1?= </;   # =?ISO-2022-JP?B?....?=<user@example.jp>
+        # comment-part<localpart@domainpart>
+        $input =~ s/[<]/ </ unless $input =~ m/\A[<]/;
+        $input =~ s/[>]/> / unless $input =~ m/[>]\z/;
+    }
 
     my $canon = '';
     my @addrs = ();
