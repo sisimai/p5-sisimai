@@ -14,7 +14,7 @@ LS    := ls -1
 CP    := cp
 MP    := /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 
-BH_LATESTVER := 2.7.13p1
+BH_LATESTVER := 2.7.13p3
 PRECISIONTAB := ./ANALYTICAL-PRECISION
 BENCHMARKDIR := ./tmp/benchmark
 PARSERLOGDIR := ./var/log
