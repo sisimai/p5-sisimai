@@ -263,7 +263,6 @@ my $R = {
         '01249' => qr/onhold/,
     },
     'RFC3834' => {
-        '01001' => qr/vacation/,
         '01002' => qr/vacation/,
     },
 };
