@@ -156,6 +156,10 @@ my $R = {
         '01002' => qr/userunknown/,
         '01003' => qr/mailboxfull/,
         '01004' => qr/(?:mailboxfull|userunknown)/,
+        '01005' => qr/filtered/,
+        '01006' => qr/mailboxfull/,
+        '01007' => qr/userunknown/,
+        '01008' => qr/userunknown/,
     },
     'RU::Yandex' => {
         '01001' => qr/userunknown/,
