@@ -7,7 +7,15 @@ use warnings;
 # Based on Sisimai::MTA::Exim
 my $Re0 = {
     'from'      => qr/[<]?mailer-daemon[@].*mail[.]ru[>]?/i,
-    'subject'   => qr/Mail failure[.]\z/,
+    'subject'   => qr{(?:
+         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
+        |Warning:[ ]message[ ].+[ ]delayed[ ]+
+        |Delivery[ ]Status[ ]Notification
+        |Mail[ ]failure
+        |Message[ ]frozen
+        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
+        )
+    }x,
     'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].*mail[.]ru[>]\z/,
     # Message-Id: <E1P1YNN-0003AD-Ga@*.mail.ru>
 };
