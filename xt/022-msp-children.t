@@ -253,32 +253,18 @@ my $R = {
         '01044' => qr/securityerror/,
     },
     'US::Outlook' => {
-        '01001' => qr/userunknown/,
         '01002' => qr/userunknown/,
         '01003' => qr/userunknown/,
-        '01004' => qr/userunknown/,
-        '01005' => qr/userunknown/,
-        '01006' => qr/userunknown/,
         '01007' => qr/blocked/,
         '01008' => qr/mailboxfull/,
-        '01009' => qr/userunknown/,
-        '01010' => qr/userunknown/,
-        '01011' => qr/userunknown/,
-        '01012' => qr/onhold/,
-        '01014' => qr/mailboxfull/,
-        '01015' => qr/mailboxfull/,
         '01016' => qr/mailboxfull/,
         '01017' => qr/userunknown/,
         '01018' => qr/hostunknown/,
         '01019' => qr/(?:userunknown|mailboxfull)/,
-        '01020' => qr/userunknown/,
-        '01021' => qr/userunknown/,
-        '01022' => qr/mailboxfull/,
         '01023' => qr/userunknown/,
         '01024' => qr/userunknown/,
         '01025' => qr/filtered/,
         '01026' => qr/filtered/,
-        '01027' => qr/onhold/,
     },
     'US::SendGrid' => {
         '01001' => qr/userunknown/,
@@ -358,6 +344,8 @@ for my $x ( keys %$R ) {
                     ok defined $ee->feedbacktype,  sprintf( "[%s] %s/%s->feedbacktype = %s", $n, $e, $x, $ee->feedbacktype );
                     ok defined $ee->subject,       sprintf( "[%s] %s/%s->subject", $n, $e, $x );
                     ok length  $ee->deliverystatus,sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
+
+                    is $ee->smtpagent, $x, sprintf( "[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent );
 
                     if( length $ee->action ) {
                         # Check the value of action
