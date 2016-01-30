@@ -4,6 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+my $ReE = {
+    'from'      => qr/[@].+[.]mail[.]ru[>]?/,
+};
 my $Re0 = {
     'from'      => qr/\AMail Delivery System/,
     'subject'   => qr{(?:
@@ -154,6 +157,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    return undef if     $mhead->{'from'}    =~ $ReE->{'from'};
     return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
