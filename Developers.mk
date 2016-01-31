@@ -16,14 +16,14 @@ CP    := cp
 MP    := /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 
 BH_LATESTVER := 2.7.13p3
-PRECISIONTAB := ./ANALYTICAL-PRECISION
-BENCHMARKDIR := ./tmp/benchmark
-PARSERLOGDIR := ./var/log
-MTAMODULEDIR := ./lib/$(NAME)/MTA
-MSPMODULEDIR := ./lib/$(NAME)/MSP
+PRECISIONTAB := ANALYTICAL-PRECISION
+PARSERLOGDIR := var/log
+MTAMODULEDIR := lib/$(NAME)/MTA
+MSPMODULEDIR := lib/$(NAME)/MSP
 MTARELATIVES := ARF RFC3464 RFC3834
-EMAIL_PARSER := ./sbin/emparser
-BENCHMARKSET := ./tmp/sample
+EMAIL_PARSER := sbin/emparser
+BENCHMARKDIR := tmp/benchmark
+BENCHMARKSET := tmp/sample
 SET_OF_EMAIL := set-of-emails
 PRIVATEMAILS := $(SET_OF_EMAIL)/private
 PUBLICEMAILS := $(SET_OF_EMAIL)/maildir/bsd
@@ -62,7 +62,7 @@ precision-table:
 	@ printf " %s\n" 'bounceHammer $(BH_LATESTVER)'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
 	@ printf "%s\n" '-------------------------------------------------------------------------------'
-	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v 'UserDefined'`; do \
+	@ for v in `$(LS) ./$(MTAMODULEDIR)/*.pm | grep -v 'UserDefined'`; do \
 		m="MTA::`echo $$v | cut -d/ -f5 | sed 's/.pm//g'`" ;\
 		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -80,8 +80,8 @@ precision-table:
 		printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
 		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
 	done
-	@ for c in `$(LS) $(MSPMODULEDIR)`; do \
-		for v in `$(LS) $(MSPMODULEDIR)/$$c/*.pm`; do \
+	@ for c in `$(LS) ./$(MSPMODULEDIR)`; do \
+		for v in `$(LS) ./$(MSPMODULEDIR)/$$c/*.pm`; do \
 			m="$$c::"`echo $$v | cut -d/ -f6 | sed 's/.pm//g'` ;\
 			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
 			l="`echo MSP::$$m | wc -c`" ;\
@@ -123,7 +123,7 @@ precision-table:
 update-analytical-precision-table: sample
 	$(CP) /dev/null $(PRECISIONTAB)
 	$(MAKE) -f Developers.mk precision-table >> $(PRECISIONTAB)
-	grep '^[A-Z]' $(PRECISIONTAB) | tr '/' ' ' | \
+	grep '^[A-Z]' ./$(PRECISIONTAB) | tr '/' ' ' | \
 		awk ' { \
 				x += $$3; \
 				y += $$4; \
@@ -140,7 +140,7 @@ update-analytical-precision-table: sample
 mta-module-table:
 	@ printf "%s\n"  '| Module Name(Sisimai::)   | Description                                       |'
 	@ printf "%s\n"  '|--------------------------|---------------------------------------------------|'
-	@ for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
+	@ for v in `$(LS) ./$(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
 		m="MTA::`echo $$v | cut -d/ -f5 | sed 's/.pm//g'`" ;\
 		d="`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 		l="`echo $$m | wc -c`" ;\
@@ -159,8 +159,8 @@ mta-module-table:
 		done ;\
 		printf " %s\n" ' |' ;\
 	done
-	@ for c in `$(LS) $(MSPMODULEDIR)`; do \
-		for v in `$(LS) $(MSPMODULEDIR)/$$c/*.pm`; do \
+	@ for c in `$(LS) ./$(MSPMODULEDIR)`; do \
+		for v in `$(LS) ./$(MSPMODULEDIR)/$$c/*.pm`; do \
 			m="$$c::"`echo $$v | cut -d/ -f6 | sed 's/.pm//g'` ;\
 			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
 			l="`echo MSP::$$m | wc -c`" ;\
@@ -208,14 +208,14 @@ update-sample-emails:
 	done
 
 sample:
-	for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
+	for v in `$(LS) ./$(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
 		MTA=`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
 		$(MKDIR) $(BENCHMARKSET)/$$MTA ;\
 		$(CP) $(PUBLICEMAILS)/$$MTA-*.eml $(BENCHMARKSET)/$$MTA/ ;\
 		$(CP) $(PRIVATEMAILS)/$$MTA/* $(BENCHMARKSET)/$$MTA/ ;\
 	done
-	for c in `$(LS) $(MSPMODULEDIR)`; do \
-		for v in `$(LS) $(MSPMODULEDIR)/$$c/*.pm`; do \
+	for c in `$(LS) ./$(MSPMODULEDIR)`; do \
+		for v in `$(LS) ./$(MSPMODULEDIR)/$$c/*.pm`; do \
 			DIR=`echo $$c | tr '[A-Z]' '[a-z]' | tr -d '/'` ;\
 			MSP="`echo $$v | cut -d/ -f6 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
 			$(MKDIR) $(BENCHMARKSET)/$$DIR-$$MSP ;\
@@ -274,7 +274,7 @@ clean:
 	$(RM) -r nytprof*
 	$(RM) -r cover_db
 	$(RM) -r ./build
-	$(RM) -r $(BENCHMARKSET)
-	$(RM) -r $(BENCHMARKDIR)
+	$(RM) -r ./$(BENCHMARKSET)
+	$(RM) -r ./$(BENCHMARKDIR)
 	$(RM) -f tmp/subject-list tmp/senders-list
 
