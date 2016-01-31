@@ -1,9 +1,10 @@
-# p5-Sisimai/Statistics.mk
-#  ____  _        _   _     _   _                      _    
-# / ___|| |_ __ _| |_(_)___| |_(_) ___ ___   _ __ ___ | | __
-# \___ \| __/ _` | __| / __| __| |/ __/ __| | '_ ` _ \| |/ /
-#  ___) | || (_| | |_| \__ \ |_| | (__\__ \_| | | | | |   < 
-# |____/ \__\__,_|\__|_|___/\__|_|\___|___(_)_| |_| |_|_|\_\
+# p5-Sisimai/Developers.mk
+#  ____                 _                                       _    
+# |  _ \  _____   _____| | ___  _ __   ___ _ __ ___   _ __ ___ | | __
+# | | | |/ _ \ \ / / _ \ |/ _ \| '_ \ / _ \ '__/ __| | '_ ` _ \| |/ /
+# | |_| |  __/\ V /  __/ | (_) | |_) |  __/ |  \__ \_| | | | | |   < 
+# |____/ \___| \_/ \___|_|\___/| .__/ \___|_|  |___(_)_| |_| |_|_|\_\
+#                              |_|                                   
 # -----------------------------------------------------------------------------
 SHELL := /bin/sh
 HERE  := $(shell pwd)
@@ -35,7 +36,7 @@ DESCR_LENGTH := 48
 .PHONY: clean
 
 private-sample:
-	@test -n "$(E)" || ( echo 'Usage: make -f Statistics.mk $@ E=/path/to/email' && exit 1 )
+	@test -n "$(E)" || ( echo 'Usage: make -f Developers.mk $@ E=/path/to/email' && exit 1 )
 	test -f $(E)
 	$(EMAIL_PARSER) $(E)
 	@echo
@@ -121,7 +122,7 @@ precision-table:
 
 update-analytical-precision-table: sample
 	$(CP) /dev/null $(PRECISIONTAB)
-	$(MAKE) -f Statistics.mk precision-table >> $(PRECISIONTAB)
+	$(MAKE) -f Developers.mk precision-table >> $(PRECISIONTAB)
 	grep '^[A-Z]' $(PRECISIONTAB) | tr '/' ' ' | \
 		awk ' { \
 				x += $$3; \

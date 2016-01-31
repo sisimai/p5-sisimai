@@ -21,7 +21,7 @@ RM    := rm -f
 .DEFAULT_GOAL = git-status
 REPOS_TARGETS = git-status git-push git-commit-amend git-tag-list git-diff \
 				git-reset-soft git-rm-cached git-branch
-STATS_TARGETS = profile private-sample update-analytical-precision-table loc
+DEVEL_TARGETS = profile private-sample update-analytical-precision-table loc
 
 # -----------------------------------------------------------------------------
 .PHONY: clean
@@ -60,8 +60,8 @@ dist:
 $(REPOS_TARGETS):
 	$(MAKE) -f Repository.mk $@
 
-$(STATS_TARGETS):
-	$(MAKE) -f Statistics.mk $@
+$(DEVEL_TARGETS):
+	$(MAKE) -f Developers.mk $@
 
 diff push branch:
 	@$(MAKE) git-$@
@@ -71,5 +71,5 @@ remove-added-file: git-rm-cached
 
 clean:
 	$(MAKE) -f Repository.mk clean
-	$(MAKE) -f Statistics.mk clean
+	$(MAKE) -f Developers.mk clean
 
