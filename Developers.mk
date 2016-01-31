@@ -13,17 +13,20 @@ PERL  := perl
 MKDIR := mkdir -p
 LS    := ls -1
 CP    := cp
-MP    := /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 
 BH_LATESTVER := 2.7.13p3
+MBOXPARSERV0 := /usr/local/bouncehammer/bin/mailboxparser -T
+MBOXPARSERV6 := /usr/local/bouncehammer/bin/mailboxparser -Tvvvvvv
 PRECISIONTAB := ANALYTICAL-PRECISION
 PARSERLOGDIR := var/log
 MTAMODULEDIR := lib/$(NAME)/MTA
 MSPMODULEDIR := lib/$(NAME)/MSP
 MTARELATIVES := ARF RFC3464 RFC3834
 EMAIL_PARSER := sbin/emparser
+BENCHMARKEMP := sbin/mp
 BENCHMARKDIR := tmp/benchmark
 BENCHMARKSET := tmp/sample
+VELOCITYTEST := tmp/emails-for-velocity-measurement
 SET_OF_EMAIL := set-of-emails
 PRIVATEMAILS := $(SET_OF_EMAIL)/private
 PUBLICEMAILS := $(SET_OF_EMAIL)/maildir/bsd
@@ -31,6 +34,9 @@ DOSFORMATSET := $(SET_OF_EMAIL)/maildir/dos
 MACFORMATSET := $(SET_OF_EMAIL)/maildir/mac
 INDEX_LENGTH := 24
 DESCR_LENGTH := 48
+BH_CAN_PARSE := courier exim messagingserver postfix sendmail surfcontrol x5 \
+				jp-ezweb jp-kddi ru-yandex uk-messagelabs us-amazonses us-aol \
+				us-bigfoot us-facebook us-outlook us-verizon
 
 # -----------------------------------------------------------------------------
 .PHONY: clean
@@ -73,7 +79,7 @@ precision-table:
 		done ;\
 		printf "%s" ' ' ;\
 		n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/$$d` ;\
-		r0=`$(MP) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
+		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
 		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
@@ -92,7 +98,7 @@ precision-table:
 			done ;\
 			printf "%s" ' ' ;\
 			n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/$$d` ;\
-			r0=`$(MP) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
+			r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 				| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 			rn="`echo $$r0 | cut -d/ -f1`" ;\
 			rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
@@ -111,7 +117,7 @@ precision-table:
 		done ;\
 		printf "%s" ' ' ;\
 		n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/$$d` ;\
-		r0=`$(MP) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
+		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
 		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
@@ -244,6 +250,40 @@ parser-log:
 profile: benchmark-mbox
 	$(PERL) -d:NYTProf $(EMAIL_PARSER) -Fjson $(BENCHMARKDIR) > /dev/null
 	nytprofhtml
+
+velocity-measurement:
+	@ $(MKDIR) $(VELOCITYTEST)
+	@ for v in $(BH_CAN_PARSE); do \
+		$(CP) $(PUBLICEMAILS)/$$v-*.eml $(VELOCITYTEST)/; \
+		$(CP) $(PRIVATEMAILS)/$$v/*.eml $(VELOCITYTEST)/; \
+	done
+	@ echo -------------------------------------------------------------------
+	@ echo `$(LS) $(VELOCITYTEST) | wc -l` emails in $(VELOCITYTEST)
+	@ echo -n 'Calculating the velocity of 1000 mails: multiply by '
+	@ echo "scale=4; 1000 / `$(LS) $(VELOCITYTEST) | wc -l`" | bc
+	@ echo -n 'Calculating the velocity of 2000 mails: multiply by '
+	@ echo "scale=4; 2000 / `$(LS) $(VELOCITYTEST) | wc -l`" | bc
+	@ echo -------------------------------------------------------------------
+	@ echo 'Sisimai(1)' $(BENCHMARKEMP)
+	@ n=1; while [ $$n -le 5 ]; do \
+		/usr/bin/time $(BENCHMARKEMP) $(VELOCITYTEST) > /dev/null ;\
+		sleep 1; \
+		n=`expr $$n + 1`; \
+	done
+	@ echo -------------------------------------------------------------------
+	@ echo 'Sisimai(2)' $(EMAIL_PARSER)
+	@ n=1; while [ $$n -le 5 ]; do \
+		/usr/bin/time $(EMAIL_PARSER) -Fjson $(VELOCITYTEST) > /dev/null ;\
+		sleep 1; \
+		n=`expr $$n + 1`; \
+	done
+	@ echo -------------------------------------------------------------------
+	@ echo bounceHammer $(BH_LATESTVER)
+	@ n=1; while [ $$n -le 5 ]; do \
+		/usr/bin/time $(MBOXPARSERV0) -Fjson $(VELOCITYTEST) > /dev/null ;\
+		sleep 1; \
+		n=`expr $$n + 1`; \
+	done
 
 benchmark-mbox: sample
 	$(MKDIR) -p $(BENCHMARKDIR)
