@@ -171,7 +171,6 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
     my $boundary00 = '';    # (String) Boundary string
-    my $rxboundary = undef; # (String) Regular expression for matching with the boundary
     my $v = undef;
 
     if( $mhead->{'content-type'} ) {
@@ -179,10 +178,6 @@ sub scan {
         # the boundary string.
         require Sisimai::MIME;
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
-        if( length $boundary00 ) {
-            # Convert to regular expression
-            $rxboundary = Sisimai::String->to_regexp( '--'.$boundary00 );
-        }
     }
 
     for my $e ( @hasdivided ) {
