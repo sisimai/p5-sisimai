@@ -23,12 +23,12 @@ MTAMODULEDIR := ./lib/$(NAME)/MTA
 MSPMODULEDIR := ./lib/$(NAME)/MSP
 MTARELATIVES := ARF RFC3464 RFC3834
 EMAIL_PARSER := ./sbin/emparser
-EMAIL_SAMPLE := ./tmp/sample
-DEVEL_SAMPLE := ./set-of-emails/private
-PUBLICSAMPLE := ./set-of-emails/maildir/bsd
-CRLF_SAMPLES := ./set-of-emails/maildir/dos
-CRFORMATMAIL := ./set-of-emails/maildir/mac
-MAILBOX_FILE := ./set-of-emails/mailbox/mbox-0
+BENCHMARKSET := ./tmp/sample
+SET_OF_EMAIL := set-of-emails
+PRIVATEMAILS := $(SET_OF_EMAIL)/private
+PUBLICEMAILS := $(SET_OF_EMAIL)/maildir/bsd
+DOSFORMATSET := $(SET_OF_EMAIL)/maildir/dos
+MACFORMATSET := $(SET_OF_EMAIL)/maildir/mac
 INDEX_LENGTH := 24
 DESCR_LENGTH := 48
 
@@ -43,18 +43,18 @@ private-sample:
 	@while true; do \
 		d=`$(EMAIL_PARSER) -Fjson $(E) | jq -M '.[].smtpagent' | head -1 \
 			| tr '[A-Z]' '[a-z]' | sed -e 's/"//g' -e 's/::/-/g'`; \
-		if [ -d "$(DEVEL_SAMPLE)/$$d" ]; then \
-			latestfile=`ls -1 $(DEVEL_SAMPLE)/$$d/*.eml | tail -1`; \
+		if [ -d "$(PRIVATEMAILS)/$$d" ]; then \
+			latestfile=`ls -1 $(PRIVATEMAILS)/$$d/*.eml | tail -1`; \
 			curr_index=`basename $$latestfile | cut -d'-' -f1`; \
 			next_index=`echo $$curr_index + 1 | bc`; \
 		else \
-			$(MKDIR) $(DEVEL_SAMPLE)/$$d; \
+			$(MKDIR) $(PRIVATEMAILS)/$$d; \
 			next_index=1001; \
 		fi; \
 		hash_value=`md5 -q $(E)`; \
 		printf "[%05d] %s %s\n" $$next_index $$hash_value \
 			`$(EMAIL_PARSER) -Fjson ./$(SAMPLE) | jq -M '.[].reason'`; \
-		mv -v $(E) $(DEVEL_SAMPLE)/$$d/0$${next_index}-$${hash_value}.eml; \
+		mv -v $(E) $(PRIVATEMAILS)/$$d/0$${next_index}-$${hash_value}.eml; \
 		break; \
 	done
 
@@ -72,8 +72,8 @@ precision-table:
 			l=`expr $$l + 1` ;\
 		done ;\
 		printf "%s" ' ' ;\
-		n0=`$(EMAIL_PARSER) --count-only $(EMAIL_SAMPLE)/$$d` ;\
-		r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
+		n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/$$d` ;\
+		r0=`$(MP) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
 		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
@@ -91,8 +91,8 @@ precision-table:
 				l=`expr $$l + 1` ;\
 			done ;\
 			printf "%s" ' ' ;\
-			n0=`$(EMAIL_PARSER) --count-only $(EMAIL_SAMPLE)/$$d` ;\
-			r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
+			n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/$$d` ;\
+			r0=`$(MP) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 				| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 			rn="`echo $$r0 | cut -d/ -f1`" ;\
 			rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
@@ -110,8 +110,8 @@ precision-table:
 			l=`expr $$l + 1` ;\
 		done ;\
 		printf "%s" ' ' ;\
-		n0=`$(EMAIL_PARSER) --count-only $(EMAIL_SAMPLE)/$$d` ;\
-		r0=`$(MP) $(EMAIL_SAMPLE)/$$d 2>&1 | grep 'debug0:' \
+		n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/$$d` ;\
+		r0=`$(MP) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
 		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
@@ -201,39 +201,39 @@ mta-module-table:
 	done
 
 update-sample-emails:
-	for v in `find $(PUBLICSAMPLE) -name '*-01.eml' -type f`; do \
+	for v in `find $(PUBLICEMAILS) -name '*-01.eml' -type f`; do \
 		f="`basename $$v`" ;\
-		nkf -Lw $$v > $(CRLF_SAMPLES)/$$f ;\
-		nkf -Lm $$v > $(CRFORMATMAIL)/$$f ;\
+		nkf -Lw $$v > $(DOSFORMATSET)/$$f ;\
+		nkf -Lm $$v > $(MACFORMATSET)/$$f ;\
 	done
 
 sample:
 	for v in `$(LS) $(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
 		MTA=`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
-		$(MKDIR) $(EMAIL_SAMPLE)/$$MTA ;\
-		$(CP) $(PUBLICSAMPLE)/$$MTA-*.eml $(EMAIL_SAMPLE)/$$MTA/ ;\
-		$(CP) $(DEVEL_SAMPLE)/$$MTA/* $(EMAIL_SAMPLE)/$$MTA/ ;\
+		$(MKDIR) $(BENCHMARKSET)/$$MTA ;\
+		$(CP) $(PUBLICEMAILS)/$$MTA-*.eml $(BENCHMARKSET)/$$MTA/ ;\
+		$(CP) $(PRIVATEMAILS)/$$MTA/* $(BENCHMARKSET)/$$MTA/ ;\
 	done
 	for c in `$(LS) $(MSPMODULEDIR)`; do \
 		for v in `$(LS) $(MSPMODULEDIR)/$$c/*.pm`; do \
 			DIR=`echo $$c | tr '[A-Z]' '[a-z]' | tr -d '/'` ;\
 			MSP="`echo $$v | cut -d/ -f6 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
-			$(MKDIR) $(EMAIL_SAMPLE)/$$DIR-$$MSP ;\
-			$(CP) $(PUBLICSAMPLE)/$$DIR-$$MSP-*.eml $(EMAIL_SAMPLE)/$$DIR-$$MSP/ ;\
-			$(CP) $(DEVEL_SAMPLE)/$$DIR-$$MSP/* $(EMAIL_SAMPLE)/$$DIR-$$MSP/ ;\
+			$(MKDIR) $(BENCHMARKSET)/$$DIR-$$MSP ;\
+			$(CP) $(PUBLICEMAILS)/$$DIR-$$MSP-*.eml $(BENCHMARKSET)/$$DIR-$$MSP/ ;\
+			$(CP) $(PRIVATEMAILS)/$$DIR-$$MSP/* $(BENCHMARKSET)/$$DIR-$$MSP/ ;\
 		done ;\
 	done
 	for v in arf rfc3464 rfc3834; do \
-		$(MKDIR) $(EMAIL_SAMPLE)/$$v ;\
-		$(CP) $(PUBLICSAMPLE)/$$v*.eml $(EMAIL_SAMPLE)/$$v/ ;\
-		$(CP) $(DEVEL_SAMPLE)/$$v/* $(EMAIL_SAMPLE)/$$v/ ;\
+		$(MKDIR) $(BENCHMARKSET)/$$v ;\
+		$(CP) $(PUBLICEMAILS)/$$v*.eml $(BENCHMARKSET)/$$v/ ;\
+		$(CP) $(PRIVATEMAILS)/$$v/* $(BENCHMARKSET)/$$v/ ;\
 	done
 
 parser-log:
 	$(MKDIR) $(PARSERLOGDIR)
-	for v in `$(LS) $(DEVEL_SAMPLE)`; do \
+	for v in `$(LS) $(PRIVATEMAILS)`; do \
 		$(CP) /dev/null $(PARSERLOGDIR)/$$v.log; \
-		for r in `find $(DEVEL_SAMPLE)/$$v -type f -name '*.eml'`; do \
+		for r in `find $(PRIVATEMAILS)/$$v -type f -name '*.eml'`; do \
 			echo $$r; \
 			echo $$r >> $(PARSERLOGDIR)/$$v.log; \
 			$(EMAIL_PARSER) -Fddp $$r | grep -E 'reason|diagnosticcode|deliverystatus' >> $(PARSERLOGDIR)/$$v.log; \
@@ -247,13 +247,13 @@ profile: benchmark-mbox
 
 benchmark-mbox: sample
 	$(MKDIR) -p $(BENCHMARKDIR)
-	$(CP) `find $(EMAIL_SAMPLE) -type f` $(BENCHMARKDIR)/
+	$(CP) `find $(BENCHMARKSET) -type f` $(BENCHMARKDIR)/
 
 header-content-list: sample
 	/bin/cp /dev/null ./subject-list
 	/bin/cp /dev/null ./senders-list
-	for v in `ls -1 $(EMAIL_SAMPLE) | grep -v rfc | grep -v arf`; do \
-		for w in `find $(EMAIL_SAMPLE)/$$v -type f`; do \
+	for v in `ls -1 $(BENCHMARKSET) | grep -v rfc | grep -v arf`; do \
+		for w in `find $(BENCHMARKSET)/$$v -type f`; do \
 			grep '^Subject:' $$w | head -1 | sed -e "s/^Subject:/[$$v]/g" >> ./subject-list; \
 			grep '^From: ' $$w | head -1 | sed -e "s/^From:/[$$v]/g" >> ./senders-list; \
 		done; \
@@ -274,7 +274,7 @@ clean:
 	$(RM) -r nytprof*
 	$(RM) -r cover_db
 	$(RM) -r ./build
-	$(RM) -r $(EMAIL_SAMPLE)
+	$(RM) -r $(BENCHMARKSET)
 	$(RM) -r $(BENCHMARKDIR)
 	$(RM) -f tmp/subject-list tmp/senders-list
 
