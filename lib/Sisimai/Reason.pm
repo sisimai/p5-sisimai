@@ -170,10 +170,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     require Sisimai::SMTP::Status;
-
     my $reasontext = '';
-    my $statuscode = '';
-    my $typestring = '';
     my $classorder = [
         'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown', 
         'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'TooManyConn', 
@@ -181,9 +178,8 @@ sub match {
         'NetworkError', 'Suspend', 'Expired', 'ContentError', 'HasMoved', 
         'SystemFull', 'NotAccept', 'MailerError', 'NoRelaying', 'OnHold',
     ];
-
-    $statuscode = Sisimai::SMTP::Status->find( $argv1 );
-    $typestring = uc( $1 ) if $argv1 =~ m/\A(SMTP|X-.+);/i;
+    my $statuscode = Sisimai::SMTP::Status->find( $argv1 );
+    my $typestring = uc( $1 ) if $argv1 =~ m/\A(SMTP|X-.+);/i;
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( @$classorder ) {
