@@ -99,8 +99,6 @@ sub scan {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $rcptintext = '';    # (String) Recipient address in the message body
-    my $remotename = '';    # (String) The value of "Reporting-MTA"
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $commondata = {
         'diagnosis'    => '',   # Error message
         'from'         => '',   # Original-Mail-From:
