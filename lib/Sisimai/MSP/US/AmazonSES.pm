@@ -22,7 +22,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 my $LongFields = Sisimai::RFC5322->LONGFIELDS;
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
-sub description { 'AmazonSES(Sending): http://aws.amazon.com/ses/' };
+sub description { 'Amazon SES(Sending): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::AmazonSES' }
 
 # X-SenderID: Sendmail Sender-ID Filter v1.0.0 nijo.example.jp p7V3i843003008

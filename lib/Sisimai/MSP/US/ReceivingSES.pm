@@ -27,7 +27,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 my $LongFields = Sisimai::RFC5322->LONGFIELDS;
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
-sub description { 'AmazonSES(Receiving): http://aws.amazon.com/ses/' };
+sub description { 'Amazon SES(Receiving): http://aws.amazon.com/ses/' };
 sub smtpagent   { 'US::ReceivingSES' }
 
 # X-SES-Outgoing: 2015.10.01-54.240.27.7
