@@ -82,7 +82,11 @@ precision-table:
 		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
-		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
+		if [ $$rn -lt $$n0 ]; then \
+			rr=`$(PERL) -le "printf('%.4f', $$rn / $$n0 );"`; \
+		else \
+			rr='1.0000'; \
+		fi; \
 		printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
 		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
 	done
@@ -101,7 +105,11 @@ precision-table:
 			r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 				| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 			rn="`echo $$r0 | cut -d/ -f1`" ;\
-			rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
+			if [ $$rn -lt $$n0 ]; then \
+				rr=`$(PERL) -le "printf('%.4f', $$rn / $$n0 );"`; \
+			else \
+				rr='1.0000'; \
+			fi; \
 			printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
 			$(PERL) -Ilib -MSisimai::MSP::$$m -lE "print Sisimai::MSP::$$m->description" ;\
 		done ;\
@@ -120,7 +128,11 @@ precision-table:
 		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
-		rr="`echo $$r0 | cut -d ' ' -f2 | tr -d '()'`" ;\
+		if [ $$rn -lt $$n0 ]; then \
+			rr=`$(PERL) -le "printf('%.4f', $$rn / $$n0 );"`; \
+		else \
+			rr='1.0000'; \
+		fi; \
 		printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
 		$(PERL) -Ilib -MSisimai::$$m -lE "print Sisimai::$$m->description" ;\
 	done
