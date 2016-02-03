@@ -150,8 +150,8 @@ and Sisimai.
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | Included      | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A[1]      |
-| Analytical precision ratio(2000 emails)[2]     | 0.52          | 1.00        |
-| The speed of parsing email(2000 emails)        | 7.07s         | 4.10s       |
+| Analytical precision ratio(2000 emails)[2]     | 0.49          | 1.00        |
+| The speed of parsing email(1000 emails)        | 4.24s         | 2.50s       |
 | The number of detectable bounce reasons        | 19            | 25          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | Unable        | OK          |
@@ -161,9 +161,9 @@ and Sisimai.
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 8900 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 158000 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 160500 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
-| Support Contract provided by Developer         | Available     | Contact Us  |
+| Support Contract provided by Developer         | End Of Sales  | Available   |
 
 1. Implement yourself with using DBI or any O/R Mapper you like
 2. See ./ANALYTICAL-PRECISION
@@ -178,8 +178,8 @@ and Sisimai.
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(同梱)  |
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し[1]     |
-| 解析精度の割合(2000通のメール)[2]              | 0.52          | 1.00        |
-| メール解析速度(2000通のメール)                 | 7.07秒        | 4.10秒      |
+| 解析精度の割合(2000通のメール)[2]              | 0.49          | 1.00        |
+| メール解析速度(1000通のメール)                 | 4.24秒        | 2.50秒      |
 | 検出可能なバウンス理由の数                     | 19            | 25          |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件解析可能|
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
@@ -189,9 +189,9 @@ and Sisimai.
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 8900行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 158000件    |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 160500件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
-| 開発会社によるサポート契約                     | 提供中        | 問合せ      |
+| 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
 1. DBIまたは好きなORMを使って自由に実装してください
 2. ./ANALYTICAL-PRECISIONを参照
@@ -275,19 +275,19 @@ page.
 | MailerError    | Mailer program error                   | メールプログラムのエラー         |
 | MesgTooBig     | Message size is too big(5.3.4)         | メールが大き過ぎる               |
 | NetworkError   | Network error: DNS or routing          | DNS等ネットワーク関係のエラー    |
-| SpamDetected   | Detected a message as spam             | メールはスパムとして判定された   |
 | NotAccept      | Destinaion does not accept any message | 宛先ホストはメールを受けとらない |
 | OnHold         | Deciding the bounce reason is on hold  | エラー理由の特定は保留           |
 | Rejected       | Rejected due to envelope from address  | エンベロープFromで拒否された     |
 | NoRelaying     | Relay access denied                    | リレーの拒否                     |
 | SecurityError  | Virus detected or authentication error | ウィルスの検出または認証失敗     |
+| SpamDetected   | Detected a message as spam             | メールはスパムとして判定された   |
 | Suspend        | Recipient's account is suspended       | 宛先アカウントは一時的に停止中   |
 | SystemError    | Some error on the destination host     | 宛先サーバでのOSレベルのエラー   |
 | SystemFull     | Disk full on the destination host      | 宛先サーバのディスクが一杯       |
 | TooManyConn    | Connection rate limit exceeded         | 接続制限数を超過した             |
 | UserUnknown    | Recipient's address does not exist     | 宛先メールアドレスは存在しない   |
-| Vacation       | Auto replied message (> v4.1.28 )      | 自動応答メッセージ(> v4.1.28 )   |
 | Undefined      | Could not decide the error reason      | バウンスした理由は特定出来ず     |
+| Vacation       | Auto replied message (> v4.1.28 )      | 自動応答メッセージ(> v4.1.28 )   |
 
 Sisimaiは上記のエラー25種を検出します。
 
