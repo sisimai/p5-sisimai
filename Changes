@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.14.2
+4.14.2  Wed,  3 Feb 2016 12:26:19 +0900 (JST)
     - Issue #154 Fix bug: remove CR(\r) at the end of string in some properties
       of Sisimai::Data before calling the constructor. Thanks to M Miyamoto.
     - Issue #151 fix bug that the value of foled Message-Id field could not be
@@ -9,6 +9,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Implement Sisimai::String->to_regexp() method to fix bug in code to build
       regular expression reported at pull-request #160, Thanks to @negachov.
     - Improved message pattern of Sisimai::Reason::SpamDetected.
+    - Issue #158, bug fix for substituting the value of "lhost" and "rhost".
 
 4.14.1  Sat, 26 Dec 2015 20:00:00 +0900 (JST)
     - eg/ directory has been renamed and sample email files have been moved to
