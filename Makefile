@@ -30,10 +30,10 @@ cpanm:
 	test -f ./$@ && $(CHMOD) a+x ./$@
 
 install-from-cpan: cpanm
-	sudo ./cpanm $(NAME)
+	./cpanm $(NAME)
 
 install-from-local: cpanm
-	sudo ./cpanm .
+	./cpanm .
 
 test: user-test author-test
 user-test:
