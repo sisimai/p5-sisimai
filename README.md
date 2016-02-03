@@ -41,7 +41,7 @@ Setting Up Sisimai | シシマイを使う準備
 System requirements | 動作環境
 ------------------------------
 More details about system requirements are available at available at 
-[Sisimai — How to Install and Start](http://libsisimai.org/start) page.
+[Sisimai | Getting Started](http://libsisimai.org/start) page.
 
 * [Perl 5.10.1 or later](http://www.perl.org/)
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
@@ -199,7 +199,9 @@ and Sisimai.
 
 MTA/MSP Modules | MTA/MSPモジュール一覧
 ---------------------------------------
-The following table is the list of MTA/MSP:(Mail Service Provider) modules.
+The following table is the list of MTA/MSP:(Mail Service Provider) modules. More
+details about these modules are available at 
+[Sisimai | Parser Engines](http://libsisimai.org/engine) page.
 
 | Module Name(Sisimai::)   | Description                                       |
 |--------------------------|---------------------------------------------------|
@@ -258,7 +260,7 @@ The following table is the list of MTA/MSP:(Mail Service Provider) modules.
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
 Sisimai can detect the following 25 bounce reasons. More details about reasons
-are available at [Sisimai — Bounce Reason List Sisimai detects](http://libsisimai.org/reason)
+are available at [Sisimai | Bounce Reason List](http://libsisimai.org/reason)
 page.
 
 | Reason(理由)   | Description                            | 理由の説明                       |
@@ -296,7 +298,7 @@ Parsed data structure | 解析後のデータ構造
 ------------------------------------------
 The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
 More details about data structure are available at available at 
-[Sisimai — Data Structure of Sisimai::Data Object](http://libsisimai.org/data) page.
+[Sisimai — Data Structure of Sisimai::Data](http://libsisimai.org/data) page.
 
 | Name           | Description                           | 値の説明                       |
 |----------------|---------------------------------------|--------------------------------|
@@ -345,7 +347,7 @@ Other Information | その他の情報
 Related Sites | 関連サイト
 --------------------------
 
-* __libSISIMAI.ORG__ | [Sisimai — The Successor To bounceHammer, Library to parse error mails](http://libsisimai.org/)
+* __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](http://libsisimai.org/)
 * __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 * __CPAN Testers Reports__ | [CPAN Testers Reports: Reports for Sisimai](http://cpantesters.org/distro/S/Sisimai.html)
