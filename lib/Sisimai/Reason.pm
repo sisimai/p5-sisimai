@@ -179,7 +179,8 @@ sub match {
         'SystemFull', 'NotAccept', 'MailerError', 'NoRelaying', 'OnHold',
     ];
     my $statuscode = Sisimai::SMTP::Status->find( $argv1 );
-    my $typestring = uc( $1 ) if $argv1 =~ m/\A(SMTP|X-.+);/i;
+    my $typestring = '';
+       $typestring = uc( $1 ) if $argv1 =~ m/\A(SMTP|X-.+);/i;
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( @$classorder ) {
