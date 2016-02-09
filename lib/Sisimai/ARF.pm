@@ -93,7 +93,6 @@ sub scan {
 
     my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
