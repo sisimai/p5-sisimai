@@ -490,15 +490,15 @@ sub tz2second {
     #   tz2second('+0900')  #=> 32400
     my $class = shift;
     my $argv1 = shift || return undef;
-    my $digit = {};
-    my $ztime = 0;
 
     if( $argv1 =~ m/\A([-+])(\d)(\d)(\d{2})\z/ ) {
-        $digit = {
+        my $ztime = 0;
+        my $digit = {
             'operator' => $1,
             'hour-10'  => $2,
             'hour-01'  => $3,
-            'minutes'  => $4, };
+            'minutes'  => $4
+        };
         $ztime += ( $digit->{'hour-10'} * 10 + $digit->{'hour-01'} ) * 3600;
         $ztime += ( $digit->{'minutes'} * 60 );
         $ztime *= -1 if $digit->{'operator'} eq '-';
@@ -524,7 +524,6 @@ sub second2tz {
     my $class = shift;
     my $argv1 = shift // return '+0000';
     my $digit = { 'operator' => '+' };
-    my $timez = '';
 
     return '' if( ref( $argv1 ) && ref( $argv1 ) ne 'Time::Seconds' );
     return '' if( abs( $argv1 ) > TZ_OFFSET );   # UTC+14 + 1(DST?)
@@ -532,9 +531,7 @@ sub second2tz {
 
     $digit->{'hours'} = int( abs( $argv1 ) / 3600 );
     $digit->{'minutes'} = int( ( abs( $argv1 ) % 3600 ) / 60 );
-    $timez = sprintf( "%s%02d%02d", $digit->{'operator'}, $digit->{'hours'}, $digit->{'minutes'} );
-
-    return $timez;
+    return sprintf( "%s%02d%02d", $digit->{'operator'}, $digit->{'hours'}, $digit->{'minutes'} );
 }
 
 1;
