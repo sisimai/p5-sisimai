@@ -52,7 +52,7 @@ sub scan {
     if( $xmail ) {
         # X-Mailer: Amazon WorkMail
         # X-Original-Mailer: Amazon WorkMail
-        $match++ if $xmail =~ $mhead->{'x-mailer'};
+        $match++ if $xmail =~ $Re0->{'x-mailer'};
     }
     return undef if $match < 2;
 
