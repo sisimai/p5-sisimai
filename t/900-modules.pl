@@ -26,6 +26,7 @@ sub list {
             MSP/RU/Yandex.pm
             MSP/UK/MessageLabs.pm
             MSP/US/AmazonSES.pm
+            MSP/US/AmazonWorkMail.pm
             MSP/US/Aol.pm
             MSP/US/Bigfoot.pm
             MSP/US/Facebook.pm
