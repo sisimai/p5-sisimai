@@ -184,6 +184,13 @@ my $R = {
         '01013' => qr/userunknown/,
         '01014' => qr/filtered/,
     },
+    'US::AmazonWorkMail' => {
+        '01001' => qr/userunknown/,
+        '01002' => qr/filtered/,
+        '01003' => qr/systemerror/,
+        '01004' => qr/mailboxfull/,
+        '01005' => qr/expired/,
+    },
     'US::Aol' => {
         '01001' => qr/hostunknown/,
         '01002' => qr/mailboxfull/,
