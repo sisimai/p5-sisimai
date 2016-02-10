@@ -1,5 +1,10 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.14.3
+    - Implement new MTA/MSP module "Sisimai::MSP::US::AmazonWorkMail" at pull-
+      request #162. The module parse bounce mails via Amazon WorkMail.
+    - Tiny code improvements: back port from the Ruby version of Sisimai.
+
 4.14.2  Wed,  3 Feb 2016 12:26:19 +0900 (JST)
     - Issue #154 Fix bug: remove CR(\r) at the end of string in some properties
       of Sisimai::Data before calling the constructor. Thanks to M Miyamoto.
