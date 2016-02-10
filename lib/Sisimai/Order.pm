@@ -70,7 +70,7 @@ my $AnotherList9 = [
     'Sisimai::MSP::DE::GMX',
     'Sisimai::MSP::RU::Yandex',
     'Sisimai::MSP::US::ReceivingSES',
-    'Sisimai::MSP::US::AmazonWOrkMail',
+    'Sisimai::MSP::US::AmazonWorkMail',
     'Sisimai::MSP::US::Zoho',
     'Sisimai::MTA::McAfee',
     'Sisimai::MTA::Activehunter',
