@@ -28,7 +28,7 @@ Key Features | 主な特徴的機能
 * __High Precision of Analysis__ | __高い解析精度__
   * 2 times higher than bounceHammer | 解析精度はbounceHammerの二倍
   * Support 21 known MTAs and 5 unknown MTAs | 26種類のMTAに対応
-  * Support 20 major MSPs(Mail Service Providers) | 20種類の著名なMSPに対応
+  * Support 21 major MSPs(Mail Service Providers) | 21種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
   * Can detect 25 error reasons | 25種類のエラー理由を検出
 * __Faster than bounceHammer version 2.7.13p3__ | __bounceHammer 2.7.13p3よりも高速に解析__
@@ -160,8 +160,8 @@ and Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 9000 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 161500 tests|
+| LOC:Source lines of code                       | 18200 lines   | 9100 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 162400 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
@@ -188,8 +188,8 @@ and Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 9000行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 161500件    |
+| LOC:ソースコードの行数                         | 18200行       | 9100行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 162400件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
@@ -245,6 +245,7 @@ details about these modules are available at
 | MSP::US::Bigfoot         | Bigfoot: http://www.bigfoot.com                   |
 | MSP::US::Facebook        | Facebook: https://www.facebook.com                |
 | MSP::US::Google          | Google Gmail: https://mail.google.com             |
+| MSP::US::Office365       | Microsoft Office 365: http://office.microsoft.com/|
 | MSP::US::Outlook         | Microsoft Outlook.com: https://www.outlook.com/   |
 | MSP::US::ReceivingSES    | AmazonSES(Receiving): http://aws.amazon.com/ses/  |
 | MSP::US::SendGrid        | SendGrid: http://sendgrid.com/                    |
