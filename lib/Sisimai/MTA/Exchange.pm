@@ -23,7 +23,7 @@ my $Re1 = {
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $ErrorCodeTable = {
+my $CodeTable = {
     'onhold' => [
         '000B099C', # Host Unknown, Message exceeds size limit, ...
         '000B09AA', # Unable to relay for, Message exceeds size limit,...
@@ -270,9 +270,9 @@ sub scan {
             my $errormessage = $2;
             my $pseudostatus = '';
 
-            for my $r ( keys %$ErrorCodeTable ) {
+            for my $r ( keys %$CodeTable ) {
                 # Find captured code from the error code table
-                next unless grep { $capturedcode eq $_ } @{ $ErrorCodeTable->{ $r } };
+                next unless grep { $capturedcode eq $_ } @{ $CodeTable->{ $r } };
                 $e->{'reason'} = $r;
                 $pseudostatus = Sisimai::SMTP::Status->code( $r );
                 $e->{'status'} = $pseudostatus if length $pseudostatus;
