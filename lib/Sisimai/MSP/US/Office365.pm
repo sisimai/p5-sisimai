@@ -44,7 +44,7 @@ sub headerlist  {
     # X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2015 23:34:45.6789 (JST)
     # X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
     # X-MS-Exchange-Transport-CrossTenantHeadersStamped: ...
-    return [ 
+    return [
         'X-MS-Exchange-Message-Is-Ndr',
         'X-Microsoft-Antispam-PRVS',
         'X-Exchange-Antispam-Report-Test',
