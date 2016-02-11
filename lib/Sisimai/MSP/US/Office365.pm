@@ -248,19 +248,6 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
-        if( length $e->{'diagnosis'} == 0 ) {
-            # No message in 'diagnosis'
-            if( $e->{'action'} eq 'delayed' ) {
-                # Set pseudo diagnostic code message for delaying
-                $e->{'diagnosis'} = 'Delivery to the following recipients has been delayed.';
-
-            } else {
-                # Set pseudo diagnostic code message
-                $e->{'diagnosis'}  = 'Unable to deliver message to the following recipients, ';
-                $e->{'diagnosis'} .= 'due to being unable to connect successfully to the destination mail server.';
-            }
-        }
-
         if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
             my $r = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
