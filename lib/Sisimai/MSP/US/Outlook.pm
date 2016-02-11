@@ -57,7 +57,6 @@ sub scan {
     $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef if $match < 2;
 
-    require Sisimai::RFC5322;
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
