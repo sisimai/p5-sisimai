@@ -171,6 +171,7 @@ sub divideup {
     SPLIT_EMAIL: for my $e ( @hasdivided ) {
         # Split email data to headers and a body part.
         $e =~ y/\r\n//d;
+        $e =~ s/[ \t]+\z//; # Remove traling space and tab characters
 
         if( $readcursor & $Indicators->{'endof'} ) {
             # The body part of the email
