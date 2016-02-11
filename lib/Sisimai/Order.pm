@@ -77,40 +77,6 @@ my $AnotherList9 = [
     'Sisimai::MTA::SurfControl',
 ];
 
-# my $SpecificHead = {
-#     'x-yandex-uniq'         => { 'Sisimai::MSP::RU::Yandex' => 1 },
-#     'x-ymailisg'            => { 'Sisimai::MSP::US::Yahoo' => 1 },
-#     'x-message-info'        => { 'Sisimai::MSP::US::Outlook' => 1 },
-#     'x-ahmailid'            => { 'Sisimai::MTA::Activehunter' => 1 },
-#     'x-nai-header'          => { 'Sisimai::MTA::McAfee' => 1 },
-#     'x-sef-processed'       => { 'Sisimai::MTA::SurfControl' => 1 },
-#     'x-mxl-hash'            => { 'Sisimai::MTA::MXLogic' => 1 },
-#     'x-ms-embedded-report'  => { 'Sisimai::MTA::Exchange' => 1 },
-#     'x-ses-outgoing'        => { 'Sisimai::MSP::US::ReceivingSES' => 1 },
-#     'x-msg-ref'             => { 'Sisimai::MSP::UK::MessageLabs' => 1 },
-#     'x-message-delivery'    => { 'Sisimai::MSP::US::Outlook' => 1 },
-#     'x-gmx-antispam'        => { 'Sisimai::MSP::DE::GMX' => 1 },
-#     'x-mimeole'             => { 'Sisimai::MTA::Exchange' => 1 },
-#     'x-spasign'             => { 'Sisimai::MSP::JP::EZweb' => 1 },
-#     'x-zohomail'            => { 'Sisimai::MSP::US::Zoho' => 1 },
-#     'x-aol-ip'              => { 'Sisimai::MSP::US::Aol' => 1 },
-#     'x-aws-outgoing'        => { 'Sisimai::MSP::US::AmazonSES' => 1 },
-#     'x-mxl-notehash'        => { 'Sisimai::MTA::MXLogic' => 1 },
-#     'x-originating-ip'      => { 'Sisimai::MSP::UK::MessageLabs' => 1 },
-#     'x-failed-recipients'   => {
-#         'Sisimai::MSP::RU::MailRu' => 1,
-#         'Sisimai::MTA::Exim' => 1,
-#         'Sisimai::MSP::US::Google' => 1
-#     },
-#     'x-mailer' => {
-#         'Sisimai::MSP::US::SendGrid' => 1,
-#         'Sisimai::MTA::mFILTER' => 1,
-#         'Sisimai::MTA::Exchange' => 1,
-#         'Sisimai::MTA::IMailServer' => 1,
-#         'Sisimai::MSP::US::Zoho' => 1,
-#     },
-# };
-
 # This variable don't hold MTA/MSP name which have one or more MTA specific
 # header such as X-AWS-Outgoing, X-Yandex-Uniq.
 my $PatternTable = {
