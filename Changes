@@ -1,8 +1,10 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.14.3
+4.15.0
     - Implement new MTA/MSP module "Sisimai::MSP::US::AmazonWorkMail" at pull-
       request #162. The module parse bounce mails via Amazon WorkMail.
+    - Implement new MTA/MSP module "Sisimai::MSP::US::Office365" at pull-request
+      #164. The module parse bounce mails via Microsoft Office 365.
     - Tiny code improvements: back port from the Ruby version of Sisimai.
 
 4.14.2  Wed,  3 Feb 2016 12:26:19 +0900 (JST)
