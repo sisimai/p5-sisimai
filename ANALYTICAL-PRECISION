@@ -17,7 +17,7 @@ MTA::MessagingServer ....   18/0021  0.8571  Oracle Communications Messaging Ser
 MTA::Notes ..............    0/0011  0.0000  Lotus Notes
 MTA::OpenSMTPD ..........    5/0023  0.2174  OpenSMTPD
 MTA::Postfix ............  161/0178  0.9045  Postfix
-MTA::Sendmail ...........  250/0235  1.0000  V8Sendmail: /usr/sbin/sendmail
+MTA::Sendmail ...........  256/0241  1.0000  V8Sendmail: /usr/sbin/sendmail
 MTA::SurfControl ........    6/0008  0.7500  WebSense SurfControl
 MTA::V5sendmail .........    0/0386  0.0000  Sendmail version 5
 MTA::X1 .................    0/0007  0.0000  Unknown MTA #1
@@ -41,6 +41,7 @@ MSP::US::Aol ............   18/0021  0.8571  Aol Mail: http://www.aol.com
 MSP::US::Bigfoot ........    2/0002  1.0000  Bigfoot: http://www.bigfoot.com
 MSP::US::Facebook .......    3/0003  1.0000  Facebook: https://www.facebook.com
 MSP::US::Google .........    0/0058  0.0000  Google Gmail: https://mail.google.com
+MSP::US::Office365 ......    6/0007  0.8571  Microsoft Office 365: http://office.microsoft.com/
 MSP::US::Outlook ........   19/0021  0.9048  Microsoft Outlook.com: https://www.outlook.com/
 MSP::US::ReceivingSES ...    0/0007  0.0000  Amazon SES(Receiving): http://aws.amazon.com/ses/
 MSP::US::SendGrid .......    0/0012  0.0000  SendGrid: http://sendgrid.com/
@@ -51,5 +52,5 @@ ARF .....................    9/0050  0.1800  Abuse Feedback Reporting Format
 RFC3464 .................  126/0269  0.4684  Fallback Module for MTAs
 RFC3834 .................    0/0004  0.0000  Detector for auto replied message
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13p3    1003/2053  0.4886
- Sisimai 4.14.2           2053/2053  1.0000
+ bounceHammer 2.7.13p3    1015/2066  0.4913
+ Sisimai 4.15.0           2066/2066  1.0000
