@@ -13,7 +13,8 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?:
-         DNS[ ]records[ ]for[ ]the[ ]destination[ ]computer[ ]could[ ]not[ ]be[ ]found
+         could[ ]not[ ]connect[ ]and[ ]send[ ]the[ ]mail[ ]to
+        |DNS[ ]records[ ]for[ ]the[ ]destination[ ]computer[ ]could[ ]not[ ]be[ ]found
         |Hop[ ]count[ ]exceeded[ ]-[ ]possible[ ]mail[ ]loop
         |host[ ]is[ ]unreachable
         |mail[ ]forwarding[ ]loop[ ]for[ ]
