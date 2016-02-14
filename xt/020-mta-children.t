@@ -942,6 +942,7 @@ my $R = {
     },
     'X5' => {
         '01001' => qr/userunknown/,
+        '01002' => qr/userunknown/,
     },
 };
 
