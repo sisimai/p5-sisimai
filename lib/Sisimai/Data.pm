@@ -111,10 +111,9 @@ sub new {
         # Check both of the first digit of "deliverystatus" and "replycode"
         my $d1 = substr( $thing->{'deliverystatus'}, 0, 1 );
         my $r1 = substr( $thing->{'replycode'}, 0, 1 );
-        if( $d1 != $r1 ) {
-            # The first digits did not match: 5.1.1 250
-            $thing->{'replycode'} = '';
-        }
+
+        # The first digits did not match: 5.1.1 250
+        $thing->{'replycode'} = '' unless $d1 eq $r1;
     }
     $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
 
