@@ -101,7 +101,7 @@ my $R = {
         '01081' => qr/(?:filtered|onhold)/,
         '01083' => qr/filtered/,
         '01085' => qr/filtered/,
-        '01086' => qr/filtered/,
+        '01086' => qr/(?:filtered|delivered)/,
         '01087' => qr/filtered/,
         '01088' => qr/onhold/,
         '01089' => qr/filtered/,
@@ -344,13 +344,13 @@ for my $x ( keys %$R ) {
 
                     if( length $ee->action ) {
                         # Check the value of action
-                        like $ee->action, qr/(?:fail.+|delayed|expired)\z/, 
+                        like $ee->action, qr/(?:fail.+|delayed|expired|delivered|deliverable|relayed)\z/, 
                             sprintf( "[%s] %s/%s->action = %s", $n, $e, $x, $ee->action );
                     }
 
                     if( length $ee->deliverystatus ) {
                         # Check the value of D.S.N. format
-                        like $ee->deliverystatus, qr/\A[45][.]\d/, 
+                        like $ee->deliverystatus, qr/\A[245][.]\d/, 
                             sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
 
                         if( substr( $ee->deliverystatus, 0, 1 ) == 4 ) {
@@ -367,7 +367,7 @@ for my $x ( keys %$R ) {
                     }
 
                     like $ee->reason,         $R->{ $x }->{ $n },   sprintf( "[%s] %s/%s->reason = %s", $n, $e, $x, $ee->reason );
-                    like $ee->replycode,      qr/\A(?:[45]\d\d|)\z/,sprintf( "[%s] %s/%s->replycode = %s", $n, $e, $x, $ee->replycode );
+                    like $ee->replycode,      qr/\A(?:[245]\d+|)\z/,sprintf( "[%s] %s/%s->replycode = %s", $n, $e, $x, $ee->replycode );
                     like $ee->timezoneoffset, qr/\A[+-]\d+\z/,      sprintf( "[%s] %s/%s->timezoneoffset = %s", $n, $e, $x, $ee->timezoneoffset );
 
                     unlike $ee->deliverystatus,qr/[ ]/, sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
@@ -413,7 +413,6 @@ for my $x ( keys %$R ) {
                     unlike $y->verp,   qr/[ ]/,     sprintf( "[%s] %s/%s->recipient->verp = %s", $n, $e, $x, $y->verp );
                     unlike $y->alias,  qr/[ ]/,     sprintf( "[%s] %s/%s->recipient->alias = %s", $n, $e, $x, $y->alias );
                     unlike $y->address,qr/[ ]/,     sprintf( "[%s] %s/%s->recipient->address = %s", $n, $e, $x, $y->address );
-
                 }
             }
         }

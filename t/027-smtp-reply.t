@@ -14,6 +14,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     my $smtperrors = [
+        q|smtp; 250 2.1.5 Ok|,
         q|smtp; 550 5.1.1 <kijitora@example.co.jp>... User Unknown|,
         q|smtp; 550 Unknown user kijitora@example.jp|,
         q|smtp; 550 5.7.1 can't determine Purported |,

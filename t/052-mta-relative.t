@@ -36,6 +36,7 @@ my $MTARelative = {
         '25' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/, 'agent' => qr/RFC3464/ },
         '26' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/, 'agent' => qr/RFC3464/ },
         '27' => { 'status' => qr/\A4[.]4[.]6\z/, 'reason' => qr/networkerror/, 'agent' => qr/RFC3464/ },
+        '28' => { 'status' => qr/\A2[.]1[.]5\z/, 'reason' => qr/delivered/, 'agent' => qr/RFC3464/ },
     },
     'RFC3834' => {
         '01' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
@@ -136,13 +137,13 @@ for my $x ( keys %$MTARelative ) {
 
                     if( length $e->{'status'} ) {
                         # Check the value of "status"
-                        like $e->{'status'}, qr/\A(?:[45][.]\d[.]\d+)\z/,
+                        like $e->{'status'}, qr/\A(?:[245][.]\d[.]\d+)\z/,
                             sprintf( "[%s] %s->status = %s", $n, $x, $e->{'status'} );
                     }
 
                     if( length $e->{'action'} ) {
                         # Check the value of "action"
-                        like $e->{'action'}, qr/\A(?:fail.+|delayed|expired)\z/, 
+                        like $e->{'action'}, qr/\A(?:fail.+|delayed|expired|delivered|deliverable)\z/, 
                             sprintf( "[%s] %s->action = %s", $n, $x, $e->{'action'} );
                     }
 
@@ -197,7 +198,7 @@ for my $x ( keys %$MTARelative ) {
                         is $e->softbounce, -1, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
                     }
 
-                    like $e->replycode,      qr/\A(?:[45]\d\d|)\z/,          sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
+                    like $e->replycode,      qr/\A(?:[245]\d\d|)\z/,         sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
                     like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
                     like $e->deliverystatus, $MTARelative->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
                     like $e->reason,         $MTARelative->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );

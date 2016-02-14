@@ -175,7 +175,7 @@ my $R = {
         '01093' => qr/(?:undefined|onhold|systemerror)/,
         '01094' => qr/onhold/,
         '01095' => qr/onhold/,
-        '01096' => qr/onhold/,
+        '01096' => qr/(?:hostunknown|onhold)/,
         '01097' => qr/(?:hostunknown|networkerror)/,
         '01098' => qr/expired/,
         '01099' => qr/expired/,
@@ -535,7 +535,7 @@ my $R = {
         '01001' => qr/suspend/,
         '01002' => qr/blocked/,
         '01003' => qr/expired/,
-        '01004' => qr/userunknown/,
+        '01004' => qr/(?:userunknown|delivered)/,
         '01005' => qr/expired/,
         '01006' => qr/expired/,
         '01007' => qr/expired/,
@@ -1018,13 +1018,13 @@ for my $x ( keys %$R ) {
 
                     if( length $ee->action ) {
                         # Check the value of action
-                        like $ee->action, qr/(?:fail.+|delayed|expired)\z/, 
+                        like $ee->action, qr/(?:fail.+|delayed|expired|expanded)\z/, 
                             sprintf( "[%s] %s/%s->action = %s", $n, $e, $x, $ee->action );
                     }
 
                     if( length $ee->deliverystatus ) {
                         # Check the value of D.S.N. format
-                        like $ee->deliverystatus, qr/\A[45][.]\d/, 
+                        like $ee->deliverystatus, qr/\A[245][.]\d/, 
                             sprintf( "[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus );
 
                         if( substr( $ee->deliverystatus, 0, 1 ) == 4 ) {
