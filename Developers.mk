@@ -48,7 +48,7 @@ private-sample:
 	@echo
 	@while true; do \
 		d=`$(EMAIL_PARSER) -Fjson $(E) | jq -M '.[].smtpagent' | head -1 \
-			| tr '[A-Z]' '[a-z]' | sed -e 's/"//g' -e 's/::/-/g'`; \
+			| tr '[A-Z]' '[a-z]' | tr -d '-' | sed -e 's/"//g' -e 's/::/-/g'`; \
 		if [ -d "$(PRIVATEMAILS)/$$d" ]; then \
 			latestfile=`ls -1 $(PRIVATEMAILS)/$$d/*.eml | tail -1`; \
 			curr_index=`basename $$latestfile | cut -d'-' -f1`; \
@@ -58,9 +58,12 @@ private-sample:
 			next_index=1001; \
 		fi; \
 		hash_value=`md5 -q $(E)`; \
-		printf "[%05d] %s %s\n" $$next_index $$hash_value \
-			`$(EMAIL_PARSER) -Fjson ./$(SAMPLE) | jq -M '.[].reason'`; \
-		mv -v $(E) $(PRIVATEMAILS)/$$d/0$${next_index}-$${hash_value}.eml; \
+		if [ -n "`ls -1 $(PRIVATEMAILS)/$$d/ | grep $$hash_value`" ]; then \
+			echo 'Already exists:' `ls -1 $(PRIVATEMAILS)/$$d/*$$hash_value.eml`; \
+		else \
+			printf "[%05d] %s %s\n" $$next_index $$hash_value; \
+			mv -v $(E) $(PRIVATEMAILS)/$$d/0$${next_index}-$${hash_value}.eml; \
+		fi; \
 		break; \
 	done
 
