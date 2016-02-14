@@ -69,8 +69,11 @@ sub find {
     my $argv1 = shift || return '';
     my $value = '';
 
-    return ''   if $argv1 =~ m/X-Unix;/i;
-    $value = $1 if $argv1 =~ m/\b([45][0-5][0-9])\b/;
+    return '' if $argv1 =~ m/X-Unix;/i;
+    if( $argv1 =~ m/\b([45][0-5][0-9])\b/ || $argv1 =~ m/\b(25[0-3])\b/ ) {
+        # 550, 447, or 250
+        $value = $1;
+    }
     return $value;
 }
 
@@ -109,7 +112,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

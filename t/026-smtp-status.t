@@ -20,6 +20,7 @@ MAKE_TEST: {
         'suspend', 'systemerror', 'systemfull', 'toomanyconn', 'userunknown',
     ];
     my $statuslist = [ qw/
+        2.1.5
         4.1.6 4.1.7 4.1.8 4.1.9 4.2.1 4.2.2 4.2.3 4.2.4 4.3.1 4.3.2 4.3.3 4.3.5
         4.4.1 4.4.2 4.4.4 4.4.5 4.4.6 4.4.7 4.5.3 4.5.5 4.6.0 4.6.2 4.6.5
         4.7.1 4.7.2 4.7.5 4.7.6 4.7.7
@@ -29,6 +30,7 @@ MAKE_TEST: {
         5.7.1 5.7.2 5.7.3 5.7.4 5.7.5 5.7.6 5.7.7 5.7.8 5.7.9
     / ];
     my $smtperrors = [
+        'smtp; 2.1.5 250 OK',
         'smtp;550 5.2.2 <mikeneko@example.co.jp>... Mailbox Full',
         'smtp; 550 5.1.1 Mailbox does not exist',
         'smtp; 550 5.1.1 Mailbox does not exist',
@@ -56,13 +58,18 @@ MAKE_TEST: {
     is $PackageName->name(''), '', '->name() = ""';
     STANRDARD_STATUS_CODE: for my $e ( @$statuslist ) {
         $v = $PackageName->name( $e );
-        ok grep( { $v eq $_ } @$reasonlist), '->name('.$e.') returns '.$v;
+        if( $v eq 'delivered' ) {
+            is $v, 'delivered', '->name('.$e.') returns delivered';
+
+        } else {
+            ok grep( { $v eq $_ } @$reasonlist), '->name('.$e.') returns '.$v;
+        }
     }
 
     is $PackageName->find(''), '', '->find("") = ""';
     for my $e ( @$smtperrors ) {
         $v = $PackageName->find( $e );
-        like $v, qr/\A[45][.]\d[.]\d\z/, '->find() returns '.$v;
+        like $v, qr/\A[245][.]\d[.]\d\z/, '->find() returns '.$v;
     }
 }
 
