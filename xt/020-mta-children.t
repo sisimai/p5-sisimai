@@ -186,6 +186,7 @@ my $R = {
         '01104' => qr/mailererror/,
         '01105' => qr/mailererror/,
         '01106' => qr/onhold/,
+        '01107' => qr/spamdetected/,
     },
     'IMailServer' => {
         '01001' => qr/hostunknown/,
@@ -264,6 +265,7 @@ my $R = {
         '01010' => qr/mailboxfull/,
         '01011' => qr/expired/,
         '01012' => qr/filtered/,
+        '01013' => qr/mailboxfull/,
     },
     'mFILTER' => {
         '01001' => qr/filtered/,
@@ -527,6 +529,7 @@ my $R = {
         '01062' => qr/filtered/,
         '01063' => qr/userunknown/,
         '01064' => qr/userunknown/,
+        '01065' => qr/mailboxfull/,
     },
     'Sendmail' => {
         '01001' => qr/suspend/,

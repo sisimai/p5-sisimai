@@ -261,6 +261,9 @@ my $R = {
         '01247' => qr/userunknown/,
         '01248' => qr/mailboxfull/,
         '01249' => qr/onhold/,
+        '01250' => qr/mailboxfull/,
+        '01251' => qr/mailboxfull/,
+        '01252' => qr/networkerror/,
     },
     'RFC3834' => {
         '01002' => qr/vacation/,
