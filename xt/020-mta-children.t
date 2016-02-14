@@ -15,6 +15,11 @@ my $R = {
         '01005' => qr/userunknown/,
         '01006' => qr/userunknown/,
         '01007' => qr/filtered/,
+        '01008' => qr/filtered/,
+        '01009' => qr/userunknown/,
+        '01010' => qr/filtered/,
+        '01011' => qr/filtered/,
+        '01012' => qr/userunknown/,
     },
     'ApacheJames' => {
         '01001' => qr/filtered/,
@@ -232,6 +237,8 @@ my $R = {
         '01003' => qr/userunknown/,
         '01004' => qr/userunknown/,
         '01005' => qr/userunknown/,
+        '01006' => qr/userunknown/,
+        '01007' => qr/userunknown/,
     },
     'MailFoundry' => {
         '01001' => qr/filtered/,
@@ -274,6 +281,7 @@ my $R = {
         '01004' => qr/filtered/,
         '01005' => qr/userunknown/,
         '01006' => qr/filtered/,
+        '01007' => qr/filtered/,
     },
     'MXLogic' => {
         '01001' => qr/userunknown/,
@@ -286,6 +294,7 @@ my $R = {
         '01008' => qr/userunknown/,
         '01009' => qr/userunknown/,
         '01010' => qr/filtered/,
+        '01011' => qr/filtered/,
     },
     'Notes' => {
         '01001' => qr/userunknown/,
@@ -463,6 +472,7 @@ my $R = {
         '01147' => qr/userunknown/,
         '01148' => qr/userunknown/,
         '01149' => qr/mailboxfull/,
+        '01150' => qr/filtered/,
     },
     'qmail' => {
         '01001' => qr/filtered/,
@@ -530,6 +540,7 @@ my $R = {
         '01063' => qr/userunknown/,
         '01064' => qr/userunknown/,
         '01065' => qr/mailboxfull/,
+        '01066' => qr/userunknown/,
     },
     'Sendmail' => {
         '01001' => qr/suspend/,
@@ -730,6 +741,7 @@ my $R = {
         '01198' => qr/userunknown/,
         '01199' => qr/blocked/,
         '01200' => qr/hostunknown/,
+        '01201' => qr/spamdetected/,
     },
     'SurfControl' => {
         '01001' => qr/filtered/,
@@ -911,12 +923,25 @@ my $R = {
         '01017' => qr/(?:suspend|filtered)/,
         '01018' => qr/suspend/,
         '01019' => qr/mailboxfull/,
+        '01020' => qr/filtered/,
+        '01021' => qr/(?:filtered|suspend)/,
+        '01022' => qr/filtered/,
+        '01023' => qr/suspend/,
+        '01024' => qr/suspend/,
+        '01025' => qr/suspend/,
+        '01026' => qr/suspend/,
+        '01027' => qr/mailboxfull/,
+        '01028' => qr/expired/,
     },
     'X3' => {
         '01001' => qr/userunknown/,
         '01002' => qr/undefined/,
         '01003' => qr/expired/,
         '01004' => qr/userunknown/,
+        '01005' => qr/undefined/,
+        '01006' => qr/userunknown/,
+        '01007' => qr/expired/,
+        '01008' => qr/userunknown/,
     },
     'X4' => {
         '01001' => qr/mailboxfull/,
@@ -939,6 +964,8 @@ my $R = {
         '01018' => qr/userunknown/,
         '01019' => qr/userunknown/,
         '01020' => qr/mailboxfull/,
+        '01021' => qr/networkerror/,
+        '01022' => qr/userunknown/,
     },
     'X5' => {
         '01001' => qr/userunknown/,
