@@ -40,12 +40,14 @@ sub get {
         return $argvs->reason if length $argvs->reason;
     }
 
+    my $statuscode = $argvs->deliverystatus || '';
     my $reasontext = '';
     my $classorder = [
         'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'HasMoved', 
         'NoRelaying', 'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown',
         'SpamDetected', 'TooManyConn', 'Blocked',
     ];
+    return 'delivered' if $statuscode =~ m/\A2[.]/;
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value

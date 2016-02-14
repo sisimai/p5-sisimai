@@ -99,8 +99,23 @@ sub new {
         'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
         'smtpcommand', 'feedbacktype', 'action', 'softbounce',
     );
-    $thing->{ $_ } =  $argvs->{ $_ } // '' for @v1;
-    $thing->{'replycode'}  = Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
+    $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
+    if( $thing->{'action'} =~ m/\A(.+?) .+/ ) {
+        # Action: expanded (to multi-recipient alias)
+        $thing->{'action'} = $1;
+    }
+
+    $thing->{'replycode'} = Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
+
+    if( length $thing->{'deliverystatus'} && length $thing->{'replycode'} ) {
+        # Check both of the first digit of "deliverystatus" and "replycode"
+        my $d1 = substr( $thing->{'deliverystatus'}, 0, 1 );
+        my $r1 = substr( $thing->{'replycode'}, 0, 1 );
+        if( $d1 != $r1 ) {
+            # The first digits did not match: 5.1.1 250
+            $thing->{'replycode'} = '';
+        }
+    }
     $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
 
     return bless( $thing, __PACKAGE__ );
@@ -168,7 +183,6 @@ sub make {
             'diagnostictype' => $e->{'spec'}         // '',
             'deliverystatus' => $e->{'status'}       // '',
         };
-        next if $p->{'deliverystatus'} =~ m/\A2[.]/;
 
         EMAIL_ADDRESS: {
             # Detect email address from message/rfc822 part
@@ -185,14 +199,6 @@ sub make {
             # Fallback: Get the sender address from the header of the bounced
             # email if the address is not set at loop above.
             $p->{'addresser'} ||= $messageobj->{'header'}->{'to'}; 
-
-            if( $p->{'alias'} && Sisimai::RFC5322->is_emailaddress( $p->{'alias'} ) ) {
-                # Alias address should be the value of "recipient", Replace the
-                # value of recipient with the value of "alias".
-                my $w = $p->{'recipient'};
-                $p->{'recipient'} = $p->{'alias'};
-                $p->{'alias'} = $w;
-            }
         }
         next unless $p->{'addresser'};
         next unless $p->{'recipient'};
@@ -295,7 +301,6 @@ sub make {
             # Check the value of SMTP command
             $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ $rxcommands;
         }
-
         $o = __PACKAGE__->new( %$p );
         next unless defined $o;
 

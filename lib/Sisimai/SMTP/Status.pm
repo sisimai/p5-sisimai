@@ -539,6 +539,7 @@ use warnings;
 # ------------------------------------------------------------------------------
 #
 my $StandardCode = {
+    '2.1.5'  => 'delivered',    # Successfully delivered
     '4.1.6'  => 'hasmoved',     # Destination mailbox has moved, No forwarding address
     '4.1.7'  => 'rejected',     # Bad sender's mailbox address syntax
     '4.1.8'  => 'rejected',     # Bad sender's system address
@@ -724,7 +725,7 @@ sub name {
     my $class = shift;
     my $argv1 = shift || return '';
 
-    return '' unless $argv1 =~ m/\A[45][.]\d[.]\d+\z/;
+    return '' unless $argv1 =~ m/\A[245][.]\d[.]\d+\z/;
     return $StandardCode->{ $argv1 } // '';
 }
 
@@ -742,6 +743,7 @@ sub find {
         qr/[ ]?[(][#]([45][.]\d[.]\d+)[)]?[ ]?/,    # #5.5.1
         qr/\b\d{3}[ -][#]?([45][.]\d[.]\d+)\b/,     # 550-5.1.1 OR 550 5.5.1
         qr/\b([45][.]\d[.]\d+)\b/,                  # 5.5.1
+        qr/\b(2[.][0-7][.][0-7])\b/,                # 2.1.5
     ];
 
     for my $e ( @$regularexp ) {
@@ -805,7 +807,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
