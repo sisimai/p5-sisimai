@@ -161,7 +161,7 @@ and Sisimai.
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 9100 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 162400 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 166200 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
@@ -189,7 +189,7 @@ and Sisimai.
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 9100行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 162400件    |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 166200件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
@@ -261,7 +261,7 @@ details about these modules are available at
 
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
-Sisimai can detect the following 25 bounce reasons. More details about reasons
+Sisimai can detect the following 26 bounce reasons. More details about reasons
 are available at [Sisimai | Bounce Reason List](http://libsisimai.org/reason)
 page.
 
@@ -269,6 +269,7 @@ page.
 |----------------|----------------------------------------|----------------------------------|
 | Blocked        | Blocked due to client IP address       | IPアドレスによる拒否             |
 | ContentError   | Invalid format email                   | 不正な形式のメール               |
+| Delivered      | Successfully delivered (> v4.16.0)     | 正常に配信された
 | ExceedLimit    | Message size exceeded the limit(5.2.3) | メールサイズの超過               |
 | Expired        | Delivery time expired                  | 配送時間切れ                     |
 | Feedback       | Bounced for a complaint of the message | 元メールへの苦情によるバウンス   |
@@ -293,7 +294,7 @@ page.
 | Undefined      | Could not decide the error reason      | バウンスした理由は特定出来ず     |
 | Vacation       | Auto replied message (> v4.1.28 )      | 自動応答メッセージ(> v4.1.28 )   |
 
-Sisimaiは上記のエラー25種を検出します。
+Sisimaiは上記のエラー26種を検出します。
 
 
 Parsed data structure | 解析後のデータ構造
