@@ -540,6 +540,7 @@ use warnings;
 #
 my $StandardCode = {
     '2.1.5'  => 'delivered',    # Successfully delivered
+    # ------------------------------------------------------------------------------
     '4.1.6'  => 'hasmoved',     # Destination mailbox has moved, No forwarding address
     '4.1.7'  => 'rejected',     # Bad sender's mailbox address syntax
     '4.1.8'  => 'rejected',     # Bad sender's system address
