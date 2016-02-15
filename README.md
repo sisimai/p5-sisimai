@@ -30,7 +30,7 @@ Key Features | 主な特徴的機能
   * Support 21 known MTAs and 5 unknown MTAs | 26種類のMTAに対応
   * Support 21 major MSPs(Mail Service Providers) | 21種類の著名なMSPに対応
   * Support Feedback Loop Message(ARF) | Feedback Loopにも対応
-  * Can detect 25 error reasons | 25種類のエラー理由を検出
+  * Can detect 26 error reasons | 26種類のエラー理由を検出
 * __Faster than bounceHammer version 2.7.13p3__ | __bounceHammer 2.7.13p3よりも高速に解析__
   * About 1.7 times faster | 1.7倍程高速
 
@@ -90,6 +90,11 @@ my $v = Sisimai->make('/path/to/mbox'); # or path to Maildir/
 
 if( defined $v ) {
     for my $e ( @$v ) {
+
+        # If you want to get only ERROR records, skip if the value of "reason"
+        # is "delivered". This reason is implemented at Sisimai v4.16.0
+        next if $e->reason eq 'delivered';
+
         print ref $e;                   # Sisimai::Data
         print ref $e->recipient;        # Sisimai::Address
         print ref $e->timestamp;        # Sisimai::Time
@@ -161,7 +166,7 @@ and Sisimai.
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 9100 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 166200 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 166700 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
@@ -189,7 +194,7 @@ and Sisimai.
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 9100行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 166200件    |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 166700件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
