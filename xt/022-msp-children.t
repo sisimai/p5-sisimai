@@ -294,6 +294,7 @@ my $R = {
     },
     'US::Verizon' => {
         '01001' => qr/userunknown/,
+        '01002' => qr/userunknown/,
     },
     'US::Yahoo' => {
         '01001' => qr/userunknown/,

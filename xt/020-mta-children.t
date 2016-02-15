@@ -40,6 +40,7 @@ my $R = {
         '01009' => qr/filtered/,
         '01010' => qr/blocked/,
         '01011' => qr/hostunknown/,
+        '01012' => qr/hostunknown/,
     },
     'Domino' => {
         '01001' => qr/onhold/,
@@ -53,6 +54,8 @@ my $R = {
         '01009' => qr/userunknown/,
         '01010' => qr/userunknown/,
         '01011' => qr/userunknown/,
+        '01012' => qr/userunknown/,
+        '01013' => qr/userunknown/,
     },
     'Exchange' => {
         '01001' => qr/userunknown/,
@@ -87,6 +90,7 @@ my $R = {
         '01030' => qr/userunknown/,
         '01031' => qr/userunknown/,
         '01032' => qr/userunknown/,
+        '01033' => qr/userunknown/,
     },
     'Exim' => {
         '01001' => qr/securityerror/,
@@ -230,6 +234,7 @@ my $R = {
         '01034' => qr/userunknown/,
         '01035' => qr/spamdetected/,
         '01036' => qr/spamdetected/,
+        '01037' => qr/spamdetected/,
     },
     'InterScanMSS' => {
         '01001' => qr/userunknown/,
@@ -304,6 +309,7 @@ my $R = {
         '01005' => qr/onhold/,
         '01006' => qr/userunknown/,
         '01007' => qr/userunknown/,
+        '01008' => qr/userunknown/,
     },
     'OpenSMTPD' => {
         '01001' => qr/userunknown/,
