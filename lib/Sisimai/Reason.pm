@@ -286,6 +286,17 @@ is C<5.6.*>.
     <<< 550 5.6.9 improper use of 8-bit data in message header
     554 5.0.0 Service unavailable
 
+=head2 C<delivered>
+
+This is NOT AN ERROR and means the message you sent has delivered to recipients
+successfully.
+
+    Final-Recipient: rfc822; kijitora@neko.nyaan.jp
+    Action: deliverable
+    Status: 2.1.5
+    Remote-MTA: dns; home.neko.nyaan.jp
+    Diagnostic-Code: SMTP; 250 2.1.5 OK
+
 =head2 C<exceedlimit>
 
 This is the error that a message was rejected due to an email exceeded the 
@@ -507,7 +518,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
