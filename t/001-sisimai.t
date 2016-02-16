@@ -6,7 +6,7 @@ use JSON;
 
 my $PackageName = 'Sisimai';
 my $MethodNames = {
-    'class' => [ 'sysname', 'libname', 'version', 'make', 'dump' ],
+    'class' => [ 'sysname', 'libname', 'version', 'make', 'dump', 'engine' ],
     'object' => [],
 };
 my $SampleEmail = {
@@ -89,6 +89,16 @@ MAKE_TEST: {
         my $jsonstring = $PackageName->dump( $IsNotBounce->{ $e } );
         is $parseddata, undef, '->make = undef';
         is $jsonstring, '[]', '->dump = "[]"';
+    }
+
+    ENGINE: {
+        my $enginelist = $PackageName->engine;
+        isa_ok $enginelist, 'HASH';
+        ok scalar(keys %$enginelist), '->engine = '.scalar(keys %$enginelist);
+        for my $e ( keys %$enginelist ) {
+            like $e, qr/\ASisimai::/, '->engine = '.$e;
+            ok length $enginelist->{ $e }, '->engine->{'.$e.'} = '.$enginelist->{ $e };
+        }
     }
 }
 done_testing;
