@@ -56,6 +56,33 @@ sub dump {
     return $jsonobject->encode( $parseddata );
 }
 
+sub engine {
+    # Parser engine list (MTA/MSP modules)
+    # @return   [Hash]     Parser engine table
+    my $class = shift;
+    my $names = [ 'MTA', 'MSP', 'ARF', 'RFC3464', 'RFC3834' ];
+    my $table = {};
+
+    for my $e ( @$names ) {
+        my $r = 'Sisimai::'.$e;
+        Module::Load::load $r;
+
+        if( $e eq 'MTA' || $e eq 'MSP' ) {
+            # Sisimai::MTA or Sisimai::MSP
+            for my $ee ( @{ $r->index } ) {
+                # Load and get the value of "description" from each module
+                my $rr = sprintf( "Sisimai::%s::%s", $e, $ee );
+                Module::Load::load $rr;
+                $table->{ $rr } = $rr->description;
+            }
+        } else {
+            # Sisimai::ARF, Sisimai::RFC3464, and Sisimai::RFC3834
+            $table->{ $r } = $r->description;
+        }
+    }
+    return $table;
+}
+
 1;
 __END__
 
@@ -119,6 +146,17 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
     use Sisimai;
     my $v = Sisimai->dump('/path/to/mbox'); # or Path to Maildir
     print $v;                               # JSON string
+
+=head2 C<B<engine()>>
+
+C<engine> method provides table including parser engine list and its description.
+
+    use Sisimai;
+    my $v = Sisimai->engine();
+    for my $e ( keys %$v ) {
+        print $e;           # Sisimai::MTA::Sendmail
+        print $v->{ $e };   # V8Sendmail: /usr/sbin/sendmail
+    }
 
 =head1 SEE ALSO
 
