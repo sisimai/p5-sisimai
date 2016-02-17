@@ -88,13 +88,12 @@ messages like following.
 use Sisimai;
 my $v = Sisimai->make('/path/to/mbox'); # or path to Maildir/
 
+# If you want to get bounce records which reason is "delivered", set "delivered"
+# option to make() method like the following:
+my $v = Sisimai->make('/path/to/mbox', 'delivered' => 1);
+
 if( defined $v ) {
     for my $e ( @$v ) {
-
-        # If you want to get only ERROR records, skip if the value of "reason"
-        # is "delivered". This reason is implemented at Sisimai v4.16.0
-        next if $e->reason eq 'delivered';
-
         print ref $e;                   # Sisimai::Data
         print ref $e->recipient;        # Sisimai::Address
         print ref $e->timestamp;        # Sisimai::Time
@@ -116,6 +115,9 @@ if( defined $v ) {
 my $j = Sisimai->dump('/path/to/mbox'); # or path to Maildir/
                                         # dump() is added in v4.1.27
 print $j;                               # parsed data as JSON
+
+# dump() method also accepts "delivered" option like the following code:
+my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 
 ```
 
