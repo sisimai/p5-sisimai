@@ -447,6 +447,11 @@ including Sisimai::Data objects.
         }
     }
 
+If you want to get bounce records which reason is "delivered", set "delivered"
+option to make() method like the following:
+
+    my $data = Sisimai::Data->make( 'data' => $mesg, 'delivered' => 1 );
+
 =head1 INSTANCE METHODS
 
 =head2 C<B<damn()>>

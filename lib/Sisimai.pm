@@ -113,7 +113,7 @@ Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
 =head1 BASIC USAGE
 
-=head2 C<B<make(I<'/path/to/mbox'>)>>
+=head2 C<B<make(I<'/path/to/mbox'>, I<delivered => 1>)>>
 
 C<make> method provides feature for getting parsed data from bounced email 
 messages like following.
@@ -146,7 +146,12 @@ messages like following.
         printf "%s\n", $json->encode( $v );
     }
 
-=head2 C<B<dump(I<'/path/to/mbox'>)>>
+If you want to get bounce records which reason is "delivered", set "delivered"
+option to make() method like the following:
+
+    my $v = Sisimai->make('/path/to/mbox', 'delivered' => 1);
+
+=head2 C<B<dump(I<'/path/to/mbox'>, I<delivered => 1>)>>
 
 C<dump> method provides feature to get parsed data from bounced email as JSON.
 
