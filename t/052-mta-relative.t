@@ -156,7 +156,7 @@ for my $x ( keys %$MTARelative ) {
                 }
 
 
-                $o = Sisimai::Data->make( 'data' => $p );
+                $o = Sisimai::Data->make( 'data' => $p, 'delivered' => 1 );
                 isa_ok $o, 'ARRAY';
                 ok scalar @$o, sprintf( "%s/entry = %s", $M, scalar @$o );
 

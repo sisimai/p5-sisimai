@@ -1009,7 +1009,7 @@ for my $x ( keys %$R ) {
                 ok length $r;
 
                 my $p = Sisimai::Message->new( 'data' => $r );
-                my $v = Sisimai::Data->make( 'data' => $p );
+                my $v = Sisimai::Data->make( 'data' => $p, 'delivered' => 1 );
                 my $y = undef;
 
                 # is ref($p), 'Sisimai::Message', sprintf( "[%s] %s/%s(Sisimai::Message)", $n, $e, $x );

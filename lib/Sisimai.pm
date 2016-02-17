@@ -11,17 +11,21 @@ sub libname { 'Sisimai'       }
 
 sub make {
     # Wrapper method for parsing mailbox or Maildir/
-    # @param    [String] argvs  Path to mbox or Maildir/
-    # @return   [Array]         Parsed objects
-    # @return   [Undef]         Undef if the argument was wrong or an empty array
+    # @param         [String] argv0      Path to mbox or Maildir/
+    # @param         [Hash]   argv1      Parser options
+    # @options argv1 [Integer] delivered 1 = Including "delivered" reason
+    # @return        [Array]             Parsed objects
+    # @return        [Undef]             Undef if the argument was wrong or an empty array
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argv0 = shift // return undef;
+    my $argv1 = { @_ };
 
     require Sisimai::Mail;
-    my $mail = Sisimai::Mail->new( $argvs );
+    my $mail = Sisimai::Mail->new( $argv0 );
     my $mesg = undef;
     my $data = undef;
     my $list = [];
+    my $opts = { 'delivered' => $argv1->{'delivered'} // 0 };
 
     return undef unless $mail;
     require Sisimai::Data;
@@ -31,7 +35,7 @@ sub make {
         # Read and parse each mail file
         $mesg = Sisimai::Message->new( 'data' => $r );
         next unless defined $mesg;
-        $data = Sisimai::Data->make( 'data' => $mesg );
+        $data = Sisimai::Data->make( 'data' => $mesg, %$opts );
         push @$list, @$data if scalar @$data;
     }
 
@@ -41,12 +45,15 @@ sub make {
 
 sub dump {
     # Wrapper method to parse mailbox/Maildir and dump as JSON
-    # @param    [String] path   Path to mbox or Maildir/
-    # @return   [String]        Parsed data as JSON text
+    # @param         [String]  argv0     Path to mbox or Maildir/
+    # @param         [Hash]    argv1     Parser options
+    # @options argv1 [Integer] delivered 1 = Including "delivered" reason
+    # @return        [String]            Parsed data as JSON text
     my $class = shift;
     my $argv0 = shift // return undef;
+    my $argv1 = { @_ };
 
-    my $parseddata = __PACKAGE__->make( $argv0 ) // [];
+    my $parseddata = __PACKAGE__->make( $argv0, %$argv1 ) // [];
     my $jsonobject = undef;
 
     # Dump as JSON

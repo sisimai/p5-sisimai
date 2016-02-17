@@ -135,6 +135,7 @@ sub make {
     return undef unless $argvs->{'data'}->rfc822;
 
     require Sisimai::SMTP;
+    my $delivered1 = $argvs->{'delivered'} // 0;
     my $messageobj = $argvs->{'data'};
     my $rfc822data = $messageobj->rfc822;
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
@@ -182,6 +183,10 @@ sub make {
             'diagnostictype' => $e->{'spec'}         // '',
             'deliverystatus' => $e->{'status'}       // '',
         };
+        unless( $delivered1 ) {
+            # Skip if the value of "deliverystatus" begins with "2." such as 2.1.5
+            next if $p->{'deliverystatus'} =~ m/\A2[.]/;
+        }
 
         EMAIL_ADDRESS: {
             # Detect email address from message/rfc822 part
