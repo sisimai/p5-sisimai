@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.16.0
+4.16.0  Thu, 18 Feb 2016 13:49:01 +0900 (JST)
     - Implement new reason "delivered". Sisimai set "delivered" to the reason
       when the value of Status: field in a bounce message begins with "2". This
       feature is optional and is not enabled by default. issue #155.
