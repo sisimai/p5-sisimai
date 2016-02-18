@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 sub text  { 'hostunknown' }
+sub description { "Delivery failed due to a domain part of a recipient's email address does not exist" }
 sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
@@ -125,7 +126,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

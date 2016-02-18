@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 sub text  { 'hasmoved' }
+sub description { "Email rejected due to user's mailbox has moved and is not forwarded automatically" }
 sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
@@ -50,7 +51,7 @@ Sisimai::Reason::HasMoved - Bounce reason is C<hasmoved> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::HasMoved checks the bounce reason is C<hasmoved> or not.  This
+Sisimai::Reason::HasMoved checks the bounce reason is C<hasmoved> or not. This
 class is called only Sisimai::Reason class.
 
 This is the error that a user's mailbox has moved (and is not forwarded 
@@ -85,7 +86,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

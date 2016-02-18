@@ -3,7 +3,8 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub text  { 'blocked' }
+sub text { 'blocked' }
+sub description { 'Email rejected due to client IP address or a hostname' }
 sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
@@ -67,7 +68,7 @@ sub match {
 }
 
 sub true {
-    # Blocked due to client IP address or hostname
+    # Rejected due to client IP address or hostname
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
     # @return   [Integer]               1: is blocked
     #           [Integer]               0: is not blocked by the client
@@ -149,7 +150,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

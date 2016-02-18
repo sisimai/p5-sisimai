@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 sub text  { 'onhold' }
+sub description { 'Sisimai could not decided the reason due to there is no (or less) detailed information for judging the reason' }
 sub match { 
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
@@ -82,7 +83,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
