@@ -70,26 +70,30 @@ sub list {
         Reason.pm
             Reason/Blocked.pm
             Reason/ContentError.pm
+            Reason/Delivered.pm
             Reason/ExceedLimit.pm
             Reason/Expired.pm
+            Reason/Feedback.pm
             Reason/Filtered.pm
             Reason/HasMoved.pm
             Reason/HostUnknown.pm
             Reason/MailboxFull.pm
             Reason/MailerError.pm
             Reason/MesgTooBig.pm
-            Reason/SpamDetected.pm
             Reason/NoRelaying.pm
             Reason/NotAccept.pm
             Reason/NetworkError.pm
             Reason/OnHold.pm
             Reason/Rejected.pm
             Reason/SecurityError.pm
+            Reason/SpamDetected.pm
             Reason/Suspend.pm
             Reason/SystemError.pm
             Reason/SystemFull.pm
             Reason/TooManyConn.pm
+            Reason/Undefined.pm
             Reason/UserUnknown.pm
+            Reason/Vacation.pm
         RFC2606.pm
         RFC3463.pm
         RFC3464.pm
