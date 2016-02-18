@@ -33,12 +33,22 @@ for my $e ( keys %$reasonchildren ) {
     Module::Load::load $r;
     is $r->text, lc $e, '->text = '.lc($e);
     is $r->true, undef, '->true = undef';
+    ok length $r->description, '->description = '.$r->description;
 
     next if $e eq 'OnHold';
     for my $v ( @{ $reasonchildren->{ $e } } ) {
         is $r->match($v), 1, '->match('.$v.') = 1';
     }
 } 
+
+for my $e ( 'Delivered', 'Feedback', 'Undefined', 'Vacation' ) {
+    my $r = 'Sisimai::Reason::'.$e;
+    Module::Load::load $r;
+    is $r->text, lc $e, '->text = '.lc($e);
+    is $r->true, undef, '->true = undef';
+    is $r->match,undef, '->match = undef';
+    ok length $r->description, '->description = '.$r->description;
+}
 
 done_testing;
 
