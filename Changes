@@ -1,5 +1,12 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.16.0
+    - Implement new reason "delivered". Sisimai set "delivered" to the reason
+      when the value of Status: field in a bounce message begins with "2". This
+      feature is optional and is not enabled by default. issue #155.
+    - Implement new method Sisimai->engine. the method returns the list of MTA
+      and MSP module list implemented in Sisimai.
+
 4.15.0  Sat, 13 Feb 2016 12:40:15 +0900 (JST)
     - Implement new MTA/MSP module "Sisimai::MSP::US::AmazonWorkMail" at pull-
       request #162. The module parse bounce mails via Amazon WorkMail.
