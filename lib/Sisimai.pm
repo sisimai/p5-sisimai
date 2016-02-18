@@ -90,6 +90,25 @@ sub engine {
     return $table;
 }
 
+sub reason {
+    # Reason list Sisimai can detect
+    # @return   [Hash]     Reason list table
+    my $class = shift;
+    my $names = [];
+    my $table = {};
+
+    require Sisimai::Reason;
+    $names = Sisimai::Reason->index;
+    push @$names, ( 'Delivered', 'Feedback', 'Undefined', 'Vacation' );
+
+    for my $e ( @$names ) {
+        my $r = 'Sisimai::Reason::'.$e;
+        Module::Load::load $r;
+        $table->{ $e } = $r->description;
+    }
+    return $table;
+}
+
 1;
 __END__
 
@@ -168,6 +187,17 @@ C<engine> method provides table including parser engine list and its description
     for my $e ( keys %$v ) {
         print $e;           # Sisimai::MTA::Sendmail
         print $v->{ $e };   # V8Sendmail: /usr/sbin/sendmail
+    }
+
+=head2 C<B<reason()>>
+
+C<reason> method provides table including all the reasons Sisimai can detect
+
+    use Sisimai;
+    my $v = Sisimai->reason();
+    for my $e ( keys %$v ) {
+        print $e;           # Blocked
+        print $v->{ $e };   # 'Email rejected due to client IP address or a hostname'
     }
 
 =head1 SEE ALSO

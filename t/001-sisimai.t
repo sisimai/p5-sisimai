@@ -100,6 +100,16 @@ MAKE_TEST: {
             ok length $enginelist->{ $e }, '->engine->{'.$e.'} = '.$enginelist->{ $e };
         }
     }
+
+    REASON: {
+        my $reasonlist = $PackageName->reason;
+        isa_ok $reasonlist, 'HASH';
+        ok scalar(keys %$reasonlist), '->reason = '.scalar(keys %$reasonlist);
+        for my $e ( keys %$reasonlist ) {
+            like $e, qr/\A[A-Z]/, '->reason = '.$e;
+            ok length $reasonlist->{ $e }, '->reason->{'.$e.'} = '.$reasonlist->{ $e };
+        }
+    }
 }
 done_testing;
 
