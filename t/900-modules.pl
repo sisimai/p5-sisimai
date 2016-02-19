@@ -88,6 +88,7 @@ sub list {
             Reason/SecurityError.pm
             Reason/SpamDetected.pm
             Reason/Suspend.pm
+            Reason/SyntaxError.pm
             Reason/SystemError.pm
             Reason/SystemFull.pm
             Reason/TooManyConn.pm
