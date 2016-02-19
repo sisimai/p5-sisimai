@@ -5,20 +5,7 @@ use warnings;
 
 sub text  { 'syntaxerror' }
 sub description { 'Email rejected due to syntax error at sent commands in SMTP session' }
-sub match {
-    # Try to match that the given text and regular expressions
-    # @param    [String] argv1  String to be matched with regular expressions
-    # @return   [Integer]       0: Did not match
-    #                           1: Matched
-    # @since v4.1.25
-    my $class = shift;
-    my $argv1 = shift // return undef;
-    my $regex = qr/address[ ].+[ ]has[ ]been[ ]replaced[ ]by[ ]/ix;
-
-    # return 1 if $argv1 =~ $regex;
-    return 0;
-}
-
+sub match { return undef }
 sub true {
     # Whether the address has moved or not
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
@@ -49,37 +36,36 @@ Sisimai::Reason::SyntaxError - Bounce reason is C<syntaxerror> or not.
 =head1 SYNOPSIS
 
     use Sisimai::Reason::SyntaxError;
-    print Sisimai::Reason::SyntaxError->match('address neko@example.jp has been replaced by ...');   # 1
+    print Sisimai::Reason::SyntaxError->text;   # syntaxerror
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SyntaxError checks the bounce reason is C<hasmoved> or not. This
-class is called only Sisimai::Reason class.
+Sisimai::Reason::SyntaxError checks the bounce reason is C<syntaxerror> or not.
+This class is called only Sisimai::Reason class.
 
-This is the error that a user's mailbox has moved (and is not forwarded 
-automatically). Sisimai will set C<hasmoved> to the reason of email bounce if
-the value of Status: field in a bounce email is C<5.1.6>.
+This is the error that a destination mail server could not recognize SMTP command
+which is sent from a sender's MTA. Sisimai will set C<syntaxerror> to the reason
+if the value of C<replycode> begins with "50" such as 502, or 503.
 
-    <kijitora@example.go.jp>: host mx1.example.go.jp[192.0.2.127] said: 550 5.1.6 recipient
-        no longer on server: kijitora@example.go.jp (in reply to RCPT TO command)
+    Action: failed
+    Status: 5.5.0
+    Diagnostic-Code: SMTP; 503 Improper sequence of commands
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<hasmoved>.
+C<text()> returns string: C<syntaxerror>.
 
-    print Sisimai::Reason::SyntaxError->text;  # hasmoved
+    print Sisimai::Reason::SyntaxError->text;  # syntaxerror
 
 =head2 C<B<match( I<string> )>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
-
-    print Sisimai::Reason::SyntaxError->match('address cat@example.jp has been replaced by ');   # 1
+C<match()> always return undef
 
 =head2 C<B<true( I<Sisimai::Data> )>>
 
-C<true()> returns 1 if the bounce reason is C<hasmoved>. The argument must be
+C<true()> returns 1 if the bounce reason is C<syntaxerror>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
