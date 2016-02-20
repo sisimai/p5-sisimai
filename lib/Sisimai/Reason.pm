@@ -6,7 +6,7 @@ use Module::Load '';
 
 my $RetryReasons = __PACKAGE__->retry;
 
-sub retry { 
+sub retry {
     # Reason list better to retry detecting an error reason
     # @return   [Array] Reason list
     return [ 'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror' ];
@@ -17,7 +17,7 @@ sub index {
     # @return   [Array] Reason list
     return [ qw|
         Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
-        MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold 
+        MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold
         Rejected NoRelaying SpamDetected SecurityError Suspend SystemError
         SystemFull TooManyConn UserUnknown SyntaxError
     | ];
@@ -35,7 +35,7 @@ sub get {
     return undef unless ref $argvs eq 'Sisimai::Data';
 
     unless( grep { $argvs->reason eq $_ } @$RetryReasons ) {
-        # Return reason text already decided except reason match with the 
+        # Return reason text already decided except reason match with the
         # regular expression of ->retry() method.
         return $argvs->reason if length $argvs->reason;
     }
@@ -44,7 +44,7 @@ sub get {
     my $statuscode = $argvs->deliverystatus || '';
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'HasMoved', 
+        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'HasMoved',
         'NoRelaying', 'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown',
         'SpamDetected', 'TooManyConn', 'Blocked',
     ];
@@ -95,7 +95,7 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'SpamDetected', 'SecurityError', 'SystemError', 
+        'MailboxFull', 'SpamDetected', 'SecurityError', 'SystemError',
         'NetworkError', 'Suspend', 'Expired', 'ContentError',
         'SystemFull', 'NotAccept', 'MailerError',
     ];
@@ -166,10 +166,10 @@ sub match {
     require Sisimai::SMTP::Status;
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown', 
-        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'TooManyConn', 
-        'Blocked', 'SpamDetected', 'SecurityError', 'SystemError', 
-        'NetworkError', 'Suspend', 'Expired', 'ContentError', 'HasMoved', 
+        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown',
+        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'TooManyConn',
+        'Blocked', 'SpamDetected', 'SecurityError', 'SystemError',
+        'NetworkError', 'Suspend', 'Expired', 'ContentError', 'HasMoved',
         'SystemFull', 'NotAccept', 'MailerError', 'NoRelaying', 'OnHold',
     ];
     my $statuscode = Sisimai::SMTP::Status->find( $argv1 );
@@ -252,18 +252,18 @@ This is the error that SMTP connection was rejected due to a client IP address
 or a hostname, or the parameter of C<HELO/EHLO> command. This reason has added
 in Sisimai 4.0.0 and does not exist in any version of bounceHammer.
 
-    <kijitora@example.net>: 
-    Connected to 192.0.2.112 but my name was rejected. 
-    Remote host said: 501 5.0.0 Invalid domain name 
+    <kijitora@example.net>:
+    Connected to 192.0.2.112 but my name was rejected.
+    Remote host said: 501 5.0.0 Invalid domain name
 
 =head2 C<contenterror>
 
-This is the error that a destination mail server has rejected email due to 
+This is the error that a destination mail server has rejected email due to
 header format of the email like the following. Sisimai will set C<contenterror>
-to the reason of email bounce if the value of Status: field in a bounce email 
+to the reason of email bounce if the value of Status: field in a bounce email
 is C<5.6.*>.
 
-=over 
+=over
 
 =item - 8 bit data in message header
 
@@ -291,8 +291,8 @@ successfully.
 
 =head2 C<exceedlimit>
 
-This is the error that a message was rejected due to an email exceeded the 
-limit. The value of D.S.N. is C<5.2.3>. This reason is almost the same as 
+This is the error that a message was rejected due to an email exceeded the
+limit. The value of D.S.N. is C<5.2.3>. This reason is almost the same as
 C<MesgTooBig>, we think.
 
     ... while talking to mx.example.org.:
@@ -302,23 +302,23 @@ C<MesgTooBig>, we think.
 
 =head2 C<expired>
 
-This is the error that delivery time has expired due to connection failure or 
+This is the error that delivery time has expired due to connection failure or
 network error and the message you sent has been in the queue for long time.
 
 =head2 C<feedback>
 
-The message you sent was forwarded to the sender as a complaint message from 
+The message you sent was forwarded to the sender as a complaint message from
 your mailbox provider. When Sismai has set C<feedback> to the reason, the value
 of C<feedbacktype> is also set like the following parsed data.
 
 =head2 C<filtered>
 
-This is the error that an email has been rejected by a header content after 
-SMTP DATA command. 
+This is the error that an email has been rejected by a header content after
+SMTP DATA command.
 In Japanese cellular phones, the error will incur that a sender's email address
-or a domain is rejected by recipient's email configuration. Sisimai will set 
-C<filtered> to the reason of email bounce if the value of Status: field in a 
-bounce email is C<5.2.0> or C<5.2.1>. 
+or a domain is rejected by recipient's email configuration. Sisimai will set
+C<filtered> to the reason of email bounce if the value of Status: field in a
+bounce email is C<5.2.0> or C<5.2.1>.
 
 This error reason is almost the same as UserUnknown.
 
@@ -329,7 +329,7 @@ This error reason is almost the same as UserUnknown.
 
 =head2 C<hasmoved>
 
-This is the error that a user's mailbox has moved (and is not forwarded 
+This is the error that a user's mailbox has moved (and is not forwarded
 automatically). Sisimai will set C<hasmoved> to the reason of email bounce if
 the value of Status: field in a bounce email is C<5.1.6>.
 
@@ -338,8 +338,8 @@ the value of Status: field in a bounce email is C<5.1.6>.
 
 =head2 C<hostunknown>
 
-This is the error that a domain part (Right hand side of @ sign) of a 
-recipient's email address does not exist. In many case, the domain part is 
+This is the error that a domain part (Right hand side of @ sign) of a
+recipient's email address does not exist. In many case, the domain part is
 misspelled, or the domain name has been expired. Sisimai will set C<hostunknown>
 to the reason of email bounce if the value of Status: field in a bounce mail is
 C<5.1.2>.
@@ -351,7 +351,7 @@ C<5.1.2>.
 
 =head2 C<mailboxfull>
 
-This is the error that a recipient's mailbox is full. Sisimai will set 
+This is the error that a recipient's mailbox is full. Sisimai will set
 C<mailboxfull> to the reason of email bounce if the value of Status: field in a
 bounce email is C<4.2.2> or C<5.2.2>.
 
@@ -381,17 +381,17 @@ if the value of Status: field in a bounce email is C<5.3.4>.
 
 This is the error that a destination mail server does ( or can ) not accept any
 email. In many case, the server is high load or under the maintenance. Sisimai
-will set C<notaccept> to the reason of email bounce if the value of Status: 
+will set C<notaccept> to the reason of email bounce if the value of Status:
 field in a bounce email is C<5.3.2> or the value of SMTP reply code is 556.
 
 =head2 C<onhold>
 
-Sisimai will set C<onhold> to the reason of email bounce if there is no (or 
+Sisimai will set C<onhold> to the reason of email bounce if there is no (or
 less) detailed information about email bounce for judging the reason.
 
 =head2 C<rejected>
 
-This is the error that a connection to destination server was rejected by a 
+This is the error that a connection to destination server was rejected by a
 sender's email address (envelope from). Sisimai set C<rejected> to the reason
 of email bounce if the value of Status: field in a bounce email is C<5.1.8> or
 the connection has been rejected due to the argument of SMTP MAIL command.
@@ -402,7 +402,7 @@ the connection has been rejected due to the argument of SMTP MAIL command.
 
 =head2 C<norelaying>
 
-This is the error that SMTP connection rejected with error message 
+This is the error that SMTP connection rejected with error message
 C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
 
     ... while talking to mailin-01.mx.example.com.:
@@ -412,9 +412,9 @@ C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
 
 =head2 C<securityerror>
 
-This is the error that a security violation was detected on a destination mail 
+This is the error that a security violation was detected on a destination mail
 server. Depends on the security policy on the server, there is any virus in the
-email, a sender's email address is camouflaged address. Sisimai will set 
+email, a sender's email address is camouflaged address. Sisimai will set
 C<securityerror> to the reason of email bounce if the value of Status: field in
 a bounce email is C<5.7.*>.
 
@@ -424,12 +424,12 @@ a bounce email is C<5.7.*>.
 
 =head2 C<suspend>
 
-This is the error that a recipient account is being suspended due to unpaid or 
+This is the error that a recipient account is being suspended due to unpaid or
 other reasons.
 
 =head2 C<networkerror>
 
-This is the error that SMTP connection failed due to DNS look up failure or 
+This is the error that SMTP connection failed due to DNS look up failure or
 other network problems. This reason has added in Sisimai 4.1.12 and does not
 exist in any version of bounceHammer.
 
@@ -454,7 +454,7 @@ not exist in any version of bounceHammer.
 This is the error that an email has bounced due to system error on the remote
 host such as LDAP connection failure or other internal system error.
 
-    <kijitora@example.net>: 
+    <kijitora@example.net>:
     Unable to contact LDAP server. (#4.4.3)I'm not going to try again; this
     message has been in the queue too long.
 
@@ -488,14 +488,14 @@ the contents of Diagnostic-Code: field represents that it is unknown user.
 
 =head2 C<undefined>
 
-Sisimai could not detect the error reason. In many case, error message is 
+Sisimai could not detect the error reason. In many case, error message is
 written in non-English or there are no enough error message in a bounce email
 to decide the reason.
 
 =head2 C<vacation>
 
-This is the reason that the recipient is out of office. The bounce message is 
-generated and returned from auto responder program. This reason has added in 
+This is the reason that the recipient is out of office. The bounce message is
+generated and returned from auto responder program. This reason has added in
 Sisimai 4.1.28 and does not exist in any version of bounceHammer.
 
 =head1 SEE ALSO
