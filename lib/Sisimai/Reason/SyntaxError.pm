@@ -18,8 +18,6 @@ sub true {
 
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq __PACKAGE__->text;
-
-    my $esmtpreply = $argvs->replycode || '';
     return 1 if $argvs->replycode =~ m/\A[45]0[0-7]\z/;
     return 0;
 }
