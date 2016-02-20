@@ -5,46 +5,6 @@ use warnings;
 use Sisimai::MTA;
 use Sisimai::RFC5322;
 
-sub EOM {
-    # End of email message as a sentinel for parsing bounce messages
-    # @return   [String] Fixed length string like a constant
-    # @private
-    # @deprecated
-    require Sisimai::String;
-    warn sprintf(" ***warning: Obsoleted method, use Sisimai::String->EOM() instead.");
-    return Sisimai::String->EOM;
-}
-sub SMTPCOMMAND {
-    # Detector for SMTP commands in a bounce mail message
-    # @return   [Hash] SMTP command regular expressions
-    # @private
-    # @deprecated
-    require Sisimai::SMTP;
-    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP->command() instead.");
-    return Sisimai::SMTP->command;
-}
-
-sub LONGFIELDS {
-    # Fields that might be long
-    # @return   [Hash] Long filed(email header) list
-    # @private
-    # @deprecated
-    warn sprintf(" ***warning: Obsoleted method, use Sisimai::RFC5322->LONGFIELDS() instead.");
-    return Sisimai::RFC5322->LONGFIELDS;
-}
-
-sub RFC822HEADERS { 
-    # Grouped RFC822 headers
-    # @param    [String] group  RFC822 Header group name
-    # @return   [Array,Hash]    RFC822 Header list
-    # @private
-    # @deprecated
-    warn sprintf(" ***warning: Obsoleted method, use Sisimai::RFC5322->HEADERFIELDS() instead.");
-    my $class = shift;
-    my $group = shift // return [ keys %{ Sisimai::RFC5322->HEADERFIELDS } ];
-    return Sisimai::RFC5322->HEADERFIELDS( $group );
-}
-
 sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
 sub INDICATORS     { return Sisimai::MTA->INDICATORS     }
 sub smtpagent      { return Sisimai::MTA->smtpagent      }
