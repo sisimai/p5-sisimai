@@ -8,7 +8,6 @@ sub list {
             Data/JSON.pm
             Data/YAML.pm
         DateTime.pm
-        ISO3166.pm
         MIME.pm
         Mail.pm
             Mail/Mbox.pm

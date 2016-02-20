@@ -9,6 +9,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       can detect and its description: issue #168.
     - Remove unused method Sisimai::Reason->match, issue #169.
     - Remove unused methods in Sisimai::MSP and Sisimai::MTA, issue #136.
+    - Remove unused module Sisimai::ISO3166, issue #137.
 
 4.16.0  Thu, 18 Feb 2016 13:49:01 +0900 (JST)
     - Implement new reason "delivered". Sisimai set "delivered" to the reason
