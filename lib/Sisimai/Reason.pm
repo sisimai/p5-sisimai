@@ -19,7 +19,7 @@ sub index {
         Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
         MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold 
         Rejected NoRelaying SpamDetected SecurityError Suspend SystemError
-        SystemFull TooManyConn UserUnknown
+        SystemFull TooManyConn UserUnknown SyntaxError
     | ];
 }
 
@@ -65,20 +65,7 @@ sub get {
 
     if( not $reasontext || $reasontext eq 'undefined' ) {
         # Bounce reason is not detected yet.
-        while( 1 ) {
-            # Check with other patterns
-            my $p = '';
-
-            # Onhold ?
-            $p = 'Sisimai::Reason::OnHold';
-            Module::Load::load( $p );
-            $reasontext = $p->text if $p->true( $argvs );
-            last if $reasontext;
-
-            # Other reason ?
-            $reasontext = __PACKAGE__->anotherone( $argvs );
-            last;
-        }
+        $reasontext = __PACKAGE__->anotherone( $argvs );
 
         if( $reasontext eq 'undefined' || $reasontext eq '' ) {
             # Action: delayed => "expired"
@@ -143,6 +130,11 @@ sub anotherone {
             } elsif( $argvs->diagnostictype =~ qr/\AX-(?:UNIX|POSTFIX)\z/ ) {
                 # Diagnostic-Code: X-UNIX; ...
                 $reasontext = 'mailererror';
+
+            } else {
+                # 50X Syntax Error?
+                require Sisimai::Reason::SyntaxError;
+                $reasontext = 'syntaxerror' if Sisimai::Reason::SyntaxError->true( $argvs );
             }
         }
 
