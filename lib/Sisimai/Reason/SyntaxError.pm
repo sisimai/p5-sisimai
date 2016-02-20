@@ -7,10 +7,10 @@ sub text  { 'syntaxerror' }
 sub description { 'Email rejected due to syntax error at sent commands in SMTP session' }
 sub match { return undef }
 sub true {
-    # Whether the address has moved or not
+    # Connection rejected due to syntax error or not
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
-    # @return   [Integer]               1: The address has moved
-    #                                   0: Has not moved
+    # @return   [Integer]               1: Rejected due to syntax error
+    #                                   0: is not syntax error
     # @since v4.1.25
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
