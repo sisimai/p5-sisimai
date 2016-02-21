@@ -29,8 +29,8 @@ cpanm:
 	$(WGET) $(CPANM) || $(CURL) $(CPANM)
 	test -f ./$@ && $(CHMOD) a+x ./$@
 
-install-from-cpan: cpanm
-	./cpanm $(NAME)
+install-from-cpan:
+	curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n $(NAME)
 
 install-from-local: cpanm
 	./cpanm .
@@ -45,17 +45,28 @@ author-test:
 cover-test:
 	cover -test
 
-release-test:
+backup-readme:
 	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
-	$(MAKE) clean
-	$(MINIL) test
+
+restore-readme:
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
 
+check-version:
+	grep cpan-`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version' | tr '.' '-'` README.md
+
+release-test:
+	$(MAKE) backup-readme
+	$(MAKE) clean
+	$(MINIL) test
+	$(MAKE) restore-readme
+	$(MAKE) check-version
+
 dist:
-	$(CP) ./README.md /tmp/$(NAME)-README.$(TIME).md
+	$(MAKE) backup-readme
 	$(MAKE) clean
 	$(MINIL) dist
-	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
+	$(MAKE) restore-readme
+	$(MAKE) check-version
 
 $(REPOS_TARGETS):
 	$(MAKE) -f Repository.mk $@
