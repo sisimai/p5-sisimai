@@ -99,9 +99,12 @@ sub reason {
 
     require Sisimai::Reason;
     $names = Sisimai::Reason->index;
+
+    # These reasons are not included in the results of Sisimai::Reason->index
     push @$names, ( 'Delivered', 'Feedback', 'Undefined', 'Vacation' );
 
     for my $e ( @$names ) {
+        # Call ->description() method of Sisimai::Reason::*
         my $r = 'Sisimai::Reason::'.$e;
         Module::Load::load $r;
         $table->{ $e } = $r->description;
