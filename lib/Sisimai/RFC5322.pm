@@ -30,6 +30,7 @@ BUILD_REGULAR_EXPRESSIONS: {
     $Re->{'domain'}  = qr/$domain/o;
 }
 
+my $LONGHEADERS = __PACKAGE__->LONGFIELDS;
 my $HEADERINDEX = {};
 my $HEADERTABLE = {
     'messageid' => [ 'Message-Id' ],
@@ -208,8 +209,6 @@ sub weedout {
     my $argv1 = shift // return undef;
     return undef unless ref $argv1 eq 'ARRAY';
 
-    my $rfc822head = __PACKAGE__->HEADERFIELDS;
-    my $longfields = __PACKAGE__->LONGFIELDS;
     my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
@@ -220,7 +219,7 @@ sub weedout {
             # Get required headers
             my $lhs = lc $1;
             $previousfn = '';
-            next unless exists $rfc822head->{ $lhs };
+            next unless exists $HEADERINDEX->{ $lhs };
 
             $previousfn  = $lhs;
             $rfc822part .= $e."\n";
@@ -228,11 +227,11 @@ sub weedout {
         } elsif( $e =~ m/\A[ \t]+/ ) {
             # Continued line from the previous line
             next if $rfc822next->{ $previousfn };
-            $rfc822part .= $e."\n" if exists $longfields->{ $previousfn };
+            $rfc822part .= $e."\n" if exists $LONGHEADERS->{ $previousfn };
 
         } else {
             # Check the end of headers in rfc822 part
-            next unless exists $longfields->{ $previousfn };
+            next unless exists $LONGHEADERS->{ $previousfn };
             next if length $e;
             $rfc822next->{ $previousfn } = 1;
         }
