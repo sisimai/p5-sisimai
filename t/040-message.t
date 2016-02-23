@@ -68,7 +68,7 @@ MAKE_TEST: {
     }
     isa_ok $p->header->{'received'}, 'ARRAY';
 
-    for my $e ( 'return-path', 'delivered-to', 'to', 'subject', 'date', 'from', 'message-id', 'reply-to' ) {
+    for my $e ( qw|return-path to subject date from message-id| ) {
         my $h = $p->rfc822->{ $e };
         ok length $h, $e;
     }
