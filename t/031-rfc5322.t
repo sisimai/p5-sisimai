@@ -7,7 +7,8 @@ my $PackageName = 'Sisimai::RFC5322';
 my $MethodNames = {
     'class' => [ 
         'HEADERFIELDS', 'LONGFIELDS',
-        'is_emailaddress', 'is_domainpart', 'is_mailerdaemon', 'received'
+        'is_emailaddress', 'is_domainpart', 'is_mailerdaemon', 'received',
+        'weedout',
     ],
     'object' => [],
 };
@@ -121,7 +122,32 @@ MAKE_TEST: {
             ok $f =~ qr/\A[-.0-9A-Za-z]+\z/, 'Regular expression';
         }
     }
-    
+
+    my $rfc822text = <<'EOR';
+Return-Path: <shironeko@mx.example.co.jp>
+Received: from mx.example.co.jp (localhost [127.0.0.1])
+	by mx.example.co.jp (8.13.9/8.13.1) with ESMTP id fffff000000001
+	for <kijitora@example.net>; Thu, 9 Apr 2014 23:34:45 +0900
+Received: (from shironeko@localhost)
+	by mx.example.co.jp (8.13.9/8.13.1/Submit) id fff0000000003
+	for kijitora@example.net; Thu, 9 Apr 2014 23:34:45 +0900
+Date: Thu, 9 Apr 2014 23:34:45 +0900
+Message-Id: <0000000011111.fff0000000003@mx.example.co.jp>
+Content-Type: text/plain
+MIME-Version: 1.0
+From: Shironeko <shironeko@example.co.jp>
+To: Kijitora <shironeko@example.co.jp>
+Subject: Nyaaaan
+
+Nyaaan
+EOR
+    my $rfc822part = Sisimai::RFC5322->weedout( [split("\n", $rfc822text)] );
+    isa_ok $rfc822part, 'SCALAR';
+    ok length $$rfc822part;
+    like $$rfc822part, qr/^From:/m;
+    like $$rfc822part, qr/^Date:/m;
+    unlike $$rfc822part, qr/^MIME-Version:/m;
+    unlike $$rfc822part, qr/^Received:/m;
 }
 
 done_testing;
