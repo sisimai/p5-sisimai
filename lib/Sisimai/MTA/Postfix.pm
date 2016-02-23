@@ -31,10 +31,7 @@ my $Re1 = {
     'rfc822'  => qr!\AContent-Type:[ \t]*(?:message/rfc822|text/rfc822-headers)\z!x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
-
 my $Indicators = __PACKAGE__->INDICATORS;
-my $LongFields = Sisimai::RFC5322->LONGFIELDS;
-my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Postfix' }
 sub smtpagent   { 'Postfix' }
@@ -61,9 +58,9 @@ sub scan {
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $previousfn = '';    # (String) Previous field name
+    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my @commandset = ();    # (Array) ``in reply to * command'' list
@@ -97,26 +94,12 @@ sub scan {
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.*\z/ ) {
-                # Get required headers only
-                my $lhs = lc $1;
-                $previousfn = '';
-                next unless exists $RFC822Head->{ $lhs };
-
-                $previousfn  = $lhs;
-                $rfc822part .= $e."\n";
-
-            } elsif( $e =~ m/\A[ \t]+/ ) {
-                # Continued line from the previous line
-                next if $rfc822next->{ $previousfn };
-                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
-
-            } else {
-                # Check the end of headers in rfc822 part
-                next unless exists $LongFields->{ $previousfn };
-                next if length $e;
-                $rfc822next->{ $previousfn } = 1;
+            unless( length $e ) {
+                $blanklines++;
+                last if $blanklines > 1;
+                next;
             }
+            push @$rfc822list, $e;
 
         } else {
             # Before "message/rfc822"
@@ -220,7 +203,7 @@ sub scan {
 
                     } elsif( $e =~ m/\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
                         # X-Postfix-Sender: rfc822; shironeko@example.org
-                        $rfc822part .= sprintf( "%s: %s\n", $1, $2 );
+                        push @$rfc822list, sprintf( "%s: %s", $1, $2 );
 
                     } else {
                         # Alternative error message and recipient
@@ -298,7 +281,8 @@ sub scan {
             $e->{'status'} = $r if length $r;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
+    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
 1;
