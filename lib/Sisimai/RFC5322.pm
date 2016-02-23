@@ -200,6 +200,46 @@ sub received {
     return $hosts;
 }
 
+sub weedout {
+    # Weed out rfc822/message header fields excepct necessary fields
+    # @param    [Array] argv1  each line divided message/rc822 part
+    # @return   [String]       Selected fields
+    my $class = shift;
+    my $argv1 = shift // return undef;
+    return undef unless ref $argv1 eq 'ARRAY';
+
+    my $rfc822head = __PACKAGE__->HEADERFIELDS;
+    my $longfields = __PACKAGE__->LONGFIELDS;
+    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
+    my $rfc822part = '';    # (String) message/rfc822-headers part
+    my $previousfn = '';    # (String) Previous field name
+
+    for my $e ( @$argv1 ) {
+        # After "message/rfc822"
+        if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
+            # Get required headers
+            my $lhs = lc $1;
+            $previousfn = '';
+            next unless exists $rfc822head->{ $lhs };
+
+            $previousfn  = $lhs;
+            $rfc822part .= $e."\n";
+
+        } elsif( $e =~ m/\A[ \t]+/ ) {
+            # Continued line from the previous line
+            next if $rfc822next->{ $previousfn };
+            $rfc822part .= $e."\n" if exists $longfields->{ $previousfn };
+
+        } else {
+            # Check the end of headers in rfc822 part
+            next unless exists $longfields->{ $previousfn };
+            next if length $e;
+            $rfc822next->{ $previousfn } = 1;
+        }
+    }
+    return \$rfc822part;
+}
+
 1;
 __END__
 
@@ -266,6 +306,25 @@ header.
         'mx.example.org',
         'mx.example.jp'
     ];
+
+=head2 C<B<weedout(I<Array>)>>
+
+C<weedout()> returns string including only necessary fields from message/rfc822
+part. This method is called from only Sisimai::MTA/MSP modules.
+
+    my $v = <<'EOM';
+    From: postmaster@nyaan.example.org
+    To: kijitora@example.jp
+    Subject: Delivery failure
+    X-Mailer: Neko mailer v2.22
+    EOM
+
+    my $r = Sisimai::RFC5322->weedout( [split("\n", $v)] );
+    print $$r;
+
+    From: postmaster@nyaan.example.org
+    To: kijitora@example.jp
+    Subject: Delivery failure
 
 =head1 AUTHOR
 
