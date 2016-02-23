@@ -215,7 +215,7 @@ sub weedout {
 
     for my $e ( @$argv1 ) {
         # After "message/rfc822"
-        if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
+        if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+/ ) {
             # Get required headers
             my $lhs = lc $1;
             $previousfn = '';
