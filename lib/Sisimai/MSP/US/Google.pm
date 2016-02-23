@@ -19,7 +19,6 @@ my $Re1 = {
     }x,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
-
 my $ReFailure = {
     'expired' => qr{(?:
          DNS[ ]Error:[ ]Could[ ]not[ ]contact[ ]DNS[ ]servers
@@ -33,7 +32,6 @@ my $ReFailure = {
         )
     }x,
 };
-
 my $StateTable = {
     # Technical details of permanent failure: 
     # Google tried to deliver your message, but it was rejected by the recipient domain.
@@ -107,10 +105,7 @@ my $StateTable = {
     # 550 550 Unknown user *****@***.**.*** (state 18).
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
-
 my $Indicators = __PACKAGE__->INDICATORS;
-my $LongFields = Sisimai::RFC5322->LONGFIELDS;
-my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Google Gmail: https://mail.google.com' }
 sub smtpagent   { 'US::Google' }
@@ -187,9 +182,9 @@ sub scan {
     require Sisimai::Address;
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $previousfn = '';    # (String) Previous field name
+    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $statecode0 = 0;     # (Integer) The value of (state *) in the error message
@@ -212,29 +207,13 @@ sub scan {
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
-                # Skip if DKIM-Signature header
-                next if $e =~ m/\ADKIM-Signature[:]/;
-
-                # Get required headers only
-                my $lhs = lc $1;
-                $previousfn = '';
-                next unless exists $RFC822Head->{ $lhs };
-
-                $previousfn  = $lhs;
-                $rfc822part .= $e."\n";
-
-            } elsif( $e =~ m/\A[ \t]+/ ) {
-                # Continued line from the previous line
-                next if $rfc822next->{ $previousfn };
-                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
-
-            } else {
-                # Check the end of headers in rfc822 part
-                next unless exists $LongFields->{ $previousfn };
-                next if length $e;
-                $rfc822next->{ $previousfn } = 1;
+            unless( length $e ) {
+                $blanklines++;
+                last if $blanklines > 1;
+                next;
             }
+            push @$rfc822list, $e;
+
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -344,7 +323,8 @@ sub scan {
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
 
-    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
+    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
 1;
