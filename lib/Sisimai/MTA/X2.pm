@@ -74,7 +74,7 @@ sub scan {
             # After "message/rfc822"
             unless( length $e ) {
                 $blanklines++;
-                last if $blanklines > 1;
+                last if $blanklines > 2;
                 next;
             }
             push @$rfc822list, $e;
