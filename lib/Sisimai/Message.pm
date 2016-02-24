@@ -140,7 +140,6 @@ sub make {
     # 5. Rewrite headers of the original message in the body part
     my $rfc822part = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
     $processing->{'rfc822'} = __PACKAGE__->takeapart( \$rfc822part );
-
     return $processing;
 }
 
@@ -157,8 +156,8 @@ sub divideup {
     my $pseudofrom = 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
 
-    $$email =~ s/[ \t]+$//gm; 
-    $$email =~ s/^[ \t]+$//gm;
+    $$email =~ s/\r\n/\n/gm if $$email =~ m/\r\n/;
+    $$email =~ s/[ \t]+$//gm if $$email =~ m/[ \t]+$/;
     @hasdivided = split( "\n", $$email );
     return {} unless scalar @hasdivided;
 
@@ -170,8 +169,6 @@ sub divideup {
 
     SPLIT_EMAIL: for my $e ( @hasdivided ) {
         # Split email data to headers and a body part.
-        $e =~ y/\r\n//d;
-
         if( $readcursor & $Indicators->{'endof'} ) {
             # The body part of the email
             $aftersplit->{'body'} .= $e."\n";
