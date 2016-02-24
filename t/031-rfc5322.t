@@ -65,6 +65,9 @@ MAKE_TEST: {
         'mailer-daemon@example.jp', 
         'MAILER-DAEMON@example.cat',
         'Mailer-Daemon <postmaster@example.org>',
+        'MAILER-DAEMON',
+        'postmaster',
+        'postmaster@example.org',
     ];
 
     for my $e ( @$emailaddrs ) {
