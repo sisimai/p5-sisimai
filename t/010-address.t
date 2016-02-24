@@ -2,6 +2,7 @@ use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Address;
+use Sisimai::RFC5322;
 
 my $PackageName = 'Sisimai::Address';
 my $MethodNames = {
@@ -25,6 +26,7 @@ MAKE_TEST: {
         '8be@example.gov', 'nekochan@example.jp', 'neko@example.com', 'neko@example.org',
         'neko@example.net', 'neko@example.edu', 'neko@example.cat', 'neko@example.mil',
         'neko@example.gov', 'neko@example.int', 'neko@example.gl', '"neko.."@example.jp',
+        'MAILER-DAEMON', 'postmaster'
     ];
     my $emailfroms = [
         q|"Neko" <neko@example.jp>|,
@@ -51,6 +53,8 @@ MAKE_TEST: {
         q|{neko@example.int}|,
         q|&lt;neko@example.gl&gt;|,
         q|"neko.."@example.jp|,
+        q|Mail Delivery Subsystem <MAILER-DAEMON>|,
+        q|postmaster|,
     ];
     my $isnotemail = [
         1, 'neko', 'cat%neko.jp', '', undef, {},
@@ -75,7 +79,9 @@ MAKE_TEST: {
         my $z = [ split( '@', $x ) ];
         isa_ok $y, $PackageName;
         is $y->user, $z->[0], '->user = '.$z->[0];
-        is $y->host, $z->[1], '->host = '.$z->[1];
+        unless( Sisimai::RFC5322->is_mailerdaemon($e) ) {
+            is $y->host, $z->[1], '->host = '.$z->[1];
+        }
         is $y->address, $x, '->address = '.$x;
         is $y->verp, '', '->verp = ""';
         is $y->alias, '', '->alias = ""';
