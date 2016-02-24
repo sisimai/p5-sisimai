@@ -5,8 +5,8 @@ use strict;
 use warnings;
 
 my $Re0 = {
-    'x-mailer' => qr/\A[<]SMTP32 v[\d.]+[>]\z/,
-    'subject'  => qr/\AUndeliverable Mail\z/,
+    'x-mailer' => qr/\A[<]SMTP32 v[\d.]+[>][ ]*\z/,
+    'subject'  => qr/\AUndeliverable Mail[ ]*\z/,
 };
 my $Re1 = {
     'begin'  => qr/\A\z/,    # Blank line
@@ -123,7 +123,7 @@ sub scan {
             # Original message follows.
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/\A(.+)[ ](.+)[:][ \t]*([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ m/\A(.+)[ ](.+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
                 # Unknown user: kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
