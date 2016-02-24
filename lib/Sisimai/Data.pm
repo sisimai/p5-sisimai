@@ -85,7 +85,7 @@ sub new {
     return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
     return undef unless ref $thing->{'addresser'} eq 'Sisimai::Address';
 
-    $thing->{'token'} = Sisimai::String->token( 
+    $thing->{'token'} = Sisimai::String->token(
                             $thing->{'addresser'}->address,
                             $thing->{'recipient'}->address,
                             $argvs->{'timestamp'} );
