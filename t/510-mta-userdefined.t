@@ -62,7 +62,7 @@ MAKE_TEST: {
             ok length $e->recipient->address, 'recipient->address = '.$e->recipient->address;
             is $e->recipient->host, $e->destination, 'destination = '.$e->destination;
 
-            ok length $e->subject, 'subject = '.$e->subject;
+            ok length $e->subject;
             ok length $e->softbounce, 'softbounce = '.$e->softbounce;
             ok length $e->diagnosticcode, 'diagnosticcode = '.$e->diagnosticcode;
             ok length $e->diagnostictype, 'diagnostictype = '.$e->diagnostictype;

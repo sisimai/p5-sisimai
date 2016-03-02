@@ -4,6 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Data;
 use Sisimai::Mail;
 use Sisimai::Message;
+use Sisimai::RFC5322;
 use Module::Load;
 
 my $R = {
@@ -988,7 +989,6 @@ for my $x ( keys %$R ) {
     use_ok $M;
 
     if( -d $d ) {
-
         my $h = undef;
         my $n = 0;
         ok $d, sprintf( "%s %s", $x, $d );
@@ -1012,8 +1012,9 @@ for my $x ( keys %$R ) {
                 my $v = Sisimai::Data->make( 'data' => $p, 'delivered' => 1 );
                 my $y = undef;
 
-                # is ref($p), 'Sisimai::Message', sprintf( "[%s] %s/%s(Sisimai::Message)", $n, $e, $x );
-                # is ref($v), 'ARRAY', sprintf( "[%s] %s/%s(ARRAY)", $n, $e, $x );
+                next unless $p;
+                is ref($p), 'Sisimai::Message', sprintf( "[%s] %s/%s(Sisimai::Message)", $n, $e, $x );
+                is ref($v), 'ARRAY', sprintf( "[%s] %s/%s(ARRAY)", $n, $e, $x );
                 # ok scalar @$v, sprintf( "[%s] %s/%s(%d)", $n, $e, $x, scalar @$v );
 
                 for my $ee ( @$v ) {
@@ -1094,7 +1095,9 @@ for my $x ( keys %$R ) {
                     like $y->day,  qr/\A\w+\z/,  sprintf( "[%s] %s/%s->timestamp->day = %s", $n, $e, $x, $y->day );
 
                     isa_ok $ee->addresser, 'Sisimai::Address'; $y = $ee->addresser;
-                    ok length  $y->host,            sprintf( "[%s] %s/%s->addresser->host = %s", $n, $e, $x, $y->host );
+                    unless( Sisimai::RFC5322->is_mailerdaemon($y->address) ) {
+                        ok length $y->host,         sprintf( "[%s] %s/%s->addresser->host = %s", $n, $e, $x, $y->host );
+                    }
                     ok length  $y->user,            sprintf( "[%s] %s/%s->addresser->user = %s", $n, $e, $x, $y->user );
                     ok length  $y->address,         sprintf( "[%s] %s/%s->addresser->address = %s", $n, $e, $x, $y->address );
                     ok defined $y->verp,            sprintf( "[%s] %s/%s->addresser->verp = %s", $n, $e, $x, $y->verp );

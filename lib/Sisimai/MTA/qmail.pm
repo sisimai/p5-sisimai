@@ -15,7 +15,6 @@ my $Re0 = {
 #
 # Characters: K,Z,D in qmail-qmqpc.c, qmail-send.c, qmail-rspawn.c
 #  K = success, Z = temporary error, D = permanent error
-#
 my $Re1 = {
     'begin'  => qr/\AHi[.] This is the qmail/,
     'rfc822' => qr/\A--- Below this line is a copy of the message[.]\z/,
@@ -23,7 +22,6 @@ my $Re1 = {
     'sorry'  => qr/\A[Ss]orry[,.][ ]/,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
-
 my $ReSMTP = {
     # Error text regular expressions which defined in qmail-remote.c
     # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
@@ -47,7 +45,6 @@ my $ReSMTP = {
         )
     }x,
 };
-
 my $ReHost = qr{(?:
     # qmail-remote.c:261|  if (!flagbother) quit("DGiving up on ","");
      Giving[ ]up[ ]on[ ](.+[0-9a-zA-Z])[.]?\z
@@ -55,7 +52,6 @@ my $ReHost = qr{(?:
     |remote[ ]host[ ]([-0-9a-zA-Z.]+[0-9a-zA-Z])[ ]said:
     )
 }x;
-
 my $ReLDAP = {
     # qmail-ldap-1.03-20040101.patch:19817 - 19866
     'suspend'     => qr/Mailaddress is administrative?le?y disabled/,            # 5.2.1
@@ -122,10 +118,7 @@ my $ReFailure = {
 
 # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
 my $ReDelayed  = qr/this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z/x;
-
 my $Indicators = __PACKAGE__->INDICATORS;
-my $LongFields = Sisimai::RFC5322->LONGFIELDS;
-my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'qmail' }
 sub smtpagent   { 'qmail' }
@@ -159,9 +152,9 @@ sub scan {
 
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $previousfn = '';    # (String) Previous field name
+    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -186,26 +179,12 @@ sub scan {
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # After "message/rfc822"
-            if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
-                # Get required headers only
-                my $lhs = lc $1;
-                $previousfn = '';
-                next unless exists $RFC822Head->{ $lhs };
-
-                $previousfn  = $lhs;
-                $rfc822part .= $e."\n";
-
-            } elsif( $e =~ m/\A[ \t]+/ ) {
-                # Continued line from the previous line
-                next if $rfc822next->{ $previousfn };
-                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
-
-            } else {
-                # Check the end of headers in rfc822 part
-                next unless exists $LongFields->{ $previousfn };
-                next if length $e;
-                $rfc822next->{ $previousfn } = 1;
+            unless( length $e ) {
+                $blanklines++;
+                last if $blanklines > 1;
+                next;
             }
+            push @$rfc822list, $e;
 
         } else {
             # Before "message/rfc822"
@@ -321,7 +300,8 @@ sub scan {
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
 
-    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
+    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
 1;

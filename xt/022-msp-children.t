@@ -343,8 +343,9 @@ for my $x ( keys %$R ) {
                 my $v = Sisimai::Data->make( 'data' => $p );
                 my $y = undef;
 
-                # is ref($p), 'Sisimai::Message', sprintf( "[%s] %s/%s(Sisimai::Message)", $n, $e, $x );
-                # is ref($v), 'ARRAY', sprintf( "[%s] %s/%s(ARRAY)", $n, $e, $x );
+                next unless $p;
+                is ref($p), 'Sisimai::Message', sprintf( "[%s] %s/%s(Sisimai::Message)", $n, $e, $x );
+                is ref($v), 'ARRAY', sprintf( "[%s] %s/%s(ARRAY)", $n, $e, $x );
                 # ok scalar @$v, sprintf( "[%s] %s/%s(%d)", $n, $e, $x, scalar @$v );
 
                 for my $ee ( @$v ) {

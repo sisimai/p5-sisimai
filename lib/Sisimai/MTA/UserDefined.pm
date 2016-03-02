@@ -23,10 +23,7 @@ my $Re1 = {
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
-
 my $Indicators = __PACKAGE__->INDICATORS;
-my $LongFields = Sisimai::RFC5322->LONGFIELDS;
-my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Module decription' }
 sub smtpagent   { 'Module name' }
@@ -68,9 +65,9 @@ sub scan {
     #
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $previousfn = '';    # (String) Previous field name
+    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
@@ -92,7 +89,8 @@ sub scan {
     return undef unless $recipients;
 
     # 4. Return the following variable.
-    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
+    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
 1;

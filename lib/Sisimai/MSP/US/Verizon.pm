@@ -14,10 +14,7 @@ my $Re0 = {
         'subject' => qr/Undeliverable Message/,
     },
 };
-
 my $Indicators = __PACKAGE__->INDICATORS;
-my $LongFields = Sisimai::RFC5322->LONGFIELDS;
-my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub smtpagent   { 'US::Verizon' }
@@ -58,11 +55,12 @@ sub scan {
     require Sisimai::MIME;
     require Sisimai::String;
     require Sisimai::Address;
+
     my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
     my @hasdivided = split( "\n", $$mbody );
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
     my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $previousfn = '';    # (String) Previous field name
+    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $senderaddr = '';    # (String) Sender address in the message body
@@ -87,7 +85,6 @@ sub scan {
             }x,
         };
 
-        $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         if( length $boundary00 ) {
             # Convert to regular expression
@@ -114,26 +111,13 @@ sub scan {
 
             if( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # After "message/rfc822"
-                if( $e =~ m/\A[ ][ ]([-0-9A-Za-z]+?)[:][ ]*.+\z/ ) {
-                    # Get required headers only
-                    my $lhs = lc $1;
-                    $previousfn = '';
-                    next unless exists $RFC822Head->{ $lhs };
-
-                    $previousfn  = $lhs;
-                    $rfc822part .= $e."\n";
-
-                } elsif( $e =~ m/\A[ \t]+/ ) {
-                    # Continued line from the previous line
-                    next if $rfc822next->{ $previousfn };
-                    $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
-
-                } else {
-                    # Check the end of headers in rfc822 part
-                    next unless exists $LongFields->{ $previousfn };
-                    next if length $e;
-                    $rfc822next->{ $previousfn } = 1;
+                unless( length $e ) {
+                    $blanklines++;
+                    last if $blanklines > 1;
+                    next;
                 }
+                push @$rfc822list, $e;
+
             } else {
                 # Before "message/rfc822"
                 next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -183,7 +167,6 @@ sub scan {
             }x,
         };
 
-        $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         if( length $boundary00 ) {
             # Convert to regular expression
@@ -210,26 +193,13 @@ sub scan {
 
             if( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # After "message/rfc822"
-                if( $e =~ m/\A[ ][ ]([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
-                    # Get required headers only
-                    my $lhs = lc $1;
-                    $previousfn = '';
-                    next unless exists $RFC822Head->{ $lhs };
-
-                    $previousfn  = $lhs;
-                    $rfc822part .= $e."\n";
-
-                } elsif( $e =~ m/\A[ \t]+/ ) {
-                    # Continued line from the previous line
-                    next if $rfc822next->{ $previousfn };
-                    $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
-
-                } else {
-                    # Check the end of headers in rfc822 part
-                    next unless exists $LongFields->{ $previousfn };
-                    next if length $e;
-                    $rfc822next->{ $previousfn } = 1;
+                unless( length $e ) {
+                    $blanklines++;
+                    last if $blanklines > 1;
+                    next;
                 }
+                push @$rfc822list, $e;
+
             } else {
                 # Before "message/rfc822"
                 next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -270,12 +240,16 @@ sub scan {
     }
     return undef unless $recipients;
 
-    # Set the value of "MAIL FROM:" or "From:", and "Subject"
-    $rfc822part .= sprintf( "From: %s\n", $senderaddr ) unless $rfc822part =~ m/\bFrom: /;
-    $rfc822part .= sprintf( "Subject: %s\n", $subjecttxt ) unless $rfc822part =~ m/\bSubject: /;
+    if( ! grep { $_ =~ /^From: / } @$rfc822list ) {
+        # Set the value of "MAIL FROM:" or "From:"
+        push @$rfc822list, sprintf( "From: %s", $senderaddr );
+
+    } elsif( ! grep { $_ =~ /^Subject: / } @$rfc822list ) {
+        # Set the value of "Subject"
+        push @$rfc822list, sprintf( "Subject: %s", $subjecttxt );
+    }
 
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
@@ -298,7 +272,8 @@ sub scan {
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
 
-    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
+    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
 1;

@@ -79,7 +79,22 @@ sub new {
         return bless( $thing, __PACKAGE__ );
 
     } else {
-        return undef;
+        # The argument does not include "@"
+        return undef unless Sisimai::RFC5322->is_mailerdaemon( $email );
+        if( $email =~ /[<]([^ ]+)[>]/ ) {
+            # Mail Delivery Subsystem <MAILER-DAEMON>
+            $thing->{'user'} = $1;
+            $thing->{'address'} = $1;
+
+        } else {
+            return undef if $email =~ /[ ]/;
+
+            # The argument does not include " "
+            $thing->{'user'} = $email;
+            $thing->{'address'} = $email;
+        }
+
+        return bless( $thing, __PACKAGE__ );
     }
 }
 
@@ -100,7 +115,10 @@ sub parse {
         #   1. The element must include '@'.
         #   2. The element must not include character except from 0x20 to 0x7e.
         next unless defined $e;
-        next unless $e =~ m/[@]/;
+        unless( $e =~ m/[@]/ ) {
+            # Allow if the argument is MAILER-DAEMON
+            next unless Sisimai::RFC5322->is_mailerdaemon( $e );
+        }
         next if $e =~ m/[^\x20-\x7e]/;
 
         my $v = __PACKAGE__->s3s4( $e );
@@ -109,7 +127,6 @@ sub parse {
             push @$addrs, $v;
         }
     }
-
     return undef unless scalar @$addrs;
     return $addrs;
 }
@@ -152,7 +169,10 @@ sub s3s4 {
     } else {
         for my $e ( @token ) {
             chomp $e;
-            next unless $e =~ m/\A[<]?.+[@][-.0-9A-Za-z]+[.]?[A-Za-z]{2,}[>]?\z/;
+            unless( $e =~ m/\A[<]?.+[@][-.0-9A-Za-z]+[.]?[A-Za-z]{2,}[>]?\z/ ) {
+                # Check whether the element is mailer-daemon or not
+                next unless Sisimai::RFC5322->is_mailerdaemon( $e );
+            }
             push @addrs, $e;
         }
     }
