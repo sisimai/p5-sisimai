@@ -173,12 +173,12 @@ sub scan {
 
         $e->{'spec'} = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
         $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
+    }
 
-        unless( grep { $_ =~ /^Subject:/ } @$rfc822list ) {
-            # Set the value of $subjecttxt as a Subject if there is no original
-            # message in the bounce mail.
-            push @$rfc822list, sprintf( "Subject: %s", $subjecttxt );
-        }
+    unless( grep { $_ =~ /^Subject:/ } @$rfc822list ) {
+        # Set the value of $subjecttxt as a Subject if there is no original
+        # message in the bounce mail.
+        push @$rfc822list, sprintf( "Subject: %s", $subjecttxt );
     }
 
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
