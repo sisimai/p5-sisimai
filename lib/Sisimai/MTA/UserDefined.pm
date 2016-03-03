@@ -63,7 +63,7 @@ sub scan {
     # 2. Parse message body($mbody) of the bounce message. See some modules in
     #    lib/Sisimai/MTA or lib/Sisimai/MSP directory to implement codes.
     #
-    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string

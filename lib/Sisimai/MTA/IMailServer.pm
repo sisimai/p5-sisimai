@@ -78,7 +78,7 @@ sub scan {
     $match ||= 1 if( defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'} );
     return undef unless $match;
 
-    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string

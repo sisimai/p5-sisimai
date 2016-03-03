@@ -70,7 +70,7 @@ sub scan {
     require Sisimai::MDA;
     require Sisimai::Address;
 
-    my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+    my $dscontents = [ Sisimai::MTA->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
     my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
     my $rfc822part = '';    # (String) message/rfc822-headers part

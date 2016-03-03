@@ -39,7 +39,7 @@ sub scan {
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
     return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
 
-    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string

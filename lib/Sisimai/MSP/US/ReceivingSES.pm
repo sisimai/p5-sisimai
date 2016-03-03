@@ -50,7 +50,7 @@ sub scan {
 
     return undef unless $mhead->{'x-ses-outgoing'};
 
-    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string

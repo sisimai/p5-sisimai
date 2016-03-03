@@ -49,7 +49,7 @@ sub scan {
         return undef unless $mhead->{'from'} =~ $Re0->{'from'};
     }
 
-    my $dscontents = []; push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
@@ -66,7 +66,6 @@ sub scan {
         'rhost' => '',      # The value of Reporting-MTA header
     };
     my $anotherset = {};    # Another error information
-
     my $v = undef;
     my $p = '';
 

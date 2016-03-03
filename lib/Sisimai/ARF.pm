@@ -91,7 +91,7 @@ sub scan {
     return undef unless is_arf( undef, $mhead );
     require Sisimai::Address;
 
-    my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+    my $dscontents = [ Sisimai::MTA->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
