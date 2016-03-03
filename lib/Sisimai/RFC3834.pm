@@ -84,7 +84,7 @@ sub scan {
     require Sisimai::Address;
     require Sisimai::RFC5322;
 
-    my $dscontents = []; push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+    my $dscontents = [ Sisimai::MTA->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
