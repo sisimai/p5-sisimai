@@ -104,18 +104,7 @@ sub new {
         # Action: expanded (to multi-recipient alias)
         $thing->{'action'} = $1;
     }
-
     $thing->{'replycode'} = Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
-
-    if( length $thing->{'deliverystatus'} && length $thing->{'replycode'} ) {
-        # Check both of the first digit of "deliverystatus" and "replycode"
-        my $d1 = substr( $thing->{'deliverystatus'}, 0, 1 );
-        my $r1 = substr( $thing->{'replycode'}, 0, 1 );
-
-        # The first digits did not match: 5.1.1 250
-        $thing->{'replycode'} = '' unless $d1 eq $r1;
-    }
-    $thing->{'softbounce'} = 1 if $thing->{'replycode'} =~ m/\A4/;
 
     return bless( $thing, __PACKAGE__ );
 }
@@ -347,11 +336,19 @@ sub make {
                     $o->softbounce( Sisimai::SMTP->is_softbounce( $pdsv ) ) if $o->softbounce < 0;
                 }
             }
+
+            if( $o->replycode ) {
+                # Check both of the first digit of "deliverystatus" and "replycode"
+                my $d1 = substr( $o->deliverystatus, 0, 1 );
+                my $r1 = substr( $o->replycode, 0, 1 );
+                $o->replycode('') unless $d1 eq $r1;
+            }
+
         } else {
             # The value of reason is "vacation" or "feedback"
             $o->softbounce(-1);
+            $o->replycode('');
         }
-
         push @$objectlist, $o;
 
     } # End of for(LOOP_DELIVERY_STATUS)
