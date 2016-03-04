@@ -130,24 +130,13 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
-
-        $e->{'status'} =  Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-        $e->{'spec'} ||= 'SMTP';
-        $e->{'agent'}  = __PACKAGE__->smtpagent;
+        $e->{'agent'}     =  __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

@@ -187,8 +187,6 @@ sub scan {
     }
 
     require Sisimai::String;
-    require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'lhost'} ||= $localhost0;
@@ -244,10 +242,6 @@ sub scan {
                 }
             }
         }
-
-        $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-        $e->{'spec'}      = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
-        $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'command'} ||= '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }

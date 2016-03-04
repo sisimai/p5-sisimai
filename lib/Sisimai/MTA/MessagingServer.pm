@@ -181,15 +181,9 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         SESSION: for my $r ( keys %$ReFailure ) {
@@ -198,15 +192,6 @@ sub scan {
             $e->{'reason'} = $r;
             last;
         }
-
-        if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
-            # There is no value of Status header or the value is 5.0.0, 4.0.0
-            my $pseudostatus = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-            $e->{'status'} = $pseudostatus if length $pseudostatus;
-        }
-
-        $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-        $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
 
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );

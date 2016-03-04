@@ -518,8 +518,6 @@ sub scan {
             }
             $e->{'status'} ||= $sv;
         }
-
-        $e->{'action'}  ||= 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'command'} ||= '';
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );

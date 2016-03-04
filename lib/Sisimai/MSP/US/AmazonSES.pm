@@ -184,12 +184,6 @@ sub scan {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 
@@ -213,9 +207,7 @@ sub scan {
             $e->{'reason'} = $r;
             last;
         }
-
         $e->{'reason'} ||= Sisimai::SMTP::Status->name( $e->{'status'} );
-        $e->{'spec'}   ||= 'SMTP';
         $e->{'agent'}    = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );

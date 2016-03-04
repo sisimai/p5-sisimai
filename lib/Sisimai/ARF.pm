@@ -314,15 +314,6 @@ sub scan {
                 $e->{'rhost'} = $1;
             }
         }
-
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
-
-        $e->{'spec'}    = 'SMTP';
         $e->{'action'}  = 'failed';
         $e->{'reason'}  = 'feedback';
         $e->{'command'} = '';

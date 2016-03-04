@@ -149,7 +149,6 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::SMTP::Status;
 
     unless( grep { $_ =~ /^Subject:/ } @$rfc822list ) {
         # Set the value of $subjecttxt as a Subject if there is no original
@@ -158,16 +157,8 @@ sub scan {
     }
 
     for my $e ( @$dscontents ) {
-        $e->{'agent'} = __PACKAGE__->smtpagent;
-
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} || $diagnostic );
-        $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

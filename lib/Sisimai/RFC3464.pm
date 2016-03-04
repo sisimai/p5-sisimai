@@ -454,18 +454,9 @@ sub scan {
             # Set the value of smtpagent
             $e->{'agent'} = __PACKAGE__->smtpagent;
         }
+        $e->{'date'}   ||= $mhead->{'date'};
         $e->{'status'} ||= Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $Re1->{'command'};
-
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
-
-        $e->{'date'}  ||= $mhead->{'date'};
-        $e->{'spec'}  ||= 'SMTP';
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

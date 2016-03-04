@@ -157,17 +157,9 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         $e->{'agent'} = __PACKAGE__->smtpagent;
-
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
 
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
@@ -190,10 +182,6 @@ sub scan {
             $e->{'reason'} = $r;
             last;
         }
-
-        $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-        $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
-        $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
     }
 
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );

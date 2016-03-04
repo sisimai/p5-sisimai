@@ -112,6 +112,7 @@ sub make {
     require Sisimai::SMTP;
     my $delivered1 = $argvs->{'delivered'} // 0;
     my $messageobj = $argvs->{'data'};
+    my $mailheader = $argvs->{'data'}->{'header'};
     my $rfc822data = $messageobj->rfc822;
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
@@ -229,6 +230,14 @@ sub make {
         next unless $p->{'timestamp'};
 
         OTHER_TEXT_HEADERS: {
+            # Scan "Received:" header of the original message
+            if( scalar @{ $mailheader->{'received'} } ) {
+                # Get localhost and remote host name from Received header.
+                my $r0 = $mailheader->{'received'};
+                $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
+                $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
+            }
+
             for my $v ( 'rhost', 'lhost' ) {
                 $p->{ $v } =~ y/[]()//d;    # Remove square brackets and curly brackets from the host variable
                 $p->{ $v } =~ s/\A.+=//;    # Remove string before "="
@@ -271,19 +280,40 @@ sub make {
                 # Cleanup the value of "Diagnostic-Code:" header
                 $p->{'diagnosticcode'} =~ s/[ \t]+$EndOfEmail//;
                 $p->{'diagnosticcode'} =~ s/\r\z//g;
+
                 my $v = Sisimai::SMTP::Status->find( $p->{'diagnosticcode'} );
                 if( $v =~ m/\A[45][.][1-9][.][1-9]\z/ ) {
                     # Use the DSN value in Diagnostic-Code:
                     $p->{'deliverystatus'} = $v;
+                }
+
+                if( $p->{'reason'} eq 'mailererror' ) {
+                    $p->{'diagnostictype'} ||= 'X-UNIX';
+
+                } else {
+                    unless( $p->{'reason'} =~ m/\A(?:feedback|vacation)\z/ ) {
+                        $p->{'diagnostictype'} ||= 'SMTP' 
+                    }
                 }
             }
 
             # Check the value of SMTP command
             $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ $rxcommands;
 
-            if( $p->{'action'} =~ m/\A(.+?) .+/ ) {
-                # Action: expanded (to multi-recipient alias)
-                $p->{'action'} = $1;
+            if( $p->{'action'} ) {
+                if( $p->{'action'} =~ m/\A(.+?) .+/ ) {
+                    # Action: expanded (to multi-recipient alias)
+                    $p->{'action'} = $1;
+                }
+            } else {
+                if( $p->{'reason'} eq 'expired' ) {
+                    # Action: delayed
+                    $p->{'action'} = 'delayed';
+
+                } elsif( $p->{'deliverystatus'} =~ m/\A[45]/ ) {
+                    # Action: failed
+                    $p->{'action'} = 'failed';
+                }
             }
         }
         $o = __PACKAGE__->new( %$p );

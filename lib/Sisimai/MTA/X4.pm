@@ -254,15 +254,8 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( ! $e->{'command'} ) {
@@ -325,10 +318,6 @@ sub scan {
                 }
             }
         }
-
-        $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-        $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
-        $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
         $e->{'command'} ||= '';
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }

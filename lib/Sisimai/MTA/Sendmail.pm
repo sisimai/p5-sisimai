@@ -237,7 +237,6 @@ sub scan {
         # Save the current line for the next loop
         $p = $e;
     }
-
     return undef unless $recipients;
     require Sisimai::String;
 
@@ -245,14 +244,6 @@ sub scan {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
-
-        $e->{'spec'}    ||= 'SMTP';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
         $e->{'command'} ||= 'EHLO' if length $esmtpreply;

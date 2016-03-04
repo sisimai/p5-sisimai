@@ -234,19 +234,11 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
-
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
 
         HARD_E: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
@@ -265,13 +257,6 @@ sub scan {
                 last;
             }
         }
-
-        if( ! $e->{'status'} || $e->{'status'} =~ m/\d[.]0[.]0\z/ ) {
-            # Get the status code from the respnse of remote MTA.
-            my $pseudostatus = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-            $e->{'status'} = $pseudostatus if length $pseudostatus;
-        }
-        $e->{'spec'}      = '' unless $e->{'spec'} =~ m/\A(?:SMTP|X-UNIX)\z/;
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
     }

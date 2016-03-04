@@ -136,12 +136,6 @@ sub scan {
     $v->{'date'}      = $mhead->{'date'};
     $v->{'status'}    = '';
 
-    if( scalar @{ $mhead->{'received'} } ) {
-        # Get localhost and remote host name from Received header.
-        my $r0 = $mhead->{'received'};
-        $v->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-        $v->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-    }
     return { 'ds' => $dscontents, 'rfc822' => '' };
 }
 

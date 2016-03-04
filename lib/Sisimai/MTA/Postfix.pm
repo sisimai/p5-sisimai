@@ -245,17 +245,11 @@ sub scan {
         }
     }
     return undef unless $recipients;
-
     require Sisimai::String;
-    require Sisimai::SMTP;
-    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
-
-        $e->{'agent'}   = __PACKAGE__->smtpagent;
-        $e->{'command'} = shift @commandset || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
@@ -266,20 +260,9 @@ sub scan {
             }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
-        $e->{'spec'} ||= 'SMTP' if $e->{'diagnosis'} =~ m/host .+ said:/;
-
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
-
-        if( length( $e->{'status'} ) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
-            # There is no value of Status header or the value is 5.0.0, 4.0.0
-            my $r = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-            $e->{'status'} = $r if length $r;
-        }
+        $e->{'spec'}    ||= 'SMTP' if $e->{'diagnosis'} =~ m/host .+ said:/;
+        $e->{'command'}   = shift @commandset || '';
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

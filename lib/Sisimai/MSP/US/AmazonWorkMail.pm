@@ -169,13 +169,6 @@ sub scan {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
-
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
         $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( $e->{'status'} =~ m/\A[45][.][01][.]0\z/ ) {
@@ -197,9 +190,7 @@ sub scan {
             # <421 4.4.2 Connection timed out>
             $e->{'replycode'} = $1;
         }
-
         $e->{'reason'} ||= Sisimai::SMTP::Status->name( $e->{'status'} );
-        $e->{'spec'}   ||= 'SMTP';
         $e->{'agent'}    = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );

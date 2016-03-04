@@ -217,19 +217,12 @@ sub scan {
         # Save the current line for the next loop
         $p = $e;
     }
-
     return undef unless $recipients;
     require Sisimai::String;
-    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        $e->{'lhost'} ||= $connheader->{'lhost'};
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
+        $e->{'lhost'}   ||= $connheader->{'lhost'};
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
 
         if( $e->{'diagnosis'} =~ m/\b([A-Z]{3})[-]([A-Z])(\d)\b/ ) {
@@ -268,11 +261,6 @@ sub scan {
                 $e->{'softbounce'} = 1;
             }
         }
-
-        $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-        $e->{'spec'}   = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
-        $e->{'action'} = 'failed' if $e->{'status'} =~ m/\A[45]/;
-        $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

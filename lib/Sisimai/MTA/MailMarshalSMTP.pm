@@ -154,21 +154,10 @@ sub scan {
     }
 
     return undef unless $recipients;
-    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        $e->{'agent'} = __PACKAGE__->smtpagent;
-
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $r0 = $mhead->{'received'};
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-            $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
-        }
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
-        $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
-        $e->{'spec'}      = $e->{'reason'} eq 'mailererror' ? 'X-UNIX' : 'SMTP';
-        $e->{'action'}    = 'failed' if $e->{'status'} =~ m/\A[45]/;
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
 
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
@@ -191,9 +180,9 @@ Email Gateway.
 
 =head1 DESCRIPTION
 
-Sisimai::MTA::MailMarshalSMTP parses a bounce email which created by 
-C<Trustwave> Secure Email Gateway: formerly MailMarshal SMTP. Methods in the
-module are called from only Sisimai::Message.
+Sisimai::MTA::MailMarshalSMTP parses a bounce email which created by C<Trustwave>
+Secure Email Gateway: formerly MailMarshal SMTP. Methods in the module are called
+from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
