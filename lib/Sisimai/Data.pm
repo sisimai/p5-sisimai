@@ -90,10 +90,6 @@ sub new {
         'smtpcommand', 'feedbacktype', 'action', 'softbounce', 'replycode',
     );
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
-    if( $thing->{'action'} =~ m/\A(.+?) .+/ ) {
-        # Action: expanded (to multi-recipient alias)
-        $thing->{'action'} = $1;
-    }
     $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
 
     return bless( $thing, __PACKAGE__ );
@@ -284,6 +280,11 @@ sub make {
 
             # Check the value of SMTP command
             $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ $rxcommands;
+
+            if( $p->{'action'} =~ m/\A(.+?) .+/ ) {
+                # Action: expanded (to multi-recipient alias)
+                $p->{'action'} = $1;
+            }
         }
         $o = __PACKAGE__->new( %$p );
         next unless defined $o;
