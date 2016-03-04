@@ -61,29 +61,19 @@ sub new {
     # Create email address object
     my $x0 = Sisimai::Address->parse( [ $argvs->{'addresser'} ] );
     my $y0 = Sisimai::Address->parse( [ $argvs->{'recipient'} ] );
-    my $v0 = undef;
     my @v1 = ();
 
-    if( ref $x0 eq 'ARRAY' ) {
-        $v0 = Sisimai::Address->new( shift @$x0 );
+    return undef unless ref $x0 eq 'ARRAY';
+    return undef unless ref $y0 eq 'ARRAY';
 
-        if( ref $v0 eq 'Sisimai::Address' ) {
-            $thing->{'addresser'} = $v0;
-            $thing->{'senderdomain'} = $v0->host;
-        }
-    }
-
-    if( ref $y0 eq 'ARRAY' ) {
-        $v0 = Sisimai::Address->new( shift @$y0 );
-
-        if( ref $v0 eq 'Sisimai::Address' ) {
-            $thing->{'recipient'} = $v0;
-            $thing->{'destination'} = $v0->host;
-            $thing->{'alias'} = $argvs->{'alias'};
-        }
-    }
-    return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
+    $thing->{'addresser'} = Sisimai::Address->new( shift @$x0 );
     return undef unless ref $thing->{'addresser'} eq 'Sisimai::Address';
+    $thing->{'senderdomain'} = $thing->{'addresser'}->host;
+
+    $thing->{'recipient'} = Sisimai::Address->new( shift @$y0 );
+    return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
+    $thing->{'destination'} = $thing->{'recipient'}->host;
+    $thing->{'alias'} = $argvs->{'alias'};
 
     $thing->{'token'} = Sisimai::String->token(
                             $thing->{'addresser'}->address,
