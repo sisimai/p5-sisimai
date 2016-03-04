@@ -62,6 +62,8 @@ my $MSPChildren = {
         '03' => { 'status' => qr/\A5[.]3[.]5\z/, 'reason' => qr/systemerror/ },
         '04' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
         '05' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
+        '06' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
+        '07' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
     },
     'US::Aol' => {
         '01' => { 'status' => qr/\A5[.]4[.]4\z/, 'reason' => qr/hostunknown/ },
