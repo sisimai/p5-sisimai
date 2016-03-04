@@ -91,6 +91,9 @@ my $MSPChildren = {
         '12' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/ },
         '13' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
         '14' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '15' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+        '16' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
+        '17' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
     },
     'US::Office365' => {
         '01' => { 'status' => qr/\A5[.]1[.]10\z/, 'reason' => qr/filtered/ },
