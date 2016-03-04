@@ -192,6 +192,12 @@ sub scan {
             $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
+        if( $e->{'diagnosis'} =~ m/[<]([245]\d\d)[ ].+[>]/ ) {
+            # 554 4.4.7 Message expired: unable to deliver in 840 minutes.
+            # <421 4.4.2 Connection timed out>
+            $e->{'replycode'} = $1;
+        }
+
         $e->{'reason'} ||= Sisimai::SMTP::Status->name( $e->{'status'} );
         $e->{'spec'}   ||= 'SMTP';
         $e->{'agent'}    = __PACKAGE__->smtpagent;

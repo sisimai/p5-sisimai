@@ -94,17 +94,17 @@ sub new {
     $thing->{'timestamp'} = localtime Sisimai::Time->new( $argvs->{'timestamp'} );
     $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
 
-    @v1 = ( 
+    @v1 = (
         'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
         'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 
-        'smtpcommand', 'feedbacktype', 'action', 'softbounce',
+        'smtpcommand', 'feedbacktype', 'action', 'softbounce', 'replycode',
     );
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
     if( $thing->{'action'} =~ m/\A(.+?) .+/ ) {
         # Action: expanded (to multi-recipient alias)
         $thing->{'action'} = $1;
     }
-    $thing->{'replycode'} = Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
+    $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
 
     return bless( $thing, __PACKAGE__ );
 }
@@ -163,6 +163,7 @@ sub make {
             'alias'          => $e->{'alias'}        // '',
             'action'         => $e->{'action'}       // '',
             'reason'         => $e->{'reason'}       // '',
+            'replycode'      => $e->{'replycode'}    // '',
             'smtpagent'      => $e->{'agent'}        // '',
             'recipient'      => $e->{'recipient'}    // '',
             'softbounce'     => $e->{'softbounce'}   // '',
