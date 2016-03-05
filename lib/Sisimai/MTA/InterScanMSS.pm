@@ -114,6 +114,17 @@ sub scan {
             } elsif( $e =~ m/\AReceived[ \t]+[>]{3}[ \t]+(\d{3}[ \t]+.+)\z/ ) {
                 # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
                 $v->{'diagnosis'} = $1;
+
+            } else {
+                # Error message in non-English
+                if( $e =~ m/[ ][>]{3}[ ]([A-Z]{4})/ ) {
+                    # >>> RCPT TO ...
+                    $v->{'command'} = $1;
+
+                } elsif( $e =~ m/[ ][<]{3}[ ](.+)/ ) {
+                    # <<< 550 5.1.1 User unknown
+                    $v->{'diagnosis'} = $1;
+                }
             }
         } # End of if: rfc822
     }
