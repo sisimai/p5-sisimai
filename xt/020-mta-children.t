@@ -239,7 +239,7 @@ my $R = {
     },
     'InterScanMSS' => {
         '01001' => qr/userunknown/,
-        '01002' => qr/undefined/,
+        '01002' => qr/userunknown/,
         '01003' => qr/userunknown/,
         '01004' => qr/userunknown/,
         '01005' => qr/userunknown/,
