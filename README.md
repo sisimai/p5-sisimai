@@ -158,8 +158,8 @@ and Sisimai.
 | WebUI/API                                      | Included      | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A[1]      |
 | Analytical precision ratio(2000 emails)[2]     | 0.49          | 1.00        |
-| The speed of parsing email(1000 emails)        | 4.24s         | 2.50s       |
-| The number of detectable bounce reasons        | 19            | 25          |
+| The speed of parsing email(1000 emails)        | 4.24s         | 2.33s       |
+| The number of detectable bounce reasons        | 19            | 27          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | Unable        | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
@@ -167,16 +167,15 @@ and Sisimai.
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 9100 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 166700 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8000 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 170000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
 1. Implement yourself with using DBI or any O/R Mapper you like
 2. See ./ANALYTICAL-PRECISION
 
-公開中のbounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違いが
-あります。
+bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違いがあります。
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
@@ -186,8 +185,8 @@ and Sisimai.
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し[1]     |
 | 解析精度の割合(2000通のメール)[2]              | 0.49          | 1.00        |
-| メール解析速度(1000通のメール)                 | 4.24秒        | 2.50秒      |
-| 検出可能なバウンス理由の数                     | 19            | 25          |
+| メール解析速度(1000通のメール)                 | 4.24秒        | 2.33秒      |
+| 検出可能なバウンス理由の数                     | 19            | 27          |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件解析可能|
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
 | 宛先ドメインによる分類項目                     | あり          | 無し        |
@@ -195,8 +194,8 @@ and Sisimai.
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 9100行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 166700件    |
+| LOC:ソースコードの行数                         | 18200行       | 8000行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 170000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
@@ -276,7 +275,7 @@ page.
 |----------------|----------------------------------------|----------------------------------|
 | Blocked        | Blocked due to client IP address       | IPアドレスによる拒否             |
 | ContentError   | Invalid format email                   | 不正な形式のメール               |
-| Delivered[1]   | Successfully delivered (> v4.16.0)     | 正常に配信された                 |
+| Delivered[1]   | Successfully delivered (> v4.16.0)     | 正常に配信された(> v4.16.0)      |
 | ExceedLimit    | Message size exceeded the limit(5.2.3) | メールサイズの超過               |
 | Expired        | Delivery time expired                  | 配送時間切れ                     |
 | Feedback       | Bounced for a complaint of the message | 元メールへの苦情によるバウンス   |
@@ -294,7 +293,7 @@ page.
 | SecurityError  | Virus detected or authentication error | ウィルスの検出または認証失敗     |
 | SpamDetected   | Detected a message as spam             | メールはスパムとして判定された   |
 | Suspend        | Recipient's account is suspended       | 宛先アカウントは一時的に停止中   |
-| SyntaxError    | syntax error in SMTP (> v4.17.0)       | SMTPの文法エラー(> 4.17.0)       |
+| SyntaxError    | syntax error in SMTP (> v4.17.0)       | SMTPの文法エラー(> v4.17.0)      |
 | SystemError    | Some error on the destination host     | 宛先サーバでのOSレベルのエラー   |
 | SystemFull     | Disk full on the destination host      | 宛先サーバのディスクが一杯       |
 | TooManyConn    | Connection rate limit exceeded         | 接続制限数を超過した             |
