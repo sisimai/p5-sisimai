@@ -37,6 +37,7 @@ my $MTARelative = {
         '26' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/, 'agent' => qr/RFC3464/ },
         '27' => { 'status' => qr/\A4[.]4[.]6\z/, 'reason' => qr/networkerror/, 'agent' => qr/RFC3464/ },
         '28' => { 'status' => qr/\A2[.]1[.]5\z/, 'reason' => qr/delivered/, 'agent' => qr/RFC3464/ },
+        '29' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/syntaxerror/, 'agent' => qr/RFC3464/ },
     },
     'RFC3834' => {
         '01' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
