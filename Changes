@@ -10,7 +10,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Remove unused method Sisimai::Reason->match, issue #169.
     - Remove unused methods in Sisimai::MSP and Sisimai::MTA, issue #136.
     - Remove unused module Sisimai::ISO3166, issue #137.
-    - Remove unused module Sisimai::RFC5321, issue #131.
+    - Remove unused module Sisimai::RFC5321 and Sisimai::RFC3463, issue #131.
     - Some methods of Sisimai::Address allow "postmaster", and "mailer-daemon"
       ( without a domain part ) as an email address.
     - Sisimai::RFC5322->is_mailerdaemon() method returns "1" when the argument
