@@ -74,7 +74,7 @@ use warnings;
 #                 Something about the address specified in the message caused
 #                 this DSN.
 #
-# X.1.1  451    Bad destination mailbox address:(RFC3463)
+# X.1.1  451    Bad destination mailbox address:(RFC 3463)
 #        550      The mailbox specified in the address does not exist. 
 #                 For Internet mail names, this means the address portion to the
 #                 the left of the "@" sign is invalid.
