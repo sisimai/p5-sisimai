@@ -98,7 +98,6 @@ sub list {
         RFC3463.pm
         RFC3464.pm
         RFC3834.pm
-        RFC5321.pm
         RFC5322.pm
         Rhost.pm
             Rhost/GoogleApps.pm
