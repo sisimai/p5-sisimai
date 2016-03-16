@@ -1,10 +1,10 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.17.0  Wed, 16 Mar 2016
+4.17.0  Wed, 16 Mar 2016 12:22:44 +0900 (JST)
     - Implement new reason "syntaxerror". Sisimai will set "syntaxerror" to the
       raeson when the value of "replycode" begins with "50" such as 502, 503,
       or 504. issue #147.
-    - Implement description method at each class in Sisimai/Reason issue #166.
+    - Implement description() method at each file in Sisimai/Reason issue #166.
     - Implement Sisimai->reason method for getting the list of reasons Sisimai
       can detect and its description: issue #168.
     - Remove unused method Sisimai::Reason->match, issue #169.
@@ -12,7 +12,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Remove unused module Sisimai::ISO3166, issue #137.
     - Remove unused module Sisimai::RFC5321 and Sisimai::RFC3463, issue #131.
     - Some methods of Sisimai::Address allow "postmaster", and "mailer-daemon"
-      ( without a domain part ) as an email address.
+      (without a domain part) as an email address.
     - Sisimai::RFC5322->is_mailerdaemon() method returns "1" when the argument
       includes "postmaster".
     - Merge pull-request #172, new method Sisimai::RFC5322->weedout() and code
