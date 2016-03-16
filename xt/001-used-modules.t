@@ -8,6 +8,8 @@ require './t/900-modules.pl';
 
 for my $e ( @{ Sisimai::Test::Modules->list() } ) { 
     my $v = 'lib/'.$e;
+    next if $e eq 'Sisimai/MTA.pm';
+    next if $e eq 'Sisimai/MSP.pm';
     ok -f $v, $v;
     Test::UsedModules::used_modules_ok( $v );
 }
