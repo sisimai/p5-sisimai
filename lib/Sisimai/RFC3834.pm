@@ -82,7 +82,6 @@ sub scan {
 
     require Sisimai::MTA;
     require Sisimai::Address;
-    require Sisimai::RFC5322;
 
     my $dscontents = [ Sisimai::MTA->DELIVERYSTATUS ];
     my @hasdivided = split( "\n", $$mbody );
