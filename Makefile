@@ -6,7 +6,7 @@
 # |_|  |_|\__,_|_|\_\___|_| |_|_|\___|
 # -----------------------------------------------------------------------------
 SHELL := /bin/sh
-TIME  := $(shell date '+%s')
+TIME  := $(shell date '+%F')
 NAME  := Sisimai
 PERL  := perl
 CPANM := http://xrl.us/cpanm
@@ -52,7 +52,7 @@ restore-readme:
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
 
 check-version:
-	grep cpan-`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version' | tr '.' '-'` README.md
+	grep cpan-v`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version'` README.md
 
 release-test:
 	$(MAKE) backup-readme
