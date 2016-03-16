@@ -15,7 +15,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::Delivered - Email delivered successuflly 
+Sisimai::Reason::Delivered - Email delivered successfully
 
 =head1 SYNOPSIS
 
