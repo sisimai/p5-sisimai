@@ -59,6 +59,7 @@ my $Re1 = {
         |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
         )
     }x,
+    'deliverystatus' => qr|\AContent-type: message/delivery-status|,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
@@ -168,6 +169,9 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
     my $boundary00 = '';    # (String) Boundary string
+    my $havepassed = {
+        'deliverystatus' => 0
+    };
     my $v = undef;
 
     if( $mhead->{'content-type'} ) {
@@ -284,7 +288,11 @@ sub scan {
 
                         } else {
                             # Error message ?
-                            $v->{'alterrors'} .= $e.' ' if $e =~ m/\A[ ]+/;
+                            unless( $havepassed->{'deliverystatus'} ) {
+                                # Content-type: message/delivery-status
+                                $havepassed->{'deliverystatus'} = 1 if $e =~ $Re1->{'deliverystatus'};
+                                $v->{'alterrors'} .= $e.' ' if $e =~ m/\A[ ]+/;
+                            }
                         }
 
                     } else {
@@ -384,7 +392,7 @@ sub scan {
                 # Check the both value and try to match 
                 if( length( $e->{'diagnosis'} ) < length( $e->{'alterrors'} ) ) {
                     # Check the value of alterrors
-                    my $rxdiagnosis = qr/$e->{'diagnosis'}/i;
+                    my $rxdiagnosis = qr/\Q$e->{'diagnosis'}\E/i;
                     if( $e->{'alterrors'} =~ $rxdiagnosis ) {
                         # Override the value of diagnostic code message because
                         # the value of alterrors includes the value of diagnosis.
