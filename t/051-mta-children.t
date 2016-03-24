@@ -65,6 +65,7 @@ my $MTAChildren = {
         '26' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/mailererror/ },
         '27' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/blocked/ },
         '28' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailererror/ },
+        '29' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/blocked/ },
     },
     'IMailServer' => {
         '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },

@@ -49,6 +49,7 @@ sub match {
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
             )
+        |SPF[ ]record
         |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
         |unresolvable[ ]relay[ ]host[ ]name
         |your[ ](?:
