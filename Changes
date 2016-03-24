@@ -1,5 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.17.1
+    - Fixed issue #179 by pull-request #180, a variable in Sisimai/MTA/Exim.pm
+      is not quoted before passing to qr// operator. Thanks to @dzolnierz.
+
 4.17.0  Wed, 16 Mar 2016 12:22:44 +0900 (JST)
     - Implement new reason "syntaxerror". Sisimai will set "syntaxerror" to the
       raeson when the value of "replycode" begins with "50" such as 502, 503,
