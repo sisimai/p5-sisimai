@@ -4,7 +4,7 @@
       "azumakuniyuki"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.4.3, CPAN::Meta::Converter version 2.143240",
+   "generated_by" : "Minilla/v3.0.1, CPAN::Meta::Converter version 2.150001",
    "license" : [
       "freebsd"
    ],
@@ -69,7 +69,7 @@
          "web" : "https://github.com/sisimai/p5-Sisimai"
       }
    },
-   "version" : "4.17.0",
+   "version" : "4.17.1",
    "x_contributors" : [
       "jcbf <underspell@gmail.com>",
       "Jonathan Leroy <jonathan@inikup.com>",
