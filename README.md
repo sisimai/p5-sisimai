@@ -207,7 +207,7 @@ MTA/MSP Modules | MTA/MSPモジュール一覧
 ---------------------------------------
 The following table is the list of MTA/MSP:(Mail Service Provider) modules. More
 details about these modules are available at 
-[Sisimai | Parser Engines](http://libsisimai.org/engine) page.
+[Sisimai | Parser Engines](http://libsisimai.org/en/engine) page.
 
 | Module Name(Sisimai::)   | Description                                       |
 |--------------------------|---------------------------------------------------|
@@ -263,12 +263,14 @@ details about these modules are available at
 | RFC3834                  | Detector for auto replied message (> v4.1.28)     |
 
 上記はSisimaiに含まれてるMTA/MSP(メールサービスプロバイダ)モジュールの一覧です。
+より詳しい情報は[Sisimai | 解析エンジン](http://libsisimai.org/ja/engine)を
+ご覧ください。
 
 
 Bounce Reason List | バウンス理由の一覧
 ----------------------------------------
 Sisimai can detect the following 27 bounce reasons. More details about reasons
-are available at [Sisimai | Bounce Reason List](http://libsisimai.org/reason)
+are available at [Sisimai | Bounce Reason List](http://libsisimai.org/en/reason)
 page.
 
 | Reason(理由)   | Description                            | 理由の説明                       |
@@ -301,7 +303,8 @@ page.
 | Undefined      | Could not decide the error reason      | バウンスした理由は特定出来ず     |
 | Vacation       | Auto replied message (> v4.1.28)       | 自動応答メッセージ(> v4.1.28)    |
 
-Sisimaiは上記のエラー27種を検出します。
+Sisimaiは上記のエラー27種を検出します。バウンス理由についてのより詳細な情報は
+[Sisimai | バウンス理由の一覧](http://libsisimai.org/ja/reason)をご覧ください。
 1. This reason is not included by default | このバウンス理由は標準では解析結果に含まれません
 
 
@@ -309,7 +312,7 @@ Parsed data structure | 解析後のデータ構造
 ------------------------------------------
 The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
 More details about data structure are available at available at 
-[Sisimai — Data Structure of Sisimai::Data](http://libsisimai.org/data) page.
+[Sisimai — Data Structure of Sisimai::Data](http://libsisimai.org/en/data) page.
 
 | Name           | Description                           | 値の説明                       |
 |----------------|---------------------------------------|--------------------------------|
@@ -337,7 +340,8 @@ More details about data structure are available at available at
 | timezoneoffset | Time zone offset(seconds)             | タイムゾーンの時差             |
 | token          | MD5 value of addresser and recipient  | 送信者と受信者のハッシュ値     |
 
-上記の表は解析後のバウンスメールの構造(Sisimai::Data)です。
+上記の表は解析後のバウンスメールの構造(Sisimai::Data)です。データ構造のより詳細な情報は
+[Sisimai | Sisimai::Dataのデータ構造](http://libsisimai.org/ja/data)をご覧ください。
 
 
 Emails could not be parsed | 解析出来ないメール
