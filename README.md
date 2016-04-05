@@ -83,7 +83,7 @@ Usage | 使い方
 
 Basic usage | 基本的な使い方
 ----------------------------
-make() method provides feature for getting parsed data from bounced email 
+`make()` method provides feature for getting parsed data from bounced email 
 messages like following.
 
 ```perl
@@ -128,20 +128,20 @@ my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 [{"recipient": "kijitora@example.jp", "addresser": "shironeko@1jo.example.org", "feedbacktype": "", "action": "failed", "subject": "Nyaaaaan", "smtpcommand": "DATA", "diagnosticcode": "550 Unknown user kijitora@example.jp", "listid": "", "destination": "example.jp", "smtpagent": "Courier", "lhost": "1jo.example.org", "deliverystatus": "5.0.0", "timestamp": 1291954879, "messageid": "201012100421.oBA4LJFU042012@1jo.example.org", "diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "filtered", "token": "ce999a4c869e3f5e4d8a77b2e310b23960fb32ab", "alias": "", "senderdomain": "1jo.example.org", "rhost": "mfsmax.example.jp"}, {"diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "userunknown", "timestamp": 1381900535, "messageid": "E1C50F1B-1C83-4820-BC36-AC6FBFBE8568@example.org", "token": "9fe754876e9133aae5d20f0fd8dd7f05b4e9d9f0", "alias": "", "senderdomain": "example.org", "rhost": "mx.bouncehammer.jp", "action": "failed", "addresser": "kijitora@example.org", "recipient": "userunknown@bouncehammer.jp", "feedbacktype": "", "smtpcommand": "DATA", "subject": "バウンスメールのテスト(日本語)", "destination": "bouncehammer.jp", "listid": "", "diagnosticcode": "550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown", "deliverystatus": "5.1.1", "lhost": "p0000-ipbfpfx00kyoto.kyoto.example.co.jp", "smtpagent": "Sendmail"}]
 ```
 
-上記のようにSisimaiのmake()メソッドをmboxかMaildirのPATHを引数にして実行すると
+上記のようにSisimaiの`make()`メソッドをmboxかMaildirのPATHを引数にして実行すると
 解析結果が配列リファレンスで返ってきます。
 
 One-Liner | ワンライナーで
 --------------------------
 
-Beginning with Sisimai 4.1.27, dump() method is available and you can get parsed
+Beginning with Sisimai 4.1.27, `dump()` method is available and you can get parsed
 data as JSON using the method.
 
 ```shell
 % perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
 
-Sisimai 4.1.27から登場したdump()メソッドを使うとワンライナーでJSON化した解析結果
+Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナーでJSON化した解析結果
 が得られます。
 
 
@@ -316,7 +316,7 @@ Sisimaiは上記のエラー27種を検出します。バウンス理由につ�
 
 Parsed data structure | 解析後のデータ構造
 ------------------------------------------
-The following table shows a data structure(Sisimai::Data) of parsed bounce mail.
+The following table shows a data structure (`Sisimai::Data`) of parsed bounce mail.
 More details about data structure are available at available at 
 [Sisimai — Data Structure of Sisimai::Data](http://libsisimai.org/en/data) page.
 
@@ -346,7 +346,7 @@ More details about data structure are available at available at
 | timezoneoffset | Time zone offset(seconds)             | タイムゾーンの時差             |
 | token          | MD5 value of addresser and recipient  | 送信者と受信者のハッシュ値     |
 
-上記の表は解析後のバウンスメールの構造(Sisimai::Data)です。データ構造のより詳細な情報は
+上記の表は解析後のバウンスメールの構造(`Sisimai::Data`)です。データ構造のより詳細な情報は
 [Sisimai | Sisimai::Dataのデータ構造](http://libsisimai.org/ja/data)をご覧ください。
 
 
