@@ -40,8 +40,11 @@ Setting Up Sisimai | シシマイを使う準備
 
 System requirements | 動作環境
 ------------------------------
-More details about system requirements are available at available at 
-[Sisimai | Getting Started](http://libsisimai.org/start) page.
+More details about system requirements are available at
+[Sisimai | Getting Started](http://libsisimai.org/en/start) page.
+
+Sisimaiの動作環境についての詳細は
+[Sisimai | シシマイを使ってみる](http://libsisimai.org/ja/start)をご覧ください。
 
 * [Perl 5.10.1 or later](http://www.perl.org/)
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
@@ -148,7 +151,8 @@ Sisimai Specification | シシマイの仕様
 Differences between ver.2 and Sisimai | 新旧の違い
 --------------------------------------------------
 The following table show the differences between ver.2 (bounceHammer 2.7.13p3)
-and Sisimai.
+and Sisimai. More information about differences are available at
+[Sisimai | Differences](http://libsisimai.org/en/diff) page.
 
 | Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
@@ -176,6 +180,8 @@ and Sisimai.
 2. See ./ANALYTICAL-PRECISION
 
 bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違いがあります。
+違いの詳細については[Sisimai | 違いの一覧](http://libsisimai.org/ja/diff)をご覧
+ください。
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
