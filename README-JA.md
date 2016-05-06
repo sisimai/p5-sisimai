@@ -32,7 +32,6 @@ Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析�
 
 シシマイを使う準備
 ==================
-
 動作環境
 --------
 Sisimaiの動作環境についての詳細は
@@ -71,7 +70,6 @@ Configuring Sisimai-4.14.0 ... OK
 
 使い方
 ======
-
 基本的な使い方
 --------------
 下記のようにSisimaiの`make()`メソッドをmboxかMaildirのPATHを引数にして実行すると
@@ -131,7 +129,6 @@ Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナ�
 
 シシマイの仕様
 ==============
-
 新旧の違い(bounceHammerとSisimai)
 ---------------------------------
 bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違いがあります。
@@ -260,12 +257,10 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 
 1. このバウンス理由は標準では解析結果に含まれません
 
-
 解析後のデータ構造
 ------------------
 下記の表は解析後のバウンスメールの構造(`Sisimai::Data`)です。データ構造のより詳細な情報は
 [Sisimai | Sisimai::Dataのデータ構造](http://libsisimai.org/ja/data)をご覧ください。
-
 
 | アクセサ名     | 値の説明                                                    |
 |----------------|-------------------------------------------------------------|
@@ -293,7 +288,6 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 | timezoneoffset | タイムゾーンの時差(例:+0900)                                |
 | token          | 送信者と受信者・時刻から作られるハッシュ値                  |
 
-
 解析出来ないメール
 ------------------
 解析出来ない__バウンスメール__は`set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet`
@@ -303,10 +297,8 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 
 その他の情報
 ============
-
 関連サイト
 ----------
-
 * __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](http://libsisimai.org/)
 * __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
@@ -314,8 +306,9 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 * __Ruby verson__ | [Ruby version of Sisimai](https://github.com/sisimai/rb-Sisimai)
 * __bounceHammer.JP__ | [bounceHammer will be EOL on February 29, 2016](http://bouncehammer.jp/)
 
-参考サイト
-----------
+参考情報
+--------
+* [README.md - README.md in English](https://github.com/sisimai/p5-Sisimai/blob/master/README.md)
 * [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
 * [RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
 * [RFC3834 - Recommendations for Automatic Responses to Electronic Mail](https://tools.ietf.org/html/rfc3834)
@@ -323,7 +316,7 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 * [RFC5322 - Internet Message Format](https://tools.ietf.org/html/rfc5322)
 
 作者
----
+----
 [@azumakuniyuki](https://twitter.com/azumakuniyuki)
 
 著作権

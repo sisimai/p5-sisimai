@@ -32,7 +32,6 @@ Key Features
 
 Setting Up Sisimai
 ==================
-
 System requirements
 -------------------
 More details about system requirements are available at
@@ -45,7 +44,6 @@ More details about system requirements are available at
 
 Install
 -------
-
 ### From CPAN
 
 ```shell
@@ -72,7 +70,6 @@ Configuring Sisimai-4.14.0 ... OK
 
 Usage
 =====
-
 Basic usage
 -----------
 `make()` method provides feature for getting parsed data from bounced email 
@@ -132,7 +129,6 @@ data as JSON using the method.
 
 Sisimai Specification
 =====================
-
 Differences between ver.2 and Sisimai
 -------------------------------------
 The following table show the differences between ver.2 (bounceHammer 2.7.13p3)
@@ -230,7 +226,7 @@ Sisimai can detect the following 27 bounce reasons. More details about reasons
 are available at [Sisimai | Bounce Reason List](http://libsisimai.org/en/reason)
 page.
 
-| Reason(理由)   | Description                            | Impelmented at     |
+| Reason         | Description                            | Impelmented at     |
 |----------------|----------------------------------------|--------------------|
 | Blocked        | Blocked due to client IP address       |                    |
 | ContentError   | Invalid format email                   |                    |
@@ -261,7 +257,6 @@ page.
 | Vacation       | Auto replied message                   | v4.1.28            |
 
 1. This reason is not included by default
-
 
 Parsed data structure
 ---------------------
@@ -306,10 +301,8 @@ and send Pull-Request to this repository.
 
 Other Information
 =================
-
 Related Sites
 -------------
-
 * __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](http://libsisimai.org/)
 * __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
