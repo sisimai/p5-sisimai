@@ -10,8 +10,8 @@ What is Sisimai
 ===============
 Sisimai is a Perl module for analyzing RFC5322 bounce emails and generating
 structured data from parsed results. Sisimai is the system formerly known as
-bounceHammer 4. "Sisimai" is a coined word: Sisi (the number 4 is pronounced
-"Si" in Japanese) and MAI (acronym of "Mail Analyzing Interface").
+bounceHammer 4. __Sisimai__ is a coined word: Sisi (the number 4 is pronounced
+__Si__ in Japanese) and MAI (acronym of __Mail Analyzing Interface__).
 
 Key Features
 ------------
@@ -158,13 +158,13 @@ and Sisimai. More information about differences are available at
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
 1. Implement yourself with using DBI or any O/R Mapper you like
-2. See ./ANALYTICAL-PRECISION
+2. See [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-Sisimai/blob/master/ANALYTICAL-PRECISION)
 
 
 MTA/MSP Modules
 ---------------
-The following table is the list of MTA/MSP:(Mail Service Provider) modules. More
-details about these modules are available at 
+The following table is the list of MTA/MSP:(Mail Service Provider) modules.
+More details about these modules are available at 
 [Sisimai | Parser Engines](http://libsisimai.org/en/engine) page.
 
 | Module Name(Sisimai::)   | Description                                       |
@@ -293,16 +293,17 @@ More details about data structure are available at available at
 
 Emails could not be parsed
 --------------------------
-__Bounce mails__ which could not be parsed by Sisimai are saved in the directory
-`set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet`. If you find any
-bounce email cannot be parsed using Sisimai, please add the email into the directory
-and send Pull-Request to this repository.
+Bounce mails which could not be parsed by Sisimai are saved in the directory
+`set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet`. 
+If you have found any bounce email cannot be parsed using Sisimai, please add
+the email into the directory and send Pull-Request to this repository.
 
 
 Other Information
 =================
 Related Sites
 -------------
+* __@libsisimai__ | [Sisimai on Twitter (@libsisimai)](https://twitter.com/libsisimai)
 * __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](http://libsisimai.org/)
 * __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)

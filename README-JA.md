@@ -10,8 +10,8 @@
 =========
 Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析結果をデータ構造に
 変換するインターフェイスを提供するPerlモジュールです。
-"シシマイ"はbounceHammer version 4として開発していたものであり、Version 4なので
-"シ"から始まりマイ(MAI: Mail Analyzing Interface)を含む名前になりました。
+__シシマイ__はbounceHammer version 4として開発していたものであり、Version 4なので
+__シ(Si)__から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名前になりました。
 
 主な特徴的機能
 -----------------------------
@@ -110,7 +110,6 @@ print $j;                               # parsed data as JSON
 
 # dump() method also accepts "delivered" option like the following code:
 my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
-
 ```
 
 ```json
@@ -125,7 +124,6 @@ Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナ�
 ```shell
 % perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
-
 
 シシマイの仕様
 ==============
@@ -158,7 +156,7 @@ bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違い
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
 1. DBIまたは好きなORMを使って自由に実装してください
-2. ./ANALYTICAL-PRECISIONを参照
+2. [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-Sisimai/blob/master/ANALYTICAL-PRECISION)を参照
 
 
 MTA/MSPモジュール一覧
@@ -290,7 +288,7 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 
 解析出来ないメール
 ------------------
-解析出来ない__バウンスメール__は`set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet`
+解析出来ないバウンスメールは`set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet`
 ディレクトリにはいっています。もしもSisimaiで解析出来ないメールを見つけたら、
 このディレクトリに追加してPull-Requestを送ってください。
 
@@ -299,6 +297,7 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 ============
 関連サイト
 ----------
+* __@libsisimai__ | [Sisimai on Twitter (@libsisimai)](https://twitter.com/libsisimai)
 * __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](http://libsisimai.org/)
 * __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
