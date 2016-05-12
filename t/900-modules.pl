@@ -100,6 +100,7 @@ sub list {
         RFC5322.pm
         Rhost.pm
             Rhost/GoogleApps.pm
+            Rhost/ExchangeOnline.pm
         SMTP.pm
             SMTP/Reply.pm
             SMTP/Status.pm
