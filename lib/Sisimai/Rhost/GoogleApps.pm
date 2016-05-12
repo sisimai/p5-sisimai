@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $SMTPErrorSet = {
+my $CodeTable = {
     'X.1.1' => [
         {
             'reason' => 'userunknown',
@@ -221,7 +221,7 @@ sub get {
 
     my $statusmesg = $argvs->diagnosticcode;
     my $reasontext = '';
-    my $errortable = $SMTPErrorSet->{ $statuscode } || [];
+    my $errortable = $CodeTable->{ $statuscode } || [];
 
     for my $e ( @$errortable ) {
         # Try to match
