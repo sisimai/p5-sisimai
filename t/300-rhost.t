@@ -21,7 +21,7 @@ MAKE_TEST: {
     my $host = 'aspmx.l.google.com';
 
     ok $PackageName->match( $host );
-    ok grep { $host eq $_ } @$list;
+    ok grep { $host =~ $_ } @$list;
 
 }
 

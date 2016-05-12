@@ -5,7 +5,8 @@ use warnings;
 use Module::Load '';
 
 my $RhostClass = {
-    'aspmx.l.google.com' => 'GoogleApps',
+    qr/\Aaspmx[.]l[.]google[.]com\z/ => 'GoogleApps',
+    qr/[.]protection[.]outlook[.]com\z/ => 'ExchangeOnline',
 };
 
 sub list {
@@ -21,10 +22,17 @@ sub match {
     #                           1: match
     my $class = shift;
     my $rhost = shift // return undef;
+    my $host0 = lc $rhost;
+    my $match = 0;
+    return $match unless length $rhost;
 
-    return 0 unless length $rhost;
-    return 1 if exists $RhostClass->{ lc $rhost };
-    return 0;
+    for my $e ( keys %$RhostClass ) {
+        # Try to match with each key of $RhostClass
+        next unless $host0 =~ $e;
+        $match = 1;
+        last;
+    }
+    return $match; 
 }
 
 sub get {
@@ -38,7 +46,15 @@ sub get {
     return $argvs->reason if length $argvs->reason;
 
     my $reasontext = '';
-    my $rhostclass = __PACKAGE__.'::'.$RhostClass->{ lc $argvs->rhost } // '';
+    my $remotehost = lc $argvs->rhost;
+    my $rhostclass = '';
+
+    for my $e ( keys %$RhostClass ) {
+        # Try to match with each key of $RhostClass
+        next unless $remotehost =~ $e;
+        $rhostclass = __PACKAGE__.'::'.$RhostClass->{ $e };
+        last;
+    }
 
     return undef unless length $rhostclass;
     Module::Load::load( $rhostclass );

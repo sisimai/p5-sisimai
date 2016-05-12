@@ -1,5 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.17.2
+    - Issue #174, Implement Sisimai::Rhost::ExchangeOnline for the bounce mail
+      from on-premises Exchange 2013 and Office 365.
+
 4.17.1  Wed, 30 Mar 2016 14:00:22 +0900 (JST)
     - Fixed issue #179 by pull-request #180, a variable in Sisimai/MTA/Exim.pm
       is not quoted before passing to qr// operator. Thanks to @dzolnierz.
