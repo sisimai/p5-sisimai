@@ -280,7 +280,7 @@ Exchange 2013 and Office 365.
 
 Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
 object as an argument of get() method when the value of C<rhost> of the object
-is "aspmx.l.google.com". This class is called only Sisimai::Data class.
+is "*.protection.outlook.com". This class is called only Sisimai::Data class.
 
 =head1 CLASS METHODS
 
@@ -294,7 +294,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
