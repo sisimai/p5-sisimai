@@ -18,11 +18,15 @@ MAKE_TEST: {
     is $PackageName->get, undef;
 
     my $list = $PackageName->list;
-    my $host = 'aspmx.l.google.com';
+    my $host = [
+        'aspmx.l.google.com',
+        'neko.protection.outlook.com',
+    ];
 
-    ok $PackageName->match( $host );
-    ok grep { $host =~ $_ } @$list;
-
+    for my $e ( @$host ) {
+        ok $PackageName->match( $e ), '->match('.$e.')';
+        ok grep { $e =~ $_ } @$list;
+    }
 }
 
 done_testing;
