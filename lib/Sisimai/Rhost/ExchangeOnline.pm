@@ -234,10 +234,10 @@ my $CodeTable = {
 };
 
 sub get {
-    # Detect bounce reason from Google Apps
+    # Detect bounce reason from Exchange 2013 and Office 365
     # @param    [Sisimai::Data] argvs   Parsed email object
-    # @return   [String]                The bounce reason for Google Apps
-    # @see      https://support.google.com/a/answer/3726730?hl=en
+    # @return   [String]                The bounce reason for Exchange Online
+    # @see      https://technet.microsoft.com/en-us/library/bb232118
     my $class = shift;
     my $argvs = shift // return undef;
 
