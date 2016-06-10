@@ -480,6 +480,10 @@ my $R = {
         '01148' => qr/userunknown/,
         '01149' => qr/mailboxfull/,
         '01150' => qr/filtered/,
+        '01151' => qr/spamdetected/,
+        '01152' => qr/blocked/,
+        '01153' => qr/spamdetected/,
+        '01154' => qr/spamdetected/,
     },
     'qmail' => {
         '01001' => qr/filtered/,
@@ -750,6 +754,8 @@ my $R = {
         '01200' => qr/hostunknown/,
         '01201' => qr/spamdetected/,
         '01202' => qr/systemfull/,
+        '01203' => qr/blocked/,
+        '01204' => qr/suspend/,
     },
     'SurfControl' => {
         '01001' => qr/filtered/,

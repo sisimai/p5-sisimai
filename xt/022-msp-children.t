@@ -258,6 +258,7 @@ my $R = {
         '01042' => qr/userunknown/,
         '01043' => qr/userunknown/,
         '01044' => qr/securityerror/,
+        '01045' => qr/expired/,
     },
     'US::Office365' => {
         '01001' => qr/filtered/,
