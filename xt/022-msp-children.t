@@ -267,6 +267,7 @@ my $R = {
         '01004' => qr/filtered/,
         '01005' => qr/filtered/,
         '01006' => qr/networkerror/,
+        '01007' => qr/userunknown/,
     },
     'US::Outlook' => {
         '01002' => qr/userunknown/,
