@@ -5,8 +5,9 @@ use strict;
 use warnings;
 
 my $Re0 = {
-    'subject'  => qr/Undeliverable:/,
-    'received' => qr/.+[.](?:outbound[.]protection|prod)[.]outlook[.]com\b/,
+    'subject'    => qr/Undeliverable:/,
+    'received'   => qr/.+[.](?:outbound[.]protection|prod)[.]outlook[.]com\b/,
+    'message-id' => qr/.+[.](?:outbound[.]protection|prod)[.]outlook[.]com\b/,
 };
 my $Re1 = {
     'begin'  => qr{\A(?:
@@ -20,14 +21,31 @@ my $Re1 = {
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 my $CodeTable = {
-    '4.4.7'     => 'expired',
-    '5.1.0'     => 'rejected',
-    '5.1.1'     => 'userunknown',
-    '5.1.10'    => 'filtered',
-    '5.4.1'     => 'networkerror',
-    '5.4.14'    => 'networkerror',
-    '5.7.1'     => 'rejected',
-    '5.7.133'   => 'rejected',
+    # https://support.office.com/en-us/article/Email-non-delivery-reports-in-Office-365-51daa6b9-2e35-49c4-a0c9-df85bf8533c3
+    qr/\A4[.]4[.]7\z/        => 'expired',
+    qr/\A4[.]7[.]26\z/       => 'securityerror',
+    qr/\A4[.]7[.][56]\d\d\z/ => 'blocked',
+    qr/\A4[.]7[.]8[5-9]\d\z/ => 'blocked',
+    qr/\A5[.]1[.]0\z/        => 'rejected',
+    qr/\A5[.]4[.]1\z/        => 'norelaying',
+    qr/\A5[.]4[.]6\z/        => 'networkerror',
+    qr/\A5[.]6[.]11\z/       => 'contenterror',
+    qr/\A5[.]7[.]1\z/        => 'rejected',
+    qr/\A5[.]7[.]1[23]\z/    => 'rejected',
+    qr/\A5[.]7[.]124\z/      => 'rejected',
+    qr/\A5[.]7[.]13[3-6]\z/  => 'rejected',
+    qr/\A5[.]7[.]25\z/       => 'networkerror',
+    qr/\A5[.]7[.]50[1-3]\z/  => 'spamdetected',
+    qr/\A5[.]7[.]50[4-5]\z/  => 'filtered',
+    qr/\A5[.]7[.]50[6-7]\z/  => 'blocked',
+    qr/\A5[.]7[.]508\z/      => 'toomanyconn',
+    qr/\A5[.]7[.]509\z/      => 'securityerror',
+    qr/\A5[.]7[.]510\z/      => 'notaccept',
+    qr/\A5[.]7[.]511\z/      => 'rejected',
+    qr/\A5[.]7[.]512\z/      => 'securityerror',
+    qr/\A5[.]7[.]60[6-9]\z/  => 'blocked',
+    qr/\A5[.]7[.]6[1-4]\d\z/ => 'blocked',
+    qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
@@ -80,6 +98,10 @@ sub scan {
     $match++ if $mhead->{'x-ms-exchange-crosstenant-fromentityheader'};
     $match++ if $mhead->{'x-ms-exchange-transport-crosstenantheadersstamped'};
     $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    if( defined $mhead->{'message-id'} ) {
+        # Message-ID: <00000000-0000-0000-0000-000000000000@*.*.prod.outlook.com>
+        $match++ if $mhead->{'message-id'} =~ $Re0->{'message-id'};
+    }
     return undef if $match < 2;
 
     if( $$mbody =~ /^Content-Transfer-Encoding: quoted-printable$/m ) {
@@ -232,7 +254,12 @@ sub scan {
 
         if( $e->{'status'} ) {
             # Find the error code from $CodeTable
-            $e->{'reason'} = $CodeTable->{ $e->{'status'} } || ''
+            for my $f ( keys %$CodeTable ) {
+                # Try to match with each key as a regular expression
+                next unless $e->{'status'} =~ $f;
+                $e->{'reason'} = $CodeTable->{ $f };
+                last;
+            }
         }
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
