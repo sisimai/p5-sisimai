@@ -5,6 +5,8 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
       from on-premises Exchange 2013 and Office 365.
     - The reason of status code: 4.4.5 is "systemfull".
     - Issue #181, Fixed minor bug on OpenBSD.
+    - Pull-Request #185: Code improvement at Sisimai::MSP::US::Office365.
+    - Pull-Request #188: Code improvement at Sisimai::MIME, Thanks to @onjensen.
 
 4.17.1  Wed, 30 Mar 2016 14:00:22 +0900 (JST)
     - Fixed issue #179 by pull-request #180, a variable in Sisimai/MTA/Exim.pm
