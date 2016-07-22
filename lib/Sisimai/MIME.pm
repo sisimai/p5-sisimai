@@ -78,10 +78,10 @@ sub mimedecode {
             eval {
                 Encode::from_to( $decodedtext1, $characterset, 'utf8' );
             };
+            $decodedtext1 = 'FAILED TO CONVERT THE SUBJECT' if $@;
         }
     }
 
-    $decodedtext1 = 'FAILED TO CONVERT THE SUBJECT' if $@;
     $utf8decoded1 = Encode::decode_utf8 $decodedtext1;
     return $utf8decoded1;
 }
