@@ -2,7 +2,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.22-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.17.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.17.2-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 ![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
 
@@ -152,8 +152,8 @@ and Sisimai. More information about differences are available at
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 8000 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 170000 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8200 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 171600 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
