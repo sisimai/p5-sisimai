@@ -69,7 +69,7 @@
          "web" : "https://github.com/sisimai/p5-Sisimai"
       }
    },
-   "version" : "4.17.1",
+   "version" : "4.17.2",
    "x_contributors" : [
       "jcbf <underspell@gmail.com>",
       "Jonathan Leroy <jonathan@inikup.com>",
@@ -77,6 +77,7 @@
       "azumakuniyuki <perl.org@azumakuniyuki.org>",
       "azumakuniyuki <azumakuniyuki+github.com@gmail.com>",
       "Mutsutoshi Yoshimoto <negachov@gmail.com>",
+      "Jon Jensen <jon@endpoint.com>",
       "azuma, kuniyuki <azumakuniyuki@users.noreply.github.com>",
       "azumakuniyuki <azumakuniyuki@gmail.com>"
    ]
