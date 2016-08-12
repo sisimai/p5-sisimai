@@ -12,134 +12,134 @@ my $MethodNames = {
 };
 my $MSPChildren = {
     'DE::EinsUndEins' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mesgtoobig/ },
+        '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/mesgtoobig/, 'b' => qr/\A1\z/ },
     },
     'DE::GMX' => {
-        '01' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
-        '04' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+        '01' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '03' => { 's' => qr/\A5[.][12][.][12]\z/,   'r' => qr/(?:userunknown|mailboxfull)/, 'b' => qr/\A[01]\z/ },
+        '04' => { 's' => qr/\A5[.]0[.]\d+\z/,       'r' => qr/expired/, 'b' => qr/\A1\z/ },
     },
     'JP::Biglobe' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
+        '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
     },
     'JP::EZweb' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
-        '02' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/(?:suspend|undefined)/ },
-        '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/suspend/ },
-        '04' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
-        '05' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '06' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
+        '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/(?:suspend|undefined)/, 'b' => qr/\d\z/ },
+        '03' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/suspend/,       'b' => qr/\A1\z/ },
+        '04' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
+        '05' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
+        '06' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/ ,  'b' => qr/\A0\z/},
     },
     'JP::KDDI' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
-        '02' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
-        '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/ },
+        '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/mailboxfull/,   'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/mailboxfull/,   'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/mailboxfull/,   'b' => qr/\A1\z/ },
     },
     'RU::MailRu' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
-        '04' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.][12][.][12]\z/, 'r' => qr/(?:userunknown|mailboxfull)/, 'b' => qr/\d\z/ },
+        '04' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
     },
     'RU::Yandex' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:userunknown|mailboxfull)/ },
-        '03' => { 'status' => qr/\A4[.]4[.]1\z/, 'reason' => qr/expired/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/,       'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.][12][.][12]\z/, 'r' => qr/(?:userunknown|mailboxfull)/, 'b' => qr/\A[01]\z/ },
+        '03' => { 's' => qr/\A4[.]4[.]1\z/,       'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'UK::MessageLabs' => {
-        '01' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/userunknown/ },
+        '01' => { 's' => qr/\A5[.]0[.]0\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
     },
     'US::AmazonSES' => {
-        '01' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/blocked/ },
-        '02' => { 'status' => qr/\A5[.]3[.]0\z/, 'reason' => qr/filtered/ },
-        '03' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '04' => { 'status' => qr/\A5[.]4[.]7\z/, 'reason' => qr/expired/ },
+        '01' => { 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/blocked/,     'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.]3[.]0\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '04' => { 's' => qr/\A5[.]4[.]7\z/, 'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'US::AmazonWorkMail' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.]2[.]1\z/, 'reason' => qr/filtered/ },
-        '03' => { 'status' => qr/\A5[.]3[.]5\z/, 'reason' => qr/systemerror/ },
-        '04' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '05' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
-        '06' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '07' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]2[.]1\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.]3[.]5\z/, 'r' => qr/systemerror/, 'b' => qr/\A1\z/ },
+        '04' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A4[.]4[.]7\z/, 'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '06' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '07' => { 's' => qr/\A4[.]4[.]7\z/, 'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'US::Aol' => {
-        '01' => { 'status' => qr/\A5[.]4[.]4\z/, 'reason' => qr/hostunknown/ },
-        '02' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '03' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:mailboxfull|userunknown)/ },
-        '04' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '01' => { 's' => qr/\A5[.]4[.]4\z/, 'r' => qr/hostunknown/, 'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.][12][.][12]\z/, 'r' => qr/(?:mailboxfull|userunknown)/, 'b' => qr/\d\z/ },
+        '04' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
     },
     'US::Bigfoot' => {
-        '01' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/userunknown/ },
+        '01' => { 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
     },
     'US::Facebook' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/filtered/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
     },
     'US::Google' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '03' => { 'status' => qr/\A5[.]7[.]0\z/, 'reason' => qr/filtered/ },
-        '04' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/blocked/ },
-        '05' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/blocked/ },
-        '06' => { 'status' => qr/\A4[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '07' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/systemerror/ },
-        '08' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '09' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '10' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '11' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '12' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/ },
-        '13' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '14' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '15' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '16' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '17' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '03' => { 's' => qr/\A5[.]7[.]0\z/,     'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '04' => { 's' => qr/\A5[.]7[.]1\z/,     'r' => qr/blocked/,     'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A5[.]7[.]1\z/,     'r' => qr/blocked/,     'b' => qr/\A1\z/ },
+        '06' => { 's' => qr/\A4[.]2[.]2\z/,     'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '07' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/systemerror/, 'b' => qr/\A1\z/ },
+        '08' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '09' => { 's' => qr/\A4[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '10' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '11' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '12' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/onhold/,      'b' => qr/\d\z/ },
+        '13' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '14' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '15' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '16' => { 's' => qr/\A5[.]2[.]2\z/,     'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '17' => { 's' => qr/\A4[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'US::Office365' => {
-        '01' => { 'status' => qr/\A5[.]1[.]10\z/, 'reason' => qr/filtered/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '01' => { 's' => qr/\A5[.]1[.]10\z/,'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
     },
     'US::Outlook' => {
-        '01' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '03' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/hostunknown/ },
-        '04' => { 'status' => qr/\A5[.][12][.][12]\z/, 'reason' => qr/(?:mailboxfull|userunknown)/ },
-        '05' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/userunknown/ },
-        '06' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
-        '07' => { 'status' => qr/\A4[.]4[.]7\z/, 'reason' => qr/expired/ },
+        '01' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '03' => { 's' => qr/\A5[.]5[.]0\z/, 'r' => qr/hostunknown/, 'b' => qr/\A0\z/ },
+        '04' => { 's' => qr/\A5[.][12][.][12]\z/, 'r' => qr/(?:mailboxfull|userunknown)/, 'b' => qr/\A[01]\z/ },
+        '05' => { 's' => qr/\A5[.]5[.]0\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '06' => { 's' => qr/\A4[.]4[.]7\z/, 'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '07' => { 's' => qr/\A4[.]4[.]7\z/, 'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'US::ReceivingSES' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/filtered/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/filtered/ },
-        '03' => { 'status' => qr/\A4[.]0[.]0\z/, 'reason' => qr/onhold/ },
-        '04' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '05' => { 'status' => qr/\A5[.]3[.]4\z/, 'reason' => qr/mesgtoobig/ },
-        '06' => { 'status' => qr/\A5[.]6[.]1\z/, 'reason' => qr/contenterror/ },
-        '07' => { 'status' => qr/\A5[.]2[.]0\z/, 'reason' => qr/filtered/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A4[.]0[.]0\z/, 'r' => qr/onhold/,      'b' => qr/\d\z/ },
+        '04' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A5[.]3[.]4\z/, 'r' => qr/mesgtoobig/,  'b' => qr/\A1\z/ },
+        '06' => { 's' => qr/\A5[.]6[.]1\z/, 'r' => qr/contenterror/,'b' => qr/\A1\z/ },
+        '07' => { 's' => qr/\A5[.]2[.]0\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
     },
     'US::SendGrid' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '03' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'US::Verizon' => {
-        '01' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/userunknown/ },
+        '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
     },
     'US::Yahoo' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '03' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '04' => { 'status' => qr/\A5[.]2[.]2\z/, 'reason' => qr/mailboxfull/ },
-        '05' => { 'status' => qr/\A5[.]2[.]1\z/, 'reason' => qr/filtered/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '04' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A5[.]2[.]1\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
     },
     'US::Zoho' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
-        '02' => { 'status' => qr/\A5[.]2[.][12]\z/, 'reason' => qr/(?:mailboxfull|filtered)/ },
-        '03' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/ },
-        '04' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
-        '05' => { 'status' => qr/\A4[.]0[.]\d+\z/, 'reason' => qr/expired/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]2[.][12]\z/,  'r' => qr/(?:mailboxfull|filtered)/, 'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '04' => { 's' => qr/\A4[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A4[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
 };
 
@@ -247,22 +247,11 @@ for my $x ( keys %$MSPChildren ) {
                     is $e->addresser->host, $e->senderdomain, sprintf( "[%s] %s->senderdomain = %s", $n, $x, $e->senderdomain );
                     is $e->recipient->host, $e->destination,  sprintf( "[%s] %s->destination = %s", $n, $x, $e->destination );
 
-                    if( substr( $e->deliverystatus, 0, 1 ) == 4 ) {
-                        # 4.x.x
-                        is $e->softbounce, 1, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
-
-                    } elsif( substr( $e->deliverystatus, 0, 1 ) == 5 ) {
-                        # 5.x.x
-                        is $e->softbounce, 0, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
-                    } else {
-                        # No deliverystatus
-                        is $e->softbounce, -1, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
-                    }
-
                     like $e->replycode,      qr/\A(?:[45]\d\d|)\z/,          sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
                     like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
-                    like $e->deliverystatus, $MSPChildren->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
-                    like $e->reason,         $MSPChildren->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );
+                    like $e->deliverystatus, $MSPChildren->{ $x }->{ $n }->{'s'}, sprintf("[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus);
+                    like $e->reason,         $MSPChildren->{ $x }->{ $n }->{'r'}, sprintf("[%s] %s->reason = %s", $n, $x, $e->reason);
+                    like $e->softbounce,     $MSPChildren->{ $x }->{ $n }->{'b'}, sprintf("[%s] %s->softbounce = %s", $n, $x, $e->softbounce);
                     like $e->token,          qr/\A([0-9a-f]{40})\z/,         sprintf( "[%s] %s->token = %s", $n, $x, $e->token );
 
                     unlike $e->deliverystatus,qr/[ \r]/, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
