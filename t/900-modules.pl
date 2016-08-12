@@ -102,6 +102,7 @@ sub list {
             Rhost/GoogleApps.pm
             Rhost/ExchangeOnline.pm
         SMTP.pm
+            SMTP/Error.pm
             SMTP/Reply.pm
             SMTP/Status.pm
         String.pm
