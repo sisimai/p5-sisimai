@@ -16,10 +16,10 @@ MAKE_TEST: {
     my $softbounces = [
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered',
         'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
-        'norelaying', 'notaccept', 'rejected', 'securityerror',
+        'norelaying', 'rejected', 'securityerror',
         'spamdetected', 'suspend', 'systemerror', 'systemfull', 'toomanyconn',
     ];
-    my $hardbounces = [ 'userunknown', 'hostunknown', 'hasmoved' ];
+    my $hardbounces = [ 'userunknown', 'hostunknown', 'hasmoved', 'notaccept' ];
     my $isntbounces = [ 'delivered', 'feedback', 'vacation' ];
     my $dependondsn = [ 'undefined', 'onhold' ];
 
