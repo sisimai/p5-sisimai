@@ -251,11 +251,6 @@ sub scan {
                 }
 
             } else {
-                if( $e =~ m/Technical details of (.+) failure:/ ) {
-                    # Technical details of permanent failure: 
-                    # Technical details of temporary failure: 
-                    $v->{'softbounce'} = $1 eq 'permanent' ? 0 : 1;
-                }
                 $v->{'diagnosis'} .= $e.' ';
             }
         } # End of if: rfc822

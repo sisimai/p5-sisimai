@@ -225,11 +225,7 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/[ \t]*This is a permanent error[.][ \t]*/ ) {
-                # deliver.c:6811|  "recipients. This is a permanent error. The following address(es) failed:\n");
-                $v->{'softbounce'} = 0;
-
-            } elsif( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)(:.+)?\z/ || $e =~ $Re1->{'alias'} ) {
+            if( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)(:.+)?\z/ || $e =~ $Re1->{'alias'} ) {
                 #   kijitora@example.jp
                 #   sabineko@example.jp: forced freeze
                 #
@@ -496,33 +492,18 @@ sub scan {
 
             if( $v1 > 0 ) {
                 # Status or SMTP reply code exists
-                if( $v1 % 5 == 0 ) {
-                    # Both "Status" and SMTP reply code indicate permanent error
-                    $e->{'softbounce'} = 0;
+                # Set pseudo DSN into the value of "status" accessor 
+                $e->{'status'} = $sv if $r1 > 0;
 
-                } elsif( $v1 % 4 == 0 ) {
-                    # Both "Status" and SMTP reply code indicate temporary error
-                    $e->{'softbounce'} = 1;
-
-                } else {
-                    # Mismatch error type...?
-                    if( $r1 > 0 ) {
-                        # Set pseudo DSN into the value of "status" accessor 
-                        $e->{'status'} = $sv;
-                        $e->{'softbounce'} = $r1 == 4 ? 1 : 0;
-                    }
-                }
             } else {
                 # Neither Status nor SMTP reply code exist
                 if( $e->{'reason'} =~ m/\A(?:expired|mailboxfull)/ ) {
                     # Set pseudo DSN (temporary error)
                     $sv = Sisimai::SMTP::Status->code( $e->{'reason'}, 1 );
-                    $e->{'softbounce'} = 1;
 
                 } else {
                     # Set pseudo DSN (permanent error)
                     $sv = Sisimai::SMTP::Status->code( $e->{'reason'}, 0 );
-                    $e->{'softbounce'} = 0;
                 }
             }
             $e->{'status'} ||= $sv;

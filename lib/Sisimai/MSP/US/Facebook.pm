@@ -232,7 +232,6 @@ sub scan {
             my $num = $3;
 
             $fbresponse = sprintf( "%s-%s%d", $lhs, $rhs, $num );
-            $e->{'softbounce'} = $rhs eq 'P' ? 0 : 1;
         }
 
         SESSION: for my $r ( keys %$ReFailure ) {
@@ -258,7 +257,6 @@ sub scan {
                 # This block has not been tested because we have no email sample
                 # including "INT-T?" error code.
                 $e->{'reason'} = 'systemerror';
-                $e->{'softbounce'} = 1;
             }
         }
     }

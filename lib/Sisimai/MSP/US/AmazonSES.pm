@@ -129,7 +129,6 @@ sub scan {
                     # Status:5.2.0
                     # Status: 5.1.0 (permanent failure)
                     $v->{'status'} = $1;
-                    $v->{'softbounce'} = 0 if $e =~ m/[(]permanent failure[)]/;
 
                 } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Remote-MTA: DNS; mx.example.jp
