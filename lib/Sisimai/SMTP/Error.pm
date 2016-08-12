@@ -9,8 +9,8 @@ my $SoftOrHard = {
     'soft' => [
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered',
         'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror', 'norelaying',
-        'notaccept', 'rejected', 'securityerror', 'spamdetected', 'suspend',
-        'syntaxerror', 'systemerror', 'systemfull', 'toomanyconn',
+        'rejected', 'securityerror', 'spamdetected', 'suspend', 'syntaxerror',
+        'systemerror', 'systemfull', 'toomanyconn',
     ],
     'hard' => [
         'hasmoved', 'hostunknown', 'userunknown',
@@ -81,6 +81,7 @@ sub soft_or_hard {
     my $argv2 = shift || '';
 
     my $getchecked = undef;
+    my $statuscode = undef;
     my $classvalue = undef;
     my $softorhard = undef;
 
@@ -99,6 +100,25 @@ sub soft_or_hard {
         } else {
             # The value is not defined (returned undef)
             $softorhard = '';
+        }
+    } elsif( $argv1 eq 'notaccept' ) {
+        # NotAccept: 5xx => hard bounce, 4xx => soft bounce
+        if( length $argv2 ) {
+            # Get D.S.N. or SMTP reply code from The 2nd argument string
+            $statuscode   = Sisimai::SMTP::Status->find($argv2);
+            $statuscode ||= Sisimai::SMTP::Reply->find($argv1);
+            $classvalue   = int(substr($statuscode, 0, 1) || 0);
+
+            if( $classvalue == 4 ) {
+                # Deal as a "soft bounce"
+                $softorhard = 'soft';
+            } else {
+                # 5 or 0, deal as a "hard bounce"
+                $softorhard = 'hard';
+            }
+        } else {
+            # "notaccept" is a hard bounce
+            $softorhard = 'hard';
         }
     } else {
         # Check all the reasons defined at the above
