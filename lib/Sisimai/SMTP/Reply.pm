@@ -68,8 +68,22 @@ sub find {
     my $class = shift;
     my $argv1 = shift || return '';
     my $value = '';
+    my $ip4re = qr{\b
+        (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])[.]
+        (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])[.]
+        (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])[.]
+        (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])
+    \b}x;
 
     return '' if $argv1 =~ m/X-Unix;/i;
+
+    if( $argv1 =~ $ip4re ) {
+        # Convert found IPv4 addresses to '***.***.***.***' to avoid that the
+        # following code detects an octet of the IPv4 adress as an SMTP reply
+        # code.
+        $argv1 =~ s/$ip4re/***.***.***.***/g 
+    }
+
     if( $argv1 =~ m/\b([45][0-5][0-9])\b/ || $argv1 =~ m/\b(25[0-3])\b/ ) {
         # 550, 447, or 250
         $value = $1;
