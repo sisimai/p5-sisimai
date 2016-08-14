@@ -331,7 +331,7 @@ sub make {
             $o->reason( $r );
         }
 
-        if( $o->reason =~ m/\A(?:feedback|vacation)\z/ ) {
+        if( $o->reason =~ m/\A(?:delivered|feedback|vacation)\z/ ) {
             # The value of reason is "vacation" or "feedback".
             $o->softbounce(-1);
             $o->replycode('') unless $o->reason eq 'delivered';
