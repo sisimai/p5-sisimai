@@ -61,6 +61,7 @@ MAKE_TEST: {
     }
 
     is $PackageName->soft_or_hard(), '';
+    is $PackageName->soft_or_hard('neko'), '';
     for my $e ( @$softbounces ) {
         $v = $PackageName->soft_or_hard($e);
         is $v, 'soft', '->soft_or_hard('.$e.') = soft';
