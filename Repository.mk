@@ -24,7 +24,7 @@ git-status:
 git-push:
 	@ for v in `$(GIT) remote show | grep -v origin`; do \
 		printf "[%s]\n" $$v; \
-		$(GIT) push --tags $$v `$(MAKE) git-current-branch`; \
+		$(GIT) push --tags $$v `$(MAKE) -f Repository.mk git-current-branch`; \
 	done
 
 git-tag-list:
