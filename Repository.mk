@@ -9,7 +9,6 @@
 SHELL := /bin/sh
 GIT   := /usr/bin/git
 CP    := cp
-B      = master
 V      = neko
 RSYNC  = rsync -var
 EMAILS = set-of-emails
@@ -25,7 +24,7 @@ git-status:
 git-push:
 	@ for v in `$(GIT) remote show | grep -v origin`; do \
 		printf "[%s]\n" $$v; \
-		$(GIT) push --tags $$v $(B); \
+		$(GIT) push --tags $$v `$(MAKE) git-current-branch`; \
 	done
 
 git-tag-list:
@@ -42,6 +41,9 @@ git-branch-delete:
 
 git-commit-amend:
 	$(GIT) commit --amend
+
+git-current-branch:
+	@$(GIT) branch --contains=HEAD | grep '*' | awk '{ print $$2 }'
 
 git-follow-log:
 	$(GIT) log --follow -p $(V) || \
