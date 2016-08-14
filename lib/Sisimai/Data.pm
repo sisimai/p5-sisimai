@@ -376,7 +376,7 @@ sub make {
                     $o->deliverystatus($pseudocode);
                     if( $o->softbounce == -1 ) {
                         # Set the value of "softbounce" again when the value is -1
-                        $softorhard = Sisimai::SMTP::Error->soft_or_hard($pseudocode);
+                        $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->reason, $pseudocode);
                         if( length $softorhard ) {
                             # Returned value is "soft" or "hard"
                             $o->softbounce($softorhard eq 'soft' ? 1 : 0);
