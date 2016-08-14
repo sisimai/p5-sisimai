@@ -72,7 +72,7 @@ my $MTAChildren = {
         '02' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
         '03' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '04' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,     'b' => qr/\A1\z/ },
-        '05' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/undefined/,   'b' => qr/\A-1\z/ },
+        '05' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/undefined/,   'b' => qr/\A0\z/ },
     },
     'InterScanMSS' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
@@ -110,7 +110,7 @@ my $MTAChildren = {
         '03' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/filtered/,       'b' => qr/\A1\z/ },
     },
     'Notes' => {
-        '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/onhold/,      'b' => qr/\A-1\z/ },
+        '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/onhold/,      'b' => qr/\A0\z/ },
         '02' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '03' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '04' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/networkerror/,'b' => qr/\A1\z/ },
@@ -154,7 +154,7 @@ my $MTAChildren = {
         '06' => { 's' => qr/\A4[.]2[.]2\z/,    'r' => qr/mailboxfull/,'b' => qr/\A1\z/ },
         '07' => { 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/networkerror/,'b' => qr/\A1\z/ },
         '08' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/mailboxfull/,'b' => qr/\A1\z/ },
-        '09' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/undefined/,  'b' => qr/\A-1\z/ },
+        '09' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/undefined/,  'b' => qr/\A0\z/ },
     },
     'Sendmail' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
@@ -226,7 +226,7 @@ my $MTAChildren = {
         '01' => { 's' => qr/\A5[.]3[.]0\z/,    'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '02' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/expired/,     'b' => qr/\A1\z/ },
         '03' => { 's' => qr/\A5[.]3[.]0\z/,    'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-        '04' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/undefined/,   'b' => qr/\A-1\z/ },
+        '04' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/undefined/,   'b' => qr/\A0\z/ },
     },
     'X4' => {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
