@@ -7,6 +7,7 @@ use Module::Load '';
 
 use Sisimai::Address;
 use Sisimai::RFC5322;
+use Sisimai::SMTP::Error;
 use Sisimai::SMTP::Reply;
 use Sisimai::SMTP::Status;
 use Sisimai::String;
@@ -330,46 +331,70 @@ sub make {
             $o->reason( $r );
         }
 
-        if( $o->reason ne 'feedback' && $o->reason ne 'vacation' ) {
+        if( $o->reason =~ m/\A(?:delivered|feedback|vacation)\z/ ) {
+            # The value of reason is "vacation" or "feedback".
+            $o->softbounce(-1);
+            $o->replycode('') unless $o->reason eq 'delivered';
+
+        } else {
             # Bounce message which reason is "feedback" or "vacation" does
             # not have the value of "deliverystatus".
+            my $softorhard = undef;
+            my $textasargv = undef;
+
             unless( length $o->softbounce ) {
-                # The value is not set yet
-                for my $v ( 'deliverystatus', 'diagnosticcode' ) {
-                    # Set the value of softbounce
-                    next unless length $p->{ $v };
-                    $o->softbounce( Sisimai::SMTP->is_softbounce( $p->{ $v } ) );
-                    last if $o->softbounce > -1;
+                # Set the value of softbounce
+                $textasargv =  sprintf("%s %s", $p->{'deliverystatus'}, $p->{'diagnosticcode'});
+                $textasargv =~ s/\A[ ]//g;
+                $softorhard =  Sisimai::SMTP::Error->soft_or_hard($o->reason, $textasargv);
+
+                if( length $softorhard ) {
+                    # Returned value is "soft" or "hard"
+                    $o->softbounce($softorhard eq 'soft' ? 1 : 0);
+
+                } else {
+                    # Returned value is an empty string or undef
+                    $o->softbounce(-1);
                 }
-                $o->softbounce(-1) unless length $o->softbounce;
             }
 
             unless( $o->deliverystatus ) {
                 # Set pseudo status code
-                my $pdsv = undef; # Pseudo delivery status value
-                my $torp = undef; # Temporary or Permanent
+                my $pseudocode = undef; # Pseudo delivery status code
+                my $getchecked = undef; # Permanent error or not
+                my $tmpfailure = undef; # Temporary error
 
-                $torp = $o->softbounce == 1 ? 1 : 0;
-                $pdsv = Sisimai::SMTP::Status->code( $o->reason, $torp );
+                $textasargv =  sprintf("%s %s", $o->replycode, $p->{'diagnosticcode'});
+                $textasargv =~ s/\A[ ]//g;
 
-                if( length $pdsv ) {
+                $getchecked = Sisimai::SMTP::Error->is_permanent($textasargv);
+                $tmpfailure = defined $getchecked ? ( $getchecked == 1 ? 0 : 1 ) : 0;
+                $pseudocode = Sisimai::SMTP::Status->code($o->reason, $tmpfailure);
+
+                if( length $pseudocode ) {
                     # Set the value of "deliverystatus" and "softbounce".
-                    $o->deliverystatus( $pdsv );
-                    $o->softbounce( Sisimai::SMTP->is_softbounce( $pdsv ) ) if $o->softbounce < 0;
+                    $o->deliverystatus($pseudocode);
+                    if( $o->softbounce == -1 ) {
+                        # Set the value of "softbounce" again when the value is -1
+                        $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->reason, $pseudocode);
+                        if( length $softorhard ) {
+                            # Returned value is "soft" or "hard"
+                            $o->softbounce($softorhard eq 'soft' ? 1 : 0);
+
+                        } else {
+                            # Returned value is an empty string or undef
+                            $o->softbounce(-1);
+                        }
+                    }
                 }
             }
 
             if( $o->replycode ) {
                 # Check both of the first digit of "deliverystatus" and "replycode"
-                my $d1 = substr( $o->deliverystatus, 0, 1 );
-                my $r1 = substr( $o->replycode, 0, 1 );
+                my $d1 = substr($o->deliverystatus, 0, 1);
+                my $r1 = substr($o->replycode, 0, 1);
                 $o->replycode('') unless $d1 eq $r1;
             }
-
-        } else {
-            # The value of reason is "vacation" or "feedback"
-            $o->softbounce(-1);
-            $o->replycode('');
         }
         push @$objectlist, $o;
 

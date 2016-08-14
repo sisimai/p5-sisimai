@@ -9,57 +9,57 @@ use Module::Load;
 my $MDAPatterns = qr/\A(?:RFC3464|dovecot|mail[.]local|procmail|maildrop|vpopmail|vmailmgr)/;
 my $MTARelative = {
     'RFC3464' => {
-        '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/mailboxfull/, 'agent' => qr/dovecot/ },
-        '02' => { 'status' => qr/\A[45][.]0[.]\d+\z/, 'reason' => qr/(?:undefined|filtered|expired)/, 'agent' => qr/RFC3464/ },
-        '03' => { 'status' => qr/\A[45][.]0[.]\d+\z/, 'reason' => qr/(?:undefined|expired)/, 'agent' => qr/RFC3464/ },
-        '04' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/mailererror/, 'agent' => qr/RFC3464/ },
-        '05' => { 'status' => qr/\A5[.]2[.]1\z/, 'reason' => qr/filtered/, 'agent' => qr/RFC3464/ },
-        '06' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/userunknown/, 'agent' => qr/mail.local/ },
-        '07' => { 'status' => qr/\A4[.]4[.]0\z/, 'reason' => qr/expired/, 'agent' => qr/RFC3464/ },
-        '08' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/spamdetected/, 'agent' => qr/RFC3464/ },
-        '09' => { 'status' => qr/\A4[.]3[.]0\z/, 'reason' => qr/mailboxfull/, 'agent' => qr/RFC3464/ },
-        '10' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/, 'agent' => qr/RFC3464/ },
-        '11' => { 'status' => qr/\A5[.]\d[.]\d+\z/, 'reason' => qr/spamdetected/, 'agent' => qr/RFC3464/ },
-        '12' => { 'status' => qr/\A4[.]3[.]0\z/, 'reason' => qr/mailboxfull/, 'agent' => qr/RFC3464/ },
-        '13' => { 'status' => qr/\A4[.]0[.]0\z/, 'reason' => qr/mailererror/, 'agent' => qr/RFC3464/ },
-        '14' => { 'status' => qr/\A4[.]4[.]1\z/, 'reason' => qr/expired/, 'agent' => qr/RFC3464/ },
-        '15' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mesgtoobig/, 'agent' => qr/RFC3464/ },
-        '16' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/filtered/, 'agent' => qr/RFC3464/ },
-        '17' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/expired/, 'agent' => qr/RFC3464/ },
-        '18' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/, 'agent' => qr/RFC3464/ },
-        '19' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/, 'agent' => qr/RFC3464/ },
-        '20' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailererror/, 'agent' => qr/RFC3464/ },
-        '21' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/networkerror/, 'agent' => qr/RFC3464/ },
-        '22' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/hostunknown/, 'agent' => qr/RFC3464/ },
-        '23' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/mailboxfull/, 'agent' => qr/RFC3464/ },
-        '24' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/, 'agent' => qr/RFC3464/ },
-        '25' => { 'status' => qr/\A5[.]0[.]\d+\z/, 'reason' => qr/onhold/, 'agent' => qr/RFC3464/ },
-        '26' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/, 'agent' => qr/RFC3464/ },
-        '27' => { 'status' => qr/\A4[.]4[.]6\z/, 'reason' => qr/networkerror/, 'agent' => qr/RFC3464/ },
-        '28' => { 'status' => qr/\A2[.]1[.]5\z/, 'reason' => qr/delivered/, 'agent' => qr/RFC3464/ },
-        '29' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/syntaxerror/, 'agent' => qr/RFC3464/ },
+        '01' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/mailboxfull/, 'a' => qr/dovecot/, 'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A[45][.]0[.]\d+\z/,'r' => qr/(?:undefined|filtered|expired)/, 'a' => qr/RFC3464/, 'b' => qr/\d\z/ },
+        '03' => { 's' => qr/\A[45][.]0[.]\d+\z/,'r' => qr/(?:undefined|expired)/,          'a' => qr/RFC3464/, 'b' => qr/\d\z/ },
+        '04' => { 's' => qr/\A5[.]5[.]0\z/,     'r' => qr/mailererror/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A5[.]2[.]1\z/,     'r' => qr/filtered/,    'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '06' => { 's' => qr/\A5[.]5[.]0\z/,     'r' => qr/userunknown/, 'a' => qr/mail.local/, 'b' => qr/\A0\z/ },
+        '07' => { 's' => qr/\A4[.]4[.]0\z/,     'r' => qr/expired/,     'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '08' => { 's' => qr/\A5[.]7[.]1\z/,     'r' => qr/spamdetected/,'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '09' => { 's' => qr/\A4[.]3[.]0\z/,     'r' => qr/mailboxfull/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '10' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'a' => qr/RFC3464/, 'b' => qr/\A0\z/ },
+        '11' => { 's' => qr/\A5[.]\d[.]\d+\z/,  'r' => qr/spamdetected/,'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '12' => { 's' => qr/\A4[.]3[.]0\z/,     'r' => qr/mailboxfull/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '13' => { 's' => qr/\A4[.]0[.]0\z/,     'r' => qr/mailererror/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '14' => { 's' => qr/\A4[.]4[.]1\z/,     'r' => qr/expired/,     'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '15' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/mesgtoobig/,  'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '16' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/filtered/,    'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '17' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/expired/,     'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '18' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'a' => qr/RFC3464/, 'b' => qr/\A0\z/ },
+        '19' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/onhold/,      'a' => qr/RFC3464/, 'b' => qr/\d\z/ },
+        '20' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/mailererror/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '21' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/networkerror/,'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '22' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/hostunknown/, 'a' => qr/RFC3464/, 'b' => qr/\A0\z/ },
+        '23' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/mailboxfull/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '24' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/onhold/,      'a' => qr/RFC3464/, 'b' => qr/\d\z/ },
+        '25' => { 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/onhold/,      'a' => qr/RFC3464/, 'b' => qr/\d\z/ },
+        '26' => { 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'a' => qr/RFC3464/, 'b' => qr/\A0\z/ },
+        '27' => { 's' => qr/\A4[.]4[.]6\z/,     'r' => qr/networkerror/,'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
+        '28' => { 's' => qr/\A2[.]1[.]5\z/,     'r' => qr/delivered/,   'a' => qr/RFC3464/, 'b' => qr/\A-1\z/ },
+        '29' => { 's' => qr/\A5[.]5[.]0\z/,     'r' => qr/syntaxerror/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
     },
     'RFC3834' => {
-        '01' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
-        '02' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
-        '03' => { 'status' => qr/\A\z/, 'reason' => qr/vacation/ },
+        '01' => { 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
+        '02' => { 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
+        '03' => { 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
     },
     'ARF' => {
-        '01' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '02' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '03' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '04' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '05' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '06' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '07' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/auth-failure/ },
-        '08' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/auth-failure/ },
-        '09' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/auth-failure/ },
-        '10' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '11' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '12' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/opt-out/ },
-        '13' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
-        '14' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/auth-failure/ },
-        '15' => { 'status' => qr/\A\z/, 'reason' => qr/feedback/, 'feedbacktype' => qr/abuse/ },
+        '01' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/, 'b' => qr/\A-1\z/ },
+        '02' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/, 'b' => qr/\A-1\z/ },
+        '03' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/, 'b' => qr/\A-1\z/ },
+        '04' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/, 'b' => qr/\A-1\z/ },
+        '05' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/, 'b' => qr/\A-1\z/ },
+        '06' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/, 'b' => qr/\A-1\z/ },
+        '07' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/auth-failure/, 'b' => qr/\A-1\z/ },
+        '08' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/auth-failure/, 'b' => qr/\A-1\z/ },
+        '09' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/auth-failure/, 'b' => qr/\A-1\z/ },
+        '10' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,    'b' => qr/\A-1\z/ },
+        '11' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,    'b' => qr/\A-1\z/ },
+        '12' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/opt-out/,  'b' => qr/\A-1\z/ },
+        '13' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,    'b' => qr/\A-1\z/ },
+        '14' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/auth-failure/, 'b' => qr/\A-1\z/ },
+        '15' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,    'b' => qr/\A-1\z/ },
     },
 };
 
@@ -116,7 +116,7 @@ for my $x ( keys %$MTARelative ) {
                     # Check the value of the following variables
                     if( $x eq 'ARF' ) {
                         # Check the value of "feedbacktype"
-                        like $e->{'feedbacktype'}, $MTARelative->{'ARF'}->{ $n }->{'feedbacktype'}, 
+                        like $e->{'feedbacktype'}, $MTARelative->{'ARF'}->{ $n }->{'f'}, 
                             sprintf( "[%s] %s->feedbacktype = %s", $n, $x, $e->{'feedbacktype'} );
                     }
 
@@ -187,27 +187,16 @@ for my $x ( keys %$MTARelative ) {
                     is $e->addresser->host, $e->senderdomain, sprintf( "[%s] %s->senderdomain = %s", $n, $x, $e->senderdomain );
                     is $e->recipient->host, $e->destination,  sprintf( "[%s] %s->destination = %s", $n, $x, $e->destination );
 
-                    if( substr( $e->deliverystatus, 0, 1 ) == 4 ) {
-                        # 4.x.x
-                        is $e->softbounce, 1, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
-
-                    } elsif( substr( $e->deliverystatus, 0, 1 ) == 5 ) {
-                        # 5.x.x
-                        is $e->softbounce, 0, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
-                    } else {
-                        # No deliverystatus
-                        is $e->softbounce, -1, sprintf( "[%s] %s->softbounce = %d", $n, $x, $e->softbounce );
-                    }
-
                     like $e->replycode,      qr/\A(?:[245]\d\d|)\z/,         sprintf( "[%s] %s->replycode = %s", $n, $x, $e->replycode );
                     like $e->timezoneoffset, qr/\A[-+]\d{4}\z/,              sprintf( "[%s] %s->timezoneoffset = %s", $n, $x, $e->timezoneoffset );
-                    like $e->deliverystatus, $MTARelative->{ $x }->{ $n }->{'status'}, sprintf( "[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus );
-                    like $e->reason,         $MTARelative->{ $x }->{ $n }->{'reason'}, sprintf( "[%s] %s->reason = %s", $n, $x, $e->reason );
+                    like $e->deliverystatus, $MTARelative->{ $x }->{ $n }->{'s'}, sprintf("[%s] %s->deliverystatus = %s", $n, $x, $e->deliverystatus);
+                    like $e->reason,         $MTARelative->{ $x }->{ $n }->{'r'}, sprintf("[%s] %s->reason = %s", $n, $x, $e->reason);
+                    like $e->softbounce,     $MTARelative->{ $x }->{ $n }->{'b'}, sprintf("[%s] %s->softbounce = %s", $n, $x, $e->softbounce);
                     like $e->token,          qr/\A([0-9a-f]{40})\z/,         sprintf( "[%s] %s->token = %s", $n, $x, $e->token );
 
                     if( $x eq 'ARF' ) {
                         # Check the value of "feedbacktype"
-                        like $e->feedbacktype, $MTARelative->{'ARF'}->{ $n }->{'feedbacktype'}, 
+                        like $e->feedbacktype, $MTARelative->{'ARF'}->{ $n }->{'f'}, 
                             sprintf( "[%s] %s->feedbacktype = %s", $n, $x, $e->feedbacktype );
                     }
 

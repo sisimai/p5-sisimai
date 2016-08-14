@@ -22,6 +22,8 @@ sub is_softbounce {
     #                            0: Hard bounce
     #                           -1: May not be bounce ?
     # @since v4.14.0
+    # @deprecated use Sisimai::SMTP::Error->soft_or_hard() method instead
+    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP::Error->soft_or_hard() instead.");
     my $class = shift;
     my $argv1 = shift || return -1;
 
@@ -104,7 +106,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

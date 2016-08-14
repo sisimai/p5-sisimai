@@ -187,18 +187,10 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
-
-        if( $e->{'status'} ) {
-            # Check softbounce or not
-            $e->{'softbounce'} = 1 if $e->{'status'} =~ m/\A4[.]/;
-
-        } else {
-            # Get the value of SMTP status code as a pseudo D.S.N.
-            if( $e->{'diagnosis'} =~ m/\b([45])\d\d[ \t]*/ ) {
-                # 4xx or 5xx
-                $e->{'softbounce'} = 1 if $1 == 4;
-                $e->{'status'} = sprintf( "%d.0.0", $1 );
-            }
+        # Get the value of SMTP status code as a pseudo D.S.N.
+        if( $e->{'diagnosis'} =~ m/\b([45])\d\d[ \t]*/ ) {
+            # 4xx or 5xx
+            $e->{'status'} = sprintf( "%d.0.0", $1 );
         }
 
         if( $e->{'status'} =~ m/[45][.]0[.]0/ ) {

@@ -244,7 +244,6 @@ sub scan {
             # Verify each regular expression of session errors
             next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
-            $e->{'softbounce'} = 0;
             last;
         }
 
@@ -253,7 +252,6 @@ sub scan {
                 # Verify each regular expression of session errors
                 next unless $e->{'diagnosis'} =~ $ReDelayed->{ $r };
                 $e->{'reason'} = $r;
-                $e->{'softbounce'} = 1;
                 last;
             }
         }

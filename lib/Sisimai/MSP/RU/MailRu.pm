@@ -154,11 +154,7 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[ -1 ];
 
-            if( $e =~ m/[ \t]*This is a permanent error[.][ \t]*/ ) {
-                # recipients. This is a permanent error. The following address(es) failed:
-                $v->{'softbounce'} = 0;
-
-            } elsif( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)\z/ ) {
+            if( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)\z/ ) {
                 #   kijitora@example.jp
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
