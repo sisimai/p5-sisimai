@@ -2,6 +2,9 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
 
 4.17.3
     - Issue #189, Soft bounce improvement. Thanks to @Quickeneen.
+    - Pull-Request #190, Sisimai::SMTP->is_softbounce() method has been marked
+      as obsoleted. Use Sisimai::SMTP::Error->soft_or_hard() method instead.
+    - Issue #185, Sisimai works on Perl 5.24.
 
 4.17.2  Tue, 26 Jul 2016 21:00:17 +0900 (JST)
     - Issue #174, Implement Sisimai::Rhost::ExchangeOnline for the bounce mail
