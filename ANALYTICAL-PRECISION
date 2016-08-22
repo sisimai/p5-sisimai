@@ -5,7 +5,8 @@ MTA::Activehunter .......    0/0014  0.0000  TransWARE Active!hunter
 MTA::ApacheJames ........    0/0006  0.0000  Java Apache Mail Enterprise Server
 MTA::Courier ............   14/0016  0.8750  Courier MTA
 MTA::Domino .............    7/0015  0.4667  IBM Domino Server
-MTA::Exchange ...........    2/0052  0.0385  Microsoft Exchange Server
+MTA::Exchange2003 .......    1/0051  0.0196  Microsoft Exchange Server 2003
+MTA::Exchange2007 .......    3/0004  0.7500  Microsoft Exchange Server 2007
 MTA::Exim ...............  142/0172  0.8256  Exim
 MTA::IMailServer ........    0/0045  0.0000  IPSWITCH IMail Server
 MTA::InterScanMSS .......    0/0009  0.0000  Trend Micro InterScan Messaging Security Suite
@@ -49,8 +50,8 @@ MSP::US::Verizon ........    3/0003  1.0000  Verizon Wireless: http://www.verizo
 MSP::US::Yahoo ..........    0/0009  0.0000  Yahoo! MAIL: https://www.yahoo.com
 MSP::US::Zoho ...........    0/0011  0.0000  Zoho Mail: https://www.zoho.com
 ARF .....................    9/0050  0.1800  Abuse Feedback Reporting Format
-RFC3464 .................  133/0274  0.4854  Fallback Module for MTAs
+RFC3464 .................  131/0272  0.4816  Fallback Module for MTAs
 RFC3834 .................    0/0004  0.0000  Detector for auto replied message
 -------------------------------------------------------------------------------
- bounceHammer 2.7.13p3    1110/2144  0.5177
- Sisimai 4.17.2           2144/2144  1.0000
+ bounceHammer 2.7.13p3    1110/2145  0.5175
+ Sisimai 4.18.0           2145/2145  1.0000
