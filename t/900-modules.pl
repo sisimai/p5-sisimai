@@ -43,7 +43,7 @@ sub list {
             MTA/Courier.pm
             MTA/Domino.pm
             MTA/Exim.pm
-            MTA/Exchange.pm
+            MTA/Exchange2003.pm
             MTA/Exchange2007.pm
             MTA/IMailServer.pm
             MTA/InterScanMSS.pm

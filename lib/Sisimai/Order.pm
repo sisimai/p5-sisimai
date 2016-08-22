@@ -11,11 +11,12 @@ my $AnotherList1 = [
     # These modules have many subject patterns or have MIME encoded subjects
     # which is hard to code as regular expression
     'Sisimai::MTA::Exim',
-    'Sisimai::MTA::Exchange',
+    'Sisimai::MTA::Exchange2003',
 ];
 my $AnotherList2 = [
     # These modules have no MTA specific header and did not listed in the 
     # following subject header based regular expressions.
+    'Sisimai::MTA::Exchange2007',
     'Sisimai::MSP::US::Facebook',
     'Sisimai::MSP::JP::KDDI',
 ];
@@ -120,7 +121,8 @@ my $PatternTable = {
         ],
         qr/undeliver/i => [  
             'Sisimai::MTA::Postfix',
-            'Sisimai::MTA::Exchange',
+            'Sisimai::MTA::Exchange2003',
+            'Sisimai::MTA::Exchange2007',
             'Sisimai::MTA::Notes',
             'Sisimai::MSP::US::Office365',
             'Sisimai::MSP::US::Verizon',

@@ -58,7 +58,7 @@ my $R = {
         '01012' => qr/userunknown/,
         '01013' => qr/userunknown/,
     },
-    'Exchange' => {
+    'Exchange2003' => {
         '01001' => qr/userunknown/,
         '01002' => qr/userunknown/,
         '01003' => qr/userunknown/,

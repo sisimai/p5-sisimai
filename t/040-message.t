@@ -39,7 +39,7 @@ MAKE_TEST: {
             'data' => $mailastext, 
             'order' => [ 
                 'Sisimai::MTA::Sendmail', 'Sisimai::MTA::Postfix', 
-                'Sisimai::MTA::qmail', 'Sisimai::MTA::Exchange', 
+                'Sisimai::MTA::qmail', 'Sisimai::MTA::Exchange2003', 
                 'Sisimai::MSP::US::Google', 'Sisimai::MSP::US::Verizon',
             ]
          );

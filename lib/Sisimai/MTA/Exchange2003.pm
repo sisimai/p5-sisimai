@@ -1,4 +1,4 @@
-package Sisimai::MTA::Exchange;
+package Sisimai::MTA::Exchange2003;
 use parent 'Sisimai::MTA';
 use feature ':5.10';
 use strict;
@@ -51,8 +51,8 @@ my $CodeTable = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Microsoft Exchange Server' }
-sub smtpagent   { 'Exchange' }
+sub description { 'Microsoft Exchange Server 2003' }
+sub smtpagent   { 'Exchange2003' }
 
 # X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
 # X-Mailer: Internet Mail Service (5.5.1960.3)
@@ -61,7 +61,7 @@ sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-MimeOLE' ] };
 sub pattern     { return $Re0 }
 
 sub scan {
-    # Detect an error from Microsoft Exchange Server
+    # Detect an error from Microsoft Exchange Server 2003
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header
@@ -287,17 +287,18 @@ __END__
 
 =head1 NAME
 
-Sisimai::MTA::Exchange - bounce mail parser class for C<Microsft Exchange
-Server>.
+Sisimai::MTA::Exchange2003 - bounce mail parser class for C<Microsft Exchange
+Server 2003>.
 
 =head1 SYNOPSIS
 
-    use Sisimai::MTA::Exchange;
+    use Sisimai::MTA::Exchange2003;
 
 =head1 DESCRIPTION
 
 Sisimai::MTA::Exchange parses a bounce email which created by C<Microsoft
-Exchange Server>. Methods in the module are called from only Sisimai::Message.
+Exchange Server 2003>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -305,13 +306,13 @@ Exchange Server>. Methods in the module are called from only Sisimai::Message.
 
 C<description()> returns description string of this module.
 
-    print Sisimai::MTA::Exchange->description;
+    print Sisimai::MTA::Exchange2003->description;
 
 =head2 C<B<smtpagent()>>
 
 C<smtpagent()> returns MTA name.
 
-    print Sisimai::MTA::Exchange->smtpagent;
+    print Sisimai::MTA::Exchange2003->smtpagent;
 
 =head2 C<B<scan( I<header data>, I<reference to body string>)>>
 

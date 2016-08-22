@@ -44,10 +44,9 @@ sub index {
     my $class = shift;
     my $index = [
         'Sendmail', 'Postfix', 'qmail', 'Exim', 'Courier', 'OpenSMTPD', 
-        'Exchange2007',
-        'Exchange', 'MessagingServer', 'Domino', 'Notes', 'ApacheJames', 
-        'McAfee', 'MXLogic', 'MailFoundry', 'IMailServer', 'mFILTER', 
-        'Activehunter', 'InterScanMSS', 'SurfControl', 'MailMarshalSMTP',
+        'Exchange2007', 'Exchange2003', 'MessagingServer', 'Domino', 'Notes',
+        'ApacheJames', 'McAfee', 'MXLogic', 'MailFoundry', 'IMailServer', 
+        'mFILTER', 'Activehunter', 'InterScanMSS', 'SurfControl', 'MailMarshalSMTP',
         'X1', 'X2', 'X3', 'X4', 'X5', 'V5sendmail', 
     ];
     return $index;

@@ -29,7 +29,7 @@ my $MTAChildren = {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '02' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
     },
-    'Exchange' => {
+    'Exchange2003' => {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '02' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '03' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
@@ -345,7 +345,7 @@ for my $x ( keys %$MTAChildren ) {
                     for my $ee ( 'rhost', 'lhost' ) {
                         # Check rhost and lhost are valid hostname or not
                         next unless $e->{ $ee };
-                        next if $x =~ m/\A(?:qmail|Exim|Exchange|X4)\z/;
+                        next if $x =~ m/\A(?:qmail|Exim|Exchange|X4)/;
                         like $e->{ $ee }, qr/\A(?:localhost|.+[.].+)\z/, sprintf( "[%s] %s->%s = %s", $g, $x, $ee, $e->{ $ee } );
                     }
                 }

@@ -151,7 +151,7 @@ for my $x ( keys %$MTARelative ) {
                     for my $ee ( 'rhost', 'lhost' ) {
                         # Check rhost and lhost are valid hostname or not
                         next unless $e->{ $ee };
-                        next if $x =~ m/\A(?:qmail|Exim|Exchange|X4)\z/;
+                        next if $x =~ m/\A(?:qmail|Exim|Exchange|X4)/;
                         like $e->{ $ee }, qr/\A(?:localhost|.+[.].+)\z/, sprintf( "[%s] %s->%s = %s", $n, $x, $ee, $e->{ $ee } );
                     }
                 }
