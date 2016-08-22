@@ -121,8 +121,8 @@ my $PatternTable = {
         ],
         qr/undeliver/i => [  
             'Sisimai::MTA::Postfix',
-            'Sisimai::MTA::Exchange2003',
             'Sisimai::MTA::Exchange2007',
+            'Sisimai::MTA::Exchange2003',
             'Sisimai::MTA::Notes',
             'Sisimai::MSP::US::Office365',
             'Sisimai::MSP::US::Verizon',
