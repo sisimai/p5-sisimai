@@ -57,9 +57,6 @@ sub scan {
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-
-    my $ndrsubject = '';
-    my $statuspart = 0;     # (Integer) Flag, 1 = have got delivery status part.
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $connheader = {
         'rhost' => '',      # The value of Reporting-MTA header or "Generating Server:"
@@ -96,7 +93,6 @@ sub scan {
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
-            next if $statuspart;
 
             if( $connvalues == scalar( keys %$connheader ) ) {
                 # Diagnostic information for administrators:
