@@ -2,7 +2,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.22-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.17.2-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.18.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 ![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
 
@@ -22,7 +22,7 @@ __シ(Si)__から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名�
   * git clone & make
 * __高い解析精度__
   * 解析精度はbounceHammerの二倍
-  * 26種類のMTAに対応
+  * 27種類のMTAに対応
   * 21種類の著名なMSPに対応
   * Feedback Loopにも対応
   * 27種類のエラー理由を検出
@@ -150,8 +150,8 @@ bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違い
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 8200行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 171600件    |
+| LOC:ソースコードの行数                         | 18200行       | 8400行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 172000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
@@ -171,7 +171,8 @@ MTA/MSPモジュール一覧
 | MTA::ApacheJames         | Java Apache Mail Enterprise Server(> v4.1.26)     |
 | MTA::Courier             | Courier MTA                                       |
 | MTA::Domino              | IBM Domino Server                                 |
-| MTA::Exchange            | Microsoft Exchange Server                         |
+| MTA::Exchange2003        | Microsoft Exchange Server 2003                    |
+| MTA::Exchange2007        | Microsoft Exchange Server 2007 (> v4.18.0)        |
 | MTA::Exim                | Exim                                              |
 | MTA::IMailServer         | IPSWITCH IMail Server                             |
 | MTA::InterScanMSS        | Trend Micro InterScan Messaging Security Suite    |
