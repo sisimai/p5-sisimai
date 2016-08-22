@@ -93,6 +93,10 @@ my $R = {
         '01032' => qr/userunknown/,
         '01033' => qr/userunknown/,
     },
+    'Exchange2007' => {
+        '01001' => qr/userunknown/,
+        '01002' => qr/mesgtoobig/,
+    },
     'Exim' => {
         '01001' => qr/securityerror/,
         '01002' => qr/expired/,

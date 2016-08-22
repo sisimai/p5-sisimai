@@ -44,6 +44,7 @@ sub list {
             MTA/Domino.pm
             MTA/Exim.pm
             MTA/Exchange.pm
+            MTA/Exchange2007.pm
             MTA/IMailServer.pm
             MTA/InterScanMSS.pm
             MTA/MailFoundry.pm

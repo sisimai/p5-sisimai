@@ -30,6 +30,7 @@ sub DELIVERYSTATUS {
         'status'       => '',   # The value of Status header
         'reason'       => '',   # Temporary reason of bounce
         'command'      => '',   # SMTP command in the message body
+        'replycode',   => '',   # SMTP Reply Code
         'diagnosis'    => '',   # The value of Diagnostic-Code header
         'recipient'    => '',   # The value of Final-Recipient header
         'softbounce'   => '',   # Soft bounce or not
@@ -43,6 +44,7 @@ sub index {
     my $class = shift;
     my $index = [
         'Sendmail', 'Postfix', 'qmail', 'Exim', 'Courier', 'OpenSMTPD', 
+        'Exchange2007',
         'Exchange', 'MessagingServer', 'Domino', 'Notes', 'ApacheJames', 
         'McAfee', 'MXLogic', 'MailFoundry', 'IMailServer', 'mFILTER', 
         'Activehunter', 'InterScanMSS', 'SurfControl', 'MailMarshalSMTP',
