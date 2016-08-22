@@ -58,7 +58,7 @@ my $R = {
         '01012' => qr/userunknown/,
         '01013' => qr/userunknown/,
     },
-    'Exchange' => {
+    'Exchange2003' => {
         '01001' => qr/userunknown/,
         '01002' => qr/userunknown/,
         '01003' => qr/userunknown/,
@@ -92,6 +92,10 @@ my $R = {
         '01031' => qr/userunknown/,
         '01032' => qr/userunknown/,
         '01033' => qr/userunknown/,
+    },
+    'Exchange2007' => {
+        '01001' => qr/userunknown/,
+        '01002' => qr/mesgtoobig/,
     },
     'Exim' => {
         '01001' => qr/securityerror/,
