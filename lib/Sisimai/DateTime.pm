@@ -530,7 +530,7 @@ sub second2tz {
 
     $digit->{'hours'} = int( abs($argv1) / 3600 );
     $digit->{'minutes'} = int(( abs($argv1) % 3600 ) / 60);
-    return sprintf( "%s%02d%02d", $digit->{'operator'}, $digit->{'hours'}, $digit->{'minutes'} );
+    return sprintf("%s%02d%02d", $digit->{'operator'}, $digit->{'hours'}, $digit->{'minutes'});
 }
 
 1;
