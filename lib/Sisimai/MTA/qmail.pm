@@ -150,8 +150,8 @@ sub scan {
     $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -195,14 +195,14 @@ sub scan {
             # 192.0.2.153 does not like recipient.
             # Remote host said: 550 5.1.1 <kijitora@example.jp>... User Unknown
             # Giving up on 192.0.2.153.
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ \t]*\z/ ) {
                 # <kijitora@example.jp>:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $1;
                 $recipients++;
@@ -224,7 +224,7 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( ! $e->{'command'} ) {
             # Get the SMTP command name for the session
@@ -287,11 +287,11 @@ sub scan {
             }
         }
         $e->{'command'} ||= '';
-        $e->{'status'}    = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+        $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
 
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -327,7 +327,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::qmail->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

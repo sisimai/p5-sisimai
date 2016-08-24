@@ -70,9 +70,9 @@ sub scan {
     require Sisimai::MDA;
     require Sisimai::Address;
 
-    my $dscontents = [ Sisimai::MTA->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
-    my $scannedset = Sisimai::MDA->scan( $mhead, $mbody );
+    my $dscontents = [Sisimai::MTA->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
+    my $scannedset = Sisimai::MDA->scan($mhead, $mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -119,7 +119,7 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
             if( $e =~ m/\A(?:[Ff]inal|[Oo]riginal)-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
                 $e =~ m/\A(?:[Ff]inal|[Oo]riginal)-[Rr]ecipient:[ ]*([^ ]+)\z/ ) {
                 # 2.3.2 Final-Recipient field
@@ -141,12 +141,12 @@ sub scan {
                 #
                 #       generic-address = *text
                 my $x = $v->{'recipienet'} || '';
-                my $y = Sisimai::Address->s3s4( $1 );
+                my $y = Sisimai::Address->s3s4($1);
 
                 if( length $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $y;
                 $recipients++;
@@ -231,7 +231,6 @@ sub scan {
                 $v->{'date'} = $1;
 
             } else {
-
                 if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                     # 2.3.6 Diagnostic-Code field
                     #   For a "failed" or "delayed" recipient, the Diagnostic-Code DSN field
@@ -391,8 +390,8 @@ sub scan {
             ['"]?[<]?([^\s\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
         }xi;
 
-        my $b = $dscontents->[ -1 ];
-        for my $e ( split( "\n", $$mbody ) ) {
+        my $b = $dscontents->[-1];
+        for my $e ( split("\n", $$mbody) ) {
             # Get the recipient's email address and error messages.
             last if $e =~ $Re1->{'endof'};
             last if $e =~ $Re1->{'rfc822'};
@@ -405,12 +404,12 @@ sub scan {
             if( $e =~ $re_addr ) {
                 # May be an email address
                 my $x = $b->{'recipient'} || '';
-                my $y = Sisimai::Address->s3s4( $1 );
+                my $y = Sisimai::Address->s3s4($1);
 
                 if( length $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
-                    $b = $dscontents->[ -1 ];
+                    $b = $dscontents->[-1];
                 }
                 $b->{'recipient'} = $y;
                 $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
@@ -418,7 +417,7 @@ sub scan {
 
             } elsif( $e =~ m/[(]expanded[ ]from:[ ]([^@]+[@][^@]+)[)]/ ) {
                 # (expanded from: neko@example.jp)
-                $b->{'alias'} = Sisimai::Address->s3s4( $1 );
+                $b->{'alias'} = Sisimai::Address->s3s4($1);
             }
             $b->{'diagnosis'} .= ' '.$e;
         }
@@ -441,7 +440,7 @@ sub scan {
             }
             delete $e->{'alterrors'};
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $scannedset ) {
             # Make bounce data by the values returned from Sisimai::MDA->scan()
@@ -455,7 +454,7 @@ sub scan {
             $e->{'agent'} = __PACKAGE__->smtpagent;
         }
         $e->{'date'}   ||= $mhead->{'date'};
-        $e->{'status'} ||= Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+        $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'});
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $Re1->{'command'};
     }
     $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
@@ -493,7 +492,7 @@ C<smtpagent()> returns MDA name or string 'RFC3464'.
 
     print Sisimai::RFC3464->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

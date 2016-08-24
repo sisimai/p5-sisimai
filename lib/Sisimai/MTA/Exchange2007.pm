@@ -35,7 +35,7 @@ sub description { 'Microsoft Exchange Server 2007' }
 sub smtpagent   { 'Exchange2007' }
 
 # Content-Language: en-US
-sub headerlist  { return [ 'Content-Language' ] };
+sub headerlist  { return ['Content-Language'] };
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -59,8 +59,8 @@ sub scan {
     return undef unless defined $mhead->{'content-language'};
     return undef unless $mhead->{'content-language'} =~ $Re0->{'content-language'};
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -112,14 +112,14 @@ sub scan {
                 # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
                 #
                 # Original message headers:
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A([^ @]+[@][^ @]+)\z/ ) {
                     # kijitora@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $recipients++;
@@ -166,10 +166,10 @@ sub scan {
                 last;
             }
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -207,7 +207,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::Exchange2007->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

@@ -57,7 +57,7 @@ sub smtpagent   { 'Exchange2003' }
 # X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
 # X-Mailer: Internet Mail Service (5.5.1960.3)
 # X-MS-Embedded-Report: 
-sub headerlist  { return [ 'X-MS-Embedded-Report', 'X-MimeOLE' ] };
+sub headerlist  { return ['X-MS-Embedded-Report', 'X-MimeOLE'] };
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -107,8 +107,8 @@ sub scan {
     }
     return undef unless $match;
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -169,7 +169,7 @@ sub scan {
                 #     The MTS-ID of the original message is: c=jp;a= ;p=neko
                 # ;l=EXCHANGE000000000000000000
                 #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[ \t]*([^ ]+[@][^ ]+) on[ \t]*.*\z/ ||
                     $e =~ m/\A[ \t]*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on[ \t]*.*\z/ ) {
@@ -178,7 +178,7 @@ sub scan {
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $v->{'msexch'} = 0;
@@ -238,7 +238,7 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'diagnosis'} =~ m{\AMSEXCH:.+[ \t]*[(]([0-9A-F]{8})[)][ \t]*(.*)\z} ) {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
@@ -250,7 +250,7 @@ sub scan {
                 # Find captured code from the error code table
                 next unless grep { $capturedcode eq $_ } @{ $CodeTable->{ $r } };
                 $e->{'reason'} = $r;
-                $pseudostatus = Sisimai::SMTP::Status->code( $r );
+                $pseudostatus = Sisimai::SMTP::Status->code($r);
                 $e->{'status'} = $pseudostatus if length $pseudostatus;
                 last;
             }
@@ -262,7 +262,7 @@ sub scan {
             if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
                 # Copy alternative error message
                 $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
-                $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+                $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
                 delete $e->{'alterrors'};
             }
         }
@@ -272,11 +272,11 @@ sub scan {
 
     if( scalar(@$rfc822list) == 0 ) {
         # When original message does not included in the bounce message
-        push @$rfc822list, sprintf( "From: %s", $connheader->{'to'} );
-        push @$rfc822list, sprintf( "Date: %s", $connheader->{'date'} );
-        push @$rfc822list, sprintf( "Subject: %s", $connheader->{'subject'} );
+        push @$rfc822list, sprintf("From: %s", $connheader->{'to'});
+        push @$rfc822list, sprintf("Date: %s", $connheader->{'date'});
+        push @$rfc822list, sprintf("Subject: %s", $connheader->{'subject'});
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -314,7 +314,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::Exchange2003->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

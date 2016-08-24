@@ -59,8 +59,8 @@ sub scan {
 
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -110,14 +110,14 @@ sub scan {
             # <<< 550 <kijitora@example.org>, User Unknown
             # 550 <kijitora@example.org>... User unknown
             # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A\d{3}[ \t]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ \t]*(.+)\z/ ) {
                 # 550 <kijitora@example.org>... User unknown
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $1;
                 $v->{'diagnosis'} = $2;
@@ -162,7 +162,7 @@ sub scan {
         for my $e ( @$rfc822list ) {
             if( $e =~ m/^To: (.+)$/ ) {
                 # The value of To: header in the original message
-                $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients = 1;
                 last;
             }
@@ -184,7 +184,7 @@ sub scan {
             # Set server response as a error message
             $e->{'diagnosis'} ||= $responding[ $errorindex ];
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         unless( $e->{'recipient'} =~ m/\A[^ ]+[@][^ ]+\z/ ) {
             # @example.jp, no local part
@@ -195,7 +195,7 @@ sub scan {
         }
         delete $e->{'sessionerr'};
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -231,7 +231,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::V5sendmail->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

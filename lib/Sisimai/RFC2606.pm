@@ -39,7 +39,7 @@ argument is reserved or not.
 
 =head1 CLASS METHODS
 
-=head2 C<B<is_reserved( I<Domain Part> )>>
+=head2 C<B<is_reserved(I<Domain Part>)>>
 
 C<is_reserved()> returns 1 if the domain part is reserved domain, returns 0 if
 the domain part is NOT reserved domain.
@@ -53,7 +53,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

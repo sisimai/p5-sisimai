@@ -33,15 +33,15 @@ BUILD_REGULAR_EXPRESSIONS: {
 my $LONGHEADERS = __PACKAGE__->LONGFIELDS;
 my $HEADERINDEX = {};
 my $HEADERTABLE = {
-    'messageid' => [ 'Message-Id' ],
-    'subject'   => [ 'Subject' ],
-    'listid'    => [ 'List-Id' ],
-    'date'      => [ 'Date', 'Posted-Date', 'Posted', 'Resent-Date', ],
-    'addresser' => [ 
+    'messageid' => ['Message-Id'],
+    'subject'   => ['Subject'],
+    'listid'    => ['List-Id'],
+    'date'      => ['Date', 'Posted-Date', 'Posted', 'Resent-Date'],
+    'addresser' => [
         'From', 'Return-Path', 'Reply-To', 'Errors-To', 'Reverse-Path', 
         'X-Postfix-Sender', 'Envelope-From', 'X-Envelope-From',
     ],
-    'recipient' => [ 
+    'recipient' => [
         'To', 'Delivered-To', 'Forward-Path', 'Envelope-To',
         'X-Envelope-To', 'Resent-To', 'Apparently-To'
     ],
@@ -150,7 +150,7 @@ sub received {
         #   (authenticated bits=0)
         #   by nijo.example.jp (V8/cf) with ESMTP id s1QB5ka0018055;
         #   Wed, 26 Feb 2014 06:05:47 -0500
-        my @received = split( ' ', $value->{'from'} );
+        my @received = split(' ', $value->{'from'});
         my @namelist = ();
         my @addrlist = ();
         my $hostname = '';
@@ -177,7 +177,7 @@ sub received {
             last;
         }
 
-        if( length( $hostname ) == 0 ) {
+        if( length($hostname) == 0 ) {
             # 2. Use IP address as a remote host name
             for my $e ( @addrlist ) {
                 # Skip if the address is a private address
@@ -262,43 +262,43 @@ Sisimai::RFC5322 provide methods for checking email address.
 
 =head1 CLASS METHODS
 
-=head2 C<B<is_emailaddress( I<email address> )>>
+=head2 C<B<is_emailaddress(I<email address>)>>
 
 C<is_emailaddress()> checks the argument is valid email address or not.
 
-    print Sisimai::RFC5322->is_emailaddress( 'neko@example.jp' );  # 1
-    print Sisimai::RFC5322->is_emailaddress( 'neko%example.jp' );  # 0
+    print Sisimai::RFC5322->is_emailaddress('neko@example.jp');  # 1
+    print Sisimai::RFC5322->is_emailaddress('neko%example.jp');  # 0
 
     my $addr_with_name = [ 
         'Stray cat <neko@example.jp',
         '=?UTF-8?B?55m954yr?= <shironeko@example.co.jp>',
     ];
     for my $e ( @$addr_with_name ) {
-        print Sisimai::RFC5322->is_emailaddress( $e ); # 1
+        print Sisimai::RFC5322->is_emailaddress($e); # 1
     }
 
-=head2 C<B<is_domainpart( I<Domain> )>>
+=head2 C<B<is_domainpart(I<Domain>)>>
 
 C<is_domainpart()> checks the argument is valid domain part of a email address
 or not.
 
-    print Sisimai::RFC5322->is_domainpart( 'neko@example.jp' );  # 0
-    print Sisimai::RFC5322->is_domainpart( 'neko.example.jp' );  # 1
+    print Sisimai::RFC5322->is_domainpart('neko@example.jp');  # 0
+    print Sisimai::RFC5322->is_domainpart('neko.example.jp');  # 1
 
-=head2 C<B<is_domainpart( I<Domain> )>>
+=head2 C<B<is_domainpart(I<Domain>)>>
 
 C<is_mailerdaemon()> checks the argument is mailer-daemon or not.
 
-    print Sisimai::RFC5322->is_mailerdaemon( 'neko@example.jp' );          # 0
-    print Sisimai::RFC5322->is_mailerdaemon( 'mailer-daemon@example.jp' ); # 1
+    print Sisimai::RFC5322->is_mailerdaemon('neko@example.jp');          # 0
+    print Sisimai::RFC5322->is_mailerdaemon('mailer-daemon@example.jp'); # 1
 
-=head2 C<B<received( I<String> )>>
+=head2 C<B<received(I<String>)>>
 
 C<received()> returns array reference which include host names in the Received
 header.
 
     my $v = 'from mx.example.org (c1.example.net [192.0.2.1]) by mx.example.jp';
-    my $r = Sisimai::RFC5322->received( $v );
+    my $r = Sisimai::RFC5322->received($v);
 
     warn Dumper $r; 
     $VAR1 = [
@@ -318,7 +318,7 @@ part. This method is called from only Sisimai::MTA/MSP modules.
     X-Mailer: Neko mailer v2.22
     EOM
 
-    my $r = Sisimai::RFC5322->weedout( [split("\n", $v)] );
+    my $r = Sisimai::RFC5322->weedout([split("\n", $v)]);
     print $$r;
 
     From: postmaster@nyaan.example.org

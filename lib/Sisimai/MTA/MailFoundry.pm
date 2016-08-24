@@ -40,8 +40,8 @@ sub scan {
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
     return undef unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -86,14 +86,14 @@ sub scan {
             # Server mx22.example.org[192.0.2.222] failed with: 550 <kijitora@example.org> No such user here
             #
             # This has been a permanent failure.  No further delivery attempts will be made.
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\AUnable to deliver message to: [<]([^ ]+[@][^ ]+)[>]\z/ ) {
                 # Unable to deliver message to: <kijitora@example.org>
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $1;
                 $recipients++;
@@ -122,11 +122,11 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
 
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -162,7 +162,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::MailFoundry->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

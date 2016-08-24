@@ -31,7 +31,7 @@ sub smtpagent   { 'US::Aol' }
 # X-BounceIO-Id: 9D38DE46-21BC-4309-83E1-5F0D788EFF1F.1_0
 # X-Outbound-Mail-Relay-Queue-ID: 07391702BF4DC
 # X-Outbound-Mail-Relay-Sender: rfc822; shironeko@aol.example.jp
-sub headerlist  { return [ 'X-AOL-IP' ] }
+sub headerlist  { return ['X-AOL-IP'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -53,8 +53,8 @@ sub scan {
 
     return undef unless $mhead->{'x-aol-ip'};
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -108,14 +108,14 @@ sub scan {
                 # Status: 5.2.2
                 # Remote-MTA: dns; mx.example.co.jp
                 # Diagnostic-Code: smtp; 550 5.2.2 <kijitora@example.co.jp>... Mailbox Full
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $recipients++;
@@ -180,7 +180,7 @@ sub scan {
 
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
         $e->{'diagnosis'} =~ s{\\n}{ }g;
-        $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
@@ -189,7 +189,7 @@ sub scan {
             last;
         }
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -225,7 +225,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MSP::US::Aol->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

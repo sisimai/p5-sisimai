@@ -14,8 +14,8 @@ my $rwaccessors = [
     'offset',   # [Integer]  Offset position for seeking
     'handle',   # [IO::File] File handle
 ];
-Class::Accessor::Lite->mk_accessors( @$rwaccessors );
-Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
+Class::Accessor::Lite->mk_accessors(@$rwaccessors);
+Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
 
 sub new {
     # Constructor of Sisimai::Mail::STDIN
@@ -26,9 +26,9 @@ sub new {
         'name'   => '<STDIN>',
         'size'   => undef,
         'offset' => 0,
-        'handle' => IO::Handle->new->fdopen( fileno(STDIN), 'r' ),
+        'handle' => IO::Handle->new->fdopen(fileno(STDIN), 'r'),
     };
-    return bless( $param, __PACKAGE__ );
+    return bless($param, __PACKAGE__);
 }
 
 sub read {
@@ -42,11 +42,11 @@ sub read {
     return undef unless -T $self->{'handle'};
 
     eval {
-        $readhandle = $self->{'handle'}->fdopen( fileno(STDIN), 'r' ) unless eof $readhandle;
+        $readhandle = $self->{'handle'}->fdopen(fileno(STDIN), 'r') unless eof $readhandle;
 
         while( my $r = <$readhandle> ) {
             # Read an email from the mailbox file
-            last if( length $readbuffer && substr( $r, 0, 5 ) eq 'From ' );
+            last if( length $readbuffer && substr($r, 0, 5) eq 'From ' );
             $readbuffer .= $r;
         }
     };
@@ -130,7 +130,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

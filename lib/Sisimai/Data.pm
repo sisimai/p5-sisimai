@@ -41,7 +41,7 @@ my $rwaccessors = [
     'deliverystatus',   # [String] Delivery Status(DSN)
     'timezoneoffset',   # [Integer] Time zone offset(seconds)
 ];
-Class::Accessor::Lite->mk_accessors( @$rwaccessors );
+Class::Accessor::Lite->mk_accessors(@$rwaccessors);
 
 my $EndOfEmail = Sisimai::String->EOM;
 my $RetryIndex = Sisimai::Reason->retry;
@@ -60,18 +60,18 @@ sub new {
     my $thing = {};
 
     # Create email address object
-    my $x0 = Sisimai::Address->parse( [ $argvs->{'addresser'} ] );
-    my $y0 = Sisimai::Address->parse( [ $argvs->{'recipient'} ] );
+    my $x0 = Sisimai::Address->parse([$argvs->{'addresser'}]);
+    my $y0 = Sisimai::Address->parse([$argvs->{'recipient'}]);
     my @v1 = ();
 
     return undef unless ref $x0 eq 'ARRAY';
     return undef unless ref $y0 eq 'ARRAY';
 
-    $thing->{'addresser'} = Sisimai::Address->new( shift @$x0 );
+    $thing->{'addresser'} = Sisimai::Address->new(shift @$x0);
     return undef unless ref $thing->{'addresser'} eq 'Sisimai::Address';
     $thing->{'senderdomain'} = $thing->{'addresser'}->host;
 
-    $thing->{'recipient'} = Sisimai::Address->new( shift @$y0 );
+    $thing->{'recipient'} = Sisimai::Address->new(shift @$y0);
     return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
     $thing->{'destination'} = $thing->{'recipient'}->host;
     $thing->{'alias'} = $argvs->{'alias'};
@@ -82,7 +82,7 @@ sub new {
                             $argvs->{'timestamp'} );
 
     # Create Sisimai::Time object
-    $thing->{'timestamp'} = localtime Sisimai::Time->new( $argvs->{'timestamp'} );
+    $thing->{'timestamp'} = localtime Sisimai::Time->new($argvs->{'timestamp'});
     $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
 
     @v1 = (
@@ -91,9 +91,9 @@ sub new {
         'smtpcommand', 'feedbacktype', 'action', 'softbounce', 'replycode',
     );
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
-    $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find( $argvs->{'diagnosticcode'} );
+    $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find($argvs->{'diagnosticcode'});
 
-    return bless( $thing, __PACKAGE__ );
+    return bless($thing, __PACKAGE__);
 }
 
 sub make {
@@ -200,14 +200,14 @@ sub make {
                 push @datevalues, $rfc822data->{ lc $f };
             }
 
-            if( scalar( @datevalues ) < 2 ) {
+            if( scalar(@datevalues) < 2 ) {
                 # Set "date" getting from the value of "Date" in the bounce message
                 push @datevalues, $messageobj->{'header'}->{'date'}; 
             }
 
             while( my $v = shift @datevalues ) {
                 # Parse each date value in the array
-                $datestring = Sisimai::DateTime->parse( $v );
+                $datestring = Sisimai::DateTime->parse($v);
                 last if $datestring;
             }
 
@@ -224,8 +224,8 @@ sub make {
             eval {
                 # Convert from the date string to an object then calculate time
                 # zone offset.
-                my $t = Sisimai::Time->strptime( $datestring, '%a, %d %b %Y %T' );
-                $p->{'timestamp'} = ( $t->epoch - $zoneoffset ) // undef; 
+                my $t = Sisimai::Time->strptime($datestring, '%a, %d %b %Y %T');
+                $p->{'timestamp'} = ($t->epoch - $zoneoffset) // undef; 
             };
         }
         next unless $p->{'timestamp'};
@@ -235,8 +235,8 @@ sub make {
             if( scalar @{ $mailheader->{'received'} } ) {
                 # Get localhost and remote host name from Received header.
                 my $r0 = $mailheader->{'received'};
-                $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $r0->[0] ) };
-                $e->{'rhost'} ||= pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
+                $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($r0->[0]) };
+                $e->{'rhost'} ||= pop   @{ Sisimai::RFC5322->received($r0->[-1]) };
             }
 
             for my $v ( 'rhost', 'lhost' ) {
@@ -247,7 +247,7 @@ sub make {
                 # Check space character in each value
                 if( $p->{ $v } =~ m/ / ) {
                     # Get the first element
-                    $p->{ $v } = (split( ' ', $p->{ $v }, 2 ))[0];
+                    $p->{ $v } = (split(' ', $p->{ $v }, 2))[0];
                 }
             }
 
@@ -282,7 +282,7 @@ sub make {
                 $p->{'diagnosticcode'} =~ s/[ \t]+$EndOfEmail//;
                 $p->{'diagnosticcode'} =~ s/\r\z//g;
 
-                my $v = Sisimai::SMTP::Status->find( $p->{'diagnosticcode'} );
+                my $v = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
                 if( $v =~ m/\A[45][.][1-9][.][1-9]\z/ ) {
                     # Use the DSN value in Diagnostic-Code:
                     $p->{'deliverystatus'} = $v;
@@ -317,18 +317,18 @@ sub make {
                 }
             }
         }
-        $o = __PACKAGE__->new( %$p );
+        $o = __PACKAGE__->new(%$p);
         next unless defined $o;
 
         if( $o->reason eq '' || grep { $o->reason eq $_ } @$RetryIndex ) {
             # Decide the reason of email bounce
-            if( Sisimai::Rhost->match( $o->rhost ) ) {
+            if( Sisimai::Rhost->match($o->rhost) ) {
                 # Remote host dependent error
-                $r = Sisimai::Rhost->get( $o );
+                $r = Sisimai::Rhost->get($o);
             }
-            $r ||= Sisimai::Reason->get( $o );
+            $r ||= Sisimai::Reason->get($o);
             $r ||= 'undefined';
-            $o->reason( $r );
+            $o->reason($r);
         }
 
         if( $o->reason =~ m/\A(?:delivered|feedback|vacation)\z/ ) {
@@ -442,10 +442,10 @@ sub dump {
     return undef unless $type =~ m/\A(?:json|yaml)\z/;
 
     my $dumpeddata = '';
-    my $referclass = sprintf( "Sisimai::Data::%s", uc $type );
+    my $referclass = sprintf("Sisimai::Data::%s", uc $type);
 
     eval { Module::Load::load $referclass };
-    $dumpeddata = $referclass->dump( $self );
+    $dumpeddata = $referclass->dump($self);
 
     return $dumpeddata;
 }
@@ -462,7 +462,7 @@ Sisimai::Data - Parsed data object
 =head1 SYNOPSIS
 
     use Sisimai::Data;
-    my $data = Sisimai::Data->make( 'data' => <Sisimai::Message> object );
+    my $data = Sisimai::Data->make('data' => <Sisimai::Message> object);
     for my $e ( @$data ) {
         print $e->reason;               # userunknown, mailboxfull, and so on.
         print $e->recipient->address;   # (Sisimai::Address) envelope recipient address
@@ -482,8 +482,8 @@ including Sisimai::Data objects.
 
     my $mail = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mail->read ) {
-        my $mesg = Sisimai::Message->new( 'data' => $r );
-        my $data = Sisimai::Data->make( 'data' => $mesg );
+        my $mesg = Sisimai::Message->new('data' => $r);
+        my $data = Sisimai::Data->make('data' => $mesg);
         for my $e ( @$data ) {
             print $e->reason;               # userunknown, mailboxfull, and so on.
             print $e->recipient->address;   # (Sisimai::Address) envelope recipient address
@@ -494,7 +494,7 @@ including Sisimai::Data objects.
 If you want to get bounce records which reason is "delivered", set "delivered"
 option to make() method like the following:
 
-    my $data = Sisimai::Data->make( 'data' => $mesg, 'delivered' => 1 );
+    my $data = Sisimai::Data->make('data' => $mesg, 'delivered' => 1);
 
 =head1 INSTANCE METHODS
 
@@ -541,9 +541,9 @@ address. Sisimai::Address object have the following accessors:
 
 =head2 C<alias> (I<String>)
 
-C<alias> is an alias address of the recipient. When the Original-Recipient: 
-field or C<expanded from 閻ｦ鬧域鏡> string  did not exist in a bounce message, this 
-value is empty.
+C<alias> is an alias address of the recipient. When the Original-Recipient:
+field or C<expanded from "address"> string did not exist in a bounce message,
+this value is empty.
 
     Original-Recipient: rfc822;kijitora@example.org
 
@@ -750,7 +750,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

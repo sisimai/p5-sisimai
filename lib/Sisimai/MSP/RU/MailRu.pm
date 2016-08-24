@@ -68,7 +68,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { '@mail.ru: https://mail.ru' }
 sub smtpagent   { 'RU::MailRu' }
-sub headerlist  { return [ 'X-Failed-Recipients' ] }
+sub headerlist  { return ['X-Failed-Recipients'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -92,8 +92,8 @@ sub scan {
     return undef unless $mhead->{'subject'}    =~ $Re0->{'subject'};
     return undef unless $mhead->{'message-id'} =~ $Re0->{'message-id'};
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -152,14 +152,14 @@ sub scan {
             #  kijitora@example.jp
             #    SMTP error from remote mail server after RCPT TO:<kijitora@example.jp>:
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)\z/ ) {
                 #   kijitora@example.jp
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $1;
                 $recipients++;
@@ -182,7 +182,7 @@ sub scan {
         # Fallback for getting recipient addresses
         if( defined $mhead->{'x-failed-recipients'} ) {
             # X-Failed-Recipients: kijitora@example.jp
-            my @rcptinhead = split( ',', $mhead->{'x-failed-recipients'} );
+            my @rcptinhead = split(',', $mhead->{'x-failed-recipients'});
             map { $_ =~ y/ //d } @rcptinhead;
             $recipients = scalar @rcptinhead;
 
@@ -213,7 +213,7 @@ sub scan {
             }
             delete $e->{'alterrors'};
         }
-        $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'diagnosis'} =~ s{\b__.+\z}{};
 
         unless( $e->{'rhost'} ) {
@@ -227,7 +227,7 @@ sub scan {
                 if( scalar @{ $mhead->{'received'} } ) {
                     # Get localhost and remote host name from Received header.
                     my $r0 = $mhead->{'received'};
-                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received( $r0->[-1] ) };
+                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received($r0->[-1]) };
                 }
             }
         }
@@ -266,7 +266,7 @@ sub scan {
         $e->{'command'} ||= '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -302,7 +302,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MSP::RU::MailRu->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

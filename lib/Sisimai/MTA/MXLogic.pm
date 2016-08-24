@@ -73,7 +73,7 @@ sub smtpagent   { 'MXLogic' }
 # X-MX-Bounce: mta/src/queue/bounce
 # X-MXL-NoteHash: ffffffffffffffff-0000000000000000000000000000000000000000
 # X-MXL-Hash: 4c9d4d411993da17-bbd4212b6c887f6c23bab7db4bd87ef5edc00758
-sub headerlist  { return [ 'X-MXL-NoteHash', 'X-MXL-Hash', 'X-MX-Bounce' ] }
+sub headerlist  { return ['X-MXL-NoteHash', 'X-MXL-Hash', 'X-MX-Bounce'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -101,8 +101,8 @@ sub scan {
     $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $match;
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -151,7 +151,7 @@ sub scan {
             #  kijitora@example.jp
             #    SMTP error from remote mail server after RCPT TO:<kijitora@example.jp>:
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A[ \t]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
                 # A message that you have sent could not be delivered to one or more
@@ -161,7 +161,7 @@ sub scan {
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $1;
                 $v->{'diagnosis'} = $2;
@@ -188,7 +188,7 @@ sub scan {
         $e->{'lhost'} ||= $localhost0;
 
         $e->{'diagnosis'} =~ s/[-]{2}.*\z//g;
-        $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         if( ! $e->{'rhost'} ) {
             # Get the remote host name
@@ -200,7 +200,7 @@ sub scan {
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {
                     # Get localhost and remote host name from Received header.
-                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received( $mhead->{'received'}->[-1] ) };
+                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received($mhead->{'received'}->[-1]) };
                 }
             }
         }
@@ -241,7 +241,7 @@ sub scan {
         $e->{'command'} ||= '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -278,7 +278,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::MXLogic->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

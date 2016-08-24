@@ -99,8 +99,8 @@ sub scan {
     return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -151,14 +151,14 @@ sub scan {
             if( $connvalues == scalar( keys %$connheader ) ) {
                 # Reporting-MTA: dns; 10.138.205.200
                 # Arrival-Date: Thu, 23 Jun 2011 02:29:43 -0700
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $recipients++;
@@ -223,7 +223,7 @@ sub scan {
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'lhost'}   ||= $connheader->{'lhost'};
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'diagnosis'} =~ m/\b([A-Z]{3})[-]([A-Z])(\d)\b/ ) {
             # Diagnostic-Code: smtp; 550 5.1.1 RCP-P2 
@@ -231,7 +231,7 @@ sub scan {
             my $rhs = $2;
             my $num = $3;
 
-            $fbresponse = sprintf( "%s-%s%d", $lhs, $rhs, $num );
+            $fbresponse = sprintf("%s-%s%d", $lhs, $rhs, $num);
         }
 
         SESSION: for my $r ( keys %$ReFailure ) {
@@ -260,7 +260,7 @@ sub scan {
             }
         }
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -296,7 +296,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MSP::US::Facebook->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

@@ -37,12 +37,12 @@ sub dump {
     $damneddata = $argvs->damn;
     if( $modulename eq 'YAML' ) {
         # Use YAML module
-        $YAML::SortKeys = 1;
-        $YAML::Stringify = 0;
-        $YAML::UseHeader = 1;
-        $YAML::UseBlock = 0;
+        $YAML::SortKeys       = 1;
+        $YAML::Stringify      = 0;
+        $YAML::UseHeader      = 1;
+        $YAML::UseBlock       = 0;
         $YAML::CompressSeries = 0;
-        $yamlstring = YAML::Dump( $damneddata );
+        $yamlstring = YAML::Dump($damneddata);
 
     } elsif( $modulename eq 'YAML::Syck' ) {
         # Use JSON::Syck module instead of YAML module.
@@ -51,7 +51,7 @@ sub dump {
         $YAML::Syck::ImplicitUnicode = 1;
         $YAML::Syck::SingleQuote     = 0;
         $YAML::Syck::SortKeys        = 1;
-        $yamlstring = YAML::Syck::Dump( $damneddata );
+        $yamlstring = YAML::Syck::Dump($damneddata);
     }
 
     return $yamlstring;
@@ -69,7 +69,7 @@ Sisimai::Data::YAML - Dumps parsed data object as a YAML format
 =head1 SYNOPSIS
 
     use Sisimai::Data;
-    my $data = Sisimai::Data->make( 'data' => <Sisimai::Message> object );
+    my $data = Sisimai::Data->make('data' => <Sisimai::Message> object);
     for my $e ( @$data ) {
         print $e->dump('yaml');
     }
@@ -87,8 +87,8 @@ C<dump> method returns Sisimai::Data object as a YAML formatted string.
 
     my $mail = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mail->read ) {
-        my $mesg = Sisimai::Message->new( 'data' => $r );
-        my $data = Sisimai::Data->make( 'data' => $mesg );
+        my $mesg = Sisimai::Message->new('data' => $r);
+        my $data = Sisimai::Data->make('data' => $mesg);
         for my $e ( @$data ) {
             print $e->dump('yaml');
         }
@@ -100,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

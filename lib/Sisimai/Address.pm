@@ -12,7 +12,7 @@ my $roaccessors = [
     'verp',     # [String] VERP
     'alias',    # [String] alias of the email address
 ];
-Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
+Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
 
 sub undisclosed { 
     # Return pseudo recipient or sender address
@@ -25,7 +25,7 @@ sub undisclosed {
 
     return undef unless $atype =~ m/\A(?:r|s)\z/;
     $local = $atype eq 'r' ? 'recipient' : 'sender';
-    return sprintf( "undisclosed-%s-in-headers%sdummy-domain.invalid", $local, '@' );
+    return sprintf("undisclosed-%s-in-headers%sdummy-domain.invalid", $local, '@');
 }
 
 sub new {
@@ -47,17 +47,17 @@ sub new {
         $lpart =~ y/`'"<>//d unless $lpart =~ m/\A["].+["]\z/;
 
         my $alias = 0;
-        my $addr0 = sprintf( "%s@%s", $lpart, $dpart );
-        my $addr1 = __PACKAGE__->expand_verp( $addr0 );
+        my $addr0 = sprintf("%s@%s", $lpart, $dpart);
+        my $addr1 = __PACKAGE__->expand_verp($addr0);
 
         unless( length $addr1 ) {
-            $addr1 = __PACKAGE__->expand_alias( $addr0 );
+            $addr1 = __PACKAGE__->expand_alias($addr0);
             $alias = 1 if $addr1;
         }
 
         if( length $addr1 ) {
             # The email address is VERP or alias
-            my @addrs = split( '@', $addr1 );
+            my @addrs = split('@', $addr1);
             if( $alias ) {
                 # The email address is an alias
                 $thing->{'alias'} = $addr0;
@@ -74,13 +74,13 @@ sub new {
             $thing->{'user'} = $lpart;
             $thing->{'host'} = $dpart;
         }
-        $thing->{'address'} = sprintf( "%s@%s", $thing->{'user'}, $thing->{'host'} );
+        $thing->{'address'} = sprintf("%s@%s", $thing->{'user'}, $thing->{'host'});
 
-        return bless( $thing, __PACKAGE__ );
+        return bless($thing, __PACKAGE__);
 
     } else {
         # The argument does not include "@"
-        return undef unless Sisimai::RFC5322->is_mailerdaemon( $email );
+        return undef unless Sisimai::RFC5322->is_mailerdaemon($email);
         if( $email =~ /[<]([^ ]+)[>]/ ) {
             # Mail Delivery Subsystem <MAILER-DAEMON>
             $thing->{'user'} = $1;
@@ -90,11 +90,11 @@ sub new {
             return undef if $email =~ /[ ]/;
 
             # The argument does not include " "
-            $thing->{'user'} = $email;
+            $thing->{'user'}    = $email;
             $thing->{'address'} = $email;
         }
 
-        return bless( $thing, __PACKAGE__ );
+        return bless($thing, __PACKAGE__);
     }
 }
 
@@ -108,7 +108,7 @@ sub parse {
     my $class = shift;
     my $argvs = shift // return undef;
     my $addrs = [];
-    return undef unless ref( $argvs ) eq 'ARRAY';
+    return undef unless ref($argvs) eq 'ARRAY';
 
     PARSE_ARRAY: for my $e ( @$argvs ) {
         # Parse each element in the array
@@ -117,11 +117,11 @@ sub parse {
         next unless defined $e;
         unless( $e =~ m/[@]/ ) {
             # Allow if the argument is MAILER-DAEMON
-            next unless Sisimai::RFC5322->is_mailerdaemon( $e );
+            next unless Sisimai::RFC5322->is_mailerdaemon($e);
         }
         next if $e =~ m/[^\x20-\x7e]/;
 
-        my $v = __PACKAGE__->s3s4( $e );
+        my $v = __PACKAGE__->s3s4($e);
         if( length $v ) {
             # The element includes a valid email address
             push @$addrs, $v;
@@ -144,8 +144,8 @@ sub s3s4 {
     unless( $input =~ /[ ]/ ) {
         # There is no space characters
         # no space character between " and < .
-        $input =~ s/(.)"</$1" </;           # "=?ISO-2022-JP?B?....?="<user@example.jp>, 
-        $input =~ s/(.)[?]=</$1?= </;       # =?ISO-2022-JP?B?....?=<user@example.jp>
+        $input =~ s/(.)"</$1" </;       # "=?ISO-2022-JP?B?....?="<user@example.jp>, 
+        $input =~ s/(.)[?]=</$1?= </;   # =?ISO-2022-JP?B?....?=<user@example.jp>
 
         # comment-part<localpart@domainpart>
         $input =~ s/[<]/ </ unless $input =~ m/\A[<]/;
@@ -154,7 +154,7 @@ sub s3s4 {
 
     my $canon = '';
     my @addrs = ();
-    my @token = split( ' ', $input );
+    my @token = split(' ', $input);
 
     for my $e ( @token ) {
         # Convert character entity; "&lt;" -> ">", "&gt;" -> "<".
@@ -171,7 +171,7 @@ sub s3s4 {
             chomp $e;
             unless( $e =~ m/\A[<]?.+[@][-.0-9A-Za-z]+[.]?[A-Za-z]{2,}[>]?\z/ ) {
                 # Check whether the element is mailer-daemon or not
-                next unless Sisimai::RFC5322->is_mailerdaemon( $e );
+                next unless Sisimai::RFC5322->is_mailerdaemon($e);
             }
             push @addrs, $e;
         }
@@ -207,12 +207,13 @@ sub expand_verp {
     #   expand_verp('bounce+neko=example.jp@example.org') #=> 'neko@example.jp'
     my $class = shift;
     my $email = shift // return undef;
-    my $local = (split( '@', $email, 2 ) )[0];
+    my $local = (split('@', $email, 2))[0];
     my $verp0 = '';
 
     if( $local =~ m/\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/ ) {
+        # bounce+neko=example.jp@example.org => neko@example.jp
         $verp0 = $1.'@'.$2;
-        return $verp0 if Sisimai::RFC5322->is_emailaddress( $verp0 );
+        return $verp0 if Sisimai::RFC5322->is_emailaddress($verp0);
 
     } else {
         return '';
@@ -231,9 +232,10 @@ sub expand_alias {
 
     return '' unless Sisimai::RFC5322->is_emailaddress( $email );
 
-    my @local = split( '@', $email );
+    my @local = split('@', $email);
     if( $local[0] =~ m/\A([-_\w]+?)[+].+\z/ ) {
-        $alias = sprintf( "%s@%s", $1, $local[1] );
+        # neko+straycat@example.jp => neko@example.jp
+        $alias = sprintf("%s@%s", $1, $local[1]);
     }
     return $alias;
 }
@@ -258,7 +260,7 @@ Sisimai::Address - Email address object
 
     use Sisimai::Address;
 
-    my $v = Sisimai::Address->new( 'neko@example.jp' );
+    my $v = Sisimai::Address->new('neko@example.jp');
     print $v->user;     # neko
     print $v->host;     # example.jp
     print $v->address;  # neko@example.jp
@@ -269,13 +271,13 @@ Sisimai::Address provide methods for dealing email address.
 
 =head1 CLASS METHODS
 
-=head2 C<B<new( I<email address> )>>
+=head2 C<B<new(I<email address>)>>
 
 C<new()> is a constructor of Sisimai::Address
 
-    my $v = Sisimai::Address->new( 'neko@example.jp' );
+    my $v = Sisimai::Address->new('neko@example.jp');
 
-=head2 C<B<parse( I<Array-Ref> )>>
+=head2 C<B<parse(I<Array-Ref>)>>
 
 C<parse()> is a parser for getting only email address from text including email
 addresses.
@@ -284,7 +286,7 @@ addresses.
         'Stray cat <cat@example.jp>',
         'nyaa@example.jp (White Cat)',
     ];
-    my $v = Sisimai::Address->parse( $r );
+    my $v = Sisimai::Address->parse($r);
 
     warn Dumper $v;
     $VAR1 = [
@@ -292,7 +294,7 @@ addresses.
                 'nyaa@example.jp'
             ];
 
-=head2 C<B<s3s4( I<email address> )>>
+=head2 C<B<s3s4(I<email address>)>>
 
 C<s3s4()> works Ruleset 3, and 4 of sendmail.cf.
 
@@ -302,23 +304,23 @@ C<s3s4()> works Ruleset 3, and 4 of sendmail.cf.
     ];
 
     for my $e ( @$r ) {
-        print Sisimai::Address->s3s4( $e );    # cat@example.jp
-                                                # nyaa@example.jp
+        print Sisimai::Address->s3s4($e);   # cat@example.jp
+                                            # nyaa@example.jp
     }
 
-=head2 C<B<expand_verp( I<email address> )>>
+=head2 C<B<expand_verp(I<email address>)>>
 
 C<expand_verp()> gets the original email address from VERP
 
     my $r = 'nyaa+neko=example.jp@example.org';
-    print Sisimai::Address->expand_verp( $r ); # neko@example.jp
+    print Sisimai::Address->expand_verp($r); # neko@example.jp
 
-=head2 C<B<expand_alias( I<email address> )>>
+=head2 C<B<expand_alias(I<email address>)>>
 
 C<expand_alias()> gets the original email address from alias
 
     my $r = 'nyaa+neko@example.jp';
-    print Sisimai::Address->expand_alias( $r ); # nyaa@example.jp
+    print Sisimai::Address->expand_alias($r); # nyaa@example.jp
 
 =head1 INSTANCE METHODS
 
@@ -326,28 +328,28 @@ C<expand_alias()> gets the original email address from alias
 
 C<user()> returns a local part of the email address.
 
-    my $v = Sisimai::Address->new( 'neko@example.jp' );
+    my $v = Sisimai::Address->new('neko@example.jp');
     print $v->user;     # neko
 
 =head2 C<B<host()>>
 
 C<host()> returns a domain part of the email address.
 
-    my $v = Sisimai::Address->new( 'neko@example.jp' );
+    my $v = Sisimai::Address->new('neko@example.jp');
     print $v->host;     # example.jp
 
 =head2 C<B<address()>>
 
 C<address()> returns the email address
 
-    my $v = Sisimai::Address->new( 'neko@example.jp' );
+    my $v = Sisimai::Address->new('neko@example.jp');
     print $v->address;     # neko@example.jp
 
 =head2 C<B<verp()>>
 
 C<verp()> returns the VERP email address
 
-    my $v = Sisimai::Address->new( 'neko+nyaa=example.jp@example.org' );
+    my $v = Sisimai::Address->new('neko+nyaa=example.jp@example.org');
     print $v->verp;     # neko+nyaa=example.jp@example.org
     print $v->address;  # nyaa@example.jp
 
@@ -355,7 +357,7 @@ C<verp()> returns the VERP email address
 
 C<alias()> returns the email address (alias)
 
-    my $v = Sisimai::Address->new( 'neko+nyaa@example.jp' );
+    my $v = Sisimai::Address->new('neko+nyaa@example.jp');
     print $v->alias;    # neko+nyaa@example.jp
     print $v->address;  # neko@example.jp
 

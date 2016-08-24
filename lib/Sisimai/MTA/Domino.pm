@@ -53,20 +53,18 @@ sub scan {
 
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $subjecttxt = '';    # (String) The value of Subject:
-
     my $v = undef;
     my $p = '';
 
     require Sisimai::Address;
-
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
         next unless length $e;
@@ -112,13 +110,13 @@ sub scan {
             #
             #   User some.name (kijitora@example.net) not listed in Domino Directory
             #
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
             if( $e =~ m/\Awas not delivered to:\z/ ) {
                 # was not delivered to:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} ||= $e;
                 $recipients++;
@@ -126,7 +124,7 @@ sub scan {
             } elsif( $e =~ m/\A[ ][ ]([^ ]+[@][^ ]+)\z/ ) {
                 # Continued from the line "was not delivered to:"
                 #   kijitora@example.net
-                $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $v->{'recipient'} = Sisimai::Address->s3s4($1);
 
             } elsif( $e =~ m/\Abecause:\z/ ) {
                 # because:
@@ -152,14 +150,14 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
-        $e->{'recipient'} = Sisimai::Address->s3s4( $e->{'recipient'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
 
         for my $r ( keys %$ReFailure ) {
             # Check each regular expression of Domino error messages
             next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
             $e->{'reason'} = $r;
-            my $pseudostatus = Sisimai::SMTP::Status->code( $r, 0 );
+            my $pseudostatus = Sisimai::SMTP::Status->code($r, 0);
             $e->{'status'} = $pseudostatus if length $pseudostatus;
             last;
         }
@@ -168,10 +166,10 @@ sub scan {
     unless( grep { $_ =~ /^Subject:/ } @$rfc822list ) {
         # Set the value of $subjecttxt as a Subject if there is no original
         # message in the bounce mail.
-        push @$rfc822list, sprintf( "Subject: %s", $subjecttxt );
+        push @$rfc822list, sprintf("Subject: %s", $subjecttxt);
     }
 
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -207,7 +205,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::Domino->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

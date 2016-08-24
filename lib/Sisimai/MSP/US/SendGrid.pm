@@ -22,7 +22,7 @@ sub smtpagent   { 'US::SendGrid' }
 
 # Return-Path: <apps@sendgrid.net>
 # X-Mailer: MIME-tools 5.502 (Entity 5.502)
-sub headerlist  { return [ 'Return-Path', 'X-Mailer' ] }
+sub headerlist  { return ['Return-Path', 'X-Mailer'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -47,8 +47,8 @@ sub scan {
     return undef unless $mhead->{'subject'}     =~ $Re0->{'subject'};
 
     require Sisimai::DateTime;
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -101,14 +101,14 @@ sub scan {
                 # Action: failed
                 # Status: 5.1.1
                 # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown 
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $recipients++;
@@ -167,8 +167,8 @@ sub scan {
                     if( $e =~ m/\A[Aa]rrival-[Dd]ate: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/ ) {
                         # Arrival-Date: 2011-08-12 01-05-05
                         $arrivaldate .= 'Thu, '.$3.' ';
-                        $arrivaldate .= Sisimai::DateTime->monthname(0)->[ int($2) - 1 ];
-                        $arrivaldate .= ' '.$1.' '.join( ':', $4, $5, $6 );
+                        $arrivaldate .= Sisimai::DateTime->monthname(0)->[int($2) - 1];
+                        $arrivaldate .= ' '.$1.' '.join(':', $4, $5, $6);
                         $arrivaldate .= ' '.Sisimai::DateTime->abbr2tz('CDT');
                     }
                     $connheader->{'date'} = $arrivaldate;
@@ -186,17 +186,17 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         # Get the value of SMTP status code as a pseudo D.S.N.
         if( $e->{'diagnosis'} =~ m/\b([45])\d\d[ \t]*/ ) {
             # 4xx or 5xx
-            $e->{'status'} = sprintf( "%d.0.0", $1 );
+            $e->{'status'} = sprintf("%d.0.0", $1);
         }
 
         if( $e->{'status'} =~ m/[45][.]0[.]0/ ) {
             # Get the value of D.S.N. from the error message or the value of
             # Diagnostic-Code header.
-            my $pseudostatus = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+            my $pseudostatus = Sisimai::SMTP::Status->find($e->{'diagnosis'});
             $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
@@ -213,7 +213,7 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt;
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -249,7 +249,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MSP::US::SendGrid->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

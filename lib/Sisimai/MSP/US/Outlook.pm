@@ -26,7 +26,7 @@ sub smtpagent   { 'US::Outlook' }
 
 # X-Message-Delivery: Vj0xLjE7RD0wO0dEPTA7U0NMPTk7bD0xO3VzPTE=
 # X-Message-Info: AuEzbeVr9u5fkDpn2vR5iCu5wb6HBeY4iruBjnutBzpStnUabbM...
-sub headerlist  { return [ 'X-Message-Delivery', 'X-Message-Info' ] }
+sub headerlist  { return ['X-Message-Delivery', 'X-Message-Info'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -53,8 +53,8 @@ sub scan {
     $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef if $match < 2;
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -112,14 +112,14 @@ sub scan {
                 # Action: failed
                 # Status: 5.2.2
                 # Diagnostic-Code: smtp;550 5.2.2 <kijitora@example.jp>... Mailbox Full
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: rfc822;kijitora@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $recipients++;
@@ -175,7 +175,7 @@ sub scan {
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
         $e->{'agent'}     = __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( length $e->{'diagnosis'} == 0 ) {
             # No message in 'diagnosis'
@@ -197,7 +197,7 @@ sub scan {
             last;
         }
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -233,7 +233,7 @@ C<smtpagent()> returns MSP name.
 
     print Sisimai::MSP::US::Outlook->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

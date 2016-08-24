@@ -88,11 +88,11 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless is_arf( undef, $mhead );
+    return undef unless is_arf(undef, $mhead);
     require Sisimai::Address;
 
-    my $dscontents = [ Sisimai::MTA->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [Sisimai::MTA->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -154,7 +154,7 @@ sub scan {
             # After "message/rfc822"
             if( $e =~ m/X-HmXmrOriginalRecipient:[ ]*(.+)\z/ ) {
                 # Microsoft ARF: original recipient.
-                $dscontents->[ -1 ]->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients++;
                 # The "X-HmXmrOriginalRecipient" header appears only once so
                 # we take this opportunity to hard-code ARF headers missing in
@@ -164,7 +164,7 @@ sub scan {
             
             } elsif( $e =~ m/\AFrom:[ ]*(.+)\z/ ) {
                 # Microsoft ARF: original sender.
-                $commondata->{'from'} ||= Sisimai::Address->s3s4( $1 );
+                $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
             
             } elsif( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
                 # Get required headers only
@@ -196,7 +196,7 @@ sub scan {
             # Original-Rcpt-To: <kijitora@example.jp>
             # Received-Date: Thu, 29 Apr 2009 00:00:00 JST
             # Source-IP: 192.0.2.1
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\AOriginal-Rcpt-To:[ ]+[<]?(.+)[>]?\z/ ||
                 $e =~ m/\ARedacted-Address:[ ]([^ ].+[@])\z/ ) {
@@ -207,9 +207,9 @@ sub scan {
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
-                $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $v->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients++;
 
             } elsif( $e =~ m/\AFeedback-Type:[ ]*([^ ]+)\z/ ) {
@@ -250,7 +250,7 @@ sub scan {
             } elsif( $e =~ m/\AOriginal-Mail-From:[ ]*(.+)\z/ ) {
                 # the header is optional and MUST NOT appear more than once.
                 # Original-Mail-From: <somespammer@example.net>
-                $commondata->{'from'} ||= Sisimai::Address->s3s4( $1 );
+                $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
 
             } elsif( $e =~ $Re1->{'begin'} ) {
                 # This is an email abuse report for an email message with the 
@@ -270,7 +270,7 @@ sub scan {
     unless( $recipients ) {
         # Insert pseudo recipient address when there is no valid recipient
         # address in the message.
-        $dscontents->[ -1 ]->{'recipient'} = Sisimai::Address->undisclosed('r');
+        $dscontents->[-1]->{'recipient'} = Sisimai::Address->undisclosed('r');
         $recipients = 1;
     }
 
@@ -278,22 +278,22 @@ sub scan {
         # There is no "From:" header in the original message
         if( length $commondata->{'from'} ) {
             # Append the value of "Original-Mail-From" value as a sender address.
-            $rfc822part .= sprintf( "From: %s\n", $commondata->{'from'} );
+            $rfc822part .= sprintf("From: %s\n", $commondata->{'from'});
         }
     }
 
     if( $mhead->{'subject'} =~ /complaint about message from ((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))/ ) {
         # Microsoft ARF: remote host address.
         $arfheaders->{'rhost'} = $1;
-        $commondata->{'diagnosis'} = sprintf( 
+        $commondata->{'diagnosis'} = sprintf(
             "This is a Microsoft email abuse report for an email message received from IP %s on %s",
-            $arfheaders->{'rhost'}, $mhead->{'date'} );
+            $arfheaders->{'rhost'}, $mhead->{'date'});
     }
 
     for my $e ( @$dscontents ) {
         if( $e->{'recipient'} =~ m/\A[^ ]+[@]\z/ ) {
             # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
-            $e->{'recipient'} = Sisimai::Address->s3s4( $rcptintext );
+            $e->{'recipient'} = Sisimai::Address->s3s4($rcptintext);
         }
         map { $e->{ $_ } ||= $arfheaders->{ $_ } } keys %$arfheaders;
         delete $e->{'authres'};
@@ -336,7 +336,7 @@ Sisimai::ARF - Parser class for detecting ARF: Abuse Feedback Reporting Format.
 Do not use this class directly, use Sisimai::ARF.
 
     use Sisimai::ARF;
-    my $v = Sisimai::ARF->scan( $header, $body );
+    my $v = Sisimai::ARF->scan($header, $body);
 
 =head1 DESCRIPTION
 

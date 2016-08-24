@@ -46,7 +46,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub smtpagent   { 'JP::EZweb' }
-sub headerlist  { return [ 'X-SPASIGN' ] }
+sub headerlist  { return ['X-SPASIGN'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -85,8 +85,8 @@ sub scan {
     require Sisimai::String;
     require Sisimai::Address;
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -98,13 +98,13 @@ sub scan {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
         require Sisimai::MIME;
-        my $b0 = Sisimai::MIME->boundary( $mhead->{'content-type'}, 1 );
+        my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1);
         if( length $b0 ) {
             # Convert to regular expression
-            $Re1->{'boundary'} = Sisimai::String->to_regexp( $b0 );
+            $Re1->{'boundary'} = Sisimai::String->to_regexp($b0);
         }
     }
-    my @rxmessages = (); map { push @rxmessages, @{ $ReFailure->{ $_ } } } ( keys %$ReFailure );
+    my @rxmessages = (); map { push @rxmessages, @{ $ReFailure->{ $_ } } } (keys %$ReFailure);
 
     for my $e ( @hasdivided ) {
         # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
@@ -146,7 +146,7 @@ sub scan {
             #    Recipient: <******@ezweb.ne.jp>
             #    >>> RCPT TO:<******@ezweb.ne.jp>
             #    <<< 550 <******@ezweb.ne.jp>: User unknown
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
                 $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
@@ -155,11 +155,11 @@ sub scan {
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
 
-                my $r = Sisimai::Address->s3s4( $1 );
-                if( Sisimai::RFC5322->is_emailaddress( $r ) ) {
+                my $r = Sisimai::Address->s3s4($1);
+                if( Sisimai::RFC5322->is_emailaddress($r) ) {
                     $v->{'recipient'} = $r;
                     $recipients++;
                 }
@@ -183,7 +183,7 @@ sub scan {
                 $v->{'date'} = $1;
 
             } else {
-                next if Sisimai::String->is_8bit( \$e );
+                next if Sisimai::String->is_8bit(\$e);
                 if( $e =~ m/\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
                     #    >>> RCPT TO:<******@ezweb.ne.jp>
                     $v->{'command'} = $1;
@@ -213,7 +213,7 @@ sub scan {
             }
             delete $e->{'alterrors'};
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by EZweb)
@@ -250,7 +250,7 @@ sub scan {
         }
         $e->{'agent'} = __PACKAGE__->smtpagent;
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -285,7 +285,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MSP::JP::EZweb->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

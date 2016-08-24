@@ -254,7 +254,7 @@ is "aspmx.l.google.com". This class is called only Sisimai::Data class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get( I<Sisimai::Data Object> )>>
+=head2 C<B<get(I<Sisimai::Data Object>)>>
 
 C<get()> detects the bounce reason.
 
@@ -264,7 +264,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

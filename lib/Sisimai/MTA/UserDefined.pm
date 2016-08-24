@@ -27,7 +27,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Module decription' }
 sub smtpagent   { 'Module name' }
-sub headerlist  { return [ 'X-Some-UserDefined-Header' ] }
+sub headerlist  { return ['X-Some-UserDefined-Header'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -63,8 +63,8 @@ sub scan {
     # 2. Parse message body($mbody) of the bounce message. See some modules in
     #    lib/Sisimai/MTA or lib/Sisimai/MSP directory to implement codes.
     #
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -89,7 +89,7 @@ sub scan {
     return undef unless $recipients;
 
     # 4. Return the following variable.
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -111,16 +111,16 @@ Sisimai::MTA::UserDefined - User defined MTA module as an example
     use Sisimai::Message;
 
     my $file = '/path/to/mailbox';
-    my $mail = Sisimai::Mail->new( $file );
+    my $mail = Sisimai::Mail->new($file);
     my $mesg = undef;
     my $data = undef;
 
     while( my $r = $mail->read ){ 
         $mesg = Sisimai::Message->new( 
                     'data' => $r,
-                    'load' => [ 'Your::Custom::MTA::Module' ]
+                    'load' => ['Your::Custom::MTA::Module']
                 ); 
-        $data = Sisimai::Data->make( 'data' => $mesg ); 
+        $data = Sisimai::Data->make('data' => $mesg); 
         ...
     }
 
@@ -143,7 +143,7 @@ C<smtpagent()> returns MTA name.
 
     print Your::Custom::MTA::Module->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

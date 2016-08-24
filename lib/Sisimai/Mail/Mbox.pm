@@ -16,8 +16,8 @@ my $rwaccessors = [
     'offset',   # [Integer]  Offset position for seeking
     'handle',   # [IO::File] File handle
 ];
-Class::Accessor::Lite->mk_accessors( @$rwaccessors );
-Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
+Class::Accessor::Lite->mk_accessors(@$rwaccessors);
+Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
 
 sub new {
     # Constructor of Sisimai::Mail::Mbox
@@ -34,9 +34,9 @@ sub new {
     $param->{'path'}   = $argv1;
     $param->{'size'}   = -s $argv1;
     $param->{'file'}   = File::Basename::basename $argv1;
-    $param->{'handle'} = ref $argv1 ? $argv1 : IO::File->new( $argv1, 'r' );
+    $param->{'handle'} = ref $argv1 ? $argv1 : IO::File->new($argv1, 'r');
 
-    return bless( $param, __PACKAGE__ );
+    return bless($param, __PACKAGE__);
 }
 
 sub read {
@@ -62,7 +62,7 @@ sub read {
 
         while( my $r = <$filehandle> ) {
             # Read the UNIX mbox file from 'From ' to the next 'From '
-            last if( length $readbuffer && substr( $r, 0, 5 ) eq 'From ' );
+            last if( length $readbuffer && substr($r, 0, 5) eq 'From ' );
             $readbuffer .= $r;
         }
         $seekoffset += length $readbuffer;
@@ -94,7 +94,7 @@ Sisimai::Mail::Mbox is a mailbox file (UNIX mbox) reader.
 
 =head1 CLASS METHODS
 
-=head2 C<B<new( I<path to mbox> )>>
+=head2 C<B<new(I<path to mbox>)>>
 
 C<new()> is a constructor of Sisimai::Mail::Mbox
 
@@ -154,7 +154,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

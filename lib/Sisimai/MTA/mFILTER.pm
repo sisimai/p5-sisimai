@@ -22,7 +22,7 @@ sub description { 'Digital Arts m-FILTER' }
 sub smtpagent   { 'm-FILTER' }
 
 # X-Mailer: m-FILTER
-sub headerlist  { return [ 'X-Mailer' ] }
+sub headerlist  { return ['X-Mailer'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -46,8 +46,8 @@ sub scan {
     return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
     return undef unless $mhead->{'subject'}  =~ $Re0->{'subject'};
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -100,7 +100,7 @@ sub scan {
             # DATA
             #
             # -------original message
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A([^ ]+[@][^ ]+)\z/ ) {
                 # 以下のメールアドレスへの送信に失敗しました。
@@ -108,7 +108,7 @@ sub scan {
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $1;
                 $recipients++;
@@ -146,20 +146,20 @@ sub scan {
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
             my $rheads = $mhead->{'received'};
-            my $rhosts = Sisimai::RFC5322->received( $rheads->[-1] );
+            my $rhosts = Sisimai::RFC5322->received($rheads->[-1]);
 
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received( $rheads->[0] ) };
+            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($rheads->[0]) };
             for my $ee ( @$rhosts ) {
                 # Avoid "... by m-FILTER"
                 next unless $ee =~ m/[.]/;
                 $e->{'rhost'} = $ee;
             }
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
 
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -195,7 +195,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::mFILTER->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

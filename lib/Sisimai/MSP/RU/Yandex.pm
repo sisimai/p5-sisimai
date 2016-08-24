@@ -24,7 +24,7 @@ sub smtpagent   { 'RU::Yandex' }
 # X-Yandex-Forward: 10104c00ad0726da5f37374723b1e0c8
 # X-Yandex-Queue-ID: 367D79E130D
 # X-Yandex-Sender: rfc822; shironeko@yandex.example.com
-sub headerlist  { return [ 'X-Yandex-Uniq' ] }
+sub headerlist  { return ['X-Yandex-Uniq'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -47,8 +47,8 @@ sub scan {
     return undef unless $mhead->{'x-yandex-uniq'};
     return undef unless $mhead->{'from'} =~ $Re0->{'from'};
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -107,14 +107,14 @@ sub scan {
                 # --367D79E130D.1417885948/forward1h.mail.yandex.net
                 # Content-Description: Undelivered Message
                 # Content-Type: message/rfc822
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: rfc822; kijitora@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $recipients++;
@@ -192,10 +192,10 @@ sub scan {
         $e->{'command'} = shift @commandset || '';
 
         $e->{'diagnosis'} =~ s{\\n}{ }g;
-        $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -231,7 +231,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MSP::RU::Yandex->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

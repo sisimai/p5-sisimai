@@ -20,7 +20,7 @@ sub dump {
     eval {
         $damneddata = $argvs->damn;
         $jsonobject->space_after(1);
-        $jsonstring = $jsonobject->encode( $damneddata );
+        $jsonstring = $jsonobject->encode($damneddata);
     };
 
     return $jsonstring;
@@ -38,7 +38,7 @@ Sisimai::Data::JSON - Dumps parsed data object as a JSON format
 =head1 SYNOPSIS
 
     use Sisimai::Data;
-    my $data = Sisimai::Data->make( 'data' => <Sisimai::Message> object );
+    my $data = Sisimai::Data->make('data' => <Sisimai::Message> object);
     for my $e ( @$data ) {
         print $e->dump('json');
     }
@@ -56,8 +56,8 @@ C<dump> method returns Sisimai::Data object as a JSON formatted string.
 
     my $mail = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mail->read ) {
-        my $mesg = Sisimai::Message->new( 'data' => $r );
-        my $data = Sisimai::Data->make( 'data' => $mesg );
+        my $mesg = Sisimai::Message->new('data' => $r);
+        my $data = Sisimai::Data->make('data' => $mesg);
         for my $e ( @$data ) {
             print $e->dump('json');
         }
@@ -69,7 +69,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

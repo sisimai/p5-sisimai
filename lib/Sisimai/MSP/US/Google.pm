@@ -180,8 +180,8 @@ sub scan {
     return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
 
     require Sisimai::Address;
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -234,18 +234,18 @@ sub scan {
             # The error that the other server returned was:
             # 550 5.1.1 <userunknown@example.jp>... User Unknown
             #
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A[ \t]+([^ ]+[@][^ ]+)\z/ ) {
                 # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
 
-                my $addr0 = Sisimai::Address->s3s4( $1 );
-                if( Sisimai::RFC5322->is_emailaddress( $addr0 ) ) {
+                my $addr0 = Sisimai::Address->s3s4($1);
+                if( Sisimai::RFC5322->is_emailaddress($addr0) ) {
                     $v->{'recipient'} = $addr0;
                     $recipients++;
                 }
@@ -262,7 +262,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         unless( $e->{'rhost'} ) {
             # Get the value of remote host
@@ -296,19 +296,19 @@ sub scan {
                 last;
             }
         }
-        $e->{'status'} = Sisimai::SMTP::Status->find( $e->{'diagnosis'} );
+        $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'});
 
         if( $e->{'reason'} ) {
             # Set pseudo status code
             if( $e->{'status'} =~ m/\A[45][.][1-7][.][1-9]\z/ ) {
                 # Override bounce reason 
-                $e->{'reason'} = Sisimai::SMTP::Status->name( $e->{'status'} );
+                $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'});
 
             } 
         }
     }
 
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -344,7 +344,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MSP::US::Google->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

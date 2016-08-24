@@ -96,15 +96,15 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless ref( $mhead ) eq 'HASH';
+    return undef unless ref($mhead) eq 'HASH';
     return undef unless $mhead->{'from'} =~ $Re0->{'from'};
-    return undef unless ref( $mbody ) eq 'SCALAR';
+    return undef unless ref($mbody) eq 'SCALAR';
     return undef unless length $$mbody;
 
     my $agentname0 = '';    # [String] MDA name
     my $reasonname = '';    # [String] Error reason
     my $bouncemesg = '';    # [String] Error message
-    my @hasdivided = split( "\n", $$mbody );
+    my @hasdivided = split("\n", $$mbody);
     my @linebuffer = ();
 
     for my $e ( @hasdivided ) {
@@ -162,7 +162,7 @@ Sisimai::MDA - Error message parser for MDA
     use Sisimai::MDA;
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
-    my $return = Sisimai::MDA->scan( $header, \$string );
+    my $return = Sisimai::MDA->scan($header, \$string);
 
 =head1 DESCRIPTION
 
@@ -172,13 +172,13 @@ This class is called from Sisimai::Message only.
 
 =head1 CLASS METHODS
 
-=head2 C<B<scan( I<Header>, I<Reference to message body> )>>
+=head2 C<B<scan(I<Header>, I<Reference to message body>)>>
 
 C<scan()> is a parser for detecting an error from mail delivery agent.
 
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
-    my $return = Sisimai::MDA->scan( $header, \$string );
+    my $return = Sisimai::MDA->scan($header, \$string);
     warn Dumper $return;
     $VAR1 = {
         'mda' => 'mail.local',

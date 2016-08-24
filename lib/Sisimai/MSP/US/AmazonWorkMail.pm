@@ -23,7 +23,7 @@ sub smtpagent   { 'US::AmazonWorkMail' }
 # X-Mailer: Amazon WorkMail
 # X-Original-Mailer: Amazon WorkMail
 # X-Ses-Outgoing: 2016.01.14-54.240.27.159
-sub headerlist  { return [ 'X-SES-Outgoing', 'X-Original-Mailer' ] }
+sub headerlist  { return ['X-SES-Outgoing', 'X-Original-Mailer'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -60,11 +60,11 @@ sub scan {
         # Content-Type: text/plain; charset=iso-8859-15
         # Content-Transfer-Encoding: quoted-printable
         require Sisimai::MIME;
-        $$mbody = Sisimai::MIME->qprintd( $mbody );
+        $$mbody = Sisimai::MIME->qprintd($mbody);
     }
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -113,14 +113,14 @@ sub scan {
                 # Final-Recipient: rfc822; kijitora@libsisimai.org
                 # Diagnostic-Code: smtp; 554 4.4.7 Message expired: unable to deliver in 840 minutes.<421 4.4.2 Connection timed out>
                 # Status: 4.4.7
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: RFC822; kijitora@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $recipients++;
@@ -169,7 +169,7 @@ sub scan {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
-        $e->{'diagnosis'} =  Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'status'} =~ m/\A[45][.][01][.]0\z/ ) {
             # Get other D.S.N. value from the error message
@@ -181,7 +181,7 @@ sub scan {
                 $errormessage = $1;
             }
 
-            $pseudostatus = Sisimai::SMTP::Status->find( $errormessage );
+            $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
             $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
@@ -190,10 +190,10 @@ sub scan {
             # <421 4.4.2 Connection timed out>
             $e->{'replycode'} = $1;
         }
-        $e->{'reason'} ||= Sisimai::SMTP::Status->name( $e->{'status'} );
+        $e->{'reason'} ||= Sisimai::SMTP::Status->name($e->{'status'});
         $e->{'agent'}    = __PACKAGE__->smtpagent;
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -229,7 +229,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MSP::US::AmazonWorkMail->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

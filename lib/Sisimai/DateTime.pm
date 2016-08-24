@@ -47,7 +47,7 @@ my $DayOfWeek = {
         'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
         'Friday', 'Saturday',
     ],
-    'abbr' => [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', ],
+    'abbr' => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
 };
 
 my $HourName = {
@@ -55,7 +55,7 @@ my $HourName = {
         'Midnight',1,2,3,4,5,'Morning',7,8,9,10,11,'Noon',
         13,14,15,16,17,'Evening',19,20,21,22,23,
     ],
-    'abbr' => [ 0..23 ],
+    'abbr' => [0..23],
 };
 
 my $TimeZoneAbbr = {
@@ -199,8 +199,8 @@ sub to_second {
     my $value = shift || return 0;
 
     my $getseconds = 0;
-    my $unitoftime = [ keys %$TimeUnit ];
-    my $mathconsts = [ keys %$MathematicalConstant ];
+    my $unitoftime = [keys %$TimeUnit];
+    my $mathconsts = [keys %$MathematicalConstant];
 
     if( $value =~ m/\A(\d+|\d+[.]\d+)([@$unitoftime])?\z/o ) {
         # 1d, 1.5w
@@ -227,8 +227,8 @@ sub monthname {
     # @param    [Integer] argv1  Require full name or not
     # @return   [Array, String]  Month name list or month name
     # @example  Get the names of each month
-    #   monthname()  #=> [ 'Jan', 'Feb', ... ]
-    #   monthname(1) #=> [ 'January', 'February', 'March', ... ]
+    #   monthname()  #=> ['Jan', 'Feb', ...]
+    #   monthname(1) #=> ['January', 'February', 'March', ...]
     my $class = shift;
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
@@ -242,8 +242,8 @@ sub dayofweek {
     # @param    [Integer] argv1 Require full name
     # @return   [Array, String] List of day of week or day of week
     # @example  Get the names of each day of week
-    #   dayofweek()  #=> [ 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' ]
-    #   dayofweek(1) #=> [ 'Sunday', 'Monday', 'Tuesday', ... ]
+    #   dayofweek()  #=> ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    #   dayofweek(1) #=> ['Sunday', 'Monday', 'Tuesday', ...]
     my $class = shift;
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
@@ -257,8 +257,8 @@ sub hourname {
     # @param    [Integer] argv1 Require full name
     # @return   [Array, String] Month name
     # @example  Get the names of each hour
-    #   hourname()  #=> [ 0, 1, 2, ... 23 ]
-    #   hourname(1) #=> [ 'Midnight', 1, 2, ... 'Morning', 7, ... 'Noon', ... 23 ]
+    #   hourname()  #=> [0, 1, 2, ... 23]
+    #   hourname(1) #=> ['Midnight', 1, 2, ... 'Morning', 7, ... 'Noon', ... 23]
     my $class = shift;
     my $argv1 = shift // 1;
     my $value = $argv1 ? 'full' : 'abbr';
@@ -281,7 +281,7 @@ sub o2d {
     my $piece = new Time::Piece;
     my $epoch = 0;
 
-    return $piece->ymd( $argv2 ) unless $argv1 =~ m/\A[-]?\d+\z/;
+    return $piece->ymd($argv2) unless $argv1 =~ m/\A[-]?\d+\z/;
 
     $epoch = $piece->epoch - $argv1 * 86400;
     if( $epoch < 0 ) {
@@ -292,7 +292,7 @@ sub o2d {
         # See http://en.wikipedia.org/wiki/Year_2038_problem
         $epoch = 2 ** 31 - 1;
     }
-    return Time::Piece->new( $epoch )->ymd( $argv2 );
+    return Time::Piece->new($epoch)->ymd($argv2);
 }
 
 sub parse {
@@ -310,7 +310,7 @@ sub parse {
     my $datestring = $argv1; 
        $datestring =~ s{[,](\d+)}{, $1};  # Thu,13 -> Thu, 13
        $datestring =~ s{(\d{1,2}),}{$1};    # Apr 29, -> Apr 29
-    my @timetokens = split( ' ', $datestring );
+    my @timetokens = split(' ', $datestring);
     my $parseddate = '';    # [String]  Canonified Date/Time string
     my $afternoon1 = 0;     # [Integer] After noon flag
     my $altervalue = {};    # [Hash] To store alternative values
@@ -327,7 +327,7 @@ sub parse {
         # Parse each piece of time
         if( $p =~ m/\A[A-Z][a-z]{2}[,]?\z/ ) {
             # Day of week or Day of week; Thu, Apr, ...
-            chop $p if length( $p ) == 4; # Thu, -> Thu
+            chop $p if length($p) == 4; # Thu, -> Thu
 
             if( grep { $p eq $_ } @{ $DayOfWeek->{'abbr'} } ) {
                 # Day of week; Mon, Thu, Sun,...
@@ -362,18 +362,18 @@ sub parse {
             # Arrival-Date: 2014-03-26 00-01-19
             if( $1 < 24 && $2 < 60 && $3 < 60 ) {
                 # Valid time format, maybe...
-                $v->{'T'} = sprintf( "%02d:%02d:%02d", $1, $2, $3 );
+                $v->{'T'} = sprintf("%02d:%02d:%02d", $1, $2, $3);
             }
 
         } elsif( $p =~ m/\A([0-2]\d):([0-5]\d)\z/ ) {
             # Time; 12:34 => 12:34:00
             if( $1 < 24 && $2 < 60 ) {
-                $v->{'T'} = sprintf( "%02d:%02d:00", $1, $2 );
+                $v->{'T'} = sprintf("%02d:%02d:00", $1, $2);
             }
 
         } elsif( $p =~ m/\A(\d\d?):(\d\d?)\z/ ) {
             # Time: 1:4 => 01:04:00
-            $v->{'T'} = sprintf( "%02d:%02d:00", $1, $2 );
+            $v->{'T'} = sprintf("%02d:%02d:00", $1, $2);
 
         } elsif( $p =~ m/\A[APap][Mm]\z/ ) {
             # AM or PM
@@ -394,27 +394,27 @@ sub parse {
                 if( $p =~ m|\A(\d{4})[-/](\d{1,2})[-/](\d{1,2})\z| ) {
                     # Mail.app(MacOS X)'s faked Bounce, Arrival-Date: 2010-06-18 17:17:52 +0900
                     $v->{'Y'} = int $1;
-                    $v->{'M'} = $MonthName->{'abbr'}->[ int( $2 ) - 1 ];
+                    $v->{'M'} = $MonthName->{'abbr'}->[int($2) - 1];
                     $v->{'d'} = int $3;
 
                 } elsif( $p =~ m|\A(\d{4})[-/](\d{1,2})[-/](\d{1,2})T([0-2]\d):([0-5]\d):([0-5]\d)\z| ) {
                     # ISO 8601; 2000-04-29T01:23:45
                     $v->{'Y'} = int $1;
-                    $v->{'M'} = $MonthName->{'abbr'}->[ int( $2 ) - 1 ];
+                    $v->{'M'} = $MonthName->{'abbr'}->[int($2) - 1];
 
                     if( $3 < 32 ) {
                         $v->{'d'} = int $3;
                     }
 
                     if( $4 < 24 && $5 < 60 && $6 < 60 ) {
-                        $v->{'T'} = sprintf( "%02d:%02d:%02d", $4, $5, $6 );
+                        $v->{'T'} = sprintf("%02d:%02d:%02d", $4, $5, $6);
                     }
 
                 } elsif( $p =~ m|\A(\d{1,2})/(\d{1,2})/(\d{1,2})\z| ) {
                     # 4/29/01 11:34:45 PM
-                    $v->{'M'} = $MonthName->{'abbr'}->[ int( $1 ) - 1 ];
+                    $v->{'M'} = $MonthName->{'abbr'}->[int($1) - 1];
                     $v->{'d'}  = int $2;
-                    $v->{'Y'}  = int( $3 ) + 2000;
+                    $v->{'Y'}  = int($3) + 2000;
                     $v->{'Y'} -= 100 if $v->{'Y'} > Time::Piece->new->year() + 1;
                 }
             }
@@ -424,8 +424,8 @@ sub parse {
     if( $v->{'T'} && $afternoon1 ) {
         # +12
         my $t0 = $v->{'T'};
-        my @t1 = split( ':', $v->{'T'} );
-        $v->{'T'} = sprintf( "%02d:%02d:%02d", $t1[0] + 12, $t1[1], $t1[2] );
+        my @t1 = split(':', $v->{'T'});
+        $v->{'T'} = sprintf("%02d:%02d:%02d", $t1[0] + 12, $t1[1], $t1[2]);
         $v->{'T'} = $t0 if $t1[0] > 12;
     }
 
@@ -434,7 +434,7 @@ sub parse {
         # 99 -> 1999, 102 -> 2002
         $v->{'Y'}  += 1900;
     }
-    $v->{'z'} ||= __PACKAGE__->second2tz( Time::Piece->new->tzoffset );
+    $v->{'z'} ||= __PACKAGE__->second2tz(Time::Piece->new->tzoffset);
 
     # Adjust 2-digit Year
     if( exists $altervalue->{'Y'} && ! $v->{'Y'} ) {
@@ -452,7 +452,7 @@ sub parse {
     # Check each piece
     if( grep { ! defined $_ } values %$v ) {
         # Strange date format
-        warn sprintf( " ***warning: Strange date format [%s]", $datestring );
+        warn sprintf(" ***warning: Strange date format [%s]", $datestring);
         return undef;
     }
 
@@ -463,8 +463,8 @@ sub parse {
 
     # Build date string
     #   Thu, 29 Apr 2004 10:01:11 +0900
-    return sprintf( "%s, %s %s %s %s %s",
-            $v->{'a'}, $v->{'d'}, $v->{'M'}, $v->{'Y'}, $v->{'T'}, $v->{'z'} );
+    return sprintf("%s, %s %s %s %s %s",
+            $v->{'a'}, $v->{'d'}, $v->{'M'}, $v->{'Y'}, $v->{'T'}, $v->{'z'});
 }
 
 sub abbr2tz {
@@ -502,11 +502,11 @@ sub tz2second {
         $ztime += ( $digit->{'minutes'} * 60 );
         $ztime *= -1 if $digit->{'operator'} eq '-';
 
-        return undef if abs( $ztime ) > TZ_OFFSET;
+        return undef if abs($ztime) > TZ_OFFSET;
         return $ztime;
 
     } elsif( $argv1 =~ m/\A[A-Za-z]+\z/ ) {
-        return __PACKAGE__->tz2second( $TimeZoneAbbr->{ $argv1 } );
+        return __PACKAGE__->tz2second($TimeZoneAbbr->{ $argv1 });
 
     } else {
         return undef;
@@ -524,12 +524,12 @@ sub second2tz {
     my $argv1 = shift // return '+0000';
     my $digit = { 'operator' => '+' };
 
-    return '' if( ref( $argv1 ) && ref( $argv1 ) ne 'Time::Seconds' );
-    return '' if( abs( $argv1 ) > TZ_OFFSET );   # UTC+14 + 1(DST?)
+    return '' if( ref($argv1) && ref($argv1) ne 'Time::Seconds' );
+    return '' if( abs($argv1) > TZ_OFFSET );   # UTC+14 + 1(DST?)
     $digit->{'operator'} = '-' if $argv1 < 0;
 
-    $digit->{'hours'} = int( abs( $argv1 ) / 3600 );
-    $digit->{'minutes'} = int( ( abs( $argv1 ) % 3600 ) / 60 );
+    $digit->{'hours'} = int( abs($argv1) / 3600 );
+    $digit->{'minutes'} = int(( abs($argv1) % 3600 ) / 60);
     return sprintf( "%s%02d%02d", $digit->{'operator'}, $digit->{'hours'}, $digit->{'minutes'} );
 }
 
@@ -546,7 +546,7 @@ Sisimai::DateTime - Date and time utilities
 
     use Sisimai::DateTime;
     my $v = 'Sat Mar  1 13:47:46 JST 2014';
-    print Sisimai::DateTime->parse( $v );  # Sat, 1 Mar 2014 13:47:46 +0900
+    print Sisimai::DateTime->parse($v);  # Sat, 1 Mar 2014 13:47:46 +0900
 
 =head1 DESCRIPTION
 
@@ -554,16 +554,16 @@ Sisimai::Tie provide methods for dealing date and time.
 
 =head1 CLASS METHODS
 
-=head2 C<B<parse( I<Date string> )>>
+=head2 C<B<parse(I<Date string>)>>
 
 C<parse()> convert various date format string.
 
     my $x = 'Fri, 9 Apr 2004 04:01:03 +0000 (GMT)';
     my $y = '27 Apr 2009 08:08:54 +0900';
-    print Sisimai::DateTime->parse( $x );  # Fri, 9 Apr 2004 04:01:03 +0000
-    print Sisimai::DateTime->parse( $y );  # Thu, 27 Apr 2009 08:08:54 +0900
+    print Sisimai::DateTime->parse($x);  # Fri, 9 Apr 2004 04:01:03 +0000
+    print Sisimai::DateTime->parse($y);  # Thu, 27 Apr 2009 08:08:54 +0900
 
-=head2 C<B<to_second( I<String> )>>
+=head2 C<B<to_second(I<String>)>>
 
 C<to_string()> convert a string to the value of seconds like followings:
 
@@ -572,7 +572,7 @@ C<to_string()> convert a string to the value of seconds like followings:
     print Sisimai::DateTime->to_second('1d');  # 86400, 1 day
     print Sisimai::DateTime->to_second('1w');  # 604800, 1 week
 
-=head2 C<B<abbr2tz( I<Abbr> )>>
+=head2 C<B<abbr2tz(I<Abbr>)>>
 
 C<abbr2tz()> convert a time zone abbreviation to 4 digit string of time zone.
 
@@ -586,7 +586,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

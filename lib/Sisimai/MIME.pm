@@ -44,7 +44,7 @@ sub mimedecode {
         $e =~ s/[ \t]+\z//g;
         $e =~ y/"//d;
 
-        if( __PACKAGE__->is_mimeencoded( \$e ) ) {
+        if( __PACKAGE__->is_mimeencoded(\$e) ) {
             # MIME Encoded string
             if( $e =~ m{\A=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=\z} ) {
                 # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
@@ -54,11 +54,11 @@ sub mimedecode {
 
                 if( $encodingname eq 'Q' ) {
                     # Quoted-Printable
-                    push @decodedtext0, MIME::QuotedPrint::decode( $mimeencoded0 );
+                    push @decodedtext0, MIME::QuotedPrint::decode($mimeencoded0);
 
                 } elsif( $encodingname eq 'B' ) {
                     # Base64
-                    push @decodedtext0, MIME::Base64::decode( $mimeencoded0 );
+                    push @decodedtext0, MIME::Base64::decode($mimeencoded0);
                 }
             }
         } else {
@@ -67,7 +67,7 @@ sub mimedecode {
     }
 
     return '' unless scalar @decodedtext0;
-    $decodedtext1 = join( '', @decodedtext0 );
+    $decodedtext1 = join('', @decodedtext0);
 
     if( $characterset && $encodingname ) {
         # utf-8 => utf8
@@ -76,7 +76,7 @@ sub mimedecode {
         if( $characterset ne 'utf8' ) {
             # Characterset is not UTF-8
             eval {
-                Encode::from_to( $decodedtext1, $characterset, 'utf8' );
+                Encode::from_to($decodedtext1, $characterset, 'utf8');
             };
             $decodedtext1 = 'FAILED TO CONVERT THE SUBJECT' if $@;
         }
@@ -95,7 +95,7 @@ sub qprintd {
 
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
-    return MIME::QuotedPrint::decode( $$argv1 );
+    return MIME::QuotedPrint::decode($$argv1);
 }
 
 sub base64d {
@@ -111,7 +111,7 @@ sub base64d {
 
     if( $$argv1 =~ m|([+/=0-9A-Za-z\r\n]+)| ) {
         # Decode BASE64
-        $plain = MIME::Base64::decode( $1 );
+        $plain = MIME::Base64::decode($1);
     }
     return $plain;
 }
@@ -136,8 +136,8 @@ sub boundary {
         $value =~ y/"'//d;
     }
 
-    $value = sprintf( "--%s", $value ) if $start > -1;
-    $value = sprintf( "%s--", $value ) if $start >  0;
+    $value = sprintf("--%s", $value) if $start > -1;
+    $value = sprintf("%s--", $value) if $start >  0;
     return $value;
 }
 
@@ -154,10 +154,10 @@ Sisimai::MIME - MIME Utilities
     use Sisimai::MIME;
 
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::MIME->is_mimeencoded( \$e );
+    my $v = Sisimai::MIME->is_mimeencoded(\$e);
     print $v;   # 1
 
-    my $x = Sisimai::MIME->mimedecode( [ $e ] );
+    my $x = Sisimai::MIME->mimedecode([$e]);
     print $x;
 
 =head1 DESCRIPTION
@@ -171,7 +171,7 @@ Sisimai::MIME is MIME Utilities for C<Sisimai>.
 C<is_mimeencoded()> returns that the argument is MIME-Encoded string or not.
 
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::MIME->is_mimeencoded( \$e );  # 1
+    my $v = Sisimai::MIME->is_mimeencoded(\$e);  # 1
 
 =head2 C<B<mimedecode(I<Array-Ref>)>>
 
@@ -179,7 +179,7 @@ C<mimedecode()> is a decoder method for getting the original string from MIME
 Encoded string in email headers.
 
     my $r = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::MIME->mimedecode( [ $r ] );
+    my $v = Sisimai::MIME->mimedecode([$r]);
 
 =head2 C<B<base64d(I<\String>)>>
 
@@ -202,11 +202,11 @@ printable encoded string.
 C<boundary()> returns a boundary string from the value of Content-Type header.
 
     my $r = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
-    my $v = Sisimai::MIME->boundary( $r );
+    my $v = Sisimai::MIME->boundary($r);
     print $v;   # Apple-Mail-1-526612466
 
-    print Sisimai::MIME->boundary( $r, 0 ); # --Apple-Mail-1-526612466
-    print Sisimai::MIME->boundary( $r, 1 ); # --Apple-Mail-1-526612466--
+    print Sisimai::MIME->boundary($r, 0); # --Apple-Mail-1-526612466
+    print Sisimai::MIME->boundary($r, 1); # --Apple-Mail-1-526612466--
 
 =head1 AUTHOR
 
@@ -214,7 +214,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

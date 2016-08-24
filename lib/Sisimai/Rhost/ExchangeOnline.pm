@@ -284,7 +284,7 @@ is "*.protection.outlook.com". This class is called only Sisimai::Data class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get( I<Sisimai::Data Object> )>>
+=head2 C<B<get(I<Sisimai::Data Object>)>>
 
 C<get()> detects the bounce reason.
 

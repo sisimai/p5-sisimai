@@ -41,8 +41,9 @@ sub scan {
 
     require Sisimai::MIME;
     require Sisimai::String;
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -52,10 +53,10 @@ sub scan {
     my $endoferror = 0;     # (Integer) Flag for the end of error message
     my $v = undef;
 
-    $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
+    $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
     if( length $boundary00 ) {
         # Convert to regular expression
-        $Re1->{'rfc822'} = Sisimai::String->to_regexp( '--'.$boundary00.'--' );
+        $Re1->{'rfc822'} = Sisimai::String->to_regexp('--'.$boundary00.'--');
 
     } else {
         $Re1->{'rfc822'} = qr/\A[ \t]*[+]+[ \t]*\z/;
@@ -97,7 +98,7 @@ sub scan {
             #
             # The following recipients were affected: 
             #    dummyuser@blabla.xxxxxxxxxxxx.com
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A[ \t]{4}([^ ]+[@][^ ]+)\z/ ) {
                 # The following recipients were affected: 
@@ -105,7 +106,7 @@ sub scan {
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $1;
                 $recipients++;
@@ -138,7 +139,7 @@ sub scan {
                         # Original Sender:    <originalsender@example.com>
                         # Use this line instead of "From" header of the original
                         # message.
-                        push @$rfc822list, sprintf("From: %s", $1 );
+                        push @$rfc822list, sprintf("From: %s", $1);
 
                     } elsif( $e =~ m/\ASender-MTA:[ \t]+[<](.+)[>]\z/ ) {
                         # Sender-MTA:         <10.11.12.13>
@@ -156,11 +157,11 @@ sub scan {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
 
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -198,7 +199,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::MailMarshalSMTP->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

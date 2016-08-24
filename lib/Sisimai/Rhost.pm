@@ -12,7 +12,7 @@ my $RhostClass = {
 sub list {
     # Retrun the list of remote hosts Sisimai support
     # @return   [Array] Remote host list
-    return [ keys %$RhostClass ];
+    return [keys %$RhostClass];
 }
 
 sub match {
@@ -57,8 +57,8 @@ sub get {
     }
 
     return undef unless length $rhostclass;
-    Module::Load::load( $rhostclass );
-    $reasontext = $rhostclass->get( $argvs );
+    Module::Load::load($rhostclass);
+    $reasontext = $rhostclass->get($argvs);
 
     return $reasontext;
 }
@@ -90,12 +90,12 @@ This class is called only Sisimai::Data class.
 Return the list of remote hosts which is supported by Sisimai for detecting the
 reason of bounce from major email services.
 
-=head2 C<B<match( I<remote host> )>>
+=head2 C<B<match(I<remote host>)>>
 
 Returns 1 if the remote host is listed in the results of Sisimai::Rhost->list()
 method.
 
-=head2 C<B<get( I<Sisimai::Data Object> )>>
+=head2 C<B<get(I<Sisimai::Data Object>)>>
 
 C<get()> detects the bounce reason.
 
@@ -105,7 +105,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

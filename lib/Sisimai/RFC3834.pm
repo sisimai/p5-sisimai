@@ -83,13 +83,13 @@ sub scan {
     require Sisimai::MTA;
     require Sisimai::Address;
 
-    my $dscontents = [ Sisimai::MTA->DELIVERYSTATUS ];
+    my $dscontents = [Sisimai::MTA->DELIVERYSTATUS];
     my @hasdivided = split( "\n", $$mbody );
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
     my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
     my $blanklines = 0;     # (Integer) Counter for countinuous blank lines
-    my $v = $dscontents->[ -1 ];
+    my $v = $dscontents->[-1];
 
     RECIPIENT_ADDRESS: {
         # Try to get the address of the recipient
@@ -104,7 +104,7 @@ sub scan {
 
         if( $v->{'recipient'} ) {
             # Clean-up the recipient address
-            $v->{'recipient'} = Sisimai::Address->s3s4( $v->{'recipient'} );
+            $v->{'recipient'} = Sisimai::Address->s3s4($v->{'recipient'});
             $recipients++;
         }
     }
@@ -129,7 +129,7 @@ sub scan {
     }
     require Sisimai::String;
 
-    $v->{'diagnosis'} = Sisimai::String->sweep( $v->{'diagnosis'} );
+    $v->{'diagnosis'} = Sisimai::String->sweep($v->{'diagnosis'});
     $v->{'reason'}    = 'vacation';
     $v->{'agent'}     = __PACKAGE__->smtpagent;
     $v->{'date'}      = $mhead->{'date'};
@@ -169,7 +169,7 @@ C<smtpagent()> returns MDA name or string 'RFC3834'.
 
     print Sisimai::RFC3834->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses an auto replied message and return results as an array
 reference. See Sisimai::Message for more details.

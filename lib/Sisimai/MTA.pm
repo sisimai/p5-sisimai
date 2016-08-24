@@ -10,8 +10,8 @@ sub INDICATORS {
     # @return   [Hash] Position flag data
     # @since    v4.13.0
     return {
-        'deliverystatus' => ( 1 << 1 ),
-        'message-rfc822' => ( 1 << 2 ),
+        'deliverystatus' => (1 << 1),
+        'message-rfc822' => (1 << 2),
     };
 }
 
@@ -116,7 +116,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

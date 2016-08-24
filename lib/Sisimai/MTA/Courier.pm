@@ -75,8 +75,8 @@ sub scan {
     }
     return undef unless $match;
 
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -131,14 +131,14 @@ sub scan {
                 # Status: 5.0.0
                 # Remote-MTA: dns; mx.example.co.jp [192.0.2.95]
                 # Diagnostic-Code: smtp; 550 5.1.1 <kijitora@example.co.jp>... User Unknown
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: rfc822; kijitora@example.co.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[ -1 ];
+                        $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $1;
                     $recipients++;
@@ -162,7 +162,7 @@ sub scan {
                     $v->{'rhost'} = lc $1;
                     if( $v->{'rhost'} =~ m/ / ) {
                         # Get the first element
-                        $v->{'rhost'} = (split( ' ', $v->{'rhost'} ))[0];
+                        $v->{'rhost'} = (split(' ', $v->{'rhost'}))[0];
                     }
 
                 } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
@@ -238,7 +238,7 @@ sub scan {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         HARD_E: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
@@ -259,7 +259,7 @@ sub scan {
         $e->{'command'} ||= $commandtxt || '';
     }
 
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -295,7 +295,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::Courier->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

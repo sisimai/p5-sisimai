@@ -12,8 +12,8 @@ my $roaccessors = [
 my $rwaccessors = [
     'mail',     # [Sisimai::Mail::Mbox, Sisimai::Mail::Maildir] Object
 ];
-Class::Accessor::Lite->mk_accessors( @$rwaccessors );
-Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
+Class::Accessor::Lite->mk_accessors(@$rwaccessors);
+Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
 
 sub new {
     # Constructor of Sisimai::Mail
@@ -31,28 +31,28 @@ sub new {
     # The argumenet is a mailbox or a Maildir/.
     if( -f $argv1 ) {
         # The argument is a file, it is an mbox or email file in Maildir/
-        $klass = sprintf( "%s::Mbox", __PACKAGE__ );
+        $klass = sprintf("%s::Mbox", __PACKAGE__);
         $param->{'type'} = 'mailbox';
 
     } elsif( -d $argv1 ) {
         # The agument is not a file, it is a Maildir/
-        $klass = sprintf( "%s::Maildir", __PACKAGE__ );
+        $klass = sprintf("%s::Maildir", __PACKAGE__);
         $param->{'type'} = 'maildir';
 
     } else {
         # The argumen1 neither a mailbox nor a Maildir/.
         if( ref($argv1) eq 'GLOB' || $argv1 eq '<STDIN>' ) {
             # Read from STDIN
-            $klass = sprintf( "%s::STDIN", __PACKAGE__ );
+            $klass = sprintf("%s::STDIN", __PACKAGE__);
             $param->{'type'} = 'stdin';
         }
     }
 
     return undef unless $klass;
     Module::Load::load $klass;
-    $param->{'mail'} = $klass->new( $argv1 );
+    $param->{'mail'} = $klass->new($argv1);
 
-    return bless( $param, __PACKAGE__ );
+    return bless($param, __PACKAGE__);
 }
 
 sub read {
@@ -108,7 +108,7 @@ wrapper class of Sisimai::Mail::Mbox and Sisimai::Mail::Maildir classes.
 
 =head1 CLASS METHODS
 
-=head2 C<B<new( I<path to mbox|Maildir/> )>>
+=head2 C<B<new(I<path to mbox|Maildir/>)>>
 
 C<new()> is a constructor of Sisimai::Mail
 
@@ -160,7 +160,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Load '';
 
-our $VERSION = '4.18.0';
+our $VERSION = '4.18.1';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
@@ -21,7 +21,7 @@ sub make {
     my $argv1 = { @_ };
 
     require Sisimai::Mail;
-    my $mail = Sisimai::Mail->new( $argv0 );
+    my $mail = Sisimai::Mail->new($argv0);
     my $mesg = undef;
     my $data = undef;
     my $list = [];
@@ -33,9 +33,9 @@ sub make {
 
     while( my $r = $mail->read ) {
         # Read and parse each mail file
-        $mesg = Sisimai::Message->new( 'data' => $r );
+        $mesg = Sisimai::Message->new('data' => $r);
         next unless defined $mesg;
-        $data = Sisimai::Data->make( 'data' => $mesg, %$opts );
+        $data = Sisimai::Data->make('data' => $mesg, %$opts);
         push @$list, @$data if scalar @$data;
     }
 
@@ -53,21 +53,21 @@ sub dump {
     my $argv0 = shift // return undef;
     my $argv1 = { @_ };
 
-    my $parseddata = __PACKAGE__->make( $argv0, %$argv1 ) // [];
+    my $parseddata = __PACKAGE__->make($argv0, %$argv1) // [];
     my $jsonobject = undef;
 
     # Dump as JSON
-    Module::Load::load( 'JSON', '-convert_blessed_universally' );
+    Module::Load::load('JSON', '-convert_blessed_universally');
     $jsonobject = JSON->new->allow_blessed->convert_blessed;
 
-    return $jsonobject->encode( $parseddata );
+    return $jsonobject->encode($parseddata);
 }
 
 sub engine {
     # Parser engine list (MTA/MSP modules)
     # @return   [Hash]     Parser engine table
     my $class = shift;
-    my $names = [ 'MTA', 'MSP', 'ARF', 'RFC3464', 'RFC3834' ];
+    my $names = ['MTA', 'MSP', 'ARF', 'RFC3464', 'RFC3834'];
     my $table = {};
 
     for my $e ( @$names ) {
@@ -78,7 +78,7 @@ sub engine {
             # Sisimai::MTA or Sisimai::MSP
             for my $ee ( @{ $r->index } ) {
                 # Load and get the value of "description" from each module
-                my $rr = sprintf( "Sisimai::%s::%s", $e, $ee );
+                my $rr = sprintf("Sisimai::%s::%s", $e, $ee);
                 Module::Load::load $rr;
                 $table->{ $rr } = $rr->description;
             }
@@ -101,7 +101,7 @@ sub reason {
     $names = Sisimai::Reason->index;
 
     # These reasons are not included in the results of Sisimai::Reason->index
-    push @$names, ( 'Delivered', 'Feedback', 'Undefined', 'Vacation' );
+    push @$names, ('Delivered', 'Feedback', 'Undefined', 'Vacation');
 
     for my $e ( @$names ) {
         # Call ->description() method of Sisimai::Reason::*
@@ -165,7 +165,7 @@ messages like following.
         use JSON '-convert_blessed_universally';
         my $json = JSON->new->allow_blessed->convert_blessed;
 
-        printf "%s\n", $json->encode( $v );
+        printf "%s\n", $json->encode($v);
     }
 
 If you want to get bounce records which reason is "delivered", set "delivered"

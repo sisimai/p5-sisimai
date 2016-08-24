@@ -15,8 +15,8 @@ my $rwaccessors = [
     'inodes',   # [Array]  i-node List of files in the Maildir/
     'handle',   # [IO::Dir] Directory handle
 ];
-Class::Accessor::Lite->mk_accessors( @$rwaccessors );
-Class::Accessor::Lite->mk_ro_accessors( @$roaccessors );
+Class::Accessor::Lite->mk_accessors(@$rwaccessors);
+Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
 
 sub new {
     # Constructor of Sisimai::Mail::Maildir
@@ -32,9 +32,9 @@ sub new {
         'file'   => undef,
         'path'   => undef,
         'inodes' => {},
-        'handle' => IO::Dir->new( $argv1 ),
+        'handle' => IO::Dir->new($argv1),
     };
-    return bless( $param, __PACKAGE__ );
+    return bless($param, __PACKAGE__);
 }
 
 sub read {
@@ -52,13 +52,13 @@ sub read {
     my $emailinode = undef;
 
     eval {
-        $seekhandle = IO::Dir->new( $self->{'dir'} ) unless $seekhandle;
+        $seekhandle = IO::Dir->new($self->{'dir'}) unless $seekhandle;
 
         while( my $r = $seekhandle->read ) {
             # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
 
-            $emailindir =  sprintf( "%s/%s", $self->{'dir'}, $r );
+            $emailindir =  sprintf("%s/%s", $self->{'dir'}, $r);
             $emailindir =~ y{/}{}s;
             next unless -f $emailindir;
             next unless -s $emailindir;
@@ -66,10 +66,10 @@ sub read {
 
             # Get inode number of the file
             $self->{'path'} = $emailindir;
-            $emailinode = [ stat $emailindir ]->[1];
+            $emailinode = [stat $emailindir]->[1];
             next if exists $self->{'inodes'}->{ $emailinode };
 
-            $filehandle = IO::File->new( $emailindir, 'r' );
+            $filehandle = IO::File->new($emailindir, 'r');
             $readbuffer = do { local $/; <$filehandle> };
             $filehandle->close;
 
@@ -158,7 +158,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2015 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

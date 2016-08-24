@@ -46,8 +46,8 @@ sub scan {
     return undef unless $match;
 
     require Sisimai::Address;
-    my $dscontents = [ __PACKAGE__->DELIVERYSTATUS ];
-    my @hasdivided = split( "\n", $$mbody );
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -105,21 +105,21 @@ sub scan {
             #   Reason: Remote SMTP server has rejected address
             #   Diagnostic code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
             #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25) (6jo.example.jp ESMTP SENDMAIL-VM)
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A[ \t]+Recipient address:[ \t]*([^ ]+[@][^ ]+)\z/ ) {
                 #   Recipient address: kijitora@example.jp
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[ -1 ];
+                    $v = $dscontents->[-1];
                 }
-                $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $v->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients++;
 
             } elsif( $e =~ m/\A[ \t]+Original address:[ \t]*([^ ]+[@][^ ]+)\z/ ) {
                 #   Original address: kijitora@example.jp
-                $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                $v->{'recipient'} = Sisimai::Address->s3s4($1);
 
             } elsif( $e =~ m/\A[ \t]+Date:[ \t]*(.+)\z/ ) {
                 #   Date: Fri, 21 Nov 2014 23:34:45 +0900
@@ -184,7 +184,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} = Sisimai::String->sweep( $e->{'diagnosis'} );
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$ReFailure ) {
             # Verify each regular expression of session errors
@@ -194,7 +194,7 @@ sub scan {
         }
     }
 
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 
@@ -232,7 +232,7 @@ C<smtpagent()> returns MTA name.
 
     print Sisimai::MTA::MessagingServer->smtpagent;
 
-=head2 C<B<scan( I<header data>, I<reference to body string>)>>
+=head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.

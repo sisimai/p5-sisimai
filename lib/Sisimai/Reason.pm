@@ -9,7 +9,7 @@ my $RetryReasons = __PACKAGE__->retry;
 sub retry {
     # Reason list better to retry detecting an error reason
     # @return   [Array] Reason list
-    return [ 'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror' ];
+    return ['undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror'];
 }
 
 sub index {
@@ -55,9 +55,9 @@ sub get {
             # Check the value of Diagnostic-Code: and the value of Status:, it is a
             # deliverystats, with true() method in each Sisimai::Reason::* class.
             my $p = 'Sisimai::Reason::'.$e;
-            Module::Load::load( $p );
+            Module::Load::load($p);
 
-            next unless $p->true( $argvs );
+            next unless $p->true($argvs);
             $reasontext = $p->text;
             last;
         }
@@ -65,7 +65,7 @@ sub get {
 
     if( not $reasontext || $reasontext eq 'undefined' ) {
         # Bounce reason is not detected yet.
-        $reasontext = __PACKAGE__->anotherone( $argvs );
+        $reasontext = __PACKAGE__->anotherone($argvs);
 
         if( $reasontext eq 'undefined' || $reasontext eq '' ) {
             # Action: delayed => "expired"
@@ -101,7 +101,7 @@ sub anotherone {
     ];
 
     require Sisimai::SMTP::Status;
-    $reasontext = Sisimai::SMTP::Status->name( $statuscode );
+    $reasontext = Sisimai::SMTP::Status->name($statuscode);
 
     if( $reasontext eq '' || $reasontext eq 'userunknown' ||
         grep { $reasontext eq $_ } @$RetryReasons ) {
@@ -109,16 +109,16 @@ sub anotherone {
         for my $e ( @$classorder ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
             my $p = 'Sisimai::Reason::'.$e;
-            Module::Load::load( $p );
+            Module::Load::load($p);
 
-            next unless $p->match( $diagnostic );
+            next unless $p->match($diagnostic);
             $reasontext = lc $e;
             last;
         }
 
         if( not $reasontext ) {
             # Check the value of Status:
-            my $v = substr( $statuscode, 0, 3 );
+            my $v = substr($statuscode, 0, 3);
             if( $v eq '5.6' || $v eq '4.6' ) {
                 #  X.6.0   Other or undefined media error
                 $reasontext = 'contenterror';
@@ -134,7 +134,7 @@ sub anotherone {
             } else {
                 # 50X Syntax Error?
                 require Sisimai::Reason::SyntaxError;
-                $reasontext = 'syntaxerror' if Sisimai::Reason::SyntaxError->true( $argvs );
+                $reasontext = 'syntaxerror' if Sisimai::Reason::SyntaxError->true($argvs);
             }
         }
 
@@ -177,11 +177,11 @@ class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get( I<Sisimai::Data Object> )>>
+=head2 C<B<get(I<Sisimai::Data Object>)>>
 
 C<get()> detects the bounce reason.
 
-=head2 C<B<anotherone( I<Sisimai::Data object> )>>
+=head2 C<B<anotherone(I<Sisimai::Data object>)>>
 
 C<anotherone()> is a method for detecting the bounce reason, it works as a fall
 back method of get() and called only from get() method.
