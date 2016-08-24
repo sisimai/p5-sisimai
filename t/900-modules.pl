@@ -112,7 +112,7 @@ sub list {
 
     push @$v, 'Sisimai.pm';
     for my $e ( @$f ) {
-        push @$v, sprintf( "Sisimai/%s", $e );
+        push @$v, sprintf("Sisimai/%s", $e);
     }
     return $v;
 }

@@ -5,7 +5,7 @@ use Sisimai::SMTP::Status;
 
 my $PackageName = 'Sisimai::SMTP::Status';
 my $MethodNames = {
-    'class' => [ 'code', 'name', 'find' ],
+    'class' => ['code', 'name', 'find'],
     'object' => [],
 };
 
@@ -48,16 +48,16 @@ MAKE_TEST: {
 
     is $PackageName->code(''), '', '->code() = ""';
     PSEUDO_STATUS_CODE: for my $e ( @$reasonlist ) {
-        $v = $PackageName->code( $e );
+        $v = $PackageName->code($e);
         like $v, qr/\A5[.]\d[.]9\d+/, 'pseudo status code('.$e.') = '.$v;
 
-        $v = $PackageName->code( $e, 1 );
+        $v = $PackageName->code($e, 1);
         like $v, qr/\A[45][.]\d[.]9\d+/, 'pseudo status code('.$e.',1) = '.$v;
     }
 
     is $PackageName->name(''), '', '->name() = ""';
     STANRDARD_STATUS_CODE: for my $e ( @$statuslist ) {
-        $v = $PackageName->name( $e );
+        $v = $PackageName->name($e);
         if( $v eq 'delivered' ) {
             is $v, 'delivered', '->name('.$e.') returns delivered';
 
@@ -68,7 +68,7 @@ MAKE_TEST: {
 
     is $PackageName->find(''), '', '->find("") = ""';
     for my $e ( @$smtperrors ) {
-        $v = $PackageName->find( $e );
+        $v = $PackageName->find($e);
         like $v, qr/\A[245][.]\d[.]\d\z/, '->find() returns '.$v;
     }
 }

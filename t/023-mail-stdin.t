@@ -6,8 +6,8 @@ use IO::Handle;
 
 my $PackageName = 'Sisimai::Mail::STDIN';
 my $MethodNames = {
-    'class' => [ 'new' ],
-    'object' => [ 'path', 'name', 'size', 'handle', 'offset', 'read' ],
+    'class' => ['new'],
+    'object' => ['path', 'name', 'size', 'handle', 'offset', 'read'],
 };
 my $SampleEmail = './set-of-emails/mailbox/mbox-0';
 my $NewInstance = $PackageName->new();

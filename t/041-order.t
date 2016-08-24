@@ -5,7 +5,7 @@ use Sisimai::Order;
 
 my $PackageName = 'Sisimai::Order';
 my $MethodNames = {
-    'class' => [ 'by', 'default', 'another', 'headers' ],
+    'class' => ['by', 'default', 'another', 'headers'],
     'object' => [],
 };
 
@@ -23,10 +23,10 @@ MAKE_TEST: {
     isa_ok $headers, 'HASH';
     isa_ok $orderby, 'HASH';
 
-    ok scalar @$default, scalar( @$default ).' Modules';
-    ok scalar @$another, scalar( @$another ).' Modules';
-    ok keys %$headers, scalar( keys %$headers ).' Headers';
-    ok keys %$orderby, scalar( keys %$orderby ).' Patterns';
+    ok scalar @$default, scalar(@$default).' Modules';
+    ok scalar @$another, scalar(@$another).' Modules';
+    ok keys %$headers, scalar(keys %$headers).' Headers';
+    ok keys %$orderby, scalar(keys %$orderby).' Patterns';
 
     for my $v ( @$default, @$another ) {
         # Module name test

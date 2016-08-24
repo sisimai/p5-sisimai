@@ -5,7 +5,7 @@ use Sisimai::Rhost;
 
 my $PackageName = 'Sisimai::Rhost::GoogleApps';
 my $MethodNames = {
-    'class' => [ 'get' ],
+    'class' => ['get'],
     'object' => [],
 };
 
@@ -23,14 +23,14 @@ MAKE_TEST: {
     use Sisimai::Message;
 
     PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
-        my $emailfn = sprintf( "./set-of-emails/maildir/bsd/google-apps-%02d.eml", $n );
-        my $mailbox = Sisimai::Mail->new( $emailfn );
+        my $emailfn = sprintf("./set-of-emails/maildir/bsd/google-apps-%02d.eml", $n);
+        my $mailbox = Sisimai::Mail->new($emailfn);
         my $mtahost = 'aspmx.l.google.com';
         next unless defined $mailbox;
 
         while( my $r = $mailbox->read ) {
 
-            my $p = Sisimai::Message->new( 'data' => $r );
+            my $p = Sisimai::Message->new('data' => $r);
             isa_ok $p, 'Sisimai::Message';
             isa_ok $p->ds, 'ARRAY';
             isa_ok $p->header, 'HASH';
@@ -51,7 +51,7 @@ MAKE_TEST: {
                 is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
             }
 
-            my $v = Sisimai::Data->make( 'data' => $p );
+            my $v = Sisimai::Data->make('data' => $p);
             for my $e ( @$v ) {
                 like $e->reason, $rs->{ $n }->{'reason'}, '->reason = '.$e->reason;
             }

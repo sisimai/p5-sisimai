@@ -14,7 +14,7 @@ MAKE_TEST: {
     for my $e ( keys %$SampleEmail ) {
 
         next if $e eq 'mac';
-        my $v = $PackageName->make( $SampleEmail->{ $e } );
+        my $v = $PackageName->make($SampleEmail->{ $e });
         isa_ok $v, 'ARRAY';
         ok scalar @$v, 'entries = '.scalar @$v;
 
@@ -41,7 +41,7 @@ MAKE_TEST: {
             }
 
             my $j = $r->dump('json');
-            ok length $j, 'length( dump("json") ) = '.length $j;
+            ok length $j, 'length(dump("json")) = '.length $j;
         }
     }
 }

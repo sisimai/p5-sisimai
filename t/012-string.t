@@ -5,7 +5,7 @@ use Sisimai::String;
 
 my $PackageName = 'Sisimai::String';
 my $MethodNames = {
-    'class' => [ 'EOM', 'token', 'is_8bit', 'sweep', 'to_regexp' ],
+    'class' => ['EOM', 'token', 'is_8bit', 'sweep', 'to_regexp'],
     'object' => [],
 };
 
@@ -17,23 +17,23 @@ MAKE_TEST: {
     my $r = 'envelope-recipient@example.org';
     my $t = '239aa35547613b2fa94f40c7f35f4394e99fdd88';
 
-    is( Sisimai::String->EOM, '__END_OF_EMAIL_MESSAGE__', '->token = __END_OF_EMAIL_MESSAGE__' );
-    ok( Sisimai::String->token( $s, $r, 1 ), '->token' );
-    is( Sisimai::String->token( $s, $r, 1 ), $t, '->token = '.$t );
-    is( Sisimai::String->token( undef  ), '', '->token = ""' );
-    is( Sisimai::String->token( $s ), '', '->token = ""' );
-    is( Sisimai::String->token( $s, $r ), '', '->token = ""' );
-    ok( Sisimai::String->token( $s, $r, 0 ), '->token' );
+    is(Sisimai::String->EOM, '__END_OF_EMAIL_MESSAGE__', '->token = __END_OF_EMAIL_MESSAGE__');
+    ok(Sisimai::String->token($s, $r, 1), '->token');
+    is(Sisimai::String->token($s, $r, 1), $t, '->token = '.$t);
+    is(Sisimai::String->token(undef), '', '->token = ""');
+    is(Sisimai::String->token($s), '', '->token = ""');
+    is(Sisimai::String->token($s, $r), '', '->token = ""');
+    ok(Sisimai::String->token($s, $r, 0), '->token');
 
-    is( Sisimai::String->is_8bit( \$s ), 0, '->is_8bit = 0' );
-    is( Sisimai::String->is_8bit( \'日本語' ), 1, '->is_8bit = 1' );
+    is(Sisimai::String->is_8bit(\$s), 0, '->is_8bit = 0');
+    is(Sisimai::String->is_8bit(\'日本語'), 1, '->is_8bit = 1');
 
-    is( Sisimai::String->sweep( undef ), undef, '->sweep = ""' );
-    is( Sisimai::String->sweep( ' neko cat '), 'neko cat', '->sweep = "neko cat"' );
-    is( Sisimai::String->sweep( ' nyaa   !!'), 'nyaa !!', '->sweep = "nyaa !!"' );
+    is(Sisimai::String->sweep(undef), undef, '->sweep = ""');
+    is(Sisimai::String->sweep(' neko cat '), 'neko cat', '->sweep = "neko cat"');
+    is(Sisimai::String->sweep(' nyaa   !!'), 'nyaa !!', '->sweep = "nyaa !!"');
 
     my $e = 'neko++/nya-n/$cat/meow...?';
-    my $v = Sisimai::String->to_regexp( $e );
+    my $v = Sisimai::String->to_regexp($e);
     ok $v, '->to_regexp = '.$v;
     like $e, $v, $e.' match with '.$v;
 }

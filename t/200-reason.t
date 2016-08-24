@@ -5,7 +5,7 @@ use Sisimai::Reason;
 
 my $PackageName = 'Sisimai::Reason';
 my $MethodNames = {
-    'class' => [ 'get', 'retry', 'index', ],
+    'class' => ['get', 'retry', 'index'],
     'object' => [],
 };
 
@@ -24,8 +24,8 @@ MAKE_TEST: {
     my $mailbox = Sisimai::Mail->new('set-of-emails/maildir/bsd/sendmail-01.eml');
 
     while( my $r = $mailbox->read ) {
-        my $o = Sisimai::Message->new( 'data' => $r );
-        my $v = Sisimai::Data->make( 'data' => $o );
+        my $o = Sisimai::Message->new('data' => $r);
+        my $v = Sisimai::Data->make('data' => $o);
         isa_ok $v, 'ARRAY';
 
         for my $e ( @$v ) {

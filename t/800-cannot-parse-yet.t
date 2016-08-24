@@ -7,13 +7,13 @@ my $CannotParse = './set-of-emails/to-be-debugged-because/sisimai-cannot-parse-y
 MAKE_TEST: {
     SISIMAI: {
         use Sisimai;
-        my $v = Sisimai->make( $CannotParse );
+        my $v = Sisimai->make($CannotParse);
         is $v, undef, 'Sisimai->make() returns undef';
     }
 
     MAILDIR: {
         use Sisimai::Mail::Maildir;
-        my $maildir = Sisimai::Mail::Maildir->new( $CannotParse );
+        my $maildir = Sisimai::Mail::Maildir->new($CannotParse);
         my $emindex = 0;
 
         isa_ok $maildir, 'Sisimai::Mail::Maildir';
@@ -23,7 +23,7 @@ MAKE_TEST: {
         isa_ok $maildir->handle, 'IO::Dir';
 
         while( my $r = $maildir->read ) {
-            ok length $r, 'maildir->read('.( $emindex + 1 ).')';
+            ok length $r, 'maildir->read('.($emindex + 1).')';
             ok length $maildir->file, '->file = '.$maildir->file;
             ok $maildir->path, '->path = '.$maildir->path;
             ok scalar keys %{ $maildir->inodes };
@@ -38,7 +38,7 @@ MAKE_TEST: {
         use IO::Dir;
         use IO::File;
 
-        my $seekhandle = IO::Dir->new( $CannotParse );
+        my $seekhandle = IO::Dir->new($CannotParse);
         my $filehandle = undef;
         my $emailindir = '';
         my $mailastext = '';
@@ -46,7 +46,7 @@ MAKE_TEST: {
         while( my $r = $seekhandle->read ) {
             # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
-            $emailindir =  sprintf( "%s/%s", $CannotParse, $r );
+            $emailindir =  sprintf("%s/%s", $CannotParse, $r);
             $emailindir =~ y{/}{}s;
 
             next unless -f $emailindir;
@@ -54,7 +54,7 @@ MAKE_TEST: {
             next unless -T $emailindir;
             next unless -r $emailindir;
 
-            $filehandle = IO::File->new( $emailindir, 'r' );
+            $filehandle = IO::File->new($emailindir, 'r');
             $mailastext = '';
 
             while( my $f = <$filehandle> ) {
@@ -63,7 +63,7 @@ MAKE_TEST: {
             $filehandle->close;
             ok length $mailastext, $emailindir.', size = '.length $mailastext;
 
-            my $p = Sisimai::Message->new( 'data' => $mailastext );
+            my $p = Sisimai::Message->new('data' => $mailastext);
             is $p, undef, 'Sisimai::Message->new() returns undef';
         }
     }

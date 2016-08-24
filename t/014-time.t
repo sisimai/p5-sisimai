@@ -8,7 +8,7 @@ require './t/999-values.pl';
 my $PackageName = 'Sisimai::Time';
 my $MethodNames = {
     'class' => [],
-    'object' => [ 'TO_JSON' ],
+    'object' => ['TO_JSON'],
 };
 
 use_ok $PackageName;

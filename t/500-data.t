@@ -7,7 +7,7 @@ use Sisimai::Message;
 
 my $PackageName = 'Sisimai::Data';
 my $MethodNames = {
-    'class' => [ 'new', 'make' ],
+    'class' => ['new', 'make'],
     'object' => [ 'damn' ],
 };
 
@@ -19,14 +19,14 @@ MAKE_TEST: {
     is $PackageName->new, undef;
 
     my $file = './set-of-emails/maildir/bsd/sendmail-03.eml';
-    my $mail = Sisimai::Mail->new( $file );
+    my $mail = Sisimai::Mail->new($file);
     my $mesg = undef;
     my $data = undef;
     my $list = undef;
 
     while( my $r = $mail->read ){ 
-        $mesg = Sisimai::Message->new( 'data' => $r ); 
-        $data = Sisimai::Data->make( 'data' => $mesg ); 
+        $mesg = Sisimai::Message->new('data' => $r); 
+        $data = Sisimai::Data->make('data' => $mesg); 
         isa_ok $data, 'ARRAY';
 
         for my $e ( @$data ) {
@@ -80,15 +80,15 @@ MAKE_TEST: {
     }
 
     $file = './set-of-emails/maildir/bsd/sendmail-04.eml';
-    $mail = Sisimai::Mail->new( $file );
+    $mail = Sisimai::Mail->new($file);
     $list = { 
-        'recipient' => [ 'X-Failed-Recipient', 'To' ],
-        'addresser' => [ 'Return-Path', 'From', 'X-Envelope-From' ],
+        'recipient' => ['X-Failed-Recipient', 'To'],
+        'addresser' => ['Return-Path', 'From', 'X-Envelope-From'],
     };
 
     WITH_ORDER: while( my $r = $mail->read ){ 
-        $mesg = Sisimai::Message->new( 'data' => $r ); 
-        $data = Sisimai::Data->make( 'data' => $mesg, 'order' => $list ); 
+        $mesg = Sisimai::Message->new('data' => $r); 
+        $data = Sisimai::Data->make('data' => $mesg, 'order' => $list); 
         isa_ok $data, 'ARRAY';
 
         for my $e ( @$data ) {
@@ -141,10 +141,10 @@ MAKE_TEST: {
     }
 
     $file = './set-of-emails/maildir/not/is-not-bounce-01.eml';
-    $mail = Sisimai::Mail->new( $file );
+    $mail = Sisimai::Mail->new($file);
 
     NOT_BOUNCE: while( my $r = $mail->read ){ 
-        $mesg = Sisimai::Message->new( 'data' => $r ); 
+        $mesg = Sisimai::Message->new('data' => $r); 
         is $mesg, undef;
     }
 }

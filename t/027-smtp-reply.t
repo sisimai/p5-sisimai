@@ -5,7 +5,7 @@ use Sisimai::SMTP::Reply;
 
 my $PackageName = 'Sisimai::SMTP::Reply';
 my $MethodNames = {
-    'class' => [ 'find' ],
+    'class' => ['find'],
     'object' => [],
 };
 
@@ -95,7 +95,7 @@ MAKE_TEST: {
     my $v = '';
     is $PackageName->find(''), '', '->find() returns ""';
     for my $e ( @$smtperrors ) {
-        $v = $PackageName->find( $e );
+        $v = $PackageName->find($e);
         ok $e, 'Error message text = '.$e;
         like $v, qr/\A[2345][0-5][0-9]\z/, 'SMTP Reply Code = '.$v;
     }

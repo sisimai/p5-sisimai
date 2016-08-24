@@ -6,7 +6,7 @@ use JSON;
 
 my $PackageName = 'Sisimai';
 my $MethodNames = {
-    'class' => [ 'sysname', 'libname', 'version', 'make', 'dump', 'engine' ],
+    'class' => ['sysname', 'libname', 'version', 'make', 'dump', 'engine'],
     'object' => [],
 };
 my $SampleEmail = {
@@ -30,7 +30,7 @@ MAKE_TEST: {
 
     for my $e ( 'mailbox', 'maildir' ) {
         MAKE: {
-            my $parseddata = $PackageName->make( $SampleEmail->{ $e } );
+            my $parseddata = $PackageName->make($SampleEmail->{ $e });
             my $damnedhash = undef;
             my $jsonstring = undef;
             isa_ok $parseddata, 'ARRAY';
@@ -59,7 +59,7 @@ MAKE_TEST: {
                 }
 
                 $jsonstring = $ee->dump('json');
-                ok length $jsonstring, 'length( dump("json") ) = '.length $jsonstring;
+                ok length $jsonstring, 'length(dump("json")) = '.length $jsonstring;
             }
         }
 
@@ -72,7 +72,7 @@ MAKE_TEST: {
             ];
             ok length $jsonstring;
             utf8::encode $jsonstring if utf8::is_utf8 $jsonstring;
-            $perlobject = JSON::decode_json( $jsonstring );
+            $perlobject = JSON::decode_json($jsonstring);
 
             isa_ok $perlobject, 'ARRAY';
             for my $ee ( @$perlobject ) {

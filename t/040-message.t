@@ -9,7 +9,7 @@ my $MethodNames = {
         'new', 'make', 'parse', 'divideup', 'headers', 'takeapart',
         'makeorder',
     ],
-    'object' => [ 'from', 'header', 'ds', 'rfc822' ],
+    'object' => ['from', 'header', 'ds', 'rfc822'],
 };
 my $SampleEmail = './set-of-emails/mailbox/mbox-0';
 
@@ -18,7 +18,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     use IO::File;
-    my $filehandle = IO::File->new( $SampleEmail, 'r' );
+    my $filehandle = IO::File->new($SampleEmail, 'r');
     my $mailastext = '';
 
     while( my $r = <$filehandle> ) {
@@ -27,7 +27,7 @@ MAKE_TEST: {
     $filehandle->close;
     ok length $mailastext;
 
-    my $p = $PackageName->new( 'data' => $mailastext );
+    my $p = $PackageName->new('data' => $mailastext);
 
     isa_ok $p, $PackageName;
     isa_ok $p->header, 'HASH', '->header';

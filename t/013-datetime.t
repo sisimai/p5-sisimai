@@ -29,28 +29,28 @@ MAKE_TEST: {
     };
 
     TO_SECOND: {
-        is $v->to_second( '1d' ), 86400, $v.' 1 Day';
-        is $v->to_second( '2w' ), ( 86400 * 7 * 2 ), $v.' 2 Weeks';
-        is $v->to_second( '3f' ), ( 86400 * 14 * 3 ), $v.' 3 Fortnights';
-        is int $v->to_second( '4l' ), 10205771, $v.' 4 Lunar months';
-        is int $v->to_second( '5q' ), 39446190, $v.' 5 Quarters';
-        is int $v->to_second( '6y' ), 189341712, $v.' 6 Years';
-        is int $v->to_second( '7o' ), 883594656, $v.' 7 Olympiads';
-        is int $v->to_second( 'gs' ), 23, $v.' 23.14(e^p) seconds';
-        is int $v->to_second( 'pm' ), 188, $v.' 3.14(PI) minutes';
-        is int $v->to_second( 'eh' ), 9785, $v.' 2.718(e) hours';
+        is $v->to_second('1d'), 86400, $v.' 1 Day';
+        is $v->to_second('2w'), (86400 * 7 * 2), $v.' 2 Weeks';
+        is $v->to_second('3f'), (86400 * 14 * 3), $v.' 3 Fortnights';
+        is int $v->to_second('4l'), 10205771, $v.' 4 Lunar months';
+        is int $v->to_second('5q'), 39446190, $v.' 5 Quarters';
+        is int $v->to_second('6y'), 189341712, $v.' 6 Years';
+        is int $v->to_second('7o'), 883594656, $v.' 7 Olympiads';
+        is int $v->to_second('gs'), 23, $v.' 23.14(e^p) seconds';
+        is int $v->to_second('pm'), 188, $v.' 3.14(PI) minutes';
+        is int $v->to_second('eh'), 9785, $v.' 2.718(e) hours';
         is $v->to_second(-1), 0, 'The value: -1';
-        is $v->to_second( -4294967296 ), 0, ' The value: -4294967296';
+        is $v->to_second(-4294967296), 0, ' The value: -4294967296';
     }
 
     IRREGULAR_CASE: {
         for my $e ( @{ $L->{'false'} }, @{ $L->{'zero'} }, @{ $L->{'esc'} }, @{ $L->{'ctrl'} } ) {
-            my $r = defined $e ? sprintf( "%#x", ord $e ) : 'undef';
-            is $v->to_second( $e ), 0, '->to_second The value: '.$r; 
+            my $r = defined $e ? sprintf("%#x", ord $e) : 'undef';
+            is $v->to_second($e), 0, '->to_second The value: '.$r; 
         }
 
         for my $e ( @{ $L->{'minus'} } ) {
-            is $v->to_second( $e ), 0, '->to_second() The value: '.$e;
+            is $v->to_second($e), 0, '->to_second() The value: '.$e;
         }
     }
 
@@ -93,7 +93,7 @@ MAKE_TEST: {
     }
 
     OFFSET2DATE: {
-        my $date = q();
+        my $date = '';
         my $base = new Time::Piece;
         my $time = undef;
 
@@ -104,13 +104,13 @@ MAKE_TEST: {
                 # http://www.cpantesters.org/cpan/report/ace5c860-9f5f-11e4-b221-9e126cbd7f71
                 next;
             }
-            $date = $v->o2d( $e );
-            $base = Time::Piece->strptime( $base->ymd, "%Y-%m-%d" );
-            $time = Time::Piece->strptime( $date, "%Y-%m-%d" );
+            $date = $v->o2d($e);
+            $base = Time::Piece->strptime($base->ymd, "%Y-%m-%d");
+            $time = Time::Piece->strptime($date, "%Y-%m-%d");
 
             like $date, qr/\A\d{4}[-]\d{2}[-]\d{2}\z/, 'offset = '.$e.', date = '.$date;
-            if( abs( $e ) < 10 ) {
-                is $time->epoch, $base->epoch - ( $e * 86400 );
+            if( abs($e) < 10 ) {
+                is $time->epoch, $base->epoch - ($e * 86400);
 
             } else {
                 like $time->epoch, qr/\d+\z/;
@@ -118,9 +118,9 @@ MAKE_TEST: {
         }
 
         for my $e ( 'a', ' ', 'string' ) {
-            $date = $v->o2d( $e );
-            $base = Time::Piece->strptime( $base->ymd, "%Y-%m-%d" );
-            $time = Time::Piece->strptime( $date, "%Y-%m-%d" );
+            $date = $v->o2d($e);
+            $base = Time::Piece->strptime($base->ymd, "%Y-%m-%d");
+            $time = Time::Piece->strptime($date, "%Y-%m-%d");
             like $date, qr/\A\d{4}[-]\d{2}[-]\d{2}\z/, 'offset = '.$e.', date = '.$date;
             is $time->epoch, $base->epoch;
         }
@@ -172,18 +172,18 @@ MAKE_TEST: {
 
         for my $e ( @$datestrings ) {
             my $time = undef;
-            my $text = $v->parse( $e );
+            my $text = $v->parse($e);
             ok length $text, '->parse('.$e.') = '.$text;
 
             $text =~ s/\s+[-+]\d{4}\z//;
-            $time = Time::Piece->strptime( $text, '%a, %d %b %Y %T' );
+            $time = Time::Piece->strptime($text, '%a, %d %b %Y %T');
             isa_ok $time, 'Time::Piece';
             ok $time->cdate, '->cdate = '.$time->cdate;
         }
 
         for my $e ( @$invaliddates ) {
-            my $text = $v->parse( $e );
-            ok length( $text || '' ) == 0, '->parse('.$e.') = '.( $text || '' );
+            my $text = $v->parse($e);
+            ok length($text || '') == 0, '->parse('.$e.') = '.($text || '');
         }
     }
 
@@ -226,12 +226,12 @@ MAKE_TEST: {
 
     IRREGULAR_CASE: {
         for my $e ( @{ $L->{'false'} }, @{ $L->{'zero'} }, @{ $L->{'esc'} }, @{ $L->{'ctrl'} } ) {
-            my $r = defined $e ? sprintf( "%#x", ord $e ) : 'undef';
-            is $v->tz2second( $e ), undef, '->tz2second() The value: '.$r;
+            my $r = defined $e ? sprintf("%#x", ord $e) : 'undef';
+            is $v->tz2second($e), undef, '->tz2second() The value: '.$r;
         }
 
         for my $e ( @{ $L->{'minus'} } ) {
-            is $v->tz2second( $e ), undef, '->tz2second() The value: '.$e;
+            is $v->tz2second($e), undef, '->tz2second() The value: '.$e;
         }
     }
 }

@@ -5,7 +5,7 @@ use Sisimai::Rhost;
 
 my $PackageName = 'Sisimai::Rhost';
 my $MethodNames = {
-    'class' => [ 'list', 'match', 'get' ],
+    'class' => ['list', 'match', 'get'],
     'object' => [],
 };
 
@@ -24,7 +24,7 @@ MAKE_TEST: {
     ];
 
     for my $e ( @$host ) {
-        ok $PackageName->match( $e ), '->match('.$e.')';
+        ok $PackageName->match($e), '->match('.$e.')';
         ok grep { $e =~ $_ } @$list;
     }
 }

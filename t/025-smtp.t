@@ -5,7 +5,7 @@ use Sisimai::SMTP;
 
 my $PackageName = 'Sisimai::SMTP';
 my $MethodNames = {
-    'class' => [ 'command', 'is_softbounce' ],
+    'class' => ['command', 'is_softbounce'],
     'object' => [],
 };
 

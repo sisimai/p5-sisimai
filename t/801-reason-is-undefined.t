@@ -7,8 +7,7 @@ my $PackageName = 'Sisimai';
 my $UndefinedES = './set-of-emails/to-be-debugged-because/reason-is-undefined';
 
 MAKE_TEST: {
-
-    my $v = $PackageName->make( $UndefinedES );
+    my $v = $PackageName->make($UndefinedES);
     isa_ok $v, 'ARRAY';
     ok scalar @$v, 'entries = '.scalar @$v;
 
@@ -35,7 +34,7 @@ MAKE_TEST: {
         }
 
         my $j = $r->dump('json');
-        ok length $j, 'length( dump("json") ) = '.length $j;
+        ok length $j, 'length(dump("json")) = '.length $j;
     }
 }
 

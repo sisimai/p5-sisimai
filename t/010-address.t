@@ -9,9 +9,9 @@ my $MethodNames = {
     'class' => [ 
         'new', 'parse', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
     ],
-    'object' => [ 'address', 'host', 'user', 'verp', 'alias', 'TO_JSON' ],
+    'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
 };
-my $NewInstance = $PackageName->new( 'maketest@bouncehammer.jp' );
+my $NewInstance = $PackageName->new('maketest@bouncehammer.jp');
 
 use_ok $PackageName;
 isa_ok $NewInstance, $PackageName;
@@ -63,20 +63,20 @@ MAKE_TEST: {
     my $emailindex = 0;
     for my $e ( @$emailfroms ) {
         # ->parse()
-        my $v = $PackageName->parse( [ $e ] );
+        my $v = $PackageName->parse([$e]);
         isa_ok $v, 'ARRAY';
         is scalar @$v, 1;
         ok $v->[0], '->parse = '.$v->[0];
         is $v->[0], $emailaddrs->[ $emailindex ], $v->[0];
 
         # ->s3s4()
-        my $x = $PackageName->s3s4( $e );
+        my $x = $PackageName->s3s4($e);
         ok $x, '->s3s4 = '.$x;
         is $x, $emailaddrs->[ $emailindex ], $x;
 
         # ->new()
-        my $y = $PackageName->new( $x );
-        my $z = [ split( '@', $x ) ];
+        my $y = $PackageName->new($x);
+        my $z = [split('@', $x)];
         isa_ok $y, $PackageName;
         is $y->user, $z->[0], '->user = '.$z->[0];
         unless( Sisimai::RFC5322->is_mailerdaemon($e) ) {
@@ -91,35 +91,35 @@ MAKE_TEST: {
 
     VERP: {
         my $e = 'nyaa+neko=example.jp@example.org';
-        my $v = $PackageName->new( $e );
-        is $PackageName->expand_verp( $e ), $v->address, '->expand_verp = '.$v->address;
+        my $v = $PackageName->new($e);
+        is $PackageName->expand_verp($e), $v->address, '->expand_verp = '.$v->address;
         is $v->verp, $e, '->verp = '.$e;
     }
 
     ALIAS: {
         my $e = 'neko+nyaa@example.jp';
-        my $v = $PackageName->new( $e );
-        is $PackageName->expand_alias( $e ), $v->address, '->expand_alias = '.$v->address;
+        my $v = $PackageName->new($e);
+        is $PackageName->expand_alias($e), $v->address, '->expand_alias = '.$v->address;
         is $v->alias, $e, '->alias = '.$e;
     }
 
     TO_JSON: {
         my $e = 'nyaan@example.org';
-        my $v = $PackageName->new( $e );
+        my $v = $PackageName->new($e);
         is $v->TO_JSON, $e, '->TO_JSON = '.$e;
     }
 
     for my $e ( @$isnotemail ) {
         # ->parse
-        my $v = $PackageName->parse( [ $e ] );
+        my $v = $PackageName->parse([$e]);
         is $v, undef;
 
         # ->s3s4
-        my $x = $PackageName->s3s4( $e );
+        my $x = $PackageName->s3s4($e);
         is $x, $x;
 
         # ->new
-        my $y = $PackageName->new( $e );
+        my $y = $PackageName->new($e);
         is $y, undef;
     }
 

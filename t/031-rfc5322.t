@@ -60,7 +60,7 @@ MAKE_TEST: {
         'Shironeko Nyanko <shironeko@example.jp>',
         '=?UTF-8?B?55m954yr?= <shironeko@example.co.jp>',
     ];
-    my $isnotaddrs = [ 'neko', 'neko%example.jp', ];
+    my $isnotaddrs = ['neko', 'neko%example.jp'];
     my $postmaster = [ 
         'mailer-daemon@example.jp', 
         'MAILER-DAEMON@example.cat',
@@ -71,27 +71,27 @@ MAKE_TEST: {
     ];
 
     for my $e ( @$emailaddrs ) {
-        ok $PackageName->is_emailaddress( $e ), '->is_emailaddress('.$e.') = 1';
+        ok $PackageName->is_emailaddress($e), '->is_emailaddress('.$e.') = 1';
     }
 
     for my $e ( @$isnotaddrs ) {
-        is $PackageName->is_emailaddress( $e ), 0, '->is_emailaddress('.$e.') = 0';
+        is $PackageName->is_emailaddress($e), 0, '->is_emailaddress('.$e.') = 0';
     }
 
-    ok $PackageName->is_domainpart( 'example.jp' ), '->is_domainpart(example.jp) = 1';
+    ok $PackageName->is_domainpart('example.jp'), '->is_domainpart(example.jp) = 1';
     for my $e ( @$emailaddrs ) {
-        is $PackageName->is_domainpart( $e ), 0, '->is_domainpart('.$e.') = 0';
+        is $PackageName->is_domainpart($e), 0, '->is_domainpart('.$e.') = 0';
     }
-    is $PackageName->is_domainpart( undef ), 0, '->is_domainpart(undef) = 0';
-    is $PackageName->is_domainpart( '[' ), 0, '->is_domainpart([) = 0';
-    is $PackageName->is_domainpart( ')' ), 0, '->is_domainpart()) = 0';
-    is $PackageName->is_domainpart( ';' ), 0, '->is_domainpart(;) = 0';
+    is $PackageName->is_domainpart(undef), 0, '->is_domainpart(undef) = 0';
+    is $PackageName->is_domainpart('['), 0, '->is_domainpart([) = 0';
+    is $PackageName->is_domainpart(')'), 0, '->is_domainpart()) = 0';
+    is $PackageName->is_domainpart(';'), 0, '->is_domainpart(;) = 0';
 
     for my $e ( @$postmaster ) {
-        is $PackageName->is_mailerdaemon( $e ), 1, '->is_mailerdaemon('.$e.') = 1';
+        is $PackageName->is_mailerdaemon($e), 1, '->is_mailerdaemon('.$e.') = 1';
     }
     for my $e ( @$emailaddrs ) {
-        is $PackageName->is_mailerdaemon( $e ), 0, '->is_mailerdaemon('.$e.') = 0';
+        is $PackageName->is_mailerdaemon($e), 0, '->is_mailerdaemon('.$e.') = 0';
     }
 
     # Check the value of Received header
@@ -116,7 +116,7 @@ MAKE_TEST: {
     ];
 
     for my $e ( @$received00 ) {
-        my $v = $PackageName->received( $e );
+        my $v = $PackageName->received($e);
         ok length $e, $e;
         isa_ok $v, 'ARRAY';
         ok scalar @$v, 'scalar = '.scalar @$v;
@@ -144,7 +144,7 @@ Subject: Nyaaaan
 
 Nyaaan
 EOR
-    my $rfc822part = Sisimai::RFC5322->weedout( [split("\n", $rfc822text)] );
+    my $rfc822part = Sisimai::RFC5322->weedout([split("\n", $rfc822text)]);
     isa_ok $rfc822part, 'SCALAR';
     ok length $$rfc822part;
     like $$rfc822part, qr/^From:/m;

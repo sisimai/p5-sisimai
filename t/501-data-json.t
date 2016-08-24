@@ -21,7 +21,7 @@ MAKE_TEST: {
     is $PackageName->dump('json'), undef;
 
     my $file = './set-of-emails/maildir/bsd/sendmail-02.eml';
-    my $mail = Sisimai::Mail->new( $file );
+    my $mail = Sisimai::Mail->new($file);
     my $mesg = undef;
     my $data = undef;
     my $list = undef;
@@ -29,8 +29,8 @@ MAKE_TEST: {
     my $perl = undef;
 
     while( my $r = $mail->read ){ 
-        $mesg = Sisimai::Message->new( 'data' => $r ); 
-        $data = Sisimai::Data->make( 'data' => $mesg ); 
+        $mesg = Sisimai::Message->new('data' => $r); 
+        $data = Sisimai::Data->make('data' => $mesg); 
         isa_ok $data, 'ARRAY';
 
         for my $e ( @$data ) {
@@ -39,7 +39,7 @@ MAKE_TEST: {
             ok length $json, '->dump()';
 
             utf8::encode $json if utf8::is_utf8 $json;
-            $perl = JSON::from_json( $json, { 'utf8' => 1 } );
+            $perl = JSON::from_json($json, { 'utf8' => 1 });
             isa_ok $perl, 'HASH';
 
             is $e->token, $perl->{'token'}, 'token = '.$e->token;

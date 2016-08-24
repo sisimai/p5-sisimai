@@ -5,11 +5,11 @@ use Sisimai::Mail::Mbox;
 
 my $PackageName = 'Sisimai::Mail::Mbox';
 my $MethodNames = {
-    'class' => [ 'new' ],
-    'object' => [ 'path', 'dir', 'file', 'size', 'handle', 'offset', 'read' ],
+    'class' => ['new'],
+    'object' => ['path', 'dir', 'file', 'size', 'handle', 'offset', 'read'],
 };
 my $SampleEmail = './set-of-emails/mailbox/mbox-0';
-my $NewInstance = $PackageName->new( $SampleEmail );
+my $NewInstance = $PackageName->new($SampleEmail);
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -18,7 +18,7 @@ can_ok $NewInstance, @{ $MethodNames->{'object'} };
 
 MAKE_TEST: {
     MAILBOX: {
-        my $mailbox = $PackageName->new( $SampleEmail );
+        my $mailbox = $PackageName->new($SampleEmail);
         my $emindex = 0;
 
         isa_ok $mailbox, $PackageName;
@@ -31,7 +31,7 @@ MAKE_TEST: {
         is $mailbox->offset, 0, '->offset = 0';
 
         while( my $r = $mailbox->read ) {
-            ok length $r, 'mailbox->read('.( $emindex + 1 ).')';
+            ok length $r, 'mailbox->read('.($emindex + 1).')';
             ok $mailbox->offset, '->offset = '.$mailbox->offset;
             $emindex++;
         }

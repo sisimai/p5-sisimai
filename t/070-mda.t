@@ -5,7 +5,7 @@ use Sisimai::MDA;
 
 my $PackageName = 'Sisimai::MDA';
 my $MethodNames = {
-    'class' => [ 'scan' ],
+    'class' => ['scan'],
     'object' => [],
 };
 
@@ -26,16 +26,16 @@ MAKE_TEST: {
     ];
 
     my $emailfn = './set-of-emails/maildir/bsd/rfc3464-01.eml';
-    my $mailbox = Sisimai::Mail->new( $emailfn );
+    my $mailbox = Sisimai::Mail->new($emailfn);
     my $message = undef;
     my $headers = {};
 
     while( my $r = $mailbox->read ) {
-        $message = Sisimai::Message->new( 'data' => $r );
+        $message = Sisimai::Message->new('data' => $r);
         $headers->{'from'} = $message->from;
 
         for my $e ( @$ErrorMesgs ) {
-            my $v = Sisimai::MDA->scan( $headers, \$e );
+            my $v = Sisimai::MDA->scan($headers, \$e);
 
             isa_ok $v, 'HASH';
             ok $v->{'mda'}, 'mda => '.$v->{'mda'};

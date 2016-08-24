@@ -5,11 +5,11 @@ use Sisimai::Mail::Maildir;
 
 my $PackageName = 'Sisimai::Mail::Maildir';
 my $MethodNames = {
-    'class' => [ 'new' ],
-    'object' => [ 'path', 'dir', 'file', 'inodes', 'handle', 'read' ],
+    'class' => ['new'],
+    'object' => ['path', 'dir', 'file', 'inodes', 'handle', 'read'],
 };
 my $SampleEmail = './set-of-emails/maildir/bsd';
-my $NewInstance = $PackageName->new( $SampleEmail );
+my $NewInstance = $PackageName->new($SampleEmail);
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -18,7 +18,7 @@ can_ok $NewInstance, @{ $MethodNames->{'object'} };
 
 MAKE_TEST: {
     MAILDIR: {
-        my $maildir = $PackageName->new( $SampleEmail );
+        my $maildir = $PackageName->new($SampleEmail);
         my $emindex = 0;
 
         isa_ok $maildir, $PackageName;
@@ -29,7 +29,7 @@ MAKE_TEST: {
         isa_ok $maildir->handle, 'IO::Dir';
 
         while( my $r = $maildir->read ) {
-            ok length $r, 'maildir->read('.( $emindex + 1 ).')';
+            ok length $r, 'maildir->read('.($emindex + 1).')';
             ok length $maildir->file, '->file = '.$maildir->file;
             ok $maildir->path, '->path = '.$maildir->path;
             ok scalar keys %{ $maildir->inodes };
