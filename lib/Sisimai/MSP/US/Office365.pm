@@ -104,18 +104,6 @@ sub scan {
     }
     return undef if $match < 2;
 
-    if( $$mbody =~ /^Content-Transfer-Encoding: quoted-printable$/m ) {
-        # --0000ffff-eeee-2222-a0000dddd000
-        # Content-Type: multipart/alternative; differences=Content-Type;
-        #     boundary="ff002222-2222-2222-bbcd-0123456789ab"
-        #
-        # --ff002222-2222-2222-bbcd-0123456789ab
-        # Content-Type: text/plain; charset="Windows-1252"
-        # Content-Transfer-Encoding: quoted-printable
-        require Sisimai::MIME;
-        $$mbody = Sisimai::MIME->qprintd($mbody);
-    }
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
