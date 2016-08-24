@@ -177,7 +177,7 @@ sub s3s4 {
         }
     }
 
-    if( scalar( @addrs ) > 1 ) {
+    if( scalar(@addrs) > 1 ) {
         # Get the first element which is <...> format string from @addrs array.
         $canon = (grep { $_ =~ m/\A[<].+[>]\z/ } @addrs)[0];
         $canon = $addrs[0] unless $canon;

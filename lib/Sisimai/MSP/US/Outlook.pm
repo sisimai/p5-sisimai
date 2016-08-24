@@ -101,7 +101,7 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            if( $connvalues == scalar( keys %$connheader ) ) {
+            if( $connvalues == scalar(keys %$connheader) ) {
                 # This is an automatically generated Delivery Status Notification.
                 #
                 # Delivery to the following recipients failed.

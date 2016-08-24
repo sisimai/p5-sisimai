@@ -528,8 +528,8 @@ sub second2tz {
     return '' if( abs($argv1) > TZ_OFFSET );   # UTC+14 + 1(DST?)
     $digit->{'operator'} = '-' if $argv1 < 0;
 
-    $digit->{'hours'} = int( abs($argv1) / 3600 );
-    $digit->{'minutes'} = int(( abs($argv1) % 3600 ) / 60);
+    $digit->{'hours'} = int(abs($argv1) / 3600);
+    $digit->{'minutes'} = int((abs($argv1) % 3600) / 60);
     return sprintf("%s%02d%02d", $digit->{'operator'}, $digit->{'hours'}, $digit->{'minutes'});
 }
 

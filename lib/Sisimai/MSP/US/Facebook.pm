@@ -148,7 +148,7 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            if( $connvalues == scalar( keys %$connheader ) ) {
+            if( $connvalues == scalar(keys %$connheader) ) {
                 # Reporting-MTA: dns; 10.138.205.200
                 # Arrival-Date: Thu, 23 Jun 2011 02:29:43 -0700
                 $v = $dscontents->[-1];

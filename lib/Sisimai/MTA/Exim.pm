@@ -314,7 +314,7 @@ sub scan {
         for my $q ( @$dscontents ) {
             # Replace the recipient address with the value of "alias"
             next unless $q->{'alias'};
-            if( length( $q->{'recipient'} ) == 0 || $q->{'recipient'} !~ m/[@]/ ) {
+            if( length($q->{'recipient'}) == 0 || $q->{'recipient'} !~ m/[@]/ ) {
                 # The value of "recipient" is empty or does not include "@"
                 $q->{'recipient'} = $q->{'alias'};
             }

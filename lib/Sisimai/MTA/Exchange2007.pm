@@ -103,7 +103,7 @@ sub scan {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
 
-            if( $connvalues == scalar( keys %$connheader ) ) {
+            if( $connvalues == scalar(keys %$connheader) ) {
                 # Diagnostic information for administrators:
                 #
                 # Generating server: mta2.neko.example.jp

@@ -98,7 +98,7 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            if( $connvalues == scalar( keys %$connheader ) ) {
+            if( $connvalues == scalar(keys %$connheader) ) {
                 # Action: failed
                 # Final-Recipient: rfc822; kijitora@neko.example.jp
                 # Original-Recipient: rfc822; kijitora@neko.example.jp

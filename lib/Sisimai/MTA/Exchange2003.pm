@@ -156,7 +156,7 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next if $statuspart;
 
-            if( $connvalues == scalar( keys %$connheader ) ) {
+            if( $connvalues == scalar(keys %$connheader) ) {
                 # did not reach the following recipient(s):
                 # 
                 # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500

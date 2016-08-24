@@ -99,7 +99,7 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            if( $connvalues == scalar( keys %$connheader ) ) {
+            if( $connvalues == scalar(keys %$connheader) ) {
                 # This is the mail delivery agent at messagelabs.com.
                 # 
                 # I was unable to deliver your message to the following addresses:
