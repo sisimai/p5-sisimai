@@ -403,6 +403,11 @@ sub parse {
                 $$bodystring = Sisimai::MIME->qprintd($bodystring);
             }
         }
+    } else {
+        if( $$bodystring =~ m/Content-Transfer-Encoding: quoted-printable/m ) {
+            # Content-Transfer-Encoding: quoted-printable
+            $$bodystring = Sisimai::MIME->qprintd($bodystring, $mailheader);
+        }
     }
 
     # EXPAND_FORWARDED_MESSAGE:
