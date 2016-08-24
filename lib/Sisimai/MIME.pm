@@ -89,6 +89,7 @@ sub mimedecode {
 sub qprintd {
     # Decode MIME Quoted-Printable Encoded string
     # @param    [String] argv1   MIME Encoded text
+    # @param    [Hash]   heads   Email header
     # @return   [String]         MIME Decoded text
     my $class = shift;
     my $argv1 = shift // return undef;
@@ -107,9 +108,8 @@ sub qprintd {
     return MIME::QuotedPrint::decode($$argv1) unless length $boundary00;
     return MIME::QuotedPrint::decode($$argv1) unless $$argv1 =~ $ctencoding;
 
-    my $encodename = '7bit';
+    my $bodystring = '';
     my $notdecoded = [];
-    my $getdecoded = undef;
     my $qprintable = qr/\A(.*?)\Q$boundary00\E(.+?)\Q$boundary00\E(.*?)\z/sx;
 
     if( $$argv1 =~ $qprintable ) {
@@ -120,20 +120,20 @@ sub qprintd {
         # --b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==
         require Sisimai::String;
 
-        push @$notdecoded, $1, $3;
-        $getdecoded =  MIME::QuotedPrint::decode($2);
-        $encodename =  '8bit' if Sisimai::String->is_8bit(\$getdecoded);
-        $getdecoded =~ s/^(Content-Transfer-Encoding:)[ ].+$/$1 $encodename/m;
+        my $getdecoded =  MIME::QuotedPrint::decode($2);
+        my $encodename =  Sisimai::String->is_8bit(\$getdecoded) ? '8bit' : '7bit';
 
-        $plain .= $notdecoded->[0];
-        $plain .= sprintf("%s%s%s", $boundary00, $getdecoded, $boundary00);
-        $plain .= $notdecoded->[1];
+        push @$notdecoded, $1, $3;
+        $getdecoded =~ s/^(Content-Transfer-Encoding:)[ ].+$/$1 $encodename/m;
+        $bodystring .= $notdecoded->[0];
+        $bodystring .= sprintf("%s%s%s", $boundary00, $getdecoded, $boundary00);
+        $bodystring .= $notdecoded->[1];
 
     } else {
         # Is not quoted-printable encoded string
-        $plain = $$argv1;
+        $bodystring = $$argv1;
     }
-    return $plain;
+    return $bodystring;
 }
 
 sub base64d {
