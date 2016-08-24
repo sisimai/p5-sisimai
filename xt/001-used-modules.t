@@ -11,6 +11,6 @@ for my $e ( @{ Sisimai::Test::Modules->list() } ) {
     next if $e eq 'Sisimai/MTA.pm';
     next if $e eq 'Sisimai/MSP.pm';
     ok -f $v, $v;
-    Test::UsedModules::used_modules_ok( $v );
+    Test::UsedModules::used_modules_ok($v);
 }
 done_testing;
