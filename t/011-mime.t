@@ -70,6 +70,45 @@ MAKE_TEST: {
     is $PackageName->base64d(\$b6), $p6, '->base64d = '.$p6;
     is $PackageName->qprintd(\'=4e=65=6b=6f'), 'Neko', '->qprintd = Neko';
 
+    # Part of Quoted-Printable
+    my $h7 = { 'content-type' => 'multipart/report; report-type=delivery-status; boundary="b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw=="' };
+    my $q7 = '
+--b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+This is the mail delivery agent at messagelabs.com.
+
+I was unable to deliver your message to the following addresses:
+
+maria@dest.example.net
+
+Reason: 550 maria@dest.example.net... No such user
+
+The message subject was: Re: BOAS FESTAS!
+The message date was: Tue, 23 Dec 2014 20:39:24 +0000
+The message identifier was: DB/3F-17375-60D39495
+The message reference was: server-5.tower-143.messagelabs.com!1419367172!32=
+691968!1
+
+Please do not reply to this email as it is sent from an unattended mailbox.
+Please visit www.messagelabs.com/support for more details
+about this error message and instructions to resolve this issue.
+
+
+--b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
+Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
+
+    ';
+    my $d7 = $PackageName->qprintd(\$q7, $h7);
+    ok length $d7, '->qprintd($a, $b)';
+    ok length($q7) > length($d7), '->qprintd($a, $b)';
+    like $d7, qr|\Q--b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==\E|m, '->qprintd(boundary)';
+    like $d7, qr|Content-Transfer-Encoding: 7bit|m, '->qprintd(): 7bit';
+    unlike $d7, qr|32=$|m, '->qprintd() does not match 32=';
 
     my $x1 = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
     my $x2 = 'Apple-Mail-1-526612466';

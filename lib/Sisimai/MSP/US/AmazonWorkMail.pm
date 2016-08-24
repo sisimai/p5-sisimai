@@ -53,16 +53,6 @@ sub scan {
     }
     return undef if $match < 2;
 
-    if( $$mbody =~ /^Content-Transfer-Encoding: quoted-printable$/m ) {
-        # This is a multi-part message in MIME format. Your mail reader does not
-        # understand MIME message format.
-        # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
-        # Content-Type: text/plain; charset=iso-8859-15
-        # Content-Transfer-Encoding: quoted-printable
-        require Sisimai::MIME;
-        $$mbody = Sisimai::MIME->qprintd($mbody);
-    }
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part

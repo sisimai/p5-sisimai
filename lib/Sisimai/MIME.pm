@@ -92,10 +92,48 @@ sub qprintd {
     # @return   [String]         MIME Decoded text
     my $class = shift;
     my $argv1 = shift // return undef;
+    my $heads = shift // {};
+    my $plain = '';
 
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
-    return MIME::QuotedPrint::decode($$argv1);
+    return MIME::QuotedPrint::decode($$argv1) unless exists $heads->{'content-type'};
+    return MIME::QuotedPrint::decode($$argv1) unless length $heads->{'content-type'};
+
+    # Quoted-printable encoded part is the part of the text
+    my $boundary00 = __PACKAGE__->boundary($heads->{'content-type'}, 0);
+    my $ctencoding = qr/Content-Transfer-Encoding:[ ]quoted-printable/;
+
+    return MIME::QuotedPrint::decode($$argv1) unless length $boundary00;
+    return MIME::QuotedPrint::decode($$argv1) unless $$argv1 =~ $ctencoding;
+
+    my $encodename = '7bit';
+    my $notdecoded = [];
+    my $getdecoded = undef;
+    my $qprintable = qr/\A(.*?)\Q$boundary00\E(.+?)\Q$boundary00\E(.*?)\z/sx;
+
+    if( $$argv1 =~ $qprintable ) {
+        # --b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==
+        # Content-Type: text/plain; charset="UTF-8"
+        # Content-Transfer-Encoding: quoted-printable
+        # ...
+        # --b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==
+        require Sisimai::String;
+
+        push @$notdecoded, $1, $3;
+        $getdecoded =  MIME::QuotedPrint::decode($2);
+        $encodename =  '8bit' if Sisimai::String->is_8bit(\$getdecoded);
+        $getdecoded =~ s/^(Content-Transfer-Encoding:)[ ].+$/$1 $encodename/m;
+
+        $plain .= $notdecoded->[0];
+        $plain .= sprintf("%s%s%s", $boundary00, $getdecoded, $boundary00);
+        $plain .= $notdecoded->[1];
+
+    } else {
+        # Is not quoted-printable encoded string
+        $plain = $$argv1;
+    }
+    return $plain;
 }
 
 sub base64d {
@@ -134,10 +172,9 @@ sub boundary {
         #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"
         $value =  $1;
         $value =~ y/"'//d;
+        $value =  sprintf("--%s", $value) if $start > -1;
+        $value =  sprintf("%s--", $value) if $start >  0;
     }
-
-    $value = sprintf("--%s", $value) if $start > -1;
-    $value = sprintf("%s--", $value) if $start >  0;
     return $value;
 }
 
