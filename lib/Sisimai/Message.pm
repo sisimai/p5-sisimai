@@ -23,6 +23,7 @@ my $EndOfEmail = Sisimai::String->EOM;
 my $DefaultSet = Sisimai::Order->another;
 my $PatternSet = Sisimai::Order->by('subject');
 my $ExtHeaders = Sisimai::Order->headers;
+my $ReEncoding = Sisimai::MIME->patterns;
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
@@ -396,17 +397,28 @@ sub parse {
             # Content-Transfer-Encoding: quoted-printable
             if( $ctencoding eq 'base64' ) {
                 # Content-Transfer-Encoding: base64
-                $$bodystring = Sisimai::MIME->base64d($bodystring);
+                $bodystring = Sisimai::MIME->base64d($bodystring);
 
             } else {
                 # Content-Transfer-Encoding: quoted-printable
-                $$bodystring = Sisimai::MIME->qprintd($bodystring);
+                $bodystring = Sisimai::MIME->qprintd($bodystring);
             }
         }
     } else {
-        if( $$bodystring =~ m/Content-Transfer-Encoding: quoted-printable/m ) {
+        # NOT text/plain
+        if( $$bodystring =~ $ReEncoding->{'quoted-print'} ) {
             # Content-Transfer-Encoding: quoted-printable
-            $$bodystring = Sisimai::MIME->qprintd($bodystring, $mailheader);
+            $bodystring = Sisimai::MIME->qprintd($bodystring, $mailheader);
+        }
+
+        if( $$bodystring =~ $ReEncoding->{'7bit-encoded'} &&
+            $$bodystring =~ $ReEncoding->{'some-iso2022'} ) {
+            # Content-Transfer-Encoding: 7bit
+            # Content-Type: text/plain; charset=ISO-2022-JP
+            unless( $1 =~ m/(?:us-ascii|utf[-]?8)/i ) {
+                # Convert to UTF-8
+                $bodystring = Sisimai::String->to_utf8($bodystring, $1);
+            }
         }
     }
 
