@@ -18,6 +18,8 @@ sub make {
     # @return        [Undef]             Undef if the argument was wrong or an empty array
     my $class = shift;
     my $argv0 = shift // return undef;
+
+    die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
 
     require Sisimai::Mail;
@@ -51,6 +53,8 @@ sub dump {
     # @return        [String]            Parsed data as JSON text
     my $class = shift;
     my $argv0 = shift // return undef;
+
+    die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
 
     my $parseddata = __PACKAGE__->make($argv0, %$argv1) // [];
@@ -180,6 +184,13 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
     use Sisimai;
     my $v = Sisimai->dump('/path/to/mbox'); # or Path to Maildir
     print $v;                               # JSON string
+
+=head2 Read email data from STDIN
+
+If you want to pass email data from STDIN, specify B<STDIN> at the first argument
+of dump() and make() method like following command:
+
+    % cat ./path/to/bounce.eml | perl -MSisimai -lE 'print Sisimai->dump(STDIN)'
 
 =head2 C<B<engine()>>
 
