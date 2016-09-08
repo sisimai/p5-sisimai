@@ -3,6 +3,8 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
 4.18.1
     - Fix bug in Sisimai::MIME->qprintd() method reported at issue #192.
     - Import sisimai/rb-Sisimai@fb45a47, MIME decoding improvements.
+    - Issue #194, fix bug in Sisimai::Mail->new() called from Sisimai->dump().
+      It didn't work properly when email data read from STDIN.
 
 4.18.0  Mon, 22 Aug 2016 20:40:55 +0900 (JST)
     - Issue #189, Soft bounce improvement. Thanks to @Quickeneen.
