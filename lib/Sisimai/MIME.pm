@@ -4,6 +4,22 @@ use warnings;
 use Encode;
 use MIME::Base64 ();
 use MIME::QuotedPrint ();
+use Sisimai::String;
+
+my $ReE = {
+    '7bit-encoded' => qr/^Content-Transfer-Encoding:[ ]*7bit$/im,
+    'quoted-print' => qr/^Content-Transfer-Encoding:[ ]*quoted-printable$/im,
+    'some-iso2022' => qr/^Content-Type:[ ]*.+;[ ]*charset=["']?(iso-2022-[-a-z0-9]+)['"]?/im,
+    'with-charset' => qr/^Content[-]Type:[ ]*.+[;][ ]*charset=['"]?([-0-9a-z]+)['"]?/i,
+    'only-charset' => qr/^[\s\t]+charset=['"]?([-0-9a-z]+)['"]?/i,
+    'html-message' => qr|^Content-Type:[ ]*text/html;|mi,
+};
+
+sub patterns {
+  # Make MIME-Encoding and Content-Type related headers regurlar expression
+  # @return   [Array] Regular expressions related to MIME encoding
+  return $ReE;
+}
 
 sub is_mimeencoded {
     # Check that the argument is MIME-Encoded string or not
@@ -98,42 +114,94 @@ sub qprintd {
 
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
-    return MIME::QuotedPrint::decode($$argv1) unless exists $heads->{'content-type'};
-    return MIME::QuotedPrint::decode($$argv1) unless length $heads->{'content-type'};
+
+    if( ! exists $heads->{'content-type'} || length($heads->{'content-type'}) == 0 ) {
+        # There is no Content-Type: field
+        $plain = MIME::QuotedPrint::decode($$argv1);
+        return \$plain;
+    }
 
     # Quoted-printable encoded part is the part of the text
     my $boundary00 = __PACKAGE__->boundary($heads->{'content-type'}, 0);
-    my $ctencoding = qr/Content-Transfer-Encoding:[ ]quoted-printable/;
 
-    return MIME::QuotedPrint::decode($$argv1) unless length $boundary00;
-    return MIME::QuotedPrint::decode($$argv1) unless $$argv1 =~ $ctencoding;
-
-    my $bodystring = '';
-    my $notdecoded = [];
-    my $qprintable = qr/\A(.*?)\Q$boundary00\E(.+?)\Q$boundary00\E(.*?)\z/sx;
-
-    if( $$argv1 =~ $qprintable ) {
-        # --b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==
-        # Content-Type: text/plain; charset="UTF-8"
-        # Content-Transfer-Encoding: quoted-printable
-        # ...
-        # --b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==
-        require Sisimai::String;
-
-        my $getdecoded =  MIME::QuotedPrint::decode($2);
-        my $encodename =  Sisimai::String->is_8bit(\$getdecoded) ? '8bit' : '7bit';
-
-        push @$notdecoded, $1, $3;
-        $getdecoded =~ s/^(Content-Transfer-Encoding:)[ ].+$/$1 $encodename/m;
-        $bodystring .= $notdecoded->[0];
-        $bodystring .= sprintf("%s%s%s", $boundary00, $getdecoded, $boundary00);
-        $bodystring .= $notdecoded->[1];
-
-    } else {
-        # Is not quoted-printable encoded string
-        $bodystring = $$argv1;
+    if( length($boundary00) == 0 || $$argv1 !~ $ReE->{'quoted-print'} ) {
+        # There is no boundary string or no
+        # Content-Transfer-Encoding: quoted-printable field.
+        $plain = MIME::QuotedPrint::decode($$argv1);
+        return \$plain;
     }
-    return $bodystring;
+
+    my $boundary01 = Sisimai::MIME->boundary($heads->{'content-type'}, 1);
+    my $reboundary = {
+        'begin' => qr/\A\Q$boundary00\E/,
+        'until' => qr/\Q$boundary01\E\z/,
+    };
+    my $bodystring = '';
+    my $notdecoded = '';
+    my $getencoded = '';
+
+    my $encodename = undef;
+    my $ctencoding = undef;
+    my $mimeinside = 0;
+
+    for my $e ( split("\n", $$argv1) ) {
+        # This is a multi-part message in MIME format. Your mail reader does not
+        # understand MIME message format.
+        # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
+        # Content-Type: text/plain; charset=iso-8859-15
+        # Content-Transfer-Encoding: quoted-printable
+        if( $mimeinside ) {
+            # Quoted-Printable encoded text block
+            if( $e =~ $reboundary->{'begin'} ) {
+                # The next boundary string has appeared
+                # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
+                $getencoded  = MIME::QuotedPrint::decode($notdecoded);
+                $getencoded  = Sisimai::String->to_utf8(\$getencoded, $encodename);
+                $bodystring .= $$getencoded;
+                $bodystring .= $e . "\n";
+
+                $notdecoded = '';
+                $mimeinside = 0;
+                $ctencoding = undef;
+                $encodename = undef;
+
+            } else {
+                # Inside of Queoted printable encoded text
+                $notdecoded .= $e . "\n";
+            }
+        } else {
+            # NOT Quoted-Printable encoded text block
+            if( $e =~ m/\A[-]{2}[^\s]+[^-]\z/ ) {
+                # Start of the boundary block
+                # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
+                unless( $e eq $boundary00 ) {
+                    # New boundary string has appeared
+                    $boundary00 = $e;
+                    $boundary01 = $e . '--';
+                    $reboundary = {
+                        'begin' => qr/\A\Q$boundary00\E/,
+                        'until' => qr/\Q$boundary01\E\z/,
+                    };
+                }
+            } elsif( $e =~ $ReE->{'with-charset'} || $e =~ $ReE->{'only-charset'} ) {
+                # Content-Type: text/plain; charset=ISO-2022-JP
+                $encodename = $1;
+                $mimeinside = 1 if $ctencoding;
+
+            } elsif( $e =~ $ReE->{'quoted-print'} ){
+                # Content-Transfer-Encoding: quoted-printable
+                $ctencoding = $e;
+                $mimeinside = 1 if $encodename;
+
+            } elsif( $e =~ $reboundary->{'until'} ) {
+                # The end of boundary block
+                # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ--
+                $mimeinside = 0;
+            }
+            $bodystring .= $e . "\n";
+        }
+    }
+    return \$bodystring;
 }
 
 sub base64d {
@@ -151,7 +219,7 @@ sub base64d {
         # Decode BASE64
         $plain = MIME::Base64::decode($1);
     }
-    return $plain;
+    return \$plain;
 }
 
 sub boundary {

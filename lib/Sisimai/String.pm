@@ -2,6 +2,8 @@ package Sisimai::String;
 use feature ':5.10';
 use strict;
 use warnings;
+use Encode;
+use Encode::Guess;
 use Digest::SHA;
 
 sub EOM {
@@ -42,6 +44,57 @@ sub is_8bit {
     return undef unless ref $argv1 eq 'SCALAR';
     return 1 unless $$argv1 =~ m/\A[\x00-\x7f]+\z/;
     return 0;
+}
+
+sub to_utf8 {
+    # Convert given string to UTF-8
+    # @param    [String] argv1  String to be converted
+    # @param    [String] argv2  Encoding name before converting
+    # @return   [String]        UTF-8 Encoded string
+    my $class = shift;
+    my $argv1 = shift || return \'';
+    my $argv2 = shift;
+
+    my $tobeutf8ed = $$argv1;
+    my $encodefrom = $argv2 || '';
+    my $hasencoded = undef;
+    my $hasguessed = Encode::Guess->guess($tobeutf8ed);
+    my $encodingto = ref $hasguessed ? $hasguessed->name : '';
+    my $dontencode = qr/\A(?>utf[-]?8|(?:us[-])?ascii)\z/i;
+
+    if( length $encodefrom ) {
+        # The 2nd argument is a encoding name of the 1st argument
+        while(1) {
+            # Encode a given string when the encoding of the string is neigther
+            # utf8 nor ascii.
+            last if $encodefrom =~ $dontencode;
+            last if $encodingto =~ $dontencode;
+
+            eval { 
+                # Try to convert the string to UTF-8
+                Encode::from_to($tobeutf8ed, $encodefrom, 'utf8');
+                $hasencoded = 1;
+            };
+            last;
+        }
+    }
+
+    unless( $hasencoded ) {
+        # The 2nd argument was not given or failed to convert from $encodefrom
+        # to UTF-8
+        if( length $encodingto ) {
+            # Guessed encoding name is available, try to encode using it.
+            unless( $encodingto =~ $dontencode ) {
+                # Encode a given string when the encoding of the string is neigther
+                # utf8 nor ascii.
+                eval { 
+                    Encode::from_to($tobeutf8ed, $encodingto, 'utf8');
+                    $hasencoded = 1;
+                };
+            }
+        }
+    }
+    return \$tobeutf8ed;
 }
 
 sub sweep {

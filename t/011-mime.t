@@ -67,8 +67,8 @@ MAKE_TEST: {
     # Base64, Quoted-Printable
     my $b6 = '44Gr44KD44O844KT';
     my $p6 = 'にゃーん';
-    is $PackageName->base64d(\$b6), $p6, '->base64d = '.$p6;
-    is $PackageName->qprintd(\'=4e=65=6b=6f'), 'Neko', '->qprintd = Neko';
+    is ${ $PackageName->base64d(\$b6) }, $p6, '->base64d = '.$p6;
+    is ${ $PackageName->qprintd(\'=4e=65=6b=6f') }, 'Neko', '->qprintd = Neko';
 
     # Part of Quoted-Printable
     my $h7 = { 'content-type' => 'multipart/report; report-type=delivery-status; boundary="b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw=="' };
@@ -103,11 +103,10 @@ Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
 Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
 
     ';
-    my $d7 = $PackageName->qprintd(\$q7, $h7);
+    my $d7 = ${ $PackageName->qprintd(\$q7, $h7) };
     ok length $d7, '->qprintd($a, $b)';
     ok length($q7) > length($d7), '->qprintd($a, $b)';
     like $d7, qr|\Q--b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==\E|m, '->qprintd(boundary)';
-    like $d7, qr|Content-Transfer-Encoding: 7bit|m, '->qprintd(): 7bit';
     unlike $d7, qr|32=$|m, '->qprintd() does not match 32=';
 
     my $x1 = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
