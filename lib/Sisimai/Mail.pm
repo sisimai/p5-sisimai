@@ -41,7 +41,7 @@ sub new {
 
     } else {
         # The argumen1 neither a mailbox nor a Maildir/.
-        if( ref($argv1) eq 'GLOB' || $argv1 eq '<STDIN>' ) {
+        if( ref($argv1) eq 'GLOB' || $argv1 eq 'STDIN' ) {
             # Read from STDIN
             $klass = sprintf("%s::STDIN", __PACKAGE__);
             $param->{'type'} = 'stdin';
