@@ -390,7 +390,7 @@ sub parse {
     my $mesgformat = lc($mailheader->{'content-type'} || '');
     my $ctencoding = lc($mailheader->{'content-transfer-encoding'} || '');
 
-    if( $mesgformat =~ m|text/plain;| ) {
+    if( $mesgformat =~ m{text/(?:plain|html);?} ) {
         # Content-Type: text/plain; charset=UTF-8
         if( $ctencoding eq 'base64' || $ctencoding eq 'quoted-printable' ) {
             # Content-Transfer-Encoding: base64
@@ -404,6 +404,12 @@ sub parse {
                 $bodystring = Sisimai::MIME->qprintd($bodystring);
             }
         }
+
+        if( $mesgformat =~ m|text/html;?| ) {
+            # Content-Type: text/html;...
+            $bodystring = Sisimai::String->to_plain($bodystring, 1);
+        }
+
     } else {
         # NOT text/plain
         if( $$bodystring =~ $ReEncoding->{'quoted-print'} ) {

@@ -46,6 +46,95 @@ sub is_8bit {
     return 0;
 }
 
+sub sweep {
+    # Clean the string out
+    # @param    [String] argv1  String to be cleaned
+    # @return   [Scalar]        Cleaned out string
+    # @example  Clean up text
+    #   sweep('  neko ') #=> 'neko'
+    my $class = shift;
+    my $argv1 = shift // return undef;
+
+    chomp $argv1;
+    $argv1 =~ y{ }{}s;
+    $argv1 =~ s{\t}{}g;
+    $argv1 =~ s{\A }{}g;
+    $argv1 =~ s{ \z}{}g;
+    $argv1 =~ s{ [-]{2,}[^ \t].+\z}{};
+
+    return $argv1;
+}
+
+sub to_regexp {
+    # Convert given string to regular expression
+    # @param    [String] argv1  String to be converted to regular expression
+    # @return   [Regexp]        Converted regular expression
+    my $class = shift;
+    my $argv1 = shift;
+
+    return qr/\A\z/ unless length $argv1;
+    my $regularexp = undef;
+    my $hasescaped = $argv1;
+    my $delimiters = ['/', '|', '#', '!', ':', ';', '@'];
+    my $delimiter0 = '<';
+    my $delimiter1 = '>';
+
+    $hasescaped =~ s/([-^+*.?])/[$1]/g;
+    $hasescaped =~ s/\$/\\\$/g;
+    for my $e ( @$delimiters ) {
+        # Select a delimiter character which is not included in given string
+        next if index($argv1, $e) > -1;
+        $delimiter0 = $e;
+        $delimiter1 = $e;
+        last;
+    }
+
+    $regularexp = sprintf("qr%s%s%s%s%s", $delimiter0, '\A', $hasescaped, '\z', $delimiter1);
+    return eval $regularexp;
+}
+
+sub to_plain {
+    # Convert given HTML text to plain text
+    # @param    [Scalar]  argv1 HTML text(reference to string)
+    # @param    [Integer] loose Loose check flag
+    # @return   [Scalar]        Plain text(reference to string)
+    my $class = shift;
+    my $argv1 = shift // return \'';
+    my $loose = shift // 0;
+
+    return \'' unless ref $argv1;
+    return \'' unless ref $argv1 eq 'SCALAR';
+
+    my $plain = $$argv1;
+    my $match = {
+        'html' => qr|<html[ >].+?</html>|sim,
+        'body' => qr|<head>.+</head>.*<body[ >].+</body>|sim,
+    };
+
+    if( $loose || $plain =~ $match->{'html'} || $plain =~ $match->{'body'} ) {
+        # <html> ... </html>
+        # Rewrite <a> elements
+        # 1. <a href = 'http://...'>...</a> to " http://... "
+        # 2. <a href = 'mailto:...'>...</a> to " Value <mailto:...> "
+        $plain =~ s|<a\s+href\s*=\s*['"](https?://.+?)['"].*?>(.*?)</a>| [$2]($1) |gsim;
+        $plain =~ s|<a\s+href\s*=\s*["']mailto:([^\s]+?)["']>(.*?)</a>| [$2](mailto:$1) |gsim;
+
+        $plain =~ s/<[^<@>]+?>\s*/ /g;  # Delete HTML tags except <neko@example.jp>
+        $plain =~ s/&lt;/</g;           # Convert to left angle brackets
+        $plain =~ s/&gt;/>/g;           # Convert to right angle brackets
+        $plain =~ s/&amp;/&/g;          # Convert to "&"
+        $plain =~ s/&quot;/"/g;         # Convert to '"'
+        $plain =~ s/&apos;/'/g;         # Convert to "'"
+        $plain =~ s/&nbsp;/ /g;         # Convert to ' '
+
+        if( length($$argv1) > length($plain) ) {
+            $plain =~ y/ //s;
+            $plain .= "\n"
+        }
+    }
+    return \$plain;
+}
+
 sub to_utf8 {
     # Convert given string to UTF-8
     # @param    [String] argv1  String to be converted
@@ -97,53 +186,6 @@ sub to_utf8 {
     return \$tobeutf8ed;
 }
 
-sub sweep {
-    # Clean the string out
-    # @param    [String] argv1  String to be cleaned
-    # @return   [Scalar]        Cleaned out string
-    # @example  Clean up text
-    #   sweep('  neko ') #=> 'neko'
-    my $class = shift;
-    my $argv1 = shift // return undef;
-
-    chomp $argv1;
-    $argv1 =~ y{ }{}s;
-    $argv1 =~ s{\t}{}g;
-    $argv1 =~ s{\A }{}g;
-    $argv1 =~ s{ \z}{}g;
-    $argv1 =~ s{ [-]{2,}[^ \t].+\z}{};
-
-    return $argv1;
-}
-
-sub to_regexp {
-    # Convert given string to regular expression
-    # @param    [String] argv1  String to be converted to regular expression
-    # @return   [Regexp]        Converted regular expression
-    my $class = shift;
-    my $argv1 = shift;
-
-    return qr/\A\z/ unless length $argv1;
-    my $regularexp = undef;
-    my $hasescaped = $argv1;
-    my $delimiters = ['/', '|', '#', '!', ':', ';', '@'];
-    my $delimiter0 = '<';
-    my $delimiter1 = '>';
-
-    $hasescaped =~ s/([-^+*.?])/[$1]/g;
-    $hasescaped =~ s/\$/\\\$/g;
-    for my $e ( @$delimiters ) {
-        # Select a delimiter character which is not included in given string
-        next if index($argv1, $e) > -1;
-        $delimiter0 = $e;
-        $delimiter1 = $e;
-        last;
-    }
-
-    $regularexp = sprintf("qr%s%s%s%s%s", $delimiter0, '\A', $hasescaped, '\z', $delimiter1);
-    return eval $regularexp;
-}
-
 1;
 __END__
 =encoding utf-8
@@ -162,6 +204,9 @@ Sisimai::String - String related class
     print Sisimai::String->token($s, $r, $t);  # 2d635de42a44c54b291dda00a93ac27b
     print Sisimai::String->is_8bit(\'猫');     # 1
     print Sisimai::String->sweep(' neko cat ');# 'neko cat'
+
+    print Sisimai::String->to_utf8('^[$BG-^[(B', 'iso-2022-jp');  # 猫
+    print Sisimai::String->to_plain('<html>neko</html>');   # neko
 
 =head1 DESCRIPTION
 
@@ -199,6 +244,20 @@ C<to_regexp> converts from given string to regular expression.
 
     print Sisimai::String->to_regexp('neko++/nya-n/$cat/meow...?');
     (?^:\Aneko[+][+]/nya[-]n//meow[.][.][.][?]\z)
+
+=head2 C<B<to_utf8(I<Reference to String>, [I<Encoding>])>>
+
+C<to_utf8> converts given string to UTF-8.
+
+    my $v = '^[$BG-^[(B';   # ISO-2022-JP
+    print Sisimai::String->to_utf8($v, 'iso-2022-jp');  # 猫
+
+=head2 C<B<to_plain(I<Reference to String>, [I<Loose Check>])>>
+
+C<to_plain> converts given string as HTML to plain text.
+
+    my $v = '<html>neko</html>';
+    print Sisimai::String->to_plain($v);    # neko
 
 =head1 AUTHOR
 
