@@ -6,7 +6,7 @@ use Sisimai::String;
 my $PackageName = 'Sisimai::String';
 my $MethodNames = {
     'class' => [
-        'EOM', 'token', 'is_8bit', 'sweep', 'to_regexp', 'to_plain', 'to_utf8'
+        'EOM', 'token', 'is_8bit', 'sweep', 'to_plain', 'to_utf8'
     ],
     'object' => [],
 };
@@ -33,11 +33,6 @@ MAKE_TEST: {
     is(Sisimai::String->sweep(undef), undef, '->sweep = ""');
     is(Sisimai::String->sweep(' neko cat '), 'neko cat', '->sweep = "neko cat"');
     is(Sisimai::String->sweep(' nyaa   !!'), 'nyaa !!', '->sweep = "nyaa !!"');
-
-    my $e = 'neko++/nya-n/$cat/meow...?';
-    my $v = Sisimai::String->to_regexp($e);
-    ok $v, '->to_regexp = '.$v;
-    like $e, $v, $e.' match with '.$v;
 
     my $h = '
         <html>

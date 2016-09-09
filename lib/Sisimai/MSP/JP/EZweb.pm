@@ -101,7 +101,7 @@ sub scan {
         my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1);
         if( length $b0 ) {
             # Convert to regular expression
-            $Re1->{'boundary'} = Sisimai::String->to_regexp($b0);
+            $Re1->{'boundary'} = qr/\A\Q$b0\E\z/;
         }
     }
     my @rxmessages = (); map { push @rxmessages, @{ $ReFailure->{ $_ } } } (keys %$ReFailure);

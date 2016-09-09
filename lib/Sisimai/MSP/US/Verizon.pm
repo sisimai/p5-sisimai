@@ -88,7 +88,8 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
         if( length $boundary00 ) {
             # Convert to regular expression
-            $Re1->{'rfc822'} = Sisimai::String->to_regexp('--'.$boundary00.'--'); 
+            $boundary00 = '--'.$boundary00.'--';
+            $Re1->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
         }
 
         for my $e ( @hasdivided ) {
@@ -170,7 +171,8 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
         if( length $boundary00 ) {
             # Convert to regular expression
-            $Re1->{'rfc822'} = Sisimai::String->to_regexp('--'.$boundary00.'--'); 
+            $boundary00 = '--'.$boundary00.'--';
+            $Re1->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
         }
 
         for my $e ( @hasdivided ) {

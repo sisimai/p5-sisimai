@@ -65,34 +65,6 @@ sub sweep {
     return $argv1;
 }
 
-sub to_regexp {
-    # Convert given string to regular expression
-    # @param    [String] argv1  String to be converted to regular expression
-    # @return   [Regexp]        Converted regular expression
-    my $class = shift;
-    my $argv1 = shift;
-
-    return qr/\A\z/ unless length $argv1;
-    my $regularexp = undef;
-    my $hasescaped = $argv1;
-    my $delimiters = ['/', '|', '#', '!', ':', ';', '@'];
-    my $delimiter0 = '<';
-    my $delimiter1 = '>';
-
-    $hasescaped =~ s/([-^+*.?])/[$1]/g;
-    $hasescaped =~ s/\$/\\\$/g;
-    for my $e ( @$delimiters ) {
-        # Select a delimiter character which is not included in given string
-        next if index($argv1, $e) > -1;
-        $delimiter0 = $e;
-        $delimiter1 = $e;
-        last;
-    }
-
-    $regularexp = sprintf("qr%s%s%s%s%s", $delimiter0, '\A', $hasescaped, '\z', $delimiter1);
-    return eval $regularexp;
-}
-
 sub to_plain {
     # Convert given HTML text to plain text
     # @param    [Scalar]  argv1 HTML text(reference to string)
@@ -237,13 +209,6 @@ C<sweep()> clean the argument string up: remove trailing spaces, squeeze spaces.
 
     print Sisimai::String->sweep(' cat neko ');  # 'cat neko';
     print Sisimai::String->sweep(' nyaa   !!');  # 'nyaa !!';
-
-=head2 C<B<to_regexp(I<String>)>>
-
-C<to_regexp> converts from given string to regular expression.
-
-    print Sisimai::String->to_regexp('neko++/nya-n/$cat/meow...?');
-    (?^:\Aneko[+][+]/nya[-]n//meow[.][.][.][?]\z)
 
 =head2 C<B<to_utf8(I<Reference to String>, [I<Encoding>])>>
 
