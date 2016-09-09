@@ -5,7 +5,9 @@ use Sisimai::String;
 
 my $PackageName = 'Sisimai::String';
 my $MethodNames = {
-    'class' => ['EOM', 'token', 'is_8bit', 'sweep', 'to_regexp'],
+    'class' => [
+        'EOM', 'token', 'is_8bit', 'sweep', 'to_regexp', 'to_plain', 'to_utf8'
+    ],
     'object' => [],
 };
 
@@ -36,6 +38,42 @@ MAKE_TEST: {
     my $v = Sisimai::String->to_regexp($e);
     ok $v, '->to_regexp = '.$v;
     like $e, $v, $e.' match with '.$v;
+
+    my $h = '
+        <html>
+        <head>
+        </head>
+        <body>
+            <h1>neko</h1>
+            <div>
+            <a href = "http://libsisimai.org">Sisimai</a>
+            <a href = "mailto:maketest@libsisimai.org">maketest</a>
+            </div>
+        </body>
+        </html>
+    ';
+    my $p = Sisimai::String->to_plain(\$h);
+    ok length $$p;
+    ok length $h > length $$p;
+    unlike $$p, qr/<html>/, '->to_plain(<html>)';
+    unlike $$p, qr/<head>/, '->to_plain(<head>)';
+    unlike $$p, qr/<body>/, '->to_plain(<body>)';
+    unlike $$p, qr/<div>/, '->to_plain(<div>)';
+    like $$p, qr/\bneko\b/, '->to_plain("neko")';
+    like $$p, qr/[[]Sisimai[]]/, '->to_plain("[Sisimai]")';
+    like $$p, qr/[[]maketest[]]/, '->to_plain("[maketest]")';
+    like $$p, qr|[(]http://.+[)]|, '->to_plain("(http://...)")';
+    like $$p, qr/[(]mailto:.+[)]/, '->to_plain("(mailto:...)")';
+
+    $p = Sisimai::String->to_plain(\'<body>Nyaan</body>', 1);
+    ok length $$p;
+    unlike $$p, qr/<body>/, '->to_plain(<body>)';
+    like $$p, qr/Nyaan/, '->to_plain("<body>Nyaan</body>")';
+
+    $p = Sisimai::String->to_plain(\'<body>Nyaan</body>', 0);
+    ok length $$p;
+    like $$p, qr/<body>/, '->to_plain(<body>)';
+    like $$p, qr/Nyaan/, '->to_plain("<body>Nyaan</body>")';
 }
 
 done_testing;
