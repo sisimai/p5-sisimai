@@ -178,7 +178,7 @@ sub another {
     # @since v4.13.1
     return [ 
         @$AnotherList1, @$AnotherList2, @$AnotherList3, 
-        @$AnotherList4, @$AnotherList5,
+        @$AnotherList4, @$AnotherList5, @$AnotherList9,
     ];
 };
 
