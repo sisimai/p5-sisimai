@@ -96,6 +96,8 @@ my $R = {
     'Exchange2007' => {
         '01001' => qr/userunknown/,
         '01002' => qr/mesgtoobig/,
+        '01003' => qr/undefined/,
+        '01004' => qr/userunknown/,
     },
     'Exim' => {
         '01001' => qr/securityerror/,
@@ -761,6 +763,7 @@ my $R = {
         '01203' => qr/blocked/,
         '01204' => qr/suspend/,
         '01205' => qr/userunknown/,
+        '01206' => qr/systemerror/,
     },
     'SurfControl' => {
         '01001' => qr/filtered/,

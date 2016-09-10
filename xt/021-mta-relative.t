@@ -263,6 +263,7 @@ my $R = {
         '01251' => qr/mailboxfull/,
         '01252' => qr/networkerror/,
         '01253' => qr/hostunknown/,
+        '01254' => qr/userunknown/,
     },
     'RFC3834' => {
         '01002' => qr/vacation/,
