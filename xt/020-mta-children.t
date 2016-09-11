@@ -765,6 +765,8 @@ my $R = {
         '01204' => qr/suspend/,
         '01205' => qr/userunknown/,
         '01206' => qr/systemerror/,
+        '01207' => qr/userunknown/,
+        '01208' => qr/expired/,
     },
     'SurfControl' => {
         '01001' => qr/filtered/,
