@@ -40,6 +40,7 @@ my $MTAChildren = {
     'Exchange2007' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '02' => { 's' => qr/\A5[.]2[.]3\z/, 'r' => qr/mesgtoobig/,  'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
     },
     'Exim' => {
         '01' => { 's' => qr/\A5[.]7[.]0\z/,    'r' => qr/blocked/,        'b' => qr/\A1\z/ },
@@ -148,6 +149,11 @@ my $MTAChildren = {
         '19' => { 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/blocked/,    'b' => qr/\A1\z/ },
         '20' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/onhold/,     'b' => qr/\d\z/ },
         '21' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/networkerror/, 'b' => qr/\A1\z/ },
+        '22' => { 's' => qr/\A4[.]0[.]0\z/,    'r' => qr/systemerror/,'b' => qr/\A1\z/ },
+        '23' => { 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
+        '24' => { 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
+        '25' => { 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/expired/,    'b' => qr/\A1\z/ },
+        '26' => { 's' => qr/\A5[.]4[.]4\z/,    'r' => qr/hostunknown/,'b' => qr/\A0\z/ },
     },
     'qmail' => {
         '01' => { 's' => qr/\A5[.]5[.]0\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
