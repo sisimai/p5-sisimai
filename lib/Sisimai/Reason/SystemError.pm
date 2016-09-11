@@ -36,6 +36,7 @@ sub match {
         |server[ ]configuration[ ]error
         |service[ ]currently[ ]unavailable
         |system[ ]config[ ]error
+        |Temporary[ ]local[ ]problem
         |timeout[ ]waiting[ ]for[ ]input
         )
     }ix;
