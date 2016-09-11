@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Load '';
 
-our $VERSION = '4.18.1';
+our $VERSION = '4.18.2';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
