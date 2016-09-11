@@ -28,12 +28,26 @@ sub is_mimeencoded {
     #                           1: MIME encoded string
     my $class = shift;
     my $argv1 = shift || return 0;
+    my @parts = ();
+    my $isnot = 0;
 
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
     $$argv1 =~ y/"//d;
 
-    return 1 if $$argv1 =~ m{[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=[ \t]*\z};
+    if( $$argv1 =~ m/[ ]/ ) {
+        # Multiple MIME-Encoded strings in a line
+        @parts = split(' ', $$argv1);
+    } else {
+        push @parts, $$argv1;
+    }
+
+    for my $e ( @parts ) {
+        # Check all the string in the array
+        next if $e =~ m/[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*\z/;
+        $isnot = 1;
+    }
+    return 1 unless $isnot;
     return 0;
 }
 
@@ -62,7 +76,7 @@ sub mimedecode {
 
         if( __PACKAGE__->is_mimeencoded(\$e) ) {
             # MIME Encoded string
-            if( $e =~ m{\A=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=\z} ) {
+            if( $e =~ m{\A=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=?\z} ) {
                 # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
                 $characterset ||= lc $1;
                 $encodingname ||= uc $2;
