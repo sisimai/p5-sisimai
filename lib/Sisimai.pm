@@ -56,15 +56,15 @@ sub dump {
 
     die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
-
-    my $parseddata = __PACKAGE__->make($argv0, %$argv1) // [];
-    my $jsonobject = undef;
+    my $nyaan = __PACKAGE__->make($argv0, %$argv1) // [];
 
     # Dump as JSON
     Module::Load::load('JSON', '-convert_blessed_universally');
-    $jsonobject = JSON->new->allow_blessed->convert_blessed;
+    my $jsonobject = JSON->new->allow_blessed->convert_blessed;
+    my $jsonstring = $jsonobject->encode($nyaan);
 
-    return $jsonobject->encode($parseddata);
+    utf8::encode $jsonstring if utf8::is_utf8 $jsonstring;
+    return $jsonstring;
 }
 
 sub engine {
