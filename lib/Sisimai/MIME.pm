@@ -28,7 +28,7 @@ sub is_mimeencoded {
     #                           1: MIME encoded string
     my $class = shift;
     my $argv1 = shift || return 0;
-    my @parts = ();
+    my @piece = ();
     my $isnot = 0;
 
     return undef unless ref $argv1;
@@ -37,12 +37,12 @@ sub is_mimeencoded {
 
     if( $$argv1 =~ m/[ ]/ ) {
         # Multiple MIME-Encoded strings in a line
-        @parts = split(' ', $$argv1);
+        @piece = split(' ', $$argv1);
     } else {
-        push @parts, $$argv1;
+        push @piece, $$argv1;
     }
 
-    for my $e ( @parts ) {
+    for my $e ( @piece ) {
         # Check all the string in the array
         next if $e =~ m/[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*\z/;
         $isnot = 1;
