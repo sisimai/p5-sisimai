@@ -248,7 +248,7 @@ sub boundary {
     my $start = shift // -1;
     my $value = '';
 
-    if( $argv1 =~ m/\bboundary=([^ ]+)/ ) {
+    if( $argv1 =~ m/\bboundary=([^ ]+)/i ) {
         # Content-Type: multipart/mixed; boundary=Apple-Mail-5--931376066
         # Content-Type: multipart/report; report-type=delivery-status;
         #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"
