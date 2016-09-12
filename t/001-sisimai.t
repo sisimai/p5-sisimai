@@ -28,6 +28,13 @@ MAKE_TEST: {
     is $PackageName->make(undef), undef;
     is $PackageName->dump(undef), undef;
 
+    # Wrong number of arguments
+    eval { $PackageName->make('/dev/null', undef), undef };
+    like $@, qr/error: wrong number of arguments/;
+
+    eval { $PackageName->dump('/dev/null', undef), undef };
+    like $@, qr/error: wrong number of arguments/;
+
     for my $e ( 'mailbox', 'maildir' ) {
         MAKE: {
             my $parseddata = $PackageName->make($SampleEmail->{ $e });
