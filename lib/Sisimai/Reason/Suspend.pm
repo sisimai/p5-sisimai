@@ -50,7 +50,7 @@ sub true {
 
     return undef unless length $statuscode;
     return 1 if $argvs->reason eq $reasontext;
-    return 1 if __PACKAGE__->match( $argvs->diagnosticcode // '' );
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
     return 0
 }
 
@@ -84,13 +84,13 @@ C<text()> returns string: C<suspend>.
 
     print Sisimai::Reason::Suspend->text;  # suspend
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::Suspend->match('recipient suspend the service'); # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<suspend>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

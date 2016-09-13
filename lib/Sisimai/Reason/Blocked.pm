@@ -85,7 +85,7 @@ sub true {
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
-    my $tempreason = Sisimai::SMTP::Status->name( $statuscode );
+    my $tempreason = Sisimai::SMTP::Status->name($statuscode);
     my $reasontext = __PACKAGE__->text;
     my $v = 0;
 
@@ -95,7 +95,7 @@ sub true {
 
     } else {
         # Matched with a pattern in this class
-        $v = 1 if __PACKAGE__->match( $diagnostic );
+        $v = 1 if __PACKAGE__->match($diagnostic);
     }
     return $v;
 }
@@ -135,7 +135,7 @@ C<text()> returns string: "blocked".
 
     print Sisimai::Reason::Blocked->text;  # blocked
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 

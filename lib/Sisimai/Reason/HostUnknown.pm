@@ -54,7 +54,7 @@ sub true {
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
-    my $tempreason = Sisimai::SMTP::Status->name( $statuscode );
+    my $tempreason = Sisimai::SMTP::Status->name($statuscode);
     my $reasontext = __PACKAGE__->text;
     my $v = 0;
 
@@ -65,7 +65,7 @@ sub true {
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
-        $v = 1 if __PACKAGE__->match( $diagnostic );
+        $v = 1 if __PACKAGE__->match($diagnostic);
     }
 
     return $v;
@@ -109,13 +109,13 @@ C<text()> returns string: C<hostunknown>.
 
     print Sisimai::Reason::HostUnknown->text;  # hostunknown
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::HostUnknown->match('550 5.2.1 Host Unknown');   # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<hostunknown>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

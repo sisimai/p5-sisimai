@@ -43,7 +43,7 @@ sub scan {
     my $match = 0;
 
     $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-    $match ||= 1 if( defined $mhead->{'message-id'} && $mhead->{'message-id'} =~ $Re0->{'message-id'} );
+    $match ||= 1 if defined $mhead->{'message-id'} && $mhead->{'message-id'} =~ $Re0->{'message-id'};
     $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
     return undef unless $match;
 

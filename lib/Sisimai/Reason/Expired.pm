@@ -71,13 +71,13 @@ C<text()> returns string: C<expired>.
 
     print Sisimai::Reason::Expired->text;  # expired
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::Expired->match('400 Delivery time expired');   # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<expired>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

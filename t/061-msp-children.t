@@ -7,7 +7,7 @@ use Sisimai::Message;
 use Module::Load;
 
 my $MethodNames = {
-    'class' => [ 'description', 'headerlist', 'scan', 'pattern', 'DELIVERYSTATUS' ],
+    'class' => ['description', 'headerlist', 'scan', 'pattern', 'DELIVERYSTATUS'],
     'object' => [],
 };
 my $MSPChildren = {

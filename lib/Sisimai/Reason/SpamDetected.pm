@@ -144,13 +144,13 @@ sub true {
     my $diagnostic = $argvs->diagnosticcode // '';
     my $v = 0;
 
-    if( Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext ) {
+    if( Sisimai::SMTP::Status->name($statuscode) eq $reasontext ) {
         # Delivery status code points "spamdetected".
         $v = 1;
 
     } else {
         # Matched with a pattern in this class
-        $v = 1 if __PACKAGE__->match( $diagnostic );
+        $v = 1 if __PACKAGE__->match($diagnostic);
     }
 
     return $v;
@@ -194,13 +194,13 @@ C<text()> returns string: C<spamdetected>.
 
     print Sisimai::Reason::SpamDetected->text;  # spamdetected
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::SpamDetected->match('550 Spam detected');   # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in 
 the message. The argument must be Sisimai::Data object and this method is called

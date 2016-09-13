@@ -79,7 +79,7 @@ sub scan {
     my $match = 0;
 
     $match ||= 1 if defined $mhead->{'x-ms-embedded-report'};
-    EXCHANGE_OR_NOT: while( 1 ) {
+    EXCHANGE_OR_NOT: while(1) {
         # Check the value of X-Mailer header
         last if $match;
 

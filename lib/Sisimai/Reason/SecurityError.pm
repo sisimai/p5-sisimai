@@ -95,13 +95,13 @@ C<text()> returns string: C<securityerror>.
 
     print Sisimai::Reason::SecurityError->text;  # securityerror
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::SecurityError->match('5.7.1 Email not accept');   # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<securityerror>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

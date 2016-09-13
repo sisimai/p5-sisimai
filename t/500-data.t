@@ -8,7 +8,7 @@ use Sisimai::Message;
 my $PackageName = 'Sisimai::Data';
 my $MethodNames = {
     'class' => ['new', 'make'],
-    'object' => [ 'damn' ],
+    'object' => ['damn'],
 };
 
 use_ok $PackageName;

@@ -269,7 +269,7 @@ C<is_emailaddress()> checks the argument is valid email address or not.
     print Sisimai::RFC5322->is_emailaddress('neko@example.jp');  # 1
     print Sisimai::RFC5322->is_emailaddress('neko%example.jp');  # 0
 
-    my $addr_with_name = [ 
+    my $addr_with_name = [
         'Stray cat <neko@example.jp',
         '=?UTF-8?B?55m954yr?= <shironeko@example.co.jp>',
     ];

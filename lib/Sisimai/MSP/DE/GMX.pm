@@ -98,7 +98,7 @@ sub scan {
             # SMTP error from remote server after RCPT command:
             # host: mx.example.jp
             # 5.1.1 <shironeko@example.jp>... User Unknown
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A["]([^ ]+[@][^ ]+)["]:\z/ ||
                 $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {

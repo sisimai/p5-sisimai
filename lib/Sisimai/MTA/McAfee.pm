@@ -105,7 +105,7 @@ sub scan {
             # --------------Boundary-00=_00000000000000000000
             # Content-Type: message/delivery-status; name="deliverystatus.txt"
             #
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>][ \t]+[(](.+)[)]\z/ ) {
                 # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)

@@ -54,7 +54,7 @@ sub true {
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
-        return 1 if __PACKAGE__->match( $argvs->diagnosticcode );
+        return 1 if __PACKAGE__->match($argvs->diagnosticcode);
     }
 }
 
@@ -93,13 +93,13 @@ C<text()> returns string: C<norelaying>.
 
     print Sisimai::Reason::NoRelaying->text;  # norelaying
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::NoRelaying->match('Relaying denied');   # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<norelaying>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

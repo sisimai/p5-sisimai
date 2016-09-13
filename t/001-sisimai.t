@@ -71,7 +71,7 @@ MAKE_TEST: {
         }
 
         DUMP: {
-            my $jsonstring = $PackageName->dump( $SampleEmail->{ $e } );
+            my $jsonstring = $PackageName->dump($SampleEmail->{ $e });
             my $perlobject = undef;
             my $tobetested = [ qw|
                 addresser recipient senderdomain destination reason timestamp 
@@ -92,8 +92,8 @@ MAKE_TEST: {
     }
 
     for my $e ( 'maildir' ) {
-        my $parseddata = $PackageName->make( $IsNotBounce->{ $e } );
-        my $jsonstring = $PackageName->dump( $IsNotBounce->{ $e } );
+        my $parseddata = $PackageName->make($IsNotBounce->{ $e });
+        my $jsonstring = $PackageName->dump($IsNotBounce->{ $e });
         is $parseddata, undef, '->make = undef';
         is $jsonstring, '[]', '->dump = "[]"';
     }

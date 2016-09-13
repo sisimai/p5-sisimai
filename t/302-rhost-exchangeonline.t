@@ -5,7 +5,7 @@ use Sisimai::Rhost;
 
 my $PackageName = 'Sisimai::Rhost::ExchangeOnline';
 my $MethodNames = {
-    'class' => [ 'get' ],
+    'class' => ['get'],
     'object' => [],
 };
 
@@ -24,13 +24,13 @@ MAKE_TEST: {
 
     PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
         my $emailfn = sprintf("./set-of-emails/maildir/bsd/exchange-online-%02d.eml", $n);
-        my $mailbox = Sisimai::Mail->new( $emailfn );
+        my $mailbox = Sisimai::Mail->new($emailfn);
         my $mtahost = 'example.com.mail.protection.outlook.com';
         next unless defined $mailbox;
 
         while( my $r = $mailbox->read ) {
 
-            my $p = Sisimai::Message->new( 'data' => $r );
+            my $p = Sisimai::Message->new('data' => $r);
             isa_ok $p, 'Sisimai::Message';
             isa_ok $p->ds, 'ARRAY';
             isa_ok $p->header, 'HASH';
@@ -51,7 +51,7 @@ MAKE_TEST: {
                 is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
             }
 
-            my $v = Sisimai::Data->make( 'data' => $p );
+            my $v = Sisimai::Data->make('data' => $p);
             for my $e ( @$v ) {
                 like $e->reason, $rs->{ $n }->{'reason'}, '->reason = '.$e->reason;
             }

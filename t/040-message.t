@@ -35,9 +35,9 @@ MAKE_TEST: {
     isa_ok $p->rfc822, 'HASH', '->rfc822';
     ok length $p->from, $p->from;
 
-    $p = $PackageName->new( 
+    $p = $PackageName->new(
             'data' => $mailastext, 
-            'order' => [ 
+            'order' => [
                 'Sisimai::MTA::Sendmail', 'Sisimai::MTA::Postfix', 
                 'Sisimai::MTA::qmail', 'Sisimai::MTA::Exchange2003', 
                 'Sisimai::MSP::US::Google', 'Sisimai::MSP::US::Verizon',

@@ -109,7 +109,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Google Gmail: https://mail.google.com' }
 sub smtpagent   { 'US::Google' }
-sub headerlist  { return [ 'X-Failed-Recipients' ] }
+sub headerlist  { return ['X-Failed-Recipients'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -281,7 +281,7 @@ sub scan {
             }
         }
 
-        $statecode0 = $1 if( $e->{'diagnosis'} =~ m/[(]state[ ](\d+)[)][.]/ );
+        $statecode0 = $1 if $e->{'diagnosis'} =~ m/[(]state[ ](\d+)[)][.]/;
         if( exists $StateTable->{ $statecode0 } ) {
             # (state *)
             $e->{'reason'}  = $StateTable->{ $statecode0 }->{'reason'};

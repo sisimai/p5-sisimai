@@ -104,7 +104,7 @@ sub parse {
     # @return   [Array, Undef]  Email address list or Undef when there is no 
     #                           email address in the argument
     # @example  Parse email address
-    #   parse( [ 'Neko <neko@example.cat>' ] )  #=> [ 'neko@example.cat' ]
+    #   parse(['Neko <neko@example.cat>'])  #=> ['neko@example.cat']
     my $class = shift;
     my $argvs = shift // return undef;
     my $addrs = [];
@@ -230,7 +230,7 @@ sub expand_alias {
     my $email = shift // return undef;
     my $alias = '';
 
-    return '' unless Sisimai::RFC5322->is_emailaddress( $email );
+    return '' unless Sisimai::RFC5322->is_emailaddress($email);
 
     my @local = split('@', $email);
     if( $local[0] =~ m/\A([-_\w]+?)[+].+\z/ ) {

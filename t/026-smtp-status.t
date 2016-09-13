@@ -13,7 +13,7 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-    my $reasonlist = [ 
+    my $reasonlist = [
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered', 'hasmoved',
         'hostunknown', 'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
         'norelaying', 'notaccept', 'onhold', 'rejected', 'securityerror', 'spamdetected',
@@ -62,7 +62,7 @@ MAKE_TEST: {
             is $v, 'delivered', '->name('.$e.') returns delivered';
 
         } else {
-            ok grep( { $v eq $_ } @$reasonlist), '->name('.$e.') returns '.$v;
+            ok grep({ $v eq $_ } @$reasonlist), '->name('.$e.') returns '.$v;
         }
     }
 

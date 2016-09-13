@@ -105,7 +105,7 @@ Maildir/ directory.
 
 =head1 CLASS METHODS
 
-=head2 C<B<new( I<path to Maildir/> )>>
+=head2 C<B<new(I<path to Maildir/>)>>
 
 C<new()> is a constructor of Sisimai::Mail::Maildir
 

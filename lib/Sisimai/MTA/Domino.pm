@@ -131,7 +131,6 @@ sub scan {
                 $v->{'diagnosis'} = $e;
 
             } else {
-
                 if( exists $v->{'diagnosis'} && $v->{'diagnosis'} eq 'because:' ) {
                     # Error message, continued from the line "because:"
                     $v->{'diagnosis'} = $e;

@@ -58,7 +58,7 @@ sub read {
 
     eval {
         $seekoffset = 0 if $seekoffset < 0;
-        seek( $filehandle, $seekoffset, 0 );
+        seek($filehandle, $seekoffset, 0);
 
         while( my $r = <$filehandle> ) {
             # Read the UNIX mbox file from 'From ' to the next 'From '

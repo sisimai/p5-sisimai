@@ -173,7 +173,7 @@ sub make {
                 my $h = lc $f;
                 next unless exists $rfc822data->{ $h };
                 next unless length $rfc822data->{ $h };
-                next unless Sisimai::RFC5322->is_emailaddress( $rfc822data->{ $h } );
+                next unless Sisimai::RFC5322->is_emailaddress($rfc822data->{ $h });
                 $p->{'addresser'} = $rfc822data->{ $h };
                 last;
             }
@@ -475,7 +475,7 @@ Sisimai::Data generate parsed data from Sisimai::Message object.
 
 =head1 CLASS METHODS
 
-=head2 C<B<make( I<Hash> )>>
+=head2 C<B<make(I<Hash>)>>
 
 C<make> generate parsed data and returns an array reference which are 
 including Sisimai::Data objects.

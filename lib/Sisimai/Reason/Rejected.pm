@@ -73,7 +73,7 @@ sub true {
     my $diagnostic = $argvs->diagnosticcode // '';
     my $v = 0;
 
-    if( Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext ) {
+    if( Sisimai::SMTP::Status->name($statuscode) eq $reasontext ) {
         # Delivery status code points C<rejected>.
         $v = 1;
 
@@ -81,7 +81,7 @@ sub true {
         # Check the value of Diagnosic-Code: header with patterns
         if( $argvs->smtpcommand eq 'MAIL' ) {
             # Matched with a pattern in this class
-            $v = 1 if __PACKAGE__->match( $diagnostic );
+            $v = 1 if __PACKAGE__->match($diagnostic);
         }
     }
 
@@ -124,13 +124,13 @@ C<text()> returns string: C<rejected>.
 
     print Sisimai::Reason::Rejected->text;  # rejected
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::Rejected->match('550 Address rejected');   # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<rejected>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

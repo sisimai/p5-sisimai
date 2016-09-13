@@ -5,7 +5,7 @@ use Sisimai::MSP;
 
 my $PackageName = 'Sisimai::MSP';
 my $MethodNames = {
-    'class' => [ 
+    'class' => [
         'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
         'DELIVERYSTATUS', 'INDICATORS',
     ],

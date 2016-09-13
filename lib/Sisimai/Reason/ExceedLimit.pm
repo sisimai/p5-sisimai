@@ -40,7 +40,7 @@ sub true {
     my $diagnostic = $argvs->diagnosticcode // '';
     my $v = 0;
 
-    if( Sisimai::SMTP::Status->name( $statuscode ) eq $reasontext ) {
+    if( Sisimai::SMTP::Status->name($statuscode) eq $reasontext ) {
         # Delivery status code points "exceedlimit".
         # Status: 5.2.3
         # Diagnostic-Code: SMTP; 552 5.2.3 Message size exceeds fixed maximum message size
@@ -48,7 +48,7 @@ sub true {
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
-        $v = 1 if __PACKAGE__->match( $diagnostic );
+        $v = 1 if __PACKAGE__->match($diagnostic);
     }
 
     return $v;
@@ -90,13 +90,13 @@ C<text()> returns string: C<exceedlimit>.
 
     print Sisimai::Reason::ExceedLimit->text;  # exceedlimit
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::ExceedLimit->match; # 0;
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<exceedlimit>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

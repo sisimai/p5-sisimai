@@ -109,7 +109,7 @@ my $PatternTable = {
             'Sisimai::MTA::X3',
             'Sisimai::MTA::mFILTER',
         ],
-        qr/return/i => [ 
+        qr/return/i => [
             'Sisimai::MTA::Postfix',
             'Sisimai::MTA::Sendmail',
             'Sisimai::MSP::US::SendGrid',
@@ -119,7 +119,7 @@ my $PatternTable = {
             'Sisimai::MSP::JP::Biglobe', 
             'Sisimai::MTA::V5sendmail',
         ],
-        qr/undeliver/i => [  
+        qr/undeliver/i => [
             'Sisimai::MTA::Postfix',
             'Sisimai::MTA::Exchange2007',
             'Sisimai::MTA::Exchange2003',
@@ -130,7 +130,7 @@ my $PatternTable = {
             'Sisimai::MTA::IMailServer',
             'Sisimai::MTA::MailMarshalSMTP',
         ],
-        qr/failure/i => [ 
+        qr/failure/i => [
             'Sisimai::MTA::qmail',
             'Sisimai::MTA::Domino',
             'Sisimai::MSP::US::Google',
@@ -176,7 +176,7 @@ sub another {
     # Make MTA/MSP module list as a spare
     # @return   [Array] Ordered module list
     # @since v4.13.1
-    return [ 
+    return [
         @$AnotherList1, @$AnotherList2, @$AnotherList3, 
         @$AnotherList4, @$AnotherList5, @$AnotherList9,
     ];

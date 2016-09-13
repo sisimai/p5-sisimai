@@ -98,7 +98,7 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
             if( $e =~ m/\A[ \t]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
                 # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
                 #     Could not be delivered to: <******@**.***.**>

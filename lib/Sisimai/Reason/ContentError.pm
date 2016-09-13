@@ -88,13 +88,13 @@ C<text()> returns string: C<contenterror>.
 
     print Sisimai::Reason::ContentError->text;  # contenterror
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::ContentError->match('550 Message Filterd'); # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<contenterror>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

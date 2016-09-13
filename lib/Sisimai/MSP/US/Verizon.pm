@@ -129,7 +129,7 @@ sub scan {
                 #   Sent date: Wed Jun 12 02:21:53 GMT 2013
                 #   MAIL FROM: *******@hg.example.com
                 #   RCPT TO: *****@vtext.com
-                $v = $dscontents->[ -1 ];
+                $v = $dscontents->[-1];
 
                 if( $e =~ m/\A[ \t]+RCPT TO: (.*)\z/ ) {
                     if( length $v->{'recipient'} ) {
@@ -168,7 +168,7 @@ sub scan {
             }x,
         };
 
-        $boundary00 = Sisimai::MIME->boundary( $mhead->{'content-type'} );
+        $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
         if( length $boundary00 ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';

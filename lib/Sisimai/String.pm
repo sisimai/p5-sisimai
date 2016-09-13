@@ -28,7 +28,7 @@ sub token {
     my $epoch = shift // return '';
 
     # Format: STX(0x02) Sender-Address RS(0x1e) Recipient-Address ETX(0x03)
-    return Digest::SHA::sha1_hex( 
+    return Digest::SHA::sha1_hex(
         sprintf("\x02%s\x1e%s\x1e%d\x03", lc $addr1, lc $addr2, $epoch));
 }
 

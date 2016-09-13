@@ -7,8 +7,8 @@ use Sisimai::Message;
 
 my $PackageName = 'Sisimai::Data';
 my $MethodNames = {
-    'class' => [ 'new', 'make' ],
-    'object' => [ 'damn' ],
+    'class' => ['new', 'make'],
+    'object' => ['damn'],
 };
 
 use_ok $PackageName;
@@ -19,17 +19,17 @@ MAKE_TEST: {
     is $PackageName->new, undef;
 
     my $file = './set-of-emails/mailbox/mbox-1';
-    my $mail = Sisimai::Mail->new( $file );
+    my $mail = Sisimai::Mail->new($file);
     my $mesg = undef;
     my $data = undef;
     my $list = undef;
 
     while( my $r = $mail->read ){ 
-        $mesg = Sisimai::Message->new( 
+        $mesg = Sisimai::Message->new(
                     'data' => $r,
-                    'load' => [ 'Sisimai::MTA::UserDefined' ]
+                    'load' => ['Sisimai::MTA::UserDefined']
                 ); 
-        $data = Sisimai::Data->make( 'data' => $mesg ); 
+        $data = Sisimai::Data->make('data' => $mesg); 
         isa_ok $data, 'ARRAY';
 
         for my $e ( @$data ) {

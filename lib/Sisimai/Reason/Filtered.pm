@@ -56,7 +56,7 @@ sub true {
     my $commandtxt = $argvs->smtpcommand // '';
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
-    my $tempreason = Sisimai::SMTP::Status->name( $statuscode );
+    my $tempreason = Sisimai::SMTP::Status->name($statuscode);
     my $reasontext = __PACKAGE__->text;
     my $v = 0;
 
@@ -64,8 +64,8 @@ sub true {
 
     if( $tempreason eq $reasontext ) {
         # Delivery status code points "filtered".
-        if( Sisimai::Reason::UserUnknown->match( $diagnostic ) ||
-            __PACKAGE__->match( $diagnostic ) ) {
+        if( Sisimai::Reason::UserUnknown->match($diagnostic) ||
+            __PACKAGE__->match($diagnostic) ) {
 
             $v = 1 
         }
@@ -73,14 +73,14 @@ sub true {
         # Check the value of Diagnostic-Code and the last SMTP command
         if( $commandtxt ne 'RCPT' && $commandtxt ne 'MAIL' ) {
             # Check the last SMTP command of the session. 
-            if( __PACKAGE__->match( $diagnostic ) ) {
+            if( __PACKAGE__->match($diagnostic) ) {
                 # Matched with a pattern in this class
                 $v = 1;
 
             } else {
                 # Did not match with patterns in this class,
                 # Check the value of "Diagnostic-Code" with other error patterns.
-                $v = 1 if Sisimai::Reason::UserUnknown->match( $diagnostic );
+                $v = 1 if Sisimai::Reason::UserUnknown->match($diagnostic);
             }
         }
     }
@@ -130,13 +130,13 @@ C<text()> returns string: C<filtered>.
 
     print Sisimai::Reason::Filtered->text;  # filtered
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::Filtered->match('550 5.1.2 User reject');   # 1
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<filtered>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

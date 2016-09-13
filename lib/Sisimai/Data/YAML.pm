@@ -81,7 +81,7 @@ method should be called from the parent object "Sisimai::Data".
 
 =head1 CLASS METHODS
 
-=head2 C<B<dump( I<Sisimai::Data> )>>
+=head2 C<B<dump(I<Sisimai::Data>)>>
 
 C<dump> method returns Sisimai::Data object as a YAML formatted string.
 

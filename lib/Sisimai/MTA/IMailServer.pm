@@ -75,7 +75,7 @@ sub scan {
     my $match = 0;
 
     $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-    $match ||= 1 if( defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'} );
+    $match ||= 1 if defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

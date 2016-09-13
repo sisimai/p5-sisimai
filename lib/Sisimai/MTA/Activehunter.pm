@@ -87,7 +87,7 @@ sub scan {
             #
             #  ----- Transcript of session follows -----
             # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
 
             if( $e =~ m/\A[>]{3}[ \t]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
                 # >>> kijitora@example.org <kijitora@example.org>

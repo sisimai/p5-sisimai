@@ -457,7 +457,7 @@ sub scan {
         $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'});
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $Re1->{'command'};
     }
-    $rfc822part = Sisimai::RFC5322->weedout( $rfc822list );
+    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
 

@@ -6,7 +6,7 @@ use Sisimai::RFC5322;
 
 my $PackageName = 'Sisimai::Address';
 my $MethodNames = {
-    'class' => [ 
+    'class' => [
         'new', 'parse', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
     ],
     'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
@@ -67,12 +67,12 @@ MAKE_TEST: {
         isa_ok $v, 'ARRAY';
         is scalar @$v, 1;
         ok $v->[0], '->parse = '.$v->[0];
-        is $v->[0], $emailaddrs->[ $emailindex ], $v->[0];
+        is $v->[0], $emailaddrs->[$emailindex], $v->[0];
 
         # ->s3s4()
         my $x = $PackageName->s3s4($e);
         ok $x, '->s3s4 = '.$x;
-        is $x, $emailaddrs->[ $emailindex ], $x;
+        is $x, $emailaddrs->[$emailindex], $x;
 
         # ->new()
         my $y = $PackageName->new($x);

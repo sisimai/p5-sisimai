@@ -32,11 +32,11 @@ my $MathematicalConstant = {
 };
 
 my $MonthName = {
-    'full' => [ 
+    'full' => [
         'January', 'February', 'March', 'April', 'May', 'June', 'July', 
         'August', 'September', 'October', 'November', 'December',
     ],
-    'abbr' => [ 
+    'abbr' => [
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ],
@@ -51,9 +51,9 @@ my $DayOfWeek = {
 };
 
 my $HourName = {
-    'full' => [ 
-        'Midnight',1,2,3,4,5,'Morning',7,8,9,10,11,'Noon',
-        13,14,15,16,17,'Evening',19,20,21,22,23,
+    'full' => [
+        'Midnight', 1, 2, 3, 4, 5, 'Morning', 7, 8, 9, 10, 11, 'Noon',
+        13, 14, 15, 16, 17, 'Evening', 19, 20, 21, 22, 23,
     ],
     'abbr' => [0..23],
 };

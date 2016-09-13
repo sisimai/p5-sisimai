@@ -124,7 +124,7 @@ sub scan {
 
                 if( $responding[ $recipients ] ) {
                     # Concatenate the response of the server and error message
-                    $v->{'diagnosis'} .= ': '.$responding[ $recipients ];
+                    $v->{'diagnosis'} .= ': '.$responding[$recipients];
                 }
                 $recipients++;
 
@@ -174,7 +174,7 @@ sub scan {
     for my $e ( @$dscontents ) {
         $errorindex++;
         $e->{'agent'}   = __PACKAGE__->smtpagent;
-        $e->{'command'} = $commandset[ $errorindex ] || '';
+        $e->{'command'} = $commandset[$errorindex] || '';
 
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
@@ -182,7 +182,7 @@ sub scan {
 
         } else {
             # Set server response as a error message
-            $e->{'diagnosis'} ||= $responding[ $errorindex ];
+            $e->{'diagnosis'} ||= $responding[$errorindex];
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 

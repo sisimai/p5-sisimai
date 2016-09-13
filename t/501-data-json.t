@@ -4,7 +4,7 @@ use lib qw(./lib ./blib/lib);
 
 my $PackageName = 'Sisimai::Data::JSON';
 my $MethodNames = {
-    'class' => [ 'dump' ],
+    'class' => ['dump'],
     'object' => [],
 };
 

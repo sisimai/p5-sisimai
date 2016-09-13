@@ -5,7 +5,7 @@ use Sisimai::MTA;
 
 my $PackageName = 'Sisimai::MTA';
 my $MethodNames = {
-    'class' => [ 
+    'class' => [
         'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
         'DELIVERYSTATUS', 'INDICATORS',
     ],

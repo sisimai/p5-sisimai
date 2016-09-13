@@ -17,7 +17,7 @@ my $rwaccessors = [
     'ds',       # [Array]  Parsed data by Sisimai::MTA::*
     'rfc822',   # [Hash]   Header part of the original message
 ];
-Class::Accessor::Lite->mk_accessors( @$rwaccessors );
+Class::Accessor::Lite->mk_accessors(@$rwaccessors);
 
 my $EndOfEmail = Sisimai::String->EOM;
 my $DefaultSet = Sisimai::Order->another;

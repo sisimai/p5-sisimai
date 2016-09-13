@@ -57,11 +57,11 @@ C<text()> returns string: C<syntaxerror>.
 
     print Sisimai::Reason::SyntaxError->text;  # syntaxerror
 
-=head2 C<B<match( I<string> )>>
+=head2 C<B<match(I<string>)>>
 
 C<match()> always return undef
 
-=head2 C<B<true( I<Sisimai::Data> )>>
+=head2 C<B<true(I<Sisimai::Data>)>>
 
 C<true()> returns 1 if the bounce reason is C<syntaxerror>. The argument must be
 Sisimai::Data object and this method is called only from Sisimai::Reason class.

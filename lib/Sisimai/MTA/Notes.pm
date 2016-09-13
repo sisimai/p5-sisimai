@@ -105,7 +105,7 @@ sub scan {
             # kijitora@notes.example.jp
             #
             # ------- Returned Message --------
-            $v = $dscontents->[ -1 ];
+            $v = $dscontents->[-1];
             if( $e =~ m/\A[^ ]+[@][^ ]+/ ) {
                 # kijitora@notes.example.jp
                 if( length $v->{'recipient'} ) {

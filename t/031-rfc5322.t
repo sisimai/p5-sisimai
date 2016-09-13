@@ -5,7 +5,7 @@ use Sisimai::RFC5322;
 
 my $PackageName = 'Sisimai::RFC5322';
 my $MethodNames = {
-    'class' => [ 
+    'class' => [
         'HEADERFIELDS', 'LONGFIELDS',
         'is_emailaddress', 'is_domainpart', 'is_mailerdaemon', 'received',
         'weedout',
@@ -61,7 +61,7 @@ MAKE_TEST: {
         '=?UTF-8?B?55m954yr?= <shironeko@example.co.jp>',
     ];
     my $isnotaddrs = ['neko', 'neko%example.jp'];
-    my $postmaster = [ 
+    my $postmaster = [
         'mailer-daemon@example.jp', 
         'MAILER-DAEMON@example.cat',
         'Mailer-Daemon <postmaster@example.org>',
