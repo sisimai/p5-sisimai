@@ -154,6 +154,7 @@ my $MTAChildren = {
         '24' => { 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
         '25' => { 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/expired/,    'b' => qr/\A1\z/ },
         '26' => { 's' => qr/\A5[.]4[.]4\z/,    'r' => qr/hostunknown/,'b' => qr/\A0\z/ },
+        '27' => { 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
     },
     'qmail' => {
         '01' => { 's' => qr/\A5[.]5[.]0\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
@@ -165,6 +166,9 @@ my $MTAChildren = {
         '07' => { 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/networkerror/,'b' => qr/\A1\z/ },
         '08' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/mailboxfull/,'b' => qr/\A1\z/ },
         '09' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/undefined/,  'b' => qr/\A0\z/ },
+        '10' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/hostunknown/,'b' => qr/\A0\z/ },
+        '11' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/norelaying/, 'b' => qr/\A1\z/ },
+        '12' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/hostunknown/,'b' => qr/\A0\z/ },
     },
     'Sendmail' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
