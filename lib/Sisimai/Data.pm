@@ -85,9 +85,12 @@ sub new {
     $thing->{'timestamp'} = localtime Sisimai::Time->new($argvs->{'timestamp'});
     $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
 
+    # Callback method
+    $thing->{'catch'} = $argvs->{'catch'} // undef;
+
     @v1 = (
         'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
-        'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost', 'catch',
+        'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost',
         'smtpcommand', 'feedbacktype', 'action', 'softbounce', 'replycode',
     );
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
