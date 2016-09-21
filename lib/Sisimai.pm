@@ -11,11 +11,12 @@ sub libname { 'Sisimai'       }
 
 sub make {
     # Wrapper method for parsing mailbox or Maildir/
-    # @param         [String] argv0      Path to mbox or Maildir/
-    # @param         [Hash]   argv1      Parser options
-    # @options argv1 [Integer] delivered 1 = Including "delivered" reason
-    # @return        [Array]             Parsed objects
-    # @return        [Undef]             Undef if the argument was wrong or an empty array
+    # @param         [String]  argv0      Path to mbox or Maildir/
+    # @param         [Hash]    argv1      Parser options
+    # @options argv1 [Integer] delivered  1 = Including "delivered" reason
+    # @options argv1 [Code]    hook       Code reference to a callback method
+    # @return        [Array]              Parsed objects
+    # @return        [Undef]              Undef if the argument was wrong or an empty array
     my $class = shift;
     my $argv0 = shift // return undef;
 
@@ -47,10 +48,11 @@ sub make {
 
 sub dump {
     # Wrapper method to parse mailbox/Maildir and dump as JSON
-    # @param         [String]  argv0     Path to mbox or Maildir/
-    # @param         [Hash]    argv1     Parser options
-    # @options argv1 [Integer] delivered 1 = Including "delivered" reason
-    # @return        [String]            Parsed data as JSON text
+    # @param         [String]  argv0      Path to mbox or Maildir/
+    # @param         [Hash]    argv1      Parser options
+    # @options argv1 [Integer] delivered  1 = Including "delivered" reason
+    # @options argv1 [Code]    hook       Code reference to a callback method
+    # @return        [String]             Parsed data as JSON text
     my $class = shift;
     my $argv0 = shift // return undef;
 

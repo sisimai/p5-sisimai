@@ -43,6 +43,9 @@ sub new {
     # Constructor of Sisimai::Message
     # @param         [Hash] argvs       Email text data
     # @options argvs [String] data      Entire email message
+    # @options argvs [Array]  load      User defined MTA module list
+    # @options argvs [Array]  order     The order of MTA modules
+    # @options argvs [Code]   hook      Reference to callback method
     # @return        [Sisimai::Message] Structured email data or Undef if each
     #                                   value of the arguments are missing
     my $class = shift;
@@ -79,6 +82,9 @@ sub make {
     # Make data structure from the email message(a body part and headers)
     # @param         [Hash] argvs   Email data
     # @options argvs [String] data  Entire email message
+    # @options argvs [Array]  load  User defined MTA module list
+    # @options argvs [Array]  order The order of MTA modules
+    # @options argvs [Code]   hook  Reference to callback method
     # @return        [Hash]         Resolved data structure
     my $class = shift;
     my $argvs = { @_ };
