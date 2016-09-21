@@ -62,7 +62,11 @@ MAKE_TEST: {
                 for my $eee ( keys %$damnedhash ) {
                     next if ref $ee->$eee;
                     next if $eee eq 'subject';
-                    is $damnedhash->{ $eee }, $ee->$eee, '->'.$eee.' = '.$damnedhash->{ $eee };
+                    if( $eee eq 'catch' ) {
+                        is $damnedhash->{ $eee }, '', '->'.$eee.' = ""';
+                    } else {
+                        is $damnedhash->{ $eee }, $ee->$eee, '->'.$eee.' = '.$damnedhash->{ $eee };
+                    }
                 }
 
                 $jsonstring = $ee->dump('json');
