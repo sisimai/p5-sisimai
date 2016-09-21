@@ -23,9 +23,19 @@ MAKE_TEST: {
     my $mesg = undef;
     my $data = undef;
     my $list = undef;
+    my $call = sub {
+        my $argvs = shift;
+        my $catch = { 
+            'x-mailer' => '',
+            'return-path' => '',
+        };
+        $catch->{'x-mailer'}    = $1 if $argvs->{'body'} =~ m/^X-Mailer:\s*(.*)$/m;
+        $catch->{'return-path'} = $1 if $argvs->{'body'} =~ m/^Return-Path:\s*(.+)$/m;
+        return $catch;
+    };
 
     while( my $r = $mail->read ){ 
-        $mesg = Sisimai::Message->new('data' => $r); 
+        $mesg = Sisimai::Message->new('data' => $r, 'hook' => $call); 
         $data = Sisimai::Data->make('data' => $mesg); 
         isa_ok $data, 'ARRAY';
 
@@ -76,6 +86,12 @@ MAKE_TEST: {
 
             ok defined $e->feedbacktype, 'feedbacktype = '.$e->feedbacktype;
             ok defined $e->action, 'action = '.$e->action;
+
+            isa_ok $e->catch, 'HASH';
+            ok length $e->catch->{'x-mailer'};
+            like $e->catch->{'x-mailer'}, qr/Apple/;
+            ok length $e->catch->{'return-path'};
+            like $e->catch->{'return-path'}, qr/kijitora/;
         }
     }
 

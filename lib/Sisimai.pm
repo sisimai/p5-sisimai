@@ -24,20 +24,20 @@ sub make {
 
     require Sisimai::Mail;
     my $mail = Sisimai::Mail->new($argv0);
-    my $mesg = undef;
-    my $data = undef;
     my $list = [];
-    my $opts = { 'delivered' => $argv1->{'delivered'} // 0 };
 
     return undef unless $mail;
     require Sisimai::Data;
     require Sisimai::Message;
 
+    my $methodargv = { 'delivered' => $argv1->{'delivered'} // 0 };
+    my $hookmethod = $argv1->{'hook'} || undef;
+
     while( my $r = $mail->read ) {
         # Read and parse each mail file
-        $mesg = Sisimai::Message->new('data' => $r);
+        my $mesg = Sisimai::Message->new('data' => $r, 'hook' => $hookmethod);
         next unless defined $mesg;
-        $data = Sisimai::Data->make('data' => $mesg, %$opts);
+        my $data = Sisimai::Data->make('data' => $mesg, %$methodargv);
         push @$list, @$data if scalar @$data;
     }
 
@@ -191,6 +191,25 @@ If you want to pass email data from STDIN, specify B<STDIN> at the first argumen
 of dump() and make() method like following command:
 
     % cat ./path/to/bounce.eml | perl -MSisimai -lE 'print Sisimai->dump(STDIN)'
+
+=head2 Set callback method to dump() and make() method
+
+Beggining from v4.19.0, `hook` argument is available to callback user defined
+method like the following codes:
+
+    my $callbackto = sub {
+        my $emdata = shift;
+        my $caught = { 'x-mailer' => '' };
+
+        if( $emdata->{'body'} =~ m/^X-Mailer:\s*(.+)$/m ) {
+            $caught->{'x-mailer'} = $1;
+        }
+        return $caught;
+    };
+    my $data = Sisimai->make('/path/to/mbox', 'hook' => $callbackto);
+    my $json = Sisimai->dump('/path/to/mbox', 'hook' => $callbackto);
+
+    print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
 
 =head2 C<B<engine()>>
 
