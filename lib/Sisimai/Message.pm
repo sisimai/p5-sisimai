@@ -134,11 +134,13 @@ sub make {
     my $aftersplit = __PACKAGE__->divideup(\$email);
     return undef unless keys %$aftersplit;
 
-    eval {
-        # 1. Call hook methods
-        $havecaught = $hookmethod->($aftersplit) if ref $hookmethod eq 'CODE';
+    # 1. Call the hook method
+    if( ref $hookmethod eq 'CODE' ) {
+        # Execute hook method
+        eval { $havecaught = $hookmethod->($aftersplit) };
+        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
         $processing->{'catch'} = $havecaught;
-    };
+    }
 
     # 2. Convert email headers from text to hash reference
     $TryOnFirst = [];
