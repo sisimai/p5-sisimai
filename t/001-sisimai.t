@@ -99,6 +99,12 @@ MAKE_TEST: {
                     like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
                 }
             }
+
+            my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'hook' => {});
+            for my $ee ( @$isntmethod ) {
+                isa_ok $ee, 'Sisimai::Data';
+                is $ee->catch, undef;
+            }
         }
 
         DUMP: {
