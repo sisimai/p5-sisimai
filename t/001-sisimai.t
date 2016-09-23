@@ -62,11 +62,48 @@ MAKE_TEST: {
                 for my $eee ( keys %$damnedhash ) {
                     next if ref $ee->$eee;
                     next if $eee eq 'subject';
-                    is $damnedhash->{ $eee }, $ee->$eee, '->'.$eee.' = '.$damnedhash->{ $eee };
+                    if( $eee eq 'catch' ) {
+                        is $damnedhash->{ $eee }, '', '->'.$eee.' = ""';
+                    } else {
+                        is $damnedhash->{ $eee }, $ee->$eee, '->'.$eee.' = '.$damnedhash->{ $eee };
+                    }
                 }
 
                 $jsonstring = $ee->dump('json');
                 ok length $jsonstring, 'length(dump("json")) = '.length $jsonstring;
+            }
+
+            my $callbackto = sub {
+                my $argvs = shift;
+                my $catch = { 
+                    'x-mailer' => '',
+                    'return-path' => '',
+                };
+                $catch->{'x-mailer'}    = $1 if $argvs->{'body'} =~ m/^X-Mailer:\s*(.*)$/m;
+                $catch->{'return-path'} = $1 if $argvs->{'body'} =~ m/^Return-Path:\s*(.+)$/m;
+                return $catch;
+            };
+            my $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto);
+
+            for my $ee ( @$havecaught ) {
+                isa_ok $ee, 'Sisimai::Data';
+                isa_ok $ee->catch, 'HASH';
+
+                ok defined $ee->catch->{'x-mailer'};
+                if( length $ee->catch->{'x-mailer'} ) {
+                    like $ee->catch->{'x-mailer'}, qr/[A-Z]/;
+                }
+
+                ok defined $ee->catch->{'return-path'};
+                if( length $ee->catch->{'return-path'} ) {
+                    like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
+                }
+            }
+
+            my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'hook' => {});
+            for my $ee ( @$isntmethod ) {
+                isa_ok $ee, 'Sisimai::Data';
+                is $ee->catch, undef;
             }
         }
 

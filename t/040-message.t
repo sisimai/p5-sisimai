@@ -20,6 +20,16 @@ MAKE_TEST: {
     use IO::File;
     my $filehandle = IO::File->new($SampleEmail, 'r');
     my $mailastext = '';
+    my $callbackto = sub {
+        my $argvs = shift;
+        my $catch = { 
+            'x-mailer' => '',
+            'return-path' => '',
+        };
+        $catch->{'x-mailer'}    = $1 if $argvs->{'body'} =~ m/^X-Mailer:\s*(.*)$/m;
+        $catch->{'return-path'} = $1 if $argvs->{'body'} =~ m/^Return-Path:\s*(.+)$/m;
+        return $catch;
+    };
 
     while( my $r = <$filehandle> ) {
         $mailastext .= $r;
@@ -37,6 +47,7 @@ MAKE_TEST: {
 
     $p = $PackageName->new(
             'data' => $mailastext, 
+            'hook' => $callbackto,
             'order' => [
                 'Sisimai::MTA::Sendmail', 'Sisimai::MTA::Postfix', 
                 'Sisimai::MTA::qmail', 'Sisimai::MTA::Exchange2003', 
@@ -72,6 +83,10 @@ MAKE_TEST: {
         my $h = $p->rfc822->{ $e };
         ok length $h, $e;
     }
+
+    isa_ok $p->catch, 'HASH';
+    ok defined $p->catch->{'x-mailer'};
+    ok defined $p->catch->{'return-path'};
 }
 
 done_testing;

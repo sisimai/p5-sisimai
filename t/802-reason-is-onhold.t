@@ -31,7 +31,12 @@ MAKE_TEST: {
         for my $p ( keys %$h ) {
             next if ref $r->$p;
             next if $p eq 'subject';
-            is $h->{ $p }, $r->$p, '->'.$p.' = '.$h->{ $p };
+
+            if( $p eq 'catch' ) {
+                is $h->{ $p }, '', '->'.$p.' = ""';
+            } else {
+                is $h->{ $p }, $r->$p, '->'.$p.' = '.$h->{ $p };
+            }
         }
 
         my $j = $r->dump('json');
