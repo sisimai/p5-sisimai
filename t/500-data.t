@@ -26,9 +26,11 @@ MAKE_TEST: {
     my $call = sub {
         my $argvs = shift;
         my $catch = { 
+            'from' => '',
             'x-mailer' => '',
             'return-path' => '',
         };
+        $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
         $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
         $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
         return $catch;
@@ -92,6 +94,8 @@ MAKE_TEST: {
             like $e->catch->{'x-mailer'}, qr/Apple/;
             ok length $e->catch->{'return-path'};
             like $e->catch->{'return-path'}, qr/kijitora/;
+            ok length $e->catch->{'from'};
+            like $e->catch->{'from'}, qr/[@]/;
         }
     }
 
