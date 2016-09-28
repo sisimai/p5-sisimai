@@ -91,7 +91,6 @@ sub make {
     my $email = $argvs->{'data'};
 
     my $hookmethod = $argvs->{'hook'} || undef;
-    my $havecaught = undef;
     my $processing = {
         'from'   => '',     # From_ line
         'header' => {},     # Email header
@@ -130,17 +129,9 @@ sub make {
         push @$ToBeLoaded, $e;
     }
 
-    # 0. Split email data to headers and a body part.
+    # 1. Split email data to headers and a body part.
     my $aftersplit = __PACKAGE__->divideup(\$email);
     return undef unless keys %$aftersplit;
-
-    # 1. Call the hook method
-    if( ref $hookmethod eq 'CODE' ) {
-        # Execute hook method
-        eval { $havecaught = $hookmethod->($aftersplit) };
-        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
-        $processing->{'catch'} = $havecaught;
-    }
 
     # 2. Convert email headers from text to hash reference
     $TryOnFirst = [];
@@ -153,12 +144,17 @@ sub make {
     }
 
     # 4. Rewrite message body for detecting the bounce reason
-    my $methodargv = { 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
+    my $methodargv = { 
+        'hook' => $hookmethod,
+        'mail' => $processing, 
+        'body' => \$aftersplit->{'body'},
+    };
     my $bouncedata = __PACKAGE__->parse(%$methodargv);
 
     return undef unless $bouncedata;
     return undef unless keys %$bouncedata;
-    $processing->{'ds'} = $bouncedata->{'ds'};
+    $processing->{'ds'}    = $bouncedata->{'ds'};
+    $processing->{'catch'} = $bouncedata->{'catch'};
 
     # 5. Rewrite headers of the original message in the body part
     my $rfc822part = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
@@ -400,6 +396,8 @@ sub parse {
 
     my $mesgentity = $argvs->{'mail'} || return '';
     my $bodystring = $argvs->{'body'} || return '';
+    my $hookmethod = $argvs->{'hook'} || undef;
+    my $havecaught = undef;
     my $mailheader = $mesgentity->{'header'};
 
     # PRECHECK_EACH_HEADER:
@@ -431,7 +429,6 @@ sub parse {
             # Content-Type: text/html;...
             $bodystring = Sisimai::String->to_plain($bodystring, 1);
         }
-
     } else {
         # NOT text/plain
         if( $$bodystring =~ $ReEncoding->{'quoted-print'} ) {
@@ -448,6 +445,14 @@ sub parse {
                 $bodystring = Sisimai::String->to_utf8($bodystring, $1);
             }
         }
+    }
+
+    # Call hook method
+    if( ref $hookmethod eq 'CODE' ) {
+        # Execute hook method
+        my $p = { 'headers' => $mailheader, 'message' => $$bodystring };
+        eval { $havecaught = $hookmethod->($p) };
+        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
     }
 
     # EXPAND_FORWARDED_MESSAGE:
@@ -519,6 +524,8 @@ sub parse {
         last;
 
     } # End of while(SCANNER)
+
+    $scannedset->{'catch'} = $havecaught if $scannedset;
     return $scannedset;
 }
 
@@ -578,7 +585,7 @@ method like the following codes:
         my $argv = shift;
         my $data = { 'x-mailer' => '' };
 
-        if( $argv->{'body'} =~ m/^X-Mailer:\s*(.+)$/m ) {
+        if( $argv->{'message'} =~ m/^X-Mailer:\s*(.+)$/m ) {
             $data->{'x-mailer'} = $1;
         }
 

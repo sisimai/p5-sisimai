@@ -29,8 +29,8 @@ MAKE_TEST: {
             'x-mailer' => '',
             'return-path' => '',
         };
-        $catch->{'x-mailer'}    = $1 if $argvs->{'body'} =~ m/^X-Mailer:\s*(.*)$/m;
-        $catch->{'return-path'} = $1 if $argvs->{'body'} =~ m/^Return-Path:\s*(.+)$/m;
+        $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
+        $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
         return $catch;
     };
 
