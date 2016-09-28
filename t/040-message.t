@@ -26,8 +26,9 @@ MAKE_TEST: {
             'x-mailer' => '',
             'return-path' => '',
         };
-        $catch->{'x-mailer'}    = $1 if $argvs->{'body'} =~ m/^X-Mailer:\s*(.*)$/m;
-        $catch->{'return-path'} = $1 if $argvs->{'body'} =~ m/^Return-Path:\s*(.+)$/m;
+        $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
+        $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
+        $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
         return $catch;
     };
 
@@ -87,6 +88,7 @@ MAKE_TEST: {
     isa_ok $p->catch, 'HASH';
     ok defined $p->catch->{'x-mailer'};
     ok defined $p->catch->{'return-path'};
+    ok defined $p->catch->{'from'};
 }
 
 done_testing;

@@ -79,8 +79,9 @@ MAKE_TEST: {
                     'x-mailer' => '',
                     'return-path' => '',
                 };
-                $catch->{'x-mailer'}    = $1 if $argvs->{'body'} =~ m/^X-Mailer:\s*(.*)$/m;
-                $catch->{'return-path'} = $1 if $argvs->{'body'} =~ m/^Return-Path:\s*(.+)$/m;
+                $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
+                $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
+                $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
             };
             my $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto);
@@ -97,6 +98,11 @@ MAKE_TEST: {
                 ok defined $ee->catch->{'return-path'};
                 if( length $ee->catch->{'return-path'} ) {
                     like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
+                }
+
+                ok defined $ee->catch->{'from'};
+                if( length $ee->catch->{'from'} ) {
+                    like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|<?mailer-daemon>?)/i;
                 }
             }
 
