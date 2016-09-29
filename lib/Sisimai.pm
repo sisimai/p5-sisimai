@@ -187,6 +187,8 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
     my $v = Sisimai->dump('/path/to/mbox'); # or Path to Maildir
     print $v;                               # JSON string
 
+=head1 OTHER WAYS TO PARSE
+
 =head2 Read email data from STDIN
 
 If you want to pass email data from STDIN, specify B<STDIN> at the first argument
@@ -194,7 +196,7 @@ of dump() and make() method like following command:
 
     % cat ./path/to/bounce.eml | perl -MSisimai -lE 'print Sisimai->dump(STDIN)'
 
-=head2 Set callback method to dump() and make() method
+=head2 Callback Feature
 
 Beggining from v4.19.0, `hook` argument is available to callback user defined
 method like the following codes:
@@ -212,6 +214,8 @@ method like the following codes:
     my $json = Sisimai->dump('/path/to/mbox', 'hook' => $callbackto);
 
     print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
+
+=head1 OTHER METHODS
 
 =head2 C<B<engine()>>
 
