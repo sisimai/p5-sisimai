@@ -156,6 +156,53 @@ sub anotherone {
     return $reasontext;
 }
 
+sub match {
+    # Detect the bounce reason from given text
+    # @param    [String] argv1  Error message
+    # @return   [String]        Bounce reason
+    my $class = shift;
+    my $argv1 = shift // return undef;
+
+    require Sisimai::SMTP::Status;
+    my $reasontext = '';
+    my $classorder = [
+        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown',
+        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'TooManyConn',
+        'Blocked', 'SpamDetected', 'SecurityError', 'SystemError',
+        'NetworkError', 'Suspend', 'Expired', 'ContentError', 'HasMoved',
+        'SystemFull', 'NotAccept', 'MailerError', 'NoRelaying', 'SyntaxError',
+        'OnHold',
+    ];
+    my $statuscode = Sisimai::SMTP::Status->find($argv1);
+    my $typestring = '';
+       $typestring = uc($1) if $argv1 =~ m/\A(SMTP|X-.+);/i;
+
+    # Diagnostic-Code: SMTP; ... or empty value
+    for my $e ( @$classorder ) {
+        # Check the value of Diagnostic-Code: and the value of Status:, it is a
+        # deliverystats, with true() method in each Sisimai::Reason::* class.
+        my $p = 'Sisimai::Reason::'.$e;
+        Module::Load::load($p);
+
+        next unless $p->match($argv1);
+        $reasontext = $p->text;
+        last;
+    }
+
+    if( not $reasontext ) {
+        # Check the value of $typestring
+        if( $typestring eq 'X-UNIX' ) {
+            # X-Unix; ...
+            $reasontext = 'mailererror';
+
+        } else {
+            # Detect the bounce reason from "Status:" code
+            $reasontext = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
+        }
+    }
+    return $reasontext;
+}
+
 1;
 __END__
 
@@ -187,6 +234,11 @@ C<anotherone()> is a method for detecting the bounce reason, it works as a fall
 back method of get() and called only from get() method.
 
 C<match()> detects the bounce reason from given text as a error message.
+
+=head2 C<B<match(I<String>)>>
+
+C<match()> is a method for detecting the bounce reason from the string given as
+an argument of the method. However, this method is low analytical precision.
 
 =head1 LIST OF BOUNCE REASONS
 
