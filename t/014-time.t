@@ -3,7 +3,6 @@ no warnings 'once';
 use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Time;
-require './t/999-values.pl';
 
 my $PackageName = 'Sisimai::Time';
 my $MethodNames = {

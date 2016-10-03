@@ -3,10 +3,13 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai;
 use JSON;
+require './t/999-values.pl';
 
 my $PackageName = 'Sisimai';
 my $MethodNames = {
-    'class' => ['sysname', 'libname', 'version', 'make', 'dump', 'engine'],
+    'class' => [
+        'sysname', 'libname', 'version', 'make', 'dump', 'engine', 'match',
+    ],
     'object' => [],
 };
 my $SampleEmail = {

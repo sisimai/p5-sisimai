@@ -21,11 +21,11 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     my $v = $PackageName; 
     my $L = {
-        'false' => $Sisimai::Test::Values::FALSE,
-        'minus' => $Sisimai::Test::Values::MINUS,
-        'zero'  => $Sisimai::Test::Values::ZEROS,
-        'ctrl'  => $Sisimai::Test::Values::CTL_CHARS,
-        'esc'   => $Sisimai::Test::Values::ESC_CHARS,
+        'false' => $Sisimai::Test::Values::False,
+        'minus' => $Sisimai::Test::Values::Minus,
+        'zero'  => $Sisimai::Test::Values::Zeros,
+        'ctrl'  => $Sisimai::Test::Values::CTLChars,
+        'esc'   => $Sisimai::Test::Values::ESCChars,
     };
 
     TO_SECOND: {

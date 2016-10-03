@@ -1,11 +1,13 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
+use Sisimai;
 use Sisimai::Reason;
+require './t/999-values.pl';
 
 my $PackageName = 'Sisimai::Reason';
 my $MethodNames = {
-    'class' => ['get', 'retry', 'index'],
+    'class' => ['get', 'retry', 'index', 'match'],
     'object' => [],
 };
 
@@ -31,6 +33,22 @@ MAKE_TEST: {
         for my $e ( @$v ) {
             isa_ok $e, 'Sisimai::Data';
             is $e->reason, 'userunknown';
+        }
+    }
+
+    MATCH: {
+        my $tablemodel;
+        my $reasonlist = Sisimai->reason;
+
+        for my $e ( @$Sisimai::Test::Values::ErrorText ) {
+            my $v = Sisimai::Reason->match($e);
+            my $r = Sisimai->match($e);
+
+            ok $e, 'Diagnostic-Code: '.$e;
+            ok $v, 'Detected reason: '.$v;
+            ok grep { $v eq lc $_ } ( keys %$reasonlist );
+            ok grep { $r eq lc $_ } ( keys %$reasonlist );
+            ok $v, $r;
         }
     }
 }
