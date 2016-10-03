@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Load '';
 
-our $VERSION = '4.18.2';
+our $VERSION = '4.19.0';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
@@ -116,6 +116,17 @@ sub reason {
         $table->{ $e } = $r->description;
     }
     return $table;
+}
+
+sub match {
+    # Try to match with message patterns
+    # @param    [String]    Error message text
+    # @return   [String]    Reason text
+    my $class = shift;
+    my $argvs = shift || return undef;
+
+    require Sisimai::Reason;
+    return Sisimai::Reason->match($argvs);
 }
 
 1;
