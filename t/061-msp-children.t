@@ -55,6 +55,10 @@ my $MSPChildren = {
         '02' => { 's' => qr/\A5[.]3[.]0\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
         '03' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
         '04' => { 's' => qr/\A5[.]4[.]7\z/, 'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '06' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '07' => { 's' => qr/\A5[.]7[.]6\z/, 'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
+        '08' => { 's' => qr/\A5[.]7[.]9\z/, 'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
     },
     'US::AmazonWorkMail' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
