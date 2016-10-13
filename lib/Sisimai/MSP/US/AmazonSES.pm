@@ -10,9 +10,16 @@ my $Re0 = {
     'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
 };
 my $Re1 = {
-    'begin'   => qr/\AThe following message to [<]/,
+    'begin'   => qr/\A(?:
+         The[ ]following[ ]message[ ]to[ ][<]
+        |An[ ]error[ ]occurred[ ]while[ ]trying[ ]to[ ]deliver[ ]the[ ]mail[ ]
+        )
+    /x,
     'rfc822'  => qr|\Acontent-type: message/rfc822\z|,
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
+my $ReE = {
+    'x-mailer' => qr/Amazon[ ]WorkMail/,
 };
 my $ReFailure = {
     'expired' => qr/Delivery[ ]expired/x,
@@ -25,7 +32,8 @@ sub smtpagent   { 'US::AmazonSES' }
 # X-SenderID: Sendmail Sender-ID Filter v1.0.0 nijo.example.jp p7V3i843003008
 # X-Original-To: 000001321defbd2a-788e31c8-2be1-422f-a8d4-cf7765cc9ed7-000000@email-bounces.amazonses.com
 # X-AWS-Outgoing: 199.255.192.156
-sub headerlist  { return ['X-AWS-Outgoing'] }
+# X-SES-Outgoing: 2016.10.12-54.240.27.6
+sub headerlist  { return ['X-AWS-Outgoing', 'X-SES-Outgoing'] }
 sub pattern     { return $Re0 }
 
 sub scan {
@@ -44,8 +52,13 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
+    my $xmail = $mhead->{'x-mailer'} || '';
 
-    return undef unless $mhead->{'x-aws-outgoing'};
+    return undef if $xmail =~ $ReE->{'x-mailer'};
+    $match ||= 1 if $mhead->{'x-aws-outgoing'};
+    $match ||= 1 if $mhead->{'x-ses-outgoing'};
+    return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -162,7 +175,7 @@ sub scan {
                 #
                 # Reporting-MTA: dns; a192-79.smtp-out.amazonses.com
                 #
-                if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                if( $e =~ m/\A[Rr]eporting-MTA:[ ]*[DNSdns]+;[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
                     next if length $connheader->{'lhost'};
                     $connheader->{'lhost'} = lc $1;
