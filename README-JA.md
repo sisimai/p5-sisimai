@@ -2,7 +2,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.22-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.18.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.19.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 ![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
 
@@ -116,6 +116,34 @@ my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 [{"recipient": "kijitora@example.jp", "addresser": "shironeko@1jo.example.org", "feedbacktype": "", "action": "failed", "subject": "Nyaaaaan", "smtpcommand": "DATA", "diagnosticcode": "550 Unknown user kijitora@example.jp", "listid": "", "destination": "example.jp", "smtpagent": "Courier", "lhost": "1jo.example.org", "deliverystatus": "5.0.0", "timestamp": 1291954879, "messageid": "201012100421.oBA4LJFU042012@1jo.example.org", "diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "filtered", "token": "ce999a4c869e3f5e4d8a77b2e310b23960fb32ab", "alias": "", "senderdomain": "1jo.example.org", "rhost": "mfsmax.example.jp"}, {"diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "userunknown", "timestamp": 1381900535, "messageid": "E1C50F1B-1C83-4820-BC36-AC6FBFBE8568@example.org", "token": "9fe754876e9133aae5d20f0fd8dd7f05b4e9d9f0", "alias": "", "senderdomain": "example.org", "rhost": "mx.bouncehammer.jp", "action": "failed", "addresser": "kijitora@example.org", "recipient": "userunknown@bouncehammer.jp", "feedbacktype": "", "smtpcommand": "DATA", "subject": "バウンスメールのテスト(日本語)", "destination": "bouncehammer.jp", "listid": "", "diagnosticcode": "550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown", "deliverystatus": "5.1.1", "lhost": "p0000-ipbfpfx00kyoto.kyoto.example.co.jp", "smtpagent": "Sendmail"}]
 ```
 
+コールバック機能
+----------------
+Sisimai 4.19.0から、`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを
+引数`hook`に指定できるようになりました。`hook`に指定したサブルーチンによって処理
+された結果は`Sisimai::Data->catch`メソッドで得ることができます。
+
+```perl
+#! /usr/bin/env perl
+use Sisimai;
+my $callbackto = sub {
+    my $emdata = shift;
+    my $caught = { 'x-mailer' => '' };
+
+    if( $emdata->{'message'} =~ m/^X-Mailer:\s*(.+)$/m ) {
+        $caught->{'x-mailer'} = $1;
+    }
+    return $caught;
+};
+my $data = Sisimai->make('/path/to/mbox', 'hook' => $callbackto);
+my $json = Sisimai->dump('/path/to/mbox', 'hook' => $callbackto);
+
+print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
+```
+
+コールバック機能のより詳細な使い方は
+[Sisimai | 解析方法 - コールバック機能](http://libsisimai.org/ja/usage/#callback)
+をご覧ください。
+
 ワンライナーで
 --------------
 Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナーでJSON化した解析結果
@@ -135,7 +163,7 @@ bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違い
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
-| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.22 |
+| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.24 |
 | コマンドラインツール                           | あり          | 無し        |
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(同梱)  |
 | WebUIとAPI                                     | あり          | 無し        |
@@ -150,8 +178,8 @@ bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違い
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 8500行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 177000件    |
+| LOC:ソースコードの行数                         | 18200行       | 8600行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 184100件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
