@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.19.0
+4.19.0  Tue, 18 Oct 2016 14:13:22 +0900 (JST)
     - Remove utf8 flag from JSON string before returning the value at Sisimai->
       dump() method.
     - Implement a callback feature at Sisimai->make and Sisimai->dump methods.
