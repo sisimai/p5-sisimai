@@ -9,7 +9,7 @@
 SHELL := /bin/sh
 HERE  := $(shell pwd)
 NAME  := Sisimai
-PERL  := perl
+PERL  ?= perl
 MKDIR := mkdir -p
 LS    := ls -1
 CP    := cp
@@ -27,11 +27,13 @@ BENCHMARKEMP := sbin/mp
 BENCHMARKDIR := tmp/benchmark
 BENCHMARKSET := tmp/sample
 VELOCITYTEST := tmp/emails-for-velocity-measurement
+
 SET_OF_EMAIL := set-of-emails
 PRIVATEMAILS := $(SET_OF_EMAIL)/private
 PUBLICEMAILS := $(SET_OF_EMAIL)/maildir/bsd
 DOSFORMATSET := $(SET_OF_EMAIL)/maildir/dos
 MACFORMATSET := $(SET_OF_EMAIL)/maildir/mac
+
 INDEX_LENGTH := 24
 DESCR_LENGTH := 48
 BH_CAN_PARSE := courier exim messagingserver postfix sendmail surfcontrol x5 \
