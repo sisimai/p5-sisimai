@@ -48,7 +48,7 @@ MAKE_TEST: {
                 is $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
-                is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
+                is $e->{'agent'}, 'MTA::Sendmail', '->agent = '.$e->{'agent'};
             }
 
             my $v = Sisimai::Data->make('data' => $p);

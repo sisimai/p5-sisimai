@@ -30,7 +30,7 @@ MAKE_TEST: {
 
     for my $v ( @$default, @$another ) {
         # Module name test
-        like $v, qr/\ASisimai::(?:MTA|MSP)::/, $v;
+        like $v, qr/\ASisimai::(?:MTA|MSP|CED)::/, $v;
         use_ok $v;
     }
 
@@ -39,7 +39,7 @@ MAKE_TEST: {
         like $v, qr/\A[a-z][-a-z]+\z/, $v;
         for my $w ( keys %{ $headers->{ $v } } ) {
             # Module name test
-            like $w, qr/\ASisimai::(?:MTA|MSP)::/, $v.' => '.$w;
+            like $w, qr/\ASisimai::(?:MTA|MSP|CED)::/, $v.' => '.$w;
             is $headers->{ $v }->{ $w }, 1;
         }
     }

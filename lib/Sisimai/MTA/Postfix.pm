@@ -33,9 +33,8 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Postfix' }
-sub smtpagent   { 'Postfix' }
 sub pattern     { return $Re0 }
+sub description { 'Postfix' }
 
 sub scan {
     # Parse bounce messages from Postfix

@@ -16,9 +16,8 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Trustwave Secure Email Gateway' }
-sub smtpagent   { 'MailMarshalSMTP' }
 sub pattern     { return $Re0 }
+sub description { 'Trustwave Secure Email Gateway' }
 
 sub scan {
     # Detect an error from MailMarshalSMTP

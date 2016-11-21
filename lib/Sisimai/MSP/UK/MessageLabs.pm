@@ -19,9 +19,6 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Symantec.cloud http://www.messagelabs.com' }
-sub smtpagent   { 'UK::MessageLabs' }
-
 # X-Msg-Ref: server-11.tower-143.messagelabs.com!1419367175!36473369!1
 # X-Originating-IP: [10.245.230.38]
 # X-StarScan-Received:
@@ -29,6 +26,7 @@ sub smtpagent   { 'UK::MessageLabs' }
 # X-VirusChecked: Checked
 sub headerlist  { return ['X-Msg-Ref'] }
 sub pattern     { return $Re0 }
+sub description { 'Symantec.cloud http://www.messagelabs.com' }
 
 sub scan {
     # Detect an error from MessageLabs.com

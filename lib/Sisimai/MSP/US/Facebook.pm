@@ -75,9 +75,8 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Facebook: https://www.facebook.com' }
-sub smtpagent   { 'US::Facebook' }
 sub pattern     { return $Re0 }
+sub description { 'Facebook: https://www.facebook.com' }
 
 sub scan {
     # Detect an error from Facebook

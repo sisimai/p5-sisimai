@@ -21,9 +21,8 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'V8Sendmail: /usr/sbin/sendmail' }
-sub smtpagent   { 'Sendmail' }
 sub pattern     { return $Re0 }
+sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 
 sub scan {
     # Parse bounce messages from Sendmail

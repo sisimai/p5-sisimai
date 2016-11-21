@@ -77,9 +77,8 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'OpenSMTPD' }
-sub smtpagent   { 'OpenSMTPD' }
 sub pattern     { return $Re0 }
+sub description { 'OpenSMTPD' }
 
 sub scan {
     # Detect an error from OpenSMTPD

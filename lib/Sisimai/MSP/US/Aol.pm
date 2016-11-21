@@ -18,9 +18,6 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Aol Mail: http://www.aol.com' }
-sub smtpagent   { 'US::Aol' }
-
 # X-AOL-IP: 192.0.2.135
 # X-AOL-VSS-INFO: 5600.1067/98281
 # X-AOL-VSS-CODE: clean
@@ -33,6 +30,7 @@ sub smtpagent   { 'US::Aol' }
 # X-Outbound-Mail-Relay-Sender: rfc822; shironeko@aol.example.jp
 sub headerlist  { return ['X-AOL-IP'] }
 sub pattern     { return $Re0 }
+sub description { 'Aol Mail: http://www.aol.com' }
 
 sub scan {
     # Detect an error from Aol Mail

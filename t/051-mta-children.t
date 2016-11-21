@@ -325,17 +325,13 @@ for my $x ( keys %$MTAChildren ) {
                     }
 
                     # Check the value of the following variables
-                    if( $x eq 'mFILTER' ) {
-                        # mFILTER => m-FILTER
-                        is $e->{'agent'}, 'm-FILTER', sprintf("[%s] %s->agent = %s", $g, $x, $e->{'agent'});
-
-                    } elsif( $x eq 'X4' ) {
+                    if( $x eq 'X4' ) {
                         # X4 is qmail clone
                         like $e->{'agent'}, qr/(?:qmail|X4)/, sprintf("[%s] %s->agent = %s", $g, $x, $e->{'agent'});
 
                     } else {
                         # Other MTA modules
-                        is $e->{'agent'}, $x, sprintf("[%s] %s->agent = %s", $g, $x, $e->{'agent'});
+                        is $e->{'agent'}, 'MTA::'.$x, sprintf("[%s] %s->agent = %s", $g, $x, $e->{'agent'});
                     }
 
                     like   $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, sprintf("[%s] %s->recipient = %s", $g, $x, $e->{'recipient'});

@@ -30,9 +30,8 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'IBM Domino Server' }
-sub smtpagent   { 'Domino' }
 sub pattern     { return $Re0 }
+sub description { 'IBM Domino Server' }
 
 sub scan {
     # Detect an error from IBM Domino

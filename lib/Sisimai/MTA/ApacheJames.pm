@@ -20,9 +20,8 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Java Apache Mail Enterprise Server' }
-sub smtpagent   { 'ApacheJames' }
 sub pattern     { return $Re0 }
+sub description { 'Java Apache Mail Enterprise Server' }
 
 sub scan {
     # Detect an error from ApacheJames

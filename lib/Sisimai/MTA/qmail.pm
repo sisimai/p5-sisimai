@@ -120,9 +120,8 @@ my $ReFailure = {
 my $ReDelayed  = qr/this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z/x;
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'qmail' }
-sub smtpagent   { 'qmail' }
 sub pattern     { return $Re0 }
+sub description { 'qmail' }
 
 sub scan {
     # Detect an error from qmail

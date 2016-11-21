@@ -72,7 +72,7 @@ MAKE_TEST: {
             ok length $e->messageid, 'messageid = '.$e->messageid;
             like $e->messageid, qr/\A.+[@].+/, 'messageid = '.$e->messageid;
 
-            is $e->smtpagent, 'Sendmail', 'smtpagent = '.$e->smtpagent;
+            is $e->smtpagent, 'MTA::Sendmail', 'smtpagent = '.$e->smtpagent;
             is $e->smtpcommand, 'DATA', 'smtpcommand = '.$e->smtpcommand;
 
             ok length $e->diagnosticcode, 'diagnosticcode = '.$e->diagnosticcode;
@@ -147,7 +147,7 @@ MAKE_TEST: {
             ok length $e->messageid, 'messageid = '.$e->messageid;
             unlike $e->messageid, qr/[ ]/, '->messageid = '.$e->messageid;
 
-            is $e->smtpagent, 'Sendmail', 'smtpagent = '.$e->smtpagent;
+            is $e->smtpagent, 'MTA::Sendmail', 'smtpagent = '.$e->smtpagent;
             is $e->smtpcommand, 'MAIL', 'smtpcommand = '.$e->smtpcommand;
 
             ok length $e->diagnosticcode, 'diagnosticcode = '.$e->diagnosticcode;

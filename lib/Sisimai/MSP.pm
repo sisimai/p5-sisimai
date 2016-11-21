@@ -2,12 +2,12 @@ package Sisimai::MSP;
 use feature ':5.10';
 use strict;
 use warnings;
-use Sisimai::MTA;
 use Sisimai::RFC5322;
+use Sisimai::Skeleton;
 
-sub DELIVERYSTATUS { return Sisimai::MTA->DELIVERYSTATUS }
-sub INDICATORS     { return Sisimai::MTA->INDICATORS     }
-sub smtpagent      { return Sisimai::MTA->smtpagent      }
+sub DELIVERYSTATUS { return Sisimai::Skeleton->DELIVERYSTATUS }
+sub INDICATORS     { return Sisimai::Skeleton->INDICATORS     }
+sub smtpagent      { my $v = shift; $v =~ s/\ASisimai:://; return $v }
 sub description    { return '' }
 sub headerlist     { return [] }
 sub pattern        { return {} }

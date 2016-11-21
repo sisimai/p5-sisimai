@@ -25,10 +25,9 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Module decription' }
-sub smtpagent   { 'Module name' }
 sub headerlist  { return ['X-Some-UserDefined-Header'] }
 sub pattern     { return $Re0 }
+sub description { 'Module decription' }
 
 sub scan {
     # @abstract      Template for User-Defined MTA module

@@ -23,14 +23,12 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Zoho Mail: https://www.zoho.com' }
-sub smtpagent   { 'US::Zoho' }
-
 # X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
 # X-Zoho-Virus-Status: 2
 # X-Mailer: Zoho Mail
 sub headerlist  { return ['X-ZohoMail'] }
 sub pattern     { return $Re0 }
+sub description { 'Zoho Mail: https://www.zoho.com' }
 
 sub scan {
     # Detect an error from Zoho Mail

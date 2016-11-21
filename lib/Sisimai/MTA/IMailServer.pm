@@ -49,12 +49,10 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'IPSWITCH IMail Server' }
-sub smtpagent   { 'IMailServer' }
-
 # X-Mailer: <SMTP32 v8.22>
 sub headerlist  { return ['X-Mailer'] }
 sub pattern     { return $Re0 }
+sub description { 'IPSWITCH IMail Server' }
 
 sub scan {
     # Detect an error from IMailServer

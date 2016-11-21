@@ -27,9 +27,8 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'au by KDDI: http://www.au.kddi.com' }
-sub smtpagent   { 'JP::KDDI' }
 sub pattern     { return $Re0 }
+sub description { 'au by KDDI: http://www.au.kddi.com' }
 
 sub scan {
     # Detect an error from au by KDDI

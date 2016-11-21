@@ -16,9 +16,8 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'MailFoundry' }
-sub smtpagent   { 'MailFoundry' }
 sub pattern     { return $Re0 }
+sub description { 'MailFoundry' }
 
 sub scan {
     # Detect an error from MailFoundry

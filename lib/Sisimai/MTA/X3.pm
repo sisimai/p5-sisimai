@@ -15,9 +15,8 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Unknown MTA #3' }
-sub smtpagent   { 'X3' }
 sub pattern     { return $Re0 }
+sub description { 'Unknown MTA #3' }
 
 sub scan {
     # Detect an error from Unknown MTA #3

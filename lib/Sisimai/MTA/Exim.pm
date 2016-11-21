@@ -131,12 +131,10 @@ my $ReDelayed = qr{(?:
 }x;
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Exim' }
-sub smtpagent   { 'Exim' }
-
 # X-Failed-Recipients: kijitora@example.ed.jp
 sub headerlist  { return ['X-Failed-Recipients'] }
 sub pattern     { return $Re0 }
+sub description { 'Exim' }
 
 sub scan {
     # Detect an error from Exim

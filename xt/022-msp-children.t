@@ -371,7 +371,7 @@ for my $x ( keys %$R ) {
                     ok defined $ee->subject,       sprintf("[%s] %s/%s->subject", $n, $e, $x);
                     ok length  $ee->deliverystatus,sprintf("[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus);
 
-                    is $ee->smtpagent, $x, sprintf("[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent);
+                    is $ee->smtpagent, 'MSP::'.$x, sprintf("[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent);
 
                     if( length $ee->action ) {
                         # Check the value of action

@@ -107,10 +107,9 @@ my $StateTable = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Google Gmail: https://mail.google.com' }
-sub smtpagent   { 'US::Google' }
 sub headerlist  { return ['X-Failed-Recipients'] }
 sub pattern     { return $Re0 }
+sub description { 'Google Gmail: https://mail.google.com' }
 
 sub scan {
     # Detect an error from Google Gmail

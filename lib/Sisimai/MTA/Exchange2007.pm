@@ -31,12 +31,10 @@ my $NDRSubject = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Microsoft Exchange Server 2007' }
-sub smtpagent   { 'Exchange2007' }
-
 # Content-Language: en-US
 sub headerlist  { return ['Content-Language'] };
 sub pattern     { return $Re0 }
+sub description { 'Microsoft Exchange Server 2007' }
 
 sub scan {
     # Detect an error from Microsoft Exchange Server 2007

@@ -49,8 +49,6 @@ my $CodeTable = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Microsoft Office 365: http://office.microsoft.com/' }
-sub smtpagent   { 'US::Office365' }
 sub headerlist  { 
     # X-MS-Exchange-Message-Is-Ndr:
     # X-Microsoft-Antispam-PRVS: <....@...outlook.com>
@@ -70,6 +68,7 @@ sub headerlist  {
     ]
 }
 sub pattern     { return $Re0 }
+sub description { 'Microsoft Office 365: http://office.microsoft.com/' }
 
 sub scan {
     # Detect an error from Microsoft Office 365

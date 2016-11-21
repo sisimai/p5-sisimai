@@ -201,7 +201,7 @@ for my $x ( keys %$MSPChildren ) {
                     }
 
                     # Check the value of the following variables
-                    is     $e->{'agent'},     $x,                   sprintf("[%s] %s->agent = %s", $n, $x, $e->{'agent'});
+                    is     $e->{'agent'},     'MSP::'.$x,           sprintf("[%s] %s->agent = %s", $n, $x, $e->{'agent'});
                     like   $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, sprintf("[%s] %s->recipient = %s", $n, $x, $e->{'recipient'});
                     unlike $e->{'recipient'}, qr/[ ]/,              sprintf("[%s] %s->recipient = %s", $n, $x, $e->{'recipient'});
                     unlike $e->{'command'},   qr/[ ]/,              sprintf("[%s] %s->command = %s", $n, $x, $e->{'command'});

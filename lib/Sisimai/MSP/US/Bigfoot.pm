@@ -16,9 +16,8 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Bigfoot: http://www.bigfoot.com' }
-sub smtpagent   { 'US::Bigfoot' }
 sub pattern     { return $Re0 }
+sub description { 'Bigfoot: http://www.bigfoot.com' }
 
 sub scan {
     # Detect an error from Bigfoot
