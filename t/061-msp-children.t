@@ -168,7 +168,7 @@ for my $x ( keys %$MSPChildren ) {
         PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $MSPChildren->{ $x } } ) {
             # Open email in set-of-emails/ directory
             my $prefix1 = lc $x; $prefix1 =~ s/::/-/;
-            my $emailfn = sprintf("./set-of-emails/maildir/bsd/%s-%02d.eml", $prefix1, $i);
+            my $emailfn = sprintf("./set-of-emails/maildir/bsd/msp-%s-%02d.eml", $prefix1, $i);
             my $mailbox = Sisimai::Mail->new($emailfn);
 
             $n = sprintf("%02d", $i);

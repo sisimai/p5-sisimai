@@ -284,7 +284,7 @@ for my $x ( keys %$MTAChildren ) {
                 next unless $DebugOnlyTo eq sprintf("%s-%02d", lc($x), $i);
             }
 
-            my $emailfn = sprintf("./set-of-emails/maildir/bsd/%s-%02d.eml", lc($x), $i);
+            my $emailfn = sprintf("./set-of-emails/maildir/bsd/mta-%s-%02d.eml", lc($x), $i);
             my $mailbox = Sisimai::Mail->new($emailfn);
 
             $n = sprintf("%02d", $i);

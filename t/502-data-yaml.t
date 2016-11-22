@@ -31,7 +31,7 @@ MAKE_TEST: {
     }
 
     if( $test ) {
-        my $file = './set-of-emails/maildir/bsd/sendmail-02.eml';
+        my $file = './set-of-emails/maildir/bsd/mta-sendmail-02.eml';
         my $mail = Sisimai::Mail->new($file);
         my $mesg = undef;
         my $data = undef;
