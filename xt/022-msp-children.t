@@ -317,7 +317,7 @@ my $R = {
 for my $x ( keys %$R ) {
     # Check each MTA module
     my $M = 'Sisimai::MSP::'.$x;
-    my $d = './set-of-emails/private/'.lc($x); $d =~ s/::/-/;
+    my $d = './set-of-emails/private/msp-'.lc($x); $d =~ s/::/-/;
 
     Module::Load::load($M);
     use_ok $M;

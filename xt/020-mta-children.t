@@ -1001,7 +1001,7 @@ my $R = {
 for my $x ( keys %$R ) {
     # Check each MTA module
     my $M = 'Sisimai::MTA::'.$x;
-    my $d = './set-of-emails/private/'.lc($x);
+    my $d = './set-of-emails/private/mta-'.lc($x);
 
     Module::Load::load($M);
     use_ok $M;
