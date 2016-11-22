@@ -38,7 +38,7 @@ sub scan {
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
     #                                   or Undef if it failed to parse or the
     #                                   arguments are missing
-    return '';
+    return undef;
 }
 
 1;
