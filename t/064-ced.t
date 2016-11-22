@@ -1,13 +1,13 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::MSP;
+use Sisimai::CED;
 
-my $PackageName = 'Sisimai::MSP';
+my $PackageName = 'Sisimai::CED';
 my $MethodNames = {
     'class' => [
-        'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
-        'DELIVERYSTATUS', 'INDICATORS',
+        'description', 'headerlist', 'scan', 'adapt', 'smtpagent', 'index',
+        'pattern', 'DELIVERYSTATUS', 'INDICATORS',
     ],
     'object' => [],
 };
@@ -19,6 +19,7 @@ MAKE_TEST: {
     ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
     is $PackageName->scan, undef, '->scan';
+    is $PackageName->adapt, undef, '->adapt';
 
     isa_ok $PackageName->index, 'ARRAY';
     isa_ok $PackageName->headerlist, 'ARRAY';
