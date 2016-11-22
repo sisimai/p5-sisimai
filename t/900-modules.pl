@@ -4,6 +4,8 @@ sub list {
     my $f = [ qw|
         Address.pm
         ARF.pm
+        CED.pm
+            CED/US/AmazonSES.pm
         Data.pm
             Data/JSON.pm
             Data/YAML.pm
