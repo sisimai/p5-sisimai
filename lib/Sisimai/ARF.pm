@@ -314,7 +314,6 @@ sub scan {
                 $e->{'rhost'} = $1;
             }
         }
-        $e->{'action'}  = 'failed';
         $e->{'reason'}  = 'feedback';
         $e->{'command'} = '';
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
