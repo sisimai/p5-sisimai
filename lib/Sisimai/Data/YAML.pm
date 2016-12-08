@@ -16,7 +16,7 @@ sub dump {
     my $yamlstring = undef;
     my $modulename = undef;
 
-    eval { 
+    eval {
         require YAML;
         $modulename = 'YAML';
     };
@@ -28,10 +28,8 @@ sub dump {
             $modulename = 'YAML::Syck';
         };
 
-        if( $@ ) {
-            # YAML::Syck is not installed
-            die ' ***error: Neither "YAML" nor "YAML::Syck" module is installed';
-        }
+        # YAML::Syck is not installed
+        die ' ***error: Neither "YAML" nor "YAML::Syck" module is installed'; if $@;
     }
 
     $damneddata = $argvs->damn;
