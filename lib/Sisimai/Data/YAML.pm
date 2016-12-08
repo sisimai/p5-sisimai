@@ -29,7 +29,7 @@ sub dump {
         };
 
         # YAML::Syck is not installed
-        die ' ***error: Neither "YAML" nor "YAML::Syck" module is installed'; if $@;
+        die ' ***error: Neither "YAML" nor "YAML::Syck" module is installed' if $@;
     }
 
     $damneddata = $argvs->damn;
