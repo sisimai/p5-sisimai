@@ -2,7 +2,6 @@ use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Mail::STDIN;
-use IO::Handle;
 
 my $PackageName = 'Sisimai::Mail::STDIN';
 my $MethodNames = {
@@ -21,6 +20,7 @@ ok $NewInstance->handle->close;
 MAKE_TEST: {
 
     MAILBOX: {
+        my $datatxt = <DATA>; open(STDIN, '>>', $datatxt);
         my $mailbox = $PackageName->new();
         my $emindex = 0;
 
@@ -31,6 +31,12 @@ MAKE_TEST: {
         is $mailbox->size, undef, '->size = undef';
         isa_ok $mailbox->handle, 'IO::Handle';
         is $mailbox->offset, 0, '->offset = 0';
+
+        while( my $r = $mailbox->read ) {
+            last;
+        }
+        ok close(STDIN);
+        ok $mailbox->handle->close, '->handle->close()';
     }
 }
 
