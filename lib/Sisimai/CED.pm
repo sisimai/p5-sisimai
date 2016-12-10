@@ -2,7 +2,6 @@ package Sisimai::CED;
 use feature ':5.10';
 use strict;
 use warnings;
-use JSON;
 use Sisimai::Skeleton;
 
 sub DELIVERYSTATUS { return Sisimai::Skeleton->DELIVERYSTATUS }
@@ -16,7 +15,7 @@ sub index {
     # MSP list
     # @return   [Array] MSP list with order
     my $class = shift;
-    my $index = [ 'US::AmazonSES' ];
+    my $index = ['US::AmazonSES', 'US::SendGrid'];
     return $index;
 }
 
