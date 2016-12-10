@@ -236,11 +236,12 @@ sub make {
 
         OTHER_TEXT_HEADERS: {
             # Scan "Received:" header of the original message
-            if( scalar @{ $mailheader->{'received'} } ) {
+            my $recvheader = $mailheader->{'received'} || [];
+
+            if( scalar @$recvheader ) {
                 # Get localhost and remote host name from Received header.
-                my $r0 = $mailheader->{'received'};
-                $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($r0->[0]) };
-                $e->{'rhost'} ||= pop   @{ Sisimai::RFC5322->received($r0->[-1]) };
+                $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($recvheader->[0]) };
+                $e->{'rhost'} ||= pop   @{ Sisimai::RFC5322->received($recvheader->[-1]) };
             }
 
             for my $v ( 'rhost', 'lhost' ) {
