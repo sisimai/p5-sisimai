@@ -25,7 +25,7 @@ sub undisclosed {
 
     return undef unless $atype =~ m/\A(?:r|s)\z/;
     $local = $atype eq 'r' ? 'recipient' : 'sender';
-    return sprintf("undisclosed-%s-in-headers%sdummy-domain.invalid", $local, '@');
+    return sprintf("undisclosed-%s-in-headers%slibsisimai.org.invalid", $local, '@');
 }
 
 sub new {

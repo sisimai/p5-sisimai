@@ -124,8 +124,8 @@ MAKE_TEST: {
     }
 
     UNDISCLOSED: {
-        is $PackageName->undisclosed('r'), 'undisclosed-recipient-in-headers@dummy-domain.invalid';
-        is $PackageName->undisclosed('s'), 'undisclosed-sender-in-headers@dummy-domain.invalid';
+        is $PackageName->undisclosed('r'), 'undisclosed-recipient-in-headers@libsisimai.org.invalid';
+        is $PackageName->undisclosed('s'), 'undisclosed-sender-in-headers@libsisimai.org.invalid';
         is $PackageName->undisclosed(''), undef;
     }
 }
