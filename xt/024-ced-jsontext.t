@@ -2,16 +2,24 @@ use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Data;
-use Sisimai::Mail;
 use Sisimai::Message;
 use Module::Load;
+use IO::File;
+use JSON;
 
 my $R = {
-    'US::AmazonSES' => {
-        '01001' => qr/userunknown/,
-        '01002' => qr/feedback/,
-        '01003' => qr/delivered/,
-        '01004' => qr/delivered/,
+    'US::SendGrid' => {
+        '01001' => qr/(?:userunknown|filtered|mailboxfull)/,
+        '01002' => qr/(?:mailboxfull|filtered)/,
+        '01003' => qr/userunknown/,
+        '01004' => qr/filtered/,
+        '01005' => qr/filtered/,
+        '01006' => qr/userunknown/,
+        '01007' => qr/filtered/,
+        '01008' => qr/userunknown/,
+        '01009' => qr/userunknown/,
+        '01010' => qr/userunknown/,
+        '01011' => qr/hostunknown/,
     },
 };
 
@@ -27,6 +35,7 @@ for my $x ( keys %$R ) {
 
         my $h = undef;
         my $n = 0;
+        my $j = JSON->new;
         ok $d, sprintf("%s %s", $x, $d);
 
         opendir($h, $d);
@@ -34,19 +43,23 @@ for my $x ( keys %$R ) {
             # Open email in set-of-emails/private directory
             next if $e eq '.';
             next if $e eq '..';
-            next unless $e =~ m/[.]eml\z/;
+            next unless $e =~ m/[.]json\z/;
 
-            my $emailfn = sprintf("%s/%s", $d, $e); next unless -f $emailfn;
-            my $mailbox = Sisimai::Mail->new($emailfn);
+            my $jsonset = sprintf("%s/%s", $d, $e); next unless -f $jsonset;
+            my $fhandle = IO::File->new($jsonset, 'r');
+            my $jsonobj = $j->decode(<$fhandle>);
+            my $bounces = [];
 
-            $n = $e; $n =~ s/\A(\d+)[-].*[.]eml/$1/;
+            $n = $e; $n =~ s/\A(\d+)[-].*[.]json/$1/;
+            push @$bounces, (ref $jsonobj eq 'ARRAY' ) ? @$jsonobj : $jsonobj;
+            $fhandle->close;
 
-            while( my $r = $mailbox->read ) {
-                # Parse each email in set-of-emails/ directory
+            while( my $r = shift @$bounces ) {
+                # Parse each JSON file in set-of-emails/ directory
                 ok length $r;
 
-                my $p = Sisimai::Message->new('data' => $r);
-                my $v = Sisimai::Data->make('data' => $p);
+                my $p = Sisimai::Message->new('data' => $r, 'input' => 'json');
+                my $v = Sisimai::Data->make('data' => $p, 'input' => 'json');
                 my $y = undef;
 
                 next unless $p;

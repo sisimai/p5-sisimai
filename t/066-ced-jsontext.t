@@ -1,8 +1,9 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
+use IO::File;
+use JSON;
 use Sisimai::Data;
-use Sisimai::Mail;
 use Sisimai::Message;
 use Module::Load;
 
@@ -18,6 +19,19 @@ my $CEDChildren = {
         '04' => { 's' => qr/\A2[.]6[.]0\z/, 'r' => qr/delivered/,   'b' => qr/\A-1\z/ },
         '05' => { 's' => qr/\A2[.]6[.]0\z/, 'r' => qr/delivered/,   'b' => qr/\A-1\z/ },
     },
+    'US::SendGrid' => {
+        '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '02' => { 's' => qr/\A5[.].[.]\d+\z/, 'r' => qr/(?:mailboxfull|filtered)/, 'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.]1[.]1\z/,   'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '04' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '06' => { 's' => qr/\A5[.]1[.]1\z/,   'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '07' => { 's' => qr/\A5[.]2[.]1\z/,   'r' => qr/filtered/,    'b' => qr/\A1\z/ },
+        '08' => { 's' => qr/\A5[.]1[.]1\z/,   'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '09' => { 's' => qr/\A5[.]1[.]1\z/,   'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '10' => { 's' => qr/\A5[.]1[.]1\z/,   'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '11' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/hostunknown/, 'b' => qr/\A0\z/ },
+    },
 };
 
 for my $x ( keys %$CEDChildren ) {
@@ -26,6 +40,7 @@ for my $x ( keys %$CEDChildren ) {
     my $v = undef;
     my $n = 0;
     my $c = 0;
+    my $j = JSON->new;
 
     Module::Load::load($M);
     use_ok $M;
@@ -34,7 +49,6 @@ for my $x ( keys %$CEDChildren ) {
     MAKE_TEST: {
         $v = $M->description; ok $v, $x.'->description = '.$v;
         $v = $M->smtpagent;   ok $v, $x.'->smtpagent = '.$v;
-        $v = $M->pattern;     ok keys %$v; isa_ok $v, 'HASH';
 
         $M->scan, undef, $M.'->scan = undef';
         $M->adapt, undef, $M.'->adapt = undef';
@@ -42,23 +56,38 @@ for my $x ( keys %$CEDChildren ) {
         PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $CEDChildren->{ $x } } ) {
             # Open email in set-of-emails/ directory
             my $prefix1 = lc $x; $prefix1 =~ s/::/-/;
-            my $emailfn = sprintf("./set-of-emails/maildir/bsd/ced-%s-%02d.eml", $prefix1, $i);
-            my $mailbox = Sisimai::Mail->new($emailfn);
+            my $jsonset = sprintf("./set-of-emails/jsonapi/ced-%s-%02d.json", $prefix1, $i);
+            my $fhandle = undef;
+            my $jsonobj = undef;
+            my $bounces = [];
+
 
             $n = sprintf("%02d", $i);
-            next unless defined $mailbox;
-            ok -f $emailfn, sprintf("[%s] %s/email = %s", $n, $M,$emailfn);
+            ok -f $jsonset, sprintf("[%s] %s/json = %s", $n, $M,$jsonset);
 
-            while( my $r = $mailbox->read ) {
-                # Parse each email in set-of-emails/maildir/bsd directory
-                my $p = Sisimai::Message->new('data' => $r);
+            eval {
+                $fhandle = IO::File->new($jsonset, 'r');
+                $jsonobj = $j->decode(<$fhandle>);
+                ok ref($jsonobj) =~ qr/\A(?:HASH|ARRAY)\z/;
+            };
+            if( $@ ) {
+                $fhandle->close;
+                next;
+            }
+            $fhandle->close;
+
+            push @$bounces, ( ref $jsonobj eq 'ARRAY' ) ? @$jsonobj : $jsonobj;
+
+            while( my $r = shift @$bounces ) {
+                # Parse each email in set-of-emails/jsonapi directory
+                my $p = Sisimai::Message->new('data' => $r, 'input' => 'json');
                 my $o = undef;
 
                 isa_ok $p, 'Sisimai::Message';
                 isa_ok $p->ds, 'ARRAY';
                 isa_ok $p->header, 'HASH';
                 isa_ok $p->rfc822, 'HASH';
-                ok length $p->from, sprintf("[%s] %s->from = %s", $n, $M, $p->from);
+                ok length($p->from) == 0, sprintf("[%s] %s->from = %s", $n, $M, $p->from);
 
                 for my $e ( @{ $p->ds } ) {
 
@@ -101,7 +130,7 @@ for my $x ( keys %$CEDChildren ) {
                 }
 
 
-                $o = Sisimai::Data->make('data' => $p, 'delivered' => 1);
+                $o = Sisimai::Data->make('data' => $p, 'delivered' => 1, 'input' => 'json');
                 isa_ok $o, 'ARRAY';
                 ok scalar @$o, sprintf("%s/entry = %s", $M, scalar @$o);
 
@@ -156,9 +185,10 @@ for my $x ( keys %$CEDChildren ) {
                 $c++;
             }
         }
-        ok $c, $M.'/the number of emails = '.$c;
+        ok $c, $M.'/the number of JSON files = '.$c;
     }
 }
 
 done_testing;
+
 
