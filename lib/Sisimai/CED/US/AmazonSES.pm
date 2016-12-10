@@ -4,12 +4,32 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub description { 'Amazon SES(JSON): http://aws.amazon.com/ses/' };
-sub smtpagent   { 'US::AmazonSES' }
+my $Re0 = {
+    'from'    => qr/\A[<]?no-reply[@]sns[.]amazonaws[.]com[>]?/,
+    'subject' => qr/\AAWS Notification Message\z/,
+};
+
+# https://docs.aws.amazon.com/en_us/ses/latest/DeveloperGuide/notification-contents.html
+my $BounceType = {
+    'Permanent' => {
+        'General'    => '',
+        'NoEmail'    => '',
+        'Suppressed' => '',
+    },
+    'Transient' => {
+        'General'            => '',
+        'MailboxFull'        => 'mailboxfull',
+        'MessageTooLarge'    => 'mesgtoobig',
+        'ContentRejected'    => '',
+        'AttachmentRejected' => '',
+    },
+};
 
 # x-amz-sns-message-id: 02f86d9b-eecf-573d-b47d-3d1850750c30
 # x-amz-sns-subscription-arn: arn:aws:sns:us-west-2:000000000000:SESEJB:ffffffff-2222-2222-2222-eeeeeeeeeeee
 sub headerlist  { return ['x-amz-sns-message-id'] };
+sub pattern     { return $Re0 }
+sub description { 'Amazon SES(JSON): http://aws.amazon.com/ses/' };
 
 sub scan {
     # Detect an error from Amazon SES(JSON)
@@ -23,10 +43,11 @@ sub scan {
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
     #                                   or Undef if it failed to parse or the
     #                                   arguments are missing
-    # @since v4.0.2
+    # @since v4.20.0
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $stuff = undef;
 
     return undef unless defined $mhead->{'x-amz-sns-message-id'};
     return undef unless length  $mhead->{'x-amz-sns-message-id'};
@@ -51,25 +72,11 @@ sub scan {
         }
         $jsonstring .= $e;
     }
-    return __PACKAGE__->adapt(\$jsonstring);
-}
 
-sub adapt {
-    # @abstract      Adapt Amazon SES bounce object for Sisimai::Message format
-    # @param         [String] argvs     bounce object(JSON) returned from each email cloud
-    # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
-    #                                   or Undef if it failed to parse or the
-    #                                   arguments are missing
-    my $class = shift;
-    my $argvs = shift;
-    my $stuff = undef;
-
-    return undef unless ref $argvs eq 'SCALAR';
-    return undef unless length $$argvs;
-
+    require JSON;
     eval {
         my $jsonparser = JSON->new;
-        my $jsonobject = $jsonparser->decode($$argvs);
+        my $jsonobject = $jsonparser->decode($jsonstring);
 
         if( exists $jsonobject->{'Message'} ) {
             # 'Message' => '{"notificationType":"Bounce",...
@@ -85,76 +92,169 @@ sub adapt {
         warn sprintf(" ***warning: Failed to decode JSON: %s", $@);
         return undef;
     }
+    return __PACKAGE__->adapt($stuff);
+}
 
-    return undef unless ref $stuff eq 'HASH';
-    return undef unless keys %$stuff;
+sub adapt {
+    # @abstract Adapt Amazon SES bounce object for Sisimai::Message format
+    # @param        [Hash] argvs     bounce object(JSON) retrieved from Amazon SNS
+    # @return       [Hash, Undef]    Bounce data list and message/rfc822 part
+    #                                or Undef if it failed to parse or the
+    #                                arguments are missing
+    my $class = shift;
+    my $argvs = shift;
+
+    return undef unless ref $argvs eq 'HASH';
+    return undef unless keys %$argvs;
+    return undef unless exists $argvs->{'notificationType'};
 
     use Sisimai::RFC5322;
     use Time::Piece;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $rfc822head = {};    # (Hash) Check flags for headers in RFC822 part
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-
-    my $b = $stuff->{'bounce'};
+    my $labeltable = {
+        'Bounce'    => 'bouncedRecipients',
+        'Complaint' => 'complainedRecipients',
+    };
     my $v = undef;
 
-    for my $e ( @{ $b->{'bouncedRecipients'} } ) {
-        # {
-        #   'emailAddress' => 'bounce@simulator.amazonses.com',
-        #   'action' => 'failed',
-        #   'status' => '5.1.1',
-        #   'diagnosticCode' => 'smtp; 550 5.1.1 user unknown'
-        # }
-        next unless Sisimai::RFC5322->is_emailaddress($e->{'emailAddress'});
+    if( $argvs->{'notificationType'} =~ m/\A(?:Bounce|Complaint)\z/ ) {
+        # { "notificationType":"Bounce", "bounce": { "bounceType":"Permanent",...
+        my $o = $argvs->{ lc $argvs->{'notificationType'} };
+        my $r = $o->{ $labeltable->{ $argvs->{'notificationType'} } } || [];
 
-        $v = $dscontents->[-1];
-        if( length $v->{'recipient'} ) {
-            # There are multiple recipient addresses in the message body.
-            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+        for my $e ( @$r ) {
+            # 'bouncedRecipients' => [ { 'emailAddress' => 'bounce@si...' }, ... ]
+            # 'complainedRecipients' => [ { 'emailAddress' => 'complaint@si...' }, ... ]
+            next unless Sisimai::RFC5322->is_emailaddress($e->{'emailAddress'});
+
             $v = $dscontents->[-1];
+            if( length $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
+            }
+            $recipients++;
+            $v->{'recipient'} = $e->{'emailAddress'};
+
+            if( $argvs->{'notificationType'} eq 'Bounce' ) {
+                # 'bouncedRecipients => [ {
+                #   'emailAddress' => 'bounce@simulator.amazonses.com',
+                #   'action' => 'failed',
+                #   'status' => '5.1.1',
+                #   'diagnosticCode' => 'smtp; 550 5.1.1 user unknown'
+                # }, ... ]
+                $v->{'action'} = $e->{'action'};
+                $v->{'status'} = $e->{'status'};
+
+                if( $e->{'diagnosticCode'} =~ m/\A(.+?);[ ]*(.+)\z/ ) {
+                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                    $v->{'spec'} = uc $1;
+                    $v->{'diagnosis'} = $2;
+
+                } else {
+                    $v->{'diagnosis'} = $e->{'diagnosticCode'};
+                }
+
+                if( $o->{'reportingMTA'} =~ m/\Adsn;[ ](.+)\z/ ) {
+                    # 'reportingMTA' => 'dsn; a27-23.smtp-out.us-west-2.amazonses.com',
+                    $v->{'lhost'} = $1;
+                }
+
+                if( exists $BounceType->{ $o->{'bounceType'} } &&
+                    exists $BounceType->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} } ) {
+                    # 'bounce' => {
+                    #       'bounceType' => 'Permanent',
+                    #       'bounceSubType' => 'General'
+                    # },
+                    $v->{'reason'} = $BounceType->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} };
+                }
+
+            } else {
+                # 'complainedRecipients' => [ {
+                #   'emailAddress' => 'complaint@simulator.amazonses.com' }, ... ],
+                $v->{'reason'} = 'feedback';
+                $v->{'feedbacktype'} = $o->{'complaintFeedbackType'} || '';
+            }
+
+            eval {
+                my $q =  $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'};
+                   $q =~ s/[.]\d+Z\z//;
+                $v->{'date'} = Time::Piece->strptime($q, "%Y-%m-%dT%T");
+            };
         }
-        $recipients++;
-        $v->{'recipient'} = $e->{'emailAddress'};
+    } elsif( $argvs->{'notificationType'} eq 'Delivery' ) {
+        # { "notificationType":"Delivery", "delivery": { ...
+        require Sisimai::SMTP::Status;
+        require Sisimai::SMTP::Reply;
 
-        $v->{'action'} = $e->{'action'};
-        $v->{'status'} = $e->{'status'};
+        my $o = $argvs->{'delivery'};
+        my $r = $o->{'recipients'} || [];
 
-        if( $e->{'diagnosticCode'} =~ m/\A(.+?);[ ]*(.+)\z/ ) {
-            # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-            $v->{'spec'} = uc $1;
-            $v->{'diagnosis'} = $2;
+        for my $e ( @$r ) {
+            # 'delivery' => {
+            #       'timestamp' => '2016-11-23T12:01:03.512Z',
+            #       'processingTimeMillis' => 3982,
+            #       'reportingMTA' => 'a27-29.smtp-out.us-west-2.amazonses.com',
+            #       'recipients' => [
+            #           'success@simulator.amazonses.com'
+            #       ],
+            #       'smtpResponse' => '250 2.6.0 Message received'
+            #   },
+            next unless Sisimai::RFC5322->is_emailaddress($e);
 
-        } else {
-            $v->{'diagnosis'} = $e->{'diagnosticCode'};
+            $v = $dscontents->[-1];
+            if( length $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
+            }
+            $recipients++;
+            $v->{'recipient'} = $e;
+            $v->{'lhost'}     = $o->{'reportingMTA'} || '';
+            $v->{'diagnosis'} = $o->{'smtpResponse'} || '';
+            $v->{'status'}    = Sisimai::SMTP::Status->find($v->{'diagnosis'});
+            $v->{'replycode'} = Sisimai::SMTP::Reply->find($v->{'diagnosis'});
+            $v->{'reason'}    = 'delivered';
+            $v->{'action'}    = 'deliverable';
+
+            eval {
+                my $q =  $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'};
+                   $q =~ s/[.]\d+Z\z//;
+                $v->{'date'} = Time::Piece->strptime($q, "%Y-%m-%dT%T");
+            };
         }
+    } else {
+        # The value of "notificationType" is not any of "Bounce", "Complaint",
+        # or "Delivery".
+        return undef;
+    }
+    return undef if $recipients == 0;
 
-        if( $b->{'reportingMTA'} =~ m/\Adsn;[ ](.+)\z/ ) {
-            # 'reportingMTA' => 'dsn; a27-23.smtp-out.us-west-2.amazonses.com',
-            $v->{'lhost'} = $1;
-        }
-
-        eval {
-            $b->{'timestamp'} =~ s/[.]\d+Z\z//;
-            $v->{'date'} = Time::Piece->strptime($b->{'timestamp'}, "%Y-%m-%dT%T");
-        };
-        $v->{'agent'} = __PACKAGE__->smtpagent;
+    for my $e ( @$dscontents ) {
+        $e->{'agent'} = __PACKAGE__->smtpagent;
     }
 
-    for my $e ( @{ $stuff->{'mail'}->{'headers'} } ) {
-        # 'headers' => [ { 'name' => 'From', 'value' => 'neko@nyaan.jp' }, ... ],
-        next unless $e->{'name'} =~ m/\A(?:From|To|Subject)\z/;
-        push @$rfc822list, sprintf("%s: %s", $e->{'name'}, $e->{'value'});
+    if( exists $argvs->{'mail'}->{'headers'} ) {
+        # "headersTruncated":false,
+        # "headers":[ { ...
+        for my $e ( @{ $argvs->{'mail'}->{'headers'} } ) {
+            # 'headers' => [ { 'name' => 'From', 'value' => 'neko@nyaan.jp' }, ... ],
+            next unless $e->{'name'} =~ m/\A(?:From|To|Subject|Message-ID|Date)\z/;
+            $rfc822head->{ lc $e->{'name'} } = $e->{'value'};
+        }
     }
 
-    if( $stuff->{'mail'}->{'messageId'} ) {
-        # 'messageId' => '01010157e48f9b9b-891e9a0e-9c9d-4773-9bfe-608f2ef4756d-000000'
-        push @$rfc822list, sprintf("Message-Id: %s", $stuff->{'mail'}->{'messageId'});
+    unless( $rfc822head->{'message-id'} ) {
+        # Try to get the value of "Message-Id".
+        if( $argvs->{'mail'}->{'messageId'} ) {
+            # 'messageId' => '01010157e48f9b9b-891e9a0e-9c9d-4773-9bfe-608f2ef4756d-000000'
+            $rfc822head->{'message-id'} = $argvs->{'mail'}->{'messageId'};
+        }
     }
-
-    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
-    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822head };
 }
 
 1;
@@ -195,7 +295,7 @@ C<smtpagent()> returns MTA name.
 C<scan()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.
 
-=head2 C<B<adapt(I<JSON as String>)>>
+=head2 C<B<adapt(I<Hash>)>>
 
 C<adapt()> method adapts Amazon SES bounce object (JSON) for Perl hash object
 used at Sisimai::Message class.
