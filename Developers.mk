@@ -28,6 +28,7 @@ BENCHMARKEMP := sbin/mp
 BENCHMARKDIR := tmp/benchmark
 BENCHMARKSET := tmp/sample
 VELOCITYTEST := tmp/emails-for-velocity-measurement
+SAMPLEPREFIX := eml
 
 SET_OF_EMAIL := set-of-emails
 PRIVATEMAILS := $(SET_OF_EMAIL)/private
@@ -53,7 +54,7 @@ private-sample:
 		d=`$(EMAIL_PARSER) -Fjson $(E) | jq -M '.[].smtpagent' | head -1 \
 			| tr '[A-Z]' '[a-z]' | tr -d '-' | sed -e 's/"//g' -e 's/::/-/g'`; \
 		if [ -d "$(PRIVATEMAILS)/$$d" ]; then \
-			latestfile=`ls -1 $(PRIVATEMAILS)/$$d/*.eml | tail -1`; \
+			latestfile=`ls -1 $(PRIVATEMAILS)/$$d/*.$(SAMPLEPREFIX) | tail -1`; \
 			curr_index=`basename $$latestfile | cut -d'-' -f1`; \
 			next_index=`echo $$curr_index + 1 | bc`; \
 		else \
@@ -62,10 +63,10 @@ private-sample:
 		fi; \
 		hash_value=`md5 -q $(E)`; \
 		if [ -n "`ls -1 $(PRIVATEMAILS)/$$d/ | grep $$hash_value`" ]; then \
-			echo 'Already exists:' `ls -1 $(PRIVATEMAILS)/$$d/*$$hash_value.eml`; \
+			echo 'Already exists:' `ls -1 $(PRIVATEMAILS)/$$d/*$$hash_value.$(SAMPLEPREFIX)`; \
 		else \
 			printf "[%05d] %s %s\n" $$next_index $$hash_value; \
-			mv -v $(E) $(PRIVATEMAILS)/$$d/0$${next_index}-$${hash_value}.eml; \
+			mv -v $(E) $(PRIVATEMAILS)/$$d/0$${next_index}-$${hash_value}.$(SAMPLEPREFIX); \
 		fi; \
 		break; \
 	done
