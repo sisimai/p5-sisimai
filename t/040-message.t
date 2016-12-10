@@ -5,90 +5,59 @@ use Sisimai::Message;
 
 my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
-    'class' => [
-        'new', 'make', 'parse', 'divideup', 'headers', 'takeapart',
-        'makeorder',
-    ],
-    'object' => ['from', 'header', 'ds', 'rfc822'],
+    'class' => ['new', 'make', 'load'],
+    'object' => ['from', 'header', 'ds', 'rfc822', 'catch'],
 };
-my $SampleEmail = './set-of-emails/mailbox/mbox-0';
+my $SampleFiles = {
+    'mail' => './set-of-emails/mailbox/mbox-0',
+    'json' => './set-of-emails/jsonapi/ced-us-amazonses-01.json',
+};
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
+    isa_ok $PackageName->make, 'HASH';
+    isa_ok $PackageName->load, 'ARRAY';
+
     use IO::File;
-    my $filehandle = IO::File->new($SampleEmail, 'r');
-    my $mailastext = '';
-    my $callbackto = sub {
-        my $argvs = shift;
-        my $catch = { 
-            'x-mailer' => '',
-            'return-path' => '',
-        };
-        $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
-        $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
-        $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
-        return $catch;
-    };
+    EMAIL: {
+        my $filehandle = IO::File->new($SampleFiles->{'mail'}, 'r');
+        my $mailastext = '';
 
-    while( my $r = <$filehandle> ) {
-        $mailastext .= $r;
-    }
-    $filehandle->close;
-    ok length $mailastext;
-
-    my $p = $PackageName->new('data' => $mailastext);
-
-    isa_ok $p, $PackageName;
-    isa_ok $p->header, 'HASH', '->header';
-    isa_ok $p->ds, 'ARRAY', '->ds';
-    isa_ok $p->rfc822, 'HASH', '->rfc822';
-    ok length $p->from, $p->from;
-
-    $p = $PackageName->new(
-            'data' => $mailastext, 
-            'hook' => $callbackto,
-            'order' => [
-                'Sisimai::MTA::Sendmail', 'Sisimai::MTA::Postfix', 
-                'Sisimai::MTA::qmail', 'Sisimai::MTA::Exchange2003', 
-                'Sisimai::MSP::US::Google', 'Sisimai::MSP::US::Verizon',
-            ]
-         );
-
-    for my $e ( @{ $p->ds } ) {
-        is $e->{'spec'}, 'SMTP', '->spec = SMTP';
-        ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
-        like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
-        ok exists $e->{'command'}, '->command = '.$e->{'command'};
-        ok length $e->{'date'}, '->date = '.$e->{'date'};
-        ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
-        ok length $e->{'action'}, '->action = '.$e->{'action'};
-        ok length $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
-        ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
-
-        for my $q ( 'rhost', 'lhost' ) {
-            next unless $e->{ $q };
-            like $e->{ $q }, qr/\A.+[.].+\z/, '->'.$q.' = '.$e->{ $q };
+        while( my $r = <$filehandle> ) {
+            $mailastext .= $r;
         }
-        is $e->{'agent'}, 'MTA::Sendmail', '->agent = '.$e->{'agent'};
+        $filehandle->close;
+        ok length $mailastext;
+
+        my $p = $PackageName->new('data' => $mailastext);
+
+        isa_ok $p, $PackageName;
+        isa_ok $p->header, 'HASH', '->header';
+        isa_ok $p->ds, 'ARRAY', '->ds';
+        isa_ok $p->rfc822, 'HASH', '->rfc822';
+        is $p->catch, undef;
+        ok length $p->from, $p->from;
     }
 
-    for my $e ( 'content-type', 'to', 'subject', 'date', 'from', 'message-id' ) {
-        my $h = $p->header->{ $e };
-        ok length $h, $h;
-    }
-    isa_ok $p->header->{'received'}, 'ARRAY';
+    JSON: {
+        use JSON;
+        my $filehandle = IO::File->new($SampleFiles->{'json'}, 'r');
+        my $jsonstring = <$filehandle>;
+        my $jsonparser = JSON->new;
 
-    for my $e ( qw|return-path to subject date from message-id| ) {
-        my $h = $p->rfc822->{ $e };
-        ok length $h, $e;
-    }
+        $filehandle->close;
+        ok length $jsonstring;
 
-    isa_ok $p->catch, 'HASH';
-    ok defined $p->catch->{'x-mailer'};
-    ok defined $p->catch->{'return-path'};
-    ok defined $p->catch->{'from'};
+        my $j = $jsonparser->decode($jsonstring);
+        my $p = $PackageName->new('data' => $j, 'input' => 'json');
+        isa_ok $p, $PackageName;
+        isa_ok $p->header, 'HASH', '->header';
+        isa_ok $p->ds, 'ARRAY', '->ds';
+        isa_ok $p->rfc822, 'HASH', '->rfc822';
+        is $p->catch, undef;
+    }
 }
 
 done_testing;
