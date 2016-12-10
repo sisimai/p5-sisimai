@@ -24,6 +24,7 @@ Key Features
   * 2 times higher than bounceHammer
   * Support 22 known MTAs and 5 unknown MTAs
   * Support 21 major MSPs(Mail Service Providers)
+  * Support  2 major Cloud Email Delivery Services(JSON format)
   * Support Feedback Loop Message(ARF)
   * Can detect 27 error reasons
 * __Faster than bounceHammer version 2.7.13p3__
@@ -49,7 +50,7 @@ Install
 ```shell
 % sudo cpanm Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.14.0.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.20.0.tar.gz ... OK
 ...
 1 distribution installed
 % perldoc -l Sisimai
@@ -64,7 +65,7 @@ Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.14.0.tar.gz ... OK
 % cd ./p5-Sisimai
 % sudo make install-from-local
 --> Working on .
-Configuring Sisimai-4.14.0 ... OK
+Configuring Sisimai-4.20.0 ... OK
 1 distribution installed
 ```
 
@@ -113,9 +114,26 @@ my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 
 ```
 
-```json
-[{"rhost": "mx.example.co.jp","recipient": "filtered@example.co.jp","token": "01b88ad40b2f7089a6b1986ade14d323aaad9da2","deliverystatus": "5.2.1","smtpcommand": "RCPT","alias": "filtered@example.co.jp","addresser": "kijitora@example.jp","subject": "test","smtpagent": "Postfix","messageid": "","diagnosticcode": "550 5.2.1 <filtered@example.co.jp>... User Unknown","lhost": "smtp.example.com","replycode": "550","reason": "userunknown","destination": "example.co.jp","action": "failed","softbounce": 0,"timezoneoffset": "+0000","diagnostictype": "SMTP","feedbacktype": "","listid": "","timestamp": 1403375674,"senderdomain": "example.jp"},{"lhost": "smtp.example.com","reason": "userunknown","replycode": "550","destination": "example.co.jp","action": "failed","softbounce": 0,"timezoneoffset": "+0000","diagnostictype": "SMTP","feedbacktype": "","listid": "","timestamp": 1403375674,"senderdomain": "example.jp","rhost": "mx.example.co.jp","recipient": "userunknown@example.co.jp","deliverystatus": "5.1.1","token": "948ed89b794207632dbab0ce3b72175553d9de83","smtpcommand": "RCPT","alias": "userunknown@example.co.jp","addresser": "kijitora@example.jp","subject": "test","smtpagent": "Postfix","messageid": "","diagnosticcode": "550 5.1.1 <userunknown@example.co.jp>... User Unknown"}]
+Read bounce object(JSON)
+------------------------
+The way to read a bounce object retrived from Cloud Email Services as JSON using
+their API is the following code. This feature is available at Sisimai 4.20.0 or
+later.
+
+```perl
+#! /usr/bin/env perl
+use JSON;
+use Sisimai;
+
+my $j = JSON->new;
+my $q = '{"json":"string",...}'
+my $v = Sisimai->make($j->decode($q), 'input' => 'json');
+
+if( defined $v ) {
+    for my $e ( @$v ) { ... }
+}
 ```
+As of present, Only Amazon SES and Sendgrid are supported.
 
 Callback Feature
 ----------------
@@ -154,6 +172,11 @@ data as JSON using the method.
 % perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
 
+Parsed results as JSON
+----------------------
+```json
+[{"rhost": "mx.example.co.jp","recipient": "filtered@example.co.jp","token": "01b88ad40b2f7089a6b1986ade14d323aaad9da2","deliverystatus": "5.2.1","smtpcommand": "RCPT","alias": "filtered@example.co.jp","addresser": "kijitora@example.jp","subject": "test","smtpagent": "Postfix","messageid": "","diagnosticcode": "550 5.2.1 <filtered@example.co.jp>... User Unknown","lhost": "smtp.example.com","replycode": "550","reason": "userunknown","destination": "example.co.jp","action": "failed","softbounce": 0,"timezoneoffset": "+0000","diagnostictype": "SMTP","feedbacktype": "","listid": "","timestamp": 1403375674,"senderdomain": "example.jp"},{"lhost": "smtp.example.com","reason": "userunknown","replycode": "550","destination": "example.co.jp","action": "failed","softbounce": 0,"timezoneoffset": "+0000","diagnostictype": "SMTP","feedbacktype": "","listid": "","timestamp": 1403375674,"senderdomain": "example.jp","rhost": "mx.example.co.jp","recipient": "userunknown@example.co.jp","deliverystatus": "5.1.1","token": "948ed89b794207632dbab0ce3b72175553d9de83","smtpcommand": "RCPT","alias": "userunknown@example.co.jp","addresser": "kijitora@example.jp","subject": "test","smtpagent": "Postfix","messageid": "","diagnosticcode": "550 5.1.1 <userunknown@example.co.jp>... User Unknown"}]
+```
 
 Sisimai Specification
 =====================
@@ -180,8 +203,8 @@ and Sisimai. More information about differences are available at
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 8600 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 184100 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8800 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 187600 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
@@ -245,6 +268,8 @@ More details about these modules are available at
 | MSP::US::Verizon         | Verizon Wireless: http://www.verizonwireless.com  |
 | MSP::US::Yahoo           | Yahoo! MAIL: https://www.yahoo.com                |
 | MSP::US::Zoho            | Zoho Mail: https://www.zoho.com                   |
+| CED::US::AmazonSES       | AmazonSES(JSON): http://aws.amazon.com/ses/       |
+| CED::US::SendGrid        | SendGrid(JSON): http://sendgrid.com/              |
 | ARF                      | Abuse Feedback Reporting Format                   |
 | RFC3464                  | Fallback Module for MTAs                          |
 | RFC3834                  | Detector for auto replied message (> v4.1.28)     |
@@ -298,6 +323,7 @@ More details about data structure are available at available at
 | action         | The value of Action: header                                 |
 | addresser      | The sender's email address (From:)                          |
 | alias          | Alias of the recipient                                      |
+| catch          | Data returned from a hook mehotd                            |
 | destination    | The domain part of the "recipinet"                          |
 | deliverystatus | Delivery Status(DSN), ex) 5.1.1, 4.4.7                      |
 | diagnosticcode | Error message                                               |
