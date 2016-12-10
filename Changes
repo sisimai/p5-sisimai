@@ -11,6 +11,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - The Domain part of dummy email address defined in Sisimai::Address module
       has been changed from "dummy-domain.invalid" to "libsisimai.org.invalid";
       issue #202.
+    - Sisimai::SMTP->is_softbounce() method has been deleted.
 
 4.19.0  Tue, 18 Oct 2016 14:13:22 +0900 (JST)
     - Remove utf8 flag from JSON string before returning the value at Sisimai->
