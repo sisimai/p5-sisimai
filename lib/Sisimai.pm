@@ -38,7 +38,7 @@ sub make {
             # The argument may be a path to email
             $input = 'email';
 
-        } elsif( $rtype =~ m/\A(?:HASH|ARRAY)\z/ ) {
+        } elsif( $rtype =~ m/\A(?:ARRAY|HASH)\z/ ) {
             # The argument may be a decoded JSON object
             $input = 'json';
         }
@@ -76,7 +76,9 @@ sub make {
                 next unless ref $e eq 'HASH';
                 push @$list, $e;
             }
-        } 
+        } else {
+            push @$list, $argv0;
+        }
 
         for my $e ( @$list ) {
             $methodargv = { 'data' => $e, 'hook' => $hookmethod, 'input' => 'json' };
