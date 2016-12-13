@@ -22,7 +22,10 @@ MAKE_TEST: {
         ok $r->recipient->address, '->recipient = '.$r->recipient->address;
         ok $r->deliverystatus, '->deliverystatus = '.$r->deliverystatus;
         is $r->reason, 'onhold', '->reason = onhold';
+
         ok(Sisimai::Reason::OnHold->true($r)), '->true = 1';
+        $r->{'reason'} = 'undefined';
+        ok(Sisimai::Reason::OnHold->true($r) == 0), '->true = 0';
 
         my $h = $r->damn;
         isa_ok $h, 'HASH';
