@@ -106,7 +106,7 @@ sub soft_or_hard {
         if( length $argv2 ) {
             # Get D.S.N. or SMTP reply code from The 2nd argument string
             $statuscode   = Sisimai::SMTP::Status->find($argv2);
-            $statuscode ||= Sisimai::SMTP::Reply->find($argv1);
+            $statuscode ||= Sisimai::SMTP::Reply->find($argv2);
             $classvalue   = int(substr($statuscode, 0, 1) || 0);
 
             if( $classvalue == 4 ) {
