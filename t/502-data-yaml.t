@@ -85,6 +85,15 @@ MAKE_TEST: {
                 is $e->action, $perl->{'action'}, 'action = '.$e->action;
             }
         }
+
+        eval {
+            delete $INC{'YAML.pm'};
+            @INC = ('./lib');
+            for my $e ( @$data ) {
+                $yaml = $e->dump('yaml');
+            }
+        };
+        like $@, qr/error:.+Neither.+nor/;
     }
 }
 done_testing;
