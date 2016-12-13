@@ -2,6 +2,7 @@ use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai;
+use Sisimai::Reason::OnHold;
 
 my $PackageName = 'Sisimai';
 my $ThatsOnHold = './set-of-emails/to-be-debugged-because/reason-is-onhold';
@@ -21,6 +22,7 @@ MAKE_TEST: {
         ok $r->recipient->address, '->recipient = '.$r->recipient->address;
         ok $r->deliverystatus, '->deliverystatus = '.$r->deliverystatus;
         is $r->reason, 'onhold', '->reason = onhold';
+        ok(Sisimai::Reason::OnHold->true($r)), '->true = 1';
 
         my $h = $r->damn;
         isa_ok $h, 'HASH';

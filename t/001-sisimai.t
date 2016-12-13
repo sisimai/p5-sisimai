@@ -1,6 +1,7 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
+use IO::File;
 use Sisimai;
 use JSON;
 require './t/999-values.pl';
@@ -15,6 +16,7 @@ my $MethodNames = {
 my $SampleEmail = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
     'maildir' => './set-of-emails/maildir/bsd',
+    'jsonapi' => './set-of-emails/jsonapi/ced-us-amazonses-01.json'
 };
 my $IsNotBounce = {
     'maildir' => './set-of-emails/maildir/not',
@@ -32,17 +34,36 @@ MAKE_TEST: {
     is $PackageName->dump(undef), undef;
 
     # Wrong number of arguments
-    eval { $PackageName->make('/dev/null', undef), undef };
+    eval { $PackageName->make('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    eval { $PackageName->dump('/dev/null', undef), undef };
+    eval { $PackageName->dump('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    for my $e ( 'mailbox', 'maildir' ) {
+    eval { $PackageName->make({}, 'input' => 'neko') };
+    like $@, qr/error: invalid value of "input"/;
+
+    for my $e ( 'mailbox', 'maildir', 'jsonapi' ) {
         MAKE: {
-            my $parseddata = $PackageName->make($SampleEmail->{ $e });
+            my $parseddata = undef;
             my $damnedhash = undef;
             my $jsonstring = undef;
+
+            if( $e eq 'jsonapi' ) {
+                my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
+                my $jsonparser = JSON->new;
+                my $jsonobject = $jsonparser->decode(<$filehandle>);
+
+                ok ref $filehandle;
+                ok ref $jsonparser;
+                ok ref $jsonobject;
+                $filehandle->close;
+                $parseddata = $PackageName->make($jsonobject);
+
+            } else {
+                $parseddata = $PackageName->make($SampleEmail->{ $e });
+            }
+
             isa_ok $parseddata, 'ARRAY';
             ok scalar @$parseddata, 'entries = '.scalar @$parseddata;
 
