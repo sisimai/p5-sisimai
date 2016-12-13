@@ -22,7 +22,7 @@ sub dump {
     };
 
     if( $@ ) {
-        # Try to load JSON::Syck
+        # Try to load YAML::Syck
         eval { 
             require YAML::Syck;
             $modulename = 'YAML::Syck';
@@ -43,7 +43,7 @@ sub dump {
         $yamlstring = YAML::Dump($damneddata);
 
     } elsif( $modulename eq 'YAML::Syck' ) {
-        # Use JSON::Syck module instead of YAML module.
+        # Use YAML::Syck module instead of YAML module.
         $YAML::Syck::ImplicitTyping  = 1;
         $YAML::Syck::Headless        = 0;
         $YAML::Syck::ImplicitUnicode = 1;
