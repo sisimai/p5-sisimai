@@ -130,6 +130,7 @@ my $MSPChildren = {
     },
     'US::Verizon' => {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
     },
     'US::Yahoo' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
