@@ -58,7 +58,9 @@ MAKE_TEST: {
                 ok ref $jsonparser;
                 ok ref $jsonobject;
                 $filehandle->close;
+
                 $parseddata = $PackageName->make($jsonobject);
+                $parseddata = $PackageName->make([$jsonobject]);
 
             } else {
                 $parseddata = $PackageName->make($SampleEmail->{ $e });
