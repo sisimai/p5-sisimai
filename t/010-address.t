@@ -86,6 +86,11 @@ MAKE_TEST: {
         is $y->verp, '', '->verp = ""';
         is $y->alias, '', '->alias = ""';
 
+        if( $e =~ m/[<]MAILER-DAEMON[>]/i ) {
+            $v = $PackageName->new($e);
+            ok $v;
+        }
+
         $emailindex++;
     }
 
