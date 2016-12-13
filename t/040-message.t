@@ -58,6 +58,11 @@ MAKE_TEST: {
         isa_ok $p->rfc822, 'HASH', '->rfc822';
         is $p->catch, undef;
     }
+
+    UNSUPPORTED: {
+        my $p = $PackageName->new('data' => 'neko', 'input' => 'neko');
+        is $p, undef;
+    }
 }
 
 done_testing;
