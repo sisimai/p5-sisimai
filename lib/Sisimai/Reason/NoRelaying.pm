@@ -56,6 +56,7 @@ sub true {
         # Check the value of Diagnosic-Code: header with patterns
         return 1 if __PACKAGE__->match($argvs->diagnosticcode);
     }
+    return 0;
 }
 
 1;
