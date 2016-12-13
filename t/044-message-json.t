@@ -50,6 +50,7 @@ MAKE_TEST: {
     $p = Sisimai::Message->new(
             'data' => $j, 
             'hook' => $callbackto,
+            'load' => ['Sisimai::Neko::Nyaan'],
             'input' => 'json',
             'order' => ['Sisimai::CED::US::AmazonSES'],
          );
