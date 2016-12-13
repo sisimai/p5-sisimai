@@ -87,10 +87,17 @@ MAKE_TEST: {
         }
 
         NO_YAML: {
+            my $p = $INC{'YAML.pm'};
+            my @q = @INC;
+
             delete $INC{'YAML.pm'};
             @INC = ('./lib');
+
             eval { $data->[0]->dump('yaml') };
             like $@, qr/error:.+Neither.+nor/;
+
+            @INC = @q;
+            $INC{'YAML.pm'} = $p;
         }
     }
 }
