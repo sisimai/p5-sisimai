@@ -86,14 +86,12 @@ MAKE_TEST: {
             }
         }
 
-        eval {
+        NO_YAML: {
             delete $INC{'YAML.pm'};
             @INC = ('./lib');
-            for my $e ( @$data ) {
-                $yaml = $e->dump('yaml');
-            }
-        };
-        like $@, qr/error:.+Neither.+nor/;
+            eval { $data->[0]->dump('yaml') };
+            like $@, qr/error:.+Neither.+nor/;
+        }
     }
 }
 done_testing;
