@@ -1,6 +1,8 @@
 use strict;
+use feature ':5.10';
 use Test::More;
 use Module::Load;
+use Sisimai;
 use lib qw(./lib ./blib/lib);
 
 my $reasonchildren = {
@@ -28,26 +30,32 @@ my $reasonchildren = {
     'UserUnknown'   => ['550 5.1.1 Unknown User'],
 };
 
+my $v = shift @{ Sisimai->make('./set-of-emails/maildir/bsd/mta-sendmail-01.eml', 'input' => 'email') };
+isa_ok $v, 'Sisimai::Data';
+
 for my $e ( keys %$reasonchildren ) {
     my $r = 'Sisimai::Reason::'.$e;
     Module::Load::load $r;
-    is $r->text, lc $e, '->text = '.lc($e);
-    is $r->true, undef, '->true = undef';
-    ok length $r->description, '->description = '.$r->description;
+    is $r->text, lc $e, $r.'->text = '.lc($e);
+    is $r->true, undef, $r.'->true = undef';
+    ok length $r->description, $r.'->description = '.$r->description;
+
+    my $q = $r->true($v) // 0;
+    like $q, qr/\A[01]\z/, $r.'->true($v) = 0 or 1';
 
     next if $e eq 'OnHold';
     for my $v ( @{ $reasonchildren->{ $e } } ) {
-        is $r->match($v), 1, '->match('.$v.') = 1';
+        is $r->match($v), 1, $r.'->match('.$v.') = 1';
     }
 } 
 
-for my $e ( 'Delivered', 'Feedback', 'Undefined', 'Vacation' ) {
+for my $e ( 'Delivered', 'Feedback', 'Undefined', 'Vacation', 'SyntaxError' ) {
     my $r = 'Sisimai::Reason::'.$e;
     Module::Load::load $r;
-    is $r->text, lc $e, '->text = '.lc($e);
-    is $r->true, undef, '->true = undef';
-    is $r->match,undef, '->match = undef';
-    ok length $r->description, '->description = '.$r->description;
+    is $r->text, lc $e, $r.'->text = '.lc($e);
+    is $r->true, undef, $r.'->true = undef';
+    is $r->match,undef, $r.'->match = undef';
+    ok length $r->description, $r.'->description = '.$r->description;
 }
 
 done_testing;
