@@ -53,6 +53,9 @@ MAKE_TEST: {
             use_ok $w;
         }
     }
+
+    isa_ok $PackageName->by('neko'), 'HASH';
+    is scalar keys %{ $PackageName->by('neko') }, 0;
 }
 
 done_testing;
