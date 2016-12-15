@@ -15,7 +15,11 @@ sub match {
     my $argv1 = shift // return undef;
 
     # Destination mail server does not accept any message
-    my $regex = qr/smtp[ ]protocol[ ]returned[ ]a[ ]permanent[ ]error/xi;
+    my $regex = qr{(?:
+         Name[ ]server:[ ][.]:[ ]host[ ]not[ ]found # Sendmail
+        |smtp[ ]protocol[ ]returned[ ]a[ ]permanent[ ]error
+        )
+    }ix;
 
     return 1 if $argv1 =~ $regex;
     return 0;
