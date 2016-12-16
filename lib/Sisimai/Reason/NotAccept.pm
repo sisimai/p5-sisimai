@@ -17,7 +17,7 @@ sub match {
     # Destination mail server does not accept any message
     my $regex = qr{(?:
          Name[ ]server:[ ][.]:[ ]host[ ]not[ ]found # Sendmail
-        |smtp[ ]protocol[ ]returned[ ]a[ ]permanent[ ]error
+        |55[46][ ]smtp[ ]protocol[ ]returned[ ]a[ ]permanent[ ]error
         )
     }ix;
 
