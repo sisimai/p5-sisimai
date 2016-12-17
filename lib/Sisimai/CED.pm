@@ -12,8 +12,8 @@ sub headerlist     { return [] }
 sub pattern        { return {} }
 
 sub index {
-    # MSP list
-    # @return   [Array] MSP list with order
+    # CED list
+    # @return   [Array] CED list with order
     my $class = shift;
     my $index = ['US::AmazonSES', 'US::SendGrid'];
     return $index;
