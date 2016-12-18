@@ -101,6 +101,7 @@ sub adapt {
     # @return       [Hash, Undef]    Bounce data list and message/rfc822 part
     #                                or Undef if it failed to parse or the
     #                                arguments are missing
+    # @since v4.20.0
     my $class = shift;
     my $argvs = shift;
 
@@ -264,7 +265,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::CED::US::AmazonSES - bounce mail parser class for C<Amazon SES(JSON)>.
+Sisimai::CED::US::AmazonSES - bounce object (JSON) parser class for C<Amazon SES>.
 
 =head1 SYNOPSIS
 

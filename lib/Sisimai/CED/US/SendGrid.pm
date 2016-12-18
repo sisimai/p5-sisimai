@@ -11,13 +11,13 @@ sub adapt {
     # @return       [Hash, Undef]    Bounce data list and message/rfc822 part
     #                                or Undef if it failed to parse or the
     #                                arguments are missing
+    # @since v4.20.0
     my $class = shift;
     my $argvs = shift;
 
     return undef unless ref $argvs eq 'HASH';
     return undef unless scalar keys %$argvs;
     return undef unless exists $argvs->{'email'};
-
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $rfc822head = {};    # (Hash) Check flags for headers in RFC822 part
@@ -86,7 +86,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::CED::US::SendGrid - bounce object parser class for C<SendGrid(JSON)>.
+Sisimai::CED::US::SendGrid - bounce object (JSON) parser class for C<SendGrid>.
 
 =head1 SYNOPSIS
 
