@@ -84,7 +84,7 @@ sub make {
         'ds'     => [],     # Parsed data, Delivery Status
         'catch'  => undef,  # Data parsed by callback method
     }
-};
+}
 
 sub load {
     # Load MTA modules which specified at 'order' and 'load' in the argument
