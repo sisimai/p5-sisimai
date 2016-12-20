@@ -20,7 +20,6 @@ sub make {
     # @return        [Hash]         Resolved data structure
     my $class = shift;
     my $argvs = { @_ };
-    my $email = $argvs->{'data'};
 
     my $methodargv = {};
     my $hookmethod = $argvs->{'hook'} || undef;
@@ -40,7 +39,7 @@ sub make {
     $ToBeLoaded = __PACKAGE__->load(%$methodargv);
     $TryOnFirst = __PACKAGE__->makeorder($argvs->{'data'});
 
-    # 1. Rewrite message body for detecting the bounce reason
+    # Rewrite message body for detecting the bounce reason
     $methodargv = { 'hook' => $hookmethod, 'json' => $argvs->{'data'} };
     $bouncedata = __PACKAGE__->parse(%$methodargv);
 
