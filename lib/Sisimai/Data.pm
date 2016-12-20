@@ -194,7 +194,6 @@ sub make {
             my $datestring = undef;
             my $zoneoffset = 0;
             my @datevalues = ();
-
             push @datevalues, $e->{'date'} if $e->{'date'};
 
             # Date information did not exist in message/delivery-status part,...
