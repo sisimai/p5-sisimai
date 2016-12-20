@@ -27,7 +27,7 @@ sub default {
 }
 
 sub by {
-    # Get regular expression patterns for specified field
+    # Get regular expression patterns for specified key name
     # @param    [String] group  Group name for "ORDER BY"
     # @return   [Hash]          Pattern table for the group
     # @since v4.13.2
