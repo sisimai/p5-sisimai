@@ -86,7 +86,14 @@ sub make {
 
     # 5. Rewrite headers of the original message in the body part
     my $rfc822part = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
-    $processing->{'rfc822'} = __PACKAGE__->takeapart(\$rfc822part);
+    if( ref $rfc822part eq '' ) {
+        # Returned from Sisimai::MTA::* or Sisimai::MSP::* modules
+        $processing->{'rfc822'} = __PACKAGE__->takeapart(\$rfc822part);
+
+    } else {
+        # Returned from Sisimai::CED::* modules
+        $processing->{'rfc822'} = $rfc822part;
+    }
     return $processing;
 }
 
