@@ -173,8 +173,8 @@ sub default {
 
     return $DefaultOrder if ref $DefaultOrder eq 'ARRAY';
     push @$order, map { 'Sisimai::MTA::'.$_ } @{ Sisimai::MTA->index() };
-    push @$order, map { 'Sisimai::CED::'.$_ } @{ Sisimai::CED->index() };
     push @$order, map { 'Sisimai::MSP::'.$_ } @{ Sisimai::MSP->index() };
+    push @$order, map { 'Sisimai::CED::'.$_ } @{ Sisimai::CED->index() };
     return $order;
 }
 
