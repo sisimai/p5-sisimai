@@ -14,8 +14,8 @@ sub make {
     # Make data structure from decoded JSON object
     # @param         [Hash] argvs   Bounce object
     # @options argvs [Hash]  data   Decoded JSON
-    # @options argvs [Array] load   User defined MTA module list
-    # @options argvs [Array] order  The order of MTA modules
+    # @options argvs [Array] load   User defined CED module list
+    # @options argvs [Array] order  The order of CED modules
     # @options argvs [Code]  hook   Reference to callback method
     # @return        [Hash]         Resolved data structure
     my $class = shift;
@@ -53,7 +53,7 @@ sub make {
 }
 
 sub load {
-    # Load MTA modules which specified at 'order' and 'load' in the argument
+    # Load CED modules which specified at 'order' and 'load' in the argument
     # @param         [Hash] argvs       Module information to be loaded
     # @options argvs [Array]  load      User defined CED module list
     # @options argvs [Array]  order     The order of CED modules
@@ -66,7 +66,7 @@ sub load {
     my $tobeloaded = [];
 
     for my $e ( 'load', 'order' ) {
-        # The order of MTA modules specified by user
+        # The order of CED modules specified by user
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
         next unless scalar @{ $argvs->{ $e } };
@@ -74,9 +74,9 @@ sub load {
         push @modulelist, @{ $argvs->{'order'} } if $e eq 'order';
         next unless $e eq 'load';
 
-        # Load user defined MTA module
+        # Load user defined CED module
         for my $v ( @{ $argvs->{'load'} } ) {
-            # Load user defined MTA module
+            # Load user defined CED module
             eval { Module::Load::load $v };
             next if $@;
             push @$tobeloaded, $v;
@@ -84,7 +84,7 @@ sub load {
     }
 
     for my $e ( @modulelist ) {
-        # Append the custom order of MTA modules
+        # Append the custom order of CED modules
         next if grep { $e eq $_ } @$tobeloaded;
         push @$tobeloaded, $e;
     }
@@ -140,7 +140,7 @@ sub parse {
 
     ADAPTOR: while(1) {
         # 1. User-Defined Module
-        # 2. MTA Module Candidates to be tried on first
+        # 2. CED Module Candidates to be tried on first
         # 3. Sisimai::CED::*
         #
         USER_DEFINED: for my $r ( @$ToBeLoaded ) {
@@ -215,12 +215,12 @@ C<new()> is a constructor of Sisimai::Message
     my $jsonobject = $jsonparser->decode($jsonstring);
     my $messageobj = Sisimai::Message->new('data' => $jsonobject, 'input' => 'json');
 
-If you have implemented a custom MTA module and use it, set the value of "load"
+If you have implemented a custom CED module and use it, set the value of "load"
 in the argument of this method as an array reference like following code:
 
     my $messageobj = Sisimai::Message->new(
                         'data'  => $jsonobject,
-                        'load'  => ['Your::Custom::MTA::Module']
+                        'load'  => ['Your::Custom::CED::Module']
                         'input' => 'json',
                   );
 
