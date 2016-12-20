@@ -110,8 +110,6 @@ sub adapt {
     return undef unless exists $argvs->{'notificationType'};
 
     use Sisimai::RFC5322;
-    use Time::Piece;
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $rfc822head = {};    # (Hash) Check flags for headers in RFC822 part
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -180,11 +178,8 @@ sub adapt {
                 $v->{'feedbacktype'} = $o->{'complaintFeedbackType'} || '';
             }
 
-            eval {
-                my $q =  $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'};
-                   $q =~ s/[.]\d+Z\z//;
-                $v->{'date'} = Time::Piece->strptime($q, "%Y-%m-%dT%T");
-            };
+            $v->{'date'} =  $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'};
+            $v->{'date'} =~ s/[.]\d+Z\z//;
         }
     } elsif( $argvs->{'notificationType'} eq 'Delivery' ) {
         # { "notificationType":"Delivery", "delivery": { ...
@@ -221,11 +216,8 @@ sub adapt {
             $v->{'reason'}    = 'delivered';
             $v->{'action'}    = 'deliverable';
 
-            eval {
-                my $q =  $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'};
-                   $q =~ s/[.]\d+Z\z//;
-                $v->{'date'} = Time::Piece->strptime($q, "%Y-%m-%dT%T");
-            };
+            $v->{'date'} =  $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'};
+            $v->{'date'} =~ s/[.]\d+Z\z//;
         }
     } else {
         # The value of "notificationType" is not any of "Bounce", "Complaint",

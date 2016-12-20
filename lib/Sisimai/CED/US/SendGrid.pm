@@ -24,7 +24,6 @@ sub adapt {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = $dscontents->[-1];
 
-    require Time::Piece;
     require Sisimai::String;
     require Sisimai::Address;
     require Sisimai::RFC5322;
@@ -38,15 +37,10 @@ sub adapt {
         #   },
         $recipients++;
         $v->{'recipient'} = $argvs->{'email'};
+        $v->{'date'} = $argvs->{'created'};
 
         my $statuscode = $argvs->{'status'}  || '';
-        my $datestring = $argvs->{'created'} || '';
         my $diagnostic = Sisimai::String->sweep($argvs->{'reason'}) || '';
-
-        eval {
-            $v->{'date'} = Time::Piece->strptime($datestring, "%Y-%m-%d %T");
-        };
-        return undef if $@;
 
         if( $statuscode =~ m/\A[245]\d\d\z/ ) {
             # "status": "550"
