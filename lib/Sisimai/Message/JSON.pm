@@ -144,7 +144,7 @@ sub parse {
         # 3. Sisimai::CED::*
         #
         USER_DEFINED: for my $r ( @$ToBeLoaded ) {
-            # Call user defined MTA modules
+            # Call user defined CED modules
             next if exists $haveloaded->{ $r };
             $hasadapted = $r->adapt($bouncedata);
             $haveloaded->{ $r } = 1;
@@ -152,8 +152,7 @@ sub parse {
         }
 
         TRY_ON_FIRST: while( my $r = shift @$TryOnFirst ) {
-            # Try MTA module candidates which are detected from MTA specific
-            # mail headers on first
+            # Try CED module candidates which are detected from object key names
             next if exists $haveloaded->{ $r };
             eval { Module::Load::load $r };
             next if $@;
@@ -164,8 +163,7 @@ sub parse {
         }
 
         DEFAULT_LIST: for my $r ( @$DefaultSet ) {
-            # MTA/MSP modules which does not have MTA specific header and did
-            # not match with any regular expressions of Subject header.
+            # Default order of CED modules
             next if exists $haveloaded->{ $r };
             eval { Module::Load::load $r };
             next if $@;
@@ -174,9 +172,8 @@ sub parse {
             $haveloaded->{ $r } = 1;
             last(ADAPTOR) if $hasadapted;
         }
+        last;   # as of now, we have no sample json data for coding this block
 
-        # as of now, we have no sample email for coding this block
-        last;
     } # End of while(ADAPTOR)
 
     $hasadapted->{'catch'} = $havecaught if $hasadapted;
