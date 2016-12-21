@@ -9,7 +9,7 @@ my $MethodNames = {
     'class' => ['new', 'make', 'load', 'parse', 'makeorder'],
     'object' => ['from', 'header', 'ds', 'rfc822'],
 };
-my $SampleEmail = './set-of-emails/jsonapi/ced-us-amazonses-01.json';
+my $SampleEmail = './set-of-emails/jsonapi/ced-us-sendgrid-03.json';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -24,14 +24,8 @@ MAKE_TEST: {
     my $tobeloaded = $PackageName->load;
     my $callbackto = sub {
         my $argvs = shift;
-        my $catch = { 
-            'feedbackid' => '',
-            'account-id' => '',
-            'source-arn' => '',
-        };
-        $catch->{'feedbackid'} = $argvs->{'message'}->{'bounce'}->{'feedbackId'} || '';
-        $catch->{'account-id'} = $argvs->{'message'}->{'mail'}->{'sendingAccountId'} || '';
-        $catch->{'source-arn'} = $argvs->{'message'}->{'mail'}->{'sourceArn'} || '';
+        my $catch = { 'email' => '' };
+        $catch->{'email'} = $argvs->{'message'}->{'email'} || '';
         return $catch;
     };
 
@@ -40,7 +34,7 @@ MAKE_TEST: {
     isa_ok $tobeloaded, 'ARRAY';
 
     my $j = $jsonparser->decode($jsonstring);
-    my $p = Sisimai::Message->new('data' => $j, 'input' => 'json');
+    my $p = Sisimai::Message->new('data' => $j->[0], 'input' => 'json');
 
     isa_ok $p, 'Sisimai::Message';
     isa_ok $p->header, 'HASH', '->header';
@@ -48,41 +42,29 @@ MAKE_TEST: {
     isa_ok $p->rfc822, 'HASH', '->rfc822';
 
     $p = Sisimai::Message->new(
-            'data' => $j, 
+            'data' => $j->[0], 
             'hook' => $callbackto,
             'load' => ['Sisimai::Neko::Nyaan'],
             'input' => 'json',
-            'order' => ['Sisimai::CED::US::AmazonSES'],
+            'order' => ['Sisimai::CED::US::AmazonSES', 'Sisimai::CED::US::SendGrid'],
          );
 
     for my $e ( @{ $p->ds } ) {
-        is $e->{'spec'}, 'SMTP', '->spec = SMTP';
+        ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
         ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
         like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
         ok length $e->{'date'}, '->date = '.$e->{'date'};
         ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
-        ok length $e->{'action'}, '->action = '.$e->{'action'};
-        ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
+        ok exists $e->{'action'}, '->action = '.$e->{'action'};
+        ok exists $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
         ok exists $e->{'command'}, '->command = '.$e->{'command'};
         ok exists $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
-
-        for my $q ( 'rhost', 'lhost' ) {
-            next unless $e->{ $q };
-            like $e->{ $q }, qr/\A.+[.].+\z/, '->'.$q.' = '.$e->{ $q };
-        }
-        is $e->{'agent'}, 'CED::US::AmazonSES', '->agent = '.$e->{'agent'};
-    }
-
-    for my $e ( qw|to subject from message-id| ) {
-        my $h = $p->rfc822->{ $e };
-        ok length $h, $e;
+        is $e->{'agent'}, 'CED::US::SendGrid', '->agent = '.$e->{'agent'};
     }
 
     ok keys(%{ $p->header }) == 0;
     isa_ok $p->catch, 'HASH';
-    ok length $p->catch->{'feedbackid'};
-    ok length $p->catch->{'account-id'};
-    ok length $p->catch->{'source-arn'};
+    ok length $p->catch->{'email'};
 }
 
 done_testing;
