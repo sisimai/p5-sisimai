@@ -25,9 +25,9 @@ MAKE_TEST: {
     my $callbackto = sub {
         my $argvs = shift;
         my $catch = { 
-            'feedback-id' => '',
-            'account-id'  => '',
-            'source-arn'  => '',
+            'feedbackid' => '',
+            'account-id' => '',
+            'source-arn' => '',
         };
         $catch->{'feedbackid'} = $argvs->{'message'}->{'bounce'}->{'feedbackId'} || '';
         $catch->{'account-id'} = $argvs->{'message'}->{'mail'}->{'sendingAccountId'} || '';
