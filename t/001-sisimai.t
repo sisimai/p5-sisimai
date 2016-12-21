@@ -99,36 +99,64 @@ MAKE_TEST: {
                 ok length $jsonstring, 'length(dump("json")) = '.length $jsonstring;
             }
 
-            my $callbackto = sub {
-                my $argvs = shift;
-                my $catch = { 
-                    'x-mailer' => '',
-                    'return-path' => '',
+            my $callbackto = undef;
+            my $havecaught = undef;
+            if( $e eq 'jsonapi' ) {
+                # JSON
+                $callbackto = sub {
+                    my $argvs = shift;
+                    my $catch = { 
+                        'feedbackid' => '',
+                        'account-id'  => '',
+                        'source-arn'  => '',
+                    };
+                    $catch->{'feedbackid'} = $argvs->{'message'}->{'bounce'}->{'feedbackId'} || '';
+                    $catch->{'account-id'} = $argvs->{'message'}->{'mail'}->{'sendingAccountId'} || '';
+                    $catch->{'source-arn'} = $argvs->{'message'}->{'mail'}->{'sourceArn'} || '';
+                    return $catch;
                 };
-                $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
-                $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
-                $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
-                return $catch;
-            };
-            my $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto);
+                $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto, 'input' => 'json');
+            } else {
+                $callbackto = sub {
+                    my $argvs = shift;
+                    my $catch = { 
+                        'x-mailer' => '',
+                        'return-path' => '',
+                    };
+                    $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
+                    $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
+                    $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
+                    return $catch;
+                };
+                $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto, 'input' => 'email');
+            }
 
             for my $ee ( @$havecaught ) {
                 isa_ok $ee, 'Sisimai::Data';
                 isa_ok $ee->catch, 'HASH';
 
-                ok defined $ee->catch->{'x-mailer'};
-                if( length $ee->catch->{'x-mailer'} ) {
-                    like $ee->catch->{'x-mailer'}, qr/[A-Z]/;
-                }
+                if( $e eq 'jsonapi' ) {
+                    # jsonapi
+                    ok defined $ee->catch->{'feedbackid'};
+                    ok defined $ee->catch->{'account-id'};
+                    ok defined $ee->catch->{'source-arn'};
 
-                ok defined $ee->catch->{'return-path'};
-                if( length $ee->catch->{'return-path'} ) {
-                    like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
-                }
+                } else {
+                    # mailbox, maildir
+                    ok defined $ee->catch->{'x-mailer'};
+                    if( length $ee->catch->{'x-mailer'} ) {
+                        like $ee->catch->{'x-mailer'}, qr/[A-Z]/;
+                    }
 
-                ok defined $ee->catch->{'from'};
-                if( length $ee->catch->{'from'} ) {
-                    like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|<?mailer-daemon>?)/i;
+                    ok defined $ee->catch->{'return-path'};
+                    if( length $ee->catch->{'return-path'} ) {
+                        like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
+                    }
+
+                    ok defined $ee->catch->{'from'};
+                    if( length $ee->catch->{'from'} ) {
+                        like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|<?mailer-daemon>?)/i;
+                    }
                 }
             }
 
