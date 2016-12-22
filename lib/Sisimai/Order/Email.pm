@@ -165,8 +165,8 @@ sub by {
 }
 
 sub default {
-    # Make default order of MTA/MSP modules to be loaded
-    # @return   [Array] Default order list of MTA/MSP modules
+    # Make default order of MTA, MSP, and CED modules to be loaded
+    # @return   [Array] Default order list of MTA, MSP, and CED modules
     # @since v4.13.1
     my $class = shift;
     my $order = [];
@@ -179,7 +179,7 @@ sub default {
 }
 
 sub another {
-    # Make MTA/MSP module list as a spare
+    # Make MTA,MSP, and CED module list as a spare
     # @return   [Array] Ordered module list
     # @since v4.13.1
     return [
@@ -189,7 +189,7 @@ sub another {
 };
 
 sub headers {
-    # Make email header list in each MTA module
+    # Make email header list in each MTA, MSP, CED module
     # @return   [Hash] Header list to be parsed
     # @since v4.13.1
     my $class = shift;
@@ -198,12 +198,12 @@ sub headers {
     my $skips = { 'return-path' => 1, 'x-mailer' => 1 };
 
     LOAD_MODULES: for my $e ( @$order ) {
-        # Load email headers from each MTA,MSP module
+        # Load email headers from each MTA, MSP module
         eval { Module::Load::load $e };
         next if $@;
 
         for my $v ( @{ $e->headerlist } ) {
-            # Get header name which required each MTA/MSP module
+            # Get header name which required each MTA,MSP, and CED module
             my $q = lc $v;
             next if exists $skips->{ $q };
             $table->{ $q }->{ $e } = 1;
@@ -227,21 +227,22 @@ Sisimai::Order::Email - Make optimized order list for calling MTA/MSP modules
 
 =head1 DESCRIPTION
 
-Sisimai::Order::Email makes optimized order list which include MTA/MSP modules
-to be loaded on first from MTA specific headers in the bounce mail headers such
-as X-Failed-Recipients. This module are called from only Sisimai::Message.
+Sisimai::Order::Email makes optimized order list which include MTA, MSP, and CED
+modules to be loaded on first from MTA/MSP/CED specific headers in the bounce
+mail headers such as X-Failed-Recipients. 
+This module are called from only Sisimai::Message::Email.
 
 =head1 CLASS METHODS
 
 =head2 C<B<default()>>
 
-C<default()> returns default order of MTA/MSP modules
+C<default()> returns default order of MTA, MSP, and CED modules
 
     print for @{ Sisimai::Order::Email->default };
 
 =head2 C<B<headers()>>
 
-C<headers()> returns MTA specific header table
+C<headers()> returns MTA, MSP, or CED specific header table
 
     print keys %{ Sisimai::Order::Email->headers };
 

@@ -54,8 +54,8 @@ Sisimai::Order::JSON - Make optimized order list for calling CED modules
 =head1 DESCRIPTION
 
 Sisimai::Order::JSON makes optimized order list which include CED modules to be
-loaded on first from MTA specific headers in the bounce mail headers such as 
-X-Failed-Recipients. This module are called from only Sisimai::Message.
+loaded on first from bounce object key names in the decoded JSON object. This
+module are called from only Sisimai::Message::JSON.
 
 =head1 CLASS METHODS
 
