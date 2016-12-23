@@ -316,6 +316,7 @@ sub scan {
         }
         $e->{'reason'}  = 'feedback';
         $e->{'command'} = '';
+        $e->{'action'}  = '';
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
