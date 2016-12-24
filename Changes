@@ -4,7 +4,7 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
     - Issue #199 Experimental implementation: New MTA modules for 2 Cloud Email
       Deliveries, Sisimai::CED::US::AmazonSES and Sisimai::CED::US::SendGrid.
       These modules can parse JSON formatted bounce objects and can convert to
-      Sisimai::Data object; issue #199.
+      Sisimai::Data object.
     - Format of "smtpagent" in the parsed result has been changed. It includes
       the category name of MTA/MSP modules like "MTA::Sendmail", "MTA::Exim",
       and "MSP::US::SendGrid": issue #200.
