@@ -30,8 +30,8 @@ my $reasonchildren = {
     'UserUnknown'   => ['550 5.1.1 Unknown User'],
 };
 
-my $v = shift @{ Sisimai->make('./set-of-emails/maildir/bsd/mta-sendmail-01.eml', 'input' => 'email') };
-isa_ok $v, 'Sisimai::Data';
+my $ss = shift @{ Sisimai->make('./set-of-emails/maildir/bsd/mta-sendmail-01.eml', 'input' => 'email') };
+isa_ok $ss, 'Sisimai::Data';
 
 for my $e ( keys %$reasonchildren ) {
     my $r = 'Sisimai::Reason::'.$e;
@@ -40,8 +40,8 @@ for my $e ( keys %$reasonchildren ) {
     is $r->true, undef, $r.'->true = undef';
     ok length $r->description, $r.'->description = '.$r->description;
 
-    my $q = $r->true($v) // 0;
-    like $q, qr/\A[01]\z/, $r.'->true($v) = 0 or 1';
+    my $q = $r->true($ss) // 0;
+    like $q, qr/\A[01]\z/, $r.'->true($ss) = 0 or 1';
 
     next if $e eq 'OnHold';
     for my $v ( @{ $reasonchildren->{ $e } } ) {
