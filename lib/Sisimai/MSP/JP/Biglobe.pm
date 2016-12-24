@@ -20,9 +20,8 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
-sub smtpagent   { 'JP::Biglobe' }
 sub pattern     { return $Re0 }
+sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
 
 sub scan {
     # Detect an error from Biglobe

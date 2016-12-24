@@ -130,6 +130,7 @@ my $MSPChildren = {
     },
     'US::Verizon' => {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
+        '02' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
     },
     'US::Yahoo' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
@@ -168,7 +169,7 @@ for my $x ( keys %$MSPChildren ) {
         PARSE_EACH_MAIL: for my $i ( 1 .. scalar keys %{ $MSPChildren->{ $x } } ) {
             # Open email in set-of-emails/ directory
             my $prefix1 = lc $x; $prefix1 =~ s/::/-/;
-            my $emailfn = sprintf("./set-of-emails/maildir/bsd/%s-%02d.eml", $prefix1, $i);
+            my $emailfn = sprintf("./set-of-emails/maildir/bsd/msp-%s-%02d.eml", $prefix1, $i);
             my $mailbox = Sisimai::Mail->new($emailfn);
 
             $n = sprintf("%02d", $i);
@@ -201,7 +202,7 @@ for my $x ( keys %$MSPChildren ) {
                     }
 
                     # Check the value of the following variables
-                    is     $e->{'agent'},     $x,                   sprintf("[%s] %s->agent = %s", $n, $x, $e->{'agent'});
+                    is     $e->{'agent'},     'MSP::'.$x,           sprintf("[%s] %s->agent = %s", $n, $x, $e->{'agent'});
                     like   $e->{'recipient'}, qr/[0-9A-Za-z@-_.]+/, sprintf("[%s] %s->recipient = %s", $n, $x, $e->{'recipient'});
                     unlike $e->{'recipient'}, qr/[ ]/,              sprintf("[%s] %s->recipient = %s", $n, $x, $e->{'recipient'});
                     unlike $e->{'command'},   qr/[ ]/,              sprintf("[%s] %s->command = %s", $n, $x, $e->{'command'});

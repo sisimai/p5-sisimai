@@ -16,10 +16,9 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'TransWARE Active!hunter' };
-sub smtpagent   { 'Activehunter' }
 sub headerlist  { return ['X-AHMAILID'] }
 sub pattern     { return $Re0 }
+sub description { 'TransWARE Active!hunter' };
 
 sub scan {
     # Detect an error from TransWARE Active!hunter

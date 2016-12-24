@@ -16,14 +16,13 @@ my $Re0 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
-sub smtpagent   { 'US::Verizon' }
 sub pattern     { 
     return {
         'from' => qr/[<]?(?:\Apost_master[@]vtext|sysadmin[@].+[.]vzwpix)[.]com[>]?\z/,
         'subject' => $Re0->{'vzwpix.com'}->{'subject'},
     };
 }
+sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 
 sub scan {
     # Detect an error from Verizon

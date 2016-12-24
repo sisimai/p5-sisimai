@@ -9,7 +9,7 @@
 SHELL := /bin/sh
 HERE  := $(shell pwd)
 NAME  := Sisimai
-PERL  := perl
+PERL  ?= perl
 MKDIR := mkdir -p
 LS    := ls -1
 CP    := cp
@@ -21,17 +21,21 @@ PRECISIONTAB := ANALYTICAL-PRECISION
 PARSERLOGDIR := var/log
 MTAMODULEDIR := lib/$(NAME)/MTA
 MSPMODULEDIR := lib/$(NAME)/MSP
+CEDMODULEDIR := lib/$(NAME)/CED
 MTARELATIVES := ARF RFC3464 RFC3834
-EMAIL_PARSER := sbin/emparser
+EMAIL_PARSER := sbin/emparser --delivered
 BENCHMARKEMP := sbin/mp
 BENCHMARKDIR := tmp/benchmark
 BENCHMARKSET := tmp/sample
 VELOCITYTEST := tmp/emails-for-velocity-measurement
+SAMPLEPREFIX := eml
+
 SET_OF_EMAIL := set-of-emails
 PRIVATEMAILS := $(SET_OF_EMAIL)/private
 PUBLICEMAILS := $(SET_OF_EMAIL)/maildir/bsd
 DOSFORMATSET := $(SET_OF_EMAIL)/maildir/dos
 MACFORMATSET := $(SET_OF_EMAIL)/maildir/mac
+
 INDEX_LENGTH := 24
 DESCR_LENGTH := 48
 BH_CAN_PARSE := courier exim messagingserver postfix sendmail surfcontrol x5 \
@@ -50,7 +54,7 @@ private-sample:
 		d=`$(EMAIL_PARSER) -Fjson $(E) | jq -M '.[].smtpagent' | head -1 \
 			| tr '[A-Z]' '[a-z]' | tr -d '-' | sed -e 's/"//g' -e 's/::/-/g'`; \
 		if [ -d "$(PRIVATEMAILS)/$$d" ]; then \
-			latestfile=`ls -1 $(PRIVATEMAILS)/$$d/*.eml | tail -1`; \
+			latestfile=`ls -1 $(PRIVATEMAILS)/$$d/*.$(SAMPLEPREFIX) | tail -1`; \
 			curr_index=`basename $$latestfile | cut -d'-' -f1`; \
 			next_index=`echo $$curr_index + 1 | bc`; \
 		else \
@@ -59,10 +63,10 @@ private-sample:
 		fi; \
 		hash_value=`md5 -q $(E)`; \
 		if [ -n "`ls -1 $(PRIVATEMAILS)/$$d/ | grep $$hash_value`" ]; then \
-			echo 'Already exists:' `ls -1 $(PRIVATEMAILS)/$$d/*$$hash_value.eml`; \
+			echo 'Already exists:' `ls -1 $(PRIVATEMAILS)/$$d/*$$hash_value.$(SAMPLEPREFIX)`; \
 		else \
 			printf "[%05d] %s %s\n" $$next_index $$hash_value; \
-			mv -v $(E) $(PRIVATEMAILS)/$$d/0$${next_index}-$${hash_value}.eml; \
+			mv -v $(E) $(PRIVATEMAILS)/$$d/0$${next_index}-$${hash_value}.$(SAMPLEPREFIX); \
 		fi; \
 		break; \
 	done
@@ -81,8 +85,8 @@ precision-table:
 			l=`expr $$l + 1` ;\
 		done ;\
 		printf "%s" ' ' ;\
-		n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/$$d` ;\
-		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
+		n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/mta-$$d` ;\
+		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/mta-$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
 		if [ $$rn -lt $$n0 ]; then \
@@ -104,8 +108,8 @@ precision-table:
 				l=`expr $$l + 1` ;\
 			done ;\
 			printf "%s" ' ' ;\
-			n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/$$d` ;\
-			r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
+			n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/msp-$$d` ;\
+			r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/msp-$$d 2>&1 | grep 'debug0:' \
 				| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 			rn="`echo $$r0 | cut -d/ -f1`" ;\
 			if [ $$rn -lt $$n0 ]; then \
@@ -115,6 +119,30 @@ precision-table:
 			fi; \
 			printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
 			$(PERL) -Ilib -MSisimai::MSP::$$m -lE "print Sisimai::MSP::$$m->description" ;\
+		done ;\
+	done
+	@ for c in `$(LS) ./$(CEDMODULEDIR)`; do \
+		for v in `$(LS) ./$(CEDMODULEDIR)/$$c/*.pm`; do \
+			m="$$c::"`echo $$v | cut -d/ -f6 | sed 's/.pm//g'` ;\
+			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
+			l="`echo CED::$$m | wc -c`" ;\
+			printf "CED::%s " $$m ;\
+			while [ $$l -le $(INDEX_LENGTH) ]; do \
+				printf "%s" '.' ;\
+				l=`expr $$l + 1` ;\
+			done ;\
+			printf "%s" ' ' ;\
+			n0=`$(EMAIL_PARSER) --count-only $(BENCHMARKSET)/ced-$$d` ;\
+			r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/ced-$$d 2>&1 | grep 'debug0:' \
+				| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
+			rn="`echo $$r0 | cut -d/ -f1`" ;\
+			if [ $$rn -lt $$n0 ]; then \
+				rr=`$(PERL) -le "printf('%.4f', $$rn / $$n0 );"`; \
+			else \
+				rr='1.0000'; \
+			fi; \
+			printf "%4d/%04d  %s  " $$rn $$n0 $$rr ;\
+			$(PERL) -Ilib -MSisimai::CED::$$m -lE "print Sisimai::CED::$$m->description" ;\
 		done ;\
 	done
 	@ for v in $(MTARELATIVES); do \
@@ -201,6 +229,27 @@ mta-module-table:
 			printf " %s\n" ' |' ;\
 		done ;\
 	done
+	@ for c in `$(LS) ./$(CEDMODULEDIR)`; do \
+		for v in `$(LS) ./$(CEDMODULEDIR)/$$c/*.pm`; do \
+			m="$$c::"`echo $$v | cut -d/ -f6 | sed 's/.pm//g'` ;\
+			d="`echo $$m | tr '[A-Z]' '[a-z]' | sed 's/::/-/'`" ;\
+			l="`echo CED::$$m | wc -c`" ;\
+			printf "| CED::%s " $$m ;\
+			while [ $$l -le $(INDEX_LENGTH) ]; do \
+				printf "%s" ' ' ;\
+				l=`expr $$l + 1` ;\
+			done ;\
+			printf "%s" '|' ;\
+			r=`$(PERL) -Ilib -MSisimai::CED::$$m -le "print Sisimai::CED::$$m->description"` ;\
+			x="`echo $$r | wc -c`" ;\
+			printf " %s" $$r ;\
+			while [ $$x -le $(DESCR_LENGTH) ]; do \
+				printf "%s" ' ' ;\
+				x=`expr $$x + 1` ;\
+			done ;\
+			printf " %s\n" ' |' ;\
+		done ;\
+	done
 	@ for v in $(MTARELATIVES); do \
 		m=$$v ;\
 		d="`echo $$v | tr '[A-Z]' '[a-z]'`" ;\
@@ -231,17 +280,26 @@ update-sample-emails:
 sample:
 	for v in `$(LS) ./$(MTAMODULEDIR)/*.pm | grep -v UserDefined`; do \
 		MTA=`echo $$v | cut -d/ -f5 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
-		$(MKDIR) $(BENCHMARKSET)/$$MTA ;\
-		$(CP) $(PUBLICEMAILS)/$$MTA-*.eml $(BENCHMARKSET)/$$MTA/ ;\
-		$(CP) $(PRIVATEMAILS)/$$MTA/* $(BENCHMARKSET)/$$MTA/ ;\
+		$(MKDIR) $(BENCHMARKSET)/mta-$$MTA ;\
+		$(CP) $(PUBLICEMAILS)/mta-$$MTA-*.eml $(BENCHMARKSET)/mta-$$MTA/ ;\
+		$(CP) $(PRIVATEMAILS)/mta-$$MTA/* $(BENCHMARKSET)/mta-$$MTA/ ;\
 	done
 	for c in `$(LS) ./$(MSPMODULEDIR)`; do \
 		for v in `$(LS) ./$(MSPMODULEDIR)/$$c/*.pm`; do \
 			DIR=`echo $$c | tr '[A-Z]' '[a-z]' | tr -d '/'` ;\
 			MSP="`echo $$v | cut -d/ -f6 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
-			$(MKDIR) $(BENCHMARKSET)/$$DIR-$$MSP ;\
-			$(CP) $(PUBLICEMAILS)/$$DIR-$$MSP-*.eml $(BENCHMARKSET)/$$DIR-$$MSP/ ;\
-			$(CP) $(PRIVATEMAILS)/$$DIR-$$MSP/* $(BENCHMARKSET)/$$DIR-$$MSP/ ;\
+			$(MKDIR) $(BENCHMARKSET)/msp-$$DIR-$$MSP ;\
+			$(CP) $(PUBLICEMAILS)/msp-$$DIR-$$MSP-*.eml $(BENCHMARKSET)/msp-$$DIR-$$MSP/ ;\
+			$(CP) $(PRIVATEMAILS)/msp-$$DIR-$$MSP/* $(BENCHMARKSET)/msp-$$DIR-$$MSP/ ;\
+		done ;\
+	done
+	for c in `$(LS) ./$(CEDMODULEDIR)`; do \
+		for v in `$(LS) ./$(CEDMODULEDIR)/$$c/*.pm`; do \
+			DIR=`echo $$c | tr '[A-Z]' '[a-z]' | tr -d '/'` ;\
+			CED="`echo $$v | cut -d/ -f6 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'`" ;\
+			$(MKDIR) $(BENCHMARKSET)/ced-$$DIR-$$CED ;\
+			$(CP) $(PUBLICEMAILS)/ced-$$DIR-$$CED-*.eml $(BENCHMARKSET)/ced-$$DIR-$$CED/ ;\
+			$(CP) $(PRIVATEMAILS)/ced-$$DIR-$$CED/* $(BENCHMARKSET)/ced-$$DIR-$$CED/ ;\
 		done ;\
 	done
 	for v in arf rfc3464 rfc3834; do \

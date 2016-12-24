@@ -45,9 +45,8 @@ my $ReDelayed = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Courier MTA' }
-sub smtpagent   { 'Courier' }
 sub pattern     { return $Re0 }
+sub description { 'Courier MTA' }
 
 sub scan {
     # Detect an error from Courier MTA

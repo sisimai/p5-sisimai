@@ -23,12 +23,10 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'McAfee Email Appliance' }
-sub smtpagent   { 'McAfee' }
-
 # X-NAI-Header: Modified by McAfee Email and Web Security Virtual Appliance
 sub headerlist  { return ['X-NAI-Header'] }
 sub pattern     { return $Re0 }
+sub description { 'McAfee Email Appliance' }
 
 sub scan {
     # Detect an error from McAfee

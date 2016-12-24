@@ -14,9 +14,6 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Yandex.Mail: http://www.yandex.ru' }
-sub smtpagent   { 'RU::Yandex' }
-
 # X-Yandex-Front: mxback1h.mail.yandex.net
 # X-Yandex-TimeMark: 1417885948
 # X-Yandex-Uniq: 92309766-f1c8-4bd4-92bc-657c75766587
@@ -26,6 +23,7 @@ sub smtpagent   { 'RU::Yandex' }
 # X-Yandex-Sender: rfc822; shironeko@yandex.example.com
 sub headerlist  { return ['X-Yandex-Uniq'] }
 sub pattern     { return $Re0 }
+sub description { 'Yandex.Mail: http://www.yandex.ru' }
 
 sub scan {
     # Detect an error from Yandex.Mail

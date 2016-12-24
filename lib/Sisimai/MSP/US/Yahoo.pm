@@ -14,15 +14,13 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
-sub smtpagent   { 'US::Yahoo' }
-
 # X-YMailISG: YtyUVyYWLDsbDh...
 # X-YMail-JAS: Pb65aU4VM1mei...
 # X-YMail-OSG: bTIbpDEVM1lHz...
 # X-Originating-IP: [192.0.2.9]
 sub headerlist  { return ['X-YMailISG'] }
 sub pattern     { return $Re0 }
+sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 
 sub scan {
     # Detect an error from Yahoo! MAIL

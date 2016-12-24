@@ -22,9 +22,8 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Trend Micro InterScan Messaging Security Suite' }
-sub smtpagent   { 'InterScanMSS' }
 sub pattern     { return $Re0 }
+sub description { 'Trend Micro InterScan Messaging Security Suite' }
 
 sub scan {
     # Detect an error from InterScanMSS

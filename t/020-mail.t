@@ -76,6 +76,21 @@ MAKE_TEST: {
         is $maildir->close, 0, 'maildir->close';
         is $emindex, 1;
     }
+
+    DEVICE: {
+        my $mailobj = $PackageName->new('STDIN');
+        my $emindex = 0;
+
+        isa_ok $mailobj, $PackageName;
+        can_ok $mailobj, @{ $MethodNames->{'object'} };
+        is $mailobj->path, 'STDIN', '->path = '.$mailobj->path;
+        is $mailobj->type, 'stdin', '->type = stdin';
+        isa_ok $mailobj->mail, $PackageName.'::STDIN';
+
+        ok $mailobj->close, 'mailobj->close';
+        is $mailobj->close, 0, 'mailobj->close';
+        is $emindex, 0;
+    }
 }
 
 done_testing;

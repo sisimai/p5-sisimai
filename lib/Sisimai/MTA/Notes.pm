@@ -23,9 +23,8 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Lotus Notes' }
-sub smtpagent   { 'Notes' }
 sub pattern     { return $Re0 }
+sub description { 'Lotus Notes' }
 
 sub scan {
     # Detect an error from Lotus Notes

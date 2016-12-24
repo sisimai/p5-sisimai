@@ -15,14 +15,14 @@ sub dump {
     return undef unless ref $argvs eq 'Sisimai::Data';
     my $damneddata = undef;
     my $jsonstring = '';
-    my $jsonobject = JSON->new;
+    my $jsonparser = JSON->new;
 
     eval {
         $damneddata = $argvs->damn;
-        $jsonobject->space_after(1);
-        $jsonstring = $jsonobject->encode($damneddata);
+        $jsonparser->space_after(1);
+        $jsonstring = $jsonparser->encode($damneddata);
     };
-
+    warn sprintf(" ***warning: Something is wrong in JSON encoding: %s", $@) if $@;
     return $jsonstring;
 }
 

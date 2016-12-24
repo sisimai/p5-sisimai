@@ -314,9 +314,9 @@ sub scan {
                 $e->{'rhost'} = $1;
             }
         }
-        $e->{'action'}  = 'failed';
         $e->{'reason'}  = 'feedback';
         $e->{'command'} = '';
+        $e->{'action'}  = '';
         $e->{'agent'} ||= __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };

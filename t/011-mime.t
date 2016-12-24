@@ -109,6 +109,10 @@ Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
     like $d7, qr|\Q--b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==\E|m, '->qprintd(boundary)';
     unlike $d7, qr|32=$|m, '->qprintd() does not match 32=';
 
+    my $q8 = 'neko';
+    my $h8 = { 'content-type' => 'neko/nyan' };
+    is $q8, ${ $PackageName->qprintd(\$q8, $8) };
+
     my $x1 = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
     my $x2 = 'Apple-Mail-1-526612466';
     is $PackageName->boundary($x1 ), $x2, '->boundary() = '.$x2;

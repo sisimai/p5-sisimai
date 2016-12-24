@@ -18,7 +18,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
-    is $PackageName->scan, '', '->scan';
+    is $PackageName->scan, undef, '->scan';
 
     isa_ok $PackageName->index, 'ARRAY';
     isa_ok $PackageName->headerlist, 'ARRAY';

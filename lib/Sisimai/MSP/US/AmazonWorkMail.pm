@@ -17,14 +17,12 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Amazon WorkMail: https://aws.amazon.com/workmail/' }
-sub smtpagent   { 'US::AmazonWorkMail' }
-
 # X-Mailer: Amazon WorkMail
 # X-Original-Mailer: Amazon WorkMail
 # X-Ses-Outgoing: 2016.01.14-54.240.27.159
 sub headerlist  { return ['X-SES-Outgoing', 'X-Original-Mailer'] }
 sub pattern     { return $Re0 }
+sub description { 'Amazon WorkMail: https://aws.amazon.com/workmail/' }
 
 sub scan {
     # Detect an error from Amazon WorkMail

@@ -8,7 +8,7 @@
 SHELL := /bin/sh
 TIME  := $(shell date '+%F')
 NAME  := Sisimai
-PERL  := perl
+PERL  ?= perl
 CPANM := http://xrl.us/cpanm
 WGET  := wget -c
 CURL  := curl -LOk
@@ -30,7 +30,7 @@ cpanm:
 	test -f ./$@ && $(CHMOD) a+x ./$@
 
 install-from-cpan:
-	curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n $(NAME)
+	curl -L https://cpanmin.us | $(PERL) - -M https://cpan.metacpan.org -n $(NAME)
 
 install-from-local: cpanm
 	./cpanm .
@@ -51,7 +51,7 @@ backup-readme:
 restore-readme:
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
 
-check-version:
+check-version-in-readme:
 	grep cpan-v`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version'` README.md
 
 release-test:
@@ -59,14 +59,14 @@ release-test:
 	$(MAKE) clean
 	$(MINIL) test
 	$(MAKE) restore-readme
-	$(MAKE) check-version
+	$(MAKE) check-version-in-readme
 
 dist:
 	$(MAKE) backup-readme
 	$(MAKE) clean
 	$(MINIL) dist
 	$(MAKE) restore-readme
-	$(MAKE) check-version
+	$(MAKE) check-version-in-readme
 
 $(REPOS_TARGETS):
 	$(MAKE) -f Repository.mk $@

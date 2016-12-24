@@ -26,15 +26,13 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Amazon SES(Sending): http://aws.amazon.com/ses/' };
-sub smtpagent   { 'US::AmazonSES' }
-
 # X-SenderID: Sendmail Sender-ID Filter v1.0.0 nijo.example.jp p7V3i843003008
 # X-Original-To: 000001321defbd2a-788e31c8-2be1-422f-a8d4-cf7765cc9ed7-000000@email-bounces.amazonses.com
 # X-AWS-Outgoing: 199.255.192.156
 # X-SES-Outgoing: 2016.10.12-54.240.27.6
 sub headerlist  { return ['X-AWS-Outgoing', 'X-SES-Outgoing'] }
 sub pattern     { return $Re0 }
+sub description { 'Amazon SES(Sending): http://aws.amazon.com/ses/' };
 
 sub scan {
     # Detect an error from Amazon SES

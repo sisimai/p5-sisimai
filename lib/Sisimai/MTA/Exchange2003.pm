@@ -51,14 +51,12 @@ my $CodeTable = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Microsoft Exchange Server 2003' }
-sub smtpagent   { 'Exchange2003' }
-
 # X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
 # X-Mailer: Internet Mail Service (5.5.1960.3)
 # X-MS-Embedded-Report: 
 sub headerlist  { return ['X-MS-Embedded-Report', 'X-MimeOLE'] };
 sub pattern     { return $Re0 }
+sub description { 'Microsoft Exchange Server 2003' }
 
 sub scan {
     # Detect an error from Microsoft Exchange Server 2003

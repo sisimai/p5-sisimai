@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Load '';
 
-our $VERSION = '4.19.0';
+our $VERSION = '4.20.0';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
@@ -12,46 +12,101 @@ sub libname { 'Sisimai'       }
 sub make {
     # Wrapper method for parsing mailbox or Maildir/
     # @param         [String]  argv0      Path to mbox or Maildir/
+    # @param         [Hash]    argv0      or Hash (decoded JSON)
+    # @param         [Handle]  argv0      or STDIN
     # @param         [Hash]    argv1      Parser options
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
+    # @options argv1 [String]  input      Input data format: 'email', 'json'
     # @return        [Array]              Parsed objects
     # @return        [Undef]              Undef if the argument was wrong or an empty array
     my $class = shift;
     my $argv0 = shift // return undef;
-
     die ' ***error: wrong number of arguments' if scalar @_ % 2;
-    my $argv1 = { @_ };
 
-    require Sisimai::Mail;
-    my $mail = Sisimai::Mail->new($argv0);
-    my $list = [];
-
-    return undef unless $mail;
     require Sisimai::Data;
     require Sisimai::Message;
 
-    my $methodargv = { 'delivered' => $argv1->{'delivered'} // 0 };
-    my $hookmethod = $argv1->{'hook'} || undef;
+    my $argv1 = { @_ };
+    my $input = $argv1->{'input'} || undef;
+    my $rtype = undef;
 
-    while( my $r = $mail->read ) {
-        # Read and parse each mail file
-        my $mesg = Sisimai::Message->new('data' => $r, 'hook' => $hookmethod);
-        next unless defined $mesg;
-        my $data = Sisimai::Data->make('data' => $mesg, %$methodargv);
-        push @$list, @$data if scalar @$data;
+    unless( $input ) {
+        # "input" did not specified, try to detect automatically.
+        $rtype = ref $argv0;
+        if( length $rtype == 0 ) {
+            # The argument may be a path to email
+            $input = 'email';
+
+        } elsif( $rtype =~ m/\A(?:ARRAY|HASH)\z/ ) {
+            # The argument may be a decoded JSON object
+            $input = 'json';
+        }
     }
 
-    return undef unless scalar @$list;
-    return $list;
+    my $methodargv = {};
+    my $delivered1 = { 'delivered' => $argv1->{'delivered'} // 0 };
+    my $hookmethod = $argv1->{'hook'} || undef;
+    my $bouncedata = [];
+
+    if( $input eq 'email' ) {
+        # Path to mailbox or Maildir/, or STDIN: 'input' => 'email'
+        require Sisimai::Mail;
+        my $mail = Sisimai::Mail->new($argv0);
+        return undef unless $mail;
+
+        while( my $r = $mail->read ) {
+            # Read and parse each mail file
+            $methodargv = { 'data' => $r, 'hook' => $hookmethod, 'input' => 'email' };
+            my $mesg = Sisimai::Message->new(%$methodargv);
+            next unless defined $mesg;
+
+            my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
+            push @$bouncedata, @$data if scalar @$data;
+        }
+
+    } elsif( $input eq 'json' ) {
+        # Decoded JSON object: 'input' => 'json'
+        my $type = ref $argv0;
+        my $list = [];
+
+        if( $type eq 'ARRAY' ) {
+            # [ {...}, {...}, ... ]
+            for my $e ( @$argv0 ) {
+                next unless ref $e eq 'HASH';
+                push @$list, $e;
+            }
+        } else {
+            push @$list, $argv0;
+        }
+
+        for my $e ( @$list ) {
+            $methodargv = { 'data' => $e, 'hook' => $hookmethod, 'input' => 'json' };
+            my $mesg = Sisimai::Message->new(%$methodargv);
+            next unless defined $mesg;
+
+            my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
+            push @$bouncedata, @$data if scalar @$data;
+        }
+
+    } else {
+        # The value of "input" neither "email" nor "json"
+        die ' ***error: invalid value of "input"';
+    }
+
+    return undef unless scalar @$bouncedata;
+    return $bouncedata;
 }
 
 sub dump {
     # Wrapper method to parse mailbox/Maildir and dump as JSON
     # @param         [String]  argv0      Path to mbox or Maildir/
+    # @param         [Hash]    argv0      or Hash (decoded JSON)
+    # @param         [Handle]  argv0      or STDIN
     # @param         [Hash]    argv1      Parser options
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
+    # @options argv1 [String]  input      Input data format: 'email', 'json'
     # @return        [String]             Parsed data as JSON text
     my $class = shift;
     my $argv0 = shift // return undef;
@@ -62,8 +117,8 @@ sub dump {
 
     # Dump as JSON
     Module::Load::load('JSON', '-convert_blessed_universally');
-    my $jsonobject = JSON->new->allow_blessed->convert_blessed;
-    my $jsonstring = $jsonobject->encode($nyaan);
+    my $jsonparser = JSON->new->allow_blessed->convert_blessed;
+    my $jsonstring = $jsonparser->encode($nyaan);
 
     utf8::encode $jsonstring if utf8::is_utf8 $jsonstring;
     return $jsonstring;
@@ -73,15 +128,15 @@ sub engine {
     # Parser engine list (MTA/MSP modules)
     # @return   [Hash]     Parser engine table
     my $class = shift;
-    my $names = ['MTA', 'MSP', 'ARF', 'RFC3464', 'RFC3834'];
+    my $names = ['MTA', 'MSP', 'CED', 'ARF', 'RFC3464', 'RFC3834'];
     my $table = {};
 
     for my $e ( @$names ) {
         my $r = 'Sisimai::'.$e;
         Module::Load::load $r;
 
-        if( $e eq 'MTA' || $e eq 'MSP' ) {
-            # Sisimai::MTA or Sisimai::MSP
+        if( $e eq 'MTA' || $e eq 'MSP' || $e eq 'CED' ) {
+            # Sisimai::MTA or Sisimai::MSP or Sisimai::CED
             for my $ee ( @{ $r->index } ) {
                 # Load and get the value of "description" from each module
                 my $rr = sprintf("Sisimai::%s::%s", $e, $ee);

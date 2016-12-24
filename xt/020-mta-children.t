@@ -1001,7 +1001,7 @@ my $R = {
 for my $x ( keys %$R ) {
     # Check each MTA module
     my $M = 'Sisimai::MTA::'.$x;
-    my $d = './set-of-emails/private/'.lc($x);
+    my $d = './set-of-emails/private/mta-'.lc($x);
 
     Module::Load::load($M);
     use_ok $M;
@@ -1055,17 +1055,13 @@ for my $x ( keys %$R ) {
                     ok length  $ee->deliverystatus,sprintf("[%s] %s/%s->deliverystatus = %s", $n, $e, $x, $ee->deliverystatus);
                     ok length  $ee->softbounce,    sprintf("[%s] %s/%s->softbounce = %s", $n, $e, $x, $ee->softbounce);
 
-                    if( $x eq 'mFILTER' ) {
-                        # mFILTER => m-FILTER
-                        is $ee->smtpagent, 'm-FILTER', sprintf("[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent);
-
-                    } elsif( $x eq 'X4' ) {
+                    if( $x eq 'X4' ) {
                         # X4 is qmail clone
-                        like $ee->smtpagent, qr/\A(?:qmail|X4)\z/, sprintf("[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent);
+                        like $ee->smtpagent, qr/(?:qmail|X4)\z/, sprintf("[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent);
 
                     } else {
                         # Other MTA modules
-                        is $ee->smtpagent, $x, sprintf("[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent);
+                        is $ee->smtpagent, 'MTA::'.$x, sprintf("[%s] %s/%s->smtpagent = %s", $n, $e, $x, $ee->smtpagent);
                     }
 
                     if( length $ee->action ) {

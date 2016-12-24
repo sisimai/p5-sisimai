@@ -31,7 +31,7 @@ MAKE_TEST: {
     }
 
     if( $test ) {
-        my $file = './set-of-emails/maildir/bsd/sendmail-02.eml';
+        my $file = './set-of-emails/maildir/bsd/mta-sendmail-02.eml';
         my $mail = Sisimai::Mail->new($file);
         my $mesg = undef;
         my $data = undef;
@@ -84,6 +84,20 @@ MAKE_TEST: {
                 is $e->feedbacktype, $perl->{'feedbacktype'}, 'feedbacktype = '.$e->feedbacktype;
                 is $e->action, $perl->{'action'}, 'action = '.$e->action;
             }
+        }
+
+        NO_YAML: {
+            my $p = $INC{'YAML.pm'};
+            my @q = @INC;
+
+            delete $INC{'YAML.pm'};
+            @INC = ('./lib');
+
+            eval { $data->[0]->dump('yaml') };
+            like $@, qr/error:.+Neither.+nor/;
+
+            @INC = @q;
+            $INC{'YAML.pm'} = $p;
         }
     }
 }

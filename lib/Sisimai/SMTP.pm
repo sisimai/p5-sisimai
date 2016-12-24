@@ -15,58 +15,6 @@ sub command {
     };
 }
 
-sub is_softbounce {
-    # Check softbounce or not
-    # @param    [String] argv1  String including SMTP Status code
-    # @return   [Integer]        1: Soft bounce
-    #                            0: Hard bounce
-    #                           -1: May not be bounce ?
-    # @since v4.14.0
-    # @deprecated use Sisimai::SMTP::Error->soft_or_hard() method instead
-    warn sprintf(" ***warning: Obsoleted method, use Sisimai::SMTP::Error->soft_or_hard() instead.");
-    my $class = shift;
-    my $argv1 = shift || return -1;
-
-    my $classvalue = -1;
-    my $softbounce = -1;
-
-    if( $argv1 =~ m/\b([245])\d\d\b/ ) {
-        # SMTP reply code: 550, 421
-        $classvalue = $1;
-
-    } elsif( $argv1 =~ m/\b([245])[.][0-9][.]\d+\b/ ) {
-        # SMTP DSN: 5.5.1, 4.4.7
-        $classvalue = $1;
-    }
-
-    if( $classvalue == 4 ) {
-        # Soft bounce, Persistent transient error
-        $softbounce = 1;
-
-    } elsif( $classvalue == 5 ) {
-        # Hard bounce, Permanent error
-        $softbounce = 0;
-
-    } else {
-        # Check with regular expression
-        if( $argv1 =~ m/(?:temporar|persistent)/i ) {
-            # Temporary failure
-            $softbounce = 1;
-
-        } elsif( $argv1 =~ m/permanent/i ) {
-            # Permanently failure
-            $softbounce = 0;
-
-        } else {
-            # did not find information to decide that it is a soft bounce
-            # or a hard bounce.
-            $softbounce = -1;
-        }
-    }
-
-    return $softbounce;
-}
-
 1;
 __END__
 
@@ -79,7 +27,7 @@ Sisimai::SMTP - SMTP Status Codes related utilities
 =head1 SYNOPSIS
 
     use Sisimai::SMTP;
-    print Sisimai::SMTP->is_softbounce('SMTP error message');
+    print keys %{ Sisimai::SMTP->command }; # helo, mail, rcpt, data
 
 =head1 DESCRIPTION
 
@@ -87,18 +35,13 @@ Sisimai::SMTP is a parent class of Sisimai::SMTP::Status and Sisimai::SMTP::Repl
 
 =head1 CLASS METHODS
 
-=head2 C<B<is_softbounce(I<String>)>>
+=head2 C<B<command>>
 
-C<is_softbounce()> returns 1 if the string includes SMTP reply code like 421,
-550 or SMTP status code like 5.1.1, 4.4.7. The return value is 1: soft bounce,
-0: hard bounce, -1: did not find information to decide that it is a soft bounce
-or a hard bounce.
+C<command()> returns regular expressions for each SMTP command: C<HELO(EHLO)>,
+C<MAIL>, C<RCPT>, and C<DATA>.
 
-    print Sisimai::SMTP->is_softbounce('422 Temporary rejected');    # 1
-    print Sisimai::SMTP->is_softbounce('550 User unknown');          # 0
-    print Sisimai::SMTP->is_softbounce('200 OK');                    # -1 
-    print Sisimai::SMTP->is_softbounce('4.4.7 Delivery expired');    # 1 
-    print Sisimai::SMTP->is_softbounce('Permanent failure');         # 0 
+    my $v = Sisimai::SMTP->command;
+    print for keys %v;  # helo, mail, rcpt, data
 
 =head1 AUTHOR
 

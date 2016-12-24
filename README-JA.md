@@ -2,7 +2,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.22-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.19.0-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.20.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 ![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
 
@@ -24,6 +24,7 @@ __シ(Si)__から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名�
   * 解析精度はbounceHammerの二倍
   * 27種類のMTAに対応
   * 21種類の著名なMSPに対応
+  * 2種類の著名なメール配信クラウドに対応(JSON)
   * Feedback Loopにも対応
   * 27種類のエラー理由を検出
 * __bounceHammer 2.7.13p3よりも高速に解析__
@@ -49,7 +50,7 @@ Sisimaiの動作環境についての詳細は
 ```shell
 % sudo cpanm Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.14.0.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.20.0.tar.gz ... OK
 ...
 1 distribution installed
 % perldoc -l Sisimai
@@ -64,7 +65,7 @@ Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.14.0.tar.gz ... OK
 % cd ./p5-Sisimai
 % sudo make install-from-local
 --> Working on .
-Configuring Sisimai-4.14.0 ... OK
+Configuring Sisimai-4.20.0 ... OK
 1 distribution installed
 ```
 
@@ -112,9 +113,26 @@ print $j;                               # parsed data as JSON
 my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 ```
 
-```json
-[{"recipient": "kijitora@example.jp", "addresser": "shironeko@1jo.example.org", "feedbacktype": "", "action": "failed", "subject": "Nyaaaaan", "smtpcommand": "DATA", "diagnosticcode": "550 Unknown user kijitora@example.jp", "listid": "", "destination": "example.jp", "smtpagent": "Courier", "lhost": "1jo.example.org", "deliverystatus": "5.0.0", "timestamp": 1291954879, "messageid": "201012100421.oBA4LJFU042012@1jo.example.org", "diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "filtered", "token": "ce999a4c869e3f5e4d8a77b2e310b23960fb32ab", "alias": "", "senderdomain": "1jo.example.org", "rhost": "mfsmax.example.jp"}, {"diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "userunknown", "timestamp": 1381900535, "messageid": "E1C50F1B-1C83-4820-BC36-AC6FBFBE8568@example.org", "token": "9fe754876e9133aae5d20f0fd8dd7f05b4e9d9f0", "alias": "", "senderdomain": "example.org", "rhost": "mx.bouncehammer.jp", "action": "failed", "addresser": "kijitora@example.org", "recipient": "userunknown@bouncehammer.jp", "feedbacktype": "", "smtpcommand": "DATA", "subject": "バウンスメールのテスト(日本語)", "destination": "bouncehammer.jp", "listid": "", "diagnosticcode": "550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown", "deliverystatus": "5.1.1", "lhost": "p0000-ipbfpfx00kyoto.kyoto.example.co.jp", "smtpagent": "Sendmail"}]
+バウンスオブジェクト(JSON)を読む
+--------------------------------
+メール配信クラウドからAPIで取得したバウンスオブジェクト(JSON)を読んで解析する
+場合は、次のようなコードを書いてください。この機能はSisimai v4.20.0で実装され
+ました。
+
+```perl
+#! /usr/bin/env perl
+use JSON;
+use Sisimai;
+
+my $j = JSON->new;
+my $q = '{"json":"string",...}'
+my $v = Sisimai->make($j->decode($q), 'input' => 'json');
+
+if( defined $v ) {
+    for my $e ( @$v ) { ... }
+}
 ```
+現時点ではAmazon SESとSendgridのみをサポートしています。
 
 コールバック機能
 ----------------
@@ -153,6 +171,12 @@ Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナ�
 % perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
 
+解析結果の例(JSON)
+------------------
+```json
+[{"recipient": "kijitora@example.jp", "addresser": "shironeko@1jo.example.org", "feedbacktype": "", "action": "failed", "subject": "Nyaaaaan", "smtpcommand": "DATA", "diagnosticcode": "550 Unknown user kijitora@example.jp", "listid": "", "destination": "example.jp", "smtpagent": "Courier", "lhost": "1jo.example.org", "deliverystatus": "5.0.0", "timestamp": 1291954879, "messageid": "201012100421.oBA4LJFU042012@1jo.example.org", "diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "filtered", "token": "ce999a4c869e3f5e4d8a77b2e310b23960fb32ab", "alias": "", "senderdomain": "1jo.example.org", "rhost": "mfsmax.example.jp"}, {"diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "userunknown", "timestamp": 1381900535, "messageid": "E1C50F1B-1C83-4820-BC36-AC6FBFBE8568@example.org", "token": "9fe754876e9133aae5d20f0fd8dd7f05b4e9d9f0", "alias": "", "senderdomain": "example.org", "rhost": "mx.bouncehammer.jp", "action": "failed", "addresser": "kijitora@example.org", "recipient": "userunknown@bouncehammer.jp", "feedbacktype": "", "smtpcommand": "DATA", "subject": "バウンスメールのテスト(日本語)", "destination": "bouncehammer.jp", "listid": "", "diagnosticcode": "550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown", "deliverystatus": "5.1.1", "lhost": "p0000-ipbfpfx00kyoto.kyoto.example.co.jp", "smtpagent": "Sendmail"}]
+```
+
 シシマイの仕様
 ==============
 新旧の違い(bounceHammerとSisimai)
@@ -178,8 +202,8 @@ bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違い
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpanまたはcpanmコマンドでのインストール        | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 8600行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 184100件    |
+| LOC:ソースコードの行数                         | 18200行       | 8800行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 187600件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
@@ -243,6 +267,8 @@ MTA/MSPモジュール一覧
 | MSP::US::Verizon         | Verizon Wireless: http://www.verizonwireless.com  |
 | MSP::US::Yahoo           | Yahoo! MAIL: https://www.yahoo.com                |
 | MSP::US::Zoho            | Zoho Mail: https://www.zoho.com                   |
+| CED::US::AmazonSES       | AmazonSES(JSON): http://aws.amazon.com/ses/       |
+| CED::US::SendGrid        | SendGrid(JSON): http://sendgrid.com/              |
 | ARF                      | Abuse Feedback Reporting Format                   |
 | RFC3464                  | Fallback Module for MTAs                          |
 | RFC3834                  | Detector for auto replied message (> v4.1.28)     |
@@ -294,6 +320,7 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 | action         | Action:ヘッダの値                                           |
 | addresser      | 送信者のアドレス                                            |
 | alias          | 受信者アドレスのエイリアス                                  |
+| catch          | 引数に指定したフックメソッドが返すデータ
 | destination    | "recipient"のドメイン部分                                   |
 | deliverystatus | 配信状態(DSN)の値(例: 5.1.1, 4.4.7)                         |
 | diagnosticcode | エラーメッセージ                                            |

@@ -3,40 +3,14 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::RFC5322;
+use Sisimai::Skeleton;
 
-sub INDICATORS {
-    # Flags for position variable for
-    # @private
-    # @return   [Hash] Position flag data
-    # @since    v4.13.0
-    return {
-        'deliverystatus' => (1 << 1),
-        'message-rfc822' => (1 << 2),
-    };
-}
-
-sub DELIVERYSTATUS {
-    # Data structure for parsed bounce messages
-    # @private
-    # @return [Hash] Data structure for delivery status
-    return {
-        'spec'         => '',   # Protocl specification
-        'date'         => '',   # The value of Last-Attempt-Date header
-        'rhost'        => '',   # The value of Remote-MTA header
-        'lhost'        => '',   # The value of Received-From-MTA header
-        'alias'        => '',   # The value of alias entry(RHS)
-        'agent'        => '',   # MTA name
-        'action'       => '',   # The value of Action header
-        'status'       => '',   # The value of Status header
-        'reason'       => '',   # Temporary reason of bounce
-        'command'      => '',   # SMTP command in the message body
-        'replycode',   => '',   # SMTP Reply Code
-        'diagnosis'    => '',   # The value of Diagnostic-Code header
-        'recipient'    => '',   # The value of Final-Recipient header
-        'softbounce'   => '',   # Soft bounce or not
-        'feedbacktype' => '',   # Feedback Type
-    };
-}
+sub DELIVERYSTATUS { return Sisimai::Skeleton->DELIVERYSTATUS }
+sub INDICATORS     { return Sisimai::Skeleton->INDICATORS     }
+sub smtpagent      { my $v = shift; $v =~ s/\ASisimai:://; return $v }
+sub description    { return '' }
+sub headerlist     { return [] }
+sub pattern        { return {} }
 
 sub index {
     # MTA list
@@ -52,31 +26,6 @@ sub index {
     return $index;
 }
 
-sub smtpagent {
-    # @abstract Return MTA name: Call smtpagent() in each child class
-    # @return   [String] MTA name
-    my $class = shift; 
-    return shift // 'null';
-}
-
-sub description {
-    # @abstract Description of MTA
-    # @return   [String] Description of MTA module
-    return '';
-}
-
-sub headerlist {
-    # @abstract Header list required by each MTA module
-    # @return   [Array] Header list
-    return [];
-}
-
-sub pattern { 
-    # @abstract Patterns for detecting MTA
-    # @return   [Hash] Pattern table
-    return {};
-}
-
 sub scan {
     # @abstract      Detect an error
     # @param         [Hash] mhead       Message header of a bounce email
@@ -89,7 +38,7 @@ sub scan {
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
     #                                   or Undef if it failed to parse or the
     #                                   arguments are missing
-    return '';
+    return undef;
 }
 
 1;

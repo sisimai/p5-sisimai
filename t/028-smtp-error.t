@@ -69,6 +69,14 @@ MAKE_TEST: {
     for my $e ( @$hardbounces ) {
         $v = $PackageName->soft_or_hard($e);
         is $v, 'hard', '->soft_or_hard('.$e.') = hard';
+
+        if( $e eq 'notaccept' ) {
+            $v = $PackageName->soft_or_hard($e, '503 Not accept any email');
+            is $v, 'hard', '->soft_or_hard('.$e.') = hard';
+
+            $v = $PackageName->soft_or_hard($e, '409 Not accept any email');
+            is $v, 'soft', '->soft_or_hard('.$e.') = soft';
+        }
     }
     for my $e ( @$isntbounces ) {
         $v = $PackageName->soft_or_hard($e);

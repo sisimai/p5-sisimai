@@ -61,6 +61,7 @@ PRIVATE_SAMPLES: {
         while( my $f = readdir $dir1 ) {
             next if $f eq '.';
             next if $f eq '..';
+            next if $f =~ m/[.]json\z/;
 
             my $emailfn = sprintf("%s/%s", $directory1, $f);
             my $lnindex = 0;

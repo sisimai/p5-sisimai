@@ -23,7 +23,7 @@ MAKE_TEST: {
     use Sisimai::Message;
 
     PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
-        my $emailfn = sprintf("./set-of-emails/maildir/bsd/exchange-online-%02d.eml", $n);
+        my $emailfn = sprintf("./set-of-emails/maildir/bsd/rhost-exchange-online-%02d.eml", $n);
         my $mailbox = Sisimai::Mail->new($emailfn);
         my $mtahost = 'example.com.mail.protection.outlook.com';
         next unless defined $mailbox;
@@ -48,7 +48,7 @@ MAKE_TEST: {
                 is $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
-                is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
+                is $e->{'agent'}, 'MTA::Sendmail', '->agent = '.$e->{'agent'};
             }
 
             my $v = Sisimai::Data->make('data' => $p);

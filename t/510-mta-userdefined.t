@@ -42,7 +42,7 @@ MAKE_TEST: {
             ok defined $e->smtpcommand, 'smtpcommand = '.$e->smtpcommand;
 
             is $e->reason, 'userunknown', 'reason = '.$e->reason;
-            is $e->smtpagent, 'Module name', 'smtpagent = '.$e->smtpagent;
+            is $e->smtpagent, 'MTA::UserDefined', 'smtpagent = '.$e->smtpagent;
 
             isa_ok $e->timestamp, 'Sisimai::Time';
             is $e->timestamp->year, 2010, 'timestamp->year = '.$e->timestamp->year;

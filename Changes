@@ -1,5 +1,18 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.20.0
+    - Issue #199 Experimental implementation: New MTA modules for 2 Cloud Email
+      Deliveries, Sisimai::CED::US::AmazonSES and Sisimai::CED::US::SendGrid.
+      These modules can parse JSON formatted bounce objects and can convert to
+      Sisimai::Data object; issue #199.
+    - Format of "smtpagent" in the parsed result has been changed. It includes
+      the category name of MTA/MSP modules like "MTA::Sendmail", "MTA::Exim",
+      and "MSP::US::SendGrid": issue #200.
+    - The Domain part of dummy email address defined in Sisimai::Address module
+      has been changed from "dummy-domain.invalid" to "libsisimai.org.invalid";
+      issue #202.
+    - Sisimai::SMTP->is_softbounce() method has been deleted.
+
 4.19.0  Tue, 18 Oct 2016 14:13:22 +0900 (JST)
     - Remove utf8 flag from JSON string before returning the value at Sisimai->
       dump() method.

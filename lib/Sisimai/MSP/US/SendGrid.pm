@@ -17,13 +17,11 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'SendGrid: http://sendgrid.com/' }
-sub smtpagent   { 'US::SendGrid' }
-
 # Return-Path: <apps@sendgrid.net>
 # X-Mailer: MIME-tools 5.502 (Entity 5.502)
 sub headerlist  { return ['Return-Path', 'X-Mailer'] }
 sub pattern     { return $Re0 }
+sub description { 'SendGrid: http://sendgrid.com/' }
 
 sub scan {
     # Detect an error from SendGrid

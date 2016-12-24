@@ -4,6 +4,9 @@ sub list {
     my $f = [ qw|
         Address.pm
         ARF.pm
+        CED.pm
+            CED/US/AmazonSES.pm
+            CED/US/SendGrid.pm
         Data.pm
             Data/JSON.pm
             Data/YAML.pm
@@ -14,6 +17,8 @@ sub list {
             Mail/Maildir.pm
             Mail/STDIN.pm
         Message.pm
+            Message/Email.pm
+            Message/JSON.pm
         MDA.pm
         MSP.pm
             MSP/DE/EinsUndEins.pm
@@ -67,6 +72,8 @@ sub list {
             MTA/X4.pm
             MTA/X5.pm
         Order.pm
+            Order/Email.pm
+            Order/JSON.pm
         Reason.pm
             Reason/Blocked.pm
             Reason/ContentError.pm
