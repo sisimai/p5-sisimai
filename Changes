@@ -1,6 +1,6 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
-4.20.0
+4.20.0  Sat, 31 Dec 2016
     - Issue #199 Experimental implementation: New MTA modules for 2 Cloud Email
       Deliveries, Sisimai::CED::US::AmazonSES and Sisimai::CED::US::SendGrid.
       These modules can parse JSON formatted bounce objects and can convert to
