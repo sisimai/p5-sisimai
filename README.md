@@ -133,7 +133,7 @@ if( defined $v ) {
     for my $e ( @$v ) { ... }
 }
 ```
-As of present, Only Amazon SES and Sendgrid are supported.
+As of present, Only Amazon SES and SendGrid are supported.
 
 Callback Feature
 ----------------
@@ -204,7 +204,7 @@ and Sisimai. More information about differences are available at
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 8800 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 187700 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 187800 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
