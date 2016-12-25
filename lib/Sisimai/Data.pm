@@ -50,6 +50,11 @@ my $AddrHeader = {
     'addresser' => $RFC822Head->{'addresser'},
     'recipient' => $RFC822Head->{'recipient'},
 };
+my $ActionList = qr/\A(?:failed|delayed|delivered|relayed|expanded)\z/;
+my $ActionHead = {
+    qr/\Afailure\z/ => 'failed',
+    qr/\Aexpired\z/ => 'delayed',
+};
 
 sub new {
     # Constructor of Sisimai::Data
@@ -309,6 +314,16 @@ sub make {
                 if( $p->{'action'} =~ m/\A(.+?) .+/ ) {
                     # Action: expanded (to multi-recipient alias)
                     $p->{'action'} = $1;
+                }
+
+                unless( $p->{'action'} =~ $ActionList ) {
+                    # The value of "action" is not in the following values:
+                    # "failed" / "delayed" / "delivered" / "relayed" / "expanded"
+                    for my $q ( keys %$ActionHead ) {
+                        next unless $p->{'action'} =~ $q;
+                        $p->{'action'} = $ActionHead->{ $q };
+                        last;
+                    }
                 }
             } else {
                 if( $p->{'reason'} eq 'expired' ) {
