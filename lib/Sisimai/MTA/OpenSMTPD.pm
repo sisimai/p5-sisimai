@@ -35,7 +35,7 @@ my $Re0 = {
 #   bounce.c/338:    "    Your message was relayed to these recipients.\n\n";
 #   bounce.c/339:
 my $Re1 = {
-    'begin'  => qr/\A[ \t]*This is the MAILER-DAEMON, please DO NOT REPLY to this e-mail[.]\z/,
+    'begin'  => qr/\A[ \t]*This is the MAILER-DAEMON, please DO NOT REPLY to this e[-]?mail[.]\z/,
     'rfc822' => qr/\A[ \t]*Below is a copy of the original message:\z/,
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
