@@ -126,6 +126,7 @@ my $MTAChildren = {
         '03' => { 's' => qr/\A5[.]0[.]\d+\z/,      'r' => qr/hostunknown/, 'b' => qr/\A0\z/ },
         '04' => { 's' => qr/\A5[.]0[.]\d+\z/,      'r' => qr/networkerror/,'b' => qr/\A1\z/ },
         '05' => { 's' => qr/\A5[.]0[.]\d+\z/,      'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '06' => { 's' => qr/\A5[.]0[.]\d+\z/,      'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'Postfix' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/mailererror/,'b' => qr/\A1\z/ },
@@ -212,6 +213,7 @@ my $MTAChildren = {
         '39' => { 's' => qr/\A4[.]4[.]5\z/, 'r' => qr/systemfull/,    'b' => qr/\A1\z/ },
         '40' => { 's' => qr/\A5[.]2[.]0\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
         '41' => { 's' => qr/\A5[.]0[.]0\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
+        '42' => { 's' => qr/\A5[.]1[.]2\z/, 'r' => qr/hostunknown/,   'b' => qr/\A0\z/ },
     },
     'SurfControl' => {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
@@ -354,6 +356,7 @@ for my $x ( keys %$MTAChildren ) {
                         # Check rhost and lhost are valid hostname or not
                         next unless $e->{ $ee };
                         next if $x =~ m/\A(?:qmail|Exim|Exchange|X4)/;
+                        next unless length $e->{ $ee };
                         like $e->{ $ee }, qr/\A(?:localhost|.+[.].+)\z/, sprintf("[%s] %s->%s = %s", $g, $x, $ee, $e->{ $ee });
                     }
                 }
