@@ -20,7 +20,8 @@ ok $NewInstance->handle->close;
 MAKE_TEST: {
 
     MAILBOX: {
-        my $datatxt = <DATA>; open(STDIN, '>>', $datatxt);
+        my $fakedev = '__SISIMAI_DUMMY_DEVICE_FOR_MAKE_TEST__';
+        my $datatxt = <DATA>; open(STDIN, '>>', $fakedev);
         my $mailbox = $PackageName->new();
         my $emindex = 0;
 
@@ -37,6 +38,7 @@ MAKE_TEST: {
         }
         ok close(STDIN);
         ok $mailbox->handle->close, '->handle->close()';
+        unlink $fakedev if -e $fakedev;
     }
 }
 
