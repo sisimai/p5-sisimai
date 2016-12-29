@@ -130,10 +130,14 @@ sub parse {
     my $haveloaded = {};
     my $hasadapted = undef;
 
-    # Call hook method
     if( ref $hookmethod eq 'CODE' ) {
-        # Execute hook method
-        my $p = { 'headers' => {}, 'message' => $argvs->{'json'} };
+        # Call hook method
+        my $p = {
+            'datasrc' => 'json',
+            'headers' => undef,
+            'message' => undef,
+            'bounces' => $argvs->{'json'},
+        };
         eval { $havecaught = $hookmethod->($p) };
         warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
     }

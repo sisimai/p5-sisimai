@@ -24,8 +24,8 @@ MAKE_TEST: {
     my $tobeloaded = $PackageName->load;
     my $callbackto = sub {
         my $argvs = shift;
-        my $catch = { 'email' => '' };
-        $catch->{'email'} = $argvs->{'message'}->{'email'} || '';
+        my $catch = { 'email' => '', 'type' => 'json' };
+        $catch->{'email'} = $argvs->{'bounces'}->{'email'} || '';
         return $catch;
     };
 
@@ -64,6 +64,7 @@ MAKE_TEST: {
 
     ok keys(%{ $p->header }) == 0;
     isa_ok $p->catch, 'HASH';
+    is $p->catch->{'type'}, 'json';
     ok length $p->catch->{'email'};
 }
 

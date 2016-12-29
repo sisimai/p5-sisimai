@@ -26,7 +26,6 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-
     is $PackageName->sysname, 'bouncehammer', '->sysname = bouncehammer';
     is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
     is $PackageName->version, $Sisimai::VERSION, '->version = '.$Sisimai::VERSION;
@@ -106,26 +105,41 @@ MAKE_TEST: {
                 $callbackto = sub {
                     my $argvs = shift;
                     my $catch = { 
+                        'type' => $argvs->{'datasrc'},
                         'feedbackid' => '',
-                        'account-id'  => '',
-                        'source-arn'  => '',
+                        'account-id' => '',
+                        'source-arn' => '',
                     };
-                    $catch->{'feedbackid'} = $argvs->{'message'}->{'bounce'}->{'feedbackId'} || '';
-                    $catch->{'account-id'} = $argvs->{'message'}->{'mail'}->{'sendingAccountId'} || '';
-                    $catch->{'source-arn'} = $argvs->{'message'}->{'mail'}->{'sourceArn'} || '';
+
+                    if( $argvs->{'datasrc'} eq 'json' ) {
+                        $catch->{'feedbackid'} = $argvs->{'bounces'}->{'bounce'}->{'feedbackId'} || '';
+                        $catch->{'account-id'} = $argvs->{'bounces'}->{'mail'}->{'sendingAccountId'} || '';
+                        $catch->{'source-arn'} = $argvs->{'bounces'}->{'mail'}->{'sourceArn'} || '';
+                    }
                     return $catch;
                 };
-                $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto, 'input' => 'json');
+
+                my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
+                my $jsonparser = JSON->new;
+                my $jsonobject = $jsonparser->decode(<$filehandle>);
+
+                $filehandle->close;
+                $havecaught = $PackageName->make($jsonobject, 'hook' => $callbackto, 'input' => 'json');
+
             } else {
                 $callbackto = sub {
                     my $argvs = shift;
                     my $catch = { 
+                        'type' => $argvs->{'datasrc'},
                         'x-mailer' => '',
                         'return-path' => '',
                     };
-                    $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
-                    $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
-                    $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
+
+                    if( $argvs->{'datasrc'} eq 'email' ) {
+                        $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
+                        $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
+                        $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
+                    }
                     return $catch;
                 };
                 $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto, 'input' => 'email');
@@ -137,12 +151,14 @@ MAKE_TEST: {
 
                 if( $e eq 'jsonapi' ) {
                     # jsonapi
-                    ok defined $ee->catch->{'feedbackid'};
-                    ok defined $ee->catch->{'account-id'};
-                    ok defined $ee->catch->{'source-arn'};
+                    is $ee->catch->{'type'}, 'json';
+                    ok length $ee->catch->{'feedbackid'};
+                    ok length $ee->catch->{'account-id'};
+                    ok length $ee->catch->{'source-arn'};
 
                 } else {
                     # mailbox, maildir
+                    is $ee->catch->{'type'}, 'email';
                     ok defined $ee->catch->{'x-mailer'};
                     if( length $ee->catch->{'x-mailer'} ) {
                         like $ee->catch->{'x-mailer'}, qr/[A-Z]/;
