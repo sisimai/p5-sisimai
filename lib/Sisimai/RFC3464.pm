@@ -387,7 +387,7 @@ sub scan {
             |You[ ]sent[ ]mail[ ]to[ ]
             |Your[ ]message[ ]to[ ]
             )
-            ['"]?[<]?([^\s\n\r@=]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
+            ['"]?[<]?([^\s\n\r@=<>]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
         }xi;
 
         my $b = $dscontents->[-1];
