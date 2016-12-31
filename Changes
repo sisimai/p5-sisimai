@@ -1,5 +1,8 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.20.1  Sat, 31 Dec 2016 22:02:22 +0900 (JST)
+    - Nothing changed. Follow the fixed version of rb-Sisimai(JRuby).
+
 4.20.0  Sat, 31 Dec 2016 13:36:22 +0900 (JST)
     - Issue #199 Experimental implementation: New MTA modules for 2 Cloud Email
       Deliveries, Sisimai::CED::US::AmazonSES and Sisimai::CED::US::SendGrid.
