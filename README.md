@@ -26,6 +26,7 @@
     - [Differences between bounceHammer and Sisimai](#differences-between-bouncehammer-and-sisimai)
     - [Other specification of Sisimai](#other-specification-of-sisimai)
 - [Contributing](#contributing)
+    - [Bug report](#bug-report)
     - [Emails could not be parsed](#emails-could-not-be-parsed)
 - [Other Information](#other-information)
     - [Related sites](#related-sites)
