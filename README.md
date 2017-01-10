@@ -8,7 +8,7 @@
 
 - [**README-JA(日本語)**](README-JA.md)
 - [What is Sisimai](#what-is-sisimai)
-    - [Key Features](#key-features)
+    - [Key features](#key-features)
     - [Command line demo](#command-line-demo)
 - [Setting Up Sisimai](#setting-up-sisimai)
     - [System requirements](#system-requirements)
@@ -45,7 +45,7 @@ __Si__ in Japanese) and MAI (acronym of __Mail Analyzing Interface__).
 
 ![](http://libsisimai.org/static/images/figure/sisimai-overview-1.png)
 
-Key Features
+Key features
 ------------
 * __Convert Bounce Mails to Structured Data__
   * Supported formats are Perl and JSON
@@ -85,22 +85,22 @@ Install
 ### From CPAN
 
 ```shell
-% sudo cpanm Sisimai
+$ sudo cpanm Sisimai
 --> Working on Sisimai
 Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.20.0.tar.gz ... OK
 ...
 1 distribution installed
-% perldoc -l Sisimai
+$ perldoc -l Sisimai
 /usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
 ```
 
 ### From GitHub
 
 ```shell
-% cd /usr/local/src
-% git clone https://github.com/sisimai/p5-Sisimai.git
-% cd ./p5-Sisimai
-% sudo make install-from-local
+$ cd /usr/local/src
+$ git clone https://github.com/sisimai/p5-Sisimai.git
+$ cd ./p5-Sisimai
+$ sudo make install-from-local
 --> Working on .
 Configuring Sisimai-4.20.0 ... OK
 1 distribution installed
@@ -215,7 +215,7 @@ Beginning with Sisimai 4.1.27, `dump()` method is available and you can get pars
 data as JSON using the method.
 
 ```shell
-% perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
+$ perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
 
 Output example
@@ -266,7 +266,6 @@ Other specification of Sisimai
 
 Contributing
 ============
-
 Bug report
 ----------
 Please use the [issue tracker](https://github.com/sisimai/p5-Sisimai/issues)

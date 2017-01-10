@@ -84,21 +84,21 @@ Install
 -------
 ### From CPAN
 ```shell
-% sudo cpanm Sisimai
+$ sudo cpanm Sisimai
 --> Working on Sisimai
 Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.20.0.tar.gz ... OK
 ...
 1 distribution installed
-% perldoc -l Sisimai
+$ perldoc -l Sisimai
 /usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
 ```
 
 ### From GitHub
 ```shell
-% cd /usr/local/src
-% git clone https://github.com/sisimai/p5-Sisimai.git
-% cd ./p5-Sisimai
-% sudo make install-from-local
+$ cd /usr/local/src
+$ git clone https://github.com/sisimai/p5-Sisimai.git
+$ cd ./p5-Sisimai
+$ sudo make install-from-local
 --> Working on .
 Configuring Sisimai-4.20.0 ... OK
 1 distribution installed
@@ -210,7 +210,7 @@ Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナ�
 が得られます。
 
 ```shell
-% perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
+$ perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
 
 Output example
