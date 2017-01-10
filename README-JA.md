@@ -1,20 +1,51 @@
+![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
+
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-Sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
-[![Perl](https://img.shields.io/badge/perl-v5.10--v5.22-blue.svg)](https://www.perl.org)
+[![Perl](https://img.shields.io/badge/perl-v5.10--v5.24-blue.svg)](https://www.perl.org)
 [![CPAN](https://img.shields.io/badge/cpan-v4.20.1-blue.svg)](https://metacpan.org/pod/Sisimai)
 
-![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
+- [**README(English)**](README.md)
+- [シシマイ? | What is Sisimai](#what-is-sisimai)
+    - [主な特徴的機能 | Key features](#key-features)
+    - [コマンドラインでのデモ | command line demo](#command-line-demo)
+- [Sisimaiを使う準備 | Setting Up Sisimai](#setting-up-sisimai)
+    - [動作環境 | System requirements](#system-requirements)
+    - [インストール | Install](#install)
+        - [CPANから | From CPAN](#from-cpan)
+        - [GitHubから | From GitHub](#from-github)
+- [使い方 | Usage](#usage)
+    - [基本的な使い方 | Basic usage](#basic-usage)
+    - [解析結果をJSONで得る | Convert to JSON](#convert-to-json)
+    - [バウンスオブジェクトを読む | Read bounce object](#read-bounce-object)
+    - [コールバック機能 | Callback feature](#callback-feature)
+    - [ワンライナー | One-Liner](#one-liner)
+    - [出力例 | Output example](#output-example)
+- [シシマイの仕様 | Sisimai Specification](#sisimai-specification)
+    - [bounceHammerとSisimaiの違い | Differences](#differences-between-bouncehammer-and-sisimai)
+    - [その他の仕様 | Other specification of Sisimai](#other-spec-of-sisimai)
+- [Contributing](#contributing)
+    - [バグ報告 | Bug report](#bug-report)
+    - [解析できないメール | Emails could not be parsed](#emails-could-not-be-parsed)
+- [その他の情報 | Other Information](#other-information)
+    - [関連サイト | Related sites](#related-sites)
+    - [参考情報 | See also](#see-also)
+- [作者 | Author](#author)
+- [著作権 | Copyright](#copyright)
+- [ライセンス | License](#license)
 
-シシマイ?
-=========
+What is sisimai
+===============
 Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析結果をデータ構造に
 変換するインターフェイスを提供するPerlモジュールです。
 __シシマイ__はbounceHammer version 4として開発していたものであり、Version 4なので
 __シ(Si)__から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名前になりました。
 
-主な特徴的機能
------------------------------
+![](http://libsisimai.org/static/images/figure/sisimai-overview-1.png)
+
+Key features
+------------
 * __エラーメールをデータ構造に変換__
   * Perlのデータ形式とJSONに対応
 * __インストールも使用も簡単__
@@ -30,11 +61,17 @@ __シ(Si)__から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名�
 * __bounceHammer 2.7.13p3よりも高速に解析__
   * 1.7倍程高速
 
+Command line demo
+-----------------
+次の画像のように、Perl版シシマイ(p5-Sisimai)もRuby版シシマイ(rb-Sisimai)も、
+コマンドラインから簡単にバウンスメールを解析することができます。
+![](http://libsisimai.org/static/images/demo/sisimai-dump-01.gif)
 
-シシマイを使う準備
+Setting Up Sisimai
 ==================
-動作環境
---------
+System requirements
+-------------------
+
 Sisimaiの動作環境についての詳細は
 [Sisimai | シシマイを使ってみる](http://libsisimai.org/ja/start)をご覧ください。
 
@@ -43,10 +80,9 @@ Sisimaiの動作環境についての詳細は
 * [__JSON__](https://metacpan.org/pod/JSON)
 
 
-インストール
-------------
-### CPANから
-
+Install
+-------
+### From CPAN
 ```shell
 % sudo cpanm Sisimai
 --> Working on Sisimai
@@ -57,8 +93,7 @@ Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.20.0.tar.gz ... OK
 /usr/local/lib/perl5/site_perl/5.20.0/Sisimai.pm
 ```
 
-### GitHubから
-
+### From GitHub
 ```shell
 % cd /usr/local/src
 % git clone https://github.com/sisimai/p5-Sisimai.git
@@ -69,10 +104,10 @@ Configuring Sisimai-4.20.0 ... OK
 1 distribution installed
 ```
 
-使い方
-======
-基本的な使い方
---------------
+Usage
+=====
+Basic usage
+-----------
 下記のようにSisimaiの`make()`メソッドをmboxかMaildirのPATHを引数にして実行すると
 解析結果が配列リファレンスで返ってきます。
 
@@ -103,7 +138,14 @@ if( defined $v ) {
         print $e->dump('json');         # JSON formatted bounce data
     }
 }
+```
 
+Convert to JSON
+---------------
+下記のようにSisimaiの`dump()`メソッドをmboxかMaildirのPATHを引数にして実行すると
+解析結果が文字列(JSON)で返ってきます。
+
+```perl
 # Get JSON string from parsed mailbox or Maildir/
 my $j = Sisimai->dump('/path/to/mbox'); # or path to Maildir/
                                         # dump() is added in v4.1.27
@@ -113,8 +155,8 @@ print $j;                               # parsed data as JSON
 my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 ```
 
-バウンスオブジェクト(JSON)を読む
---------------------------------
+Read bounce object
+------------------
 メール配信クラウドからAPIで取得したバウンスオブジェクト(JSON)を読んで解析する
 場合は、次のようなコードを書いてください。この機能はSisimai v4.20.0で実装され
 ました。
@@ -134,7 +176,7 @@ if( defined $v ) {
 ```
 現時点ではAmazon SESとSendGridのみをサポートしています。
 
-コールバック機能
+Callback feature
 ----------------
 Sisimai 4.19.0から、`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを
 引数`hook`に指定できるようになりました。`hook`に指定したサブルーチンによって処理
@@ -162,8 +204,8 @@ print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
 [Sisimai | 解析方法 - コールバック機能](http://libsisimai.org/ja/usage/#callback)
 をご覧ください。
 
-ワンライナーで
---------------
+One-Liner
+---------
 Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナーでJSON化した解析結果
 が得られます。
 
@@ -171,16 +213,16 @@ Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナ�
 % perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
 
-解析結果の例(JSON)
-------------------
+Output example
+--------------
 ```json
 [{"recipient": "kijitora@example.jp", "addresser": "shironeko@1jo.example.org", "feedbacktype": "", "action": "failed", "subject": "Nyaaaaan", "smtpcommand": "DATA", "diagnosticcode": "550 Unknown user kijitora@example.jp", "listid": "", "destination": "example.jp", "smtpagent": "Courier", "lhost": "1jo.example.org", "deliverystatus": "5.0.0", "timestamp": 1291954879, "messageid": "201012100421.oBA4LJFU042012@1jo.example.org", "diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "filtered", "token": "ce999a4c869e3f5e4d8a77b2e310b23960fb32ab", "alias": "", "senderdomain": "1jo.example.org", "rhost": "mfsmax.example.jp"}, {"diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "userunknown", "timestamp": 1381900535, "messageid": "E1C50F1B-1C83-4820-BC36-AC6FBFBE8568@example.org", "token": "9fe754876e9133aae5d20f0fd8dd7f05b4e9d9f0", "alias": "", "senderdomain": "example.org", "rhost": "mx.bouncehammer.jp", "action": "failed", "addresser": "kijitora@example.org", "recipient": "userunknown@bouncehammer.jp", "feedbacktype": "", "smtpcommand": "DATA", "subject": "バウンスメールのテスト(日本語)", "destination": "bouncehammer.jp", "listid": "", "diagnosticcode": "550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown", "deliverystatus": "5.1.1", "lhost": "p0000-ipbfpfx00kyoto.kyoto.example.co.jp", "smtpagent": "Sendmail"}]
 ```
 
-シシマイの仕様
-==============
-新旧の違い(bounceHammerとSisimai)
----------------------------------
+Sisimai Specification
+=====================
+Differences between bounceHammer and Sisimai
+--------------------------------------------
 bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違いがあります。
 違いの詳細については[Sisimai | 違いの一覧](http://libsisimai.org/ja/diff)をご覧
 ください。
@@ -210,158 +252,39 @@ bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違い
 1. DBIまたは好きなORMを使って自由に実装してください
 2. [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-Sisimai/blob/master/ANALYTICAL-PRECISION)を参照
 
-
-MTA/MSPモジュール一覧
+Other spec of Sisimai
 ---------------------
-下記はSisimaiに含まれてるMTA/MSP(メールサービスプロバイダ)モジュールの一覧です。
-より詳しい情報は[Sisimai | 解析エンジン](http://libsisimai.org/ja/engine)を
-ご覧ください。
+- [**解析モジュールの一覧**](http://libsisimai.org/ja/engine)
+- [**バウンス理由の一覧**](http://libsisimai.org/ja/reason)
+- [**Sisimai::Dataのデータ構造**](http://libsisimai.org/ja/data)
 
-| Module Name(Sisimai::)   | Description                                       |
-|--------------------------|---------------------------------------------------|
-| MTA::Activehunter        | TransWARE Active!hunter                           |
-| MTA::ApacheJames         | Java Apache Mail Enterprise Server(> v4.1.26)     |
-| MTA::Courier             | Courier MTA                                       |
-| MTA::Domino              | IBM Domino Server                                 |
-| MTA::Exchange2003        | Microsoft Exchange Server 2003                    |
-| MTA::Exchange2007        | Microsoft Exchange Server 2007 (> v4.18.0)        |
-| MTA::Exim                | Exim                                              |
-| MTA::IMailServer         | IPSWITCH IMail Server                             |
-| MTA::InterScanMSS        | Trend Micro InterScan Messaging Security Suite    |
-| MTA::MXLogic             | McAfee SaaS                                       |
-| MTA::MailFoundry         | MailFoundry                                       |
-| MTA::MailMarshalSMTP     | Trustwave Secure Email Gateway                    |
-| MTA::McAfee              | McAfee Email Appliance                            |
-| MTA::MessagingServer     | Oracle Communications Messaging Server            |
-| MTA::mFILTER             | Digital Arts m-FILTER                             |
-| MTA::Notes               | Lotus Notes                                       |
-| MTA::OpenSMTPD           | OpenSMTPD                                         |
-| MTA::Postfix             | Postfix                                           |
-| MTA::qmail               | qmail                                             |
-| MTA::Sendmail            | V8Sendmail: /usr/sbin/sendmail                    |
-| MTA::SurfControl         | WebSense SurfControl                              |
-| MTA::V5sendmail          | Sendmail version 5                                |
-| MTA::X1                  | Unknown MTA #1                                    |
-| MTA::X2                  | Unknown MTA #2                                    |
-| MTA::X3                  | Unknown MTA #3                                    |
-| MTA::X4                  | Unknown MTA #4 qmail clones(> v4.1.23)            |
-| MTA::X5                  | Unknown MTA #5 (> v4.13.0 )                       |
-| MSP::DE::EinsUndEins     | 1&1: http://www.1and1.de                          |
-| MSP::DE::GMX             | GMX: http://www.gmx.net                           |
-| MSP::JP::Biglobe         | BIGLOBE: http://www.biglobe.ne.jp                 |
-| MSP::JP::EZweb           | au EZweb: http://www.au.kddi.com/mobile/          |
-| MSP::JP::KDDI            | au by KDDI: http://www.au.kddi.com                |
-| MSP::RU::MailRu          | @mail.ru: https://mail.ru                         |
-| MSP::RU::Yandex          | Yandex.Mail: http://www.yandex.ru                 |
-| MSP::UK::MessageLabs     | Symantec.cloud http://www.messagelabs.com         |
-| MSP::US::AmazonSES       | AmazonSES(Sending): http://aws.amazon.com/ses/    |
-| MSP::US::AmazonWorkMail  | Amazon WorkMail: https://aws.amazon.com/workmail/ |
-| MSP::US::Aol             | Aol Mail: http://www.aol.com                      |
-| MSP::US::Bigfoot         | Bigfoot: http://www.bigfoot.com                   |
-| MSP::US::Facebook        | Facebook: https://www.facebook.com                |
-| MSP::US::Google          | Google Gmail: https://mail.google.com             |
-| MSP::US::Office365       | Microsoft Office 365: http://office.microsoft.com/|
-| MSP::US::Outlook         | Microsoft Outlook.com: https://www.outlook.com/   |
-| MSP::US::ReceivingSES    | AmazonSES(Receiving): http://aws.amazon.com/ses/  |
-| MSP::US::SendGrid        | SendGrid: http://sendgrid.com/                    |
-| MSP::US::Verizon         | Verizon Wireless: http://www.verizonwireless.com  |
-| MSP::US::Yahoo           | Yahoo! MAIL: https://www.yahoo.com                |
-| MSP::US::Zoho            | Zoho Mail: https://www.zoho.com                   |
-| CED::US::AmazonSES       | AmazonSES(JSON): http://aws.amazon.com/ses/       |
-| CED::US::SendGrid        | SendGrid(JSON): http://sendgrid.com/              |
-| ARF                      | Abuse Feedback Reporting Format                   |
-| RFC3464                  | Fallback Module for MTAs                          |
-| RFC3834                  | Detector for auto replied message (> v4.1.28)     |
-
-バウンス理由の一覧
-------------------
-Sisimaiは下記のエラー27種を検出します。バウンス理由についてのより詳細な情報は
-[Sisimai | バウンス理由の一覧](http://libsisimai.org/ja/reason)をご覧ください。
-
-| バウンス理由   | 理由の説明                                 | 実装バージョン |
-|----------------|--------------------------------------------|----------------|
-| Blocked        | IPアドレスやホスト名による拒否             |                |
-| ContentError   | 不正な形式のヘッダまたはメール             |                |
-| Delivered[1]   | 正常に配信された                           | v4.16.0        |
-| ExceedLimit    | メールサイズの超過                         |                |
-| Expired        | 配送時間切れ                               |                |
-| Feedback       | 元メールへの苦情によるバウンス(FBL形式の)  |                |
-| Filtered       | DATAコマンド以降で拒否された               |                |
-| HasMoved       | 宛先メールアドレスは移動した               |                |
-| HostUnknown    | 宛先ホスト名が存在しない                   |                |
-| MailboxFull    | メールボックスが一杯                       |                |
-| MailerError    | メールプログラムのエラー                   |                |
-| MesgTooBig     | メールが大き過ぎる                         |                |
-| NetworkError   | DNS等ネットワーク関係のエラー              |                |
-| NotAccept      | 宛先ホストはメールを受けとらない           |                |
-| OnHold         | エラー理由の特定は保留                     |                |
-| Rejected       | エンベロープFromで拒否された               |                |
-| NoRelaying     | リレーの拒否                               |                |
-| SecurityError  | ウィルスの検出または認証失敗               |                |
-| SpamDetected   | メールはスパムとして判定された             |                |
-| Suspend        | 宛先アカウントは一時的に停止中             |                |
-| SyntaxError    | SMTPの文法エラー                           | v4.17.0        |
-| SystemError    | 宛先サーバでのOSレベルのエラー             |                |
-| SystemFull     | 宛先サーバのディスクが一杯                 |                |
-| TooManyConn    | 接続制限数を超過した                       |                |
-| UserUnknown    | 宛先メールアドレスは存在しない             |                |
-| Undefined      | バウンスした理由は特定出来ず               |                |
-| Vacation       | 自動応答メッセージ                         | v4.1.28        |
-
-1. このバウンス理由は標準では解析結果に含まれません
-
-解析後のデータ構造
-------------------
-下記の表は解析後のバウンスメールの構造(`Sisimai::Data`)です。データ構造のより詳細な情報は
-[Sisimai | Sisimai::Dataのデータ構造](http://libsisimai.org/ja/data)をご覧ください。
-
-| アクセサ名     | 値の説明                                                    |
-|----------------|-------------------------------------------------------------|
-| action         | Action:ヘッダの値                                           |
-| addresser      | 送信者のアドレス                                            |
-| alias          | 受信者アドレスのエイリアス                                  |
-| catch          | 引数に指定したフックメソッドが返すデータ                    |
-| destination    | "recipient"のドメイン部分                                   |
-| deliverystatus | 配信状態(DSN)の値(例: 5.1.1, 4.4.7)                         |
-| diagnosticcode | エラーメッセージ                                            |
-| diagnostictype | エラーメッセージの種別                                      |
-| feedbacktype   | Feedback-Typeのフィールド                                   |
-| lhost          | 送信側MTAのホスト名                                         |
-| listid         | 本メールのList-Idヘッダの値                                 |
-| messageid      | 元メールのMessage-Idヘッダの値                              |
-| reason         | 検出したバウンスした理由                                    |
-| recipient      | バウンスした受信者のアドレス                                |
-| replycode      | SMTP応答コード(例: 550, 421)                                |
-| rhost          | 受信側MTAのホスト名                                         |
-| senderdomain   | "addresser"のドメイン部分                                   |
-| softbounce     | ソフトバウンスであるかどうか(0=hard,1=soft,-1=不明)         |
-| smtpagent      | 解析に使用したMTA/MSPのモジュール名(Sisimai::MTA::,MSP::)   |
-| smtpcommand    | セッション中最後のSMTPコマンド                              |
-| subject        | 元メールのSubjectヘッダの値(UTF-8)                          |
-| timestamp      | バウンスした日時(UNIXマシンタイム)                          |
-| timezoneoffset | タイムゾーンの時差(例:+0900)                                |
-| token          | 送信者と受信者・時刻から作られるハッシュ値                  |
-
-解析出来ないメール
-------------------
-解析出来ないバウンスメールは`set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet`
-ディレクトリにはいっています。もしもSisimaiで解析出来ないメールを見つけたら、
-このディレクトリに追加してPull-Requestを送ってください。
-
-
-その他の情報
+Contributing
 ============
-関連サイト
+Bug report
 ----------
+もしもSisimaiにバグを発見した場合は[Issues](https://github.com/sisimai/p5-Sisimai/issues)
+にて連絡をいただけると助かります。
+
+Emails could not be parsed
+--------------------------
+Sisimaiで解析できないバウンスメールは
+[set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet](https://github.com/sisimai/set-of-emails/tree/master/to-be-debugged-because/sisimai-cannot-parse-yet)リポジトリに追加してPull-Requestを送ってください。
+
+
+Other Information
+=================
+Related sites
+-------------
 * __@libsisimai__ | [Sisimai on Twitter (@libsisimai)](https://twitter.com/libsisimai)
 * __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](http://libsisimai.org/)
 * __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 * __CPAN Testers Reports__ | [CPAN Testers Reports: Reports for Sisimai](http://cpantesters.org/distro/S/Sisimai.html)
 * __Ruby verson__ | [Ruby version of Sisimai](https://github.com/sisimai/rb-Sisimai)
+* __Fixtures__ | [set-of-emails - Sample emails for "make test"](https://github.com/sisimai/set-of-emails)
 * __bounceHammer.JP__ | [bounceHammer will be EOL on February 29, 2016](http://bouncehammer.jp/)
 
-参考情報
+See also
 --------
 * [README.md - README.md in English](https://github.com/sisimai/p5-Sisimai/blob/master/README.md)
 * [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
@@ -370,15 +293,15 @@ Sisimaiは下記のエラー27種を検出します。バウンス理由につ�
 * [RFC5321 - Simple Mail Transfer Protocol](https://tools.ietf.org/html/rfc5321)
 * [RFC5322 - Internet Message Format](https://tools.ietf.org/html/rfc5322)
 
-作者
-----
+Author
+------
 [@azumakuniyuki](https://twitter.com/azumakuniyuki)
 
-著作権
-------
-Copyright (C) 2014-2016 azumakuniyuki, All Rights Reserved.
+Copyright
+---------
+Copyright (C) 2014-2017 azumakuniyuki, All Rights Reserved.
 
-ライセンス
-----------
+License
+-------
 This software is distributed under The BSD 2-Clause License.
 
