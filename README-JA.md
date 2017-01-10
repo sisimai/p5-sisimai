@@ -10,7 +10,7 @@
 - [シシマイ? | What is Sisimai](#what-is-sisimai)
     - [主な特徴的機能 | Key features](#key-features)
     - [コマンドラインでのデモ | command line demo](#command-line-demo)
-- [Sisimaiを使う準備 | Setting Up Sisimai](#setting-up-sisimai)
+- [シシマイを使う準備 | Setting Up Sisimai](#setting-up-sisimai)
     - [動作環境 | System requirements](#system-requirements)
     - [インストール | Install](#install)
         - [CPANから | From CPAN](#from-cpan)
@@ -24,7 +24,7 @@
     - [出力例 | Output example](#output-example)
 - [シシマイの仕様 | Sisimai Specification](#sisimai-specification)
     - [bounceHammerとSisimaiの違い | Differences](#differences-between-bouncehammer-and-sisimai)
-    - [その他の仕様 | Other specification of Sisimai](#other-spec-of-sisimai)
+    - [その他の仕様詳細 | Other specification of Sisimai](#other-spec-of-sisimai)
 - [Contributing](#contributing)
     - [バグ報告 | Bug report](#bug-report)
     - [解析できないメール | Emails could not be parsed](#emails-could-not-be-parsed)
@@ -36,7 +36,7 @@
 - [ライセンス | License](#license)
 
 What is sisimai
-===============
+===============================================================================
 Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析結果をデータ構造に
 変換するインターフェイスを提供するPerlモジュールです。
 __シシマイ__はbounceHammer version 4として開発していたものであり、Version 4なので
@@ -45,9 +45,9 @@ __シ(Si)__から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名�
 ![](http://libsisimai.org/static/images/figure/sisimai-overview-1.png)
 
 Key features
-------------
+-------------------------------------------------------------------------------
 * __エラーメールをデータ構造に変換__
-  * Perlのデータ形式とJSONに対応
+  * Perlのデータ形式(HashとArray)とJSON(文字列)に対応
 * __インストールも使用も簡単__
   * cpanm
   * git clone & make
@@ -62,17 +62,18 @@ Key features
   * 1.7倍程高速
 
 Command line demo
------------------
+-------------------------------------------------------------------------------
 次の画像のように、Perl版シシマイ(p5-Sisimai)もRuby版シシマイ(rb-Sisimai)も、
 コマンドラインから簡単にバウンスメールを解析することができます。
 ![](http://libsisimai.org/static/images/demo/sisimai-dump-01.gif)
 
 Setting Up Sisimai
-==================
-System requirements
--------------------
+===============================================================================
 
-Sisimaiの動作環境についての詳細は
+System requirements
+-------------------------------------------------------------------------------
+
+シシマイの動作環境についての詳細は
 [Sisimai | シシマイを使ってみる](http://libsisimai.org/ja/start)をご覧ください。
 
 * [Perl 5.10.1 or later](http://www.perl.org/)
@@ -81,7 +82,7 @@ Sisimaiの動作環境についての詳細は
 
 
 Install
--------
+-------------------------------------------------------------------------------
 ### From CPAN
 ```shell
 $ sudo cpanm Sisimai
@@ -105,9 +106,10 @@ Configuring Sisimai-4.20.0 ... OK
 ```
 
 Usage
-=====
+===============================================================================
+
 Basic usage
------------
+-------------------------------------------------------------------------------
 下記のようにSisimaiの`make()`メソッドをmboxかMaildirのPATHを引数にして実行すると
 解析結果が配列リファレンスで返ってきます。
 
@@ -141,7 +143,7 @@ if( defined $v ) {
 ```
 
 Convert to JSON
----------------
+-------------------------------------------------------------------------------
 下記のようにSisimaiの`dump()`メソッドをmboxかMaildirのPATHを引数にして実行すると
 解析結果が文字列(JSON)で返ってきます。
 
@@ -156,7 +158,7 @@ my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 ```
 
 Read bounce object
-------------------
+-------------------------------------------------------------------------------
 メール配信クラウドからAPIで取得したバウンスオブジェクト(JSON)を読んで解析する
 場合は、次のようなコードを書いてください。この機能はSisimai v4.20.0で実装され
 ました。
@@ -177,7 +179,7 @@ if( defined $v ) {
 現時点ではAmazon SESとSendGridのみをサポートしています。
 
 Callback feature
-----------------
+-------------------------------------------------------------------------------
 Sisimai 4.19.0から、`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを
 引数`hook`に指定できるようになりました。`hook`に指定したサブルーチンによって処理
 された結果は`Sisimai::Data->catch`メソッドで得ることができます。
@@ -205,7 +207,7 @@ print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
 をご覧ください。
 
 One-Liner
----------
+-------------------------------------------------------------------------------
 Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナーでJSON化した解析結果
 が得られます。
 
@@ -214,16 +216,17 @@ $ perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 ```
 
 Output example
---------------
+-------------------------------------------------------------------------------
 ```json
 [{"recipient": "kijitora@example.jp", "addresser": "shironeko@1jo.example.org", "feedbacktype": "", "action": "failed", "subject": "Nyaaaaan", "smtpcommand": "DATA", "diagnosticcode": "550 Unknown user kijitora@example.jp", "listid": "", "destination": "example.jp", "smtpagent": "Courier", "lhost": "1jo.example.org", "deliverystatus": "5.0.0", "timestamp": 1291954879, "messageid": "201012100421.oBA4LJFU042012@1jo.example.org", "diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "filtered", "token": "ce999a4c869e3f5e4d8a77b2e310b23960fb32ab", "alias": "", "senderdomain": "1jo.example.org", "rhost": "mfsmax.example.jp"}, {"diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "userunknown", "timestamp": 1381900535, "messageid": "E1C50F1B-1C83-4820-BC36-AC6FBFBE8568@example.org", "token": "9fe754876e9133aae5d20f0fd8dd7f05b4e9d9f0", "alias": "", "senderdomain": "example.org", "rhost": "mx.bouncehammer.jp", "action": "failed", "addresser": "kijitora@example.org", "recipient": "userunknown@bouncehammer.jp", "feedbacktype": "", "smtpcommand": "DATA", "subject": "バウンスメールのテスト(日本語)", "destination": "bouncehammer.jp", "listid": "", "diagnosticcode": "550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown", "deliverystatus": "5.1.1", "lhost": "p0000-ipbfpfx00kyoto.kyoto.example.co.jp", "smtpagent": "Sendmail"}]
 ```
 
 Sisimai Specification
-=====================
+===============================================================================
+
 Differences between bounceHammer and Sisimai
---------------------------------------------
-bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違いがあります。
+-------------------------------------------------------------------------------
+bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあります。
 違いの詳細については[Sisimai | 違いの一覧](http://libsisimai.org/ja/diff)をご覧
 ください。
 
@@ -253,28 +256,30 @@ bounceHammer version 2.7.13p3とSisimai(シシマイ)は下記のような違い
 2. [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-Sisimai/blob/master/ANALYTICAL-PRECISION)を参照
 
 Other spec of Sisimai
----------------------
+-------------------------------------------------------------------------------
 - [**解析モジュールの一覧**](http://libsisimai.org/ja/engine)
 - [**バウンス理由の一覧**](http://libsisimai.org/ja/reason)
 - [**Sisimai::Dataのデータ構造**](http://libsisimai.org/ja/data)
 
 Contributing
-============
+===============================================================================
+
 Bug report
-----------
+-------------------------------------------------------------------------------
 もしもSisimaiにバグを発見した場合は[Issues](https://github.com/sisimai/p5-Sisimai/issues)
 にて連絡をいただけると助かります。
 
 Emails could not be parsed
---------------------------
+-------------------------------------------------------------------------------
 Sisimaiで解析できないバウンスメールは
 [set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet](https://github.com/sisimai/set-of-emails/tree/master/to-be-debugged-because/sisimai-cannot-parse-yet)リポジトリに追加してPull-Requestを送ってください。
 
 
 Other Information
-=================
+===============================================================================
+
 Related sites
--------------
+-------------------------------------------------------------------------------
 * __@libsisimai__ | [Sisimai on Twitter (@libsisimai)](https://twitter.com/libsisimai)
 * __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](http://libsisimai.org/)
 * __Sisimai Blog__ | [blog.libsisimai.org](http://blog.libsisimai.org/)
@@ -287,7 +292,7 @@ Related sites
 * __bounceHammer.JP__ | [bounceHammer will be EOL on February 29, 2016](http://bouncehammer.jp/)
 
 See also
---------
+-------------------------------------------------------------------------------
 * [README.md - README.md in English](https://github.com/sisimai/p5-Sisimai/blob/master/README.md)
 * [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
 * [RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
@@ -296,14 +301,14 @@ See also
 * [RFC5322 - Internet Message Format](https://tools.ietf.org/html/rfc5322)
 
 Author
-------
+===============================================================================
 [@azumakuniyuki](https://twitter.com/azumakuniyuki)
 
 Copyright
----------
+===============================================================================
 Copyright (C) 2014-2017 azumakuniyuki, All Rights Reserved.
 
 License
--------
+===============================================================================
 This software is distributed under The BSD 2-Clause License.
 
