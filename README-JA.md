@@ -52,7 +52,7 @@ Key features
   * cpanm
   * git clone & make
 * __高い解析精度__
-  * 解析精度はbounceHammerの二倍
+  * 解析精度はbounceHammerの2倍
   * 27種類のMTAに対応
   * 21種類の著名なMSPに対応
   * 2種類の著名なメール配信クラウドに対応(JSON)
@@ -180,9 +180,10 @@ if( defined $v ) {
 
 Callback feature
 -------------------------------------------------------------------------------
-Sisimai 4.19.0から、`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを
-引数`hook`に指定できるようになりました。`hook`に指定したサブルーチンによって処理
-された結果は`Sisimai::Data->catch`メソッドで得ることができます。
+Sisimai 4.19.0から`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを
+引数`hook`に指定できるコールバック機能が実装されました。
+`hook`に指定したサブルーチンによって処理された結果は`Sisimai::Data->catch`
+メソッドで得ることができます。
 
 ```perl
 #! /usr/bin/env perl
@@ -208,8 +209,8 @@ print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
 
 One-Liner
 -------------------------------------------------------------------------------
-Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナーでJSON化した解析結果
-が得られます。
+Sisimai 4.1.27から登場した`dump()`メソッドを使うとワンライナーでJSON化した
+解析結果が得られます。
 
 ```shell
 $ perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
@@ -227,8 +228,8 @@ Sisimai Specification
 Differences between bounceHammer and Sisimai
 -------------------------------------------------------------------------------
 bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあります。
-違いの詳細については[Sisimai | 違いの一覧](http://libsisimai.org/ja/diff)をご覧
-ください。
+違いの詳細については[Sisimai | 違いの一覧](http://libsisimai.org/ja/diff)
+をご覧ください。
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
