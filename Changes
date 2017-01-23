@@ -1,5 +1,9 @@
 Revision history for Sisimai/formerly known as bounceHammer version 4
 
+4.20.2
+    - Pull-Request #207 Add some error message patterns from Amazon SES SMTP
+      endpoint.
+
 4.20.1  Sat, 31 Dec 2016 22:02:22 +0900 (JST)
     - Nothing changed. Follow the fixed version of rb-Sisimai(JRuby).
 
