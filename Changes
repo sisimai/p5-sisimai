@@ -3,6 +3,9 @@ Revision history for Sisimai/formerly known as bounceHammer version 4
 4.20.2
     - Pull-Request #207 Add some error message patterns from Amazon SES SMTP
       endpoint.
+    - Register sample email "rfc3834-06.eml" based on an email that is uploaded
+      from @rdeavila at https://github.com/sisimai/rb-Sisimai/issues/65 to test
+      a vacation message.
 
 4.20.1  Sat, 31 Dec 2016 22:02:22 +0900 (JST)
     - Nothing changed. Follow the fixed version of rb-Sisimai(JRuby).
