@@ -46,6 +46,7 @@ my $MTARelative = {
         '03' => { 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
         '04' => { 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
         '05' => { 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
+        '06' => { 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
     },
     'ARF' => {
         '01' => { 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/, 'b' => qr/\A-1\z/ },
