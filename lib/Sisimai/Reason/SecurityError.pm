@@ -14,8 +14,12 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
-         authentication[ ](?:
-             failed;[ ]server[ ].+[ ]said:  # Postfix
+         Account[ ]not[ ]subscribed[ ]to[ ]SES
+        |authentication[ ](?:
+             Credentials Invalid
+            |failure
+            |failed;[ ]server[ ].+[ ]said:  # Postfix
+            |required
             |turned[ ]on[ ]in[ ]your[ ]email[ ]client
             )
         |\d+[ ]denied[ ]\[[a-z]+\][ ].+[(]Mode:[ ].+[)]
@@ -38,6 +42,7 @@ sub match {
         |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]
             virus[ ]or[ ]spam[ ]content
         |TLS[ ]required[ ]but[ ]not[ ]supported # SendGrid:the recipient mailserver does not support TLS or have a valid certificate
+        |User[ ].+[ ]is[ ]not[ ]authorized[ ]to[ ]perform[ ]ses:SendRawEmail[ ]on[ ]resource
         |you[ ]are[ ]not[ ]authorized[ ]to[ ]send[ ]mail,[ ]authentication[ ]is[ ]required
         |You[ ]have[ ]exceeded[ ]the[ ]the[ ]allowable[ ]number[ ]of[ ]posts[ ]
             without[ ]solving[ ]a[ ]captcha
