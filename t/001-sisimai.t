@@ -133,16 +133,22 @@ MAKE_TEST: {
                         'type' => $argvs->{'datasrc'},
                         'x-mailer' => '',
                         'return-path' => '',
+                        'x-virus-scanned' => '',
                     };
 
                     if( $argvs->{'datasrc'} eq 'email' ) {
                         $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
+                        $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '';
                         $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
                         $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                     }
                     return $catch;
                 };
-                $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto, 'input' => 'email');
+                $havecaught = $PackageName->make($SampleEmail->{ $e },
+                    'hook'  => $callbackto,
+                    'input' => 'email',
+                    'field' => ['X-Virus-Scanned'],
+                );
             }
 
             for my $ee ( @$havecaught ) {
@@ -172,6 +178,11 @@ MAKE_TEST: {
                     ok defined $ee->catch->{'from'};
                     if( length $ee->catch->{'from'} ) {
                         like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|<?mailer-daemon>?)/i;
+                    }
+
+                    ok defined $ee->catch->{'x-virus-scanned'};
+                    if( length $ee->catch->{'x-virus-scanned'} ) {
+                        like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam)/i;
                     }
                 }
             }

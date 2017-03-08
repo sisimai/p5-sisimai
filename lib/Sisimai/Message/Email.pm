@@ -42,7 +42,8 @@ sub make {
     my $email = $argvs->{'data'};
 
     my $methodargv = {};
-    my $hookmethod = $argvs->{'hook'} || undef;
+    my $hookmethod = $argvs->{'hook'}  || undef;
+    my $headerlist = $argvs->{'field'} || [];
     my $processing = {
         'from'   => '',     # From_ line
         'header' => {},     # Email header
@@ -64,7 +65,7 @@ sub make {
     # 2. Convert email headers from text to hash reference
     $TryOnFirst = [];
     $processing->{'from'}   = $aftersplit->{'from'};
-    $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'});
+    $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'}, $headerlist);
 
     # 3. Check headers for detecting MTA/MSP module
     unless( scalar @$TryOnFirst ) {
@@ -198,12 +199,14 @@ sub headers {
     # @return        [Hash]          Structured email header data
     my $class = shift;
     my $heads = shift || return undef;
+    my $field = shift || [];
 
     my $currheader = '';
     my $allheaders = {};
     my $structured = {};
 
     map { $allheaders->{ $_ } = 1 } (@HeaderList, @RFC3834Set, keys %$ExtHeaders);
+    map { $allheaders->{ lc $_ } = 1 } @$field if scalar @$field;
     map { $structured->{ $_ } = undef } @HeaderList;
     map { $structured->{ lc $_ } = [] } keys %$MultiHeads;
 
@@ -213,7 +216,6 @@ sub headers {
             # split the line into a header name and a header content
             my $lhs = $1;
             my $rhs = $2;
-
             $currheader = lc $lhs;
             next unless exists $allheaders->{ $currheader };
 

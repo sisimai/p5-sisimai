@@ -47,6 +47,7 @@ sub make {
     my $methodargv = {};
     my $delivered1 = { 'delivered' => $argv1->{'delivered'} // 0 };
     my $hookmethod = $argv1->{'hook'} || undef;
+    my $headerlist = $argv1->{'field'} || [];
     my $bouncedata = [];
 
     if( $input eq 'email' ) {
@@ -57,7 +58,12 @@ sub make {
 
         while( my $r = $mail->read ) {
             # Read and parse each mail file
-            $methodargv = { 'data' => $r, 'hook' => $hookmethod, 'input' => 'email' };
+            $methodargv = {
+                'data'  => $r,
+                'hook'  => $hookmethod,
+                'input' => 'email',
+                'field' => $headerlist,
+            };
             my $mesg = Sisimai::Message->new(%$methodargv);
             next unless defined $mesg;
 
