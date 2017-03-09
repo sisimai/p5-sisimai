@@ -568,16 +568,34 @@ method like the following codes:
 
     my $cmethod = sub {
         my $argv = shift;
-        my $data = { 'x-mailer' => '' };
+        my $data = {
+            'queue-id' => '',
+            'x-mailer' => '',
+            'precedence' => '',
+        };
 
-        if( $argv->{'message'} =~ m/^X-Mailer:\s*(.+)$/m ) {
-            $data->{'x-mailer'} = $1;
+        # Header part of the bounced mail
+        for my $e ( 'x-mailer', 'precedence' ) {
+            next unless exists $argv->{'headers'}->{ $e };
+            $data->{ $e } = $argv->{'headers'}->{ $e };
+        }
+
+        # Message body of the bounced email
+        if( $argv->{'message'} =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
+            $data->{'queue-id'} = $1;
         }
 
         return $data;
     };
-    my $message = Sisimai::Message->new('data' => $mailtxt, 'hook' => $cmethod);
+
+    my $message = Sisimai::Message->new(
+        'data' => $mailtxt, 
+        'hook' => $cmethod,
+        'field' => ['X-Mailer', 'Precedence']
+    );
     print $message->catch->{'x-mailer'};    # Apple Mail (2.1283)
+    print $message->catch->{'queue-id'};    # 2DAEB222022E
+    print $message->catch->{'precedence'};  # bulk
 
 =head1 INSTANCE METHODS
 
@@ -621,7 +639,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
