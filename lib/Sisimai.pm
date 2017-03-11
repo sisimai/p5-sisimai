@@ -18,6 +18,7 @@ sub make {
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
     # @options argv1 [String]  input      Input data format: 'email', 'json'
+    # @options argv1 [Array]   field      Email header names to be captured
     # @return        [Array]              Parsed objects
     # @return        [Undef]              Undef if the argument was wrong or an empty array
     my $class = shift;
@@ -47,6 +48,7 @@ sub make {
     my $methodargv = {};
     my $delivered1 = { 'delivered' => $argv1->{'delivered'} // 0 };
     my $hookmethod = $argv1->{'hook'} || undef;
+    my $headerlist = $argv1->{'field'} || [];
     my $bouncedata = [];
 
     if( $input eq 'email' ) {
@@ -57,7 +59,12 @@ sub make {
 
         while( my $r = $mail->read ) {
             # Read and parse each mail file
-            $methodargv = { 'data' => $r, 'hook' => $hookmethod, 'input' => 'email' };
+            $methodargv = {
+                'data'  => $r,
+                'hook'  => $hookmethod,
+                'input' => 'email',
+                'field' => $headerlist,
+            };
             my $mesg = Sisimai::Message->new(%$methodargv);
             next unless defined $mesg;
 
@@ -266,20 +273,36 @@ of dump() and make() method like following command:
 
 Beggining from v4.19.0, `hook` argument is available to callback user defined
 method like the following codes:
+    my $cmethod = sub {
+        my $argv = shift;
+        my $data = {
+            'queue-id' => '',
+            'x-mailer' => '',
+            'precedence' => '',
+        };
 
-    my $callbackto = sub {
-        my $emdata = shift;
-        my $caught = { 'x-mailer' => '' };
-
-        if( $emdata->{'body'} =~ m/^X-Mailer:\s*(.+)$/m ) {
-            $caught->{'x-mailer'} = $1;
+        # Header part of the bounced mail
+        for my $e ( 'x-mailer', 'precedence' ) {
+            next unless exists $argv->{'headers'}->{ $e };
+            $data->{ $e } = $argv->{'headers'}->{ $e };
         }
-        return $caught;
-    };
-    my $data = Sisimai->make('/path/to/mbox', 'hook' => $callbackto);
-    my $json = Sisimai->dump('/path/to/mbox', 'hook' => $callbackto);
 
-    print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
+        # Message body of the bounced email
+        if( $argv->{'message'} =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
+            $data->{'queue-id'} = $1;
+        }
+
+        return $data;
+    };
+
+    my $message = Sisimai::Message->new(
+        'data' => $mailtxt, 
+        'hook' => $cmethod,
+        'field' => ['X-Mailer', 'Precedence']
+    );
+    print $message->catch->{'x-mailer'};    # Apple Mail (2.1283)
+    print $message->catch->{'queue-id'};    # 2DAEB222022E
+    print $message->catch->{'precedence'};  # bulk
 
 =head1 OTHER METHODS
 
@@ -341,7 +364,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

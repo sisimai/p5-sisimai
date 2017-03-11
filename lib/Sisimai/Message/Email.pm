@@ -35,6 +35,7 @@ sub make {
     # @options argvs [String] data  Entire email message
     # @options argvs [Array]  load  User defined MTA module list
     # @options argvs [Array]  order The order of MTA modules
+    # @options argvs [Array]  field Email header names to be captured
     # @options argvs [Code]   hook  Reference to callback method
     # @return        [Hash]         Resolved data structure
     my $class = shift;
@@ -42,7 +43,8 @@ sub make {
     my $email = $argvs->{'data'};
 
     my $methodargv = {};
-    my $hookmethod = $argvs->{'hook'} || undef;
+    my $hookmethod = $argvs->{'hook'}  || undef;
+    my $headerlist = $argvs->{'field'} || [];
     my $processing = {
         'from'   => '',     # From_ line
         'header' => {},     # Email header
@@ -64,7 +66,7 @@ sub make {
     # 2. Convert email headers from text to hash reference
     $TryOnFirst = [];
     $processing->{'from'}   = $aftersplit->{'from'};
-    $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'});
+    $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'}, $headerlist);
 
     # 3. Check headers for detecting MTA/MSP module
     unless( scalar @$TryOnFirst ) {
@@ -198,12 +200,14 @@ sub headers {
     # @return        [Hash]          Structured email header data
     my $class = shift;
     my $heads = shift || return undef;
+    my $field = shift || [];
 
     my $currheader = '';
     my $allheaders = {};
     my $structured = {};
 
     map { $allheaders->{ $_ } = 1 } (@HeaderList, @RFC3834Set, keys %$ExtHeaders);
+    map { $allheaders->{ lc $_ } = 1 } @$field if scalar @$field;
     map { $structured->{ $_ } = undef } @HeaderList;
     map { $structured->{ lc $_ } = [] } keys %$MultiHeads;
 
@@ -213,7 +217,6 @@ sub headers {
             # split the line into a header name and a header content
             my $lhs = $1;
             my $rhs = $2;
-
             $currheader = lc $lhs;
             next unless exists $allheaders->{ $currheader };
 
@@ -566,16 +569,34 @@ method like the following codes:
 
     my $cmethod = sub {
         my $argv = shift;
-        my $data = { 'x-mailer' => '' };
+        my $data = {
+            'queue-id' => '',
+            'x-mailer' => '',
+            'precedence' => '',
+        };
 
-        if( $argv->{'message'} =~ m/^X-Mailer:\s*(.+)$/m ) {
-            $data->{'x-mailer'} = $1;
+        # Header part of the bounced mail
+        for my $e ( 'x-mailer', 'precedence' ) {
+            next unless exists $argv->{'headers'}->{ $e };
+            $data->{ $e } = $argv->{'headers'}->{ $e };
+        }
+
+        # Message body of the bounced email
+        if( $argv->{'message'} =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
+            $data->{'queue-id'} = $1;
         }
 
         return $data;
     };
-    my $message = Sisimai::Message->new('data' => $mailtxt, 'hook' => $cmethod);
+
+    my $message = Sisimai::Message->new(
+        'data' => $mailtxt, 
+        'hook' => $cmethod,
+        'field' => ['X-Mailer', 'Precedence']
+    );
     print $message->catch->{'x-mailer'};    # Apple Mail (2.1283)
+    print $message->catch->{'queue-id'};    # 2DAEB222022E
+    print $message->catch->{'precedence'};  # bulk
 
 =head1 INSTANCE METHODS
 
@@ -619,7 +640,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
