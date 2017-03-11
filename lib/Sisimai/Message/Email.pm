@@ -35,6 +35,7 @@ sub make {
     # @options argvs [String] data  Entire email message
     # @options argvs [Array]  load  User defined MTA module list
     # @options argvs [Array]  order The order of MTA modules
+    # @options argvs [Array]  field Email header names to be captured
     # @options argvs [Code]   hook  Reference to callback method
     # @return        [Hash]         Resolved data structure
     my $class = shift;

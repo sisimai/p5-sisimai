@@ -18,6 +18,7 @@ sub make {
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
     # @options argv1 [String]  input      Input data format: 'email', 'json'
+    # @options argv1 [Array]   field      Email header names to be captured
     # @return        [Array]              Parsed objects
     # @return        [Undef]              Undef if the argument was wrong or an empty array
     my $class = shift;
