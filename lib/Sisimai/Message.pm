@@ -26,8 +26,8 @@ sub new {
     #                                   value of the arguments are missing
     my $class = shift;
     my $argvs = { @_ };
-    my $input = $argvs->{'input'}   // 'email';
-    my $email = $argvs->{'data'}    // '';
+    my $input = $argvs->{'input'} // 'email';
+    my $email = $argvs->{'data'}  // '';
     my $child = undef;
 
     if( $input eq 'email' ) {
