@@ -257,8 +257,8 @@ and Sisimai. More information about differences are available at
 | Easy to install                                | No            | Yes         |
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 8850 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 189000 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8884 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 189200 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
