@@ -752,6 +752,12 @@ sub find {
         # Get the value of DSN in the text
         next unless $argv1 =~ $e;
         $foundvalue = $1;
+
+        if( $argv1 =~ m/\b(?:${foundvalue}[.]\d{1,3}|\d{1,3}[.]${foundvalue})\b/ ) {
+            # Clear and skip if the value is an IPv4 address
+            $foundvalue = '';
+            next;
+        }
         last;
     }
     return $foundvalue;
@@ -809,7 +815,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Module::Load '';
 
-our $VERSION = '4.20.2';
+our $VERSION = '4.20.2p1';
 sub version { return $VERSION }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
@@ -29,9 +29,11 @@ sub make {
     require Sisimai::Message;
 
     my $argv1 = { @_ };
-    my $input = $argv1->{'input'} || undef;
     my $rtype = undef;
+    my $input = $argv1->{'input'} || undef;
+    my $field = $argv1->{'field'} || [];
 
+    die ' ***error: "field" accepts an array reference only' if ref $field ne 'ARRAY';
     unless( $input ) {
         # "input" did not specified, try to detect automatically.
         $rtype = ref $argv0;
@@ -48,7 +50,6 @@ sub make {
     my $methodargv = {};
     my $delivered1 = { 'delivered' => $argv1->{'delivered'} // 0 };
     my $hookmethod = $argv1->{'hook'} || undef;
-    my $headerlist = $argv1->{'field'} || [];
     my $bouncedata = [];
 
     if( $input eq 'email' ) {
@@ -63,7 +64,7 @@ sub make {
                 'data'  => $r,
                 'hook'  => $hookmethod,
                 'input' => 'email',
-                'field' => $headerlist,
+                'field' => $field,
             };
             my $mesg = Sisimai::Message->new(%$methodargv);
             next unless defined $mesg;

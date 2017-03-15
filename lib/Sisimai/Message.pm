@@ -26,8 +26,9 @@ sub new {
     #                                   value of the arguments are missing
     my $class = shift;
     my $argvs = { @_ };
-    my $input = $argvs->{'input'}   // 'email';
-    my $email = $argvs->{'data'}    // '';
+    my $input = $argvs->{'input'} // 'email';
+    my $email = $argvs->{'data'}  // '';
+    my $field = $argvs->{'field'} || [];
     my $child = undef;
 
     if( $input eq 'email' ) {
@@ -42,6 +43,13 @@ sub new {
 
     } else {
         # Unsupported value in "input"
+        warn sprintf(qq| ***warning: Unsupported value in "input": %s|, $input);
+        return undef;
+    }
+
+    if( ref $field ne 'ARRAY' ) {
+        # Unsupported value in "field"
+        warn ' ***warning: "field" accepts an array reference only';
         return undef;
     }
 
@@ -54,7 +62,7 @@ sub new {
     my $methodargv = {
         'data'  => $email,
         'hook'  => $argvs->{'hook'}  // undef,
-        'field' => $argvs->{'field'} // [],
+        'field' => $field,
     };
     my $datasource = undef;
     my $mesgobject = undef;

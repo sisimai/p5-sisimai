@@ -180,10 +180,12 @@ sub scan {
                 if( $e =~ m/[ \t][(]in reply to ([A-Z]{4}).*/ ) {
                     # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                     push @commandset, $1;
+                    $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
                 } elsif( $e =~ m/([A-Z]{4})[ \t]*.*command[)]\z/ ) {
                     # to MAIL command)
                     push @commandset, $1;
+                    $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
                 } else {
                     if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
@@ -243,6 +245,8 @@ sub scan {
     }
     return undef unless $recipients;
     require Sisimai::String;
+    require Sisimai::SMTP::Reply;
+    require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
@@ -254,6 +258,34 @@ sub scan {
             if( $e->{'diagnosis'} =~ m/\A\d+\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $anotherset->{'diagnosis'};
+
+            } else {
+                # More detailed error message is in "$anotherset"
+                my $as = undef; # status
+                my $ar = undef; # replycode
+
+                if( $e->{'status'} eq '' || $e->{'status'} =~ m/\A[45][.]0[.]0\z/ ) {
+                    # Check the value of D.S.N. in $anotherset
+                    $as = Sisimai::SMTP::Status->find($anotherset->{'diagnosis'});
+                    if( length($as) > 0 && substr($as, -3, 3) ne '0.0' ) {
+                        # The D.S.N. is neither an empty nor *.0.0
+                        $e->{'status'} = $as;
+                    }
+                }
+
+                if( $e->{'replycode'} eq '' || $e->{'replycode'} =~ m/\A[45]00\z/ ) {
+                    # Check the value of SMTP reply code in $anotherset
+                    $ar = Sisimai::SMTP::Reply->find($anotherset->{'diagnosis'});
+                    if( length($ar) > 0 && substr($ar, -2, 2) ne '00' ) {
+                        # The SMTP reply code is neither an empty nor *00
+                        $e->{'replycode'} = $ar;
+                    }
+                }
+
+                if( $as || $ar && ( length($anotherset->{'diagnosis'}) > length($e->{'diagnosis'}) ) ) {
+                    # Update the error message in $e->{'diagnosis'}
+                    $e->{'diagnosis'} = $anotherset->{'diagnosis'};
+                }
             }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
@@ -308,7 +340,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
