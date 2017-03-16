@@ -42,6 +42,9 @@ MAKE_TEST: {
     eval { $PackageName->make({}, 'input' => 'neko') };
     like $@, qr/error: invalid value of "input"/;
 
+    eval { $PackageName->make('/dev/null', 'field' => 22) };
+    like $@, qr/error: "field" accepts an array reference only/;
+
     for my $e ( 'mailbox', 'maildir', 'jsonapi' ) {
         MAKE: {
             my $parseddata = undef;
