@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 sub text  { 'mesgtoobig' }
-sub description { 'Email rejected due to a email size is too big for a destination mail server' }
+sub description { 'Email rejected due to an email size is too big for a destination mail server' }
 sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions

@@ -279,7 +279,7 @@ C<is_emailaddress()> checks the argument is valid email address or not.
 
 =head2 C<B<is_domainpart(I<Domain>)>>
 
-C<is_domainpart()> checks the argument is valid domain part of a email address
+C<is_domainpart()> checks the argument is valid domain part of an email address
 or not.
 
     print Sisimai::RFC5322->is_domainpart('neko@example.jp');  # 0
