@@ -3,6 +3,7 @@ Revision history for Sisimai | Formerly known as bounceHammer version 4
 4.20.2p2
     - Fix some typos in method comments: Import pull-request at Ruby version of
       Sisimai, https://github.com/sisimai/rb-Sisimai/pull/69. Thanks to @koic.
+    - Issue #217: Fix some macros in Makefile to get cpanm. Thanks to @sgroef.
 
 4.20.2p1
     - Issue #212, Sisimai->make and Sisimai::Message->new methods check "field"
