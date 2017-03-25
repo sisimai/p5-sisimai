@@ -35,6 +35,7 @@ sub list {
             MSP/US/Bigfoot.pm
             MSP/US/Facebook.pm
             MSP/US/Google.pm
+            MSP/US/GSuite.pm
             MSP/US/Office365.pm
             MSP/US/Outlook.pm
             MSP/US/ReceivingSES.pm
