@@ -190,6 +190,7 @@ sub scan {
 
     return undef unless $recipients;
     require Sisimai::String;
+    require Sisimai::SMTP::Reply;
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
