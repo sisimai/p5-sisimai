@@ -127,9 +127,8 @@ sub scan {
                     $v->{'date'} = $1;
 
                 } else {
-
                     if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
-                        # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                        # Diagnostic-Code: smtp; 550 #5.1.0 Address rejected.
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
                     }
@@ -179,7 +178,7 @@ sub scan {
                             # Your message wasn't delivered to * because the address couldn't be found.
                             # Check for typos or unnecessary spaces and try again.
                             next unless $e;
-                            next unless $Re1->{'begin'};
+                            next unless $e =~ $Re1->{'begin'};
                             $anotherset->{'diagnosis'} = $e;
                         }
                     }
