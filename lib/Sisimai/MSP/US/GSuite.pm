@@ -94,7 +94,7 @@ sub scan {
                 # Final-Recipient: rfc822; kijitora@example.de
                 # Action: failed
                 # Status: 5.0.0
-                # Remote-MTA: dns; 94.80.44.190 (94.80.44.190, the server for the domain.)
+                # Remote-MTA: dns; 192.0.2.222 (192.0.2.222, the server for the domain.)
                 # Diagnostic-Code: smtp; 550 #5.1.0 Address rejected.
                 # Last-Attempt-Date: Fri, 24 Mar 2017 23:34:10 -0700 (PDT)
                 $v = $dscontents->[-1];
@@ -118,7 +118,7 @@ sub scan {
                     $v->{'status'} = $1;
 
                 } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                    # Remote-MTA: dns; 94.80.44.190 (94.80.44.190, the server for the domain.)
+                    # Remote-MTA: dns; 192.0.2.222 (192.0.2.222, the server for the domain.)
                     $v->{'rhost'} = lc $1;
                     $v->{'rhost'} = '' if $v->{'rhost'} =~ m/\A\s+\z/;  # Remote-MTA: DNS; 
 
@@ -193,9 +193,6 @@ sub scan {
     require Sisimai::SMTP::Status;
 
     for my $e ( @$dscontents ) {
-        $e->{'agent'}     = __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
@@ -236,6 +233,7 @@ sub scan {
             }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
 
         for my $q ( keys %$ErrorMayBe ) {
             # Guess an reason of the bounce
