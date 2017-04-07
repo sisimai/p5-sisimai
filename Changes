@@ -1,19 +1,17 @@
 Revision history for Sisimai | Formerly known as bounceHammer version 4
 
-4.20.2p2
-    - Fix some typos in method comments: Import pull-request at Ruby version of
-      Sisimai, https://github.com/sisimai/rb-Sisimai/pull/69. Thanks to @koic.
-    - Issue #217: Fix some macros in Makefile to get cpanm. Thanks to @sgroef.
+4.21.0
     - Experimental implementation: new MTA module "Sisimai::MSP::US::GSuite" to 
       parse bounce mails returned from G Suite. Thanks to @racke at issue #218.
-
-4.20.2p1
-    - Issue #212, Sisimai->make and Sisimai::Message->new methods check "field"
-      argument more strictly.
     - Improved Sisimai::SMTP::Status->find(). The method checks whether a found
       value as D.S.N. is IPv4 address or not.
     - Improved code for getting error messages, D.S.N. values, and SMTP reply
       codes in Sisimai::MTA::Postfix->scan() method.
+    - Issue #212, Sisimai->make and Sisimai::Message->new methods check "field"
+      argument more strictly.
+    - Fix some typos in method comments: Import pull-request at Ruby version of
+      Sisimai, https://github.com/sisimai/rb-Sisimai/pull/69. Thanks to @koic.
+    - Issue #217: Fix some macros in Makefile to get cpanm. Thanks to @sgroef.
 
 4.20.2  Sat, 11 Mar 2017 16:32:48 +0900 (JST)
     - Pull-Request #207 Add some error message patterns from Amazon SES SMTP
