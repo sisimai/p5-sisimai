@@ -21,9 +21,9 @@ sub match {
         |address[ ]unknown
         |archived[ ]recipient
         |BAD[-_ \t]RECIPIENT
+        |can[']t[ ]accept[ ]user
         |destination[ ]addresses[ ]were[ ]unknown
         |destination[ ]server[ ]rejected[ ]recipients
-        |can[']t[ ]accept[ ]user
         |email[ ]address[ ]does[ ]not[ ]exist
         |invalid[ ](?:
              address
@@ -228,7 +228,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
