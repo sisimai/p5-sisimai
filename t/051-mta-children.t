@@ -70,7 +70,8 @@ my $MTAChildren = {
         '26' => { 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/mailererror/,    'b' => qr/\A1\z/ },
         '27' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/blocked/,        'b' => qr/\A1\z/ },
         '28' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/mailererror/,    'b' => qr/\A1\z/ },
-        '29' => { 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/blocked/,        'b' => qr/\A1\z/ },
+        '29' => { 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/blocked/,        'b' => qr/\A1\z/ },
+        '30' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/securityerror/,  'b' => qr/\A1\z/ },
     },
     'IMailServer' => {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
