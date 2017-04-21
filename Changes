@@ -1,5 +1,8 @@
 Revision history for Sisimai | Formerly known as bounceHammer version 4
 
+4.21.0p1
+    - Improved error message patterns to resolve issue #221, Thanks to @racke.
+
 4.21.0 Mon, 10 Apr 2017 12:17:22 +0900 (JST)
     - Experimental implementation: new MTA module "Sisimai::MSP::US::GSuite" to 
       parse bounce mails returned from G Suite. Thanks to @racke at issue #218.
