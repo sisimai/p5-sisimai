@@ -104,6 +104,10 @@ my $MSPChildren = {
     'US::GSuite' => {
         '01' => { 's' => qr/\A5[.]1[.]0\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
         '02' => { 's' => qr/\A5[.]0[.]0\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '03' => { 's' => qr/\A4[.]0[.]0\z/,     'r' => qr/notaccept/,   'b' => qr/\A1\z/ },
+        '04' => { 's' => qr/\A4[.]0[.]0\z/,     'r' => qr/networkerror/,'b' => qr/\A1\z/ },
+        '05' => { 's' => qr/\A4[.]0[.]0\z/,     'r' => qr/networkerror/,'b' => qr/\A1\z/ },
+        '06' => { 's' => qr/\A4[.]4[.]1\z/,     'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'US::Office365' => {
         '01' => { 's' => qr/\A5[.]1[.]10\z/,'r' => qr/filtered/,    'b' => qr/\A1\z/ },
