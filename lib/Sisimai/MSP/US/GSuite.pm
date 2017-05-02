@@ -10,13 +10,15 @@ my $Re0 = {
 };
 my $Re1 = {
     'begin'   => qr/\A[*][*][ ].+[ ][*][*]\z/,
-    'error'   => qr/\AThe[ ]response[ ]from[ ]the[ ]remote[ ]server[ ]was:\z/,
+    'error'   => qr/\AThe[ ]response([ ]from[ ]the[ ]remote[ ]server)?[ ]was:\z/,
     'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 my $ErrorMayBe = {
-    'userunknown' => qr/because the address couldn't be found/,
+    'userunknown'  => qr/because the address couldn't be found/,
+    'notaccept'    => qr/Null MX/,
+    'networkerror' => qr/DNS type .+ lookup of .+ responded with code NXDOMAIN/
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
@@ -52,6 +54,7 @@ sub scan {
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
+    my $endoferror = 0;     # (Integer) Flag for a blank line after error messages
     my $anotherset = {};    # (Hash) Another error information
     my $emptylines = 0;     # (Integer) The number of empty lines
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
@@ -88,7 +91,6 @@ sub scan {
         } else {
             # Before "message/rfc822"
             next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
 
             if( $connvalues == scalar(keys %$connheader) ) {
                 # Final-Recipient: rfc822; kijitora@example.de
@@ -131,6 +133,17 @@ sub scan {
                         # Diagnostic-Code: smtp; 550 #5.1.0 Address rejected.
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
+
+                    } else {
+                        # Append error messages continued from the previous line
+                        if( $endoferror == 0 && length $v->{'diagnosis'} ) {
+                            $endoferror = 1 if $e eq '';
+                            $endoferror = 1 if $e =~ m/\A--/;
+
+                            next if $endoferror;
+                            next unless $e =~ m/\A[ ]/;
+                            $v->{'diagnosis'} .= $e;
+                        }
                     }
                 }
             } else {
@@ -154,7 +167,7 @@ sub scan {
                     # Detect SMTP session error or connection error
                     if( $e =~ $Re1->{'error'} ) {
                         # The response from the remote server was:
-                        $anotherset->{'diagnosis'} = $e;
+                        $anotherset->{'diagnosis'} .= $e;
 
                     } else {
                         # ** Address not found **
@@ -166,10 +179,15 @@ sub scan {
                         # 550 #5.1.0 Address rejected.
                         next if $e =~ $Re1->{'html'};
 
-                        if( $anotherset->{'diagnosis'} ) {
-                            # 550 #5.1.0 Address rejected.
-                            $emptylines += 1 if $e eq '';
-                            next if $emptylines > 2;
+                        if( length $anotherset->{'diagnosis'} ) {
+                            # Continued error messages from the previous line like
+                            # "550 #5.1.0 Address rejected."
+                            next if $emptylines > 5;
+                            unless( length $e ) {
+                                # Count and next()
+                                $emptylines += 1;
+                                next;
+                            }
                             $anotherset->{'diagnosis'} .= ' '.$e
 
                         } else {
