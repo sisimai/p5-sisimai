@@ -6,10 +6,12 @@ RELEASE NOTES for Perl version of Sisimai
 v4.21.0p2
 --------------------------------------------------------------------------------
 - release: "Not released yet"
-- version: "Not tagged yet"
+- version: "4.21.0p2"
 - changes:
   - Changes file has been renamed to **ChangeLog.md** and converted to Markdown
     format.
+  - Pull-Request #223, Improved code to detect error messages related to DNS at
+    G Suite.
 
 v4.21.0p1
 --------------------------------------------------------------------------------
