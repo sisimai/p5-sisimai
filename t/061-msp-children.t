@@ -41,6 +41,8 @@ my $MSPChildren = {
         '02' => { 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
         '03' => { 's' => qr/\A5[.][12][.][12]\z/, 'r' => qr/(?:userunknown|mailboxfull)/, 'b' => qr/\d\z/ },
         '04' => { 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
+        '05' => { 's' => qr/\A5[.]0[.].+\z/, 'r' => qr/notaccept/, 'b' => qr/\A0\z/ },
+        '06' => { 's' => qr/\A5[.]0[.].+\z/, 'r' => qr/hostunknown/, 'b' => qr/\A0\z/ },
     },
     'RU::Yandex' => {
         '01' => { 's' => qr/\A5[.]1[.]1\z/,       'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
