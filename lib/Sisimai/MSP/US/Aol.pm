@@ -15,6 +15,7 @@ my $Re1 = {
 };
 my $ReFailure = {
     'hostunknown' => qr/Host[ ]or[ ]domain[ ]name[ ]not[ ]found/,
+    'notaccept'   => qr/type=MX:[ ]Malformed[ ]or[ ]unexpected[ ]name[ ]server[ ]reply/,
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
@@ -234,7 +235,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
