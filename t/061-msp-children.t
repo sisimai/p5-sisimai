@@ -112,6 +112,7 @@ my $MSPChildren = {
         '04' => { 's' => qr/\A4[.]0[.]0\z/,     'r' => qr/networkerror/,'b' => qr/\A1\z/ },
         '05' => { 's' => qr/\A4[.]0[.]0\z/,     'r' => qr/networkerror/,'b' => qr/\A1\z/ },
         '06' => { 's' => qr/\A4[.]4[.]1\z/,     'r' => qr/expired/,     'b' => qr/\A1\z/ },
+        '07' => { 's' => qr/\A4[.]4[.]1\z/,     'r' => qr/expired/,     'b' => qr/\A1\z/ },
     },
     'US::Office365' => {
         '01' => { 's' => qr/\A5[.]1[.]10\z/,'r' => qr/filtered/,    'b' => qr/\A1\z/ },
