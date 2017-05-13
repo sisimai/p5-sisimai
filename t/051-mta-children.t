@@ -157,6 +157,7 @@ my $MTAChildren = {
         '25' => { 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/expired/,    'b' => qr/\A1\z/ },
         '26' => { 's' => qr/\A5[.]4[.]4\z/,    'r' => qr/hostunknown/,'b' => qr/\A0\z/ },
         '27' => { 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
+        '28' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
     },
     'qmail' => {
         '01' => { 's' => qr/\A5[.]5[.]0\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
@@ -215,6 +216,7 @@ my $MTAChildren = {
         '40' => { 's' => qr/\A5[.]2[.]0\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
         '41' => { 's' => qr/\A5[.]0[.]0\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
         '42' => { 's' => qr/\A5[.]1[.]2\z/, 'r' => qr/hostunknown/,   'b' => qr/\A0\z/ },
+        '47' => { 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
     },
     'SurfControl' => {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
