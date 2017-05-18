@@ -3,6 +3,13 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.21.0p5
+--------------------------------------------------------------------------------
+- release: "Not released yet"
+- version: "4.21.0p5"
+- changes:
+  - Add unit test codes to test all the changes at sisimai/rb-Sisimai#75.
+
 v4.21.0p4
 --------------------------------------------------------------------------------
 - release: "Not released yet"
