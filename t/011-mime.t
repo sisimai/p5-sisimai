@@ -21,24 +21,24 @@ MAKE_TEST: {
     my $b2 = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
     my $q3 = '=?utf-8?Q?=E3=83=8B=E3=83=A5=E3=83=BC=E3=82=B9=E3=83=AC=E3=82=BF=E3=83=BC?=';
 
-    is $PackageName->is_mimeencoded(\$p1), 0, '->mimeencoded = 0';
-    is $PackageName->is_mimeencoded(\$p2), 0, '->mimeencoded = 0';
-    is $PackageName->is_mimeencoded(\$b2), 1, '->mimeencoded = 1';
-    is $PackageName->is_mimeencoded(\$q3), 1, '->mimeencoded = 1';
+    is $PackageName->is_mimeencoded(\$p1), 0, '->is_mimeencoded = 0';
+    is $PackageName->is_mimeencoded(\$p2), 0, '->is_mimeencoded = 0';
+    is $PackageName->is_mimeencoded(\$b2), 1, '->is_mimeencoded = 1';
+    is $PackageName->is_mimeencoded(\$q3), 1, '->is_mimeencoded = 1';
 
     for my $e ( $p1, $p2 ) {
         $v0 = $PackageName->mimedecode([$e]);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
-        is $v0, $e, '->mimedecode = '.$e;
+        is $v0, $e, '->is_mimedecode = '.$e;
     }
 
     $v0 = $PackageName->mimedecode([$b2]);
     $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
-    is $v0, $p2, '->mimedecode = '.$p2;
+    is $v0, $p2, '->is_mimedecode = '.$p2;
 
     $v0 = $PackageName->mimedecode([$q3]);
     $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
-    is $v0, $p3, '->mimedecode = '.$p3;
+    is $v0, $p3, '->is_mimedecode = '.$p3;
 
     # MIME-Encoded text in multiple lines
     my $p4 = '何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。';
@@ -49,7 +49,7 @@ MAKE_TEST: {
     ];
     $v0 = $PackageName->mimedecode($b4);
     $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
-    is $v0, $p4, '->mimedecode = '.$p4;
+    is $v0, $p4, '->is_mimedecode = '.$p4;
 
     # Other encodings
     my $b5 = [
@@ -61,7 +61,7 @@ MAKE_TEST: {
         $v0 = $PackageName->mimedecode([$e]);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
         chomp $v0;
-        ok length $v0, '->mimedecode = '.$v0;
+        ok length $v0, '->is_mimedecode = '.$v0;
     }
 
     # Base64, Quoted-Printable
@@ -119,6 +119,24 @@ Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
     is $PackageName->boundary($x1, 0), '--'.$x2, '->boundary(0) = --'.$x2;
     is $PackageName->boundary($x1, 1), '--'.$x2.'--', '->boundary(1) = --'.$x2.'--';
     is $PackageName->boundary($x1, 2), '--'.$x2.'--', '->boundary(2) = --'.$x2.'--';
+
+    # Irregular MIME encoded strings
+    my $b9 = [
+        '[NEKO] =?UTF-8?B?44OL44Oj44O844Oz?=',
+        '=?UTF-8?B?44OL44Oj44O844Oz?= [NYAAN]',
+        '[NEKO] =?UTF-8?B?44OL44Oj44O844Oz?= [NYAAN]'
+    ];
+
+    for my $e ( @$b9 ) {
+        $v0 = $PackageName->mimedecode([$e]);
+        $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
+        chomp $v0;
+
+        is $PackageName->is_mimeencoded(\$e), 1, '->is_mimeencoded = 1';
+        ok length $v0, '->mimedecode = '.$v0;
+        like $v0, qr/ニャーン/, 'Decoded text matches with /ニャーン/';
+    }
+
 }
 
 done_testing;
