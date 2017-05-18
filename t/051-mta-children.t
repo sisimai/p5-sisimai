@@ -158,6 +158,7 @@ my $MTAChildren = {
         '26' => { 's' => qr/\A5[.]4[.]4\z/,    'r' => qr/hostunknown/,'b' => qr/\A0\z/ },
         '27' => { 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
         '28' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
+        '29' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
     },
     'qmail' => {
         '01' => { 's' => qr/\A5[.]5[.]0\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },

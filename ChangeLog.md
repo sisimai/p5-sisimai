@@ -3,6 +3,15 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.21.0p4
+--------------------------------------------------------------------------------
+- release: "Not released yet"
+- version: "4.21.0p4"
+- changes:
+  - Code improvements for checking and decoding irregular MIME encoded strings
+    at is_mimeencoded and mimedecode methods in Sisimai::MIME class reported at
+    sisimai/rb-Sisimai#75 from @winebarrel.
+
 v4.21.0p3
 --------------------------------------------------------------------------------
 - release: "Not released yet"

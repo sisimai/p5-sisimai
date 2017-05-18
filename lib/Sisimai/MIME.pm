@@ -29,7 +29,7 @@ sub is_mimeencoded {
     my $class = shift;
     my $argv1 = shift || return 0;
     my @piece = ();
-    my $isnot = 0;
+    my $mime1 = 0;
 
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
@@ -44,11 +44,10 @@ sub is_mimeencoded {
 
     for my $e ( @piece ) {
         # Check all the string in the array
-        next if $e =~ m/[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*\z/;
-        $isnot = 1;
+        next unless $e =~ m/[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*/;
+        $mime1 = 1;
     }
-    return 1 unless $isnot;
-    return 0;
+    return $mime1;
 }
 
 sub mimedecode {
@@ -68,6 +67,9 @@ sub mimedecode {
     my $decodedtext1 = '';
     my $utf8decoded1 = '';
 
+    my $notmimetext0 = '';
+    my $notmimetext1 = '';
+
     for my $e ( @$argvs ) {
         # Check and decode each element
         $e =~ s/\A[ \t]+//g;
@@ -76,12 +78,15 @@ sub mimedecode {
 
         if( __PACKAGE__->is_mimeencoded(\$e) ) {
             # MIME Encoded string
-            if( $e =~ m{\A=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=?\z} ) {
+            if( $e =~ m{\A(.*)=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=?(.*)\z} ) {
                 # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
-                $characterset ||= lc $1;
-                $encodingname ||= uc $2;
-                $mimeencoded0   = $3;
+                $notmimetext0   = $1;
+                $characterset ||= lc $2;
+                $encodingname ||= uc $3;
+                $mimeencoded0   = $4;
+                $notmimetext1   = $5;
 
+                push @decodedtext0, $notmimetext0;
                 if( $encodingname eq 'Q' ) {
                     # Quoted-Printable
                     push @decodedtext0, MIME::QuotedPrint::decode($mimeencoded0);
@@ -90,6 +95,7 @@ sub mimedecode {
                     # Base64
                     push @decodedtext0, MIME::Base64::decode($mimeencoded0);
                 }
+                push @decodedtext0, $notmimetext1;
             }
         } else {
             push @decodedtext0, $e;
