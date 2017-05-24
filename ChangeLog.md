@@ -3,47 +3,22 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.21.0p5
+v4.21.1
 --------------------------------------------------------------------------------
-- release: "Not released yet"
-- version: "4.21.0p5"
+- release: "Mon, 29 May 2017"
+- version: "4.21.1"
 - changes:
-  - Add unit test codes to test all the changes at sisimai/rb-Sisimai#75.
-
-v4.21.0p4
---------------------------------------------------------------------------------
-- release: "Not released yet"
-- version: "4.21.0p4"
-- changes:
-  - Code improvements for checking and decoding irregular MIME encoded strings
-    at is_mimeencoded and mimedecode methods in Sisimai::MIME class reported at
-    sisimai/rb-Sisimai#75 from @winebarrel.
-
-v4.21.0p3
---------------------------------------------------------------------------------
-- release: "Not released yet"
-- version: "4.21.0p3"
-- changes:
-  - Improved code to detect RFC7505 (NullMX) error: sisimai/set-of-emails#4.
-
-v4.21.0p2
---------------------------------------------------------------------------------
-- release: "Not released yet"
-- version: "4.21.0p2"
-- changes:
+  - Improved error message patterns to resolve issue #221, Thanks to @racke.
+  - Add `mta-exim-30.eml` as a sample email in set-of-emails/ directory.
   - Changes file has been renamed to **ChangeLog.md** and converted to Markdown
     format.
   - Pull-Request #223, Improved code to detect error messages related to DNS at
     G Suite.
-
-v4.21.0p1
---------------------------------------------------------------------------------
-- release: "Not released yet. As of present, it is available on GitHub only."
-- version: "4.21.0p1"
-- changes:
-  - Improved error message patterns to resolve issue #221, Thanks to @racke.
-  - Add `mta-exim-30.eml` as a sample email in set-of-emails/ directory.
-
+  - Improved code to detect RFC7505 (NullMX) error: sisimai/set-of-emails#4.
+  - Code improvements for checking and decoding irregular MIME encoded strings
+    at is_mimeencoded and mimedecode methods in Sisimai::MIME class reported at
+    sisimai/rb-Sisimai#75 from @winebarrel.
+  - Add unit test codes to test all the changes at sisimai/rb-Sisimai#75.
 
 v4.21.0 - Support G Suite
 --------------------------------------------------------------------------------
