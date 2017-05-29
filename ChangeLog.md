@@ -5,7 +5,7 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.21.1
 --------------------------------------------------------------------------------
-- release: "Mon, 29 May 2017"
+- release: "Mon, 29 May 2017 14:22:22 +0900 (JST)"
 - version: "4.21.1"
 - changes:
   - Improved error message patterns to resolve issue #221, Thanks to @racke.
