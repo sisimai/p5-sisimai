@@ -55,6 +55,7 @@ check-version-in-readme:
 	grep cpan-v`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version'` README.md
 
 release-test:
+	$(CP) ChangeLog.md Changes
 	$(MAKE) backup-readme
 	$(MAKE) clean
 	$(MINIL) test
@@ -62,6 +63,7 @@ release-test:
 	$(MAKE) check-version-in-readme
 
 dist:
+	$(CP) ChangeLog.md Changes
 	$(MAKE) backup-readme
 	$(MAKE) clean
 	$(MINIL) dist
