@@ -203,7 +203,7 @@ my $R = {
         '01105' => qr/mailererror/,
         '01106' => qr/onhold/,
         '01107' => qr/spamdetected/,
-        '01108' => qr/onhold/,
+        '01108' => qr/policyviolation/,
         '01109' => qr/securityerror/,
     },
     'IMailServer' => {

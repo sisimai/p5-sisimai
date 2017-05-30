@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
          because[ ]the[ ]recipient[ ]is[ ]not[ ]accepting[ ]mail[ ]with[ ](?:attachments|embedded[ ]images) # AOL Phoenix
+        |closed[ ]mailing[ ]list
         |email[ ](?:
              not[ ]accepted[ ]for[ ]policy[ ]reasons
             # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
