@@ -18,8 +18,8 @@ sub index {
     return [ qw|
         Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
         MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold
-        Rejected NoRelaying SpamDetected SecurityError Suspend SystemError
-        SystemFull TooManyConn UserUnknown SyntaxError
+        Rejected NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError
+        Suspend SystemError SystemFull TooManyConn UserUnknown SyntaxError
     | ];
 }
 
@@ -95,9 +95,9 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'SpamDetected', 'SecurityError', 'SystemError',
-        'NetworkError', 'Suspend', 'Expired', 'ContentError',
-        'SystemFull', 'NotAccept', 'MailerError',
+        'MailboxFull', 'SpamDetected', 'PolicyViolation', 'VirusDetected',
+        'SecurityError', 'SystemError', 'NetworkError', 'Suspend', 'Expired',
+        'ContentError', 'SystemFull', 'NotAccept', 'MailerError',
     ];
 
     require Sisimai::SMTP::Status;

@@ -92,6 +92,7 @@ sub list {
             Reason/NotAccept.pm
             Reason/NetworkError.pm
             Reason/OnHold.pm
+            Reason/PolicyViolation.pm
             Reason/Rejected.pm
             Reason/SecurityError.pm
             Reason/SpamDetected.pm
@@ -103,6 +104,7 @@ sub list {
             Reason/Undefined.pm
             Reason/UserUnknown.pm
             Reason/Vacation.pm
+            Reason/VirusDetected.pm
         RFC2606.pm
         RFC3464.pm
         RFC3834.pm
