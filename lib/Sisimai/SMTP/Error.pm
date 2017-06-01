@@ -9,8 +9,8 @@ my $SoftOrHard = {
     'soft' => [
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered',
         'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror', 'norelaying',
-        'rejected', 'securityerror', 'spamdetected', 'suspend', 'syntaxerror',
-        'systemerror', 'systemfull', 'toomanyconn',
+        'policyviolation', 'rejected', 'securityerror', 'spamdetected', 'suspend',
+        'syntaxerror', 'systemerror', 'systemfull', 'toomanyconn', 'virusdetected',
     ],
     'hard' => [
         'hasmoved', 'hostunknown', 'userunknown',
@@ -182,7 +182,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
