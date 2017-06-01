@@ -29,7 +29,7 @@ my $reasonchildren = {
     'SystemFull'      => ['550 5.0.0 Mail system full'],
     'TooManyConn'     => ['421 Too many connections'],
     'UserUnknown'     => ['550 5.1.1 Unknown User'],
-    'VirusDetected'   => ['550 5.7.9  The message was rejected because it contains prohibited virus or spam content'],
+    'VirusDetected'   => ['550 5.7.9 The message was rejected because it contains prohibited virus or spam content'],
 };
 
 my $ss = shift @{ Sisimai->make('./set-of-emails/maildir/bsd/mta-sendmail-01.eml', 'input' => 'email') };
