@@ -241,6 +241,10 @@ Sisimai::RFC3464
   * https://github.com/LoneStarInternet/mail_manager/tree/master/spec/test_app/spec/support/files/bounce-over-quota.txt
   * Copyright (c) 2015 Lone Star Internet, Inc. | MIT
 
+* rfc3464-31.eml
+  * https://github.com/houseabsolute/Courriel/blob/master/t/data/stress-test/mbox_mime_virus-mcafee-virusscan.txt
+  * Copyright (c) 2016 by Dave Rolsky. | Artistic License 2.0
+
 Sisimai::RFC3834
 ----------------
 * rfc3834-01.eml
