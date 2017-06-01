@@ -13,9 +13,11 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr/
+    my $regex = qr{(?:
          the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]virus[ ]or[ ]spam[ ]content
-    /ix;
+        |Your[ ]message[ ]was[ ]infected[ ]with[ ]a[ ]virus
+        )
+    }ix;
 
     return 1 if $argv1 =~ $regex;
     return 0;
