@@ -245,6 +245,10 @@ Sisimai::RFC3464
   * https://github.com/houseabsolute/Courriel/blob/master/t/data/stress-test/mbox_mime_virus-mcafee-virusscan.txt
   * Copyright (c) 2016 by Dave Rolsky. | Artistic License 2.0
 
+* rfc3464-32.eml
+  * https://github.com/houseabsolute/Courriel/blob/master/t/data/stress-test/mbox_mime_auto-error-msg.txt
+  * Copyright (c) 2016 by Dave Rolsky. | Artistic License 2.0
+
 Sisimai::RFC3834
 ----------------
 * rfc3834-01.eml
