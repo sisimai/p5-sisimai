@@ -377,6 +377,27 @@ if the value of Status: field in a bounce email is C<5.3.4>.
     Action: failure
     Status: 553 Exceeded maximum inbound message size
 
+=head2 C<networkerror>
+
+This is the error that SMTP connection failed due to DNS look up failure or
+other network problems. This reason has added in Sisimai 4.1.12 and does not
+exist in any version of bounceHammer.
+
+    A message is delayed for more than 10 minutes for the following
+    list of recipients:
+
+    kijitora@neko.example.jp: Network error on destination MXs
+
+=head2 C<norelaying>
+
+This is the error that SMTP connection rejected with error message
+C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
+
+    ... while talking to mailin-01.mx.example.com.:
+    >>> RCPT To:<kijitora@example.org>
+    <<< 554 5.7.1 <kijitora@example.org>: Relay access denied
+    554 5.0.0 Service unavailable
+
 =head2 C<notaccept>
 
 This is the error that a destination mail server does ( or can ) not accept any
@@ -407,16 +428,6 @@ the connection has been rejected due to the argument of SMTP MAIL command.
     Connected to 192.0.2.225 but sender was rejected.
     Remote host said: 550 5.7.1 <root@nijo.example.jp>... Access denied
 
-=head2 C<norelaying>
-
-This is the error that SMTP connection rejected with error message
-C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
-
-    ... while talking to mailin-01.mx.example.com.:
-    >>> RCPT To:<kijitora@example.org>
-    <<< 554 5.7.1 <kijitora@example.org>: Relay access denied
-    554 5.0.0 Service unavailable
-
 =head2 C<securityerror>
 
 This is the error that a security violation was detected on a destination mail
@@ -428,22 +439,6 @@ bounce if the value of Status: field in a bounce email is C<5.7.*>.
     Remote-MTA: DNS; gmail-smtp-in.l.google.com
     Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
 
-=head2 C<suspend>
-
-This is the error that a recipient account is being suspended due to unpaid or
-other reasons.
-
-=head2 C<networkerror>
-
-This is the error that SMTP connection failed due to DNS look up failure or
-other network problems. This reason has added in Sisimai 4.1.12 and does not
-exist in any version of bounceHammer.
-
-    A message is delayed for more than 10 minutes for the following
-    list of recipients:
-
-    kijitora@neko.example.jp: Network error on destination MXs
-
 =head2 C<spamdetected>
 
 This is the error that the message you sent was rejected by C<spam> filter which
@@ -454,6 +449,11 @@ not exist in any version of bounceHammer.
     Status: 5.7.1
     Diagnostic-Code: smtp; 550 5.7.1 Message content rejected, UBE, id=00000-00-000
     Last-Attempt-Date: Thu, 9 Apr 2008 23:34:45 +0900 (JST)
+
+=head2 C<suspend>
+
+This is the error that a recipient account is being suspended due to unpaid or
+other reasons.
 
 =head2 C<syntaxerror>
 
@@ -524,6 +524,9 @@ mail server. This reason has been divided from C<securityerror> at Sisimai 4.22.
 
     Your message was infected with a virus. You should download a virus
     scanner and check your computer for viruses.
+
+    Sender:    <sironeko@libsisimai.org>
+    Recipient: <kijitora@example.jp>
 
 =head1 SEE ALSO
 
