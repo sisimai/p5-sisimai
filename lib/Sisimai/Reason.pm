@@ -389,6 +389,13 @@ field in a bounce email is C<5.3.2> or the value of SMTP reply code is 556.
 Sisimai will set C<onhold> to the reason of email bounce if there is no (or
 less) detailed information about email bounce for judging the reason.
 
+=head2 C<policyviolation>
+
+This is the error that a policy violation was detected on a destination mail
+server. This reason has been divided from C<securityerror> at Sisimai 4.22.0.
+
+    570 5.7.7 Email not accepted for policy reasons
+
 =head2 C<rejected>
 
 This is the error that a connection to destination server was rejected by a
@@ -413,10 +420,9 @@ C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
 =head2 C<securityerror>
 
 This is the error that a security violation was detected on a destination mail
-server. Depends on the security policy on the server, there is any virus in the
-email, a sender's email address is camouflaged address. Sisimai will set
-C<securityerror> to the reason of email bounce if the value of Status: field in
-a bounce email is C<5.7.*>.
+server. Depends on the security policy on the server, a sender's email address
+is camouflaged address. Sisimai will set C<securityerror> to the reason of email
+bounce if the value of Status: field in a bounce email is C<5.7.*>.
 
     Status: 5.7.0
     Remote-MTA: DNS; gmail-smtp-in.l.google.com
@@ -510,6 +516,14 @@ to decide the reason.
 This is the reason that the recipient is out of office. The bounce message is
 generated and returned from auto responder program. This reason has added in
 Sisimai 4.1.28 and does not exist in any version of bounceHammer.
+
+=head2 C<virusdetected>
+
+This is the error that an email was rejected by a virus scanner at a destination
+mail server. This reason has been divided from C<securityerror> at Sisimai 4.22.
+
+    Your message was infected with a virus. You should download a virus
+    scanner and check your computer for viruses.
 
 =head1 SEE ALSO
 
