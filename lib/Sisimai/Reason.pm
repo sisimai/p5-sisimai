@@ -449,6 +449,19 @@ not exist in any version of bounceHammer.
     Diagnostic-Code: smtp; 550 5.7.1 Message content rejected, UBE, id=00000-00-000
     Last-Attempt-Date: Thu, 9 Apr 2008 23:34:45 +0900 (JST)
 
+=head2 C<syntaxerror>
+
+This is the error that a destination mail server could not recognize SMTP command
+which is sent from a sender's MTA. This reason has been added at Sisimai v4.17.0.
+
+=over
+
+=item - 503 Improper sequence of commands
+
+=item - 504 Command parameter not implemented
+
+=back
+
 =head2 C<systemerror>
 
 This is the error that an email has bounced due to system error on the remote
