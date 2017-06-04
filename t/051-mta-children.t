@@ -45,7 +45,7 @@ my $MTAChildren = {
     'Exim' => {
         '01' => { 's' => qr/\A5[.]7[.]0\z/,    'r' => qr/blocked/,        'b' => qr/\A1\z/ },
         '02' => { 's' => qr/\A5[.][12][.]1\z/, 'r' => qr/userunknown/,    'b' => qr/\A0\z/ },
-        '03' => { 's' => qr/\A5[.]7[.]0\z/,    'r' => qr/securityerror/,  'b' => qr/\A1\z/ },
+        '03' => { 's' => qr/\A5[.]7[.]0\z/,    'r' => qr/policyviolation/,'b' => qr/\A1\z/ },
         '04' => { 's' => qr/\A5[.]7[.]0\z/,    'r' => qr/blocked/,        'b' => qr/\A1\z/ },
         '05' => { 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,    'b' => qr/\A0\z/ },
         '06' => { 's' => qr/\A4[.]0[.]\d+\z/,  'r' => qr/expired/,        'b' => qr/\A1\z/ },
@@ -157,8 +157,8 @@ my $MTAChildren = {
         '25' => { 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/expired/,    'b' => qr/\A1\z/ },
         '26' => { 's' => qr/\A5[.]4[.]4\z/,    'r' => qr/hostunknown/,'b' => qr/\A0\z/ },
         '27' => { 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
-        '28' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
-        '29' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
+        '28' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/policyviolation/, 'b' => qr/\A1\z/ },
+        '29' => { 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/policyviolation/, 'b' => qr/\A1\z/ },
     },
     'qmail' => {
         '01' => { 's' => qr/\A5[.]5[.]0\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
@@ -183,7 +183,7 @@ my $MTAChildren = {
         '06' => { 's' => qr/\A5[.]6[.]9\z/, 'r' => qr/contenterror/,  'b' => qr/\A1\z/ },
         '07' => { 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/norelaying/,    'b' => qr/\A1\z/ },
         '08' => { 's' => qr/\A4[.]7[.]1\z/, 'r' => qr/blocked/,       'b' => qr/\A1\z/ },
-        '09' => { 's' => qr/\A5[.]7[.]9\z/, 'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
+        '09' => { 's' => qr/\A5[.]7[.]9\z/, 'r' => qr/policyviolation/, 'b' => qr/\A1\z/ },
         '10' => { 's' => qr/\A4[.]7[.]1\z/, 'r' => qr/blocked/,       'b' => qr/\A1\z/ },
         '11' => { 's' => qr/\A4[.]4[.]7\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
         '12' => { 's' => qr/\A4[.]4[.]7\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
@@ -217,7 +217,7 @@ my $MTAChildren = {
         '40' => { 's' => qr/\A5[.]2[.]0\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
         '41' => { 's' => qr/\A5[.]0[.]0\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
         '42' => { 's' => qr/\A5[.]1[.]2\z/, 'r' => qr/hostunknown/,   'b' => qr/\A0\z/ },
-        '47' => { 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/securityerror/, 'b' => qr/\A1\z/ },
+        '43' => { 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/policyviolation/, 'b' => qr/\A1\z/ },
     },
     'SurfControl' => {
         '01' => { 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
