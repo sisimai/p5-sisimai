@@ -67,6 +67,7 @@ sub match {
         |rejecting[ ]banned[ ]content 
         |related[ ]to[ ]content[ ]with[ ]spam[-]like[ ]characteristics
         |rule[ ]imposed[ ]as[ ].+is[ ]blacklisted[ ]on              # Mailmarshal RBLs
+        |Sender[ ]domain[ ]listed[ ]at[ ].+
         |sending[ ]address[ ]not[ ]accepted[ ]due[ ]to[ ]spam[ ]filter
         |spam[ ](?:
              .+[ ]exceeded
@@ -212,7 +213,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
