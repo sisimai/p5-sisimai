@@ -21,6 +21,9 @@ sub match {
             # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
             |rejected[ ]due[ ]to[ ]security[ ]policies
             )
+        |header[ ]are[ ]not[ ]accepted
+        |Header[ ]error
+        |Messages[ ]with[ ]multiple[ ]addresses
         |You[ ]have[ ]exceeded[ ]the[ ]the[ ]allowable[ ]number[ ]of[ ]posts[ ]without[ ]solving[ ]a[ ]captcha
         )
     }ix;
@@ -32,8 +35,8 @@ sub match {
 sub true {
     # The bounce reason is security error or not
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is security error
-    #                                   0: is not security error
+    # @return   [Integer]               1: is policy violation
+    #                                   0: is not policyviolation
     # @see http://www.ietf.org/rfc/rfc2822.txt
     return undef;
 }
@@ -50,22 +53,21 @@ Sisimai::Reason::PolicyViolation - Bounce reason is C<policyviolation> or not.
 =head1 SYNOPSIS
 
     use Sisimai::Reason::PolicyViolation;
-    print Sisimai::Reason::PolicyViolation->match('5.7.1 Email not accept');   # 1
+    print Sisimai::Reason::PolicyViolation->match('5.7.9 Header error');    # 1
 
 =head1 DESCRIPTION
 
 Sisimai::Reason::PolicyViolation checks the bounce reason is C<policyviolation> or 
 not. This class is called only Sisimai::Reason class.
 
-This is the error that a security violation was detected on a destination mail 
-server. Depends on the security policy on the server, there is any virus in the
-email, a sender's email address is camouflaged address. Sisimai will set
-C<policyviolation> to the reason of email bounce if the value of Status: field in
-a bounce email is C<5.7.*>.
+This is the error that a policy violation was detected on a destination mail host.
+When a header content or a format of the original message violates security policies,
+or multiple addresses exist in the From: header, Sisimai will set C<policyviolation>.
 
-    Status: 5.7.0
-    Remote-MTA: DNS; gmail-smtp-in.l.google.com
-    Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
+    Action: failed
+    Status: 5.7.9
+    Remote-MTA: DNS; mx.example.co.jp
+    Diagnostic-Code: SMTP; 554 5.7.9 Header error
 
 =head1 CLASS METHODS
 
@@ -79,7 +81,7 @@ C<text()> returns string: C<policyviolation>.
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
-    print Sisimai::Reason::PolicyViolation->match('5.7.1 Email not accept');   # 1
+    print Sisimai::Reason::PolicyViolation->match('5.7.9 Header error');    # 1
 
 =head2 C<B<true(I<Sisimai::Data>)>>
 

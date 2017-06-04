@@ -26,8 +26,8 @@ sub match {
 sub true {
     # The bounce reason is security error or not
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is security error
-    #                                   0: is not security error
+    # @return   [Integer]               1: is virus detected
+    #                                   0: is not virus detected
     # @see http://www.ietf.org/rfc/rfc2822.txt
     return undef;
 }
@@ -39,7 +39,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::VirusDetected - Bounce reason is C<securityerror> or not.
+Sisimai::Reason::VirusDetected - Bounce reason is C<virusdetected> or not.
 
 =head1 SYNOPSIS
 
@@ -48,37 +48,38 @@ Sisimai::Reason::VirusDetected - Bounce reason is C<securityerror> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::VirusDetected checks the bounce reason is C<securityerror> or 
+Sisimai::Reason::VirusDetected checks the bounce reason is C<virusdetected> or
 not. This class is called only Sisimai::Reason class.
 
-This is the error that a security violation was detected on a destination mail 
-server. Depends on the security policy on the server, there is any virus in the
-email, a sender's email address is camouflaged address. Sisimai will set
-C<securityerror> to the reason of email bounce if the value of Status: field in
-a bounce email is C<5.7.*>.
+This is an error that any virus or trojan horse detected in the message by virus
+scanner program at a destination mail server. This reason has been divided from
+C<securityerror> at Sisimai 4.22.0.
 
-    Status: 5.7.0
-    Remote-MTA: DNS; gmail-smtp-in.l.google.com
-    Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
+    Your message was infected with a virus. You should download a virus
+    scanner and check your computer for viruses.
+
+    Sender:    <sironeko@libsisimai.org>
+    Recipient: <kijitora@example.jp>
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<securityerror>.
+C<text()> returns string: C<virusdetected>.
 
-    print Sisimai::Reason::VirusDetected->text;  # securityerror
+    print Sisimai::Reason::VirusDetected->text;  # virusdetected
 
 =head2 C<B<match(I<string>)>>
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
-    print Sisimai::Reason::VirusDetected->match('5.7.1 Email not accept');   # 1
+    my $v = 'Your message was infected with a virus. ...';
+    print Sisimai::Reason::VirusDetected->match($v);    # 1
 
 =head2 C<B<true(I<Sisimai::Data>)>>
 
-C<true()> returns 1 if the bounce reason is C<securityerror>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<virusdetected>. The argument must
+be Sisimai::Data object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
