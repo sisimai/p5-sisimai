@@ -18,8 +18,8 @@ sub index {
     return [ qw|
         Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
         MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold
-        Rejected NoRelaying SpamDetected SecurityError Suspend SystemError
-        SystemFull TooManyConn UserUnknown SyntaxError
+        Rejected NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError
+        Suspend SystemError SystemFull TooManyConn UserUnknown SyntaxError
     | ];
 }
 
@@ -95,9 +95,9 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $reasontext = '';
     my $classorder = [
-        'MailboxFull', 'SpamDetected', 'SecurityError', 'SystemError',
-        'NetworkError', 'Suspend', 'Expired', 'ContentError',
-        'SystemFull', 'NotAccept', 'MailerError',
+        'MailboxFull', 'SpamDetected', 'PolicyViolation', 'VirusDetected',
+        'SecurityError', 'SystemError', 'NetworkError', 'Suspend', 'Expired',
+        'ContentError', 'SystemFull', 'NotAccept', 'MailerError',
     ];
 
     require Sisimai::SMTP::Status;
@@ -377,6 +377,27 @@ if the value of Status: field in a bounce email is C<5.3.4>.
     Action: failure
     Status: 553 Exceeded maximum inbound message size
 
+=head2 C<networkerror>
+
+This is the error that SMTP connection failed due to DNS look up failure or
+other network problems. This reason has added in Sisimai 4.1.12 and does not
+exist in any version of bounceHammer.
+
+    A message is delayed for more than 10 minutes for the following
+    list of recipients:
+
+    kijitora@neko.example.jp: Network error on destination MXs
+
+=head2 C<norelaying>
+
+This is the error that SMTP connection rejected with error message
+C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
+
+    ... while talking to mailin-01.mx.example.com.:
+    >>> RCPT To:<kijitora@example.org>
+    <<< 554 5.7.1 <kijitora@example.org>: Relay access denied
+    554 5.0.0 Service unavailable
+
 =head2 C<notaccept>
 
 This is the error that a destination mail server does ( or can ) not accept any
@@ -389,6 +410,13 @@ field in a bounce email is C<5.3.2> or the value of SMTP reply code is 556.
 Sisimai will set C<onhold> to the reason of email bounce if there is no (or
 less) detailed information about email bounce for judging the reason.
 
+=head2 C<policyviolation>
+
+This is the error that a policy violation was detected on a destination mail
+server. This reason has been divided from C<securityerror> at Sisimai 4.22.0.
+
+    570 5.7.7 Email not accepted for policy reasons
+
 =head2 C<rejected>
 
 This is the error that a connection to destination server was rejected by a
@@ -400,43 +428,16 @@ the connection has been rejected due to the argument of SMTP MAIL command.
     Connected to 192.0.2.225 but sender was rejected.
     Remote host said: 550 5.7.1 <root@nijo.example.jp>... Access denied
 
-=head2 C<norelaying>
-
-This is the error that SMTP connection rejected with error message
-C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
-
-    ... while talking to mailin-01.mx.example.com.:
-    >>> RCPT To:<kijitora@example.org>
-    <<< 554 5.7.1 <kijitora@example.org>: Relay access denied
-    554 5.0.0 Service unavailable
-
 =head2 C<securityerror>
 
 This is the error that a security violation was detected on a destination mail
-server. Depends on the security policy on the server, there is any virus in the
-email, a sender's email address is camouflaged address. Sisimai will set
-C<securityerror> to the reason of email bounce if the value of Status: field in
-a bounce email is C<5.7.*>.
+server. Depends on the security policy on the server, a sender's email address
+is camouflaged address. Sisimai will set C<securityerror> to the reason of email
+bounce if the value of Status: field in a bounce email is C<5.7.*>.
 
     Status: 5.7.0
     Remote-MTA: DNS; gmail-smtp-in.l.google.com
     Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
-
-=head2 C<suspend>
-
-This is the error that a recipient account is being suspended due to unpaid or
-other reasons.
-
-=head2 C<networkerror>
-
-This is the error that SMTP connection failed due to DNS look up failure or
-other network problems. This reason has added in Sisimai 4.1.12 and does not
-exist in any version of bounceHammer.
-
-    A message is delayed for more than 10 minutes for the following
-    list of recipients:
-
-    kijitora@neko.example.jp: Network error on destination MXs
 
 =head2 C<spamdetected>
 
@@ -448,6 +449,24 @@ not exist in any version of bounceHammer.
     Status: 5.7.1
     Diagnostic-Code: smtp; 550 5.7.1 Message content rejected, UBE, id=00000-00-000
     Last-Attempt-Date: Thu, 9 Apr 2008 23:34:45 +0900 (JST)
+
+=head2 C<suspend>
+
+This is the error that a recipient account is being suspended due to unpaid or
+other reasons.
+
+=head2 C<syntaxerror>
+
+This is the error that a destination mail server could not recognize SMTP command
+which is sent from a sender's MTA. This reason has been added at Sisimai v4.17.0.
+
+=over
+
+=item - 503 Improper sequence of commands
+
+=item - 504 Command parameter not implemented
+
+=back
 
 =head2 C<systemerror>
 
@@ -498,6 +517,17 @@ This is the reason that the recipient is out of office. The bounce message is
 generated and returned from auto responder program. This reason has added in
 Sisimai 4.1.28 and does not exist in any version of bounceHammer.
 
+=head2 C<virusdetected>
+
+This is the error that an email was rejected by a virus scanner at a destination
+mail server. This reason has been divided from C<securityerror> at Sisimai 4.22.
+
+    Your message was infected with a virus. You should download a virus
+    scanner and check your computer for viruses.
+
+    Sender:    <sironeko@libsisimai.org>
+    Recipient: <kijitora@example.jp>
+
 =head1 SEE ALSO
 
 L<Sisimai::ARF>
@@ -510,7 +540,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

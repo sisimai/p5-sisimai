@@ -23,29 +23,15 @@ sub match {
             |turned[ ]on[ ]in[ ]your[ ]email[ ]client
             )
         |\d+[ ]denied[ ]\[[a-z]+\][ ].+[(]Mode:[ ].+[)]
-        |because[ ](?>
-             the[ ]recipient[ ]is[ ]not[ ]accepting[ ]mail[ ]with[ ](?:
-                 attachments        # AOL Phoenix
-                |embedded[ ]images  # AOL Phoenix
-                )
-            )
         |domain[ ].+[ ]is[ ]a[ ]dead[ ]domain
-        |email[ ](?:
-             not[ ]accepted[ ]for[ ]policy[ ]reasons
-            # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
-            |rejected[ ]due[ ]to[ ]security[ ]policies
-            )
         |Executable[ ]files[ ]are[ ]not[ ]allowed[ ]in[ ]compressed[ ]files
         |insecure[ ]mail[ ]relay
         |Recipient[ ]address[ ]rejected:[ ]Access[ ]denied
         |sorry,[ ]you[ ]don'?t[ ]authenticate[ ]or[ ]the[ ]domain[ ]isn'?t[ ]in[ ]
                 my[ ]list[ ]of[ ]allowed[ ]rcpthosts
-        |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]virus[ ]or[ ]spam[ ]content
         |TLS[ ]required[ ]but[ ]not[ ]supported # SendGrid:the recipient mailserver does not support TLS or have a valid certificate
         |User[ ].+[ ]is[ ]not[ ]authorized[ ]to[ ]perform[ ]ses:SendRawEmail[ ]on[ ]resource
         |you[ ]are[ ]not[ ]authorized[ ]to[ ]send[ ]mail,[ ]authentication[ ]is[ ]required
-        |You[ ]have[ ]exceeded[ ]the[ ]the[ ]allowable[ ]number[ ]of[ ]posts[ ]
-            without[ ]solving[ ]a[ ]captcha
         |verification[ ]failure
         )
     }ix;
@@ -75,7 +61,7 @@ Sisimai::Reason::SecurityError - Bounce reason is C<securityerror> or not.
 =head1 SYNOPSIS
 
     use Sisimai::Reason::SecurityError;
-    print Sisimai::Reason::SecurityError->match('5.7.1 Email not accept');   # 1
+    print Sisimai::Reason::SecurityError->match('570 5.7.0 Authentication failure');   # 1
 
 =head1 DESCRIPTION
 
@@ -83,14 +69,15 @@ Sisimai::Reason::SecurityError checks the bounce reason is C<securityerror> or
 not. This class is called only Sisimai::Reason class.
 
 This is the error that a security violation was detected on a destination mail 
-server. Depends on the security policy on the server, there is any virus in the
-email, a sender's email address is camouflaged address. Sisimai will set
-C<securityerror> to the reason of email bounce if the value of Status: field in
-a bounce email is C<5.7.*>.
+server. Depends on the security policy on the server, a sender's email address
+is camouflaged address. Sisimai will set C<securityerror> to the reason of email
+bounce if the value of Status: field in a bounce email is C<5.7.*>.
 
+    Action: failed
     Status: 5.7.0
     Remote-MTA: DNS; gmail-smtp-in.l.google.com
     Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
+    Last-Attempt-Date: Tue, 28 Apr 2009 11:02:45 +0900 (JST)
 
 =head1 CLASS METHODS
 
@@ -104,7 +91,7 @@ C<text()> returns string: C<securityerror>.
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
-    print Sisimai::Reason::SecurityError->match('5.7.1 Email not accept');   # 1
+    print Sisimai::Reason::SecurityError->match('570 5.7.0 Authentication failure');   # 1
 
 =head2 C<B<true(I<Sisimai::Data>)>>
 

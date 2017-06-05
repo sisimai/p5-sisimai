@@ -200,7 +200,7 @@ my $R = {
         '01006' => qr/userunknown/,
         '01007' => qr/mailboxfull/,
         '01008' => qr/filtered/,
-        '01009' => qr/securityerror/,
+        '01009' => qr/policyviolation/,
         '01010' => qr/filtered/,
         '01011' => qr/filtered/,
         '01012' => qr/mailboxfull/,
@@ -257,7 +257,7 @@ my $R = {
         '01041' => qr/userunknown/,
         '01042' => qr/userunknown/,
         '01043' => qr/userunknown/,
-        '01044' => qr/securityerror/,
+        '01044' => qr/policyviolation/,
         '01045' => qr/expired/,
     },
     'US::GSuite' => {

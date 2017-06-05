@@ -340,7 +340,8 @@ sub scan {
         }xi;
 
         my $re_stop  = qr{(?:
-             \AContent-Type:[ ]message/delivery-status
+             \A[*][*][*][ ].+[ ].+[ ][*][*][*]
+            |\AContent-Type:[ ]message/delivery-status
             |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
             |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
             |\AReceived:[ \t]*
