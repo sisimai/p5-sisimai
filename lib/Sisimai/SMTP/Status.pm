@@ -685,6 +685,7 @@ my $InternalCode = {
         'norelaying'     => '5.0.909',
         'notaccept'      => '5.0.932',
         'onhold'         => '5.0.901',
+        'policyviolation'=> '5.0.972',
         'rejected'       => '5.0.918',
         'securityerror'  => '5.0.970',
         'spamdetected'   => '5.0.980',
@@ -696,7 +697,6 @@ my $InternalCode = {
         'userunknown'    => '5.0.911',
         'undefined'      => '5.0.900',
         'virusdetected'  => '5.0.971',
-        'policyviolation'=> '5.0.972',
     },
 };
 

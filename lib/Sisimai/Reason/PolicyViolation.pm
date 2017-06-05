@@ -10,7 +10,7 @@ sub match {
     # @param    [String] argv1  String to be matched with regular expressions
     # @return   [Integer]       0: Did not match
     #                           1: Matched
-    # @since v4.0.0
+    # @since v4.22.0
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
@@ -37,6 +37,7 @@ sub true {
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
     # @return   [Integer]               1: is policy violation
     #                                   0: is not policyviolation
+    # @since v4.22.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     return undef;
 }
@@ -57,8 +58,8 @@ Sisimai::Reason::PolicyViolation - Bounce reason is C<policyviolation> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::PolicyViolation checks the bounce reason is C<policyviolation> or 
-not. This class is called only Sisimai::Reason class.
+Sisimai::Reason::PolicyViolation checks the bounce reason is C<policyviolation>
+or not. This class is called only Sisimai::Reason class.
 
 This is the error that a policy violation was detected on a destination mail host.
 When a header content or a format of the original message violates security policies,
