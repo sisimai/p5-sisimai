@@ -3,6 +3,18 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.21.1p1
+--------------------------------------------------------------------------------
+- release: "not released yet"
+- version: "4.21.1p1"
+- changes:
+  - Issue #215 and Pull-Request #225, bounce reason: "securityerror" has been
+    divided into the following three reasons:
+    - securityerror
+    - virusdetected
+    - policyviolation
+  - Sisimai now works on Perl 5.26.0
+
 v4.21.1
 --------------------------------------------------------------------------------
 - release: "Mon, 29 May 2017 14:22:22 +0900 (JST)"

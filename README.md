@@ -249,7 +249,7 @@ and Sisimai. More information about differences are available at
 | Database schema for storing parsed bounce data | Available     | N/A[1]      |
 | Analytical precision ratio(2000 emails)[2]     | 0.49          | 1.00        |
 | The speed of parsing email(1000 emails)        | 4.24s         | 2.33s       |
-| The number of detectable bounce reasons        | 19            | 27          |
+| The number of detectable bounce reasons        | 19            | 29          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | Unable        | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
@@ -258,7 +258,7 @@ and Sisimai. More information about differences are available at
 | Install using cpan or cpanm command            | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 9000 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 191300 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 191600 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
