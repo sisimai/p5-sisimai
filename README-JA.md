@@ -1,4 +1,4 @@
-![](http://41.media.tumblr.com/45c8d33bea2f92da707f4bbe66251d6b/tumblr_nuf7bgeyH51uz9e9oo1_1280.png)
+![](http://libsisimai.org/static/images/logo/sisimai-x01.png)
 
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-Sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
@@ -39,8 +39,8 @@ What is sisimai
 ===============================================================================
 Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析結果をデータ構造に
 変換するインターフェイスを提供するPerlモジュールです。
-__シシマイ__はbounceHammer version 4として開発していたものであり、Version 4なので
-__シ(Si)__から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名前になりました。
+__シシマイ__ はbounceHammer version 4として開発していたものであり、Version 4なので
+__シ(Si)__ から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名前になりました。
 
 ![](http://libsisimai.org/static/images/figure/sisimai-overview-1.png)
 
