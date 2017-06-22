@@ -10,8 +10,9 @@ TIME  := $(shell date '+%F')
 NAME  := Sisimai
 PERL  ?= perl
 CPANM := http://cpanmin.us/
-WGET  := wget -c -O ./cpanm
-CURL  := curl -o ./cpanm -L
+CPM   := https://git.io/cpm
+WGET  := wget -c 
+CURL  := curl -L
 CHMOD := chmod
 PROVE := prove -Ilib --timer
 MINIL := minil
@@ -26,7 +27,11 @@ DEVEL_TARGETS = profile private-sample update-analytical-precision-table loc
 # -----------------------------------------------------------------------------
 .PHONY: clean
 cpanm:
-	$(WGET) $(CPANM) || $(CURL) $(CPANM)
+	$(WGET) -O ./$@ $(CPANM) || $(CURL) -o ./$@ $(CPANM)
+	test -f ./$@ && $(CHMOD) a+x ./$@
+
+cpm:
+	$(CURL) -s --compressed $(CPM) > ./$@
 	test -f ./$@ && $(CHMOD) a+x ./$@
 
 install-from-cpan:
