@@ -49,7 +49,7 @@ Key features
 * __エラーメールをデータ構造に変換__
   * Perlのデータ形式(HashとArray)とJSON(文字列)に対応
 * __インストールも使用も簡単__
-  * cpan, cpanm, cpmコマンド
+  * `cpan`, `cpanm`, `cpm install`
   * git clone & make
 * __高い解析精度__
   * 解析精度はbounceHammerの2倍
