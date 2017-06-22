@@ -50,7 +50,7 @@ Key features
 * __Convert Bounce Mails to Structured Data__
   * Supported formats are Perl(Hash, Array) and JSON(String)
 * __Easy to Install, Use.__
-  * cpanm
+  * cpan, cpanm, or cpm command
   * git clone & make
 * __High Precision of Analysis__
   * 2 times higher than bounceHammer
