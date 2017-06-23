@@ -85,7 +85,7 @@ Install
 -------------------------------------------------------------------------------
 ### From CPAN
 ```shell
-$ sudo cpanm Sisimai
+$ cpanm --sudo Sisimai
 --> Working on Sisimai
 Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.21.0.tar.gz ... OK
 ...

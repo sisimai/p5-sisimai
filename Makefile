@@ -38,7 +38,7 @@ install-from-cpan:
 	curl -L https://cpanmin.us | $(PERL) - -M https://cpan.metacpan.org -n $(NAME)
 
 install-from-local: cpanm
-	./cpanm .
+	./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 
 test: user-test author-test
 user-test:

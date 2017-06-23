@@ -86,7 +86,7 @@ Install
 ### From CPAN
 
 ```shell
-$ sudo cpanm Sisimai
+$ cpanm --sudo Sisimai
 --> Working on Sisimai
 Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.21.0.tar.gz ... OK
 ...
@@ -101,7 +101,7 @@ $ perldoc -l Sisimai
 $ cd /usr/local/src
 $ git clone https://github.com/sisimai/p5-Sisimai.git
 $ cd ./p5-Sisimai
-$ sudo make install-from-local
+$ make install-from-local
 --> Working on .
 Configuring Sisimai-4.21.0 ... OK
 1 distribution installed
