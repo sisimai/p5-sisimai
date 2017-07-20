@@ -1,5 +1,5 @@
-package Sisimai::CED::US::AmazonSES;
-use parent 'Sisimai::CED';
+package Sisimai::Bite::JSON::AmazonSES;
+use parent 'Sisimai::Bite::JSON';
 use feature ':5.10';
 use strict;
 use warnings;
@@ -33,7 +33,7 @@ sub description { 'Amazon SES(JSON): http://aws.amazon.com/ses/' };
 
 sub scan {
     # Detect an error from Amazon SES(JSON)
-    # @param         [Hash] mhead       Message header of a bounce email
+    # @param         [Hash] mhead       Message headers of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header
     # @options mhead [String] subject   Subject header
@@ -257,15 +257,15 @@ __END__
 
 =head1 NAME
 
-Sisimai::CED::US::AmazonSES - bounce object (JSON) parser class for C<Amazon SES>.
+Sisimai::Bite::JSON::AmazonSES - bounce object (JSON) parser class for C<Amazon SES>.
 
 =head1 SYNOPSIS
 
-    use Sisimai::CED::US::AmazonSES;
+    use Sisimai::Bite::JSON::AmazonSES;
 
 =head1 DESCRIPTION
 
-Sisimai::CED::US::AmazonSES parses a bounce object as JSON which created by
+Sisimai::Bite::JSON::AmazonSES parses a bounce object as JSON which created by
 C<Amazon Simple Email Service>. Methods in the module are called from only 
 Sisimai::Message.
 
@@ -275,13 +275,13 @@ Sisimai::Message.
 
 C<description()> returns description string of this module.
 
-    print Sisimai::CED::US::AmazonSES->description;
+    print Sisimai::Bite::JSON::AmazonSES->description;
 
 =head2 C<B<smtpagent()>>
 
 C<smtpagent()> returns MTA name.
 
-    print Sisimai::CED::US::AmazonSES->smtpagent;
+    print Sisimai::Bite::JSON::AmazonSES->smtpagent;
 
 =head2 C<B<scan(I<header data>, I<reference to body string>)>>
 
@@ -299,7 +299,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

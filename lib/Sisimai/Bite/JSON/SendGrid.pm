@@ -1,5 +1,5 @@
-package Sisimai::CED::US::SendGrid;
-use parent 'Sisimai::CED';
+package Sisimai::Bite::JSON::SendGrid;
+use parent 'Sisimai::Bite::JSON';
 use feature ':5.10';
 use strict;
 use warnings;
@@ -80,15 +80,15 @@ __END__
 
 =head1 NAME
 
-Sisimai::CED::US::SendGrid - bounce object (JSON) parser class for C<SendGrid>.
+Sisimai::Bite::JSON::SendGrid - bounce object (JSON) parser class for C<SendGrid>.
 
 =head1 SYNOPSIS
 
-    use Sisimai::CED::US::SendGrid;
+    use Sisimai::Bite::JSON::SendGrid;
 
 =head1 DESCRIPTION
 
-Sisimai::CED::US::SendGrid parses a bounce object as JSON which created by
+Sisimai::Bite::JSON::SendGrid parses a bounce object as JSON which created by
 C<SendGrid>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
@@ -97,13 +97,13 @@ C<SendGrid>. Methods in the module are called from only Sisimai::Message.
 
 C<description()> returns description string of this module.
 
-    print Sisimai::CED::US::SendGrid->description;
+    print Sisimai::Bite::JSON::SendGrid->description;
 
 =head2 C<B<smtpagent()>>
 
 C<smtpagent()> returns MTA name.
 
-    print Sisimai::CED::US::SendGrid->smtpagent;
+    print Sisimai::Bite::JSON::SendGrid->smtpagent;
 
 =head2 C<B<adapt(I<Hash>)>>
 
@@ -116,7 +116,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
