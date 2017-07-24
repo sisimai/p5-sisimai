@@ -49,7 +49,7 @@ my $HEADERTABLE = {
 
 BUILD_FLATTEN_RFC822HEADER_LIST: {
     # Convert $HEADER: hash reference to flatten hash reference for being
-    # called from Sisimai::MTA::*
+    # called from Sisimai::Bite::Email::*
     for my $v ( values %$HEADERTABLE ) {
         $HEADERINDEX->{ lc $_ } = 1 for @$v;
     }
@@ -309,7 +309,7 @@ header.
 =head2 C<B<weedout(I<Array>)>>
 
 C<weedout()> returns string including only necessary fields from message/rfc822
-part. This method is called from only Sisimai::MTA/MSP modules.
+part. This method is called from only Sisimai::Bite::Email::* modules.
 
     my $v = <<'EOM';
     From: postmaster@nyaan.example.org
@@ -331,7 +331,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

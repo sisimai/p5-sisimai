@@ -2,7 +2,7 @@ package Sisimai::RFC3464;
 use feature ':5.10';
 use strict;
 use warnings;
-use Sisimai::MTA;
+use Sisimai::Bite::Email;
 use Sisimai::RFC5322;
 
 # http://tools.ietf.org/html/rfc3464
@@ -41,7 +41,7 @@ my $Re1 = {
     'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/i,
     'command'=> qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
 };
-my $Indicators = Sisimai::MTA->INDICATORS;
+my $Indicators = Sisimai::Bite::Email->INDICATORS;
 
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
@@ -70,7 +70,7 @@ sub scan {
     require Sisimai::MDA;
     require Sisimai::Address;
 
-    my $dscontents = [Sisimai::MTA->DELIVERYSTATUS];
+    my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $scannedset = Sisimai::MDA->scan($mhead, $mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -145,7 +145,7 @@ sub scan {
 
                 if( length $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
-                    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+                    push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = $y;
@@ -409,7 +409,7 @@ sub scan {
 
                 if( length $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
-                    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+                    push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
                     $b = $dscontents->[-1];
                 }
                 $b->{'recipient'} = $y;
@@ -477,7 +477,7 @@ Sisimai::RFC3464 - bounce mail parser class for Fallback.
 =head1 DESCRIPTION
 
 Sisimai::RFC3464 is a class which called from called from only Sisimai::Message
-when other Sisimai::MTA::* modules did not detected a bounce reason.
+when other Sisimai::Bite::Email::* modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
@@ -504,7 +504,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
