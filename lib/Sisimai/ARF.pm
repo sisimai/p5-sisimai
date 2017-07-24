@@ -2,7 +2,7 @@ package Sisimai::ARF;
 use feature ':5.10';
 use strict;
 use warnings;
-use Sisimai::MTA;
+use Sisimai::Bite::Email;
 use Sisimai::RFC5322;
 
 my $Re0 = {
@@ -36,7 +36,7 @@ my $Re1 = {
     'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-my $Indicators = Sisimai::MTA->INDICATORS;
+my $Indicators = Sisimai::Bite::Email->INDICATORS;
 my $LongFields = Sisimai::RFC5322->LONGFIELDS;
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
@@ -91,7 +91,7 @@ sub scan {
     return undef unless is_arf(undef, $mhead);
     require Sisimai::Address;
 
-    my $dscontents = [Sisimai::MTA->DELIVERYSTATUS];
+    my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
@@ -206,7 +206,7 @@ sub scan {
                 # Redacted-Address: localpart@
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
-                    push @$dscontents, Sisimai::MTA->DELIVERYSTATUS;
+                    push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
                 }
                 $v->{'recipient'} = Sisimai::Address->s3s4($1);
@@ -370,7 +370,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
