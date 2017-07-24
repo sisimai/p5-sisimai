@@ -30,7 +30,7 @@ my $rwaccessors = [
     'recipient',        # [Sisimai::Address] Recipient address which bounced
     'messageid',        # [String] Message-Id: header
     'replycode',        # [String] SMTP Reply Code
-    'smtpagent',        # [String] MTA name
+    'smtpagent',        # [String] Module(Engine) name
     'softbounce',       # [Integer] 1 = Soft bounce, 0 = Hard bounce, -1 = ?
     'smtpcommand',      # [String] The last SMTP command
     'destination',      # [String] The domain part of the "recipinet"
@@ -711,7 +711,7 @@ as the return value from host() method of addresser accessor.
 =head2 C<smtpagent> (I<String>)
 
 C<smtpagent> is a module name to be used for detecting bounce reason. For 
-example, when the value is C<Sendmail>, Sisimai used L<Sisimai::MTA::Sendmail>
+example, when the value is C<Sendmail>, Sisimai used L<Sisimai::Bite::Email::Sendmail>
 to get the recipient address and other delivery status information from a 
 bounce message.
 
