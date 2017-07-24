@@ -68,7 +68,7 @@ sub make {
     $processing->{'from'}   = $aftersplit->{'from'};
     $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'}, $headerlist);
 
-    # 3. Check headers for detecting MTA/MSP module
+    # 3. Check headers for detecting MTA module
     unless( scalar @$TryOnFirst ) {
         push @$TryOnFirst, @{ __PACKAGE__->makeorder($processing->{'header'}) };
     }
@@ -89,7 +89,7 @@ sub make {
     # 5. Rewrite headers of the original message in the body part
     my $rfc822part = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
     if( ref $rfc822part eq '' ) {
-        # Returned from Sisimai::MTA::* or Sisimai::MSP::* modules
+        # Returned value from Sisimai::Bite::Email::* module
         $processing->{'rfc822'} = __PACKAGE__->takeapart(\$rfc822part);
 
     } else {
@@ -254,9 +254,9 @@ sub headers {
 }
 
 sub makeorder {
-    # Check headers for detecting MTA/MSP module and returns the order of modules
+    # Check headers for detecting MTA module and returns the order of modules
     # @param         [Hash] heads   Email header data
-    # @return        [Array]        Order of MTA/MSP modules
+    # @return        [Array]        Order of MTA modules
     my $class = shift;
     my $heads = shift || return [];
     my $order = [];
@@ -363,7 +363,7 @@ sub takeapart {
 }
 
 sub parse {
-    # Parse bounce mail with each MTA/MSP module
+    # Parse bounce mail with each MTA module
     # @param               [Hash] argvs    Processing message entity.
     # @param options argvs [Hash] mail     Email message entity
     # @param options mail  [String] from   From line of mbox
@@ -459,7 +459,7 @@ sub parse {
         # 1. Sisimai::ARF 
         # 2. User-Defined Module
         # 3. MTA Module Candidates to be tried on first
-        # 4. Sisimai::MTA::* and MSP::*
+        # 4. Sisimai::Bite::Email::*
         # 5. Sisimai::RFC3464
         # 6. Sisimai::RFC3834
         #
@@ -487,16 +487,16 @@ sub parse {
         }
 
         DEFAULT_LIST: for my $r ( @$DefaultSet ) {
-            # MTA/MSP modules which does not have MTA specific header and did
-            # not match with any regular expressions of Subject header.
+            # MTA modules which does not have MTA specific header and did not
+            # match with any regular expressions of Subject header.
             next if exists $haveloaded->{ $r };
             $hasscanned = $r->scan($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             last(SCANNER) if $hasscanned;
         }
 
-        # When the all of Sisimai::MTA::* modules did not return bounce data,
-        # call Sisimai::RFC3464;
+        # When the all of Sisimai::Bite::Email::* modules did not return bounce
+        # data, call Sisimai::RFC3464;
         require Sisimai::RFC3464;
         $hasscanned = Sisimai::RFC3464->scan($mailheader, $bodystring);
         last(SCANNER) if $hasscanned;
