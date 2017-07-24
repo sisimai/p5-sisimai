@@ -4,12 +4,32 @@ use strict;
 use warnings;
 use Sisimai::Skeleton;
 
-sub DELIVERYSTATUS { return Sisimai::Skeleton->DELIVERYSTATUS }
-sub INDICATORS     { return Sisimai::Skeleton->INDICATORS     }
-sub smtpagent      { my $v = shift; $v =~ s/\ASisimai:://; return $v }
-sub description    { return '' }
-sub headerlist     { return [] }
-sub pattern        { return {} }
+sub DELIVERYSTATUS {
+    warn sprintf(" ***warning: %s->DELIVERYSTATUS has been moved to Sisimai::Bite->DELIVERYSTATUS\n", __PACKAGE__);
+    return Sisimai::Skeleton->DELIVERYSTATUS;
+}
+sub INDICATORS {
+    warn sprintf(" ***warning: %s->DELIVERYSTATUS has been moved to Sisimai::Bite::Email->INDICATORS\n", __PACKAGE__);
+    return Sisimai::Skeleton->INDICATORS;
+}
+sub smtpagent { 
+    warn sprintf(" ***warning: %s->smtpagent has been moved to Sisimai::Bite->smtpagent\n", __PACKAGE__);
+    my $v = shift;
+    $v =~ s/\ASisimai:://;
+    return $v;
+}
+sub description {
+    warn sprintf(" ***warning: %s->description has been moved to Sisimai::Bite->description\n", __PACKAGE__);
+    return '';
+}
+sub headerlist {
+    warn sprintf(" ***warning: %s->headerlist has been moved to Sisimai::Bite::Email->headerlist\n", __PACKAGE__);
+    return [];
+}
+sub pattern {
+    warn sprintf(" ***warning: %s->pattern has been moved to Sisimai::Bite::Email->pattern\n", __PACKAGE__);
+    return {};
+}
 
 sub index {
     # CED list
@@ -39,6 +59,10 @@ sub adapt {
 }
 
 1;
+
+package Sisimai::CED::US::AmazonSES; use parent 'Sisimai::CED'; 1;
+package Sisimai::CED::US::SendGrid; use parent 'Sisimai::CED'; 1;
+
 __END__
 
 =encoding utf-8
@@ -62,7 +86,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
