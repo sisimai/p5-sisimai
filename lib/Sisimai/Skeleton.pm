@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 sub INDICATORS {
-    # Flags for position variable for
+    # Flags for position variables
     # @private
     # @return   [Hash] Position flag data
     # @since    v4.13.0
