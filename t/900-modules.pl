@@ -4,6 +4,61 @@ sub list {
     my $f = [ qw|
         Address.pm
         ARF.pm
+        Bite.pm
+            Bite/Email.pm
+                Bite/Email/Activehunter.pm
+                Bite/Email/AmazonSES.pm
+                Bite/Email/AmazonWorkMail.pm
+                Bite/Email/Aol.pm
+                Bite/Email/ApacheJames.pm
+                Bite/Email/Bigfoot.pm
+                Bite/Email/Biglobe.pm
+                Bite/Email/Courier.pm
+                Bite/Email/Domino.pm
+                Bite/Email/EinsUndEins.pm
+                Bite/Email/Exchange2003.pm
+                Bite/Email/Exchange2007.pm
+                Bite/Email/Exim.pm
+                Bite/Email/EZweb.pm
+                Bite/Email/Facebook.pm
+                Bite/Email/GMX.pm
+                Bite/Email/Google.pm
+                Bite/Email/GSuite.pm
+                Bite/Email/IMailServer.pm
+                Bite/Email/InterScanMSS.pm
+                Bite/Email/KDDI.pm
+                Bite/Email/MailFoundry.pm
+                Bite/Email/MailMarshalSMTP.pm
+                Bite/Email/MailRu.pm
+                Bite/Email/McAfee.pm
+                Bite/Email/MessageLabs.pm
+                Bite/Email/MessagingServer.pm
+                Bite/Email/mFILTER.pm
+                Bite/Email/MXLogic.pm
+                Bite/Email/Notes.pm
+                Bite/Email/Office365.pm
+                Bite/Email/OpenSMTPD.pm
+                Bite/Email/Outlook.pm
+                Bite/Email/Postfix.pm
+                Bite/Email/qmail.pm
+                Bite/Email/ReceivingSES.pm
+                Bite/Email/SendGrid.pm
+                Bite/Email/Sendmail.pm
+                Bite/Email/SurfControl.pm
+                Bite/Email/UserDefined.pm
+                Bite/Email/V5sendmail.pm
+                Bite/Email/Verizon.pm
+                Bite/Email/X1.pm
+                Bite/Email/X2.pm
+                Bite/Email/X3.pm
+                Bite/Email/X4.pm
+                Bite/Email/X5.pm
+                Bite/Email/Yahoo.pm
+                Bite/Email/Yandex.pm
+                Bite/Email/Zoho.pm
+            Bite/JSON.pm
+                Bite/JSON/AmazonSES.pm
+                Bite/JSON/SendGrid.pm
         CED.pm
             CED/US/AmazonSES.pm
             CED/US/SendGrid.pm
