@@ -1,5 +1,5 @@
 package Sisimai::Bite::Email::KDDI;
-use parent 'Sisimai::MSP';
+use parent 'Sisimai::Bite::Email';
 use feature ':5.10';
 use strict;
 use warnings;
