@@ -30,7 +30,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-Original-To: 000001321defbd2a-788e31c8-2be1-422f-a8d4-cf7765cc9ed7-000000@email-bounces.amazonses.com
 # X-AWS-Outgoing: 199.255.192.156
 # X-SES-Outgoing: 2016.10.12-54.240.27.6
-sub headerlist  { return ['X-AWS-Outgoing', 'X-SES-Outgoing'] }
+sub headerlist  { return ['X-AWS-Outgoing', 'X-SES-Outgoing', 'x-amz-sns-message-id'] }
 sub pattern     { return $Re0 }
 sub description { 'Amazon SES(Sending): http://aws.amazon.com/ses/' };
 
@@ -184,6 +184,18 @@ sub scan {
     } continue {
         # Save the current line for the next loop
         $p = $e;
+    }
+
+    if( $recipients == 0 && $$mbody =~ m/notificationType/ ) {
+        # Try to parse with Sisimai::Bite::JSON::AmazonSES module
+        require Sisimai::Bite::JSON::AmazonSES;
+        my $e = Sisimai::Bite::JSON::AmazonSES->scan($mhead, $mbody);
+
+        if( ref $e->{'ds'} eq 'ARRAY' ) {
+            # Update $dscontents
+            $dscontents = $e->{'ds'};
+            $recipients = scalar @{ $e->{'ds'} };
+        }
     }
 
     return undef unless $recipients;
