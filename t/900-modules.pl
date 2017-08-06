@@ -75,58 +75,6 @@ sub list {
             Message/Email.pm
             Message/JSON.pm
         MDA.pm
-        MSP.pm
-            MSP/DE/EinsUndEins.pm
-            MSP/DE/GMX.pm
-            MSP/JP/Biglobe.pm
-            MSP/JP/EZweb.pm
-            MSP/JP/KDDI.pm
-            MSP/RU/MailRu.pm
-            MSP/RU/Yandex.pm
-            MSP/UK/MessageLabs.pm
-            MSP/US/AmazonSES.pm
-            MSP/US/AmazonWorkMail.pm
-            MSP/US/Aol.pm
-            MSP/US/Bigfoot.pm
-            MSP/US/Facebook.pm
-            MSP/US/Google.pm
-            MSP/US/GSuite.pm
-            MSP/US/Office365.pm
-            MSP/US/Outlook.pm
-            MSP/US/ReceivingSES.pm
-            MSP/US/SendGrid.pm
-            MSP/US/Verizon.pm
-            MSP/US/Yahoo.pm
-            MSP/US/Zoho.pm
-        MTA.pm
-            MTA/Activehunter.pm
-            MTA/ApacheJames.pm
-            MTA/Courier.pm
-            MTA/Domino.pm
-            MTA/Exim.pm
-            MTA/Exchange2003.pm
-            MTA/Exchange2007.pm
-            MTA/IMailServer.pm
-            MTA/InterScanMSS.pm
-            MTA/MailFoundry.pm
-            MTA/MailMarshalSMTP.pm
-            MTA/McAfee.pm
-            MTA/MessagingServer.pm
-            MTA/mFILTER.pm
-            MTA/MXLogic.pm
-            MTA/Notes.pm
-            MTA/OpenSMTPD.pm
-            MTA/Postfix.pm
-            MTA/qmail.pm
-            MTA/Sendmail.pm
-            MTA/SurfControl.pm
-            MTA/UserDefined.pm
-            MTA/V5sendmail.pm
-            MTA/X1.pm
-            MTA/X2.pm
-            MTA/X3.pm
-            MTA/X4.pm
-            MTA/X5.pm
         Order.pm
             Order/Email.pm
             Order/JSON.pm
