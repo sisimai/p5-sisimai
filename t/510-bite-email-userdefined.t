@@ -27,7 +27,7 @@ MAKE_TEST: {
     while( my $r = $mail->read ){ 
         $mesg = Sisimai::Message->new(
                     'data' => $r,
-                    'load' => ['Sisimai::MTA::UserDefined']
+                    'load' => ['Sisimai::Bite::Email::UserDefined']
                 ); 
         $data = Sisimai::Data->make('data' => $mesg); 
         isa_ok $data, 'ARRAY';
@@ -42,7 +42,7 @@ MAKE_TEST: {
             ok defined $e->smtpcommand, 'smtpcommand = '.$e->smtpcommand;
 
             is $e->reason, 'userunknown', 'reason = '.$e->reason;
-            is $e->smtpagent, 'MTA::UserDefined', 'smtpagent = '.$e->smtpagent;
+            is $e->smtpagent, 'Email::UserDefined', 'smtpagent = '.$e->smtpagent;
 
             isa_ok $e->timestamp, 'Sisimai::Time';
             is $e->timestamp->year, 2010, 'timestamp->year = '.$e->timestamp->year;
