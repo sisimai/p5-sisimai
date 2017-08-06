@@ -59,9 +59,9 @@ MAKE_TEST: {
             'hook' => $callbackto,
             'input' => 'email',
             'order' => [
-                'Sisimai::MTA::Sendmail', 'Sisimai::MTA::Postfix', 
-                'Sisimai::MTA::qmail', 'Sisimai::MTA::Exchange2003', 
-                'Sisimai::MSP::US::Google', 'Sisimai::MSP::US::Verizon',
+                'Sisimai::Bite::Email::Sendmail', 'Sisimai::Bite::Email::Postfix', 
+                'Sisimai::Bite::Email::qmail', 'Sisimai::Bite::Email::Exchange2003', 
+                'Sisimai::BIte::Email::Google', 'Sisimai::Bite::Email::Verizon',
             ]
          );
 
@@ -80,7 +80,7 @@ MAKE_TEST: {
             next unless $e->{ $q };
             like $e->{ $q }, qr/\A.+[.].+\z/, '->'.$q.' = '.$e->{ $q };
         }
-        is $e->{'agent'}, 'MTA::Sendmail', '->agent = '.$e->{'agent'};
+        is $e->{'agent'}, 'Email::Sendmail', '->agent = '.$e->{'agent'};
     }
 
     for my $e ( 'content-type', 'to', 'subject', 'date', 'from', 'message-id' ) {
