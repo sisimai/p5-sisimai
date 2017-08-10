@@ -9,7 +9,7 @@ my $MethodNames = {
     'class' => ['new', 'make', 'load', 'parse', 'makeorder'],
     'object' => ['from', 'header', 'ds', 'rfc822'],
 };
-my $SampleEmail = './set-of-emails/jsonapi/ced-us-sendgrid-03.json';
+my $SampleEmail = './set-of-emails/jsonobj/json-sendgrid-03.json';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -46,7 +46,7 @@ MAKE_TEST: {
             'hook' => $callbackto,
             'load' => ['Sisimai::Neko::Nyaan'],
             'input' => 'json',
-            'order' => ['Sisimai::CED::US::AmazonSES', 'Sisimai::CED::US::SendGrid'],
+            'order' => ['Sisimai::Bite::JSON::AmazonSES', 'Sisimai::Bite::JSON::SendGrid'],
          );
 
     for my $e ( @{ $p->ds } ) {
@@ -59,7 +59,7 @@ MAKE_TEST: {
         ok exists $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
         ok exists $e->{'command'}, '->command = '.$e->{'command'};
         ok exists $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
-        is $e->{'agent'}, 'CED::US::SendGrid', '->agent = '.$e->{'agent'};
+        is $e->{'agent'}, 'JSON::SendGrid', '->agent = '.$e->{'agent'};
     }
 
     ok keys(%{ $p->header }) == 0;

@@ -59,9 +59,6 @@ sub list {
             Bite/JSON.pm
                 Bite/JSON/AmazonSES.pm
                 Bite/JSON/SendGrid.pm
-        CED.pm
-            CED/US/AmazonSES.pm
-            CED/US/SendGrid.pm
         Data.pm
             Data/JSON.pm
             Data/YAML.pm

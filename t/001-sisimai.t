@@ -16,7 +16,7 @@ my $MethodNames = {
 my $SampleEmail = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
     'maildir' => './set-of-emails/maildir/bsd',
-    'jsonapi' => './set-of-emails/jsonapi/ced-us-amazonses-01.json'
+    'jsonobj' => './set-of-emails/jsonobj/json-amazonses-01.json'
 };
 my $IsNotBounce = {
     'maildir' => './set-of-emails/maildir/not',
@@ -45,13 +45,13 @@ MAKE_TEST: {
     eval { $PackageName->make('/dev/null', 'field' => 22) };
     like $@, qr/error: "field" accepts an array reference only/;
 
-    for my $e ( 'mailbox', 'maildir', 'jsonapi' ) {
+    for my $e ( 'mailbox', 'maildir', 'jsonobj' ) {
         MAKE: {
             my $parseddata = undef;
             my $damnedhash = undef;
             my $jsonstring = undef;
 
-            if( $e eq 'jsonapi' ) {
+            if( $e eq 'jsonobj' ) {
                 my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
                 my $jsonparser = JSON->new;
                 my $jsonobject = $jsonparser->decode(<$filehandle>);
@@ -103,7 +103,7 @@ MAKE_TEST: {
 
             my $callbackto = undef;
             my $havecaught = undef;
-            if( $e eq 'jsonapi' ) {
+            if( $e eq 'jsonobj' ) {
                 # JSON
                 $callbackto = sub {
                     my $argvs = shift;
@@ -158,8 +158,8 @@ MAKE_TEST: {
                 isa_ok $ee, 'Sisimai::Data';
                 isa_ok $ee->catch, 'HASH';
 
-                if( $e eq 'jsonapi' ) {
-                    # jsonapi
+                if( $e eq 'jsonobj' ) {
+                    # jsonobj
                     is $ee->catch->{'type'}, 'json';
                     ok length $ee->catch->{'feedbackid'};
                     ok length $ee->catch->{'account-id'};

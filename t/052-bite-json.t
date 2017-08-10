@@ -1,14 +1,11 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::MSP;
+use Sisimai::Bite::JSON;
 
-my $PackageName = 'Sisimai::MSP';
+my $PackageName = 'Sisimai::Bite::JSON';
 my $MethodNames = {
-    'class' => [
-        'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
-        'DELIVERYSTATUS', 'INDICATORS',
-    ],
+    'class' => ['index', 'scan', 'adapt', 'smtpagent', 'description', 'DELIVERYSTATUS'],
     'object' => [],
 };
 
@@ -19,11 +16,10 @@ MAKE_TEST: {
     ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
     is $PackageName->scan, undef, '->scan';
+    is $PackageName->adapt, undef, '->adapt';
 
     isa_ok $PackageName->index, 'ARRAY';
-    isa_ok $PackageName->headerlist, 'ARRAY';
-    isa_ok $PackageName->pattern, 'HASH';
     isa_ok $PackageName->DELIVERYSTATUS, 'HASH';
-    isa_ok $PackageName->INDICATORS, 'HASH';
 }
 done_testing;
+

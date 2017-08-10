@@ -1,0 +1,258 @@
+#!/usr/bin/env perl
+package Sisimai::Bite::Email::Code;
+use lib qw(./lib ./blib/lib);
+use strict;
+use warnings;
+
+my $moduletest = sub {
+    my $modulename = shift || return undef;
+    my $isexpected = shift || return undef;
+    my $onlydebugs = shift || 0;
+
+    my $E = $modulename;
+    my $M = undef;
+    my $v = undef;
+
+    use Test::More;
+    use Module::Load;
+    use Sisimai::Mail;
+    use Sisimai::Message;
+    use Sisimai::Data;
+
+    my $outofemail = ['ARF', 'RFC3464', 'RFC3834'];
+    my $methodlist = ['description', 'headerlist', 'scan', 'pattern', 'DELIVERYSTATUS'];
+    my $emailindex = 0;
+    my $mesgmethod = {
+        'length' => [qw|recipient agent|],
+        'exists' => [qw|
+            date spec reason status command action alias rhost lhost 
+            diagnosis feedbacktype softbounce
+        |],
+    };
+
+    if( grep { $E eq $_ } @$outofemail ) {
+        # ARF, RFC3464, RFC3834
+        $M = sprintf("Sisimai::%s", $E);
+
+    } else {
+        # Other MTA modules
+        $M = sprintf("Sisimai::Bite::Email::%s", $E);
+    }
+
+    Module::Load::load($M);
+    use_ok $M;
+    can_ok $M, @$methodlist unless grep { $E eq $_ } @$outofemail;
+
+    $v = $M->description; ok $v, $E.'->description = '.$v;
+    $v = $M->smtpagent;   ok $v, $E.'->smtpagent = '.$v;
+    $v = $M->pattern;     ok keys(%$v), $E.'->pattern = HASH';
+    $v = $M->scan;        is $v, undef, $E.'->scan = undef';
+
+    PARSE_EACH_EMAIL: for my $e ( @$isexpected ) {
+        # Open each email in set-of-emails/ directory
+        my $samplefile = undef;
+        my $mailobject = undef;
+        my $indexlabel = sprintf("%02d", $e->{'n'});
+
+        if( $onlydebugs ) {
+            # Debug mode
+            $emailindex += 1;
+            next unless $onlydebugs == $emailindex;
+            ok $onlydebugs, sprintf("[%s] %s|DEBUG(%02d)", $indexlabel, $E, $onlydebugs);
+        }
+
+        if( grep { $E eq $_ } @$outofemail ) {
+            # ARF, RFC3464, and RFC3834
+            $samplefile = sprintf("./set-of-emails/maildir/bsd/%s-%02d.eml", lc $E, $e->{'n'});
+
+        } else {
+            # Other MTA modules
+            $samplefile = sprintf("./set-of-emails/maildir/bsd/email-%s-%02d.eml", lc $E, $e->{'n'});
+        }
+        ok -f $samplefile, sprintf("[%s] %s/email(path) = %s", $indexlabel, $E, $samplefile);
+        ok -s $samplefile, sprintf("[%s] %s/email(size) = %s", $indexlabel, $E, -s $samplefile);
+
+        $mailobject = Sisimai::Mail->new($samplefile);
+        next unless defined $mailobject;
+        isa_ok $mailobject, 'Sisimai::Mail'; 
+
+        READ_EACH_EMAIL: while( my $r = $mailobject->read ) {
+            # Read messages in each email
+            my $mesgobject = undef;
+            my $dataobject = undef;
+            my $foundindex = 0;
+
+            my $pp = undef; # Property
+            my $lb = undef; # Label
+            my $re = undef; # Regular expression
+
+            $mesgobject = Sisimai::Message->new('data' => $r);
+            isa_ok $mesgobject,         'Sisimai::Message';
+            isa_ok $mesgobject->ds,     'ARRAY';
+            isa_ok $mesgobject->header, 'HASH';
+            isa_ok $mesgobject->rfc822, 'HASH';
+
+            ok length $mesgobject->from,    sprintf("[%s***] %s->from = %s", $indexlabel, $E, $mesgobject->from);
+            ok scalar @{ $mesgobject->ds }, sprintf("[%s***] %s->ds = %d entries", $indexlabel, $E, scalar @{ $mesgobject->ds });
+
+            SISIMAI_MESSAGE: for my $ds ( @{ $mesgobject->ds } ) {
+                $foundindex += 1;
+                $lb = sprintf("%02d-%02d", $e->{'n'}, $foundindex);
+
+                for my $rr ( @{ $mesgmethod->{'length'} } ) {
+                    # Lenght of each variable is greater than 0
+                    ok length $ds->{ $rr }, sprintf(" [%s] %s->%s = %s", $lb, $E, $rr, $ds->{ $rr });
+                }
+
+                for my $rr ( @{ $mesgmethod->{'exists'} } ) {
+                    # Each key should be exist
+                    ok exists $ds->{ $rr }, sprintf(" [%s] %s->%s = %s", $lb, $E, $rr, $ds->{ $rr } || '');
+                }
+
+                $pp = 'agent';
+                if( $E eq 'X4' ) {
+                    # X4 is qmail clone
+                    $re = qr/(?:qmail|X4)/;
+                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+
+                } elsif( $E eq 'RFC3464' ) {
+                    # RFC3464
+                    $re = $e->{'a'};
+                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+
+                } elsif( $E eq 'RFC3834' ) {
+                    # RFC3834
+                    $re = qr/\ARFC3834\z/;
+                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+
+                } elsif( $E eq 'ARF' ) {
+                    # ARF
+                    $re = qr/.+/;
+                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+
+                } else {
+                    # Other MTA modules
+                    $re = 'Email::'.$E;
+                    is $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                }
+
+                $pp = 'recipient';
+                $re = qr/[0-9A-Za-z@-_.]+/;
+                like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+
+                $pp = 'command';
+                unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+
+                $pp = 'status';
+                if( length $ds->{ $pp } ) {
+                    # Check the value of "status"
+                    $re = qr/\A(?:[245][.]\d[.]\d+)\z/;
+                    like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                    unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                }
+
+                $pp = 'action';
+                if( length $ds->{ $pp } ) {
+                    # Check the value of "action"
+                    $re = qr/\A(?:fail.+|delayed|expired|deliverable)\z/;
+                    like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                    unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                }
+
+                for my $rr ( 'rhost', 'lhost' ) {
+                    # Check rhost and lhost are valid hostname or not
+                    next unless $ds->{ $rr };
+                    next if $E =~ m/\A(?:qmail|Exim|Exchange|X4|MailRu)/;
+                    next unless length $ds->{ $rr };
+
+                    $pp = $rr;
+                    $re = qr/\A(?:localhost|.+[.].+)\z/;
+                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                }
+            } # End of the loop for checking Sisimai::Message
+
+
+            $dataobject = Sisimai::Data->make('data' => $mesgobject, 'delivered' => 1);
+            isa_ok $dataobject, 'ARRAY';
+            isa_ok $dataobject->[0], 'Sisimai::Data';
+            ok scalar @$dataobject, sprintf("%s|Sisimai::Data = %s", $E, scalar @$dataobject);
+
+            SISIMAI_DATA: for my $pr ( @$dataobject ) {
+                # checking each Sisimai::Data object
+                isa_ok $pr,            'Sisimai::Data';
+                isa_ok $pr->timestamp, 'Sisimai::Time';
+                isa_ok $pr->addresser, 'Sisimai::Address';
+                isa_ok $pr->recipient, 'Sisimai::Address';
+
+                $pp = 'replycode';      ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'subject';        ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, '...');
+                $pp = 'smtpcommand';    ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'diagnosticcode'; ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'diagnostictype'; ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                if( $pr->reason eq 'feedback' ) {
+                    # reason: "feedback"
+                    $pp = 'deliverystatus'; is $pr->$pp, '', sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                    if( $E eq 'ARF' ) {
+                        $pp = 'feedbacktype';
+                        like $pr->$pp, $e->{'f'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                    }
+
+                } elsif( $pr->reason eq 'vacation' ) {
+                    # RFC3834
+                    $pp = 'deliverystatus'; is $pr->$pp, '',  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                    $pp = 'feedbacktype';   is $pr->$pp, '',  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                } else {
+                    # other reasons
+                    $pp = 'deliverystatus'; ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                    $pp = 'feedbacktype';   is $pr->$pp, '',    sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                }
+
+                $pp = 'token';          ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'smtpagent';      ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'timezoneoffset'; ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                $pp = 'senderdomain'; is $pr->addresser->host, $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'destination';  is $pr->recipient->host, $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                $pp = 'softbounce';
+                cmp_ok $pr->$pp, '>=', -1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                cmp_ok $pr->$pp, '<=',  1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                like   $pr->$pp, $e->{'b'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                $pp = 'replycode';      like $pr->$pp, qr/\A(?:[245]\d\d|)\z/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'timezoneoffset'; like $pr->$pp, qr/\A[-+]\d{4}\z/,      sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'deliverystatus'; like $pr->$pp, $e->{'s'},              sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'reason';         like $pr->$pp, $e->{'r'},              sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'token';          like $pr->$pp, qr/\A([0-9a-f]{40})\z/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                $re = qr/[ \r]/;
+                for my $rr ( qw|deliverystatus diagnostictype smtpcommand lhost rhost alias listid action messageid| ) {
+                    # Each value does not include ' '
+                    $pp = $rr; unlike $pr->$pp, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                }
+
+                $re = qr/__END_OF_EMAIL_MESSAGE__/;
+                $pp = 'diagnosticcode'; unlike $pr->$pp, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                for my $rr ( qw|user host verp alias| ) {
+                    # Each value does not include ' '
+                    $pp = $rr;
+                    unlike $pr->addresser->$pp, $re, sprintf(" [%s] %s->addresser->%s = %s", $lb, $E, $pp, $pr->addresser->$pp);
+                    unlike $pr->recipient->$pp, $re, sprintf(" [%s] %s->recipient->%s = %s", $lb, $E, $pp, $pr->recipient->$pp);
+                }
+            } # End of the loop for checking each Sisimai::Data object
+            $emailindex++;
+
+        } # End of READ_EACH_EMAIL
+
+    } # End of PARSE_EACH_EMAIL
+    ok $emailindex, sprintf("%s|the number of emails = %d", $M, $emailindex);
+};
+
+sub maketest { return $moduletest }
+
+1;
