@@ -4,11 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'    => qr/\A[<]?no-reply[@]sns[.]amazonaws[.]com[>]?/,
-    'subject' => qr/\AAWS Notification Message\z/,
-};
-
 # https://docs.aws.amazon.com/en_us/ses/latest/DeveloperGuide/notification-contents.html
 my $BounceType = {
     'Permanent' => {
@@ -24,13 +19,7 @@ my $BounceType = {
         'AttachmentRejected' => '',
     },
 };
-
-# x-amz-sns-message-id: 02f86d9b-eecf-573d-b47d-3d1850750c30
-# x-amz-sns-subscription-arn: arn:aws:sns:us-west-2:000000000000:SESEJB:ffffffff-2222-2222-2222-eeeeeeeeeeee
-sub headerlist  { return ['x-amz-sns-message-id'] };
-sub pattern     { return $Re0 }
 sub description { 'Amazon SES(JSON): http://aws.amazon.com/ses/' };
-
 sub scan {
     # Detect an error from Amazon SES(JSON)
     # @param         [Hash] mhead       Message headers of a bounce email
