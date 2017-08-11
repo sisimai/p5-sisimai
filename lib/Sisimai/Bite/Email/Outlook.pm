@@ -227,7 +227,7 @@ C<description()> returns description string of this module.
 
 =head2 C<B<smtpagent()>>
 
-C<smtpagent()> returns MSP name.
+C<smtpagent()> returns MTA name.
 
     print Sisimai::Bite::Email::Outlook->smtpagent;
 

@@ -40,13 +40,13 @@ Sisimai::Bite - Base class for Sisimai::Bite::*
 
 =head1 SYNOPSIS
 
-Sisimai::Bite is a base class for keeping all the MTA and MSP modules.
-Do not use this class and each child class of Sisimai::Bite::* directly. use
-Sisimai::Bite::*::*, such as Sisimai::Bite::Email::Sendmail, instead.
+Sisimai::Bite is a base class for keeping all the MTA modules. Do not use this
+class and child classes of Sisimai::Bite::* directly. Use Sisimai::Bite::*::*,
+such as Sisimai::Bite::Email::Sendmail, instead.
 
 =head1 DESCRIPTION
 
-Sisimai::Bite is a base class for keeping all the MTA and MSP modules.
+Sisimai::Bite is a base class for keeping all the MTA modules.
 
 =head1 AUTHOR
 

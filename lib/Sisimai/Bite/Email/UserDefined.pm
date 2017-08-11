@@ -60,7 +60,8 @@ sub scan {
     return undef unless $match;
 
     # 2. Parse message body($mbody) of the bounce message. See some modules in
-    #    lib/Sisimai/MTA or lib/Sisimai/MSP directory to implement codes.
+    #    lib/Sisimai/Bite/Email or lib/Sisimai/Bite/JSON directory to implement
+    #    codes.
     #
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);

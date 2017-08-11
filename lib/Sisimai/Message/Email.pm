@@ -93,7 +93,7 @@ sub make {
         $processing->{'rfc822'} = __PACKAGE__->takeapart(\$rfc822part);
 
     } else {
-        # Returned from Sisimai::CED::* modules
+        # Returned from Sisimai::Bite::JSON::* modules
         $processing->{'rfc822'} = $rfc822part;
     }
     return $processing;
