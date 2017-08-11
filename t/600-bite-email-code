@@ -7,6 +7,7 @@ use warnings;
 my $moduletest = sub {
     my $modulename = shift || return undef;
     my $isexpected = shift || return undef;
+    my $privateset = shift || 0;
     my $onlydebugs = shift || 0;
 
     my $E = $modulename;
@@ -20,6 +21,7 @@ my $moduletest = sub {
     use Sisimai::Data;
 
     my $outofemail = ['ARF', 'RFC3464', 'RFC3834'];
+    my $samplepath = 'set-of-emails/maildir/bsd';
     my $methodlist = ['description', 'headerlist', 'scan', 'pattern', 'DELIVERYSTATUS'];
     my $emailindex = 0;
     my $mesgmethod = {
@@ -33,10 +35,12 @@ my $moduletest = sub {
     if( grep { $E eq $_ } @$outofemail ) {
         # ARF, RFC3464, RFC3834
         $M = sprintf("Sisimai::%s", $E);
+        $samplepath = sprintf("set-of-emails/private/%s", lc $E) if $privateset;
 
     } else {
         # Other MTA modules
         $M = sprintf("Sisimai::Bite::Email::%s", $E);
+        $samplepath = sprintf("set-of-emails/private/email-%s", lc $E) if $privateset;
     }
 
     Module::Load::load($M);
@@ -57,20 +61,28 @@ my $moduletest = sub {
         if( $onlydebugs ) {
             # Debug mode
             $emailindex += 1;
-            next unless $onlydebugs == $emailindex;
-            ok $onlydebugs, sprintf("[%s] %s|DEBUG(%02d)", $indexlabel, $E, $onlydebugs);
+            next unless int($onlydebugs) == int($e->{'n'});
+            ok $onlydebugs, sprintf("[%s] %s|DEBUG(%02d)", $e->{'n'}, $E, $onlydebugs);
         }
 
-        if( grep { $E eq $_ } @$outofemail ) {
-            # ARF, RFC3464, and RFC3834
-            $samplefile = sprintf("./set-of-emails/maildir/bsd/%s-%02d.eml", lc $E, $e->{'n'});
+        if( $privateset ) {
+            # Private sample
+            $samplefile = [glob(sprintf("./%s/%s-*.eml", $samplepath, $e->{'n'}))]->[0];
 
         } else {
-            # Other MTA modules
-            $samplefile = sprintf("./set-of-emails/maildir/bsd/email-%s-%02d.eml", lc $E, $e->{'n'});
+            # Public sample
+            if( grep { $E eq $_ } @$outofemail ) {
+                # ARF, RFC3464, and RFC3834
+                $samplefile = sprintf("./%s/%s-%02d.eml", $samplepath, lc $E, $e->{'n'});
+
+            } else {
+                # Other MTA modules
+                $samplefile = sprintf("./%s/email-%s-%02d.eml", $samplepath, lc $E, $e->{'n'});
+            }
         }
-        ok -f $samplefile, sprintf("[%s] %s/email(path) = %s", $indexlabel, $E, $samplefile);
-        ok -s $samplefile, sprintf("[%s] %s/email(size) = %s", $indexlabel, $E, -s $samplefile);
+
+        ok -f $samplefile, sprintf("[%s] %s/email(path) = %s", $e->{'n'}, $E, $samplefile);
+        ok -s $samplefile, sprintf("[%s] %s/email(size) = %s", $e->{'n'}, $E, -s $samplefile);
 
         $mailobject = Sisimai::Mail->new($samplefile);
         next unless defined $mailobject;
@@ -86,14 +98,16 @@ my $moduletest = sub {
             my $lb = undef; # Label
             my $re = undef; # Regular expression
 
-            $mesgobject = Sisimai::Message->new('data' => $r);
-            isa_ok $mesgobject,         'Sisimai::Message';
-            isa_ok $mesgobject->ds,     'ARRAY';
-            isa_ok $mesgobject->header, 'HASH';
-            isa_ok $mesgobject->rfc822, 'HASH';
+            $mesgobject = Sisimai::Message->new('data' => $r, 'input' => 'email');
+            next unless defined $mesgobject;
 
-            ok length $mesgobject->from,    sprintf("[%s***] %s->from = %s", $indexlabel, $E, $mesgobject->from);
-            ok scalar @{ $mesgobject->ds }, sprintf("[%s***] %s->ds = %d entries", $indexlabel, $E, scalar @{ $mesgobject->ds });
+            isa_ok $mesgobject,         'Sisimai::Message', sprintf("[%s] Sisimai::Message object", $e->{'n'});
+            isa_ok $mesgobject->ds,     'ARRAY', sprintf("[%s] Sisimai::Message->ds",     $e->{'n'});
+            isa_ok $mesgobject->header, 'HASH',  sprintf("[%s] Sisimai::Message->header", $e->{'n'});
+            isa_ok $mesgobject->rfc822, 'HASH',  sprintf("[%s] Sisimai::Message->rf822",  $e->{'n'});
+
+            ok length $mesgobject->from,    sprintf("[%s***] %s->from = %s", $e->{'n'}, $E, $mesgobject->from);
+            ok scalar @{ $mesgobject->ds }, sprintf("[%s***] %s->ds = %d entries", $e->{'n'}, $E, scalar @{ $mesgobject->ds });
 
             SISIMAI_MESSAGE: for my $ds ( @{ $mesgobject->ds } ) {
                 $foundindex += 1;
@@ -117,8 +131,13 @@ my $moduletest = sub {
 
                 } elsif( $E eq 'RFC3464' ) {
                     # RFC3464
-                    $re = $e->{'a'};
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                    if( $privateset ) {
+                        ok length $ds->{ $pp }, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+
+                    } else {
+                        $re = $e->{'a'};
+                        like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                    }
 
                 } elsif( $E eq 'RFC3834' ) {
                     # RFC3834
@@ -139,7 +158,7 @@ my $moduletest = sub {
                 $pp = 'recipient';
                 $re = qr/[0-9A-Za-z@-_.]+/;
                 like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                #unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
 
                 $pp = 'command';
                 unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
@@ -155,9 +174,8 @@ my $moduletest = sub {
                 $pp = 'action';
                 if( length $ds->{ $pp } ) {
                     # Check the value of "action"
-                    $re = qr/\A(?:fail.+|delayed|expired|deliverable)\z/;
+                    $re = qr/\A(?:fail.+|delayed|deliverable|delivered|expired|expanded.*|relayed)\z/;
                     like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                    unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
                 }
 
                 for my $rr ( 'rhost', 'lhost' ) {
@@ -167,15 +185,15 @@ my $moduletest = sub {
                     next unless length $ds->{ $rr };
 
                     $pp = $rr;
-                    $re = qr/\A(?:localhost|.+[.].+)\z/;
+                    $re = qr/\A(?:[0-9A-Za-z]+|.+[.].+)\z/;
                     like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
                 }
             } # End of the loop for checking Sisimai::Message
 
 
             $dataobject = Sisimai::Data->make('data' => $mesgobject, 'delivered' => 1);
-            isa_ok $dataobject, 'ARRAY';
-            isa_ok $dataobject->[0], 'Sisimai::Data';
+            isa_ok $dataobject, 'ARRAY',              sprintf("[%s] Data object", $e->{'n'});
+            isa_ok $dataobject->[0], 'Sisimai::Data', sprintf("[%s] Sisimai::Data", $e->{'n'});
             ok scalar @$dataobject, sprintf("%s|Sisimai::Data = %s", $E, scalar @$dataobject);
 
             SISIMAI_DATA: for my $pr ( @$dataobject ) {
@@ -197,7 +215,12 @@ my $moduletest = sub {
 
                     if( $E eq 'ARF' ) {
                         $pp = 'feedbacktype';
-                        like $pr->$pp, $e->{'f'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                        if( $privateset ) {
+                            ok length $pr->$pp,       sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                        } else {
+                            like $pr->$pp, $e->{'f'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                        }
                     }
 
                 } elsif( $pr->reason eq 'vacation' ) {
@@ -221,16 +244,28 @@ my $moduletest = sub {
                 $pp = 'softbounce';
                 cmp_ok $pr->$pp, '>=', -1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 cmp_ok $pr->$pp, '<=',  1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                like   $pr->$pp, $e->{'b'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                if( $privateset ) {
+                    # Explicit value is not defined for private samples
+                    $pp = 'softbounce';     ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                    $re = qr/\A(?:[245][.]\d[.]\d+|)\z/;
+                    $pp = 'deliverystatus'; like $pr->$pp, $re,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                } else {
+                    # Try to match with the explicit value
+                    $pp = 'softbounce';     like $pr->$pp, $e->{'b'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                    $pp = 'deliverystatus'; like $pr->$pp, $e->{'s'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                }
 
                 $pp = 'replycode';      like $pr->$pp, qr/\A(?:[245]\d\d|)\z/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'timezoneoffset'; like $pr->$pp, qr/\A[-+]\d{4}\z/,      sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'deliverystatus'; like $pr->$pp, $e->{'s'},              sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'diagnostictype'; like $pr->$pp, qr/.*/,                 sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'reason';         like $pr->$pp, $e->{'r'},              sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'token';          like $pr->$pp, qr/\A([0-9a-f]{40})\z/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                $pp = 'alias';        unlike $pr->$pp, qr/[ ]/,                sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp) if $pr->$pp;
 
                 $re = qr/[ \r]/;
-                for my $rr ( qw|deliverystatus diagnostictype smtpcommand lhost rhost alias listid action messageid| ) {
+                for my $rr ( qw|deliverystatus smtpcommand lhost rhost alias listid action messageid| ) {
                     # Each value does not include ' '
                     $pp = $rr; unlike $pr->$pp, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 }
@@ -244,6 +279,18 @@ my $moduletest = sub {
                     unlike $pr->addresser->$pp, $re, sprintf(" [%s] %s->addresser->%s = %s", $lb, $E, $pp, $pr->addresser->$pp);
                     unlike $pr->recipient->$pp, $re, sprintf(" [%s] %s->recipient->%s = %s", $lb, $E, $pp, $pr->recipient->$pp);
                 }
+
+                for my $rr ( qw|addresser recipient| ) {
+                    $re = qr/[@]/;
+                    if( length $pr->$rr->alias ) {
+                        $pp = 'alias'; like $pr->$rr->$pp, $re, sprintf(" [%s] %s->%s->%s = %s", $lb, $E, $rr, $pp, $pr->$rr->$pp);
+                    }
+                    if( length $pr->$rr->verp ) {
+                        $pp = 'verp';  like $pr->$rr->$pp, $re, sprintf(" [%s] %s->%s->%s = %s", $lb, $E, $rr, $pp, $pr->$rr->$pp);
+                    }
+
+                }
+
             } # End of the loop for checking each Sisimai::Data object
             $emailindex++;
 

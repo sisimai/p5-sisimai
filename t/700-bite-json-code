@@ -7,6 +7,7 @@ use warnings;
 my $moduletest = sub {
     my $modulename = shift || return undef;
     my $isexpected = shift || return undef;
+    my $privateset = shift || 0;
     my $onlydebugs = shift || 0;
 
     my $E = $modulename;
@@ -21,6 +22,7 @@ my $moduletest = sub {
     use Sisimai::Data;
 
     my $jsonparser = JSON->new;
+    my $samplepath = 'set-of-emails/jsonobj';
     my $methodlist = ['description', 'scan', 'adapt', 'DELIVERYSTATUS'];
     my $emailindex = 0;
     my $mesgmethod = {
@@ -30,6 +32,8 @@ my $moduletest = sub {
             diagnosis feedbacktype softbounce
         |],
     };
+
+    $samplepath = sprintf("set-of-emails/private/json-%s", lc $E) if $privateset;
 
     use_ok $M;
     can_ok $M, @$methodlist;
@@ -50,11 +54,19 @@ my $moduletest = sub {
         if( $onlydebugs ) {
             # Debug mode
             $emailindex += 1;
-            next unless $onlydebugs == $emailindex;
+            next unless int($onlydebugs) == int($e->{'n'});
             ok $onlydebugs, sprintf("[%s] %s|DEBUG(%02d)", $indexlabel, $E, $onlydebugs);
         }
 
-        $samplefile = sprintf("./set-of-emails/jsonobj/json-%s-%02d.json", lc $E, $e->{'n'});
+        if( $privateset ) {
+            # Private sample
+            $samplefile = [glob(sprintf("./%s/%s-*.json", $samplepath, $e->{'n'}))]->[0];
+
+        } else {
+            # Public sample
+            $samplefile = sprintf("./%s/json-%s-%02d.json", $samplepath, lc $E, $e->{'n'});
+        }
+
         ok -f $samplefile, sprintf("[%s] %s/email(path) = %s", $indexlabel, $E, $samplefile);
         ok -s $samplefile, sprintf("[%s] %s/email(size) = %s", $indexlabel, $E, -s $samplefile);
 
@@ -210,14 +222,18 @@ my $moduletest = sub {
                 $pp = 'senderdomain'; is $pr->addresser->host, $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'destination';  is $pr->recipient->host, $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
 
-                $pp = 'softbounce';
-                cmp_ok $pr->$pp, '>=', -1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                cmp_ok $pr->$pp, '<=',  1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                like   $pr->$pp, $e->{'b'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                unless( $privateset ) {
+                    $pp = 'softbounce';
+                    cmp_ok $pr->$pp, '>=', -1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                    cmp_ok $pr->$pp, '<=',  1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                    like   $pr->$pp, $e->{'b'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+
+                    $pp = 'deliverystatus';
+                    like $pr->$pp, $e->{'s'},   sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                }
 
                 $pp = 'replycode';      like $pr->$pp, qr/\A(?:[245]\d\d|)\z/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'timezoneoffset'; like $pr->$pp, qr/\A[-+]\d{4}\z/,      sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'deliverystatus'; like $pr->$pp, $e->{'s'},              sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'reason';         like $pr->$pp, $e->{'r'},              sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'token';          like $pr->$pp, qr/\A([0-9a-f]{40})\z/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
 
