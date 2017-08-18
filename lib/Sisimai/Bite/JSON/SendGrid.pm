@@ -26,7 +26,6 @@ sub adapt {
 
     require Sisimai::String;
     require Sisimai::Address;
-    require Sisimai::RFC5322;
 
     if( Sisimai::RFC5322->is_emailaddress($argvs->{'email'}) ) {
         #   {
