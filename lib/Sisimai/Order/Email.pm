@@ -75,7 +75,6 @@ my $EngineOrder9 = [
     'Sisimai::Bite::Email::AmazonWorkMail',
     'Sisimai::Bite::Email::Zoho',
     'Sisimai::Bite::Email::McAfee',
-    #'Sisimai::Bite::JSON::AmazonSES',
     'Sisimai::Bite::Email::Activehunter',
     'Sisimai::Bite::Email::SurfControl',
 ];
@@ -106,7 +105,6 @@ my $PatternTable = {
             'Sisimai::Bite::Email::Courier',
             'Sisimai::Bite::Email::MessagingServer',
             'Sisimai::Bite::Email::OpenSMTPD',
-            #'Sisimai::Bite::JSON::AmazonSES',
             'Sisimai::Bite::Email::X4',
             'Sisimai::Bite::Email::X3',
             'Sisimai::Bite::Email::mFILTER',
@@ -171,7 +169,6 @@ sub default {
 
     return $DefaultOrder if ref $DefaultOrder eq 'ARRAY';
     push @$order, map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->index() };
-    #push @$order, map { 'Sisimai::Bite::JSON::'.$_ }  @{ Sisimai::Bite::JSON->index() };
     return $order;
 }
 
