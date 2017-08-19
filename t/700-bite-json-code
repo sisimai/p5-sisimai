@@ -44,7 +44,7 @@ my $moduletest = sub {
     $v = $M->adapt;       is $v, undef, $E.'->adapt = undef';
 
     PARSE_EACH_EMAIL: for my $e ( @$isexpected ) {
-        # Open each email in set-of-emails/ directory
+        # Open each json file in set-of-emails/ directory
         my $indexlabel = sprintf("%02d", $e->{'n'});
         my $samplefile = undef;
         my $filehandle = undef;
@@ -67,8 +67,8 @@ my $moduletest = sub {
             $samplefile = sprintf("./%s/json-%s-%02d.json", $samplepath, lc $E, $e->{'n'});
         }
 
-        ok -f $samplefile, sprintf("[%s] %s/email(path) = %s", $indexlabel, $E, $samplefile);
-        ok -s $samplefile, sprintf("[%s] %s/email(size) = %s", $indexlabel, $E, -s $samplefile);
+        ok -f $samplefile, sprintf("[%s] %s/json(path) = %s", $indexlabel, $E, $samplefile);
+        ok -s $samplefile, sprintf("[%s] %s/json(size) = %s", $indexlabel, $E, -s $samplefile);
 
         eval {
             $filehandle = IO::File->new($samplefile, 'r');
@@ -81,7 +81,7 @@ my $moduletest = sub {
         push @$bouncedata, ( ref $jsonobject eq 'ARRAY' ) ? @$jsonobject : $jsonobject;
 
         READ_EACH_EMAIL: while( my $r = shift @$bouncedata ) {
-            # Read messages in each email
+            # Read messages in each json object
             my $mesgobject = undef;
             my $dataobject = undef;
             my $foundindex = 0;
@@ -114,31 +114,8 @@ my $moduletest = sub {
                 }
 
                 $pp = 'agent';
-                if( $E eq 'X4' ) {
-                    # X4 is qmail clone
-                    $re = qr/(?:qmail|X4)/;
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-
-                } elsif( $E eq 'RFC3464' ) {
-                    # RFC3464
-                    $re = $e->{'a'};
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-
-                } elsif( $E eq 'RFC3834' ) {
-                    # RFC3834
-                    $re = qr/\ARFC3834\z/;
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-
-                } elsif( $E eq 'ARF' ) {
-                    # ARF
-                    $re = qr/.+/;
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-
-                } else {
-                    # Other MTA modules
-                    $re = 'JSON::'.$E;
-                    is $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                }
+                $re = 'JSON::'.$E;
+                is $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
 
                 $pp = 'recipient';
                 $re = qr/[0-9A-Za-z@-_.]+/;
@@ -199,11 +176,6 @@ my $moduletest = sub {
                     # reason: "feedback"
                     $pp = 'deliverystatus'; is $pr->$pp, '', sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
 
-                    if( $E eq 'ARF' ) {
-                        $pp = 'feedbacktype';
-                        like $pr->$pp, $e->{'f'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                    }
-
                 } elsif( $pr->reason eq 'vacation' ) {
                     # RFC3834
                     $pp = 'deliverystatus'; is $pr->$pp, '',  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
@@ -258,7 +230,7 @@ my $moduletest = sub {
         } # End of READ_EACH_EMAIL
 
     } # End of PARSE_EACH_EMAIL
-    ok $emailindex, sprintf("%s|the number of emails = %d", $M, $emailindex);
+    ok $emailindex, sprintf("%s|the number of json objects = %d", $M, $emailindex);
 };
 
 sub maketest { return $moduletest }
