@@ -80,10 +80,10 @@ sub scan {
     }
     return undef unless $match;
 
-    require Sisimai::MTA;
+    require Sisimai::Bite::Email;
     require Sisimai::Address;
 
-    my $dscontents = [Sisimai::MTA->DELIVERYSTATUS];
+    my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
@@ -153,7 +153,7 @@ Sisimai::RFC3834 - RFC3834 auto reply message detector
 =head1 DESCRIPTION
 
 Sisimai::RFC3834 is a class which called from called from only Sisimai::Message
-when other Sisimai::MTA::* modules did not detected a bounce reason.
+when other Sisimai::Bite::Email::* modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
@@ -180,7 +180,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

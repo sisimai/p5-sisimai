@@ -10,7 +10,7 @@ my $MethodNames = {
 };
 my $SampleFiles = {
     'mail' => './set-of-emails/mailbox/mbox-0',
-    'json' => './set-of-emails/jsonapi/ced-us-amazonses-01.json',
+    'json' => './set-of-emails/jsonobj/json-amazonses-01.json',
 };
 
 use_ok $PackageName;

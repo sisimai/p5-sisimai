@@ -28,12 +28,12 @@ MAKE_TEST: {
 
     for my $v ( @$default ) {
         # Module name test
-        like $v, qr/\ASisimai::CED::/, $v;
+        like $v, qr/\ASisimai::Bite::JSON::/, $v;
         use_ok $v;
     }
 
     for my $v ( keys %$orderby ) {
-        # Pattern table for detecting CED
+        # Pattern table for detecting MTA module
         ok $v, 'subject =~ '.$v;
         ok scalar @{ $orderby->{ $v } };
         for my $w ( @{ $orderby->{ $v } } ) {

@@ -8,7 +8,7 @@ use Class::Accessor::Lite;
 my $rwaccessors = [
     'from',     # [String] UNIX From line
     'header',   # [Hash]   Header part of an email
-    'ds',       # [Array]  Parsed data by Sisimai::MTA::*
+    'ds',       # [Array]  Parsed data by Sisimai::Bite::*::*
     'rfc822',   # [Hash]   Header part of the original message
     'catch'     # [?]      The results returned by hook method
 ];
@@ -68,7 +68,7 @@ sub new {
     my $mesgobject = undef;
 
     for my $e ( 'load', 'order' ) {
-        # Order of MTA, MSP modules
+        # Order of MTA modules
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
         next unless scalar @{ $argvs->{ $e } };

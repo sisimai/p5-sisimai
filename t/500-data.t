@@ -18,7 +18,7 @@ MAKE_TEST: {
     is $PackageName->make, undef;
     is $PackageName->new, undef;
 
-    my $file = './set-of-emails/maildir/bsd/mta-sendmail-03.eml';
+    my $file = './set-of-emails/maildir/bsd/email-sendmail-03.eml';
     my $mail = Sisimai::Mail->new($file);
     my $mesg = undef;
     my $data = undef;
@@ -73,7 +73,7 @@ MAKE_TEST: {
             ok length $e->messageid, 'messageid = '.$e->messageid;
             like $e->messageid, qr/\A.+[@].+/, 'messageid = '.$e->messageid;
 
-            is $e->smtpagent, 'MTA::Sendmail', 'smtpagent = '.$e->smtpagent;
+            is $e->smtpagent, 'Email::Sendmail', 'smtpagent = '.$e->smtpagent;
             is $e->smtpcommand, 'DATA', 'smtpcommand = '.$e->smtpcommand;
 
             ok length $e->diagnosticcode, 'diagnosticcode = '.$e->diagnosticcode;
@@ -101,7 +101,7 @@ MAKE_TEST: {
         }
     }
 
-    $file = './set-of-emails/maildir/bsd/mta-sendmail-04.eml';
+    $file = './set-of-emails/maildir/bsd/email-sendmail-04.eml';
     $mail = Sisimai::Mail->new($file);
     $list = { 
         'recipient' => ['X-Failed-Recipient', 'To'],
@@ -149,7 +149,7 @@ MAKE_TEST: {
             ok length $e->messageid, 'messageid = '.$e->messageid;
             unlike $e->messageid, qr/[ ]/, '->messageid = '.$e->messageid;
 
-            is $e->smtpagent, 'MTA::Sendmail', 'smtpagent = '.$e->smtpagent;
+            is $e->smtpagent, 'Email::Sendmail', 'smtpagent = '.$e->smtpagent;
             is $e->smtpcommand, 'MAIL', 'smtpcommand = '.$e->smtpcommand;
 
             ok length $e->diagnosticcode, 'diagnosticcode = '.$e->diagnosticcode;

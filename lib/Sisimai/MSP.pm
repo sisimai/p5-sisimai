@@ -5,12 +5,32 @@ use warnings;
 use Sisimai::RFC5322;
 use Sisimai::Skeleton;
 
-sub DELIVERYSTATUS { return Sisimai::Skeleton->DELIVERYSTATUS }
-sub INDICATORS     { return Sisimai::Skeleton->INDICATORS     }
-sub smtpagent      { my $v = shift; $v =~ s/\ASisimai:://; return $v }
-sub description    { return '' }
-sub headerlist     { return [] }
-sub pattern        { return {} }
+sub DELIVERYSTATUS {
+    warn sprintf(" ***warning: %s->DELIVERYSTATUS has been moved to Sisimai::Bite->DELIVERYSTATUS\n", __PACKAGE__);
+    return Sisimai::Skeleton->DELIVERYSTATUS;
+}
+sub INDICATORS {
+    warn sprintf(" ***warning: %s->DELIVERYSTATUS has been moved to Sisimai::Bite::Email->INDICATORS\n", __PACKAGE__);
+    return Sisimai::Skeleton->INDICATORS;
+}
+sub smtpagent { 
+    warn sprintf(" ***warning: %s->smtpagent has been moved to Sisimai::Bite->smtpagent\n", __PACKAGE__);
+    my $v = shift;
+    $v =~ s/\ASisimai:://;
+    return $v;
+}
+sub description {
+    warn sprintf(" ***warning: %s->description has been moved to Sisimai::Bite->description\n", __PACKAGE__);
+    return '';
+}
+sub headerlist {
+    warn sprintf(" ***warning: %s->headerlist has been moved to Sisimai::Bite::Email->headerlist\n", __PACKAGE__);
+    return [];
+}
+sub pattern {
+    warn sprintf(" ***warning: %s->pattern has been moved to Sisimai::Bite::Email->pattern\n", __PACKAGE__);
+    return {};
+}
 
 sub index {
     # MSP list
@@ -42,6 +62,30 @@ sub scan {
 }
 
 1;
+
+package Sisimai::MSP::DE::EinsUndEins; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::DE::GMX; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::JP::Biglobe; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::JP::EZweb; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::JP::KDDI; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::RU::MailRu; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::RU::Yandex; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::UK::MessageLabs; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::AmazonSES; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::AmazonWorkMail; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Aol; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Bigfoot; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Facebook; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Google; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::GSuite; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Office365; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Outlook; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::ReceivingSES; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::SendGrid; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Verizon; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Yahoo; use parent 'Sisimai::MSP'; 1;
+package Sisimai::MSP::US::Zoho; use parent 'Sisimai::MSP'; 1;
+
 __END__
 
 =encoding utf-8
@@ -65,7 +109,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

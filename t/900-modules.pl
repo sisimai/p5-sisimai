@@ -4,9 +4,61 @@ sub list {
     my $f = [ qw|
         Address.pm
         ARF.pm
-        CED.pm
-            CED/US/AmazonSES.pm
-            CED/US/SendGrid.pm
+        Bite.pm
+            Bite/Email.pm
+                Bite/Email/Activehunter.pm
+                Bite/Email/AmazonSES.pm
+                Bite/Email/AmazonWorkMail.pm
+                Bite/Email/Aol.pm
+                Bite/Email/ApacheJames.pm
+                Bite/Email/Bigfoot.pm
+                Bite/Email/Biglobe.pm
+                Bite/Email/Courier.pm
+                Bite/Email/Domino.pm
+                Bite/Email/EinsUndEins.pm
+                Bite/Email/Exchange2003.pm
+                Bite/Email/Exchange2007.pm
+                Bite/Email/Exim.pm
+                Bite/Email/EZweb.pm
+                Bite/Email/Facebook.pm
+                Bite/Email/GMX.pm
+                Bite/Email/Google.pm
+                Bite/Email/GSuite.pm
+                Bite/Email/IMailServer.pm
+                Bite/Email/InterScanMSS.pm
+                Bite/Email/KDDI.pm
+                Bite/Email/MailFoundry.pm
+                Bite/Email/MailMarshalSMTP.pm
+                Bite/Email/MailRu.pm
+                Bite/Email/McAfee.pm
+                Bite/Email/MessageLabs.pm
+                Bite/Email/MessagingServer.pm
+                Bite/Email/mFILTER.pm
+                Bite/Email/MXLogic.pm
+                Bite/Email/Notes.pm
+                Bite/Email/Office365.pm
+                Bite/Email/OpenSMTPD.pm
+                Bite/Email/Outlook.pm
+                Bite/Email/Postfix.pm
+                Bite/Email/qmail.pm
+                Bite/Email/ReceivingSES.pm
+                Bite/Email/SendGrid.pm
+                Bite/Email/Sendmail.pm
+                Bite/Email/SurfControl.pm
+                Bite/Email/UserDefined.pm
+                Bite/Email/V5sendmail.pm
+                Bite/Email/Verizon.pm
+                Bite/Email/X1.pm
+                Bite/Email/X2.pm
+                Bite/Email/X3.pm
+                Bite/Email/X4.pm
+                Bite/Email/X5.pm
+                Bite/Email/Yahoo.pm
+                Bite/Email/Yandex.pm
+                Bite/Email/Zoho.pm
+            Bite/JSON.pm
+                Bite/JSON/AmazonSES.pm
+                Bite/JSON/SendGrid.pm
         Data.pm
             Data/JSON.pm
             Data/YAML.pm
@@ -20,58 +72,6 @@ sub list {
             Message/Email.pm
             Message/JSON.pm
         MDA.pm
-        MSP.pm
-            MSP/DE/EinsUndEins.pm
-            MSP/DE/GMX.pm
-            MSP/JP/Biglobe.pm
-            MSP/JP/EZweb.pm
-            MSP/JP/KDDI.pm
-            MSP/RU/MailRu.pm
-            MSP/RU/Yandex.pm
-            MSP/UK/MessageLabs.pm
-            MSP/US/AmazonSES.pm
-            MSP/US/AmazonWorkMail.pm
-            MSP/US/Aol.pm
-            MSP/US/Bigfoot.pm
-            MSP/US/Facebook.pm
-            MSP/US/Google.pm
-            MSP/US/GSuite.pm
-            MSP/US/Office365.pm
-            MSP/US/Outlook.pm
-            MSP/US/ReceivingSES.pm
-            MSP/US/SendGrid.pm
-            MSP/US/Verizon.pm
-            MSP/US/Yahoo.pm
-            MSP/US/Zoho.pm
-        MTA.pm
-            MTA/Activehunter.pm
-            MTA/ApacheJames.pm
-            MTA/Courier.pm
-            MTA/Domino.pm
-            MTA/Exim.pm
-            MTA/Exchange2003.pm
-            MTA/Exchange2007.pm
-            MTA/IMailServer.pm
-            MTA/InterScanMSS.pm
-            MTA/MailFoundry.pm
-            MTA/MailMarshalSMTP.pm
-            MTA/McAfee.pm
-            MTA/MessagingServer.pm
-            MTA/mFILTER.pm
-            MTA/MXLogic.pm
-            MTA/Notes.pm
-            MTA/OpenSMTPD.pm
-            MTA/Postfix.pm
-            MTA/qmail.pm
-            MTA/Sendmail.pm
-            MTA/SurfControl.pm
-            MTA/UserDefined.pm
-            MTA/V5sendmail.pm
-            MTA/X1.pm
-            MTA/X2.pm
-            MTA/X3.pm
-            MTA/X4.pm
-            MTA/X5.pm
         Order.pm
             Order/Email.pm
             Order/JSON.pm

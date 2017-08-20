@@ -133,18 +133,18 @@ sub dump {
 }
 
 sub engine {
-    # Parser engine list (MTA/MSP modules)
+    # Parser engine list (MTA modules)
     # @return   [Hash]     Parser engine table
     my $class = shift;
-    my $names = ['MTA', 'MSP', 'CED', 'ARF', 'RFC3464', 'RFC3834'];
+    my $names = ['Bite::Email', 'Bite::JSON', 'ARF', 'RFC3464', 'RFC3834'];
     my $table = {};
 
     for my $e ( @$names ) {
         my $r = 'Sisimai::'.$e;
         Module::Load::load $r;
 
-        if( $e eq 'MTA' || $e eq 'MSP' || $e eq 'CED' ) {
-            # Sisimai::MTA or Sisimai::MSP or Sisimai::CED
+        if( $e =~ m/\ABite::(?:Email|JSON)\z/ ) {
+            # Sisimai::Bite::Email or Sisimai::Bite::JSON
             for my $ee ( @{ $r->index } ) {
                 # Load and get the value of "description" from each module
                 my $rr = sprintf("Sisimai::%s::%s", $e, $ee);
