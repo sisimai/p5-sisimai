@@ -58,7 +58,7 @@ Key features
   * Support 22 major MSPs(Mail Service Providers)
   * Support  2 major Cloud Email Delivery Services(JSON format)
   * Support Feedback Loop Message(ARF)
-  * Can detect 27 error reasons
+  * Can detect 29 error reasons
 * __Faster than bounceHammer 2.7.13p3__
   * About 1.7 times faster
 
