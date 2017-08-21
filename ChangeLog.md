@@ -3,10 +3,10 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.21.1p1
+v4.22.0
 --------------------------------------------------------------------------------
 - release: "not released yet"
-- version: "4.21.1p1"
+- version: "4.22.0"
 - changes:
   - Issue #215 and Pull-Request #225, bounce reason: "securityerror" has been
     divided into the following three reasons:
@@ -14,6 +14,9 @@ v4.21.1p1
     - virusdetected
     - policyviolation
   - Sisimai now works on Perl 5.26.0
+  - Issue #226 All the MTA modules have been moved to Sisimai::Bite::* and old
+    MTA modules: Sisimai::MTA, Sisimai::MSP, Sisimai::CED, and all the methods
+    in these classes have been marked as obsoleted.
 
 v4.21.1
 --------------------------------------------------------------------------------
