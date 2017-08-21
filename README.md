@@ -255,7 +255,7 @@ and Sisimai. More information about differences are available at
 | Classification based on recipient domain       | Available     | N/A         |
 | Output format of parsed data                   | YAML,JSON,CSV | JSON only   |
 | Easy to install                                | No            | Yes         |
-| Install using cpan or cpanm command            | N/A           | OK          |
+| Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 9100 lines  |
 | The number of tests in t/, xt/ directory       | 27365 tests   | 202400 tests|
