@@ -38,8 +38,8 @@ MACFORMATSET := $(SET_OF_EMAIL)/maildir/mac
 INDEX_LENGTH := 24
 DESCR_LENGTH := 50
 BH_CAN_PARSE := courier exim messagingserver postfix sendmail surfcontrol x5 \
-				jp-ezweb jp-kddi ru-yandex uk-messagelabs us-amazonses us-aol \
-				us-bigfoot us-facebook us-outlook us-verizon
+				ezweb kddi yandex messagelabs amazonses aol bigfoot facebook \
+				outlook verizon
 
 # -----------------------------------------------------------------------------
 .PHONY: clean
