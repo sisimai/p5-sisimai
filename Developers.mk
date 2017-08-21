@@ -259,8 +259,8 @@ profile: benchmark-mbox
 velocity-measurement:
 	@ $(MKDIR) $(VELOCITYTEST)
 	@ for v in $(BH_CAN_PARSE); do \
-		$(CP) $(PUBLICEMAILS)/$$v-*.eml $(VELOCITYTEST)/; \
-		$(CP) $(PRIVATEMAILS)/$$v/*.eml $(VELOCITYTEST)/; \
+		$(CP) $(PUBLICEMAILS)/email-$$v-*.eml $(VELOCITYTEST)/; \
+		$(CP) $(PRIVATEMAILS)/email-$$v/*.eml $(VELOCITYTEST)/; \
 	done
 	@ echo -------------------------------------------------------------------
 	@ echo `$(LS) $(VELOCITYTEST) | wc -l` emails in $(VELOCITYTEST)
