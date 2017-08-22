@@ -158,7 +158,6 @@ my $moduletest = sub {
                 $pp = 'recipient';
                 $re = qr/[0-9A-Za-z@-_.]+/;
                 like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                #unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
 
                 $pp = 'command';
                 unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });

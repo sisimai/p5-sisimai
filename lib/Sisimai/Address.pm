@@ -106,13 +106,14 @@ sub find {
     # @return   [Array, Undef]  Email address list or Undef when there is no 
     #                           email address in the argument
     # @example  Parse email address
-    #   parse(['Neko <neko@example.cat>'])  #=> ['neko@example.cat']
+    #   input:  find('Neko <neko@example.cat>')
+    #   output: [{'address' => 'neko@example.cat', 'name' => 'Neko'}]
     my $class = shift;
     my $argvs = shift // return undef;
     my $addrs = shift // undef;
     $argvs =~ s/[\r\n]//g;
 
-    my $emailtable = { 'address' => '', name => '', 'comment' => '' };
+    my $emailtable = { 'address' => '', 'name' => '', 'comment' => '' };
     my $addrtables = [];
     my $readcursor = 0;
     my $delimiters = ['<', '>', '(', ')', '"', ','];
@@ -273,7 +274,7 @@ sub find {
                     }
                 }
                 next;
-            }
+            } # End of if('"')
         } else {
             # The character is not a delimiter
             length $p ? ($v->{ $p } .= $e) : ($v->{'name'} .= $e);
@@ -295,7 +296,7 @@ sub find {
 
             } elsif( $v->{'name'} =~ m/([^\s]+[@][^\s]+)/ ) {
                 # neko-nyaan@example.org
-                $v->{'address'} =  $1;
+                $v->{'address'} = $1;
             }
         } elsif( Sisimai::RFC5322->is_mailerdaemon($v->{'name'}) ) {
             # Allow if the argument is MAILER-DAEMON
@@ -346,6 +347,8 @@ sub find {
         }
         push @$addrtables, $e;
     }
+
+    return undef unless scalar @$addrtables;
     return $addrtables;
 }
 
