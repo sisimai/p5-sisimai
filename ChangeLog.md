@@ -17,6 +17,8 @@ v4.22.0
   - Issue #226 All the MTA modules have been moved to Sisimai::Bite::* and old
     MTA modules: Sisimai::MTA, Sisimai::MSP, Sisimai::CED, and all the methods
     in these classes have been marked as obsoleted.
+  - Issue #227 Experimental implementation: Sisimai::Address->find() as bourne
+    again parser method for email addresses. Thanks to @SteveTheTechie.
 
 v4.21.1
 --------------------------------------------------------------------------------
