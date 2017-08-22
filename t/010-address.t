@@ -7,7 +7,7 @@ use Sisimai::RFC5322;
 my $PackageName = 'Sisimai::Address';
 my $MethodNames = {
     'class' => [
-        'new', 'parse', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
+        'new', 'find', 'parse', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
     ],
     'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
 };
@@ -39,10 +39,8 @@ MAKE_TEST: {
         { 'v' => q|"neko@example.net"|, 'a' => 'neko@example.net' },
         { 'v' => q|'neko@example.edu'|, 'a' => 'neko@example.edu' },
         { 'v' => q|`neko@example.cat`|, 'a' => 'neko@example.cat' },
-        { 'v' => q|(neko@example.mil)|, 'a' => 'neko@example.mil' },
         { 'v' => q|[neko@example.gov]|, 'a' => 'neko@example.gov' },
         { 'v' => q|{neko@example.int}|, 'a' => 'neko@example.int' },
-        { 'v' => q|&lt;neko@example.gl&gt;|, 'a' => 'neko@example.gl' },
         { 'v' => q|"neko.."@example.jp|, 'a' => '"neko.."@example.jp' },
         { 'v' => q|Mail Delivery Subsystem <MAILER-DAEMON>|, 'a' => 'MAILER-DAEMON' },
         { 'v' => q|postmaster|, 'a' => 'postmaster' },
@@ -76,6 +74,12 @@ MAKE_TEST: {
         is scalar @$v, 1;
         ok $v->[0], '->parse(1) = '.$v->[0];
         is $v->[0], $e->{'a'}, '->parse(2) = '.$e->{'a'};
+
+        # ->find()
+        $v = $PackageName->find($e->{'v'});
+        isa_ok $v, 'ARRAY';
+        ok $v->[0]->{'address'}, '->find(1) = '.$e->{'a'};
+        is $v->[0]->{'address'}, $e->{'a'}, '->find(2) = '.$e->{'a'};
 
         # ->s3s4()
         my $x = $PackageName->s3s4($e->{'v'});

@@ -65,18 +65,18 @@ sub new {
     my $thing = {};
 
     # Create email address object
-    my $x0 = Sisimai::Address->parse([$argvs->{'addresser'}]);
-    my $y0 = Sisimai::Address->parse([$argvs->{'recipient'}]);
+    my $x0 = Sisimai::Address->find($argvs->{'addresser'});
+    my $y0 = Sisimai::Address->find($argvs->{'recipient'});
     my @v1 = ();
 
     return undef unless ref $x0 eq 'ARRAY';
     return undef unless ref $y0 eq 'ARRAY';
 
-    $thing->{'addresser'} = Sisimai::Address->new(shift @$x0);
+    $thing->{'addresser'} = Sisimai::Address->new($x0->[0]->{'address'});
     return undef unless ref $thing->{'addresser'} eq 'Sisimai::Address';
     $thing->{'senderdomain'} = $thing->{'addresser'}->host;
 
-    $thing->{'recipient'} = Sisimai::Address->new(shift @$y0);
+    $thing->{'recipient'} = Sisimai::Address->new($y0->[0]->{'address'});
     return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
     $thing->{'destination'} = $thing->{'recipient'}->host;
     $thing->{'alias'} = $argvs->{'alias'};
