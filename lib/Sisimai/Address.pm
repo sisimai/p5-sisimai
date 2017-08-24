@@ -290,11 +290,11 @@ sub find {
         # No email address like <neko@example.org> in the argument
         if( $v->{'name'} =~ m/[@]/ ) {
             # String like an email address will be set to the value of "address"
-            if( $v->{'name'} =~ m/(["].+?["][@][^ ]+)/ ) {
+            if( $v->{'name'} =~ m/(["].+?["][@][^\s]+[.][A-Za-z]+[.]?)/ ) {
                 # "neko nyaan"@example.org
                 $v->{'address'} = $1;
 
-            } elsif( $v->{'name'} =~ m/([^\s]+[@][^\s]+)/ ) {
+            } elsif( $v->{'name'} =~ m/([^\s]+[@][^\s]+[.][A-Za-z]+[.]?)/ ) {
                 # neko-nyaan@example.org
                 $v->{'address'} = $1;
             }
@@ -304,14 +304,13 @@ sub find {
         }
 
         if( length $v->{'address'} ) {
-            # Remove the value of "name" and remove the comment from the address
+            # Remove the comment from the address
             if( $v->{'address'} =~ m/(.*)([(].+[)])(.*)/ ) {
                 # (nyaan)nekochan@example.org, nekochan(nyaan)cat@example.org or
                 # nekochan(nyaan)@example.org
                 $v->{'address'} = $1.$3;
                 $v->{'comment'} = $2;
             }
-            $v->{'name'} = '';
             push @$readbuffer, $v;
         }
     }
@@ -342,7 +341,9 @@ sub find {
                 $e->{ $f } =~ s/\A\s*//;
                 $e->{ $f } =~ s/\s*\z//;
             }
-            $e->{'name'} =~ s/\A["]//;
+
+            $e->{'name'} =~ y/ //s unless $e->{'name'} =~ /\A["].+["]\z/;
+            $e->{'name'} =~ s/\A["]// unless $e->{'name'} =~ /\A["].+["][@]/;
             $e->{'name'} =~ s/["]\z//;
         }
         push @$addrtables, $e;
