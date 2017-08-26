@@ -7,7 +7,8 @@ use Sisimai::RFC5322;
 my $PackageName = 'Sisimai::Address';
 my $MethodNames = {
     'class' => [
-        'new', 'find', 'parse', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
+        'new', 'make', 'find', 'parse', 's3s4', 'expand_verp', 'expand_alias',
+        'undisclosed',
     ],
     'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
 };
@@ -63,10 +64,22 @@ MAKE_TEST: {
           'a' => '8be@example.gov',
           'n' => 'Shibainu Hachibe. 8be@example.gov',
           'c' => '(Harima-no-kami)', },
-        { 'v' => 'nekochan@example.jp',
+        { 'v' => 'neko(nyaan)chan@example.jp',
           'a' => 'nekochan@example.jp',
           'n' => 'nekochan@example.jp',
-          'c' => '' },
+          'c' => '(nyaan)' },
+        { 'v' => '(nyaan)neko@example.jp',
+          'a' => 'neko@example.jp',
+          'n' => 'neko@example.jp',
+          'c' => '(nyaan)' },
+        { 'v' => 'neko(nyaan)@example.jp',
+          'a' => 'neko@example.jp',
+          'n' => 'neko@example.jp',
+          'c' => '(nyaan)' },
+        { 'v' => 'nora(nyaan)neko@example.jp(cat)',
+          'a' => 'noraneko@example.jp',
+          'n' => 'noraneko@example.jp',
+          'c' => '(nyaan) (cat)' },
         { 'v' => '<neko@example.com>:', 'a' => 'neko@example.com', 'n' => ':', 'c' => '' },
         { 'v' => '"<neko@example.org>"', 'a' => 'neko@example.org', 'n' => '', 'c' => '' },
         { 'v' => '"neko@example.net"',
@@ -123,16 +136,35 @@ MAKE_TEST: {
           'n' => '"neko.nyaan.@.nyaan.jp"@example.com',
           'c' => '',
         },
-#        { 'v' => q|"neko.(),:;<>[]\".NYAAN.\"neko@\\ \"neko\".nyaan"@neko.example.com|,
-#          'a' => q|"neko.(),:;<>[]\".NYAAN.\"neko@\\ \"neko\".nyaan"@neko.example.com| },
-#        { 'v' => q|neko-nyaan@neko-nyaan.example.com|, 'a' => 'neko-nyaan@neko-nyaan.example.com' },
-#        { 'v' => q|neko@nyaan|, 'a' => 'neko@nyaan' },
-#        { 'v' => q[#!$%&'*+-/=?^_`{}|~@example.org], 'a' => q[#!$%&'*+-/=?^_`{}|~@example.org] },
-#        { 'v' => q*"()<>[]:,;@\\\"!#$%&'-/=?^_`{}| ~.a"@example.org*,
-#          'a' => q*"()<>[]:,;@\\\"!#$%&'-/=?^_`{}| ~.a"@example.org* },
-#        { 'v' => q|" "@example.org|, 'a' => '" "@example.org' },
-#        { 'v' => q|neko@localhost|, 'a' => 'neko@localhost' },
-#        { 'v' => q|neko@[IPv6:2001:DB8::1]|, 'a' => 'neko@[IPv6:2001:DB8::1]' },
+#       { 'v' => q|"neko.(),:;<>[]\".NYAAN.\"neko@\\ \"neko\".nyaan"@neko.example.com|,
+#         'a' => q|"neko.(),:;<>[]\".NYAAN.\"neko@\\ \"neko\".nyaan"@neko.example.com|,
+#         'n' => q|"neko.(),:;<>[]\".NYAAN.\"neko@\\ \"neko\".nyaan"@neko.example.com|,
+#         'c' => '' },
+        { 'v' => q|neko-nyaan@neko-nyaan.example.com|,
+          'a' => 'neko-nyaan@neko-nyaan.example.com',
+          'n' => 'neko-nyaan@neko-nyaan.example.com',
+          'c' => '' },
+#       { 'v' => q|neko@nyaan|, 'a' => 'neko@nyaan', 'n' => 'neko@nyaan', 'c' => '' },
+        { 'v' => q[#!$%&'*+-/=?^_`{}|~@example.org],
+          'a' => q[#!$%&'*+-/=?^_`{}|~@example.org],
+          'n' => q[#!$%&'*+-/=?^_`{}|~@example.org],
+          'c' => '' },
+#       { 'v' => q*"()<>[]:,;@\\\"!#$%&'-/=?^_`{}| ~.a"@example.org*,
+#         'a' => q*"()<>[]:,;@\\\"!#$%&'-/=?^_`{}| ~.a"@example.org*,
+#         'n' => q*"()<>[]:,;@\\\"!#$%&'-/=?^_`{}| ~.a"@example.org*,
+#         'c' => '' },
+        { 'v' => q|" "@example.org|,
+          'a' => '" "@example.org',
+          'n' => '" "@example.org',
+          'c' => '' },
+#       { 'v' => q|neko@localhost|,
+#         'a' => 'neko@localhost',
+#         'n' => 'neko@localhost',
+#         'c' => '' },
+#       { 'v' => 'neko@[IPv6:2001:DB8::1]',
+#         'a' => 'neko@[IPv6:2001:DB8::1]',
+#         'n' => 'neko@[IPv6:2001:DB8::1]',
+#         'c' => '' },
     ];
     my $isnotemail = [
         1, 'neko', 'cat%neko.jp', '', undef, {},
@@ -188,6 +220,21 @@ MAKE_TEST: {
             is keys %{ $v->[0] }, 1, sprintf("%s %s->find(v,1) has 1 key", $n, $p);
         }
 
+        MAKE: {
+            # ->make()
+            $v = $p->make(shift @{ $p->find($e->{'v'}) });
+            if( $e->{'a'} =~ /\A(.+)[@]([^@]+)\z/ ){ $a->[0] = $1; $a->[1] = $2; }
+            $a->[0] = $e->{'a'} if Sisimai::RFC5322->is_mailerdaemon($e->{'v'});
+
+            is ref $v, 'Sisimai::Address', sprintf("%s %s->make(v)", $n, $p);
+            is $v->address, $e->{'a'}, sprintf("%s %s->make(v)->address= %s", $n, $p, $e->{'a'});
+            is $v->user,    $a->[0],   sprintf("%s %s->make(v)->user = %s", $n, $p, $a->[0]);
+            is $v->verp,    '',        sprintf("%s %s->make(v)->verp = ''", $n, $p, '');
+            is $v->alias,   '',        sprintf("%s %s->make(v)->alias = ''", $n, $p, '');
+            is $v->name,    $e->{'n'}, sprintf("%s %s->make(v)->name = ''", $n, $p, $e->{'n'});
+            is $v->comment, $e->{'c'}, sprintf("%s %s->make(v)->comment = ''", $n, $p, $e->{'c'});
+        }
+
         S3S4: {
             # ->s3s4()
             $v = $p->s3s4($e->{'v'});
@@ -198,14 +245,17 @@ MAKE_TEST: {
 
         NEW: {
             # ->new()
-            $v = $p->new($p->s3s4($e->{'v'}));
-            $a = [split('@', $e->{'a'})];
+            $v = $p->new($e->{'v'});
+            if( $e->{'a'} =~ /\A(.+)[@]([^@]+)\z/ ){ $a->[0] = $1; $a->[1] = $2; }
+            $a->[0] = $e->{'a'} if Sisimai::RFC5322->is_mailerdaemon($e->{'v'});
 
             is ref $v, 'Sisimai::Address', sprintf("%s %s->new(v)", $n, $p);
             is $v->address, $e->{'a'}, sprintf("%s %s->new(v)->address= %s", $n, $p, $e->{'a'});
             is $v->user,    $a->[0],   sprintf("%s %s->new(v)->user = %s", $n, $p, $a->[0]);
             is $v->verp,    '',        sprintf("%s %s->new(v)->verp = ''", $n, $p, '');
             is $v->alias,   '',        sprintf("%s %s->new(v)->alias = ''", $n, $p, '');
+            is $v->name,    $e->{'n'}, sprintf("%s %s->new(v)->name = ''", $n, $p, $e->{'n'});
+            is $v->comment, $e->{'c'}, sprintf("%s %s->new(v)->comment = ''", $n, $p, $e->{'c'});
 
             unless( Sisimai::RFC5322->is_mailerdaemon($e->{'v'}) ) {
                 is $v->host, $a->[1], sprintf("%s %s->new(v)->host = %s", $n, $p, $a->[1]);
@@ -217,16 +267,16 @@ MAKE_TEST: {
     VERP: {
         $a = 'nyaa+neko=example.jp@example.org';
         $v = $p->new($a);
-        is $p->expand_verp($a), $v->address, sprintf("%s->expand_verp(%s) = %s", $p, $a, $v);
-        is $v->verp, $a, sprintf("%s %s->new(v)->verp = %s", $n, $p, $a);
+        is $p->expand_verp($a), 'neko@example.jp', sprintf("%s->expand_verp(%s) = %s", $p, $a, $v);
+        is $v->verp, $a, sprintf("%s->new(v)->verp = %s", $p, $a);
     }
 
     ALIAS: {
         $a = 'neko+nyaa@example.jp';
         $v = $p->new($a);
 
-        is $p->expand_alias($a), $v->address, sprintf("%s->expand_alias(%s) = %s", $p, $a, $v);
-        is $v->alias, $a, sprintf("%s %s->new(v)->alias = %s", $n, $p, $a);
+        is $p->expand_alias($a), 'neko@example.jp', sprintf("%s->expand_alias(%s) = %s", $p, $a, $v);
+        is $v->alias, $a, sprintf("%s->new(v)->alias = %s", $p, $a);
     }
 
     TO_JSON: {
