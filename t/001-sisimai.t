@@ -4,6 +4,7 @@ use lib qw(./lib ./blib/lib);
 use IO::File;
 use Sisimai;
 use JSON;
+use Sisimai::RFC5322;
 require './t/999-values.pl';
 
 my $PackageName = 'Sisimai';
@@ -212,7 +213,14 @@ MAKE_TEST: {
             for my $ee ( @$perlobject ) {
                 isa_ok $ee, 'HASH';
                 for my $eee ( @$tobetested ) {
-                    ok $ee->{ $eee }, $eee.' = '.$ee->{ $eee };
+                    if( $eee eq 'senderdomain' && $ee->{'addresser'} =~ /\A(?:postmaster|MAILER-DAEMON)\z/ ) {
+                        # addresser = postmaster
+                        is $ee->{'senderdomain'}, '', $eee.' = ""';
+
+                    } else {
+                        # other properties
+                        ok $ee->{ $eee }, $eee.' = '.$ee->{ $eee };
+                    }
                 }
             }
         }
