@@ -62,6 +62,7 @@ sub make {
     # @since    v4.22.1
     my $class = shift;
     my $argvs = shift // return undef;
+    my $email = undef;
     my $thing = {
         'address' => '',    # Entire email address
         'user'    => '',    # Local part
@@ -74,6 +75,7 @@ sub make {
 
     return undef unless ref $argvs eq 'HASH';
     return undef unless exists $argvs->{'address'};
+    return undef unless length $argvs->{'address'};
 
     if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
         $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
@@ -409,6 +411,7 @@ sub parse {
 
     return undef unless ref $argvs eq 'ARRAY';
     return undef unless scalar @$argvs;
+    warn sprintf(" ***warning: %s->parse is marked as obsoleted\n", __PACKAGE__);
 
     FIND_ADDRS: for my $e ( @$argvs ) {
         next unless defined $e;

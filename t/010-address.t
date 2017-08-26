@@ -185,14 +185,14 @@ MAKE_TEST: {
         ok defined $e->{'n'}, sprintf("%s Display name(n) = %s", $n, $e->{'n'});
         ok defined $e->{'c'}, sprintf("%s Comment(c) = %s", $n, $e->{'c'});
 
-        PARSE: {
-            # ->parse
-            $v = $p->parse([$e->{'v'}]);
-
-            is ref $v, 'ARRAY', sprintf("%s %s->parse(v)", $n, $p);
-            is scalar @$v, 1, sprintf("%s %s->parse returns 1 email address", $n, $p);
-            is $v->[0], $e->{'a'}, sprintf("%s Sisimai::Address->parse(v) = %s", $n, $e->{'a'});
-        }
+        #PARSE: {
+        #    # ->parse
+        #    $v = $p->parse([$e->{'v'}]);
+        #
+        #    is ref $v, 'ARRAY', sprintf("%s %s->parse(v)", $n, $p);
+        #    is scalar @$v, 1, sprintf("%s %s->parse returns 1 email address", $n, $p);
+        #    is $v->[0], $e->{'a'}, sprintf("%s Sisimai::Address->parse(v) = %s", $n, $e->{'a'});
+        #}
 
         FIND: {
             # ->find()
