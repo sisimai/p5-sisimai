@@ -317,7 +317,6 @@ sub scan {
                 $q->{'recipient'} = $q->{'alias'};
             }
         }
-
     } else {
         # Fallback for getting recipient addresses
         if( defined $mhead->{'x-failed-recipients'} ) {

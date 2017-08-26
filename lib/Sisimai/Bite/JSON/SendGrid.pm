@@ -63,7 +63,6 @@ sub adapt {
             'from' => Sisimai::Address->undisclosed('s'),
             'date' => $v->{'date'},
         };
-
     } else {
         # The value of $argvs->{'email'} does not seems to an email address
         return undef;

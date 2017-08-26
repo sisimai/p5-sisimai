@@ -162,7 +162,6 @@ sub scan {
                     $v->{'recipient'} = $r;
                     $recipients++;
                 }
-
             } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # Status: 5.1.1
                 # Status:5.2.0

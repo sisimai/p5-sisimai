@@ -187,7 +187,6 @@ sub scan {
                     $v->{'diagnosis'} .= $1;
 
                 } else {
-
                     next if $v->{'msexch'};
                     if( $v->{'diagnosis'} =~ m/\AMSEXCH:.+/ ) {
                         # Continued from MEEXCH in the previous line
