@@ -66,24 +66,19 @@ sub new {
 
     # Create email address object
     my $as = Sisimai::Address->make($argvs->{'addresser'});
-    my $ar = Sisimai::Address->find($argvs->{'recipient'});
-    my @v1 = ();
+    my $ar = Sisimai::Address->make({ 'address' => $argvs->{'recipient'} });
 
     return undef unless ref $as eq 'Sisimai::Address';
-    return undef unless ref $ar eq 'ARRAY';
+    return undef unless ref $ar eq 'Sisimai::Address';
 
-    $thing->{'addresser'}    = $as;
-    $thing->{'senderdomain'} = $thing->{'addresser'}->host;
-
-    $thing->{'recipient'} = Sisimai::Address->new($ar->[0]->{'address'});
-    return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
-    $thing->{'destination'} = $thing->{'recipient'}->host;
-    $thing->{'alias'} = $argvs->{'alias'};
-
-    $thing->{'token'} = Sisimai::String->token(
-                            $as,
-                            $thing->{'recipient'}->address,
-                            $argvs->{'timestamp'} );
+    $thing = {
+        'addresser' => $as,
+        'recipient' => $ar,
+        'senderdomain' => $as->host,
+        'destination'  => $ar->host,
+        'alias' => $argvs->{'alias'} || $ar->alias,
+        'token' => Sisimai::String->token($as, $ar, $argvs->{'timestamp'}),
+    };
 
     # Create Sisimai::Time object
     $thing->{'timestamp'} = localtime Sisimai::Time->new($argvs->{'timestamp'});
@@ -92,7 +87,7 @@ sub new {
     # Callback method
     $thing->{'catch'} = $argvs->{'catch'} // undef;
 
-    @v1 = (
+    my @v1 = (
         'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
         'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost',
         'smtpcommand', 'feedbacktype', 'action', 'softbounce', 'replycode',
