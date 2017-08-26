@@ -160,7 +160,6 @@ sub scan {
                     # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
                     $v->{'alias'} = $1;
                 }
-
             } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
                 # 2.3.3 Action field
                 #   The Action field indicates the action performed by the Reporting-MTA
@@ -181,7 +180,6 @@ sub scan {
                     # failed (bad destination mailbox address)
                     $v->{'action'} = $1;
                 }
-
             } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # 2.3.4 Status field
                 #   The per-recipient Status field contains a transport-independent
@@ -406,6 +404,7 @@ sub scan {
                 # May be an email address
                 my $x = $b->{'recipient'} || '';
                 my $y = Sisimai::Address->s3s4($1);
+                next unless Sisimai::RFC5322->is_emailaddress($1);
 
                 if( length $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
@@ -421,6 +420,26 @@ sub scan {
                 $b->{'alias'} = Sisimai::Address->s3s4($1);
             }
             $b->{'diagnosis'} .= ' '.$e;
+        }
+    }
+
+    unless( $recipients ) {
+        # Try to get a recipient address from email headers
+        for my $e ( @$rfc822list ) {
+            # Check To: header in the original message
+            if( $e =~ /\ATo:\s*(.+)\z/ ) {
+                my $r = Sisimai::Address->find($1, 1);
+                my $b = undef;
+                next unless scalar @$r;
+
+                if( scalar @$dscontents == $recipients ) {
+                    push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
+                }
+                $b = $dscontents->[-1];
+                $b->{'recipient'} = $r->[0]->{'address'};
+                $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
+                $recipients++;
+            }
         }
     }
 
