@@ -157,7 +157,7 @@ sub find {
     my $validemail = qr{(?>
         (?:([^\s]+|["].+?["]))          # local part
         [@]
-        (?:([^@\s]+|[.0-9A-Za-z:\.]+))  # domain part
+        (?:([^@\s]+|[0-9A-Za-z:\.]+))   # domain part
         )
     }x;
     my $indicators = {
@@ -363,8 +363,10 @@ sub find {
         }
 
         # Remove angle brackets, other brackets, and quotations: []<>{}'`
+        # except a domain part is an IP address like neko@[192.0.2.222]
         $e->{'address'} =~ s/\A[\[<{('`]//;
-        $e->{'address'} =~ s/['`>})\]]\z//;
+        $e->{'address'} =~ s/['`>})]\z//;
+        $e->{'address'} =~ s/\]\z// unless $e->{'address'} =~ /[@]\[[0-9A-Z:\.]+\]\z/i;
 
         unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
             # Remove double-quotations
