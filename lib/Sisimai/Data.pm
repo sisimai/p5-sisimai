@@ -65,24 +65,23 @@ sub new {
     my $thing = {};
 
     # Create email address object
-    my $x0 = Sisimai::Address->find($argvs->{'addresser'});
-    my $y0 = Sisimai::Address->find($argvs->{'recipient'});
+    my $as = Sisimai::Address->make($argvs->{'addresser'});
+    my $ar = Sisimai::Address->find($argvs->{'recipient'});
     my @v1 = ();
 
-    return undef unless ref $x0 eq 'ARRAY';
-    return undef unless ref $y0 eq 'ARRAY';
+    return undef unless ref $as eq 'Sisimai::Address';
+    return undef unless ref $ar eq 'ARRAY';
 
-    $thing->{'addresser'} = Sisimai::Address->new($x0->[0]->{'address'});
-    return undef unless ref $thing->{'addresser'} eq 'Sisimai::Address';
+    $thing->{'addresser'}    = $as;
     $thing->{'senderdomain'} = $thing->{'addresser'}->host;
 
-    $thing->{'recipient'} = Sisimai::Address->new($y0->[0]->{'address'});
+    $thing->{'recipient'} = Sisimai::Address->new($ar->[0]->{'address'});
     return undef unless ref $thing->{'recipient'} eq 'Sisimai::Address';
     $thing->{'destination'} = $thing->{'recipient'}->host;
     $thing->{'alias'} = $argvs->{'alias'};
 
     $thing->{'token'} = Sisimai::String->token(
-                            $thing->{'addresser'}->address,
+                            $as,
                             $thing->{'recipient'}->address,
                             $argvs->{'timestamp'} );
 
@@ -177,19 +176,26 @@ sub make {
 
         EMAIL_ADDRESS: {
             # Detect email address from message/rfc822 part
+            my $h = undef;
+            my $j = undef;
             for my $f ( @{ $fieldorder->{'addresser'} } ) {
                 # Check each header in message/rfc822 part
-                my $h = lc $f;
+                $h = lc $f;
                 next unless exists $rfc822data->{ $h };
                 next unless length $rfc822data->{ $h };
-                next unless Sisimai::RFC5322->is_emailaddress($rfc822data->{ $h });
-                $p->{'addresser'} = $rfc822data->{ $h };
+
+                $j = Sisimai::Address->find($rfc822data->{ $h }) || [];
+                next unless scalar @$j;
+                $p->{'addresser'} = $j->[0];
                 last;
             }
 
-            # Fallback: Get the sender address from the header of the bounced
-            # email if the address is not set at loop above.
-            $p->{'addresser'} ||= $messageobj->{'header'}->{'to'}; 
+            unless( $p->{'addresser'} ) {
+                # Fallback: Get the sender address from the header of the bounced
+                # email if the address is not set at loop above.
+                $j = Sisimai::Address->find($messageobj->{'header'}->{'to'}) || [];
+                $p->{'addresser'} = $j->[0] if scalar @$j;
+            }
         }
         next unless $p->{'addresser'};
         next unless $p->{'recipient'};
