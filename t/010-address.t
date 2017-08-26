@@ -144,7 +144,7 @@ MAKE_TEST: {
           'a' => 'neko-nyaan@neko-nyaan.example.com',
           'n' => 'neko-nyaan@neko-nyaan.example.com',
           'c' => '' },
-#       { 'v' => q|neko@nyaan|, 'a' => 'neko@nyaan', 'n' => 'neko@nyaan', 'c' => '' },
+        { 'v' => 'neko@nyaan', 'a' => 'neko@nyaan', 'n' => 'neko@nyaan', 'c' => '' },
         { 'v' => q[#!$%&'*+-/=?^_`{}|~@example.org],
           'a' => q[#!$%&'*+-/=?^_`{}|~@example.org],
           'n' => q[#!$%&'*+-/=?^_`{}|~@example.org],
@@ -157,14 +157,14 @@ MAKE_TEST: {
           'a' => '" "@example.org',
           'n' => '" "@example.org',
           'c' => '' },
-#       { 'v' => q|neko@localhost|,
-#         'a' => 'neko@localhost',
-#         'n' => 'neko@localhost',
-#         'c' => '' },
-#       { 'v' => 'neko@[IPv6:2001:DB8::1]',
-#         'a' => 'neko@[IPv6:2001:DB8::1]',
-#         'n' => 'neko@[IPv6:2001:DB8::1]',
-#         'c' => '' },
+        { 'v' => q|neko@localhost|,
+          'a' => 'neko@localhost',
+          'n' => 'neko@localhost',
+          'c' => '' },
+        { 'v' => 'neko@[IPv6:2001:DB8::1]',
+          'a' => 'neko@[IPv6:2001:DB8::1]',
+          'n' => 'neko@[IPv6:2001:DB8::1]',
+          'c' => '' },
     ];
     my $isnotemail = [
         1, 'neko', 'cat%neko.jp', '', undef, {},
@@ -286,9 +286,9 @@ MAKE_TEST: {
     }
 
     for my $e ( @$isnotemail ) {
-        $v = $p->parse([$e]); is $v, undef, sprintf("%s->parse([v])= undef", $p);
         $v = $p->s3s4($e);    is $v, $e,    sprintf("%s->s3s4(v)= %s", $p, $e);
         $v = $p->new($e);     is $v, undef, sprintf("%s->new(v)= undef", $p);
+        $v = $p->find($e);    is $v, undef, sprintf("%s->find(v)= undef", $p);
     }
 
     UNDISCLOSED: {
