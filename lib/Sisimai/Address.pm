@@ -40,12 +40,11 @@ sub new {
     #                                         address was not valid.
     my $class = shift;
     my $email = shift // return undef;
-    my $parts = __PACKAGE__->find($email);
-    my $thing = undef;
+    my $addrs = __PACKAGE__->find($email);
 
-    return undef unless $parts;
-    return undef unless scalar @$parts;
-    return __PACKAGE__->make($parts->[0]);
+    return undef unless $addrs;
+    return undef unless scalar @$addrs;
+    return __PACKAGE__->make($addrs->[0]);
 }
 
 sub make {
@@ -91,7 +90,7 @@ sub make {
             $alias = 1 if length $email;
         }
 
-        if( $email =~ /\A(.+)[@](.+?)\z/ ) {
+        if( $email =~ /\A.+[@].+?\z/ ) {
             # The address is a VERP or an alias
             if( $alias ) {
                 # The address is an alias: neko+nyaan@example.jp
@@ -300,13 +299,6 @@ sub find {
                             $readcursor &= ~$indicators->{'quoted-string'};
                             $p = '';
                         }
-                    } else {
-                        if( ! $readcursor & $indicators->{'email-address'} &&
-                            ! $readcursor & $indicators->{'comment-block'} ) {
-                            # Deal as the beginning of a display name
-                            $readcursor |= $indicators->{'quoted-string'};
-                            $p = 'name';
-                        }
                     }
                 }
                 next;
@@ -396,9 +388,7 @@ sub parse {
     # @param    [Array] argvs   List of strings including email address
     # @return   [Array, Undef]  Email address list or Undef when there is no 
     #                           email address in the argument
-    # @example  Parse email address
-    #   parse(['Neko <neko@example.cat>'])  #=> ['neko@example.cat']
-    # @until    v4.22.0
+    # @until    v4.22.1
     my $class = shift;
     my $argvs = shift // return undef;
     my $addrs = [];
