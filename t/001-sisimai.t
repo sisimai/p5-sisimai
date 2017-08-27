@@ -4,7 +4,6 @@ use lib qw(./lib ./blib/lib);
 use IO::File;
 use Sisimai;
 use JSON;
-use Sisimai::RFC5322;
 require './t/999-values.pl';
 
 my $PackageName = 'Sisimai';
