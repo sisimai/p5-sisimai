@@ -173,8 +173,8 @@ MAKE_TEST: {
         1, 'neko', 'cat%neko.jp', '', undef, {},
     ];
     my $manyemails = [
-        q|'"Neko, Nyaan" <(nora)neko@example.jp>', 'Nora Nyaans <neko(nora)@example.jp>'|,
-        q|'Neko (Nora, Nyaan) <neko@example.jp>', '(Neko) "Nora, Mike" <neko@example.jp>'|,
+        '"Neko, Nyaan" <(nora)neko@example.jp>, Nora Nyaans <neko(nora)@example.jp>',
+        'Neko (Nora, Nyaan) <neko@example.jp>, (Neko) "Nora, Mike" <neko@example.jp>',
     ];
     my $emailindex = 1;
 
@@ -191,15 +191,6 @@ MAKE_TEST: {
         ok length  $e->{'a'}, sprintf("%s Address(a) = %s", $n, $e->{'a'});
         ok defined $e->{'n'}, sprintf("%s Display name(n) = %s", $n, $e->{'n'});
         ok defined $e->{'c'}, sprintf("%s Comment(c) = %s", $n, $e->{'c'});
-
-        #PARSE: {
-        #    # ->parse
-        #    $v = $p->parse([$e->{'v'}]);
-        #
-        #    is ref $v, 'ARRAY', sprintf("%s %s->parse(v)", $n, $p);
-        #    is scalar @$v, 1, sprintf("%s %s->parse returns 1 email address", $n, $p);
-        #    is $v->[0], $e->{'a'}, sprintf("%s Sisimai::Address->parse(v) = %s", $n, $e->{'a'});
-        #}
 
         FIND: {
             # ->find()
@@ -231,15 +222,20 @@ MAKE_TEST: {
             # ->make()
             $v = $p->make(shift @{ $p->find($e->{'v'}) });
             if( $e->{'a'} =~ /\A(.+)[@]([^@]+)\z/ ){ $a->[0] = $1; $a->[1] = $2; }
-            $a->[0] = $e->{'a'} if Sisimai::RFC5322->is_mailerdaemon($e->{'v'});
+            if( Sisimai::RFC5322->is_mailerdaemon($e->{'v'}) ){ $a->[0] = $e->{'a'}; $a->[1] = ''; }
 
             is ref $v, 'Sisimai::Address', sprintf("%s %s->make(v)", $n, $p);
             is $v->address, $e->{'a'}, sprintf("%s %s->make(v)->address= %s", $n, $p, $e->{'a'});
             is $v->user,    $a->[0],   sprintf("%s %s->make(v)->user = %s", $n, $p, $a->[0]);
+            is $v->host,    $a->[1],   sprintf("%s %s->make(v)->host = %s", $n, $p, $a->[1]);
             is $v->verp,    '',        sprintf("%s %s->make(v)->verp = ''", $n, $p, '');
             is $v->alias,   '',        sprintf("%s %s->make(v)->alias = ''", $n, $p, '');
             is $v->name,    $e->{'n'}, sprintf("%s %s->make(v)->name = ''", $n, $p, $e->{'n'});
             is $v->comment, $e->{'c'}, sprintf("%s %s->make(v)->comment = ''", $n, $p, $e->{'c'});
+
+            # name, and comment are writable accessor
+            $v->name('nyaan');    is $v->name,    'nyaan', sprintf("%s %s->make(v)->name = nyaan", $n, $p);
+            $v->comment('nyaan'); is $v->comment, 'nyaan', sprintf("%s %s->make(v)->comment = nyaan", $n, $p);
         }
 
         S3S4: {
