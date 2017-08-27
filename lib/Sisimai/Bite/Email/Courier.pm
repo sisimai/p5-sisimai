@@ -88,7 +88,6 @@ sub scan {
         'rhost'   => '',    # The value of Reporting-MTA header
         'lhost'   => '',    # The value of Received-From-MTA header
     };
-
     my $v = undef;
     my $p = '';
 
@@ -225,7 +224,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
     } continue {
         # Save the current line for the next loop
         $p = $e;

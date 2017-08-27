@@ -25,9 +25,9 @@ BUILD_REGULAR_EXPRESSIONS: {
     my $local_part     = qr/(?:$dot_atom|$quoted_string)/o;
     my $domain         = qr/(?:$dot_atom|$domain_literal)/o;
 
-    $Re->{'rfc5322'} = qr/$local_part[@]$domain/o;
-    $Re->{'ignored'} = qr/$local_part[.]*[@]$domain/o;
-    $Re->{'domain'}  = qr/$domain/o;
+    $Re->{'rfc5322'} = qr/\A$local_part[@]$domain\z/o;
+    $Re->{'ignored'} = qr/\A$local_part[.]*[@]$domain\z/o;
+    $Re->{'domain'}  = qr/\A$domain\z/o;
 }
 
 my $LONGHEADERS = __PACKAGE__->LONGFIELDS;
@@ -80,6 +80,7 @@ sub is_emailaddress {
     my $email = shift // return 0;
 
     return 0 if $email =~ m/(?:[\x00-\x1f]|\x1f)/;
+    return 0 if length $email > 254;
     return 1 if $email =~ $Re->{'ignored'};
     return 0;
 }

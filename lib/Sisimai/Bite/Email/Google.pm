@@ -248,7 +248,6 @@ sub scan {
                     $v->{'recipient'} = $addr0;
                     $recipients++;
                 }
-
             } else {
                 $v->{'diagnosis'} .= $e.' ';
             }

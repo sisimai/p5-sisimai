@@ -144,7 +144,6 @@ sub scan {
                     $v->{'date'} = $1;
 
                 } else {
-
                     if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
@@ -156,7 +155,6 @@ sub scan {
                         $e = 'Diagnostic-Code: '.$e;
                     }
                 }
-
             } else {
                 # ----- Transcript of session follows -----
                 # ... while talking to mta.example.org.:
@@ -232,7 +230,6 @@ sub scan {
                 }
             }
         } # End of if: rfc822
-
     } continue {
         # Save the current line for the next loop
         $p = $e;

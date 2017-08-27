@@ -200,7 +200,6 @@ sub scan {
                     } else {
                         $htmlbegins = 1 if $e =~ m/\A[<]html[>]/;
                     }
-
                 } else {
                     if( $e =~ $Re1->{'error'} ) {
                         # Diagnostic information for administrators:

@@ -115,7 +115,6 @@ sub scan {
                     $v->{'recipient'} = $r;
                     $recipients++;
                 }
-
             } else {
                 next if $e =~ m/\A[^\w]/;
                 $v->{'diagnosis'} .= $e.' ';

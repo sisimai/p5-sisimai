@@ -159,7 +159,6 @@ sub adapt {
                     # },
                     $v->{'reason'} = $BounceType->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} };
                 }
-
             } else {
                 # 'complainedRecipients' => [ {
                 #   'emailAddress' => 'complaint@simulator.amazonses.com' }, ... ],

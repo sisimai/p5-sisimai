@@ -108,7 +108,7 @@ sub scan {
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                         $v = $dscontents->[-1];
                     }
-                    $v->{'recipient'} = Sisimai::Address->s3s4( $1 );
+                    $v->{'recipient'} = Sisimai::Address->s3s4($1);
                     $recipients++;
 
                 } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {

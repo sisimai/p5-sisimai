@@ -146,7 +146,6 @@ sub scan {
             # <meta name="Generator" content="Amazon WorkMail v3.0-2023.77">
             # <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             last if $e =~ m/\A[<]!DOCTYPE HTML[>][<]html[>]\z/;
-
         } # End of if: rfc822
     }
 
