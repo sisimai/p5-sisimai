@@ -109,19 +109,11 @@ sub make {
     } else {
         # The argument does not include "@"
         return undef unless Sisimai::RFC5322->is_mailerdaemon($argvs->{'address'});
+        return undef if $argvs->{'address'} =~ /[ ]/;
 
-        if( $argvs->{'address'} =~ /[<]([^ ]+)[>]/ ) {
-            # Mail Delivery Subsystem <MAILER-DAEMON>
-            $thing->{'user'}    = $1;
-            $thing->{'address'} = $1;
-
-        } else {
-            return undef if $argvs->{'address'} =~ /[ ]/;
-
-            # The argument does not include " "
-            $thing->{'user'}    = $argvs->{'address'};
-            $thing->{'address'} = $argvs->{'address'};
-        }
+        # The argument does not include " "
+        $thing->{'user'}    = $argvs->{'address'};
+        $thing->{'address'} = $argvs->{'address'};
     }
 
     $thing->{'name'}    = $argvs->{'name'}    || '';
