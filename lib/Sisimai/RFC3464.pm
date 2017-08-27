@@ -404,7 +404,7 @@ sub scan {
                 # May be an email address
                 my $x = $b->{'recipient'} || '';
                 my $y = Sisimai::Address->s3s4($1);
-                next unless Sisimai::RFC5322->is_emailaddress($1);
+                next unless Sisimai::RFC5322->is_emailaddress($y);
 
                 if( length $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
