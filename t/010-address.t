@@ -134,8 +134,11 @@ MAKE_TEST: {
         { 'v' => '"neko.nyaan.@.nyaan.jp"@example.com',
           'a' => '"neko.nyaan.@.nyaan.jp"@example.com',
           'n' => '"neko.nyaan.@.nyaan.jp"@example.com',
-          'c' => '',
-        },
+          'c' => '' },
+        { 'v' => '"neko nyaan"@example.org',
+          'a' => '"neko nyaan"@example.org',
+          'n' => '"neko nyaan"@example.org',
+          'c' => '' },
 #       { 'v' => q|"neko.(),:;<>[]\".NYAAN.\"neko@\\ \"neko\".nyaan"@neko.example.com|,
 #         'a' => q|"neko.(),:;<>[]\".NYAAN.\"neko@\\ \"neko\".nyaan"@neko.example.com|,
 #         'n' => q|"neko.(),:;<>[]\".NYAAN.\"neko@\\ \"neko\".nyaan"@neko.example.com|,
@@ -168,6 +171,10 @@ MAKE_TEST: {
     ];
     my $isnotemail = [
         1, 'neko', 'cat%neko.jp', '', undef, {},
+    ];
+    my $manyemails = [
+        q|'"Neko, Nyaan" <(nora)neko@example.jp>', 'Nora Nyaans <neko(nora)@example.jp>'|,
+        q|'Neko (Nora, Nyaan) <neko@example.jp>', '(Neko) "Nora, Mike" <neko@example.jp>'|,
     ];
     my $emailindex = 1;
 
@@ -262,6 +269,24 @@ MAKE_TEST: {
             }
         }
         $emailindex++;
+    }
+
+    FIND_MANY: {
+        for my $e ( @$manyemails ) {
+            my $v = Sisimai::Address->find($e);
+
+            is ref $v, 'ARRAY', sprintf("%s %s->find(v)", $n, $p);
+            is scalar @$v, 2, sprintf("%s %s->find(v) = 2", $n, $p);
+
+            for my $f ( @$v ) {
+                $a = Sisimai::Address->make($f);
+                is ref $f, 'HASH',  sprintf("%s %s->find(v)->[]", $n, $p);
+                is ref $a, 'Sisimai::Address', sprintf("%s %s->make(f)", $n, $p);
+                ok $a->address, sprintf("%s %s->make(f)->address = %s", $n, $p, $a->address);
+                ok $a->comment, sprintf("%s %s->make(f)->comment = %s", $n, $p, $a->comment);
+                ok $a->name,    sprintf("%s %s->make(f)->name = %s",    $n, $p, $a->name);
+            }
+        }
     }
 
     VERP: {
