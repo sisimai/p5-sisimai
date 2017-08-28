@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'SendGrid(JSON): http://sendgrid.com/' };
 sub adapt {
-    # @abstract     Adapt SendGrid bounce object for Sisimai::Message format
+    # Adapt SendGrid bounce object for Sisimai::Message format
     # @param        [Hash] argvs     bounce object(JSON) retrieved via SendGrid API
     # @return       [Hash, Undef]    Bounce data list and message/rfc822 part
     #                                or Undef if it failed to parse or the

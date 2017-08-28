@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 sub index {
-    # @abstract Modules for parsing bounce data in JSON
+    # Module list for parsing bounce data in JSON
     # @return   [Array] list with order
     my $class = shift;
     my $index = ['SendGrid', 'AmazonSES'];
@@ -13,7 +13,7 @@ sub index {
 }
 
 sub scan {
-    # @abstract      Convert from JSON object to Sisimai::Message
+    # Method of parent class to convert from JSON object to Sisimai::Message
     # @param         [Hash] mhead       Message header of a bounce email
     # @param         [String] mbody     Message body of a bounce email(JSON)
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
@@ -23,7 +23,7 @@ sub scan {
 }
 
 sub adapt {
-    # @abstract      Adapt bounce object for Sisimai::Message format
+    # Method of parent class to adapt bounce object for Sisimai::Message format
     # @param         [Hash] argvs       bounce object returned from each email cloud
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
     #                                   or Undef if it failed to parse or the

@@ -47,7 +47,7 @@ sub index {
 }
 
 sub scan {
-    # @abstract      Detect an error
+    # Detect an error
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header

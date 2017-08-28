@@ -40,7 +40,7 @@ sub index {
 }
 
 sub scan {
-    # @abstract      Convert from JSON object to Sisimai::Message
+    # Convert from JSON object to Sisimai::Message
     # @param         [Hash] mhead       Message header of a bounce email
     # @param         [String] mbody     Message body of a bounce email(JSON)
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
@@ -50,7 +50,7 @@ sub scan {
 }
 
 sub adapt {
-    # @abstract      Adapt bounce object for Sisimai::Message format
+    # Adapt bounce object for Sisimai::Message format
     # @param         [Hash] argvs       bounce object returned from each email cloud
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
     #                                   or Undef if it failed to parse or the

@@ -30,7 +30,7 @@ sub pattern     { return $Re0 }
 sub description { 'Module decription' }
 
 sub scan {
-    # @abstract      Template for User-Defined MTA module
+    # Template for User-Defined MTA module
     # @param         [Hash] mhead       Message headers of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header

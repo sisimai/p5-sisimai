@@ -52,12 +52,6 @@ sub make {
     # @param    [Hash] argvs        Email address, name, and other elements
     # @return   [Sisimai::Address]  Object or Undef when the email address was
     #                               not valid.
-    # @example  input: {
-    #               'address' => 'neko@example.org',
-    #               'name'    => 'Neko',
-    #               'comment' => '(nyaan)'
-    #           }
-    #           output: Sisimai::Address Object
     # @since    v4.22.1
     my $class = shift;
     my $argvs = shift // return undef;
@@ -127,12 +121,6 @@ sub find {
     #                           1 = Returns list including email addresses only
     # @return   [Array, Undef]  Email address list or Undef when there is no 
     #                           email address in the argument
-    # @example  input:  'Neko <neko(nyaan)@example.org>'
-    #           output: [{
-    #               'address' => 'neko@example.org',
-    #               'name'    => 'Neko',
-    #               'comment' => '(nyaan)'
-    #           }]
     # @since    v4.22.0
     my $class = shift;
     my $argv1 = shift // return undef;
@@ -413,8 +401,6 @@ sub s3s4 {
     # Runs like ruleset 3,4 of sendmail.cf
     # @param    [String] input  Text including an email address
     # @return   [String]        Email address without comment, brackets
-    # @example  input:  '<neko@example.cat>'
-    #           output: 'neko@example.cat'
     my $class = shift;
     my $input = shift // return undef;
     my $addrs = [];
@@ -427,11 +413,9 @@ sub s3s4 {
 }
 
 sub expand_verp {
-    # @abstract Expand VERP: Get the original recipient address from VERP
+    # Expand VERP: Get the original recipient address from VERP
     # @param    [String] email  VERP Address
     # @return   [String]        Email address
-    # @example  input:  'bounce+neko=example.org@example.org'
-    #           output: 'neko@example.org'
     my $class = shift;
     my $email = shift // return undef;
     my $local = (split('@', $email, 2))[0];
@@ -450,8 +434,6 @@ sub expand_alias {
     # Expand alias: remove from '+' to '@'
     # @param    [String] email  Email alias string
     # @return   [String]        Expanded email address
-    # @example  Expand alias
-    #   expand_alias('neko+straycat@example.org') #=> 'neko@example.org'
     my $class = shift;
     my $email = shift // return undef;
     my $alias = '';

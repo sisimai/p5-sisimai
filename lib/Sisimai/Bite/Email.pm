@@ -35,7 +35,7 @@ sub index {
 }
 
 sub scan {
-    # @abstract      Detect an error
+    # Method of a parent class to parse a bounce message of each MTA
     # @param         [Hash] mhead       Message headers of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header

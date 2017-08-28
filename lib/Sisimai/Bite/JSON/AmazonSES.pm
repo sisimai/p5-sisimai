@@ -85,7 +85,7 @@ sub scan {
 }
 
 sub adapt {
-    # @abstract Adapt Amazon SES bounce object for Sisimai::Message format
+    # Adapt Amazon SES bounce object for Sisimai::Message format
     # @param        [Hash] argvs     bounce object(JSON) retrieved from Amazon SNS
     # @return       [Hash, Undef]    Bounce data list and message/rfc822 part
     #                                or Undef if it failed to parse or the
