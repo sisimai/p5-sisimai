@@ -211,6 +211,9 @@ MAKE_TEST: {
             isa_ok $perlobject, 'ARRAY';
             for my $ee ( @$perlobject ) {
                 isa_ok $ee, 'HASH';
+                is ref $ee->{'addresser'}, '', '->{addresser} is a String';
+                is ref $ee->{'recipient'}, '', '->{reciipent} is a String';
+
                 for my $eee ( @$tobetested ) {
                     if( $eee eq 'senderdomain' && $ee->{'addresser'} =~ /\A(?:postmaster|MAILER-DAEMON)\z/ ) {
                         # addresser = postmaster
