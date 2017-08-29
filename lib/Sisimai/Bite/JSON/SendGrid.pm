@@ -21,8 +21,6 @@ sub adapt {
     return undef unless Sisimai::RFC5322->is_emailaddress($argvs->{'email'});
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822head = {};    # (Hash) Check flags for headers in RFC822 part
-    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = $dscontents->[-1];
 
     require Sisimai::String;
@@ -34,7 +32,6 @@ sub adapt {
     #       "reason": "Unable to resolve MX host sendgrid.ne",
     #       "email": "esting@sendgrid.ne"
     #   },
-    $recipients++;
     $v->{'recipient'} = $argvs->{'email'};
     $v->{'date'} = $argvs->{'created'};
 
@@ -58,12 +55,11 @@ sub adapt {
     $v->{'agent'}       = __PACKAGE__->smtpagent;
 
     # Generate pseudo message/rfc822 part
-    $rfc822head = {
+    my $rfc822head = {
         'to'   => $argvs->{'email'},
         'from' => Sisimai::Address->undisclosed('s'),
         'date' => $v->{'date'},
     };
-    return undef if $recipients == 0;
     return { 'ds' => $dscontents, 'rfc822' => $rfc822head };
 }
 
