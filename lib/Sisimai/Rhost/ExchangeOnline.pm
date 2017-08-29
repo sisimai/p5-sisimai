@@ -112,6 +112,12 @@ my $CodeTable = {
             'regexp' => qr/System incorrectly configured/,
         },
     ],
+    qr/\A5[.]4[.]1\z/ => [
+        {
+            'reason' => 'userunknown',
+            'regexp' => qr/Recipient address rejected: Access denied/,
+        },
+    ],
     qr/\A5[.]4[.][46]\z/ => [
         {
             'reason' => 'networkerror',
@@ -294,7 +300,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
