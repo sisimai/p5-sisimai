@@ -3,7 +3,6 @@ use feature ':5.10';
 use parent 'Sisimai::Bite';
 use strict;
 use warnings;
-use Sisimai::RFC5322;
 
 sub INDICATORS {
     # Flags for position variables

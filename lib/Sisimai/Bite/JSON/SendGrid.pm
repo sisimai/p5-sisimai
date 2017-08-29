@@ -18,6 +18,7 @@ sub adapt {
     return undef unless ref $argvs eq 'HASH';
     return undef unless scalar keys %$argvs;
     return undef unless exists $argvs->{'email'};
+    return undef unless Sisimai::RFC5322->is_emailaddress($argvs->{'email'});
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $rfc822head = {};    # (Hash) Check flags for headers in RFC822 part
@@ -27,46 +28,41 @@ sub adapt {
     require Sisimai::String;
     require Sisimai::Address;
 
-    if( Sisimai::RFC5322->is_emailaddress($argvs->{'email'}) ) {
-        #   {
-        #       "status": "4.0.0",
-        #       "created": "2011-09-16 22:02:19",
-        #       "reason": "Unable to resolve MX host sendgrid.ne",
-        #       "email": "esting@sendgrid.ne"
-        #   },
-        $recipients++;
-        $v->{'recipient'} = $argvs->{'email'};
-        $v->{'date'} = $argvs->{'created'};
+    #   {
+    #       "status": "4.0.0",
+    #       "created": "2011-09-16 22:02:19",
+    #       "reason": "Unable to resolve MX host sendgrid.ne",
+    #       "email": "esting@sendgrid.ne"
+    #   },
+    $recipients++;
+    $v->{'recipient'} = $argvs->{'email'};
+    $v->{'date'} = $argvs->{'created'};
 
-        my $statuscode = $argvs->{'status'}  || '';
-        my $diagnostic = Sisimai::String->sweep($argvs->{'reason'}) || '';
+    my $statuscode = $argvs->{'status'}  || '';
+    my $diagnostic = Sisimai::String->sweep($argvs->{'reason'}) || '';
 
-        if( $statuscode =~ m/\A[245]\d\d\z/ ) {
-            # "status": "550"
-            $v->{'replycode'} = $statuscode;
+    if( $statuscode =~ m/\A[245]\d\d\z/ ) {
+        # "status": "550"
+        $v->{'replycode'} = $statuscode;
 
-        } elsif( $statuscode =~ m/\A[245][.]\d[.]\d+\z/ ) {
-            # "status": "5.1.1"
-            $v->{'status'} = $statuscode;
-        }
-
-        require Sisimai::SMTP::Reply;
-        require Sisimai::SMTP::Status;
-        $v->{'status'}    ||= Sisimai::SMTP::Status->find($diagnostic);
-        $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($diagnostic);
-        $v->{'diagnosis'}   = $argvs->{'reason'} || '';
-        $v->{'agent'}       = __PACKAGE__->smtpagent;
-
-        # Generate pseudo message/rfc822 part
-        $rfc822head = {
-            'to'   => $argvs->{'email'},
-            'from' => Sisimai::Address->undisclosed('s'),
-            'date' => $v->{'date'},
-        };
-    } else {
-        # The value of $argvs->{'email'} does not seems to an email address
-        return undef;
+    } elsif( $statuscode =~ m/\A[245][.]\d[.]\d+\z/ ) {
+        # "status": "5.1.1"
+        $v->{'status'} = $statuscode;
     }
+
+    require Sisimai::SMTP::Reply;
+    require Sisimai::SMTP::Status;
+    $v->{'status'}    ||= Sisimai::SMTP::Status->find($diagnostic);
+    $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($diagnostic);
+    $v->{'diagnosis'}   = $argvs->{'reason'} || '';
+    $v->{'agent'}       = __PACKAGE__->smtpagent;
+
+    # Generate pseudo message/rfc822 part
+    $rfc822head = {
+        'to'   => $argvs->{'email'},
+        'from' => Sisimai::Address->undisclosed('s'),
+        'date' => $v->{'date'},
+    };
     return undef if $recipients == 0;
     return { 'ds' => $dscontents, 'rfc822' => $rfc822head };
 }
