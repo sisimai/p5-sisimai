@@ -3,6 +3,18 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.1
+--------------------------------------------------------------------------------
+- release: "Tue, 29 Aug 2017 17:25:22 +0900 (JST)"
+- version: "4.22.1"
+- changes:
+  - Sisimai::Address was born again to resolve issue #227
+    - Implement new email address parser method: find()
+    - Implement new constructor: make()
+    - Implement new writable accessors: name() and comment()
+    - parse() method was marked as obsoleted
+  - Build test with Perl 5.26 on Travis-CI.
+
 v4.22.0
 --------------------------------------------------------------------------------
 - release: "Tue, 22 Aug 2017 18:25:55 +0900 (JST)"
