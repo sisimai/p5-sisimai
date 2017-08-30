@@ -25,7 +25,7 @@ my $isexpected = [
     { 'n' => '16', 's' => qr/\A5[.]0[.]\d+\z/,    'r' => qr/filtered/,      'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
     { 'n' => '17', 's' => qr/\A5[.]0[.]\d+\z/,    'r' => qr/expired/,       'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
     { 'n' => '18', 's' => qr/\A5[.]1[.]1\z/,      'r' => qr/userunknown/,   'a' => qr/RFC3464/, 'b' => qr/\A0\z/ },
-    { 'n' => '19', 's' => qr/\A5[.]0[.]\d+\z/,    'r' => qr/onhold/,        'a' => qr/RFC3464/, 'b' => qr/\d\z/ },
+    { 'n' => '19', 's' => qr/\A5[.]0[.]\d+\z/,    'r' => qr/onhold/,        'a' => qr/RFC3464/, 'b' => qr/\A0\z/ },
     { 'n' => '20', 's' => qr/\A5[.]0[.]\d+\z/,    'r' => qr/mailererror/,   'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
     { 'n' => '21', 's' => qr/\A5[.]0[.]\d+\z/,    'r' => qr/networkerror/,  'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
     { 'n' => '22', 's' => qr/\A5[.]0[.]\d+\z/,    'r' => qr/hostunknown/,   'a' => qr/RFC3464/, 'b' => qr/\A0\z/ },
