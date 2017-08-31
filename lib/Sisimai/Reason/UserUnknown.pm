@@ -150,12 +150,10 @@ sub true {
             my $p = 'Sisimai::Reason::'.$e;
             Module::Load::load($p);
 
-            if( $p->match($diagnostic) ) {
-                # Match with reason defined in Sisimai::Reason::* Except 
-                # UserUnknown.
-                $matchother = 1;
-                last;
-            }
+            next unless $p->match($diagnostic);
+            # Match with reason defined in Sisimai::Reason::* except UserUnknown.
+            $matchother = 1;
+            last;
         }
 
         # Did not match with other message patterns
