@@ -243,21 +243,20 @@ sub scan {
             }
         }
 
-        unless( $e->{'reason'} ) {
-            # http://postmaster.facebook.com/response_codes
-            #   Facebook System Resource Issues
-            #   These codes indicate a temporary issue internal to Facebook's 
-            #   system. Administrators observing these issues are not required to
-            #   take any action to correct them.
-            if( $fbresponse =~ m/\AINT-T\d+\z/ ) {
-                # * INT-Tx
-                #
-                # https://groups.google.com/forum/#!topic/cdmix/eXfi4ddgYLQ
-                # This block has not been tested because we have no email sample
-                # including "INT-T?" error code.
-                $e->{'reason'} = 'systemerror';
-            }
-        }
+        # http://postmaster.facebook.com/response_codes
+        #   Facebook System Resource Issues
+        #   These codes indicate a temporary issue internal to Facebook's 
+        #   system. Administrators observing these issues are not required to
+        #   take any action to correct them.
+        next if $e->{'reason'};
+
+        # * INT-Tx
+        #
+        # https://groups.google.com/forum/#!topic/cdmix/eXfi4ddgYLQ
+        # This block has not been tested because we have no email sample
+        # including "INT-T?" error code.
+        next unless $fbresponse =~ m/\AINT-T\d+\z/;
+        $e->{'reason'} = 'systemerror';
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

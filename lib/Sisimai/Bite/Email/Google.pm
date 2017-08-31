@@ -294,15 +294,14 @@ sub scan {
                 last;
             }
         }
+        next unless $e->{'reason'};
+
+        # Set pseudo status code
         $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'});
+        if( $e->{'status'} =~ m/\A[45][.][1-7][.][1-9]\z/ ) {
+            # Override bounce reason 
+            $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'});
 
-        if( $e->{'reason'} ) {
-            # Set pseudo status code
-            if( $e->{'status'} =~ m/\A[45][.][1-7][.][1-9]\z/ ) {
-                # Override bounce reason 
-                $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'});
-
-            } 
         }
     }
 
