@@ -189,12 +189,12 @@ sub scan {
     if( $recipients == 0 && $$mbody =~ m/notificationType/ ) {
         # Try to parse with Sisimai::Bite::JSON::AmazonSES module
         require Sisimai::Bite::JSON::AmazonSES;
-        my $e = Sisimai::Bite::JSON::AmazonSES->scan($mhead, $mbody);
+        my $j = Sisimai::Bite::JSON::AmazonSES->scan($mhead, $mbody);
 
-        if( ref $e->{'ds'} eq 'ARRAY' ) {
+        if( ref $j->{'ds'} eq 'ARRAY' ) {
             # Update $dscontents
-            $dscontents = $e->{'ds'};
-            $recipients = scalar @{ $e->{'ds'} };
+            $dscontents = $j->{'ds'};
+            $recipients = scalar @{ $j->{'ds'} };
         }
     }
 
