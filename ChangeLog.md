@@ -3,6 +3,15 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.1p1
+--------------------------------------------------------------------------------
+- release: "Not released yet"
+- version: ""
+- changes:
+  - Code improvements in Sisimai::Reason::UserUnknown, and some parser modules 
+    in Sisimai::Bite::Email.
+  - Support parsing JSON object retrieved from SendGrid Event Webhooks #211.
+
 v4.22.1
 --------------------------------------------------------------------------------
 - release: "Tue, 29 Aug 2017 17:25:22 +0900 (JST)"
