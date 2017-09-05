@@ -18,27 +18,71 @@ sub adapt {
     return undef unless ref $argvs eq 'HASH';
     return undef unless scalar keys %$argvs;
     return undef unless exists $argvs->{'email'};
-
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822head = {};    # (Hash) Check flags for headers in RFC822 part
-    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $v = $dscontents->[-1];
+    return undef unless Sisimai::RFC5322->is_emailaddress($argvs->{'email'});
 
     require Sisimai::String;
     require Sisimai::Address;
+    require Sisimai::SMTP::Reply;
+    require Sisimai::SMTP::Status;
 
-    if( Sisimai::RFC5322->is_emailaddress($argvs->{'email'}) ) {
+    my $dscontents = undef;
+    my $rfc822head = {};
+    my $v = undef;
+
+    if( exists $argvs->{'event'} ) {
+        # https://sendgrid.com/docs/API_Reference/Webhooks/event.html
+        # {
+        #   'tls' => 0,
+        #   'timestamp' => 1504555832,
+        #   'event' => 'bounce',
+        #   'email' => 'mailboxfull@example.jp',
+        #   'ip' => '192.0.2.22',
+        #   'sg_message_id' => '03_Wof6nRbqqzxRvLpZbfw.filter0017p3mdw1-11399-59ADB335-16.0',
+        #   'type' => 'blocked',
+        #   'sg_event_id' => 'S4wr46YHS0qr3BKhawTQjQ',
+        #   'reason' => '550 5.2.2 <mailboxfull@example.jp>... Mailbox Full ',
+        #   'smtp-id' => '<201709042010.v84KAQ5T032530@example.nyaan.jp>',
+        #   'status' => '5.2.2'
+        # },
+        return undef unless $argvs->{'event'} =~ qr/\A(?:bounce|deferred|delivered)\z/;
+        use Sisimai::Time;
+        $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+        $v = $dscontents->[-1];
+
+        $v->{'date'}      = localtime(Sisimai::Time->new($argvs->{'timestamp'}));
+        $v->{'agent'}     = __PACKAGE__->smtpagent;
+        $v->{'lhost'}     = $argvs->{'ip'};
+        $v->{'status'}    = $argvs->{'status'} || '';
+        $v->{'diagnosis'} = Sisimai::String->sweep($argvs->{'reason'} || $argvs->{'response'}) || '';
+        $v->{'recipient'} = $argvs->{'email'};
+
+        if( $argvs->{'event'} eq 'delivered' ) {
+            # "event": "delivered"
+            $v->{'reason'} = 'delivered';
+        }
+        $v->{'status'}    ||= Sisimai::SMTP::Status->find($v->{'diagnosis'});
+        $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($v->{'diagnosis'});
+
+        # Generate pseudo message/rfc822 part
+        $rfc822head = {
+            'from' => Sisimai::Address->undisclosed('s'),
+            'message-id' => $argvs->{'smtp-id'},
+        };
+
+    } else {
         #   {
         #       "status": "4.0.0",
         #       "created": "2011-09-16 22:02:19",
         #       "reason": "Unable to resolve MX host sendgrid.ne",
         #       "email": "esting@sendgrid.ne"
         #   },
-        $recipients++;
+        $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+        $v = $dscontents->[-1];
+
         $v->{'recipient'} = $argvs->{'email'};
         $v->{'date'} = $argvs->{'created'};
 
-        my $statuscode = $argvs->{'status'}  || '';
+        my $statuscode = $argvs->{'status'} || '';
         my $diagnostic = Sisimai::String->sweep($argvs->{'reason'}) || '';
 
         if( $statuscode =~ m/\A[245]\d\d\z/ ) {
@@ -50,8 +94,6 @@ sub adapt {
             $v->{'status'} = $statuscode;
         }
 
-        require Sisimai::SMTP::Reply;
-        require Sisimai::SMTP::Status;
         $v->{'status'}    ||= Sisimai::SMTP::Status->find($diagnostic);
         $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($diagnostic);
         $v->{'diagnosis'}   = $argvs->{'reason'} || '';
@@ -59,15 +101,10 @@ sub adapt {
 
         # Generate pseudo message/rfc822 part
         $rfc822head = {
-            'to'   => $argvs->{'email'},
             'from' => Sisimai::Address->undisclosed('s'),
             'date' => $v->{'date'},
         };
-    } else {
-        # The value of $argvs->{'email'} does not seems to an email address
-        return undef;
     }
-    return undef if $recipients == 0;
     return { 'ds' => $dscontents, 'rfc822' => $rfc822head };
 }
 

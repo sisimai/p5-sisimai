@@ -237,15 +237,14 @@ sub scan {
             my $r = Sisimai::SMTP::Status->find($e->{'diagnosis'});
             $e->{'status'} = $r if length $r;
         }
+        next unless $e->{'status'};
 
-        if( $e->{'status'} ) {
-            # Find the error code from $CodeTable
-            for my $f ( keys %$CodeTable ) {
-                # Try to match with each key as a regular expression
-                next unless $e->{'status'} =~ $f;
-                $e->{'reason'} = $CodeTable->{ $f };
-                last;
-            }
+        # Find the error code from $CodeTable
+        for my $f ( keys %$CodeTable ) {
+            # Try to match with each key as a regular expression
+            next unless $e->{'status'} =~ $f;
+            $e->{'reason'} = $CodeTable->{ $f };
+            last;
         }
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
