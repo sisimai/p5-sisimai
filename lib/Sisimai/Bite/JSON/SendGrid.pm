@@ -20,7 +20,6 @@ sub adapt {
     return undef unless exists $argvs->{'email'};
     return undef unless Sisimai::RFC5322->is_emailaddress($argvs->{'email'});
 
-    use Time::Piece;
     require Sisimai::String;
     require Sisimai::Address;
     require Sisimai::SMTP::Reply;
@@ -46,10 +45,11 @@ sub adapt {
         #   'status' => '5.2.2'
         # },
         return undef unless $argvs->{'event'} =~ qr/\A(?:bounce|deferred|delivered)\z/;
+        use Sisimai::Time;
         $dscontents = [__PACKAGE__->DELIVERYSTATUS];
         $v = $dscontents->[-1];
 
-        $v->{'date'}      = localtime(Time::Piece->new($argvs->{'timestamp'}));
+        $v->{'date'}      = localtime(Sisimai::Time->new($argvs->{'timestamp'}));
         $v->{'agent'}     = __PACKAGE__->smtpagent;
         $v->{'lhost'}     = $argvs->{'ip'};
         $v->{'status'}    = $argvs->{'status'} || '';
