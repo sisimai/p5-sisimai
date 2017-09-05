@@ -20,46 +20,91 @@ sub adapt {
     return undef unless exists $argvs->{'email'};
     return undef unless Sisimai::RFC5322->is_emailaddress($argvs->{'email'});
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $v = $dscontents->[-1];
-
+    use Time::Piece;
     require Sisimai::String;
     require Sisimai::Address;
-
-    #   {
-    #       "status": "4.0.0",
-    #       "created": "2011-09-16 22:02:19",
-    #       "reason": "Unable to resolve MX host sendgrid.ne",
-    #       "email": "esting@sendgrid.ne"
-    #   },
-    $v->{'recipient'} = $argvs->{'email'};
-    $v->{'date'} = $argvs->{'created'};
-
-    my $statuscode = $argvs->{'status'}  || '';
-    my $diagnostic = Sisimai::String->sweep($argvs->{'reason'}) || '';
-
-    if( $statuscode =~ m/\A[245]\d\d\z/ ) {
-        # "status": "550"
-        $v->{'replycode'} = $statuscode;
-
-    } elsif( $statuscode =~ m/\A[245][.]\d[.]\d+\z/ ) {
-        # "status": "5.1.1"
-        $v->{'status'} = $statuscode;
-    }
-
     require Sisimai::SMTP::Reply;
     require Sisimai::SMTP::Status;
-    $v->{'status'}    ||= Sisimai::SMTP::Status->find($diagnostic);
-    $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($diagnostic);
-    $v->{'diagnosis'}   = $argvs->{'reason'} || '';
-    $v->{'agent'}       = __PACKAGE__->smtpagent;
 
-    # Generate pseudo message/rfc822 part
-    my $rfc822head = {
-        'to'   => $argvs->{'email'},
-        'from' => Sisimai::Address->undisclosed('s'),
-        'date' => $v->{'date'},
-    };
+    my $dscontents = undef;
+    my $rfc822head = {};
+    my $v = undef;
+
+    if( exists $argvs->{'event'} ) {
+        # https://sendgrid.com/docs/API_Reference/Webhooks/event.html
+        # {
+        #   'tls' => 0,
+        #   'timestamp' => 1504555832,
+        #   'event' => 'bounce',
+        #   'email' => 'mailboxfull@example.jp',
+        #   'ip' => '192.0.2.22',
+        #   'sg_message_id' => '03_Wof6nRbqqzxRvLpZbfw.filter0017p3mdw1-11399-59ADB335-16.0',
+        #   'type' => 'blocked',
+        #   'sg_event_id' => 'S4wr46YHS0qr3BKhawTQjQ',
+        #   'reason' => '550 5.2.2 <mailboxfull@example.jp>... Mailbox Full ',
+        #   'smtp-id' => '<201709042010.v84KAQ5T032530@example.nyaan.jp>',
+        #   'status' => '5.2.2'
+        # },
+        return undef unless $argvs->{'event'} =~ qr/\A(?:bounce|deferred|delivered)\z/;
+        $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+        $v = $dscontents->[-1];
+
+        $v->{'date'}      = localtime(Time::Piece->new($argvs->{'timestamp'}));
+        $v->{'agent'}     = __PACKAGE__->smtpagent;
+        $v->{'lhost'}     = $argvs->{'ip'};
+        $v->{'status'}    = $argvs->{'status'} || '';
+        $v->{'diagnosis'} = Sisimai::String->sweep($argvs->{'reason'} || $argvs->{'response'}) || '';
+        $v->{'recipient'} = $argvs->{'email'};
+
+        if( $argvs->{'event'} eq 'delivered' ) {
+            # "event": "delivered"
+            $v->{'reason'} = 'delivered';
+        }
+        $v->{'status'}    ||= Sisimai::SMTP::Status->find($v->{'diagnosis'});
+        $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($v->{'diagnosis'});
+
+        # Generate pseudo message/rfc822 part
+        $rfc822head = {
+            'from' => Sisimai::Address->undisclosed('s'),
+            'message-id' => $argvs->{'smtp-id'},
+        };
+
+    } else {
+        #   {
+        #       "status": "4.0.0",
+        #       "created": "2011-09-16 22:02:19",
+        #       "reason": "Unable to resolve MX host sendgrid.ne",
+        #       "email": "esting@sendgrid.ne"
+        #   },
+        $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+        $v = $dscontents->[-1];
+
+        $v->{'recipient'} = $argvs->{'email'};
+        $v->{'date'} = $argvs->{'created'};
+
+        my $statuscode = $argvs->{'status'} || '';
+        my $diagnostic = Sisimai::String->sweep($argvs->{'reason'}) || '';
+
+        if( $statuscode =~ m/\A[245]\d\d\z/ ) {
+            # "status": "550"
+            $v->{'replycode'} = $statuscode;
+
+        } elsif( $statuscode =~ m/\A[245][.]\d[.]\d+\z/ ) {
+            # "status": "5.1.1"
+            $v->{'status'} = $statuscode;
+        }
+
+        $v->{'status'}    ||= Sisimai::SMTP::Status->find($diagnostic);
+        $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($diagnostic);
+        $v->{'diagnosis'}   = $argvs->{'reason'} || '';
+        $v->{'agent'}       = __PACKAGE__->smtpagent;
+
+        # Generate pseudo message/rfc822 part
+        $rfc822head = {
+            'from' => Sisimai::Address->undisclosed('s'),
+            'date' => $v->{'date'},
+        };
+    }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822head };
 }
 
