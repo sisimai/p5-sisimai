@@ -90,7 +90,7 @@ my $moduletest = sub {
             my $lb = undef; # Label
             my $re = undef; # Regular expression
 
-            $mesgobject = Sisimai::Message->new('data' => $r, 'input' => 'json');
+            $mesgobject = Sisimai::Message->new('data' => $r, 'input' => 'json', 'delivered' => 1);
             isa_ok $mesgobject,         'Sisimai::Message';
             isa_ok $mesgobject->ds,     'ARRAY';
             isa_ok $mesgobject->header, 'HASH';
