@@ -78,8 +78,8 @@ sub adapt {
 
         # Generate pseudo message/rfc822 part
         $rfc822head = {
-            'from' => Sisimai::Address->undisclosed('s'),
-            'message-id' => $argvs->{'smtp-id'},
+            'from'       => Sisimai::Address->undisclosed('s'),
+            'message-id' => $argvs->{'sg_message_id'},
         };
 
     } else {
