@@ -44,7 +44,7 @@ sub adapt {
         #   'smtp-id' => '<201709042010.v84KAQ5T032530@example.nyaan.jp>',
         #   'status' => '5.2.2'
         # },
-        return undef unless $argvs->{'event'} =~ qr/\A(?:bounce|deferred|delivered)\z/;
+        return undef unless $argvs->{'event'} =~ qr/\A(?:bounce|deferred|delivered|spamreport)\z/;
         use Sisimai::Time;
         $dscontents = [__PACKAGE__->DELIVERYSTATUS];
         $v = $dscontents->[-1];
@@ -59,14 +59,27 @@ sub adapt {
         if( $argvs->{'event'} eq 'delivered' ) {
             # "event": "delivered"
             $v->{'reason'} = 'delivered';
+
+        } elsif( $argvs->{'event'} eq 'spamreport' ) {
+            # [
+            #   {
+            #     "email": "kijitora@example.com",
+            #     "timestamp": 1504837383,
+            #     "sg_message_id": "6_hrAeKvTDaB5ynBI2nbnQ.filter0002p3las1-27574-59B1FDA3-19.0",
+            #     "sg_event_id": "o70uHqbMSXOaaoveMZIjjg",
+            #     "event": "spamreport"
+            #   }
+            # ]
+            $v->{'reason'} = 'feedback';
+            $v->{'feedbacktype'} = 'abuse';
         }
         $v->{'status'}    ||= Sisimai::SMTP::Status->find($v->{'diagnosis'});
         $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($v->{'diagnosis'});
 
         # Generate pseudo message/rfc822 part
         $rfc822head = {
-            'from' => Sisimai::Address->undisclosed('s'),
-            'message-id' => $argvs->{'smtp-id'},
+            'from'       => Sisimai::Address->undisclosed('s'),
+            'message-id' => $argvs->{'sg_message_id'},
         };
 
     } else {
