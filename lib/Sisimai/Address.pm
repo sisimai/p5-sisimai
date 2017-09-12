@@ -5,6 +5,7 @@ use warnings;
 use Class::Accessor::Lite;
 use Sisimai::RFC5322;
 
+my $undisclosed = 'libsisimai.org.invalid';
 my $roaccessors = [
     'address',  # [String] Email address
     'user',     # [String] local part of the email address
@@ -30,7 +31,7 @@ sub undisclosed {
 
     return undef unless $atype =~ m/\A(?:r|s)\z/;
     $local = $atype eq 'r' ? 'recipient' : 'sender';
-    return sprintf("undisclosed-%s-in-headers%slibsisimai.org.invalid", $local, '@');
+    return sprintf("undisclosed-%s-in-headers%s%s", $local, '@', $undisclosed);
 }
 
 sub new {
@@ -446,6 +447,16 @@ sub expand_alias {
         $alias = sprintf("%s@%s", $1, $local[1]);
     }
     return $alias;
+}
+
+sub is_undisclosed {
+    # Check the "address" is an undisclosed address or not
+    # @param    [None]
+    # @return   [Integer]   1: Undisclosed address
+    #                       0: Is not undisclosed address
+    my $self = shift;
+    return 1 if $self->host eq $undisclosed;
+    return 0;
 }
 
 sub TO_JSON {

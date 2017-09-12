@@ -10,7 +10,9 @@ my $MethodNames = {
         'new', 'make', 'find', 'parse', 's3s4', 'expand_verp', 'expand_alias',
         'undisclosed',
     ],
-    'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
+    'object' => [
+        'address', 'host', 'user', 'verp', 'alias', 'is_undisclosed', 'TO_JSON'
+    ],
 };
 my $NewInstance = $PackageName->new('maketest@bouncehammer.jp');
 
@@ -315,9 +317,16 @@ MAKE_TEST: {
     UNDISCLOSED: {
         my $r = 'undisclosed-recipient-in-headers@libsisimai.org.invalid';
         my $s = 'undisclosed-sender-in-headers@libsisimai.org.invalid';
+        my $v = undef;
         is $p->undisclosed('r'), $r,    sprintf("%s->undisclosed(r) = %s", $p, $r);
         is $p->undisclosed('s'), $s,    sprintf("%s->undisclosed(s) = %s", $p, $s);
         is $p->undisclosed(''),  undef, sprintf("%s->undisclosed() = undef", $p);
+
+        $v = $p->new($r);
+        is $v->is_undisclosed, 1, sprintf("%s->is_undisclosed() = 1", $p);
+
+        $v = $p->new($s);
+        is $v->is_undisclosed, 1, sprintf("%s->is_undisclosed() = 1", $p);
     }
 }
 
