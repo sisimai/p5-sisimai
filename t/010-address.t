@@ -261,6 +261,7 @@ MAKE_TEST: {
             is $v->alias,   '',        sprintf("%s %s->new(v)->alias = ''", $n, $p, '');
             is $v->name,    $e->{'n'}, sprintf("%s %s->new(v)->name = ''", $n, $p, $e->{'n'});
             is $v->comment, $e->{'c'}, sprintf("%s %s->new(v)->comment = ''", $n, $p, $e->{'c'});
+            is $v->is_undisclosed, 0,  sprintf("%s %s->new(v)->is_undisclosed = 0", $n, $p);
 
             unless( Sisimai::RFC5322->is_mailerdaemon($e->{'v'}) ) {
                 is $v->host, $a->[1], sprintf("%s %s->new(v)->host = %s", $n, $p, $a->[1]);
@@ -317,7 +318,6 @@ MAKE_TEST: {
     UNDISCLOSED: {
         my $r = 'undisclosed-recipient-in-headers@libsisimai.org.invalid';
         my $s = 'undisclosed-sender-in-headers@libsisimai.org.invalid';
-        my $v = undef;
         is $p->undisclosed('r'), $r,    sprintf("%s->undisclosed(r) = %s", $p, $r);
         is $p->undisclosed('s'), $s,    sprintf("%s->undisclosed(s) = %s", $p, $s);
         is $p->undisclosed(''),  undef, sprintf("%s->undisclosed() = undef", $p);
