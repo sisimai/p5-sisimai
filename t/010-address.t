@@ -10,7 +10,9 @@ my $MethodNames = {
         'new', 'make', 'find', 'parse', 's3s4', 'expand_verp', 'expand_alias',
         'undisclosed',
     ],
-    'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
+    'object' => [
+        'address', 'host', 'user', 'verp', 'alias', 'is_undisclosed', 'TO_JSON'
+    ],
 };
 my $NewInstance = $PackageName->new('maketest@bouncehammer.jp');
 
@@ -259,6 +261,7 @@ MAKE_TEST: {
             is $v->alias,   '',        sprintf("%s %s->new(v)->alias = ''", $n, $p, '');
             is $v->name,    $e->{'n'}, sprintf("%s %s->new(v)->name = ''", $n, $p, $e->{'n'});
             is $v->comment, $e->{'c'}, sprintf("%s %s->new(v)->comment = ''", $n, $p, $e->{'c'});
+            is $v->is_undisclosed, 0,  sprintf("%s %s->new(v)->is_undisclosed = 0", $n, $p);
 
             unless( Sisimai::RFC5322->is_mailerdaemon($e->{'v'}) ) {
                 is $v->host, $a->[1], sprintf("%s %s->new(v)->host = %s", $n, $p, $a->[1]);
@@ -318,6 +321,12 @@ MAKE_TEST: {
         is $p->undisclosed('r'), $r,    sprintf("%s->undisclosed(r) = %s", $p, $r);
         is $p->undisclosed('s'), $s,    sprintf("%s->undisclosed(s) = %s", $p, $s);
         is $p->undisclosed(''),  undef, sprintf("%s->undisclosed() = undef", $p);
+
+        $v = $p->new($r);
+        is $v->is_undisclosed, 1, sprintf("%s->is_undisclosed() = 1", $p);
+
+        $v = $p->new($s);
+        is $v->is_undisclosed, 1, sprintf("%s->is_undisclosed() = 1", $p);
     }
 }
 

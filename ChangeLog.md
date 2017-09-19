@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.1p2
+v4.22.1p3
 --------------------------------------------------------------------------------
 - release: "Not released yet"
 - version: ""
@@ -12,6 +12,7 @@ v4.22.1p2
     in Sisimai::Bite::Email.
   - Support parsing JSON object retrieved from SendGrid Event Webhooks #211.
   - Support "event": "spamreport" via Feedback Loop on SendGrid Event Webhooks.
+  - Implement `Sisimai::Address->is_undisclosed` method.
 
 v4.22.1
 --------------------------------------------------------------------------------
