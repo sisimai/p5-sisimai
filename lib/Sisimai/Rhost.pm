@@ -5,9 +5,9 @@ use warnings;
 use Module::Load '';
 
 my $RhostClass = {
-    qr/\Aaspmx[.]l[.]google[.]com\z/    => 'GoogleApps',
-    qr/[.]protection[.]outlook[.]com\z/ => 'ExchangeOnline',
-    qr/\Asmtp[.]secureserver[.]net\z/   => 'GoDaddy',
+    qr/\Aaspmx[.]l[.]google[.]com\z/                   => 'GoogleApps',
+    qr/[.]protection[.]outlook[.]com\z/                => 'ExchangeOnline',
+    qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/   => 'GoDaddy',
 };
 
 sub list {
