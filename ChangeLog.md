@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.1p3
+v4.22.1p4
 --------------------------------------------------------------------------------
 - release: "Not released yet"
 - version: ""
@@ -13,6 +13,8 @@ v4.22.1p3
   - Support parsing JSON object retrieved from SendGrid Event Webhooks #211.
   - Support "event": "spamreport" via Feedback Loop on SendGrid Event Webhooks.
   - Implement `Sisimai::Address->is_undisclosed` method.
+  - Implement Sisimai::Rhost::GoDaddy to get a correct reason at parsing bounce
+    mails from GoDaddy (reported at issue #236). Thanks to @ViktorNacht.
 
 v4.22.1
 --------------------------------------------------------------------------------
