@@ -76,6 +76,22 @@ sub close {
     return 1;
 }
 
+sub to_anon {
+    # Close the handle
+    # @param
+    # @return   [Integer] 0: Mail handle is not defined
+    #                     1: Successfully closed the handle
+    my $self = shift;
+    my $code = shift || sub { return shift };
+    my $text = '';
+
+    while( my $e = $self->mail->read ) {
+        $text .= $e;
+    }
+
+    return $text;
+}
+
 1;
 __END__
 

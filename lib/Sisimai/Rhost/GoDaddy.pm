@@ -60,14 +60,11 @@ sub get {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return $argvs->reason if length $argvs->reason;
 
-    my $statuscode = $argvs->deliverystatus;
     my $statusmesg = $argvs->diagnosticcode;
     my $reasontext = '';
-    my $bouncecode = undef;
 
     if( $statusmesg =~ /\s(IB\d{3})\b/ ) {
         # 192.0.2.22 has sent to too many recipients this hour. IB607 ...
-        $bouncecode = $1;
         $reasontext = $CodeTable->{ $1 };
 
     } else {
