@@ -21,6 +21,8 @@ MAKE_TEST: {
     my $host = [
         'aspmx.l.google.com',
         'neko.protection.outlook.com',
+        'smtp.secureserver.net',
+        'mailstore1.secureserver.net',
     ];
 
     for my $e ( @$host ) {
