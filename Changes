@@ -3,6 +3,21 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.2
+--------------------------------------------------------------------------------
+- release: "Fri, 13 Oct 2017 11:33:00 +0900 (JST)
+- version: "4.22.2"
+- changes:
+  - Code improvements in Sisimai::Reason::UserUnknown, and some parser modules 
+    in Sisimai::Bite::Email.
+  - Support parsing JSON object retrieved from SendGrid Event Webhooks #211.
+  - Support "event": "spamreport" via Feedback Loop on SendGrid Event Webhooks.
+  - Implement `Sisimai::Address->is_undisclosed` method.
+  - Implement Sisimai::Rhost::GoDaddy to get a correct reason at parsing bounce
+    mails from GoDaddy (reported at issue #236). Thanks to @ViktorNacht.
+  - Remove obsoleted classes: Sisimai::MTA, Sisimai::MSP, and Sisimai::CED.
+  - Remove obsoleted method: `Sisimai::Address->parse`.
+
 v4.22.1
 --------------------------------------------------------------------------------
 - release: "Tue, 29 Aug 2017 17:25:22 +0900 (JST)"
