@@ -3,10 +3,10 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.1p4
+v4.22.2
 --------------------------------------------------------------------------------
-- release: "Not released yet"
-- version: ""
+- release: "Fri, 13 Oct 2017 11:33:00 +0900 (JST)
+- version: "4.22.2"
 - changes:
   - Code improvements in Sisimai::Reason::UserUnknown, and some parser modules 
     in Sisimai::Bite::Email.
@@ -15,6 +15,8 @@ v4.22.1p4
   - Implement `Sisimai::Address->is_undisclosed` method.
   - Implement Sisimai::Rhost::GoDaddy to get a correct reason at parsing bounce
     mails from GoDaddy (reported at issue #236). Thanks to @ViktorNacht.
+  - Remove obsoleted classes: Sisimai::MTA, Sisimai::MSP, and Sisimai::CED.
+  - Remove obsoleted method: `Sisimai::Address->parse`.
 
 v4.22.1
 --------------------------------------------------------------------------------
