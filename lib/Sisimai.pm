@@ -207,7 +207,7 @@ Sisimai - Mail Analyzing Interface for bounce mails.
 
 =head1 DESCRIPTION
 
-Sisimai is the system formerly known as C<bounceHammer> 4, is a Pelr module for
+Sisimai is the system formerly known as C<bounceHammer> 4, is a Perl module for
 analyzing bounce mails and generate structured data in a JSON format (YAML is 
 also available if "YAML" module is installed on your system) from parsed bounce
 messages. C<Sisimai> is a coined word: Sisi (the number 4 is pronounced "Si" in
@@ -272,7 +272,7 @@ of dump() and make() method like following command:
 
 =head2 Callback Feature
 
-Beggining from v4.19.0, `hook` argument is available to callback user defined
+Beginning from v4.19.0, `hook` argument is available to callback user defined
 method like the following codes:
     my $cmethod = sub {
         my $argv = shift;
@@ -309,7 +309,7 @@ method like the following codes:
 
 =head2 C<B<engine()>>
 
-C<engine> method provides table including parser engine list and its description.
+C<engine> method provides table including parser engine list and it's description.
 
     use Sisimai;
     my $v = Sisimai->engine();
