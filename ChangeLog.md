@@ -9,6 +9,8 @@ v4.22.2p1
 - version: ""
 - changes:
   - Merge Pull-Request #238, Fix some typos in POD. Thanks to @brewt.
+  - Add set-of-emails/json/json-amazonses-06.json as a sample JSON object from
+    sisimai/rb-Sisimai#88.
 
 v4.22.2
 --------------------------------------------------------------------------------
