@@ -11,6 +11,8 @@ v4.22.2p1
   - Merge Pull-Request #238, Fix some typos in POD. Thanks to @brewt.
   - Add set-of-emails/json/json-amazonses-06.json as a sample JSON object from
     sisimai/rb-Sisimai#88.
+  - Merge Pull-Request #239, Add bounce message patterns in MailboxFull.pm and
+    Blocked.pm for laposte.net and orange.fr. Thanks to @Quickeneen.
 
 v4.22.2
 --------------------------------------------------------------------------------
