@@ -66,6 +66,8 @@ sub match {
             |dynamic[ ]ips
             )
         |http://www[.]spamcop[.]net/bl[.]
+	|LPN007_510
+	|ofr_506
         )
     }xi;
 
