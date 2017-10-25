@@ -68,6 +68,7 @@ sub match {
             )
         |was[ ]automatically[ ]rejected:[ ]quota[ ]exceeded
         |would[ ]be[ ]over[ ]the[ ]allowed[ ]quota
+	|OFR_417
         )
     }ix;
 
