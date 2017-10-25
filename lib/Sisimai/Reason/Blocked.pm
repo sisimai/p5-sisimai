@@ -42,10 +42,12 @@ sub match {
         |IP[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]EarthLink # Earthlink
         |IP[/]domain[ ]reputation[ ]problems
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
+        |LPN007_510 # laposte.net
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
         |Messages[ ]from[ ].+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
         |no[ ]access[ ]from[ ]mail[ ]server
         |Not[ ]currently[ ]accepting[ ]mail[ ]from[ ]your[ ]ip  # Microsoft
+        |ofr_506    # orange.fr
         |Please[ ]get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
         |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
         |Rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
@@ -66,8 +68,6 @@ sub match {
             |dynamic[ ]ips
             )
         |http://www[.]spamcop[.]net/bl[.]
-	|LPN007_510
-	|ofr_506
         )
     }xi;
 

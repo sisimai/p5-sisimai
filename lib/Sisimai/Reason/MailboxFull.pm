@@ -46,6 +46,7 @@ sub match {
             )
         |mailfolder[ ]is[ ]full
         |not[ ]enough[ ]storage[ ]space[ ]in
+        |OFR_417    # orange.fr
         |over[ ]the[ ]allowed[ ]quota
         |quota[ ]exceeded
         |quota[ ]violation[ ]for
@@ -68,7 +69,6 @@ sub match {
             )
         |was[ ]automatically[ ]rejected:[ ]quota[ ]exceeded
         |would[ ]be[ ]over[ ]the[ ]allowed[ ]quota
-	|OFR_417
         )
     }ix;
 
