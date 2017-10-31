@@ -34,6 +34,7 @@ sub match {
              a[ ]known[ ]user
             |an[ ]active[ ]address[ ]at[ ]this[ ]host
             )
+        |LPN416     # laposte.net
         |mailbox[ ](?:
              not[ ]present
             |not[ ]found
