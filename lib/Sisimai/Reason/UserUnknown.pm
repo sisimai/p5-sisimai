@@ -58,6 +58,7 @@ sub match {
              a[ ]valid[ ]user[ ]here
             |a[ ]local[ ]address
             )
+        |OFR_416    # orange.fr
         |rcpt[ ][<].+[>][ ]does[ ]not[ ]exist
         |recipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in

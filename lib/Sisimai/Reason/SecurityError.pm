@@ -26,6 +26,7 @@ sub match {
         |domain[ ].+[ ]is[ ]a[ ]dead[ ]domain
         |Executable[ ]files[ ]are[ ]not[ ]allowed[ ]in[ ]compressed[ ]files
         |insecure[ ]mail[ ]relay
+        |OFR(?:102|103|304)[-_]402   # orange.fr
         |Recipient[ ]address[ ]rejected:[ ]Access[ ]denied
         |sorry,[ ]you[ ]don'?t[ ]authenticate[ ]or[ ]the[ ]domain[ ]isn'?t[ ]in[ ]
                 my[ ]list[ ]of[ ]allowed[ ]rcpthosts

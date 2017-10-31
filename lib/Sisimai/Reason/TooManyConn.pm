@@ -17,6 +17,7 @@ sub match {
          All[ ]available[ ]IPs[ ]are[ ]at[ ]maximum[ ]connection[ ]limit    # SendGrid
         |connection[ ]rate[ ]limit[ ]exceeded
         |no[ ]IPs[ ]available[ ][-][ ].+[ ]exceeds[ ]per[-]domain[ ]connection[ ]limit[ ]for
+        |OFR[03]04[-_]104  # orange.fr
         |Throttling[ ]failure:[ ](?:
              Daily[ ]message[ ]quota[ ]exceeded
             |Maximum[ ]sending[ ]rate[ ]exceeded
@@ -116,7 +117,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

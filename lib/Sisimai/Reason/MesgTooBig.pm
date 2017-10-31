@@ -27,6 +27,7 @@ sub match {
             |too[ ]big
             |too[ ]large[ ]for[ ]this[ ].+
             )
+        |OFR_514    # orange.fr
         |size[ ]limit
         )
     }ix;
@@ -135,7 +136,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
