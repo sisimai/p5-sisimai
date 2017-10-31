@@ -69,7 +69,7 @@ sub make {
 
     return undef unless ref $argvs eq 'HASH';
     return undef unless exists $argvs->{'address'};
-    return undef unless length $argvs->{'address'};
+    return undef unless $argvs->{'address'};
 
     if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
         $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
