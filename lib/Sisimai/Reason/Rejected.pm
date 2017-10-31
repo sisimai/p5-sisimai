@@ -25,6 +25,7 @@ sub match {
         |closed[ ]mailing[ ]list    # Exim test mail
         |denied[ ]\[bouncedeny\]    # McAfee
         |domain[ ]of[ ]sender[ ]address[ ].+[ ]does[ ]not[ ]exist
+        |Emetteur[ ]invalide        # orange.fr
         |empty[ ]envelope[ ]senders[ ]not[ ]allowed
         |error:[ ]no[ ]third-party[ ]dsns               # SpamWall - block empty sender
         |fully[ ]qualified[ ]email[ ]address[ ]required # McAfee
@@ -33,6 +34,8 @@ sub match {
         |mx[ ]records[ ]for[ ].+[ ]violate[ ]section[ ].+
         |name[ ]service[ ]error[ ]for[ ]    # Malformed MX RR or host not found
         |Null[ ]Sender[ ]is[ ]not[ ]allowed
+        |OFR_415        # orange.fr
+        |OFR204[-_]405  # orange.fr
         |recipient[ ]not[ ]accepted[.][ ][(]batv:[ ]no[ ]tag
         |returned[ ]mail[ ]not[ ]accepted[ ]here
         |rfc[ ]1035[ ]violation:[ ]recursive[ ]cname[ ]records[ ]for
@@ -142,7 +145,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

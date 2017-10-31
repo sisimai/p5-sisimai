@@ -34,6 +34,7 @@ sub match {
              a[ ]known[ ]user
             |an[ ]active[ ]address[ ]at[ ]this[ ]host
             )
+        |LPN416     # laposte.net
         |mailbox[ ](?:
              not[ ]present
             |not[ ]found
@@ -58,6 +59,7 @@ sub match {
              a[ ]valid[ ]user[ ]here
             |a[ ]local[ ]address
             )
+        |OFR_416    # orange.fr
         |rcpt[ ][<].+[>][ ]does[ ]not[ ]exist
         |recipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in
