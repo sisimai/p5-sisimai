@@ -55,9 +55,11 @@ sub scan {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for a blank line after error messages
-    my $anotherset = {};    # (Hash) Another error information
     my $emptylines = 0;     # (Integer) The number of empty lines
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
+    my $anotherset = {      # (Hash) Another error information
+        'diagnosis' => '',
+    };
     my $connheader = {
         'date'  => '',      # The value of Arrival-Date header
         'lhost' => '',      # The value of Reporting-MTA header
