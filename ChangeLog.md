@@ -13,6 +13,9 @@ v4.22.2p1
     sisimai/rb-Sisimai#88.
   - Merge Pull-Request #239, Add bounce message patterns in MailboxFull.pm and
     Blocked.pm for laposte.net and orange.fr. Thanks to @Quickeneen.
+  - Fix code to avoid warning message "Use of uninitialized value in length" at
+    Sisimai::Bite::Email::GSuite, Sisimai::Message::Email, and Sisimai::Address
+    on only Perl 5.10.1.
 
 v4.22.2
 --------------------------------------------------------------------------------
