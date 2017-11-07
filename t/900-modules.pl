@@ -113,6 +113,7 @@ sub list {
             Rhost/GoogleApps.pm
             Rhost/ExchangeOnline.pm
             Rhost/GoDaddy.pm
+            Rhost/FrancePTT.pm
         SMTP.pm
             SMTP/Error.pm
             SMTP/Reply.pm
