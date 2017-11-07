@@ -14,7 +14,8 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?:
-         invalid/inactive[ ]user
+         Boite[ ]du[ ]destinataire[ ]archivee.+[A-Z]{3}.+420
+        |invalid/inactive[ ]user
         # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
         |email[ ]account[ ]that[ ]you[ ]tried[ ]to[ ]reach[ ]is[ ]disabled
         |is[ ]a[ ]deactivated[ ]mailbox
@@ -101,7 +102,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

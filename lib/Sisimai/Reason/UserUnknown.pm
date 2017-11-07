@@ -17,6 +17,7 @@ sub match {
          .+[ ]user[ ]unknown
         |[#]5[.]1[.]1[ ]bad[ ]address
         |[<].+[>][ ]not[ ]found
+        |Adresse[ ]d[ ]au[ ]moins[ ]un[ ]destinataire[ ]invalide.+[A-Z]{3}.+(?:416|418)
         |address[ ]does[ ]not[ ]exist
         |address[ ]unknown
         |archived[ ]recipient
@@ -129,7 +130,10 @@ sub true {
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::SMTP::Status;
-    my $prematches = ['NoRelaying', 'Blocked', 'MailboxFull', 'HasMoved'];
+    my $prematches = [
+        'NoRelaying', 'Blocked', 'MailboxFull', 'HasMoved',
+        'Blocked', 'Rejected',
+    ];
     my $matchother = 0;
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';

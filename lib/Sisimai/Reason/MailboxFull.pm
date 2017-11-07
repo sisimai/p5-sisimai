@@ -19,6 +19,7 @@ sub match {
             |over[ ]quota
             |temporarily[ ]over[ ]quota
             )
+        |Boite[ ]du[ ]destinataire[ ]pleine.+[A-Z]{3}.+417
         |delivery[ ]failed:[ ]over[ ]quota
         |disc[ ]quota[ ]exceeded
         |does[ ]not[ ]have[ ]enough[ ]space
@@ -46,7 +47,6 @@ sub match {
             )
         |mailfolder[ ]is[ ]full
         |not[ ]enough[ ]storage[ ]space[ ]in
-        |OFR_417    # orange.fr
         |over[ ]the[ ]allowed[ ]quota
         |quota[ ]exceeded
         |quota[ ]violation[ ]for
@@ -163,7 +163,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
