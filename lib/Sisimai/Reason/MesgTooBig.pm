@@ -28,6 +28,7 @@ sub match {
             |too[ ]large[ ]for[ ]this[ ].+
             )
         |size[ ]limit
+        |Taille[ ]limite[ ]du[ ]message[ ]atteinte.+[A-Z]{3}.+514
         )
     }ix;
 
@@ -135,7 +136,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

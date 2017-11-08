@@ -13,6 +13,7 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
+    my $isnot = qr/recipient[ ]address[ ]rejected/xi;
     my $regex = qr{(?>
          [<][>][ ]invalid[ ]sender
         |address[ ]rejected
@@ -25,10 +26,12 @@ sub match {
         |closed[ ]mailing[ ]list    # Exim test mail
         |denied[ ]\[bouncedeny\]    # McAfee
         |domain[ ]of[ ]sender[ ]address[ ].+[ ]does[ ]not[ ]exist
+        |Emetteur[ ]invalide.+[A-Z]{3}.+(?:403|405|415)
         |empty[ ]envelope[ ]senders[ ]not[ ]allowed
         |error:[ ]no[ ]third-party[ ]dsns               # SpamWall - block empty sender
         |fully[ ]qualified[ ]email[ ]address[ ]required # McAfee
         |invalid[ ]domain,[ ]see[ ][<]url:.+[>]
+        |Mail[ ]from[ ]not[ ]owned[ ]by[ ]user.+[A-Z]{3}.+421
         |Message[ ]rejected:[ ]Email[ ]address[ ]is[ ]not[ ]verified
         |mx[ ]records[ ]for[ ].+[ ]violate[ ]section[ ].+
         |name[ ]service[ ]error[ ]for[ ]    # Malformed MX RR or host not found
@@ -49,6 +52,7 @@ sub match {
         )
     }xi;
 
+    return 0 if $argv1 =~ $isnot;
     return 1 if $argv1 =~ $regex;
     return 0;
 }
@@ -142,7 +146,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

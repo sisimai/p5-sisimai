@@ -27,6 +27,7 @@ sub match {
             |concurrent[ ]SMTP[ ]connections        # Microsoft
             |SMTP[ ]sessions[ ]for[ ]this[ ]host    # Sendmail(daemon.c)
             )
+        |Trop[ ]de[ ]connexions,[ ].+[A-Z]{3}.+104
         )
     }xi;
 
@@ -116,7 +117,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

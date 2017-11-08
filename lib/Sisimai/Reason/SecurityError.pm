@@ -22,7 +22,9 @@ sub match {
             |required
             |turned[ ]on[ ]in[ ]your[ ]email[ ]client
             )
+        |Authentification[ ]requise.+[A-Z]{3}.+402
         |\d+[ ]denied[ ]\[[a-z]+\][ ].+[(]Mode:[ ].+[)]
+        |Codes?[ ]d'?[ ]*authentification[ ]invalide.+[A-Z]{3}.+305
         |domain[ ].+[ ]is[ ]a[ ]dead[ ]domain
         |Executable[ ]files[ ]are[ ]not[ ]allowed[ ]in[ ]compressed[ ]files
         |insecure[ ]mail[ ]relay

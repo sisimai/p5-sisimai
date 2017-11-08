@@ -42,12 +42,10 @@ sub match {
         |IP[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]EarthLink # Earthlink
         |IP[/]domain[ ]reputation[ ]problems
         |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
-        |LPN007_510 # laposte.net
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
         |Messages[ ]from[ ].+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
         |no[ ]access[ ]from[ ]mail[ ]server
         |Not[ ]currently[ ]accepting[ ]mail[ ]from[ ]your[ ]ip  # Microsoft
-        |ofr_506    # orange.fr
         |Please[ ]get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
         |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
         |Rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
@@ -55,9 +53,11 @@ sub match {
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
             )
+        |SPF:[ ].+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail.+[A-Z]{3}.+401
         |SPF[ ]record
         |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
         |unresolvable[ ]relay[ ]host[ ]name
+        |Veuillez[ ]essayer[ ]plus[ ]tard.+[A-Z]{3}.+(?:103|510)
         |your[ ](?:
              network[ ]is[ ]temporary[ ]blacklisted
             |server[ ]requires[ ]confirmation
