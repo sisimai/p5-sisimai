@@ -5,8 +5,8 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.22.2p1
 --------------------------------------------------------------------------------
-- release: "not released yet"
-- version: ""
+- release: "Wed,  8 Nov 2017 20:27:19 +0900 (JST)"
+- version: "4.22.2p1"
 - changes:
   - Merge Pull-Request #238, Fix some typos in POD. Thanks to @brewt.
   - Add set-of-emails/json/json-amazonses-06.json as a sample JSON object from
