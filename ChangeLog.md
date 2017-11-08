@@ -16,6 +16,8 @@ v4.22.2p1
   - Fix code to avoid warning message "Use of uninitialized value in length" at
     Sisimai::Bite::Email::GSuite, Sisimai::Message::Email, and Sisimai::Address
     on only Perl 5.10.1.
+  - Merge Pull-Request #244 at issue #243 for following up pull-request #239,
+    more support for Orange and La Poste. Thanks to @Quickeneen.
 
 v4.22.2
 --------------------------------------------------------------------------------
