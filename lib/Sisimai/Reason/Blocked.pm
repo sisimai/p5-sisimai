@@ -16,6 +16,7 @@ sub match {
     my $regex = qr{(?>
          access[ ]denied[.][ ]IP[ ]name[ ]lookup[ ]failed
         |access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
+        |all[ ]mail[ ]servers[ ]must[ ]have[ ]a[ ]PTR[ ]record[ ]with[ ]a[ ]valid[ ]Reverse[ ]DNS[ ]entry
         |blacklisted[ ]by
         |Blocked[ ]-[ ]see[ ]https://support[.]proofpoint[.]com/dnsbl-lookup[.]cgi[?]ip=.+
         |can[']t[ ]determine[ ]Purported[ ]Responsible[ ]Address
@@ -38,6 +39,7 @@ sub match {
         |domain[ ].+[ ]mismatches[ ]client[ ]ip
         |dns[ ]lookup[ ]failure:[ ].+[ ]try[ ]again[ ]later
         |DNSBL:ATTRBL
+        |Fix[ ]reverse[ ]DNS[ ]for[ ].+
         |Go[ ]away
         |hosts[ ]with[ ]dynamic[ ]ip
         |IP[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]EarthLink # Earthlink
@@ -46,10 +48,16 @@ sub match {
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
         |Messages[ ]from[ ].+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
         |no[ ]access[ ]from[ ]mail[ ]server
+        |No[ ]PTR[ ]Record[ ]found[.]
         |Not[ ]currently[ ]accepting[ ]mail[ ]from[ ]your[ ]ip  # Microsoft
         |Please[ ]get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
         |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
         |Rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
+        |Reverse[ ]DNS[ ](?:failed|required)
+        |Reverse[ ]DNS[ ]lookup[ ]for[ ]host[ ].+[ ]failed[ ]permanently
+        |Server[ ]access[ ].+[ ]forbidden[ ]by[ ]invalid[ ]RDNS[ ]record[ ]of[ ]your[ ]mail[ ]server
+        |service[ ]permits[ ]\d+[ ]unverifyable[ ]sending[ ]IPs
+        |SMTP[ ]error[ ]from[ ]remote[ ]mail[ ]server[ ]after[ ]initial[ ]connection:   # Exim
         |sorry,[ ](?:
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
@@ -57,6 +65,7 @@ sub match {
         |SPF:[ ].+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail.+[A-Z]{3}.+401
         |SPF[ ]record
         |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
+        |This[ ]system[ ]will[ ]not[ ]accept[ ]messages[ ]from[ ]servers[/]devices[ ]with[ ]no[ ]reverse[ ]DNS
         |Too[ ]many[ ]spams[ ]from[ ]your[ ]IP  # free.fr
         |unresolvable[ ]relay[ ]host[ ]name
         |Veuillez[ ]essayer[ ]plus[ ]tard.+[A-Z]{3}.+(?:103|510)

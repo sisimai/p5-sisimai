@@ -49,6 +49,7 @@ sub match {
         |syntax[ ]error:[ ]empty[ ]email[ ]address
         |the[ ]message[ ]has[ ]been[ ]rejected[ ]by[ ]batv[ ]defense
         |transaction[ ]failed[ ]unsigned[ ]dsn[ ]for
+        |Unroutable[ ]sender[ ]address
         )
     }xi;
 

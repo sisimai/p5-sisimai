@@ -77,6 +77,7 @@ sub match {
         |requested[ ]action[ ]not[ ]taken:[ ]mailbox[ ]unavailable
         |RESOLVER[.]ADR[.]RecipNotFound # Microsoft
         |said:[ ]550[-[ ]]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]
+        |SMTP[ ]error[ ]from[ ]remote[ ]mail[ ]server[ ]after[ ]end[ ]of[ ]data:[ ]553.+does[ ]not[ ]exist
         |sorry,[ ](?:
              user[ ]unknown
             |badrcptto
