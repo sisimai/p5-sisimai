@@ -3,10 +3,11 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.2p1
+
+v4.22.2p2
 --------------------------------------------------------------------------------
-- release: "Wed,  8 Nov 2017 20:27:19 +0900 (JST)"
-- version: "4.22.2p1"
+- release: "not released yet"
+- version: ""
 - changes:
   - Merge Pull-Request #238, Fix some typos in POD. Thanks to @brewt.
   - Add set-of-emails/json/json-amazonses-06.json as a sample JSON object from
@@ -18,6 +19,7 @@ v4.22.2p1
     on only Perl 5.10.1.
   - Merge Pull-Request #244 at issue #243 for following up pull-request #239,
     more support for Orange and La Poste. Thanks to @Quickeneen.
+  - Merge Pull-Request #245: update error message patterns of SFR and Free.fr.
 
 v4.22.2
 --------------------------------------------------------------------------------
