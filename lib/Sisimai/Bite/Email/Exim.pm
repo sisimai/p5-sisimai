@@ -48,13 +48,14 @@ my $Re1 = {
     'alias'  => qr/\A([ ]+an[ ]undisclosed[ ]address)\z/,
     'frozen' => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
     'rfc822' => qr{\A(?:
-         [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message.+headers[.][ ][-]+
+         [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+headers[.][ ][-]+
         |Content-Type:[ ]*message/rfc822
         )\z
     }x,
     'begin'  => qr{\A(?>
          This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
         |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
+        |A[ ]message[ ]that[ ]you[ ]sent[ ]contained[ ]one[ ]or[ ]more[ ]recipient[ ]addresses[ ]
         |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
         |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
         )
@@ -96,6 +97,17 @@ my $ReFailure = {
     'notaccept' => qr{(?:
          an[ ]MX[ ]or[ ]SRV[ ]record[ ]indicated[ ]no[ ]SMTP[ ]service
         |no[ ]host[ ]found[ ]for[ ]existing[ ]SMTP[ ]connection
+        )
+    }x,
+    # parser.c:666| *errorptr = string_sprintf("%s (expected word or \"<\")", *errorptr);
+    # parser.c:701| if(bracket_count++ > 5) FAILED(US"angle-brackets nested too deep");
+    # parser.c:738| FAILED(US"domain missing in source-routed address");
+    # parser.c:747| : string_sprintf("malformed address: %.32s may not follow %.*s",
+    'syntaxerror' => qr{(?:
+         angle-brackets[ ]nested[ ]too[ ]deep
+        |expected[ ]word[ ]or[ ]["]<["]
+        |domain[ ]missing[ ]in[ ]source-routed[ ]address
+        |malformed[ ]address:
         )
     }x,
     # deliver.c:5614|  addr->message = US"delivery to file forbidden";
@@ -223,19 +235,37 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)(:.+)?\z/ || $e =~ $Re1->{'alias'} ) {
+            if( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)(:.+)?\z/ ||
+                $e =~ m/\A[ \t]+[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ||
+                $e =~ $Re1->{'alias'} ) {
                 #   kijitora@example.jp
                 #   sabineko@example.jp: forced freeze
+                #   mikeneko@example.jp <nekochan@example.org>: ...
                 #
                 # deliver.c:4549|  printed = US"an undisclosed address";
                 #   an undisclosed address
                 #     (generated from kijitora@example.jp)
+                my $r = $1;
+
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
                 }
-                $v->{'recipient'} = $1;
+
+                if( $e =~ m/\A[ \t]+[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ) {
+                    # parser.c:743| while (bracket_count-- > 0) if (*s++ != '>')
+                    # parser.c:744|   {
+                    # parser.c:745|   *errorptr = s[-1] == 0
+                    # parser.c:746|     ? US"'>' missing at end of address"
+                    # parser.c:747|     : string_sprintf("malformed address: %.32s may not follow %.*s",
+                    # parser.c:748|     s-1, (int)(s - US mailbox - 1), mailbox);
+                    # parser.c:749|   goto PARSE_FAILED;
+                    # parser.c:750|   }
+                    $r = $1;
+                    $v->{'diagnosis'} = $e;
+                }
+                $v->{'recipient'} = $r;
                 $recipients++;
 
             } elsif( $e =~ m/\A[ ]+[(]generated[ ]from[ ](.+)[)]\z/ ||
