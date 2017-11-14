@@ -60,6 +60,7 @@ sub match {
         |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
         |our[ ]system[ ]has[ ]detected[ ]that[ ]this[ ]message[ ]is
         |probable[ ]spam
+        |Reject,.+[ ][-][ ]SPAM[.][ ]
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
             |[ ]by[ ].+[ ][(]spam[)]

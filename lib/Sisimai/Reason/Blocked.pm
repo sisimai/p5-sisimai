@@ -50,6 +50,7 @@ sub match {
         |no[ ]access[ ]from[ ]mail[ ]server
         |No[ ]PTR[ ]Record[ ]found[.]
         |Not[ ]currently[ ]accepting[ ]mail[ ]from[ ]your[ ]ip  # Microsoft
+        |part[ ]of[ ]their[ ]network[ ]is[ ]on[ ]our[ ]block[ ]list
         |Please[ ]get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
         |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
         |Rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
