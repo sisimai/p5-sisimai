@@ -43,6 +43,7 @@ sub match {
         |no[ ](?:
              account[ ]by[ ]that[ ]name[ ]here
             |mail[ ]box[ ]available[ ]for[ ]this[ ]user
+            |mailbox[ ]by[ ]that[ ]name[ ]is[ ]currently[ ]available
             |mailbox[ ]found
             |matches[ ]to[ ]nameserver[ ]query
             |such[ ](?:
