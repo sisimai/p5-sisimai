@@ -39,6 +39,7 @@ sub match {
         |domain[ ].+[ ]mismatches[ ]client[ ]ip
         |dns[ ]lookup[ ]failure:[ ].+[ ]try[ ]again[ ]later
         |DNSBL:ATTRBL
+        |Dynamic/zombied/spam[ ]IPs[ ]blocked
         |Fix[ ]reverse[ ]DNS[ ]for[ ].+
         |Go[ ]away
         |hosts[ ]with[ ]dynamic[ ]ip
