@@ -235,7 +235,7 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)(:.+)?\z/ ||
+            if( $e =~ m/\A[ \t]+([^ \t]+[@][^ \t]+[.]?[a-zA-Z]+)(:.+)?\z/ ||
                 $e =~ m/\A[ \t]+[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ||
                 $e =~ $Re1->{'alias'} ) {
                 #   kijitora@example.jp
