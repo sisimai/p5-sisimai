@@ -17,6 +17,7 @@ sub match {
     my $regex = qr{(?>
          [<][>][ ]invalid[ ]sender
         |address[ ]rejected
+        |Administrative[ ]prohibition
         |batv[ ](?:
              failed[ ]to[ ]verify   # SoniWall
             |validation[ ]failure   # SoniWall

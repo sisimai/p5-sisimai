@@ -35,17 +35,28 @@ sub match {
            |reset[ ]by[ ]peer
            |was[ ]dropped[ ]by[ ]remote[ ]host
            )
+        |Connections[ ](?:
+             not[ ]accepted[ ]from[ ]IP[ ]addresses[ ]on[ ]Spamhaus[ ]XBL
+            |will[ ]not[ ]be[ ]accepted[ ]from[ ].+because[ ]the[ ]ip[ ]is[ ]in[ ]Spamhaus's[ ]list
+            )
         |domain[ ]does[ ]not[ ]exist:
         |domain[ ].+[ ]mismatches[ ]client[ ]ip
         |dns[ ]lookup[ ]failure:[ ].+[ ]try[ ]again[ ]later
         |DNSBL:ATTRBL
         |Dynamic/zombied/spam[ ]IPs[ ]blocked
+        |Email[ ]blocked[ ]by[ ](?:
+            .+[.]barracudacentral[.]org
+           |SPAMHAUS
+           )
         |Fix[ ]reverse[ ]DNS[ ]for[ ].+
         |Go[ ]away
         |hosts[ ]with[ ]dynamic[ ]ip
         |IP[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]EarthLink # Earthlink
         |IP[/]domain[ ]reputation[ ]problems
-        |is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
+        |is[ ](?:
+             in[ ]a[ ]black[ ]list[ ]at[ ].+[.]spamhaus[.]org
+            |not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
+            )
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
         |Messages[ ]from[ ].+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
         |no[ ]access[ ]from[ ]mail[ ]server
@@ -57,7 +68,10 @@ sub match {
         |Rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
         |Reverse[ ]DNS[ ](?:failed|required)
         |Reverse[ ]DNS[ ]lookup[ ]for[ ]host[ ].+[ ]failed[ ]permanently
-        |Server[ ]access[ ].+[ ]forbidden[ ]by[ ]invalid[ ]RDNS[ ]record[ ]of[ ]your[ ]mail[ ]server
+        |Server[ ]access[ ](?:
+             .+[ ]forbidden[ ]by[ ]invalid[ ]RDNS[ ]record[ ]of[ ]your[ ]mail[ ]server
+            |forbidden[ ]by[ ]your[ ]IP[ ]
+            )
         |service[ ]permits[ ]\d+[ ]unverifyable[ ]sending[ ]IPs
         |SMTP[ ]error[ ]from[ ]remote[ ]mail[ ]server[ ]after[ ]initial[ ]connection:   # Exim
         |sorry,[ ](?:
@@ -73,6 +87,7 @@ sub match {
         |Veuillez[ ]essayer[ ]plus[ ]tard.+[A-Z]{3}.+(?:103|510)
         |your[ ](?:
              network[ ]is[ ]temporary[ ]blacklisted
+            |sender's[ ]IP[ ]address[ ]is[ ]listed[ ]at[ ].+[.]abuseat[.]org
             |server[ ]requires[ ]confirmation
             )
         |was[ ]blocked[ ]by[ ].+

@@ -29,6 +29,7 @@ sub match {
         |email[ ]address[ ]does[ ]not[ ]exist
         |invalid[ ](?:
              address
+            |mailbox:
             |mailbox[ ]path
             |recipient                 # Linkedin
             )
@@ -91,6 +92,7 @@ sub match {
             |following[ ]recipients[ ]was[ ]undeliverable
             |user[']s[ ]email[ ]name[ ]is[ ]not[ ]found
             )
+        |There[ ]is[ ]no[ ]one[ ]at[ ]this[ ]address
         |this[ ](?:
              address[ ]no[ ]longer[ ]accepts[ ]mail
             |email[ ]address[ ]is[ ]wrong[ ]or[ ]no[ ]longer[ ]valid
