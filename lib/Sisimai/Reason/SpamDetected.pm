@@ -60,6 +60,7 @@ sub match {
         |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
         |our[ ]system[ ]has[ ]detected[ ]that[ ]this[ ]message[ ]is
         |probable[ ]spam
+        |Reject,.+[ ][-][ ]SPAM[.][ ]
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
             |[ ]by[ ].+[ ][(]spam[)]
@@ -88,13 +89,19 @@ sub match {
         |spambouncer[ ]identified[ ]spam    # SpamBouncer identified SPAM
         |spamming[ ]not[ ]allowed
         |Too[ ]much[ ]spam[.]               # Earthlink
-        |the[ ]message[ ]was[ ]rejected[ ]due[ ]to[ ]classification[ ]as[ ]bulk[ ]mail
+        |the[ ]message[ ](?:
+             has[ ]been[ ]rejected[ ]by[ ]spam[ ]filtering[ ]engine
+            |was[ ]rejected[ ]due[ ]to[ ]classification[ ]as[ ]bulk[ ]mail
+            )
         |The[ ]content[ ]of[ ]this[ ]message[ ]looked[ ]like[ ]spam # SendGrid
+        |This[ ]e-mail[ ]is[ ]classified[ ]as[ ]spam[ ]and[ ]is[ ]rejected
+        |This[ ]mail[ ]cannot[ ]be[ ]forwarded[ ]because[ ]it[ ]was[ ]detected[ ]as[ ]spam
         |this[ ]message[ ](?:
              appears[ ]to[ ]be[ ]spam
             |has[ ]been[ ]identified[ ]as[ ]spam
             |scored[ ].+[ ]spam[ ]points
             |was[ ]classified[ ]as[ ]spam
+            |was[ ]rejected[ ]by[ ]Recurrent[ ]Pattern[ ]Detection[ ]System
             )
         |transaction[ ]failed[ ]spam[ ]message[ ]not[ ]queued       # SendGrid
         |we[ ]dont[ ]accept[ ]spam
@@ -109,7 +116,8 @@ sub match {
                 |was[ ]detected[ ]as[ ]spam
                 )
             |message[ ](?:
-                 has[ ]been[ ](?:
+                 as[ ]spam[ ]and[ ]has[ ]prevented[ ]delivery
+                |has[ ]been[ ](?:
                      temporarily[ ]blocked[ ]by[ ]our[ ]filter
                     |rejected[ ]because[ ]it[ ]appears[ ]to[ ]be[ ]SPAM
                     )

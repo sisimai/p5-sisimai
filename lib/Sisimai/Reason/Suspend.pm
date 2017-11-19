@@ -13,20 +13,24 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?:
+    my $regex = qr{(?>
          Boite[ ]du[ ]destinataire[ ]archivee.+[A-Z]{3}.+420
+        |email[ ]account[ ]that[ ]you[ ]tried[ ]to[ ]reach[ ]is[ ]disabled
         |invalid/inactive[ ]user
         # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
-        |email[ ]account[ ]that[ ]you[ ]tried[ ]to[ ]reach[ ]is[ ]disabled
         |is[ ]a[ ]deactivated[ ]mailbox
         |mailbox[ ](?:
              currently[ ]suspended
             |unavailable[ ]or[ ]access[ ]denied
             )
-        |user[ ]suspended   # http://mail.163.com/help/help_spam_16.htm
-        |recipient[ ]suspend[ ]the[ ]service
+        |recipient[ ](?:
+             rejected:[ ]Temporarily[ ]inactive
+            |suspend[ ]the[ ]service
+            )
         |sorry[ ]your[ ]message[ ]to[ ].+[ ]cannot[ ]be[ ]delivered[.][ ]this[ ]
             account[ ]has[ ]been[ ]disabled[ ]or[ ]discontinued
+        |The[ ]domain[ ].+[ ]is[ ]currently[ ]suspended
+        |user[ ]suspended   # http://mail.163.com/help/help_spam_16.htm
         |vdelivermail:[ ]account[ ]is[ ]locked[ ]email[ ]bounced
         )
     }xi;

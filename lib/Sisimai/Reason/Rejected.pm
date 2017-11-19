@@ -17,6 +17,7 @@ sub match {
     my $regex = qr{(?>
          [<][>][ ]invalid[ ]sender
         |address[ ]rejected
+        |Administrative[ ]prohibition
         |batv[ ](?:
              failed[ ]to[ ]verify   # SoniWall
             |validation[ ]failure   # SoniWall
@@ -24,17 +25,19 @@ sub match {
         |backscatter[ ]protection[ ]detected[ ]an[ ]invalid[ ]or[ ]expired[ ]email[ ]address    # MDaemon
         |bogus[ ]mail[ ]from        # IMail - block empty sender
         |closed[ ]mailing[ ]list    # Exim test mail
+        |Connections[ ]not[ ]accepted[ ]from[ ]servers[ ]without[ ]a[ ]valid[ ]sender[ ]domain
         |denied[ ]\[bouncedeny\]    # McAfee
+        |does[ ]not[ ]exist[ ]E2110
         |domain[ ]of[ ]sender[ ]address[ ].+[ ]does[ ]not[ ]exist
         |Emetteur[ ]invalide.+[A-Z]{3}.+(?:403|405|415)
         |empty[ ]envelope[ ]senders[ ]not[ ]allowed
         |error:[ ]no[ ]third-party[ ]dsns               # SpamWall - block empty sender
+        |From:[ ]Domain[ ]is[ ]invalid[.][ ]Please[ ]provide[ ]a[ ]valid[ ]From:
         |fully[ ]qualified[ ]email[ ]address[ ]required # McAfee
         |invalid[ ]domain,[ ]see[ ][<]url:.+[>]
         |Mail[ ]from[ ]not[ ]owned[ ]by[ ]user.+[A-Z]{3}.+421
         |Message[ ]rejected:[ ]Email[ ]address[ ]is[ ]not[ ]verified
         |mx[ ]records[ ]for[ ].+[ ]violate[ ]section[ ].+
-        |name[ ]service[ ]error[ ]for[ ]    # Malformed MX RR or host not found
         |Null[ ]Sender[ ]is[ ]not[ ]allowed
         |recipient[ ]not[ ]accepted[.][ ][(]batv:[ ]no[ ]tag
         |returned[ ]mail[ ]not[ ]accepted[ ]here
@@ -49,6 +52,8 @@ sub match {
         |syntax[ ]error:[ ]empty[ ]email[ ]address
         |the[ ]message[ ]has[ ]been[ ]rejected[ ]by[ ]batv[ ]defense
         |transaction[ ]failed[ ]unsigned[ ]dsn[ ]for
+        |Unroutable[ ]sender[ ]address
+        |you[ ]are[ ]sending[ ]to[/]from[ ]an[ ]address[ ]that[ ]has[ ]been[ ]blacklisted
         )
     }xi;
 
@@ -68,25 +73,40 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
+    require Sisimai::SMTP::Status;
+
     my $statuscode = $argvs->deliverystatus // '';
     my $reasontext = __PACKAGE__->text;
+    my $tempreason = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
 
-    return undef unless length $statuscode;
+    #return undef unless length $statuscode;
     return 1 if $argvs->reason eq $reasontext;
 
-    require Sisimai::SMTP::Status;
     my $diagnostic = $argvs->diagnosticcode // '';
     my $v = 0;
 
-    if( Sisimai::SMTP::Status->name($statuscode) eq $reasontext ) {
+    if( $tempreason eq $reasontext ) {
         # Delivery status code points C<rejected>.
         $v = 1;
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
         if( $argvs->smtpcommand eq 'MAIL' ) {
-            # Matched with a pattern in this class
+            # The session was rejected at 'MAIL FROM' command
             $v = 1 if __PACKAGE__->match($diagnostic);
+
+        } elsif( $argvs->smtpcommand eq 'DATA' ) {
+            # The session was rejected at 'DATA' command
+            if( $tempreason ne 'userunknown' ) {
+                # Except "userunknown"
+                $v = 1 if __PACKAGE__->match($diagnostic);
+            }
+        } else {
+            if( $tempreason eq 'undefined' || $tempreason eq 'onhold' ) {
+                # Try to match with message patterns when the temporary reason
+                # is "onhold" or "undefined"
+                $v = 1 if __PACKAGE__->match($diagnostic);
+            }
         }
     }
 

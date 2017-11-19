@@ -17,6 +17,7 @@ sub match {
          .+[ ]user[ ]unknown
         |[#]5[.]1[.]1[ ]bad[ ]address
         |[<].+[>][ ]not[ ]found
+        |5[.]0[.]0[.][ ]Mail[ ]rejected[.]
         |Adresse[ ]d[ ]au[ ]moins[ ]un[ ]destinataire[ ]invalide.+[A-Z]{3}.+(?:416|418)
         |address[ ]does[ ]not[ ]exist
         |address[ ]unknown
@@ -28,6 +29,7 @@ sub match {
         |email[ ]address[ ]does[ ]not[ ]exist
         |invalid[ ](?:
              address
+            |mailbox:
             |mailbox[ ]path
             |recipient                 # Linkedin
             )
@@ -43,6 +45,7 @@ sub match {
         |no[ ](?:
              account[ ]by[ ]that[ ]name[ ]here
             |mail[ ]box[ ]available[ ]for[ ]this[ ]user
+            |mailbox[ ]by[ ]that[ ]name[ ]is[ ]currently[ ]available
             |mailbox[ ]found
             |matches[ ]to[ ]nameserver[ ]query
             |such[ ](?:
@@ -52,6 +55,7 @@ sub match {
                 |user(?:[ ]here)?
                 )
             |[ ].+[ ]in[ ]name[ ]directory
+            |thank[ ]you[ ]rejected:[ ]Account[ ]Unavailable:
             |valid[ ]recipients[,][ ]bye    # Microsoft
             )
         |non[- ]?existent[ ]user
@@ -77,6 +81,7 @@ sub match {
         |requested[ ]action[ ]not[ ]taken:[ ]mailbox[ ]unavailable
         |RESOLVER[.]ADR[.]RecipNotFound # Microsoft
         |said:[ ]550[-[ ]]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]
+        |SMTP[ ]error[ ]from[ ]remote[ ]mail[ ]server[ ]after[ ]end[ ]of[ ]data:[ ]553.+does[ ]not[ ]exist
         |sorry,[ ](?:
              user[ ]unknown
             |badrcptto
@@ -87,9 +92,11 @@ sub match {
             |following[ ]recipients[ ]was[ ]undeliverable
             |user[']s[ ]email[ ]name[ ]is[ ]not[ ]found
             )
+        |There[ ]is[ ]no[ ]one[ ]at[ ]this[ ]address
         |this[ ](?:
              address[ ]no[ ]longer[ ]accepts[ ]mail
             |email[ ]address[ ]is[ ]wrong[ ]or[ ]no[ ]longer[ ]valid
+            |spectator[ ]does[ ]not[ ]exist
             |user[ ]doesn[']?t[ ]have[ ]a[ ].+[ ]account
             )
         |unknown[ ](?:

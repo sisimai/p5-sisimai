@@ -14,7 +14,9 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?:
-         the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]virus[ ]or[ ]spam[ ]content
+         it[ ]has[ ]a[ ]potentially[ ]executable[ ]attachment
+        |the[ ]message[ ]was[ ]rejected[ ]because[ ]it[ ]contains[ ]prohibited[ ]virus[ ]or[ ]spam[ ]content
+        |This[ ]form[ ]of[ ]attachment[ ]has[ ]been[ ]used[ ]by[ ]recent[ ]viruses[ ]or[ ]other[ ]malware
         |Your[ ]message[ ]was[ ]infected[ ]with[ ]a[ ]virus
         )
     }ix;

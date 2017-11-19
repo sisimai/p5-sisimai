@@ -31,6 +31,7 @@ sub match {
             address[ ]rejected:[ ]unknown[ ]domain[ ]name
             domain[ ]must[ ]exist
             )
+        |The[ ]account[ ]or[ ]domain[ ]may[ ]not[ ]exist
         |unknown[ ]host
         )
     }ix;
@@ -127,7 +128,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
