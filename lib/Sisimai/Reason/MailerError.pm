@@ -15,10 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
          \Aprocmail:[ ]    # procmail
-        |bin/(?:
-             procmail
-            |maildrop
-            )
+        |bin/(?:procmail|maildrop)
         |command[ ](?:
              failed:[ ]
             |died[ ]with[ ]status[ ]\d+
