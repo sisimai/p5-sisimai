@@ -6,7 +6,7 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.22.2p2
 --------------------------------------------------------------------------------
-- release: "not released yet"
+- release: "Mon, 20 Nov 2017 18:00:00 +0900 (JST)"
 - version: ""
 - changes:
   - Merge Pull-Request #238, Fix some typos in POD. Thanks to @brewt.
@@ -20,6 +20,8 @@ v4.22.2p2
   - Merge Pull-Request #244 at issue #243 for following up pull-request #239,
     more support for Orange and La Poste. Thanks to @Quickeneen.
   - Merge Pull-Request #245: update error message patterns of SFR and Free.fr.
+  - Merge Pull-Request #246: error message patterns have been improved on Exim.
+  - Fix bug in regular expression at Sisimai::Reason::HostUnknown.
 
 v4.22.2
 --------------------------------------------------------------------------------
