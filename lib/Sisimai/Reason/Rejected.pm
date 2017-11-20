@@ -24,7 +24,6 @@ sub match {
             )
         |backscatter[ ]protection[ ]detected[ ]an[ ]invalid[ ]or[ ]expired[ ]email[ ]address    # MDaemon
         |bogus[ ]mail[ ]from        # IMail - block empty sender
-        |closed[ ]mailing[ ]list    # Exim test mail
         |Connections[ ]not[ ]accepted[ ]from[ ]servers[ ]without[ ]a[ ]valid[ ]sender[ ]domain
         |denied[ ]\[bouncedeny\]    # McAfee
         |does[ ]not[ ]exist[ ]E2110
