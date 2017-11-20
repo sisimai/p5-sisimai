@@ -98,7 +98,7 @@ my $isexpected = [
     { 'n' => '01092', 'r' => qr/undefined/       },
     { 'n' => '01093', 'r' => qr/(?:undefined|onhold|systemerror)/ },
     { 'n' => '01094', 'r' => qr/onhold/          },
-    { 'n' => '01095', 'r' => qr/onhold/          },
+    { 'n' => '01095', 'r' => qr/undefined/       },
     { 'n' => '01096', 'r' => qr/(?:hostunknown|onhold)/ },
     { 'n' => '01097', 'r' => qr/(?:hostunknown|networkerror)/ },
     { 'n' => '01098', 'r' => qr/expired/         },
@@ -125,7 +125,7 @@ my $isexpected = [
     { 'n' => '01119', 'r' => qr/blocked/         },
     { 'n' => '01120', 'r' => qr/blocked/         },
     { 'n' => '01121', 'r' => qr/blocked/         },
-    { 'n' => '01122', 'r' => qr/blocked/         },
+    { 'n' => '01122', 'r' => qr/rejected/        },
     { 'n' => '01123', 'r' => qr/mailererror/     },
     { 'n' => '01124', 'r' => qr/rejected/        },
     { 'n' => '01125', 'r' => qr/blocked/         },
@@ -137,7 +137,7 @@ my $isexpected = [
     { 'n' => '01131', 'r' => qr/syntaxerror/     },
     { 'n' => '01132', 'r' => qr/mailererror/     },
     { 'n' => '01133', 'r' => qr/blocked/         },
-    { 'n' => '01134', 'r' => qr/rejected/        },
+    { 'n' => '01134', 'r' => qr/spamdetected/    },
     { 'n' => '01135', 'r' => qr/blocked/         },
     { 'n' => '01136', 'r' => qr/rejected/        },
     { 'n' => '01137', 'r' => qr/userunknown/     },
@@ -147,9 +147,9 @@ my $isexpected = [
     { 'n' => '01141', 'r' => qr/filtered/        },
     { 'n' => '01142', 'r' => qr/virusdetected/   },
     { 'n' => '01143', 'r' => qr/userunknown/     },
-    { 'n' => '01144', 'r' => qr/(?:blocked|filtered)/ },
+    { 'n' => '01144', 'r' => qr/(?:blocked|onhold)/ },
     { 'n' => '01145', 'r' => qr/mesgtoobig/      },
-    { 'n' => '01146', 'r' => qr/userunkonwn/     },
+    { 'n' => '01146', 'r' => qr/userunknown/     },
     { 'n' => '01147', 'r' => qr/blocked/         },
     { 'n' => '01148', 'r' => qr/spamdetected/    },
     { 'n' => '01149', 'r' => qr/rejected/        },
@@ -166,6 +166,6 @@ my $isexpected = [
 ];
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
-$enginetest->($enginename, $isexpected, 1, 1084);
+$enginetest->($enginename, $isexpected, 1, 0);
 done_testing;
 
