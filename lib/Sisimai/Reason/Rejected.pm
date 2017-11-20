@@ -79,7 +79,6 @@ sub true {
     my $reasontext = __PACKAGE__->text;
     my $tempreason = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
 
-    #return undef unless length $statuscode;
     return 1 if $argvs->reason eq $reasontext;
 
     my $diagnostic = $argvs->diagnosticcode // '';
@@ -88,7 +87,6 @@ sub true {
     if( $tempreason eq $reasontext ) {
         # Delivery status code points C<rejected>.
         $v = 1;
-
     } else {
         # Check the value of Diagnosic-Code: header with patterns
         if( $argvs->smtpcommand eq 'MAIL' ) {
