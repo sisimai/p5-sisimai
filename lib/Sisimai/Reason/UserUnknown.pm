@@ -43,7 +43,8 @@ sub match {
             |unavailable
             )
         |no[ ](?:
-             account[ ]by[ ]that[ ]name[ ]here
+             [ ].+[ ]in[ ]name[ ]directory
+            |account[ ]by[ ]that[ ]name[ ]here
             |mail[ ]box[ ]available[ ]for[ ]this[ ]user
             |mailbox[ ]by[ ]that[ ]name[ ]is[ ]currently[ ]available
             |mailbox[ ]found
@@ -54,7 +55,6 @@ sub match {
                 |recipient
                 |user(?:[ ]here)?
                 )
-            |[ ].+[ ]in[ ]name[ ]directory
             |thank[ ]you[ ]rejected:[ ]Account[ ]Unavailable:
             |valid[ ]recipients[,][ ]bye    # Microsoft
             )
