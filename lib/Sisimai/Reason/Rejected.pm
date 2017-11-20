@@ -84,7 +84,7 @@ sub true {
     my $v = 0;
 
     if( $tempreason eq $reasontext ) {
-        # Delivery status code points C<rejected>.
+        # Delivery status code points "rejected".
         $v = 1;
     } else {
         # Check the value of Diagnosic-Code: header with patterns
