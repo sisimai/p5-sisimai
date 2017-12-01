@@ -17,8 +17,9 @@ sub match {
          access[ ]denied[.][ ]IP[ ]name[ ]lookup[ ]failed
         |access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
         |all[ ]mail[ ]servers[ ]must[ ]have[ ]a[ ]PTR[ ]record[ ]with[ ]a[ ]valid[ ]Reverse[ ]DNS[ ]entry
+        |Bad[ ]sender[ ]IP[ ]address
         |blacklisted[ ]by
-        |Blocked[ ]-[ ]see[ ]https://support[.]proofpoint[.]com/dnsbl-lookup[.]cgi[?]ip=.+
+        |(?:Blocked|Refused)[ ]-[ ]see[ ]https?://
         |can[']t[ ]determine[ ]Purported[ ]Responsible[ ]Address
         |cannot[ ]resolve[ ]your[ ]address
         |client[ ]host[ ].+[ ]blocked[ ]using
@@ -39,6 +40,7 @@ sub match {
              not[ ]accepted[ ]from[ ]IP[ ]addresses[ ]on[ ]Spamhaus[ ]XBL
             |will[ ]not[ ]be[ ]accepted[ ]from[ ].+because[ ]the[ ]ip[ ]is[ ]in[ ]Spamhaus's[ ]list
             )
+        |Currently[ ]Sending[ ]Spam[ ]See:[ ]
         |domain[ ]does[ ]not[ ]exist:
         |domain[ ].+[ ]mismatches[ ]client[ ]ip
         |dns[ ]lookup[ ]failure:[ ].+[ ]try[ ]again[ ]later
@@ -50,28 +52,50 @@ sub match {
            )
         |Fix[ ]reverse[ ]DNS[ ]for[ ].+
         |Go[ ]away
+        |host[ ].+[ ]refused[ ]to[ ]talk[ ]to[ ]me:[ ]\d+[ ]Blocked
         |hosts[ ]with[ ]dynamic[ ]ip
+        |http://(?:
+             spf[.]pobox[.]com/why[.]html
+            |www[.]spamcop[.]net/bl[.]
+            )
+        |INVALID[ ]IP[ ]FOR[ ]SENDING[ ]MAIL[ ]OF[ ]DOMAIN
         |IP[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]EarthLink # Earthlink
         |IP[/]domain[ ]reputation[ ]problems
+        |IPs[ ]with[ ]missing[ ]PTR[ ]records
         |is[ ](?:
-             in[ ]a[ ]black[ ]list[ ]at[ ].+[.]spamhaus[.]org
-            |not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
+             in[ ]a[ ]black[ ]list[ ]at[ ].+[.]
+            |in[ ]an[ ].*RBL[ ]on[ ].+
+            |not[ ]allowed[ ]to[ ]send[ ](?:
+                 mail[ ]from
+                |from[ ].+[ ]per[ ]it's[ ]SPF[ ]Record
+                )
             )
         |mail[ ]server[ ]at[ ].+[ ]is[ ]blocked
+        |Mail[ ]from[ ]\d+[.]\d+[.]\d+[.]\d[ ]refused:
+        |Message[ ]from[ ].+[ ]rejected[ ]based[ ]on[ ]blacklist
         |Messages[ ]from[ ].+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
         |no[ ]access[ ]from[ ]mail[ ]server
         |No[ ]PTR[ ]Record[ ]found[.]
         |Not[ ]currently[ ]accepting[ ]mail[ ]from[ ]your[ ]ip  # Microsoft
         |part[ ]of[ ]their[ ]network[ ]is[ ]on[ ]our[ ]block[ ]list
-        |Please[ ]get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
-        |please[ ]use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
+        |Please[ ](?:
+             get[ ]a[ ]custom[ ]reverse[ ]DNS[ ]name[ ]from[ ]your[ ]ISP[ ]for[ ]your[ ]host
+            |inspect[ ]your[ ]SPF[ ]settings
+            |use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]ISP
+            )
+        |PTR[ ]record[ ]setup
         |Rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
         |Reverse[ ]DNS[ ](?:failed|required)
         |Reverse[ ]DNS[ ]lookup[ ]for[ ]host[ ].+[ ]failed[ ]permanently
+        |Sender[ ]IP[ ](?:
+             address[ ]rejected
+            |reverse[ ]lookup[ ]rejected
+            )
         |Server[ ]access[ ](?:
              .+[ ]forbidden[ ]by[ ]invalid[ ]RDNS[ ]record[ ]of[ ]your[ ]mail[ ]server
             |forbidden[ ]by[ ]your[ ]IP[ ]
             )
+        |Server[ ]IP[ ].+[ ]listed[ ]as[ ]abusive
         |service[ ]permits[ ]\d+[ ]unverifyable[ ]sending[ ]IPs
         |SMTP[ ]error[ ]from[ ]remote[ ]mail[ ]server[ ]after[ ]initial[ ]connection:   # Exim
         |sorry,[ ](?:
@@ -79,7 +103,10 @@ sub match {
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
             )
         |SPF:[ ].+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail.+[A-Z]{3}.+401
-        |SPF[ ]record
+        |SPF[ ](?:
+             record
+            |check:[ ]fail
+            )
         |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
         |This[ ]system[ ]will[ ]not[ ]accept[ ]messages[ ]from[ ]servers[/]devices[ ]with[ ]no[ ]reverse[ ]DNS
         |Too[ ]many[ ]spams[ ]from[ ]your[ ]IP  # free.fr
@@ -95,7 +122,14 @@ sub match {
              hosts[ ]with[ ]dynamic[ ]IP[ ]or[ ]generic[ ]dns[ ]PTR-records
             |dynamic[ ]ips
             )
-        |http://www[.]spamcop[.]net/bl[.]
+        |You[ ]are[ ](?:
+             not[ ]allowed[ ]to[ ]connect
+            |sending[ ]spam
+             )
+        |Your[ ](?:
+             access[ ]to[ ]submit[ ]messages[ ]to[ ]this[ ]e-mail[ ]system[ ]has[ ]been[ ]rejected
+            |message[ ]was[ ]rejected[ ]for[ ]possible[ ]spam/virus[ ]content
+            )
         )
     }xi;
 

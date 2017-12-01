@@ -27,6 +27,7 @@ sub match {
             )
         |relaying[ ]denied  # Sendmail
         |that[ ]domain[ ]isn[']t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthost
+        |This[ ]system[ ]is[ ]not[ ]configured[ ]to[ ]relay[ ]mail
         |Unable[ ]to[ ]relay[ ]for
         )
     }ix;

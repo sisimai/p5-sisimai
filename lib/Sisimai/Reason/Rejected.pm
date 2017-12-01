@@ -13,7 +13,12 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $isnot = qr/recipient[ ]address[ ]rejected/xi;
+    my $isnot = qr{(?:
+         5[.]1[.]0[ ]Address
+        |Recipient[ ]address
+        |Sender[ ]IP[ ]address
+        )[ ]rejected
+    }xi;
     my $regex = qr{(?>
          [<][>][ ]invalid[ ]sender
         |address[ ]rejected
@@ -26,6 +31,7 @@ sub match {
         |bogus[ ]mail[ ]from        # IMail - block empty sender
         |Connections[ ]not[ ]accepted[ ]from[ ]servers[ ]without[ ]a[ ]valid[ ]sender[ ]domain
         |denied[ ]\[bouncedeny\]    # McAfee
+        |Delivery[ ]not[ ]authorized,[ ]message[ ]refused
         |does[ ]not[ ]exist[ ]E2110
         |domain[ ]of[ ]sender[ ]address[ ].+[ ]does[ ]not[ ]exist
         |Emetteur[ ]invalide.+[A-Z]{3}.+(?:403|405|415)
@@ -43,10 +49,12 @@ sub match {
         |rfc[ ]1035[ ]violation:[ ]recursive[ ]cname[ ]records[ ]for
         |rule[ ]imposed[ ]mailbox[ ]access[ ]for        # MailMarshal
         |sender[ ](?:
-             verify[ ]failed        # Exim callout
+             email[ ]address[ ]rejected
+            |is[ ]Spammer
             |not[ ]pre[-]approved
             |rejected
             |domain[ ]is[ ]empty
+            |verify[ ]failed        # Exim callout
             )
         |syntax[ ]error:[ ]empty[ ]email[ ]address
         |the[ ]message[ ]has[ ]been[ ]rejected[ ]by[ ]batv[ ]defense
@@ -99,9 +107,9 @@ sub true {
                 $v = 1 if __PACKAGE__->match($diagnostic);
             }
         } else {
-            if( $tempreason eq 'undefined' || $tempreason eq 'onhold' ) {
+            if( $tempreason =~ /\A(?:onhold|undefined|securityerror|systemerror)\z/ ) {
                 # Try to match with message patterns when the temporary reason
-                # is "onhold" or "undefined"
+                # is "onhold", "undefined", "securityerror", or "systemerror"
                 $v = 1 if __PACKAGE__->match($diagnostic);
             }
         }

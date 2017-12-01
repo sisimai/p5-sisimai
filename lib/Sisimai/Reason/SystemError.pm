@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
          can[']t[ ]create[ ]user[ ]output[ ]file
+        |Could[ ]not[ ]load[ ]DRD[ ]for[ ]domain
         |Internal[ ](?:
              error[ ]reading[ ]data                             # Microsoft
             |server[ ]error:[ ]Operation[ ]now[ ]in[ ]progress  # Microsoft
@@ -105,7 +106,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
