@@ -209,7 +209,7 @@ my $isexpected = [
     { 'n' => '01215', 'r' => qr/spamdetected/   },
     { 'n' => '01216', 'r' => qr/onhold/         },
     { 'n' => '01217', 'r' => qr/userunknown/    },
-    { 'n' => '01218', 'r' => qr/mailboxfull/    },
+    { 'n' => '01218', 'r' => qr/toomanyconn/    },
     { 'n' => '01219', 'r' => qr/onhold/         },
     { 'n' => '01220', 'r' => qr/filtered/       },
     { 'n' => '01221', 'r' => qr/filtered/       },
@@ -251,6 +251,15 @@ my $isexpected = [
     { 'n' => '01257', 'r' => qr/onhold/         },
     { 'n' => '01258', 'r' => qr/userunknown/    },
     { 'n' => '01259', 'r' => qr/spamdetected/   },
+    { 'n' => '01260', 'r' => qr/toomanyconn/    },
+    { 'n' => '01261', 'r' => qr/policyviolation/},
+    { 'n' => '01262', 'r' => qr/expired/        },
+    { 'n' => '01263', 'r' => qr/networkerror/   },
+    { 'n' => '01264', 'r' => qr/networkerror/   },
+    { 'n' => '01265', 'r' => qr/policyviolation/},
+    { 'n' => '01266', 'r' => qr/policyviolation/},
+    { 'n' => '01267', 'r' => qr/hasmoved/       },
+    { 'n' => '01268', 'r' => qr/spamdetected/   },
 ];
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
