@@ -16,7 +16,10 @@ my $Re0 = {
         )
     /xi,
 };
-my $Re1 = { 'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/ };
+my $Re1 = {
+    'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
+    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
 my $Re2 = {
     'subject' => qr{(?:
           SECURITY[ ]information[ ]for  # sudo
@@ -89,6 +92,7 @@ sub scan {
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
     my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
     my $blanklines = 0;     # (Integer) Counter for countinuous blank lines
+    my $countuntil = 1;     # (Integer) Maximun value of blank lines in the bodoy part
     my $v = $dscontents->[-1];
 
     RECIPIENT_ADDRESS: {
@@ -110,17 +114,29 @@ sub scan {
     }
     return undef unless $recipients;
 
+    if( $mhead->{'content-type'} ) {
+        # Get the boundary string and set regular expression for matching with
+        # the boundary string.
+        require Sisimai::MIME;
+        my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 0);
+        $Re1->{'boundary'} = qr/\A\Q$b0\E\z/ if length $b0;
+    }
+
     BODY_PARSER: {
         # Get vacation message
         for my $e ( @hasdivided ) {
             # Read the first 5 lines except a blank line
+            $countuntil += 1 if $e =~ $Re1->{'boundary'};
+
             unless( length $e ) {
                 # Check a blank line
                 $blanklines++;
-                last if $blanklines > 1;
+                last if $blanklines > $countuntil;
                 next;
             }
             next unless $e =~ m/ /;
+            next if $e =~ /\AContent-(?:Type|Transfer)/;
+
             $v->{'diagnosis'} .= $e.' ';
             $haveloaded++;
             last if $haveloaded >= $maxmsgline;
