@@ -9,6 +9,7 @@ my $samplepath = sprintf("./set-of-emails/private/%s", lc $enginename);
 my $enginetest = Sisimai::Bite::Email::Code->maketest;
 my $isexpected = [
     { 'n' => '01002', 'r' => qr/vacation/ },
+    { 'n' => '01003', 'r' => qr/vacation/ },
 ];
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
