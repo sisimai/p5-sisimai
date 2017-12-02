@@ -88,6 +88,7 @@ sub scan {
 
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
+    my $rfc822part = '';    # (String) message/rfc822-headers part
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
     my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
@@ -151,7 +152,12 @@ sub scan {
     $v->{'date'}      = $mhead->{'date'};
     $v->{'status'}    = '';
 
-    return { 'ds' => $dscontents, 'rfc822' => '' };
+    if( $mhead->{'subject'} =~ /\A[Rr][Ee]:[ ](.+)\z/ ) {
+        # Get the Subject header from the original message
+        $rfc822part = sprintf("Subject: %s\n", $1);
+    }
+
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 
 1;
