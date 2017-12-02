@@ -10,9 +10,11 @@ my $Re0 = {
     # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
     'x-auto-response-suppress' => qr/(?:OOF|AutoReply)/i,
     'precedence' => qr/\Aauto_reply\z/,
-    'subject' => qr/\A(?:
+    'subject' => qr/\A(?>
          Auto:
-        |Out[ ]of[ ]Office:
+        |Auto[ ]Response:
+        |Automatic[ ]reply:
+        |Out[ ]of[ ](?:the[ ])*Office:
         )
     /xi,
 };
@@ -29,6 +31,14 @@ my $Re2 = {
     'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/i,
     'to'      => qr/root[@]/,
 };
+my $ReV = qr{\A(?>
+     (?:.+?)*Re:
+    |Auto(?:[ ]Response):
+    |Automatic[ ]reply:
+    |Out[ ]of[ ]Office:
+    )
+    [ ]*(.+)\z
+}xi;
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }
@@ -152,7 +162,7 @@ sub scan {
     $v->{'date'}      = $mhead->{'date'};
     $v->{'status'}    = '';
 
-    if( $mhead->{'subject'} =~ /\A[Rr][Ee]:[ ](.+)\z/ ) {
+    if( $mhead->{'subject'} =~ $ReV ) {
         # Get the Subject header from the original message
         $rfc822part = sprintf("Subject: %s\n", $1);
     }
