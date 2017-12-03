@@ -34,7 +34,6 @@ sub match {
         |http://(?:
              www[.]spamhaus[.]org
             |dsbl[.]org
-            |www[.]sorbs[.]net
             )
         |listed[ ]in[ ]work[.]drbl[.]imedia[.]ru
         |mail[ ](?:
@@ -51,15 +50,18 @@ sub match {
             |looks[ ]like[ ]spam
             |not[ ]accepted[ ]for[ ]policy[ ]reasons[.][ ]See[ ]http:   # Yahoo!
             |refused[ ]by[ ]mailmarshal[ ]spamprofiler
-            |rejected[ ]as[ ]spam
-            |rejected[ ]as[ ]spam[ ]by[ ]Content[ ]Filtering
-            |rejected[ ]due[ ]to[ ]suspected[ ]spam[ ]content
-            |rejected[ ]for[ ]policy[ ]reasons
+            |rejected[ ](?:
+                 as[ ]spam
+                |because[ ]of[ ]unacceptable[ ]content
+                |due[ ]to[ ]suspected[ ]spam[ ]content
+                |for[ ]policy[ ]reasons
+                )
             )
         |our[ ]email[ ]server[ ]thinks[ ]this[ ]email[ ]is[ ]spam
         |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
         |our[ ]system[ ]has[ ]detected[ ]that[ ]this[ ]message[ ]is
         |probable[ ]spam
+        |REJECT[ ]bulk[.]advertising
         |Reject,.+[ ][-][ ]SPAM[.][ ]
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
@@ -99,6 +101,7 @@ sub match {
         |this[ ]message[ ](?:
              appears[ ]to[ ]be[ ]spam
             |has[ ]been[ ]identified[ ]as[ ]spam
+            |has[ ]been[ ]scored[ ]as[ ]spam[ ]with[ ]a[ ]probability
             |scored[ ].+[ ]spam[ ]points
             |was[ ]classified[ ]as[ ]spam
             |was[ ]rejected[ ]by[ ]Recurrent[ ]Pattern[ ]Detection[ ]System

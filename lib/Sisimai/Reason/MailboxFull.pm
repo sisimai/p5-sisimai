@@ -14,7 +14,8 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
-         account[ ]is[ ](?:
+         Account[ ]disabled[ ]temporarly[ ]for[ ]exceeding[ ]receiving[ ]limits
+        |account[ ]is[ ](?:
              exceeding[ ]their[ ]quota
             |over[ ]quota
             |temporarily[ ]over[ ]quota
@@ -54,8 +55,11 @@ sub match {
              reached[ ]disk[ ]quota
             |rejected:[ ]mailbox[ ]would[ ]exceed[ ]maximum[ ]allowed[ ]storage
             )
-        |The[ ]recipient[ ]mailbox[ ]has[ ]exceeded[ ]its[ ]disk[ ]space[ ]limit
-        |The[ ]user[']s[ ]space[ ]has[ ]been[ ]used[ ]up
+        |The[ ](?:
+             recipient[ ]mailbox[ ]has[ ]exceeded[ ]its[ ]disk[ ]space[ ]limit
+            |user[']s[ ]space[ ]has[ ]been[ ]used[ ]up
+            |user[ ]you[ ]are[ ]trying[ ]to[ ]reach[ ]is[ ]over[ ]quota
+            )
         |too[ ]much[ ]mail[ ]data   # @docomo.ne.jp
         |user[ ](?:
              has[ ](?:

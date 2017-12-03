@@ -10,13 +10,18 @@ my $Re0 = {
     # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
     'x-auto-response-suppress' => qr/(?:OOF|AutoReply)/i,
     'precedence' => qr/\Aauto_reply\z/,
-    'subject' => qr/\A(?:
+    'subject' => qr/\A(?>
          Auto:
-        |Out[ ]of[ ]Office:
+        |Auto[ ]Response:
+        |Automatic[ ]reply:
+        |Out[ ]of[ ](?:the[ ])*Office:
         )
     /xi,
 };
-my $Re1 = { 'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/ };
+my $Re1 = {
+    'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
+    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+};
 my $Re2 = {
     'subject' => qr{(?:
           SECURITY[ ]information[ ]for  # sudo
@@ -26,6 +31,14 @@ my $Re2 = {
     'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/i,
     'to'      => qr/root[@]/,
 };
+my $ReV = qr{\A(?>
+     (?:.+?)*Re:
+    |Auto(?:[ ]Response):
+    |Automatic[ ]reply:
+    |Out[ ]of[ ]Office:
+    )
+    [ ]*(.+)\z
+}xi;
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }
@@ -85,10 +98,12 @@ sub scan {
 
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
+    my $rfc822part = '';    # (String) message/rfc822-headers part
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
     my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
     my $blanklines = 0;     # (Integer) Counter for countinuous blank lines
+    my $countuntil = 1;     # (Integer) Maximun value of blank lines in the bodoy part
     my $v = $dscontents->[-1];
 
     RECIPIENT_ADDRESS: {
@@ -110,17 +125,29 @@ sub scan {
     }
     return undef unless $recipients;
 
+    if( $mhead->{'content-type'} ) {
+        # Get the boundary string and set regular expression for matching with
+        # the boundary string.
+        require Sisimai::MIME;
+        my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 0);
+        $Re1->{'boundary'} = qr/\A\Q$b0\E\z/ if length $b0;
+    }
+
     BODY_PARSER: {
         # Get vacation message
         for my $e ( @hasdivided ) {
             # Read the first 5 lines except a blank line
+            $countuntil += 1 if $e =~ $Re1->{'boundary'};
+
             unless( length $e ) {
                 # Check a blank line
                 $blanklines++;
-                last if $blanklines > 1;
+                last if $blanklines > $countuntil;
                 next;
             }
             next unless $e =~ m/ /;
+            next if $e =~ /\AContent-(?:Type|Transfer)/;
+
             $v->{'diagnosis'} .= $e.' ';
             $haveloaded++;
             last if $haveloaded >= $maxmsgline;
@@ -135,7 +162,12 @@ sub scan {
     $v->{'date'}      = $mhead->{'date'};
     $v->{'status'}    = '';
 
-    return { 'ds' => $dscontents, 'rfc822' => '' };
+    if( $mhead->{'subject'} =~ $ReV ) {
+        # Get the Subject header from the original message
+        $rfc822part = sprintf("Subject: %s\n", $1);
+    }
+
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 
 1;

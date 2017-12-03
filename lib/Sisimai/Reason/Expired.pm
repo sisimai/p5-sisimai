@@ -17,6 +17,7 @@ sub match {
          connection[ ]timed[ ]out
         |could[ ]not[ ]find[ ]a[ ]gateway[ ]for
         |delivery[ ]time[ ]expired
+        |Failed[ ]to[ ]deliver[ ]to[ ]domain[ ].+[ ]after[ ]\d+[ ]tries
         |giving[ ]up[ ]on
         |it[ ]has[ ]not[ ]been[ ]collected[ ]after
         |message[ ]expired[ ]after[ ]sitting[ ]in[ ]queue[ ]for
@@ -25,6 +26,7 @@ sub match {
         |server[ ]did[ ]not[ ]respond
         |this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long
         |was[ ]not[ ]reachable[ ]within[ ]the[ ]allowed[ ]queue[ ]period
+        |Your[ ]message[ ]could[ ]not[ ]be[ ]delivered[ ]for[ ]more[ ]than
         )
     }ix;
 

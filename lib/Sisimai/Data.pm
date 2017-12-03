@@ -289,7 +289,7 @@ sub make {
 
             CHECK_DELIVERY_STATUS_VALUE: {
                 # Cleanup the value of "Diagnostic-Code:" header
-                $p->{'diagnosticcode'} =~ s/[ \t]+$EndOfEmail//;
+                $p->{'diagnosticcode'} =~ s/[ \t.]+$EndOfEmail//;
                 $p->{'diagnosticcode'} =~ s/\r\z//g;
 
                 my $v = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});

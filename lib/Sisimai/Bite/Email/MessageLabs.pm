@@ -15,7 +15,12 @@ my $Re1 = {
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 my $ReFailure = {
-    'userunknown' => qr/No[ ]such[ ]user/x,
+    'userunknown' => qr{(?:
+         542[ ].+[ ]Rejected
+        |No[ ]such[ ]user
+        )
+    }x,
+    'securityerror' => qr/Please turn on SMTP Authentication in your mail client/,
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 

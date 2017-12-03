@@ -9,8 +9,7 @@ sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
     # @return   [Integer]       0: Did not match
-    #                           1: Matched
-    # @since v4.0.0
+    #                           1: Matched # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
@@ -33,6 +32,7 @@ sub match {
             )
         |The[ ]account[ ]or[ ]domain[ ]may[ ]not[ ]exist
         |unknown[ ]host
+        |Unrouteable[ ]address
         )
     }ix;
 
@@ -63,7 +63,8 @@ sub true {
     if( $tempreason eq $reasontext ) {
         # Status: 5.1.2
         # Diagnostic-Code: SMTP; 550 Host unknown
-        $v = 1;
+        require Sisimai::Reason::NetworkError;
+        $v = 1 unless Sisimai::Reason::NetworkError->match($diagnostic);
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
