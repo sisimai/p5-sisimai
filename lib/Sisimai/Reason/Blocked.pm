@@ -85,8 +85,11 @@ sub match {
             )
         |PTR[ ]record[ ]setup
         |Rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
-        |Reverse[ ]DNS[ ](?:failed|required)
-        |Reverse[ ]DNS[ ]lookup[ ]for[ ]host[ ].+[ ]failed[ ]permanently
+        |Reverse[ ]DNS[ ](?:
+              failed
+             |required
+             |lookup[ ]for[ ]host[ ].+[ ]failed[ ]permanently
+             )
         |Sender[ ]IP[ ](?:
              address[ ]rejected
             |reverse[ ]lookup[ ]rejected
@@ -102,11 +105,11 @@ sub match {
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
             )
-        |SPF:[ ].+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail.+[A-Z]{3}.+401
         |SPF[ ](?:
              record
             |check:[ ]fail
             )
+        |SPF:[ ].+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail.+[A-Z]{3}.+401
         |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
         |This[ ]system[ ]will[ ]not[ ]accept[ ]messages[ ]from[ ]servers[/]devices[ ]with[ ]no[ ]reverse[ ]DNS
         |Too[ ]many[ ]spams[ ]from[ ]your[ ]IP  # free.fr
