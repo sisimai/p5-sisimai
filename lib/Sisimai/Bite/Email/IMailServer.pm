@@ -121,7 +121,7 @@ sub scan {
             # Original message follows.
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A(.+)[ ](.+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
+            if( $e =~ m/\A([^ ]+)[ ]([^ ]+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
                 # Unknown user: kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
