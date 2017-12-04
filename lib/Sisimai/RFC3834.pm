@@ -145,7 +145,7 @@ sub scan {
                 last if $blanklines > $countuntil;
                 next;
             }
-            next unless $e =~ m/ /;
+            next unless $e =~ / /;
             next if $e =~ /\AContent-(?:Type|Transfer)/;
 
             $v->{'diagnosis'} .= $e.' ';
