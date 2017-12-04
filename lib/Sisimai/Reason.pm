@@ -108,9 +108,9 @@ sub anotherone {
     $reasontext = Sisimai::SMTP::Status->name($statuscode);
 
     TRY_TO_MATCH: while(1) {
-        $trytomatch = 1 if $reasontext eq '';
-        $trytomatch = 1 if grep { $reasontext eq $_ } @$RetryReasons;
-        $trytomatch = 1 if $argvs->diagnostictype ne 'SMTP';
+        $trytomatch ||= 1 if $reasontext eq '';
+        $trytomatch ||= 1 if grep { $reasontext eq $_ } @$RetryReasons;
+        $trytomatch ||= 1 if $argvs->diagnostictype ne 'SMTP';
         last unless $trytomatch;
 
         # Could not decide the reason by the value of Status:
