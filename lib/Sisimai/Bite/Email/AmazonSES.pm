@@ -206,6 +206,7 @@ sub scan {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} =~ s{\\n}{ }g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -229,7 +230,6 @@ sub scan {
             $e->{'reason'} = $r;
             last;
         }
-        $e->{'agent'}    = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
