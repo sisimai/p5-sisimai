@@ -32,7 +32,7 @@ my $Re2 = {
     'to'      => qr/root[@]/,
 };
 my $ReV = qr{\A(?>
-     (?:.+?)*Re:
+     (?:.+?)?Re:
     |Auto(?:[ ]Response):
     |Automatic[ ]reply:
     |Out[ ]of[ ]Office:
