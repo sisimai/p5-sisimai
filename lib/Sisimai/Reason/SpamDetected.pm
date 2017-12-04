@@ -31,10 +31,7 @@ sub match {
         |denied[ ]due[ ]to[ ]spam[ ]list
         |dt:spm[ ]mx.+[ ]http://mail[.]163[.]com/help/help_spam_16[.]htm
         |greylisted.?.[ ]please[ ]try[ ]again[ ]in
-        |http://(?:
-             www[.]spamhaus[.]org
-            |dsbl[.]org
-            )
+        |http://(?:www[.]spamhaus[.]org|dsbl[.]org)
         |listed[ ]in[ ]work[.]drbl[.]imedia[.]ru
         |mail[ ](?:
              appears[ ]to[ ]be[ ]unsolicited    # rejected due to spam
@@ -45,8 +42,10 @@ sub match {
         |message[ ](?:
              content[ ]rejected
             |filtered
-            |filtered[.][ ]please[ ]see[ ]the[ ]faqs[ ]section[ ]on[ ]spam
-            |filtered[.][ ]Refer[ ]to[ ]the[ ]Troubleshooting[ ]page[ ]at[ ]
+            |filtered[.][ ](?:
+                 please[ ]see[ ]the[ ]faqs[ ]section[ ]on[ ]spam
+                |Refer[ ]to[ ]the[ ]Troubleshooting[ ]page[ ]at[ ]
+                )
             |looks[ ]like[ ]spam
             |not[ ]accepted[ ]for[ ]policy[ ]reasons[.][ ]See[ ]http:   # Yahoo!
             |refused[ ]by[ ]mailmarshal[ ]spamprofiler
@@ -57,9 +56,11 @@ sub match {
                 |for[ ]policy[ ]reasons
                 )
             )
-        |our[ ]email[ ]server[ ]thinks[ ]this[ ]email[ ]is[ ]spam
-        |our[ ]filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
-        |our[ ]system[ ]has[ ]detected[ ]that[ ]this[ ]message[ ]is
+        |our[ ](?:
+             email[ ]server[ ]thinks[ ]this[ ]email[ ]is[ ]spam
+            |filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
+            |system[ ]has[ ]detected[ ]that[ ]this[ ]message[ ]is
+            )
         |probable[ ]spam
         |REJECT[ ]bulk[.]advertising
         |Reject,.+[ ][-][ ]SPAM[.][ ]
@@ -96,12 +97,16 @@ sub match {
             |was[ ]rejected[ ]due[ ]to[ ]classification[ ]as[ ]bulk[ ]mail
             )
         |The[ ]content[ ]of[ ]this[ ]message[ ]looked[ ]like[ ]spam # SendGrid
-        |This[ ]e-mail[ ]is[ ]classified[ ]as[ ]spam[ ]and[ ]is[ ]rejected
-        |This[ ]mail[ ]cannot[ ]be[ ]forwarded[ ]because[ ]it[ ]was[ ]detected[ ]as[ ]spam
+        |This[ ](?:e-mail|mail)[ ](?:
+             cannot[ ]be[ ]forwarded[ ]because[ ]it[ ]was[ ]detected[ ]as[ ]spam
+            |is[ ]classified[ ]as[ ]spam[ ]and[ ]is[ ]rejected
+            )
         |this[ ]message[ ](?:
              appears[ ]to[ ]be[ ]spam
-            |has[ ]been[ ]identified[ ]as[ ]spam
-            |has[ ]been[ ]scored[ ]as[ ]spam[ ]with[ ]a[ ]probability
+            |has[ ]been[ ](?:
+                 identified[ ]as[ ]spam
+                |scored[ ]as[ ]spam[ ]with[ ]a[ ]probability
+                )
             |scored[ ].+[ ]spam[ ]points
             |was[ ]classified[ ]as[ ]spam
             |was[ ]rejected[ ]by[ ]Recurrent[ ]Pattern[ ]Detection[ ]System
@@ -114,8 +119,7 @@ sub match {
                  appears[ ]similar[ ]to[ ]spam[ ]we[ ]have[ ]received[ ]before
                 |breaches[ ]local[ ]URIBL[ ]policy
                 |had[ ]spam[-]like[ ]
-                |is[ ]considered[ ]spam
-                |is[ ]probably[ ]spam
+                |is[ ](?:considered|probably)[ ]spam
                 |was[ ]detected[ ]as[ ]spam
                 )
             |message[ ](?:

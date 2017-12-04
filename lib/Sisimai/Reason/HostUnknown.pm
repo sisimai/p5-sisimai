@@ -16,8 +16,8 @@ sub match {
     my $regex = qr{(?>
          domain[ ](?:
              does[ ]not[ ]exist
-            |must[ ]exist
             |is[ ]not[ ]reachable
+            |must[ ]exist
             )
         |host[ ](?:
              or[ ]domain[ ]name[ ]not[ ]found

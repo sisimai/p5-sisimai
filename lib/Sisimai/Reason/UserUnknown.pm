@@ -21,24 +21,19 @@ sub match {
         |5[.]0[.]0[.][ ]Mail[ ]rejected[.]
         |5[.]1[.]0[ ]Address[ ]rejected[.]
         |Adresse[ ]d[ ]au[ ]moins[ ]un[ ]destinataire[ ]invalide.+[A-Z]{3}.+(?:416|418)
-        |address[ ](?:
-             does[ ]not[ ]exist
-            |unknown
-            )
+        |address[ ](?:does[ ]not[ ]exist|unknown)
         |archived[ ]recipient
         |BAD[-_ \t]RECIPIENT
         |can[']t[ ]accept[ ]user
-        |destination[ ]addresses[ ]were[ ]unknown
-        |destination[ ]server[ ]rejected[ ]recipients
-        |email[ ]address[ ](?:
-             does[ ]not[ ]exist
-            |could[ ]not[ ]be[ ]found
+        |destination[ ](?:
+             addresses[ ]were[ ]unknown
+            |server[ ]rejected[ ]recipients
             )
+        |email[ ]address[ ](?:does[ ]not[ ]exist|could[ ]not[ ]be[ ]found)
         |invalid[ ](?:
              address
             |mailbox:
-            |mailbox[ ]path
-            |recipient                 # Linkedin
+            |mailbox[ ]path|recipient
             )
         |is[ ]not[ ](?:
              a[ ]known[ ]user
@@ -56,11 +51,12 @@ sub match {
         |no[ ](?:
              [ ].+[ ]in[ ]name[ ]directory
             |account[ ]by[ ]that[ ]name[ ]here
-            |existe[ ]dicha[ ]persona
-            |existe[ ]ese[ ]usuario[ ]
+            |existe[ ](?:dicha[ ]persona|ese[ ]usuario[ ])
             |mail[ ]box[ ]available[ ]for[ ]this[ ]user
-            |mailbox[ ]by[ ]that[ ]name[ ]is[ ]currently[ ]available
-            |mailbox[ ]found
+            |mailbox[ ](?:
+                 by[ ]that[ ]name[ ]is[ ]currently[ ]available
+                |found
+                )
             |matches[ ]to[ ]nameserver[ ]query
             |such[ ](?:
                  address[ ]here

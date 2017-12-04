@@ -22,8 +22,7 @@ sub match {
             # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
             |rejected[ ]due[ ]to[ ]security[ ]policies
             )
-        |header[ ]are[ ]not[ ]accepted
-        |Header[ ]error
+        |header[ ](?:are[ ]not[ ]accepted|error)
         |Mail[ ]from[ ].+[ ]rejected[ ]for[ ]policy[ ]reasons
         |message[ ](?:
              given[ ]low[ ]priority

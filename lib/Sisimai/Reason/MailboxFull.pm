@@ -27,8 +27,10 @@ sub match {
         |exceeded[ ]storage[ ]allocation
         |exceeding[ ]its[ ]mailbox[ ]quota
         |full[ ]mailbox
-        |is[ ]over[ ]quota[ ]temporarily
-        |is[ ]over[ ]disk[ ]quota
+        |is[ ]over[ ](?:
+             disk[ ]quota
+            |quota[ ]temporarily
+            )
         |mail[ ](?:
              file[ ]size[ ]exceeds[ ]the[ ]maximum[ ]size[ ]allowed[ ]for[ ]mail[ ]delivery
             |quota[ ]exceeded
@@ -49,8 +51,10 @@ sub match {
         |mailfolder[ ]is[ ]full
         |not[ ]enough[ ]storage[ ]space[ ]in
         |over[ ]the[ ]allowed[ ]quota
-        |quota[ ]exceeded
-        |quota[ ]violation[ ]for
+        |quota[ ](?:
+             exceeded
+            |violation[ ]for
+            )
         |recipient[ ](?:
              reached[ ]disk[ ]quota
             |rejected:[ ]mailbox[ ]would[ ]exceed[ ]maximum[ ]allowed[ ]storage
@@ -66,8 +70,7 @@ sub match {
                  exceeded[ ]quota,[ ]bouncing[ ]mail
                 |too[ ]many[ ]messages[ ]on[ ]the[ ]server
                 )
-            |is[ ]over[ ]quota
-            |is[ ]over[ ]the[ ]quota
+            |is[ ]over[ ](?:the[ ])?quota
             |over[ ]quota
             |over[ ]quota[.][ ][(][#]5[.]1[.]1[)]   # qmail-toaster
             )

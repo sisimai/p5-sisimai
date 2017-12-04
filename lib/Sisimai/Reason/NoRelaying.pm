@@ -18,8 +18,10 @@ sub match {
         |Insecure[ ]Mail[ ]Relay
         |mail[ ]server[ ]requires[ ]authentication[ ]when[ ]attempting[ ]to[ ]
             send[ ]to[ ]a[ ]non-local[ ]e-mail[ ]address    # MailEnable 
-        |not[ ]allowed[ ]to[ ]relay[ ]through[ ]this[ ]machine
-        |Not[ ]an[ ]open[ ]relay,[ ]so[ ]get[ ]lost
+        |not[ ](?:
+             allowed[ ]to[ ]relay[ ]through[ ]this[ ]machine
+            |an[ ]open[ ]relay,[ ]so[ ]get[ ]lost
+            )
         |relay[ ](?:
              access[ ]denied
             |denied

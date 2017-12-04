@@ -22,12 +22,14 @@ sub match {
         |(?:Blocked|Refused)[ ]-[ ]see[ ]https?://
         |can[']t[ ]determine[ ]Purported[ ]Responsible[ ]Address
         |cannot[ ]resolve[ ]your[ ]address
-        |client[ ]host[ ].+[ ]blocked[ ]using
-        |client[ ]host[ ]rejected:[ ](?:
-             Abus[ ]detecte[ ]GU_EIB_0[24]      # SFR
-            |cannot[ ]find[ ]your[ ]hostname    # Yahoo!
-            |may[ ]not[ ]be[ ]mail[ ]exchanger
-            |was[ ]not[ ]authenticated          # Microsoft
+        |client[ ]host[ ](?:
+             .+[ ]blocked[ ]using
+            |rejected:[ ](?:
+                 Abus[ ]detecte[ ]GU_EIB_0[24]      # SFR
+                |cannot[ ]find[ ]your[ ]hostname    # Yahoo!
+                |may[ ]not[ ]be[ ]mail[ ]exchanger
+                |was[ ]not[ ]authenticated          # Microsoft
+                )
             )
         |confirm[ ]this[ ]mail[ ]server
         |connection[ ](?:
@@ -41,15 +43,14 @@ sub match {
             |will[ ]not[ ]be[ ]accepted[ ]from[ ].+because[ ]the[ ]ip[ ]is[ ]in[ ]Spamhaus's[ ]list
             )
         |Currently[ ]Sending[ ]Spam[ ]See:[ ]
-        |domain[ ]does[ ]not[ ]exist:
-        |domain[ ].+[ ]mismatches[ ]client[ ]ip
+        |domain[ ](?:
+             .+[ ]mismatches[ ]client[ ]ip
+            |does[ ]not[ ]exist:
+            )
         |dns[ ]lookup[ ]failure:[ ].+[ ]try[ ]again[ ]later
         |DNSBL:ATTRBL
         |Dynamic/zombied/spam[ ]IPs[ ]blocked
-        |Email[ ]blocked[ ]by[ ](?:
-            .+[.]barracudacentral[.]org
-           |SPAMHAUS
-           )
+        |Email[ ]blocked[ ]by[ ](?:.+[.]barracudacentral[.]org|SPAMHAUS)
         |Fix[ ]reverse[ ]DNS[ ]for[ ].+
         |Go[ ]away
         |host[ ].+[ ]refused[ ]to[ ]talk[ ]to[ ]me:[ ]\d+[ ]Blocked
@@ -74,8 +75,10 @@ sub match {
         |Mail[ ]from[ ]\d+[.]\d+[.]\d+[.]\d[ ]refused:
         |Message[ ]from[ ].+[ ]rejected[ ]based[ ]on[ ]blacklist
         |Messages[ ]from[ ].+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
-        |no[ ]access[ ]from[ ]mail[ ]server
-        |No[ ]PTR[ ]Record[ ]found[.]
+        |no[ ](?:
+             access[ ]from[ ]mail[ ]server
+            |PTR[ ]Record[ ]found[.]
+            )
         |Not[ ]currently[ ]accepting[ ]mail[ ]from[ ]your[ ]ip  # Microsoft
         |part[ ]of[ ]their[ ]network[ ]is[ ]on[ ]our[ ]block[ ]list
         |Please[ ](?:
@@ -105,10 +108,7 @@ sub match {
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
             )
-        |SPF[ ](?:
-             record
-            |check:[ ]fail
-            )
+        |SPF[ ](?:record|check:[ ]fail)
         |SPF:[ ].+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail.+[A-Z]{3}.+401
         |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
         |This[ ]system[ ]will[ ]not[ ]accept[ ]messages[ ]from[ ]servers[/]devices[ ]with[ ]no[ ]reverse[ ]DNS
@@ -122,13 +122,13 @@ sub match {
             )
         |was[ ]blocked[ ]by[ ].+
         |we[ ]do[ ]not[ ]accept[ ]mail[ ]from[ ](?: # @mail.ru
-             hosts[ ]with[ ]dynamic[ ]IP[ ]or[ ]generic[ ]dns[ ]PTR-records
-            |dynamic[ ]ips
+             dynamic[ ]ips
+            |hosts[ ]with[ ]dynamic[ ]IP[ ]or[ ]generic[ ]dns[ ]PTR-records
             )
         |You[ ]are[ ](?:
              not[ ]allowed[ ]to[ ]connect
             |sending[ ]spam
-             )
+            )
         |Your[ ](?:
              access[ ]to[ ]submit[ ]messages[ ]to[ ]this[ ]e-mail[ ]system[ ]has[ ]been[ ]rejected
             |message[ ]was[ ]rejected[ ]for[ ]possible[ ]spam/virus[ ]content
