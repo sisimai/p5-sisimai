@@ -4,9 +4,9 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 
 
-v4.22.2p2
+v4.22.2p3
 --------------------------------------------------------------------------------
-- release: "Mon, 20 Nov 2017 18:00:00 +0900 (JST)"
+- release: "Tue,  5 Dec 2017 10:00:00 +0900 (JST)"
 - version: ""
 - changes:
   - Merge Pull-Request #238, Fix some typos in POD. Thanks to @brewt.
@@ -22,6 +22,10 @@ v4.22.2p2
   - Merge Pull-Request #245: update error message patterns of SFR and Free.fr.
   - Merge Pull-Request #246: error message patterns have been improved on Exim.
   - Fix bug in regular expression at Sisimai::Reason::HostUnknown.
+  - Merge Pull-Request #247, Add 100+ error message patterns into the following
+    reason classes: Blocked, Expired, Filtered, HostUnknown, PolicyViolation,
+    MailboxFull, NetworkError, NoRelaying, Rejected, SpamDetected, SystemError,
+    Suspend, TooManyConn, and UserUnknown.
 
 v4.22.2
 --------------------------------------------------------------------------------
