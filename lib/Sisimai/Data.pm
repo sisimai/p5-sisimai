@@ -120,7 +120,6 @@ sub make {
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
     my $rxcommands = qr/\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
-    my $rxsmtpcode = qr/[ ][45][0-9][0-9][- ](?:[45][.][0-9][.][0-9])?/;
     my $givenorder = $argvs->{'order'} ? $argvs->{'order'} : {};
 
     # Decide the order of email headers: user specified or system default.
