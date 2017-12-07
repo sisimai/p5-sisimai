@@ -120,6 +120,7 @@ sub make {
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
     my $rxcommands = qr/\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
+    my $rxsmtpcode = qr/[ ][45][0-9][0-9][- ](?:[45][.][0-9][.][0-9])?/;
     my $givenorder = $argvs->{'order'} ? $argvs->{'order'} : {};
 
     # Decide the order of email headers: user specified or system default.
@@ -292,20 +293,40 @@ sub make {
                 $p->{'diagnosticcode'} =~ s/[ \t.]+$EndOfEmail//;
                 $p->{'diagnosticcode'} =~ s/\r\z//g;
 
-                my $v = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
-                if( $v =~ m/\A[45][.][1-9][.][1-9]\z/ ) {
-                    # Use the DSN value in Diagnostic-Code:
-                    $p->{'deliverystatus'} = $v;
-                }
+                my $vs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
+                my $vr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'});
+                my $vm = 0;
+                my $re = undef;
 
-                if( $p->{'reason'} eq 'mailererror' ) {
-                    $p->{'diagnostictype'} ||= 'X-UNIX';
+                if( length $p->{'diagnosticcode'} ) {
+                    # Count the number of D.S.N. and SMTP Reply Code
+                    if( length $vs ) {
+                        # How many times does the D.S.N. appeared
+                        $vm += 1 while $p->{'diagnosticcode'} =~ /\b\Q$vs\E\b/g;
+                        $p->{'deliverystatus'} = $vs if $vs =~ m/\A[45][.][1-9][.][1-9]\z/;
+                    }
 
-                } else {
-                    unless( $p->{'reason'} =~ m/\A(?:feedback|vacation)\z/ ) {
-                        $p->{'diagnostictype'} ||= 'SMTP' 
+                    if( length $vr ) {
+                        # How many times does the SMTP reply code appeared
+                        $vm += 1 while $p->{'diagnosticcode'} =~ /\b$vr\b/g;
+                        $p->{'replycode'} ||= $vr;
+                    }
+
+                    if( $vm > 2 ) {
+                        # Build regular expression for removing string like '550-5.1.1'
+                        # from the value of "diagnosticcode"
+                        $re = qr/[ ]$vr[- ](?:\Q$vs\E)?/;
+
+                        # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
+                        # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
+                        # 550-5.7.1 this message has been blocked. Please visit
+                        # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
+                        $p->{'diagnosticcode'} =~ s/$re/ /g;
+                        $p->{'diagnosticcode'} =  Sisimai::String->sweep($p->{'diagnosticcode'});
                     }
                 }
+                $p->{'diagnostictype'} ||= 'X-UNIX' if $p->{'reason'} eq 'mailererror';
+                $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ m/\A(?:feedback|vacation)\z/;
             }
 
             # Check the value of SMTP command
