@@ -292,13 +292,13 @@ sub make {
                 $p->{'diagnosticcode'} =~ s/[ \t.]+$EndOfEmail//;
                 $p->{'diagnosticcode'} =~ s/\r\z//g;
 
-                my $vs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
-                my $vr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'});
-                my $vm = 0;
-                my $re = undef;
-
                 if( length $p->{'diagnosticcode'} ) {
                     # Count the number of D.S.N. and SMTP Reply Code
+                    my $vs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
+                    my $vr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'});
+                    my $vm = 0;
+                    my $re = undef;
+
                     if( length $vs ) {
                         # How many times does the D.S.N. appeared
                         $vm += 1 while $p->{'diagnosticcode'} =~ /\b\Q$vs\E\b/g;
