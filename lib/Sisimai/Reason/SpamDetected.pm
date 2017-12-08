@@ -40,7 +40,8 @@ sub match {
             )
         |may[ ]consider[ ]spam
         |message[ ](?:
-             content[ ]rejected
+             considered[ ]as[ ]spam[ ]or[ ]virus
+            |content[ ]rejected
             |filtered
             |filtered[.][ ](?:
                  please[ ]see[ ]the[ ]faqs[ ]section[ ]on[ ]spam
