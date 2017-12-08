@@ -3,10 +3,9 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-
-v4.22.2p3
+v4.22.2p4
 --------------------------------------------------------------------------------
-- release: "Tue,  5 Dec 2017 10:00:00 +0900 (JST)"
+- release: ""
 - version: ""
 - changes:
   - Merge Pull-Request #238, Fix some typos in POD. Thanks to @brewt.
@@ -26,6 +25,9 @@ v4.22.2p3
     reason classes: Blocked, Expired, Filtered, HostUnknown, PolicyViolation,
     MailboxFull, NetworkError, NoRelaying, Rejected, SpamDetected, SystemError,
     Suspend, TooManyConn, and UserUnknown.
+  - Merge Pull-Request #248, code improvement at Sisimai::Data to remove string
+    like "550-5.1.1" from the beginning of each line in an error message for to
+    be matched exactly with regular expression of Sisimai::Reason::*.
 
 v4.22.2
 --------------------------------------------------------------------------------
