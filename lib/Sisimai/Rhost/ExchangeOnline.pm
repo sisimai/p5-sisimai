@@ -124,6 +124,12 @@ my $CodeTable = {
             'regexp' => qr/(?:Invalid[ ]arguments|Routing[ ]loop[ ]detected)/x,
         },
     ],
+    qr/\A5[.]4[.]14\z/ => [
+        {
+            'reason' => 'networkerror',
+            'regexp' => qr/Hop[ ]count[ ]exceeded/x
+        },
+    ],
     qr/\A5[.]5[.]2\z/ => [
         {
             'reason' => 'syntaxerror',
