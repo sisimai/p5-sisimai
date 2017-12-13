@@ -16,6 +16,7 @@ MAKE_TEST: {
     my $rs = {
         '01' => { 'status' => qr/\A5[.]7[.]606\z/, 'reason' => qr/blocked/ },
         '02' => { 'status' => qr/\A5[.]4[.]1\z/,   'reason' => qr/userunknown/ },
+        '03' => { 'status' => qr/\A5[.]1[.]10\z/,  'reason' => qr/userunknown/ },
     };
     is $PackageName->get, undef;
 
@@ -26,7 +27,7 @@ MAKE_TEST: {
     PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
         my $emailfn = sprintf("./set-of-emails/maildir/bsd/rhost-exchange-online-%02d.eml", $n);
         my $mailbox = Sisimai::Mail->new($emailfn);
-        my $mtahost = qr/example[.].+[.]mail[.]protection[.]outlook[.]com/;
+        my $mtahost = qr/[.].+[.](?:prod|protection)[.]outlook[.]com/;
         next unless defined $mailbox;
 
         while( my $r = $mailbox->read ) {
@@ -40,16 +41,16 @@ MAKE_TEST: {
 
             for my $e ( @{ $p->ds } ) {
                 is $e->{'spec'}, 'SMTP', '->spec = SMTP';
-                ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
-                like $e->{'status'}, $rs->{ $n }->{'status'}, '->status = '.$e->{'status'};
-                like $e->{'command'}, qr/[A-Z]{4}/, '->command = '.$e->{'command'};
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok length $e->{'action'}, '->action = '.$e->{'action'};
-                like $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
+                ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
-                like $e->{'agent'}, qr/\AEmail::.+/, '->agent = '.$e->{'agent'};
+                ok defined $e->{'command'}, '->command = '.$e->{'command'};
+                like $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
+                like $e->{'agent'}, qr/\A(?:Email::.+|RFC3464)/, '->agent = '.$e->{'agent'};
+                like $e->{'status'}, $rs->{ $n }->{'status'}, '->status = '.$e->{'status'};
             }
 
             my $v = Sisimai::Data->make('data' => $p);
