@@ -28,6 +28,7 @@ v4.22.2p4
   - Merge Pull-Request #248, code improvement at Sisimai::Data to remove string
     like "550-5.1.1" from the beginning of each line in an error message for to
     be matched exactly with regular expression of Sisimai::Reason::*.
+  - Merge Pull-Request #248, Sisimai::Rhost::ExchangeOnline improved.
 
 v4.22.2
 --------------------------------------------------------------------------------
