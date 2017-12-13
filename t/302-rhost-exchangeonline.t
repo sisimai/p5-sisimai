@@ -15,6 +15,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     my $rs = {
         '01' => { 'status' => qr/\A5[.]7[.]606\z/, 'reason' => qr/blocked/ },
+        '02' => { 'status' => qr/\A5[.]4[.]1\z/,   'reason' => qr/userunknown/ },
     };
     is $PackageName->get, undef;
 
@@ -25,7 +26,7 @@ MAKE_TEST: {
     PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
         my $emailfn = sprintf("./set-of-emails/maildir/bsd/rhost-exchange-online-%02d.eml", $n);
         my $mailbox = Sisimai::Mail->new($emailfn);
-        my $mtahost = 'example.com.mail.protection.outlook.com';
+        my $mtahost = qr/example[.].+[.]mail[.]protection[.]outlook[.]com/;
         next unless defined $mailbox;
 
         while( my $r = $mailbox->read ) {
@@ -45,10 +46,10 @@ MAKE_TEST: {
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok length $e->{'action'}, '->action = '.$e->{'action'};
-                is $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
+                like $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
-                is $e->{'agent'}, 'Email::Sendmail', '->agent = '.$e->{'agent'};
+                like $e->{'agent'}, qr/\AEmail::.+/, '->agent = '.$e->{'agent'};
             }
 
             my $v = Sisimai::Data->make('data' => $p);

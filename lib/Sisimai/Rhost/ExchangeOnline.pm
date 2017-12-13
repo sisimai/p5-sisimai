@@ -124,6 +124,12 @@ my $CodeTable = {
             'regexp' => qr/(?:Invalid[ ]arguments|Routing[ ]loop[ ]detected)/x,
         },
     ],
+    qr/\A5[.]4[.]14\z/ => [
+        {
+            'reason' => 'networkerror',
+            'regexp' => qr/Hop[ ]count[ ]exceeded/x
+        },
+    ],
     qr/\A5[.]5[.]2\z/ => [
         {
             'reason' => 'syntaxerror',
@@ -238,6 +244,18 @@ my $CodeTable = {
         },
     ],
 };
+my $MesgTable = {
+    # Copied and converted from Sisimai::Bite::Email::Exchange2007
+    'expired'       => qr/QUEUE[.]Expired/,
+    'hostunknown'   => qr/SMTPSEND[.]DNS[.]NonExistentDomain/,
+    'mesgtoobig'    => qr/RESOLVER[.]RST[.]Recip(?:ient)?SizeLimit/,
+    'networkerror'  => qr/SMTPSEND[.]DNS[.]MxLoopback/,
+    'rejected'      => qr/RESOLVER[.]RST[.]NotAuthorized/,
+    'securityerror' => qr/RESOLVER[.]RST[.]AuthRequired/,
+    'systemerror'   => qr/RESOLVER[.]ADR[.](?:Ambiguous|BadPrimary|InvalidInSmtp)/,
+    'toomanyconn'   => qr/RESOLVER[.]ADR[.]Recip(?:ient)?Limit/,
+    'userunknown'   => qr/RESOLVER[.]ADR[.](?:Ex)?Recip(?:ient)?NotFound/,
+};
 
 sub get {
     # Detect bounce reason from Exchange 2013 and Office 365
@@ -264,6 +282,17 @@ sub get {
             last;
         }
         last;
+    }
+
+    unless( $reasontext ) {
+        # D.S.N. included in the error message did not matched with any key in
+        # $CodeTable
+        for my $e ( keys %$MesgTable ) {
+            # Try to match with error messages defined in MesgTable
+            next unless $statusmesg =~ $MesgTable->{ $e };
+            $reasontext = $e;
+            last;
+        }
     }
     return $reasontext;
 }
