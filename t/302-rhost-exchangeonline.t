@@ -46,7 +46,7 @@ MAKE_TEST: {
                 ok length $e->{'action'}, '->action = '.$e->{'action'};
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
-                ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
+                ok defined $e->{'alias'}, '->alias = '.$e->{'alias'};
                 ok defined $e->{'command'}, '->command = '.$e->{'command'};
                 like $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
                 like $e->{'agent'}, qr/\A(?:Email::.+|RFC3464)/, '->agent = '.$e->{'agent'};
