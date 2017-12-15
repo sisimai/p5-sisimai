@@ -26,9 +26,11 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
+    my $v  = $Sisimai::VERSION;
+       $v .= sprintf("p%d", $Sisimai::PATCHLV) if $Sisimai::PATCHLV > 0;
     is $PackageName->sysname, 'bouncehammer', '->sysname = bouncehammer';
     is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
-    is $PackageName->version, $Sisimai::VERSION, '->version = '.$Sisimai::VERSION;
+    is $PackageName->version, $v, '->version = '.$v;
     is $PackageName->make(undef), undef;
     is $PackageName->dump(undef), undef;
 
