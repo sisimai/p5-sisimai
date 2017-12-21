@@ -401,10 +401,7 @@ sub parse {
                     # ISO 8601; 2000-04-29T01:23:45
                     $v->{'Y'} = int $1;
                     $v->{'M'} = $MonthName->{'abbr'}->[int($2) - 1];
-
-                    if( $3 < 32 ) {
-                        $v->{'d'} = int $3;
-                    }
+                    $v->{'d'} = int $3 if $3 < 32;
 
                     if( $4 < 24 && $5 < 60 && $6 < 60 ) {
                         $v->{'T'} = sprintf("%02d:%02d:%02d", $4, $5, $6);
@@ -419,7 +416,7 @@ sub parse {
 
                 } elsif( $p =~ m|\A(\d{1,2})[-/](\d{1,2})[-/](\d{4})| ) {
                     # 29-04-2017 22:22
-                    $v->{'d'} = int $1;
+                    $v->{'d'} = int $1 if $1 < 32;
                     $v->{'M'} = $MonthName->{'abbr'}->[int($2) - 1];
                     $v->{'Y'} = int($3);
                 }
@@ -592,7 +589,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
