@@ -427,7 +427,7 @@ sub scan {
         for my $e ( @$rfc822list ) {
             # Check To: header in the original message
             if( $e =~ /\ATo:\s*(.+)\z/ ) {
-                my $r = Sisimai::Address->find($1, 1);
+                my $r = Sisimai::Address->find($1, 1) || [];
                 my $b = undef;
                 next unless scalar @$r;
 
