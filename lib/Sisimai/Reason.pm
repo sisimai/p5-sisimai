@@ -72,8 +72,9 @@ sub get {
 
         if( $reasontext eq 'undefined' || $reasontext eq '' ) {
             # Action: delayed => "expired"
-            $reasontext = 'expired' if $argvs->action eq 'delayed';
-            $reasontext = 'onhold'  if length $argvs->diagnosticcode;
+            $reasontext   = '';
+            $reasontext ||= 'expired' if $argvs->action eq 'delayed';
+            $reasontext ||= 'onhold'  if length $argvs->diagnosticcode;
         }
         $reasontext ||= 'undefined';
     }
