@@ -68,14 +68,16 @@ sub get {
 
     if( not $reasontext || $reasontext eq 'undefined' ) {
         # Bounce reason is not detected yet.
-        $reasontext = __PACKAGE__->anotherone($argvs);
+        $reasontext   = __PACKAGE__->anotherone($argvs);
+        $reasontext   = '' if $reasontext eq 'undefined';
+        $reasontext ||= 'expired' if $argvs->action eq 'delayed';
 
-        if( $reasontext eq 'undefined' || $reasontext eq '' ) {
-            # Action: delayed => "expired"
-            $reasontext   = '';
-            $reasontext ||= 'expired' if $argvs->action eq 'delayed';
-            $reasontext ||= 'onhold'  if length $argvs->diagnosticcode;
+        unless( $reasontext ) {
+            # Try to match with message patterns in Sisimai::Reason::Vacation
+            Module::Load::load 'Sisimai::Reason::Vacation';
+            $reasontext = 'vacation' if Sisimai::Reason::Vacation->match($argvs->diagnosticcode);
         }
+        $reasontext ||= 'onhold'  if length $argvs->diagnosticcode;
         $reasontext ||= 'undefined';
     }
 
