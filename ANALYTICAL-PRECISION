@@ -54,8 +54,8 @@ Email::qmail ............   55/0085  0.6471  qmail
 JSON::AmazonSES .........   31/0040  0.7750  Amazon SES(JSON): http://aws.amazon.com/ses/
 JSON::SendGrid ..........    7/0012  0.5833  SendGrid(JSON): http://sendgrid.com/
 ARF .....................    9/0050  0.1800  Abuse Feedback Reporting Format
-RFC3464 .................  144/0295  0.4881  Fallback Module for MTAs
+RFC3464 .................  145/0296  0.4899  Fallback Module for MTAs
 RFC3834 .................    0/0012  0.0000  Detector for auto replied message
 --------------------------------------------------------------------------------
- bounceHammer 2.7.13p3    1400/2436  0.5747
- Sisimai 4.22.2p3           2436/2436  1.0000
+ bounceHammer 2.7.13p3    1401/2437  0.5749
+ Sisimai 4.22.3           2437/2437  1.0000
