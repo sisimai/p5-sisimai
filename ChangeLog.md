@@ -3,6 +3,13 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.3p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Issue #253, Add status code 4.7.25(RFC-7372) as "blocked".
+
 v4.22.3
 --------------------------------------------------------------------------------
 - release: "Tue, 26 Dec 2017 09:22:22 +0900 (JST)"
