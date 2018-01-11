@@ -21,9 +21,7 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub pattern     { return $Re0 }
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
-
 sub scan {
     # Parse bounce messages from Sendmail
     # @param         [Hash] mhead       Message header of a bounce email
@@ -320,7 +318,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

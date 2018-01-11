@@ -23,10 +23,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-GMX-Antivirus: 0 (no virus found)
 # X-UI-Out-Filterresults: unknown:0;
 sub headerlist  { return ['X-GMX-Antispam'] }
-sub pattern     { return $Re0 }
 sub description { 'GMX: http://www.gmx.net' }
-
-
 sub scan {
     # Detect an error from GMX and mail.com
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -208,7 +205,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

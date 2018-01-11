@@ -66,9 +66,7 @@ sub headerlist  {
         'X-MS-Exchange-Transport-CrossTenantHeadersStamped',
     ]
 }
-sub pattern     { return $Re0 }
 sub description { 'Microsoft Office 365: http://office.microsoft.com/' }
-
 sub scan {
     # Detect an error from Microsoft Office 365
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -293,7 +291,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

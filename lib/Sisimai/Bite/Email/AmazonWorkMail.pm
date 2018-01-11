@@ -21,9 +21,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-Original-Mailer: Amazon WorkMail
 # X-Ses-Outgoing: 2016.01.14-54.240.27.159
 sub headerlist  { return ['X-SES-Outgoing', 'X-Original-Mailer'] }
-sub pattern     { return $Re0 }
 sub description { 'Amazon WorkMail: https://aws.amazon.com/workmail/' }
-
 sub scan {
     # Detect an error from Amazon WorkMail
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -227,7 +225,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

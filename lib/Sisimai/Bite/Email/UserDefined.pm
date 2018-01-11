@@ -26,9 +26,7 @@ my $Re1 = {
 my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-Some-UserDefined-Header'] }
-sub pattern     { return $Re0 }
 sub description { 'Module decription' }
-
 sub scan {
     # Template for User-Defined MTA module
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -154,7 +152,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

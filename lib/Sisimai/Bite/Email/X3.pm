@@ -15,9 +15,7 @@ my $Re1 = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub pattern     { return $Re0 }
 sub description { 'Unknown MTA #3' }
-
 sub scan {
     # Detect an error from Unknown MTA #3
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -177,7 +175,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -19,9 +19,7 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub pattern     { return $Re0 }
 sub description { 'Oracle Communications Messaging Server' }
-
 sub scan {
     # Detect an error from Oracle Communications Messaging Server
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -242,7 +240,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

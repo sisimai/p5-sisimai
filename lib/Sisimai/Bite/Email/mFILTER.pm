@@ -20,9 +20,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-Mailer: m-FILTER
 sub headerlist  { return ['X-Mailer'] }
-sub pattern     { return $Re0 }
 sub description { 'Digital Arts m-FILTER' }
-
 sub scan {
     # Detect an error from DigitalArts m-FILTER
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -205,7 +203,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
