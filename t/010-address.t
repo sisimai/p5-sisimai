@@ -7,7 +7,7 @@ use Sisimai::RFC5322;
 my $PackageName = 'Sisimai::Address';
 my $MethodNames = {
     'class' => [
-        'new', 'make', 'find', 'parse', 's3s4', 'expand_verp', 'expand_alias',
+        'new', 'make', 'find', 's3s4', 'expand_verp', 'expand_alias',
         'undisclosed',
     ],
     'object' => [

@@ -11,6 +11,7 @@ v4.22.3p1
   - Issue #253, Add status code 4.7.25(RFC-7372) as "blocked".
   - Pull-Request #254, Remove unused method: Sisimai::Bite::Email->pattern and
     the same methods defined in each child class.
+  - Obsoleted method Sisimai::Address->parse has been removed.
 
 v4.22.3
 --------------------------------------------------------------------------------

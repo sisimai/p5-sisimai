@@ -372,32 +372,6 @@ sub find {
     return $addrtables;
 }
 
-sub parse {
-    # Email address parser
-    # @param    [Array] argvs   List of strings including email address
-    # @return   [Array, Undef]  Email address list or Undef when there is no 
-    #                           email address in the argument
-    # @until    v4.22.1
-    my $class = shift;
-    my $argvs = shift // return undef;
-    my $addrs = [];
-
-    return undef unless ref $argvs eq 'ARRAY';
-    return undef unless scalar @$argvs;
-    warn sprintf(" ***warning: %s->parse is marked as obsoleted\n", __PACKAGE__);
-
-    FIND_ADDRS: for my $e ( @$argvs ) {
-        next unless defined $e;
-        next unless length $e;
-
-        my $v = __PACKAGE__->find($e, 1) || [];
-        next unless scalar @$v;
-        push @$addrs, $_->{'address'} for @$v;
-    }
-    return undef unless scalar @$addrs;
-    return $addrs;
-}
-
 sub s3s4 {
     # Runs like ruleset 3,4 of sendmail.cf
     # @param    [String] input  Text including an email address
@@ -518,20 +492,6 @@ email addresses.
               }
     ];
 
-=head2 C<B<parse(I<Array-Ref>)>>
-
-C<parse()> is a parser for getting only email address from text including email
-addresses.
-
-    my $r = [
-        'Stray cat <cat@example.org>',
-        'nyaa@example.org (White Cat)',
-    ];
-    my $v = Sisimai::Address->parse($r);
-
-    warn Dumper $v;
-    $VAR1 = ['cat@example.org', 'nyaa@example.org'];
-
 =head2 C<B<s3s4(I<email address>)>>
 
 C<s3s4()> works Ruleset 3, and 4 of sendmail.cf.
@@ -624,7 +584,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
