@@ -42,7 +42,6 @@ my $ReV = qr{\A(?>
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }
-sub pattern     { return $Re0 }
 sub headerlist  {
     return [
         'Auto-Submitted',
@@ -50,7 +49,6 @@ sub headerlist  {
         'X-Auto-Response-Suppress',
     ];
 }
-
 sub scan {
     # Detect auto reply message as RFC3834
     # @param         [Hash] mhead       Message header of a bounce email
@@ -212,7 +210,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

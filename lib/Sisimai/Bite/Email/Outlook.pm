@@ -24,9 +24,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-Message-Delivery: Vj0xLjE7RD0wO0dEPTA7U0NMPTk7bD0xO3VzPTE=
 # X-Message-Info: AuEzbeVr9u5fkDpn2vR5iCu5wb6HBeY4iruBjnutBzpStnUabbM...
 sub headerlist  { return ['X-Message-Delivery', 'X-Message-Info'] }
-sub pattern     { return $Re0 }
 sub description { 'Microsoft Outlook.com: https://www.outlook.com/' }
-
 sub scan {
     # Detect an error from Microsoft Outlook.com
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -242,7 +240,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

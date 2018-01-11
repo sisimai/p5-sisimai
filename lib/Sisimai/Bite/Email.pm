@@ -15,8 +15,6 @@ sub INDICATORS {
     };
 }
 sub headerlist { return [] }
-sub pattern    { return {} }
-
 sub index {
     # MTA list
     # @return   [Array] MTA list with order
@@ -72,7 +70,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

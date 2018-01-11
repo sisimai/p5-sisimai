@@ -6,7 +6,7 @@ use Sisimai::Bite::Email;
 my $PackageName = 'Sisimai::Bite::Email';
 my $MethodNames = {
     'class' => [
-        'description', 'headerlist', 'scan', 'smtpagent', 'index', 'pattern',
+        'description', 'headerlist', 'scan', 'smtpagent', 'index',
         'DELIVERYSTATUS', 'INDICATORS',
     ],
     'object' => [],
@@ -22,7 +22,6 @@ MAKE_TEST: {
 
     isa_ok $PackageName->index, 'ARRAY';
     isa_ok $PackageName->headerlist, 'ARRAY';
-    isa_ok $PackageName->pattern, 'HASH';
     isa_ok $PackageName->DELIVERYSTATUS, 'HASH';
     isa_ok $PackageName->INDICATORS, 'HASH';
 }

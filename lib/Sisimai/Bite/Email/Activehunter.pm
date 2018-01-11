@@ -17,9 +17,7 @@ my $Re1 = {
 my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-AHMAILID'] }
-sub pattern     { return $Re0 }
 sub description { 'TransWARE Active!hunter' };
-
 sub scan {
     # Detect an error from TransWARE Active!hunter
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -162,7 +160,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

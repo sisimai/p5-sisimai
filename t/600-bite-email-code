@@ -22,7 +22,7 @@ my $moduletest = sub {
 
     my $outofemail = ['ARF', 'RFC3464', 'RFC3834'];
     my $samplepath = 'set-of-emails/maildir/bsd';
-    my $methodlist = ['description', 'headerlist', 'scan', 'pattern', 'DELIVERYSTATUS'];
+    my $methodlist = ['description', 'headerlist', 'scan', 'DELIVERYSTATUS'];
     my $emailindex = 0;
     my $mesgmethod = {
         'length' => [qw|recipient agent|],
@@ -49,7 +49,6 @@ my $moduletest = sub {
 
     $v = $M->description; ok $v, $E.'->description = '.$v;
     $v = $M->smtpagent;   ok $v, $E.'->smtpagent = '.$v;
-    $v = $M->pattern;     ok keys(%$v), $E.'->pattern = HASH';
     $v = $M->scan;        is $v, undef, $E.'->scan = undef';
 
     PARSE_EACH_EMAIL: for my $e ( @$isexpected ) {

@@ -23,9 +23,7 @@ my $ErrorMayBe = {
 my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-Gm-Message-State'] }
-sub pattern     { return $Re0 }
 sub description { 'G Suite: https://gsuite.google.com/' }
-
 sub scan {
     # Detect an error from G Suite (Transfer from G Suite to a destination host)
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -310,7 +308,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

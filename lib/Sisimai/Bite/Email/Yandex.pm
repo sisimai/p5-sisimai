@@ -22,9 +22,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-Yandex-Queue-ID: 367D79E130D
 # X-Yandex-Sender: rfc822; shironeko@yandex.example.com
 sub headerlist  { return ['X-Yandex-Uniq'] }
-sub pattern     { return $Re0 }
 sub description { 'Yandex.Mail: http://www.yandex.ru' }
-
 sub scan {
     # Detect an error from Yandex.Mail
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -240,7 +238,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

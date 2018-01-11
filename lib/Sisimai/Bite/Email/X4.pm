@@ -149,9 +149,7 @@ my $ReFailure = {
 my $ReDelayed  = qr{this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z}x;
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub pattern     { return $Re0 }
 sub description { 'Unknown MTA #4 qmail clones' }
-
 sub scan {
     # Detect an error from Unknown MTA #4, qmail clones
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -364,7 +362,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

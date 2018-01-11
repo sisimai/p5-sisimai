@@ -20,9 +20,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-SEF-Processed: 0_0_0_000__2010_04_29_23_34_45
 # X-Mailer: SurfControl E-mail Filter
 sub headerlist  { return ['X-SEF-Processed', 'X-Mailer'] }
-sub pattern     { return $Re0 }
 sub description { 'WebSense SurfControl' }
-
 sub scan {
     # Detect an error from SurfControl
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -199,7 +197,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

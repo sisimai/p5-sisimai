@@ -31,9 +31,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-AWS-Outgoing: 199.255.192.156
 # X-SES-Outgoing: 2016.10.12-54.240.27.6
 sub headerlist  { return ['X-AWS-Outgoing', 'X-SES-Outgoing', 'x-amz-sns-message-id'] }
-sub pattern     { return $Re0 }
 sub description { 'Amazon SES(Sending): http://aws.amazon.com/ses/' };
-
 sub scan {
     # Detect an error from Amazon SES
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -278,7 +276,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

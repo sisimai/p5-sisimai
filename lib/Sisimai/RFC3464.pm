@@ -45,7 +45,6 @@ my $Indicators = Sisimai::Bite::Email->INDICATORS;
 
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
-sub pattern     { return $Re0 }
 
 sub scan {
     # Detect an error for RFC3464
@@ -521,7 +520,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

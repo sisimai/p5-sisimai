@@ -20,9 +20,7 @@ my $ReFailure = {
 };
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub pattern     { return $Re0 }
 sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
-
 sub scan {
     # Detect an error from Biglobe
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -184,7 +182,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

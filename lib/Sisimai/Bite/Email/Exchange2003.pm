@@ -55,9 +55,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-Mailer: Internet Mail Service (5.5.1960.3)
 # X-MS-Embedded-Report: 
 sub headerlist  { return ['X-MS-Embedded-Report', 'X-MimeOLE'] };
-sub pattern     { return $Re0 }
 sub description { 'Microsoft Exchange Server 2003' }
-
 sub scan {
     # Detect an error from Microsoft Exchange Server 2003
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -322,7 +320,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

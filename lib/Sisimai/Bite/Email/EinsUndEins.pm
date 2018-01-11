@@ -21,9 +21,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-UI-Out-Filterresults: unknown:0;
 # sub headerlist  { return ['X-UI-Out-Filterresults'] }
-sub pattern     { return $Re0 }
 sub description { '1&1: http://www.1and1.de' }
-
 sub scan {
     # Detect an error from 1&1
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -181,7 +179,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

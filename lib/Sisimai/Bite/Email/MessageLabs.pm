@@ -30,9 +30,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 # X-StarScan-Version: 6.12.5; banners=-,-,-
 # X-VirusChecked: Checked
 sub headerlist  { return ['X-Msg-Ref'] }
-sub pattern     { return $Re0 }
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
-
 sub scan {
     # Detect an error from MessageLabs.com
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -253,7 +251,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

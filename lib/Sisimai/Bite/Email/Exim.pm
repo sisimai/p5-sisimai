@@ -145,9 +145,7 @@ my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-Failed-Recipients: kijitora@example.ed.jp
 sub headerlist  { return ['X-Failed-Recipients'] }
-sub pattern     { return $Re0 }
 sub description { 'Exim' }
-
 sub scan {
     # Detect an error from Exim
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -590,7 +588,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
