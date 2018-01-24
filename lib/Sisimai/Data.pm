@@ -50,11 +50,7 @@ my $AddrHeader = {
     'addresser' => $RFC822Head->{'addresser'},
     'recipient' => $RFC822Head->{'recipient'},
 };
-my $ActionList = qr/\A(?:failed|delayed|delivered|relayed|expanded)\z/;
-my $ActionHead = {
-    qr/\Afailure\z/ => 'failed',
-    qr/\Aexpired\z/ => 'delayed',
-};
+my $ActionHead = { 'failure' => 'failed', 'expired' => 'delayed' };
 
 sub new {
     # Constructor of Sisimai::Data
@@ -166,7 +162,7 @@ sub make {
         };
         unless( $delivered1 ) {
             # Skip if the value of "deliverystatus" begins with "2." such as 2.1.5
-            next if $p->{'deliverystatus'} =~ m/\A2[.]/;
+            next if index($p->{'deliverystatus'}, '2.') == 0;
         }
 
         EMAIL_ADDRESS: {
@@ -337,11 +333,11 @@ sub make {
                     $p->{'action'} = $1;
                 }
 
-                unless( $p->{'action'} =~ $ActionList ) {
+                unless( $p->{'action'} =~ /\A(?:failed|delayed|delivered|relayed|expanded)\z/ ) {
                     # The value of "action" is not in the following values:
                     # "failed" / "delayed" / "delivered" / "relayed" / "expanded"
                     for my $q ( keys %$ActionHead ) {
-                        next unless $p->{'action'} =~ $q;
+                        next unless $p->{'action'} eq $q;
                         $p->{'action'} = $ActionHead->{ $q };
                         last;
                     }
@@ -384,7 +380,7 @@ sub make {
 
             unless( length $o->softbounce ) {
                 # Set the value of softbounce
-                $textasargv =  sprintf("%s %s", $p->{'deliverystatus'}, $p->{'diagnosticcode'});
+                $textasargv =  $p->{'deliverystatus'}.' '.$p->{'diagnosticcode'};
                 $textasargv =~ s/\A[ ]//g;
                 $softorhard =  Sisimai::SMTP::Error->soft_or_hard($o->reason, $textasargv);
 
@@ -404,7 +400,7 @@ sub make {
                 my $getchecked = undef; # Permanent error or not
                 my $tmpfailure = undef; # Temporary error
 
-                $textasargv =  sprintf("%s %s", $o->replycode, $p->{'diagnosticcode'});
+                $textasargv =  $o->replycode.' '.$p->{'diagnosticcode'};
                 $textasargv =~ s/\A[ ]//g;
 
                 $getchecked = Sisimai::SMTP::Error->is_permanent($textasargv);
@@ -482,7 +478,7 @@ sub dump {
     return undef unless $type =~ m/\A(?:json|yaml)\z/;
 
     my $dumpeddata = '';
-    my $referclass = sprintf("Sisimai::Data::%s", uc $type);
+    my $referclass = 'Sisimai::Data::'.uc($type);
 
     eval { Module::Load::load $referclass };
     $dumpeddata = $referclass->dump($self);
@@ -809,7 +805,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

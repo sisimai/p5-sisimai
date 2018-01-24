@@ -48,13 +48,13 @@ sub scan {
     while( my $e = shift @hasdivided ) {
         # Find JSON string from the message body
         next unless length $e;
-        last if $e =~ m/\A[-]{2}\z/;
+        last if $e eq '--';
         last if $e eq '__END_OF_EMAIL_MESSAGE__';
 
         $e =~ s/\A[ ]// if $foldedline; # The line starts with " ", continued from !\n.
         $foldedline = 0;
 
-        if( $e =~ m/[!]\z/ ) {
+        if( substr($e, -1, 1) eq '!' ) {
             # ... long long line ...![\n]
             $e =~ s/!\z//;
             $foldedline = 1;
@@ -108,7 +108,7 @@ sub adapt {
     };
     my $v = undef;
 
-    if( $argvs->{'notificationType'} =~ m/\A(?:Bounce|Complaint)\z/ ) {
+    if( $argvs->{'notificationType'} eq 'Bounce' || $argvs->{'notificationType'} eq 'Complaint' ) {
         # { "notificationType":"Bounce", "bounce": { "bounceType":"Permanent",...
         my $o = $argvs->{ lc $argvs->{'notificationType'} };
         my $r = $o->{ $labeltable->{ $argvs->{'notificationType'} } } || [];
@@ -287,7 +287,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
