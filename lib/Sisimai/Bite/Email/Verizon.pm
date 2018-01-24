@@ -4,18 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'received' => qr/by .+[.]vtext[.]com /,
-    'vtext.com' => {
-        'from' => qr/\Apost_master[@]vtext[.]com\z/,
-    },
-    'vzwpix.com' => {
-        'from'    => qr/[<]?sysadmin[@].+[.]vzwpix[.]com[>]?\z/,
-        'subject' => qr/Undeliverable Message/,
-    },
-};
 my $Indicators = __PACKAGE__->INDICATORS;
-
 sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub scan {
     # Detect an error from Verizon
@@ -37,9 +26,10 @@ sub scan {
 
     while(1) {
         # Check the value of "From" header
-        last unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
-        $match = 1 if $mhead->{'from'} =~ $Re0->{'vtext.com'}->{'from'};
-        $match = 0 if $mhead->{'from'} =~ $Re0->{'vzwpix.com'}->{'from'};
+        # 'subject' => qr/Undeliverable Message/,
+        last unless grep { $_ =~ /by .+[.]vtext[.]com / } @{ $mhead->{'received'} };
+        $match = 1 if $mhead->{'from'} eq 'post_master@vtext.com';
+        $match = 0 if $mhead->{'from'} =~ /[<]?sysadmin[@].+[.]vzwpix[.]com[>]?\z/;
         last;
     }
     return undef if $match < 0;
@@ -58,19 +48,19 @@ sub scan {
     my $senderaddr = '';    # (String) Sender address in the message body
     my $subjecttxt = '';    # (String) Subject of the original message
 
-    my $Re1        = {};    # (Ref->Hash) Delimiter patterns
-    my $ReFailure  = {};    # (Ref->Hash) Error message patterns
+    my $StartingOf = {};    # (Ref->Hash) Delimiter strings
+    my $MarkingsOf = {};    # (Ref->Hash) Delimiter patterns
+    my $ReFailures = {};    # (Ref->Hash) Error message patterns
     my $boundary00 = '';    # (String) Boundary string
     my $v = undef;
 
     if( $match == 1 ) {
         # vtext.com
-        $Re1 = {
-            'begin'  => qr/\AError:[ \t]/,
-            'rfc822' => qr/\A__BOUNDARY_STRING_HERE__\z/,
-            'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+        $MarkingsOf = {
+            'message' => qr/\AError:[ \t]/,
+            'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/,
         };
-        $ReFailure = {
+        $ReFailures = {
             'userunknown' => qr{
                 # The attempted recipient address does not exist.
                 550[ ][-][ ]Requested[ ]action[ ]not[ ]taken:[ ]no[ ]such[ ]user[ ]here
@@ -81,14 +71,14 @@ sub scan {
         if( length $boundary00 ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
-            $Re1->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
+            $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
         }
 
         for my $e ( @hasdivided ) {
-            # Read each line between $Re0->{'begin'} and $Re0->{'rfc822'}.
+            # Read each line between the start of the message and the start of rfc822 part.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                if( $e =~ $Re1->{'begin'} ) {
+                if( $e =~ $MarkingsOf->{'message'} ) {
                     $readcursor |= $Indicators->{'deliverystatus'};
                     next;
                 }
@@ -96,7 +86,7 @@ sub scan {
 
             unless( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # Beginning of the original message part
-                if( $e =~ $Re1->{'rfc822'} ) {
+                if( $e =~ $MarkingsOf->{'rfc822'} ) {
                     $readcursor |= $Indicators->{'message-rfc822'};
                     next;
                 }
@@ -149,12 +139,9 @@ sub scan {
         }
     } else {
         # vzwpix.com
-        $Re1 = {
-            'begin'  => qr/\AMessage could not be delivered to mobile/,
-            'rfc822' => qr/\A__BOUNDARY_STRING_HERE__\z/,
-            'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-        };
-        $ReFailure = {
+        $StartingOf = { 'message' => ['Message could not be delivered to mobile'] };
+        $MarkingsOf = { 'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/ };
+        $ReFailures = {
             'userunknown' => qr{
                 No[ ]valid[ ]recipients[ ]for[ ]this[ ]MM
             }x,
@@ -164,14 +151,14 @@ sub scan {
         if( length $boundary00 ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
-            $Re1->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
+            $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
         }
 
         for my $e ( @hasdivided ) {
-            # Read each line between $Re0->{'begin'} and $Re0->{'rfc822'}.
+            # Read each line between the start of the message and the start of rfc822 part.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                if( $e =~ $Re1->{'begin'} ) {
+                if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                     $readcursor |= $Indicators->{'deliverystatus'};
                     next;
                 }
@@ -179,7 +166,7 @@ sub scan {
 
             unless( $readcursor & $Indicators->{'message-rfc822'} ) {
                 # Beginning of the original message part
-                if( $e =~ $Re1->{'rfc822'} ) {
+                if( $e =~ $MarkingsOf->{'rfc822'} ) {
                     $readcursor |= $Indicators->{'message-rfc822'};
                     next;
                 }
@@ -234,11 +221,11 @@ sub scan {
     }
     return undef unless $recipients;
 
-    if( ! grep { $_ =~ /^From: / } @$rfc822list ) {
+    if( ! grep { index($_, 'From: ') == 0 } @$rfc822list ) {
         # Set the value of "MAIL FROM:" or "From:"
         push @$rfc822list, sprintf("From: %s", $senderaddr);
 
-    } elsif( ! grep { $_ =~ /^Subject: / } @$rfc822list ) {
+    } elsif( ! grep { index($_, 'Subject: ') == 0 } @$rfc822list ) {
         # Set the value of "Subject"
         push @$rfc822list, sprintf("Subject: %s", $subjecttxt);
     }
@@ -247,9 +234,9 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

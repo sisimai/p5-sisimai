@@ -4,19 +4,15 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'    => qr/\AFacebook [<]mailer-daemon[@]mx[.]facebook[.]com[>]\z/,
-    'subject' => qr/\ASorry, your message could not be delivered\z/,
-};
-my $Re1 = {
-    'begin'   => qr/\AThis message was created automatically by Facebook[.]\z/,
-    'rfc822'  => qr/\AContent-Disposition: inline\z/,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['This message was created automatically by Facebook.'],
+    'rfc822'  => ['Content-Disposition: inline'],
 };
 
-# http://postmaster.facebook.com/response_codes
-# NOT TESTD EXCEPT RCP-P2
 my $ReFailure = {
+    # http://postmaster.facebook.com/response_codes
+    # NOT TESTD EXCEPT RCP-P2
     'userunknown' => [
         'RCP-P1',   # The attempted recipient address does not exist.
         'INT-P1',   # The attempted recipient address does not exist.
@@ -73,7 +69,6 @@ my $ReFailure = {
         'CON-T4',   # Your mail server has exceeded the maximum number of recipients for its current connection.
     ],
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Facebook: https://www.facebook.com' }
 sub scan {
@@ -93,8 +88,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless $mhead->{'from'} eq 'Facebook <mailer-daemon@mx.facebook.com>';
+    return undef unless $mhead->{'subject'} eq 'Sorry, your message could not be delivered';
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -114,10 +109,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -125,7 +120,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

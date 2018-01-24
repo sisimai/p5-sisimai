@@ -4,15 +4,11 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'subject' => qr/\AFailure Notice\z/,
-};
-my $Re1 = {
-    'begin'   => qr/\ASorry, we were unable to deliver your message/,
-    'rfc822'  => qr/\A--- Below this line is a copy of the message[.]\z/,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Sorry, we were unable to deliver your message'],
+    'rfc822'  => ['--- Below this line is a copy of the message.'],
+};
 
 # X-YMailISG: YtyUVyYWLDsbDh...
 # X-YMail-JAS: Pb65aU4VM1mei...
@@ -37,6 +33,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # 'subject' => qr/\AFailure Notice\z/,
     return undef unless $mhead->{'x-ymailisg'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -49,10 +46,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -60,7 +57,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -97,7 +94,7 @@ sub scan {
                 $recipients++;
 
             } else {
-                if( $e =~ m/\ARemote host said:/ ) {
+                if( index($e, 'Remote host said:') == 0 ) {
                     # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
                     $v->{'diagnosis'} = $e;
 
@@ -110,7 +107,7 @@ sub scan {
                     # Remote host said:
                     # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
                     # [RCPT_TO]
-                    if( $v->{'diagnosis'} =~ m/\ARemote host said:\z/ ) {
+                    if( $v->{'diagnosis'} eq 'Remote host said:' ) {
                         # Remote host said:
                         # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
                         if( $e =~ m/\[([A-Z]{4}).*\]\z/ ) {

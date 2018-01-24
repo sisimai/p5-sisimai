@@ -4,37 +4,32 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'    => qr/\AMail Delivery Subsystem/,
-    'subject' => qr/\AReturned mail: [A-Z]/,
-};
-# Error text regular expressions which defined in src/savemail.c
-#   savemail.c:485| (void) fflush(stdout);
-#   savemail.c:486| p = queuename(e->e_parent, 'x');
-#   savemail.c:487| if ((xfile = fopen(p, "r")) == NULL)
-#   savemail.c:488| {
-#   savemail.c:489|   syserr("Cannot open %s", p);
-#   savemail.c:490|   fprintf(fp, "  ----- Transcript of session is unavailable -----\n");
-#   savemail.c:491| }
-#   savemail.c:492| else
-#   savemail.c:493| {
-#   savemail.c:494|   fprintf(fp, "   ----- Transcript of session follows -----\n");
-#   savemail.c:495|   if (e->e_xfp != NULL)
-#   savemail.c:496|       (void) fflush(e->e_xfp);
-#   savemail.c:497|   while (fgets(buf, sizeof buf, xfile) != NULL)
-#   savemail.c:498|       putline(buf, fp, m);
-#   savemail.c:499|   (void) fclose(xfile);
-my $Re1 = {
-    'begin'   => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = { 'message' => ['----- Transcript of session follows -----'] };
+my $MarkingsOf = {
+    # Error text regular expressions which defined in src/savemail.c
+    #   savemail.c:485| (void) fflush(stdout);
+    #   savemail.c:486| p = queuename(e->e_parent, 'x');
+    #   savemail.c:487| if ((xfile = fopen(p, "r")) == NULL)
+    #   savemail.c:488| {
+    #   savemail.c:489|   syserr("Cannot open %s", p);
+    #   savemail.c:490|   fprintf(fp, "  ----- Transcript of session is unavailable -----\n");
+    #   savemail.c:491| }
+    #   savemail.c:492| else
+    #   savemail.c:493| {
+    #   savemail.c:494|   fprintf(fp, "   ----- Transcript of session follows -----\n");
+    #   savemail.c:495|   if (e->e_xfp != NULL)
+    #   savemail.c:496|       (void) fflush(e->e_xfp);
+    #   savemail.c:497|   while (fgets(buf, sizeof buf, xfile) != NULL)
+    #   savemail.c:498|       putline(buf, fp, m);
+    #   savemail.c:499|   (void) fclose(xfile);
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
     'rfc822'  => qr{\A[ \t]+-----[ \t](?:
          Unsent[ ]message[ ]follows
         |No[ ]message[ ]was[ ]collected
         )[ \t]-----
     }x,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Sendmail version 5' }
 sub scan {
@@ -54,7 +49,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    # 'from'    => qr/\AMail Delivery Subsystem/,
+    return undef unless $mhead->{'subject'} =~ /\AReturned mail: [A-Z]/;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -70,10 +66,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) > -1 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -81,7 +77,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -138,7 +134,7 @@ sub scan {
             } else {
                 # Detect SMTP session error or connection error
                 next if $v->{'sessionerr'};
-                if( $e =~ $Re1->{'error'} ) { 
+                if( $e =~ $MarkingsOf->{'error'} ) { 
                     # ----- Transcript of session follows -----
                     # ... while talking to mta.example.org.:
                     $v->{'sessionerr'} = 1;

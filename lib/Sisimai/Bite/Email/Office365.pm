@@ -4,22 +4,20 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'subject'    => qr/Undeliverable:/,
-    'received'   => qr/.+[.](?:outbound[.]protection|prod)[.]outlook[.]com\b/,
-    'message-id' => qr/.+[.](?:outbound[.]protection|prod)[.]outlook[.]com\b/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'rfc822' => ['Content-Type: message/rfc822'],
+    'error'  => ['Diagnostic information for administrators:'],
+    'eoerr'  => ['Original message headers:'],
 };
-my $Re1 = {
-    'begin'  => qr{\A(?:
+my $MarkingsOf = {
+    'message' => qr{\A(?:
          Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
         |.+[ ]rejected[ ]your[ ]message[ ]to[ ]the[ ]following[ ]e[-]?mail[ ]addresses:
         )
     }x,
-    'error'  => qr/\ADiagnostic information for administrators:\z/,
-    'eoerr'  => qr/\AOriginal message headers:\z/,
-    'rfc822' => qr|\AContent-Type: message/rfc822\z|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
+
 my $CodeTable = {
     # https://support.office.com/en-us/article/Email-non-delivery-reports-in-Office-365-51daa6b9-2e35-49c4-a0c9-df85bf8533c3
     qr/\A4[.]4[.]7\z/        => 'expired',
@@ -46,7 +44,6 @@ my $CodeTable = {
     qr/\A5[.]7[.]6[1-4]\d\z/ => 'blocked',
     qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { 
     # X-MS-Exchange-Message-Is-Ndr:
@@ -84,8 +81,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
+    my $tryto = qr/.+[.](?:outbound[.]protection|prod)[.]outlook[.]com\b/;
 
-    $match++ if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match++ if index($mhead->{'subject'}, 'Undeliverable:') > -1;
     $match++ if $mhead->{'x-ms-exchange-message-is-ndr'};
     $match++ if $mhead->{'x-microsoft-antispam-prvs'};
     $match++ if $mhead->{'x-exchange-antispam-report-test'};
@@ -93,10 +91,10 @@ sub scan {
     $match++ if $mhead->{'x-ms-exchange-crosstenant-originalarrivaltime'};
     $match++ if $mhead->{'x-ms-exchange-crosstenant-fromentityheader'};
     $match++ if $mhead->{'x-ms-exchange-transport-crosstenantheadersstamped'};
-    $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    $match++ if grep { $_ =~ $tryto } @{ $mhead->{'received'} };
     if( defined $mhead->{'message-id'} ) {
         # Message-ID: <00000000-0000-0000-0000-000000000000@*.*.prod.outlook.com>
-        $match++ if $mhead->{'message-id'} =~ $Re0->{'message-id'};
+        $match++ if $mhead->{'message-id'} =~ $tryto;
     }
     return undef if $match < 2;
 
@@ -113,10 +111,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -124,7 +122,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -169,7 +167,7 @@ sub scan {
                     # After "Original message headers:"
                     if( $htmlbegins ) {
                         # <html> .. </html>
-                        $htmlbegins = 0 if $e =~ m|\A[<]/html[>]|;
+                        $htmlbegins = 0 if index($e, '</html>') == 0;
                         next;
                     }
 
@@ -195,10 +193,10 @@ sub scan {
                         $connheader->{'date'} = $1;
 
                     } else {
-                        $htmlbegins = 1 if $e =~ m/\A[<]html[>]/;
+                        $htmlbegins = 1 if index($e, '<html>') == 0;
                     }
                 } else {
-                    if( $e =~ $Re1->{'error'} ) {
+                    if( $e eq $StartingOf->{'error'}->[0] ) {
                         # Diagnostic information for administrators:
                         $v->{'diagnosis'} = $e;
 
@@ -207,7 +205,7 @@ sub scan {
                         # Remote Server returned '550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipien=
                         # t not found by SMTP address lookup'
                         next unless $v->{'diagnosis'};
-                        if( $e =~ $Re1->{'eoerr'} ) {
+                        if( $e eq $StartingOf->{'eoerr'}->[0] ) {
                             # Original message headers:
                             $endoferror = 1;
                             next;
@@ -229,7 +227,7 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( length($e->{'status'}) == 0 || $e->{'status'} =~ m/\A\d[.]0[.]0\z/ ) {
+        if( length($e->{'status'}) == 0 || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
             my $r = Sisimai::SMTP::Status->find($e->{'diagnosis'});
             $e->{'status'} = $r if length $r;

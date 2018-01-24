@@ -4,26 +4,19 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-# $Re0 is a regular expression to match with message headers which are given as
-# the first argument of scan() method.
-my $Re0 = {
-    'from'    => qr/\AMail Sysmet/,
-    'subject' => qr/\AError Mail Report/,
-};
-
-# $Re1 is delimiter set of these sections:
-#   begin:  The first line of a bounce message to be parsed.
-#   error:  The first line of an error message to get an error reason, recipient
-#           addresses, or other bounce information.
-#   rfc822: The first line of the original message.
-#   endof:  Fixed string ``__END_OF_EMAIL_MESSAGE__''
-my $Re1 = {
-    'begin'   => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
+# $StartingOf, and $MarkingsOf are delimiter set of these sections:
+#   message: The first line of a bounce message to be parsed.
+#   error:   The first line of an error message to get an error reason, recipient
+#            addresses, or other bounce information.
+#   rfc822:  The first line of the original message.
+#   endof:   Fixed string ``__END_OF_EMAIL_MESSAGE__''
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = { 'rfc822' => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'] };
+my $MarkingsOf = {
+    'message' => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-Some-UserDefined-Header'] }
 sub description { 'Module decription' }
@@ -51,8 +44,8 @@ sub scan {
     #   - Did not matched:          return undef;
     #
     MATCH: {
-        $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-        $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
+        $match ||= 1 if index($mhead->{'subject'}, 'Error Mail Report') == 0;
+        $match ||= 1 if index($mhead->{'from'}, 'Mail Sysmet') == 0;
         $match ||= 1 if $mhead->{'x-some-userdefined-header'};
     }
     return undef unless $match;

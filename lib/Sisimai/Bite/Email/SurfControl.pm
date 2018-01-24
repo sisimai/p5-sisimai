@@ -4,17 +4,11 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'     => qr/ [(]Mail Delivery System[)]\z/,
-    'x-mailer' => qr/\ASurfControl E-mail Filter\z/,
-};
-my $Re1 = {
-    'begin'    => qr/\AYour message could not be sent[.]\z/,
-    'error'    => qr/\AFailed to send to identified host,\z/,
-    'rfc822'   => qr|\AContent-Type: message/rfc822\z|,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Your message could not be sent.'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
+};
 
 # X-SEF-ZeroHour-RefID: fgs=000000000
 # X-SEF-Processed: 0_0_0_000__2010_04_29_23_34_45
@@ -38,9 +32,10 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # 'from'     => qr/ [(]Mail Delivery System[)]\z/,
     return undef unless $mhead->{'x-sef-processed'};
     return undef unless $mhead->{'x-mailer'};
-    return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
+    return undef unless $mhead->{'x-mailer'} eq 'SurfControl E-mail Filter';
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -54,10 +49,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e eq $StartingOf->{'message'}->[0] ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -65,7 +60,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

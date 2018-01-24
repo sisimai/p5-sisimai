@@ -4,24 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    # X-Mailer: Internet Mail Service (5.0.1461.28)
-    # X-Mailer: Microsoft Exchange Server Internet Mail Connector Version ...
-    'x-mailer'  => qr{\A(?:
-         Internet[ ]Mail[ ]Service[ ][(][\d.]+[)]\z
-        |Microsoft[ ]Exchange[ ]Server[ ]Internet[ ]Mail[ ]Connector
-        )
-    }x,
-    'x-mimeole' => qr/\AProduced By Microsoft Exchange/,
-    # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
-    'received'  => qr/\Aby .+ with Internet Mail Service [(][\d.]+[)]/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Your message'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
+    'error'   => ['did not reach the following recipient(s):'],
 };
-my $Re1 = {
-    'begin'  => qr/\AYour message/,
-    'error'  => qr/\Adid not reach the following recipient[(]s[)]:/,
-    'rfc822' => qr|\AContent-Type: message/rfc822|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $CodeTable = {
     'onhold' => [
         '000B099C', # Host Unknown, Message exceeds size limit, ...
@@ -49,7 +38,6 @@ my $CodeTable = {
         '000C0595', # Ambiguous Recipient
     ],
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
 # X-Mailer: Internet Mail Service (5.5.1960.3)
@@ -82,20 +70,22 @@ sub scan {
         if( defined $mhead->{'x-mailer'} ) {
             # X-Mailer:  Microsoft Exchange Server Internet Mail Connector Version 4.0.994.63
             # X-Mailer: Internet Mail Service (5.5.2232.9)
-            $match ||= 1 if $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
+            my $tryto = ['Internet Mail Service (', 'Microsoft Exchange Server Internet Mail Connector'];
+            my $value = $mhead->{'x-mailer'} || '';
+            $match ||= 1 if index($value, $tryto->[0]) == 0 || index($value, $tryto->[1]) == 0;
             last if $match;
         }
 
         if( defined $mhead->{'x-mimeole'} ) {
             # X-MimeOLE: Produced By Microsoft Exchange V6.5
-            $match ||= 1 if $mhead->{'x-mimeole'} =~ $Re0->{'x-mimeole'};
+            $match ||= 1 if index($mhead->{'x-mimeole'}, 'Produced By Microsoft Exchange') == 0;
             last if $match;
         }
 
         last unless scalar @{ $mhead->{'received'} };
         for my $e ( @{ $mhead->{'received'} } ) {
             # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
-            next unless $e =~ $Re0->{'received'};
+            next unless $e =~ /\Aby .+ with Internet Mail Service [(][\d.]+[)]/;
             $match = 1;
             last(EXCHANGE_OR_NOT);
         }
@@ -121,10 +111,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -132,7 +122,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

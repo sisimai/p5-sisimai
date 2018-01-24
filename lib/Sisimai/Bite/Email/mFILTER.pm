@@ -4,19 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'     => qr/\AMailer Daemon [<]MAILER-DAEMON[@]/,
-    'subject'  => qr/\Afailure notice\z/,
-    'x-mailer' => qr/\Am-FILTER\z/,
-};
-my $Re1 = {
-    'begin'    => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/,
-    'error'    => qr/\A-------server message\z/,
-    'command'  => qr/\A-------SMTP command\z/,
-    'rfc822'   => qr/\A-------original (?:message|mail info)\z/,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'command'  => ['-------SMTP command'],
+    'rfc822'   => ['-------original message', '-------original mail info'],
+    'error'    => ['-------server message'],
+};
+my $MarkingsOf = { 'message' => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/ };
 
 # X-Mailer: m-FILTER
 sub headerlist  { return ['X-Mailer'] }
@@ -38,9 +32,10 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # 'from'     => qr/\AMailer Daemon [<]MAILER-DAEMON[@]/,
     return undef unless defined $mhead->{'x-mailer'};
-    return undef unless $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
-    return undef unless $mhead->{'subject'}  =~ $Re0->{'subject'};
+    return undef unless $mhead->{'x-mailer'} eq 'm-FILTER';
+    return undef unless $mhead->{'subject'}  eq 'failure notice';
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -53,15 +48,15 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
+            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] || $e eq $StartingOf->{'rfc822'}->[1] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -117,17 +112,17 @@ sub scan {
 
             } else {
                 # Get error message and SMTP command
-                if( $e =~ $Re1->{'error'} ) {
+                if( $e eq $StartingOf->{'error'}->[0] ) {
                     # -------server message
                     $markingset->{'diagnosis'} = 1;
 
-                } elsif( $e =~ $Re1->{'command'} ) {
+                } elsif( $e eq $StartingOf->{'command'}->[0] ) {
                     # -------SMTP command
                     $markingset->{'command'} = 1;
 
                 } else {
                     # 550 5.1.1 unknown user <kijitora@example.jp>
-                    next if $e =~ m/\A[-]+/;
+                    next if index($e, '-') == 0;
                     next if $v->{'diagnosis'};
                     $v->{'diagnosis'} = $e;
                 }

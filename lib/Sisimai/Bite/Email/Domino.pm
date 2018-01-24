@@ -4,14 +4,12 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'subject' => qr/\ADELIVERY FAILURE:/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Your message'],
+    'rfc822'  => ['Content-Type: message/delivery-status'],
 };
-my $Re1 = {
-    'begin'   => qr/\AYour message/,
-    'rfc822'  => qr|\AContent-Type: message/delivery-status\z|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     'userunknown' => qr{(?>
          not[ ]listed[ ]in[ ](?:
@@ -28,7 +26,6 @@ my $ReFailure = {
         Several[ ]matches[ ]found[ ]in[ ]Domino[ ]Directory
     }x,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'IBM Domino Server' }
 sub scan {
@@ -48,7 +45,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -63,12 +60,12 @@ sub scan {
 
     require Sisimai::Address;
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         next unless length $e;
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -76,7 +73,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -108,7 +105,7 @@ sub scan {
             #   User some.name (kijitora@example.net) not listed in Domino Directory
             #
             $v = $dscontents->[-1];
-            if( $e =~ m/\Awas not delivered to:\z/ ) {
+            if( $e eq 'was not delivered to:' ) {
                 # was not delivered to:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -123,7 +120,7 @@ sub scan {
                 #   kijitora@example.net
                 $v->{'recipient'} = Sisimai::Address->s3s4($1);
 
-            } elsif( $e =~ m/\Abecause:\z/ ) {
+            } elsif( $e eq 'because:' ) {
                 # because:
                 $v->{'diagnosis'} = $e;
 
@@ -159,7 +156,7 @@ sub scan {
         }
     }
 
-    unless( grep { $_ =~ /^Subject:/ } @$rfc822list ) {
+    unless( grep { index($_, 'Subject:') == 0 } @$rfc822list ) {
         # Set the value of $subjecttxt as a Subject if there is no original
         # message in the bounce mail.
         push @$rfc822list, sprintf("Subject: %s", $subjecttxt);

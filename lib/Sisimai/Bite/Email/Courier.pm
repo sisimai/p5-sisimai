@@ -4,30 +4,14 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-# http://www.courier-mta.org/courierdsn.html
-# courier/module.dsn/dsn*.txt
-my $Re0 = {
-    'from'       => qr/Courier mail server at /,
-    'subject'    => qr{(?:
-         NOTICE:[ ]mail[ ]delivery[ ]status[.]
-        |WARNING:[ ]delayed[ ]mail[.]
-        )
-    }x,
-    'message-id' => qr/\A[<]courier[.][0-9A-F]+[.]/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    # http://www.courier-mta.org/courierdsn.html
+    # courier/module.dsn/dsn*.txt
+    'message' => ['DELAYS IN DELIVERING YOUR MESSAGE', 'UNDELIVERABLE MAIL'],
+    'rfc822'  => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],
 };
-my $Re1 = {
-    'begin'  => qr{(?:
-         DELAYS[ ]IN[ ]DELIVERING[ ]YOUR[ ]MESSAGE
-        |UNDELIVERABLE[ ]MAIL
-        )
-    }x,
-    'rfc822' => qr{\AContent-Type:[ ]*(?:
-         message/rfc822
-        |text/rfc822-headers
-        )\z
-    }x,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
     'hostunknown' => qr{
@@ -43,7 +27,6 @@ my $ReDelayed = {
     # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
     'networkerror' => qr/\ADNS[ ]lookup[ ]failed[.]\z/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Courier MTA' }
 sub scan {
@@ -64,11 +47,11 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
-    $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+    $match ||= 1 if index($mhead->{'from'}, 'Courier mail server at ') > -1;
+    $match ||= 1 if $mhead->{'subject'} =~ /(?:NOTICE: mail delivery status[.]|WARNING: delayed mail[.])/;
     if( defined $mhead->{'message-id'} ) {
         # Message-ID: <courier.4D025E3A.00001792@5jo.example.org>
-        $match ||= 1 if $mhead->{'message-id'} =~ $Re0->{'message-id'};
+        $match ||= 1 if $mhead->{'message-id'} =~ /\A[<]courier[.][0-9A-F]+[.]/;
     }
     return undef unless $match;
 
@@ -90,10 +73,11 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) > -1 ||
+                index($e, $StartingOf->{'message'}->[1]) > -1 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -101,7 +85,8 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ||
+                index($e, $StartingOf->{'rfc822'}->[1]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

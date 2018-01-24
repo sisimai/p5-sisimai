@@ -4,25 +4,22 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'subject'  => qr{\A(?:
-         failure[ ]notice
-        |Permanent[ ]Delivery[ ]Failure
-        )
-    }xi,
-    'received' => qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+for[ ]+bounce[)]/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'rfc822' => ['--- Below this line is a copy of the message.', '--- Original message follows.'],
+    'error'  => ['Remote host said:'],
 };
-#  qmail-remote.c:248|    if (code >= 500) {
-#  qmail-remote.c:249|      out("h"); outhost(); out(" does not like recipient.\n");
-#  qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
-#  qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
-#
-# Characters: K,Z,D in qmail-qmqpc.c, qmail-send.c, qmail-rspawn.c
-#  K = success, Z = temporary error, D = permanent error
-#
-# MTA module for qmail clones
-my $Re1 = {
-    'begin'  => qr{\A(?>
+my $MarkingsOf = {
+    #  qmail-remote.c:248|    if (code >= 500) {
+    #  qmail-remote.c:249|      out("h"); outhost(); out(" does not like recipient.\n");
+    #  qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
+    #  qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
+    #
+    # Characters: K,Z,D in qmail-qmqpc.c, qmail-send.c, qmail-rspawn.c
+    #  K = success, Z = temporary error, D = permanent error
+    #
+    # MTA module for qmail clones
+    'message' => qr{\A(?>
          He/Her[ ]is[ ]not.+[ ]user
         |Hi[.][ ].+[ ]unable[ ]to[ ]deliver[ ]your[ ]message[ ]to[ ]the[ ]following[ ]addresses
         |Su[ ]mensaje[ ]no[ ]pudo[ ]ser[ ]entregado
@@ -39,14 +36,6 @@ my $Re1 = {
         |We're[ ]sorry[.]
         )
     }ix,
-    'rfc822' => qr{\A(?:
-         ---[ ]Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message[.]
-        |---[ ]Original[ ]message[ ]follows[.]
-        )
-    }xi,
-    'error'  => qr/\ARemote host said:/,
-    'sorry'  => qr/\A[Ss]orry[,.][ ]/,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 my $ReSMTP = {
@@ -147,7 +136,6 @@ my $ReFailure = {
 
 # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
 my $ReDelayed  = qr{this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z}x;
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Unknown MTA #4 qmail clones' }
 sub scan {
@@ -167,13 +155,15 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
+    my $tryto = qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+for[ ]+bounce[)]/;
 
     # Pre process email headers and the body part of the message which generated
     # by qmail, see http://cr.yp.to/qmail.html
     #   e.g.) Received: (qmail 12345 invoked for bounce); 29 Apr 2009 12:34:56 -0000
     #         Subject: failure notice
-    $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-    $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    $match ||= 1 if index($mhead->{'subject'}, 'failure notice') == 0;
+    $match ||= 1 if index($mhead->{'subject'}, 'Permanent Delivery Failure') == 0;
+    $match ||= 1 if grep { $_ =~ $tryto } @{ $mhead->{'received'} };
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -186,10 +176,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -197,7 +187,8 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ||
+                index($e, $StartingOf->{'rfc822'}->[1]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -237,7 +228,7 @@ sub scan {
                 # Append error message
                 next unless length $e;
                 $v->{'diagnosis'} .= $e.' ';
-                $v->{'alterrors'}  = $e if $e =~ $Re1->{'error'};
+                $v->{'alterrors'}  = $e if index($e, $StartingOf->{'error'}->[0]) == 0;
 
                 next if $v->{'rhost'};
                 $v->{'rhost'} = $1 if $e =~ $ReHost;
@@ -270,7 +261,7 @@ sub scan {
             # MAIL | Connected to 192.0.2.135 but sender was rejected.
             $e->{'reason'} = 'rejected';
 
-        } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
+        } elsif( $e->{'command'} eq 'HELO' || $e->{'command'} eq 'EHLO' ) {
             # HELO | Connected to 192.0.2.135 but my name was rejected.
             $e->{'reason'} = 'blocked';
 

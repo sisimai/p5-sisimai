@@ -5,25 +5,12 @@ use strict;
 use warnings;
 
 # Based on Sisimai::Bite::Email::Exim
-my $Re0 = {
-    'from'      => qr/[<]?mailer-daemon[@].*mail[.]ru[>]?/i,
-    'subject'   => qr{(?:
-         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
-        |Warning:[ ]message[ ].+[ ]delayed[ ]+
-        |Delivery[ ]Status[ ]Notification
-        |Mail[ ]failure
-        |Message[ ]frozen
-        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
-        )
-    }x,
-    'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].*mail[.]ru[>]\z/,
-    # Message-Id: <E1P1YNN-0003AD-Ga@*.mail.ru>
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['This message was created automatically by mail delivery software.'],
+    'rfc822'  => ['------ This is a copy of the message, including all the headers. ------'],
 };
-my $Re1 = {
-    'rfc822' => qr/\A------ This is a copy of the message.+headers[.] ------\z/,
-    'begin'  => qr/\AThis message was created automatically by mail delivery software[.]/,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReCommand = [
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
@@ -64,7 +51,6 @@ my $ReFailure = {
         Too[ ]many[ ]["]Received["][ ]headers[ ]
     }x,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-Failed-Recipients'] }
 sub description { '@mail.ru: https://mail.ru' }
@@ -85,9 +71,18 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}       =~ $Re0->{'from'};
-    return undef unless $mhead->{'subject'}    =~ $Re0->{'subject'};
-    return undef unless $mhead->{'message-id'} =~ $Re0->{'message-id'};
+    # Message-Id: <E1P1YNN-0003AD-Ga@*.mail.ru>
+    return undef unless $mhead->{'from'} =~ /[<]?mailer-daemon[@].*mail[.]ru[>]?/i;
+    return undef unless $mhead->{'message-id'} =~ /\A[<]\w+[-]\w+[-]\w+[@].*mail[.]ru[>]\z/;
+    return undef unless $mhead->{'subject'} =~ qr{(?:
+         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
+        |Warning:[ ]message[ ].+[ ]delayed[ ]+
+        |Delivery[ ]Status[ ]Notification
+        |Mail[ ]failure
+        |Message[ ]frozen
+        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
+        )
+    }x;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -100,10 +95,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -111,7 +106,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -204,7 +199,7 @@ sub scan {
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
-            if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
+            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ /__\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
             }
@@ -245,7 +240,7 @@ sub scan {
                     # MAIL | Connected to 192.0.2.135 but sender was rejected.
                     $e->{'reason'} = 'rejected';
 
-                } elsif( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
+                } elsif( $e->{'command'} eq 'HELO' || $e->{'command'} eq 'EHLO' ) {
                     # HELO | Connected to 192.0.2.135 but my name was rejected.
                     $e->{'reason'} = 'blocked';
 

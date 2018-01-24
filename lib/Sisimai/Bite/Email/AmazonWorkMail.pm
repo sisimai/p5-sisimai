@@ -5,17 +5,11 @@ use strict;
 use warnings;
 
 # https://aws.amazon.com/workmail/
-my $Re0 = {
-    'subject' => qr/Delivery[_ ]Status[_ ]Notification[_ ].+Failure/,
-    'received'=> qr/.+[.]smtp-out[.].+[.]amazonses[.]com\b/,
-    'x-mailer'=> qr/\AAmazon WorkMail\z/,
-};
-my $Re1 = {
-    'begin'   => qr/\ATechnical report:\z/,
-    'rfc822'  => qr|\Acontent-type: message/rfc822\z|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Technical report:'],
+    'rfc822'  => ['content-type: message/rfc822'],
+};
 
 # X-Mailer: Amazon WorkMail
 # X-Original-Mailer: Amazon WorkMail
@@ -41,11 +35,13 @@ sub scan {
     my $match = 0;
     my $xmail = $mhead->{'x-original-mailer'} || $mhead->{'x-mailer'} || '';
 
+    # 'subject' => qr/Delivery[_ ]Status[_ ]Notification[_ ].+Failure/,
+    # 'received'=> qr/.+[.]smtp-out[.].+[.]amazonses[.]com\b/,
     $match++ if $mhead->{'x-ses-outgoing'};
     if( $xmail ) {
         # X-Mailer: Amazon WorkMail
         # X-Original-Mailer: Amazon WorkMail
-        $match++ if $xmail =~ $Re0->{'x-mailer'};
+        $match++ if $xmail eq 'Amazon WorkMail';
     }
     return undef if $match < 2;
 
@@ -63,10 +59,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e eq $StartingOf->{'message'}->[0] ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -74,7 +70,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -143,7 +139,7 @@ sub scan {
             # <head>
             # <meta name="Generator" content="Amazon WorkMail v3.0-2023.77">
             # <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-            last if $e =~ m/\A[<]!DOCTYPE HTML[>][<]html[>]\z/;
+            last if index($e, '<!DOCTYPE HTML><html>') == 0;
         } # End of if: rfc822
     }
 

@@ -4,23 +4,11 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'     => qr/InterScan MSS/,
-    'received' => qr/[ ][(]InterScanMSS[)][ ]with[ ]/,
-    'subject'  => [
-        'Mail could not be delivered',
-        # メッセージを配信できません。
-        '=?iso-2022-jp?B?GyRCJWElQyU7ITwlOCRyR1s/LiRHJC0kXiQ7JHMhIxsoQg==?=',
-        # メール配信に失敗しました
-        '=?iso-2022-jp?B?GyRCJWEhPCVrR1s/LiRLPDpHVCQ3JF4kNyQ/GyhCDQo=?=',
-    ],
-};
-my $Re1 = {
-    'begin'  => qr|\AContent-type: text/plain|,
-    'rfc822' => qr|\AContent-type: message/rfc822|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Content-type: text/plain'],
+    'rfc822'  => ['Content-type: message/rfc822'],
+};
 
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
 sub scan {
@@ -40,9 +28,17 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
+    my $tryto = [
+        'Mail could not be delivered',
+        # メッセージを配信できません。
+        '=?iso-2022-jp?B?GyRCJWElQyU7ITwlOCRyR1s/LiRHJC0kXiQ7JHMhIxsoQg==?=',
+        # メール配信に失敗しました
+        '=?iso-2022-jp?B?GyRCJWEhPCVrR1s/LiRLPDpHVCQ3JF4kNyQ/GyhCDQo=?=',
+    ];
 
-    $match ||= 1 if $mhead->{'from'} =~ $Re0->{'from'};
-    $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @{ $Re0->{'subject'} };
+    # 'received' => qr/[ ][(]InterScanMSS[)][ ]with[ ]/,
+    $match ||= 1 if index($mhead->{'from'}, 'InterScan MSS') > -1;
+    $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -55,10 +51,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -66,7 +62,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

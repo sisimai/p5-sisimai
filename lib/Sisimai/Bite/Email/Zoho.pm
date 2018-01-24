@@ -4,24 +4,15 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'     => qr/mailer-daemon[@]mail[.]zoho[.]com\z/,
-    'subject'  => qr{\A(?:
-         Undelivered[ ]Mail[ ]Returned[ ]to[ ]Sender
-        |Mail[ ]Delivery[ ]Status[ ]Notification
-        )
-    }x,
-    'x-mailer' => qr/\AZoho Mail\z/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['This message was created automatically by mail delivery'],
+    'rfc822'  => ['from mail.zoho.com by mx.zohomail.com'],
 };
-my $Re1 = {
-    'begin'  => qr/\AThis message was created automatically by mail delivery/,
-    'rfc822' => qr/\AReceived:[ \t]*from mail[.]zoho[.]com/,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     'expired' => qr/Host not reachable/
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
 # X-Zoho-Virus-Status: 2
@@ -45,6 +36,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # 'from'     => qr/mailer-daemon[@]mail[.]zoho[.]com\z/,
+    # 'subject'  => qr/\A(?:Undelivered Mail Returned to Sender|Mail Delivery Status Notification)/x,
+    # 'x-mailer' => qr/\AZoho Mail\z/,
     return undef unless $mhead->{'x-zohomail'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -58,10 +52,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -69,7 +63,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) > -1 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -112,7 +106,7 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $v->{'diagnosis'} = $2;
 
-                if( $v->{'diagnosis'} =~ m/=\z/ ) {
+                if( substr($v->{'diagnosis'}, -1, 1) eq '=' ) {
                     # Quoted printable
                     $v->{'diagnosis'} =~ s/=\z//;
                     $qprintable = 1;

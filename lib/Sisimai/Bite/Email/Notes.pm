@@ -5,14 +5,12 @@ use strict;
 use warnings;
 use Encode;
 
-my $Re0 = {
-    'subject' => qr/\AUndeliverable message/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['------- Failure Reasons '],
+    'rfc822'  => ['------- Returned Message '],
 };
-my $Re1 = {
-    'begin'   => qr/\A[-]+[ ]+Failure Reasons[ ]+[-]+\z/,
-    'rfc822'  => qr/^[-]+[ ]+Returned Message[ ]+[-]+$/,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     'userunknown' => qr{(?:
          User[ ]not[ ]listed[ ]in[ ]public[ ]Name[ ][&][ ]Address[ ]Book
@@ -21,7 +19,6 @@ my $ReFailure = {
     }x,
     'networkerror' => qr/Message has exceeded maximum hop count/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Lotus Notes' }
 sub scan {
@@ -41,8 +38,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-
+    return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
     require Sisimai::Address;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -58,10 +54,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -69,7 +65,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -114,8 +110,8 @@ sub scan {
                 $recipients++;
 
             } else {
-                next if $e =~ m/\A\z/;
-                next if $e =~ m/\A[-]+/;
+                next if $e eq '';
+                next if index($e, '-') == 0;
 
                 if( $e =~ m/[^\x20-\x7e]/ ) {
                     # Error message is not ISO-8859-1

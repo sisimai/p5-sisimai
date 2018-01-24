@@ -4,18 +4,11 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'        => qr/\AMAILER-DAEMON\z/,
-    'return-path' => qr/\A[<]apps[@]sendgrid[.]net[>]\z/,
-    'subject'     => qr/\AUndelivered Mail Returned to Sender\z/,
-};
-my $Re1 = {
-    'begin'  => qr/\AThis is an automatically generated message from SendGrid[.]\z/,
-    'error'  => qr/\AIf you require assistance with this, please contact SendGrid support[.]\z/,
-    'rfc822' => qr|\AContent-Type: message/rfc822|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['This is an automatically generated message from SendGrid.'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
+};
 
 # Return-Path: <apps@sendgrid.net>
 # X-Mailer: MIME-tools 5.502 (Entity 5.502)
@@ -38,9 +31,10 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # 'from'        => qr/\AMAILER-DAEMON\z/,
     return undef unless $mhead->{'return-path'};
-    return undef unless $mhead->{'return-path'} =~ $Re0->{'return-path'};
-    return undef unless $mhead->{'subject'}     =~ $Re0->{'subject'};
+    return undef unless $mhead->{'return-path'} eq '<apps@sendgrid.net>';
+    return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
 
     require Sisimai::DateTime;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -60,10 +54,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e eq $StartingOf->{'message'}->[0] ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -71,7 +65,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

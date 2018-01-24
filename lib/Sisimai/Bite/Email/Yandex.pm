@@ -4,15 +4,11 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'   => qr/\Amailer-daemon[@]yandex[.]ru\z/,
-};
-my $Re1 = {
-    'begin'  => qr/\AThis is the mail system at host yandex[.]ru[.]/,
-    'rfc822' => qr|\AContent-Type: message/rfc822|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['This is the mail system at host yandex.ru.'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
+};
 
 # X-Yandex-Front: mxback1h.mail.yandex.net
 # X-Yandex-TimeMark: 1417885948
@@ -41,7 +37,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'x-yandex-uniq'};
-    return undef unless $mhead->{'from'} =~ $Re0->{'from'};
+    return undef unless $mhead->{'from'} eq 'mailer-daemon@yandex.ru';
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -61,10 +57,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -72,7 +68,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

@@ -4,16 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'x-mailer' => qr/\A[<]SMTP32 v[\d.]+[>][ ]*\z/,
-    'subject'  => qr/\AUndeliverable Mail[ ]*\z/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => [''],  # Blank line
+    'rfc822'  => ['Original message follows.'],
+    'error'   => ['Body of message generated response:'],
 };
-my $Re1 = {
-    'begin'  => qr/\A\z/,    # Blank line
-    'error'  => qr/Body of message generated response:/,
-    'rfc822' => qr/\AOriginal message follows[.]\z/,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReSMTP = {
     'conn' => qr{(?:
          SMTP[ ]connection[ ]failed,
@@ -47,7 +44,6 @@ my $ReFailure = {
         \ADelivery[ ]failed[ ]\d+[ ]attempts
     }x,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-Mailer: <SMTP32 v8.22>
 sub headerlist  { return ['X-Mailer'] }
@@ -70,8 +66,8 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
-    $match ||= 1 if defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} =~ $Re0->{'x-mailer'};
+    $match ||= 1 if $mhead->{'subject'} =~ /\AUndeliverable Mail[ ]*\z/;
+    $match ||= 1 if defined $mhead->{'x-mailer'} && index($mhead->{'x-mailer'}, '<SMTP32 v') == 0;
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -84,10 +80,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e eq $StartingOf->{'message'}->[0] ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -95,7 +91,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -144,7 +140,7 @@ sub scan {
                 # Other error message text
                 $v->{'alterrors'} //= '';
                 $v->{'alterrors'}  .= ' '.$e if length $v->{'alterrors'};
-                if( $e =~ $Re1->{'error'} ) {
+                if( index($e, $StartingOf->{'error'}->[0]) > -1 ) {
                     # Body of message generated response:
                     $v->{'alterrors'} = $e;
                 }

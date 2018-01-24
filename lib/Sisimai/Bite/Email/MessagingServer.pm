@@ -4,20 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'subject'  => qr/\ADelivery Notification: /,
-    'received' => qr/[ ][(]MessagingServer[)][ ]with[ ]/,
-    'boundary' => qr/Boundary_[(]ID_.+[)]/,
-};
-my $Re1 = {
-    'begin'    => qr/\AThis report relates to a message you sent with the following header fields:/,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-    'rfc822'   => qr!\A(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)!x,
-};
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = { 'message' => ['This report relates to a message you sent with the following header fields:'] };
+my $MarkingsOf = { 'rfc822'  => qr!\A(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)! };
+
 my $ReFailure = {
     'hostunknown' => qr{Illegal[ ]host/domain[ ]name[ ]found}x,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Oracle Communications Messaging Server' }
 sub scan {
@@ -38,8 +31,9 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match ||= 1 if $mhead->{'content-type'} =~ $Re0->{'boundary'};
-    $match ||= 1 if $mhead->{'subject'}      =~ $Re0->{'subject'};
+    # 'received' => qr/[ ][(]MessagingServer[)][ ]with[ ]/,
+    $match ||= 1 if index($mhead->{'content-type'}, 'Boundary_(ID_') > -1;
+    $match ||= 1 if index($mhead->{'subject'}, 'Delivery Notification: ') == 0;
     return undef unless $match;
 
     require Sisimai::Address;
@@ -53,10 +47,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -64,7 +58,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

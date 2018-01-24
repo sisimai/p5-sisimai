@@ -4,14 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'       => qr/[<]?(?>postmaster[@]ezweb[.]ne[.]jp)[>]?/i,
-    'subject'    => qr/\AMail System Error - Returned Mail\z/,
-    'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
-    'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-};
-my $Re1 = {
-    'begin'    => qr{\A(?:
+my $Indicators = __PACKAGE__->INDICATORS;
+my $MarkingsOf = {
+    'message' => qr{\A(?:
          The[ ]user[(]s[)][ ]
         |Your[ ]message[ ]
         |Each[ ]of[ ]the[ ]following
@@ -20,8 +15,8 @@ my $Re1 = {
     }x,
     'rfc822'   => qr#\A(?:[-]{50}|Content-Type:[ ]*message/rfc822)#,
     'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
+
 my $ReFailure = {
     #'notaccept' => [ qr/The following recipients did not receive this message:/ ],
     'mailboxfull' => [
@@ -42,7 +37,6 @@ my $ReFailure = {
         qr/Each of the following recipients was rejected by a remote mail server/,
     ],
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-SPASIGN'] }
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
@@ -71,11 +65,11 @@ sub scan {
     #   Received: from ezweb.ne.jp (wmflb12na02.ezweb.ne.jp [222.15.69.197])
     #   Received: from nmomta.auone-net.jp ([aaa.bbb.ccc.ddd]) by ...
     #
-    $match++ if $mhead->{'from'}     =~ $Re0->{'from'};
-    $match++ if $mhead->{'subject'}  =~ $Re0->{'subject'};
-    $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    $match++ if index($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
+    $match++ if $mhead->{'subject'} eq 'Mail System Error - Returned Mail';
+    $match++ if grep { $_ =~ /\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/ } @{ $mhead->{'received'} };
     if( defined $mhead->{'message-id'} ) {
-        $match++ if $mhead->{'message-id'} =~ $Re0->{'message-id'};
+        $match++ if $mhead->{'message-id'} =~ /[.]ezweb[.]ne[.]jp[>]\z/;
     }
     return undef if $match < 2;
 
@@ -98,21 +92,21 @@ sub scan {
         my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1);
         if( length $b0 ) {
             # Convert to regular expression
-            $Re1->{'boundary'} = qr/\A\Q$b0\E\z/;
+            $MarkingsOf->{'boundary'} = qr/\A\Q$b0\E\z/;
         }
     }
     my @rxmessages = (); map { push @rxmessages, @{ $ReFailure->{ $_ } } } (keys %$ReFailure);
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
+            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} || $e =~ $Re1->{'boundary'} ) {
+            if( $e =~ $MarkingsOf->{'rfc822'} || $e =~ $MarkingsOf->{'boundary'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -203,7 +197,7 @@ sub scan {
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
-            if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
+            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ /__\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
             }

@@ -4,12 +4,12 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-# Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
-my $Re0 = {
-    'from'    => qr/ [(]Mail Delivery System[)]\z/,
-    'subject' => qr/\AUndelivered Mail Returned to Sender\z/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'rfc822' => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],
 };
-my $Re1 = {
+my $MarkingsOf = {
+    # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
     'begin' => qr{\A(?>
          [ ]+The[ ](?:
              Postfix[ ](?:
@@ -28,10 +28,7 @@ my $Re1 = {
             )
         )
     }x,
-    'rfc822'  => qr!\AContent-Type:[ \t]*(?:message/rfc822|text/rfc822-headers)\z!x,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'Postfix' }
 sub scan {
@@ -51,7 +48,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    # 'from'    => qr/ [(]Mail Delivery System[)]\z/,
+    return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -71,10 +69,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e =~ $MarkingsOf->{'begin'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -82,7 +80,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] || $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -261,10 +259,10 @@ sub scan {
                 my $as = undef; # status
                 my $ar = undef; # replycode
 
-                if( $e->{'status'} eq '' || $e->{'status'} =~ m/\A[45][.]0[.]0\z/ ) {
+                if( $e->{'status'} eq '' || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
                     # Check the value of D.S.N. in $anotherset
                     $as = Sisimai::SMTP::Status->find($anotherset->{'diagnosis'});
-                    if( length($as) > 0 && substr($as, -3, 3) ne '0.0' ) {
+                    if( length($as) > 0 && substr($as, -4, 4) ne '.0.0' ) {
                         # The D.S.N. is neither an empty nor *.0.0
                         $e->{'status'} = $as;
                     }
