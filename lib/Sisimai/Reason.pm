@@ -5,25 +5,21 @@ use warnings;
 use Module::Load '';
 
 my $RetryReasons = __PACKAGE__->retry;
-
 sub retry {
     # Reason list better to retry detecting an error reason
     # @return   [Array] Reason list
-    return [
-        'undefined', 'onhold', 'systemerror', 'securityerror', 'networkerror',
-        'hostunknown', 'userunknown',
-    ];
+    return [qw|undefined onhold systemerror securityerror networkerror hostunknown userunknown|];
 }
 
 sub index {
     # All the error reason list Sisimai support
     # @return   [Array] Reason list
-    return [ qw|
+    return [qw|
         Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown
         MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold
         Rejected NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError
         Suspend SystemError SystemFull TooManyConn UserUnknown SyntaxError
-    | ];
+    |];
 }
 
 sub get {
@@ -42,15 +38,14 @@ sub get {
         # regular expression of ->retry() method.
         return $argvs->reason if length $argvs->reason;
     }
-    return 'delivered' if $argvs->deliverystatus =~ m/\A2[.]/;
+    return 'delivered' if substr($argvs->deliverystatus, 0, 2) eq '2.';
 
     my $statuscode = $argvs->deliverystatus || '';
     my $reasontext = '';
-    my $classorder = [
-        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'HasMoved',
-        'NoRelaying', 'UserUnknown', 'Filtered', 'Rejected', 'HostUnknown',
-        'SpamDetected', 'TooManyConn', 'Blocked',
-    ];
+    my $classorder = [qw|
+        MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown
+        Filtered Rejected HostUnknown SpamDetected TooManyConn Blocked
+    |];
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
@@ -101,11 +96,11 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $trytomatch = undef;
     my $reasontext = '';
-    my $classorder = [
-        'MailboxFull', 'SpamDetected', 'PolicyViolation', 'VirusDetected',
-        'SecurityError', 'SystemError', 'NetworkError', 'Suspend', 'Expired',
-        'ContentError', 'SystemFull', 'NotAccept', 'MailerError',
-    ];
+    my $classorder = [qw|
+        MailboxFull SpamDetected PolicyViolation VirusDetected SecurityError
+        SystemError NetworkError Suspend Expired ContentError SystemFull
+        NotAccept MailerError
+    |];
 
     require Sisimai::SMTP::Status;
     $reasontext = Sisimai::SMTP::Status->name($statuscode);
@@ -138,7 +133,7 @@ sub anotherone {
                 #  X.7.0   Other or undefined security status
                 $reasontext = 'securityerror';
 
-            } elsif( $argvs->diagnostictype =~ qr/\AX-(?:UNIX|POSTFIX)\z/ ) {
+            } elsif( $argvs->diagnostictype eq 'X-UNIX' || $argvs->diagnostictype eq 'X-POSTFIX' ) {
                 # Diagnostic-Code: X-UNIX; ...
                 $reasontext = 'mailererror';
 
@@ -157,7 +152,7 @@ sub anotherone {
 
             } else {
                 # Check the value of SMTP command
-                if( $commandtxt =~ m/\A(?:EHLO|HELO)\z/ ) {
+                if( $commandtxt eq 'EHLO' || $commandtxt eq 'HELO' ) {
                     # Rejected at connection or after EHLO|HELO
                     $reasontext = 'blocked';
                 }
@@ -177,14 +172,12 @@ sub match {
 
     require Sisimai::SMTP::Status;
     my $reasontext = '';
-    my $classorder = [
-        'MailboxFull', 'MesgTooBig', 'ExceedLimit', 'Suspend', 'UserUnknown',
-        'Filtered', 'Rejected', 'HostUnknown', 'SpamDetected', 'TooManyConn',
-        'Blocked', 'SpamDetected', 'SecurityError', 'SystemError',
-        'NetworkError', 'Suspend', 'Expired', 'ContentError', 'HasMoved',
-        'SystemFull', 'NotAccept', 'MailerError', 'NoRelaying', 'SyntaxError',
-        'OnHold',
-    ];
+    my $classorder = [qw|
+        MailboxFull MesgTooBig ExceedLimit Suspend UserUnknown Filtered Rejected
+        HostUnknown SpamDetected TooManyConn Blocked SpamDetected SecurityError
+        SystemError NetworkError Suspend Expired ContentError HasMoved SystemFull
+        NotAccept MailerError NoRelaying SyntaxError OnHold
+    |];
     my $statuscode = Sisimai::SMTP::Status->find($argv1);
     my $typestring = '';
        $typestring = uc($1) if $argv1 =~ m/\A(SMTP|X-.+);/i;
@@ -552,7 +545,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

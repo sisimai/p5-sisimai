@@ -43,7 +43,7 @@ sub new {
 
     } else {
         # Unsupported value in "input"
-        warn sprintf(qq| ***warning: Unsupported value in "input": %s|, $input);
+        warn ' ***warning: Unsupported value in "input": '.$input;
         return undef;
     }
 
@@ -67,7 +67,7 @@ sub new {
     my $datasource = undef;
     my $mesgobject = undef;
 
-    for my $e ( 'load', 'order' ) {
+    for my $e ('load', 'order') {
         # Order of MTA modules
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
@@ -231,7 +231,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -35,7 +35,7 @@ sub is_mimeencoded {
     return undef unless ref $argv1 eq 'SCALAR';
     $$argv1 =~ y/"//d;
 
-    if( $$argv1 =~ m/[ ]/ ) {
+    if( $$argv1 =~ /[ ]/ ) {
         # Multiple MIME-Encoded strings in a line
         @piece = split(' ', $$argv1);
     } else {
@@ -44,7 +44,7 @@ sub is_mimeencoded {
 
     for my $e ( @piece ) {
         # Check all the string in the array
-        next unless $e =~ m/[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*/;
+        next unless $e =~ /[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*/;
         $mime1 = 1;
     }
     return $mime1;
@@ -260,8 +260,8 @@ sub boundary {
         #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"
         $value =  $1;
         $value =~ y/"'//d;
-        $value =  sprintf("--%s", $value) if $start > -1;
-        $value =  sprintf("%s--", $value) if $start >  0;
+        $value =  '--'.$value if $start > -1;
+        $value =  $value.'--' if $start >  0;
     }
     return $value;
 }
@@ -339,7 +339,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
