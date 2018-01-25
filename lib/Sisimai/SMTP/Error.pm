@@ -6,15 +6,12 @@ use Sisimai::SMTP::Reply;
 use Sisimai::SMTP::Status;
 
 my $SoftOrHard = {
-    'soft' => [
-        'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered',
-        'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror', 'norelaying',
-        'policyviolation', 'rejected', 'securityerror', 'spamdetected', 'suspend',
-        'syntaxerror', 'systemerror', 'systemfull', 'toomanyconn', 'virusdetected',
-    ],
-    'hard' => [
-        'hasmoved', 'hostunknown', 'userunknown',
-    ],
+    'soft' => [qw|
+        blocked contenterror exceedlimit expired filtered mailboxfull mailererror
+        mesgtoobig networkerror norelaying policyviolation rejected securityerror
+        spamdetected suspend syntaxerror systemerror systemfull toomanyconn virusdetected
+    |],
+    'hard' => [qw|hasmoved hostunknown userunknown|],
 };
 
 sub is_permanent {
@@ -85,7 +82,7 @@ sub soft_or_hard {
     my $classvalue = undef;
     my $softorhard = undef;
 
-    if( $argv1 =~ m/\A(?:delivered|feedback|vacation)\z/ ) {
+    if( $argv1 eq 'deliverd' || $argv1 eq 'feedback' || $argv1 eq 'vacation' ) {
         # These are not dealt as a bounce reason
         $softorhard = '';
 
@@ -182,7 +179,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

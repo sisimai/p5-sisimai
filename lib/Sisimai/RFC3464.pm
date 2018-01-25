@@ -6,22 +6,10 @@ use Sisimai::Bite::Email;
 use Sisimai::RFC5322;
 
 # http://tools.ietf.org/html/rfc3464
-my $Re0 = {
-    'from'        => qr/\b(?:postmaster|mailer-daemon|root)[@]/i,
-    'return-path' => qr/(?:[<][>]|mailer-daemon)/i,
-    'subject'     => qr{(?>
-         delivery[ ](?:failed|failure|report)
-        |failure[ ]notice
-        |mail[ ](?:delivery|error)
-        |non[-]delivery
-        |returned[ ]mail
-        |undeliverable[ ]mail
-        |Warning:[ ]
-        )
-    }xi,
-};
-my $Re1 = {
-    'begin'  => qr{\A(?>
+my $Indicators = Sisimai::Bite::Email->INDICATORS;
+my $MarkingsOf = {
+    'command' => qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
+    'message' => qr{\A(?>
          Content-Type:[ ]*(?:
               message/delivery-status
              |message/disposition-notification
@@ -32,16 +20,13 @@ my $Re1 = {
         |Your[ ]message[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
         )
     }xi,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/i,
     'rfc822' => qr{\A(?>
          Content-Type:[ ]*(?:message/rfc822|text/rfc822-headers)
         |Return-Path:[ ]*[<].+[>]\z
         )\z
     }xi,
-    'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/i,
-    'command'=> qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
 };
-my $Indicators = Sisimai::Bite::Email->INDICATORS;
 
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
@@ -87,10 +72,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -98,7 +83,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -296,7 +281,7 @@ sub scan {
                     } else {
                         # Get error message
                         next if $e =~ m/\A[ -]+/;
-                        next unless $e =~ $Re1->{'error'};
+                        next unless $e =~ $MarkingsOf->{'error'};
 
                         # 500 User Unknown
                         # <kijitora@example.jp> Unknown
@@ -315,11 +300,20 @@ sub scan {
         last if $recipients;
 
         # Failed to get a recipient address at code above
-        $match ||= 1 if $mhead->{'from'}    =~ $Re0->{'from'};
-        $match ||= 1 if $mhead->{'subject'} =~ $Re0->{'subject'};
+        $match ||= 1 if $mhead->{'from'} =~ /\b(?:postmaster|mailer-daemon|root)[@]/i;
+        $match ||= 1 if $mhead->{'subject'} =~ qr{(?>
+             delivery[ ](?:failed|failure|report)
+            |failure[ ]notice
+            |mail[ ](?:delivery|error)
+            |non[-]delivery
+            |returned[ ]mail
+            |undeliverable[ ]mail
+            |Warning:[ ]
+            )
+        }xi;
         if( defined $mhead->{'return-path'} ) {
             # Check the value of Return-Path of the message
-            $match ||= 1 if $mhead->{'return-path'} =~ $Re0->{'return-path'};
+            $match ||= 1 if $mhead->{'return-path'} =~ /(?:[<][>]|mailer-daemon)/i;
         }
         last unless $match;
 
@@ -390,13 +384,13 @@ sub scan {
         my $b = $dscontents->[-1];
         for my $e ( split("\n", $$mbody) ) {
             # Get the recipient's email address and error messages.
-            last if $e =~ $Re1->{'endof'};
-            last if $e =~ $Re1->{'rfc822'};
+            last if $e eq '__END_OF_EMAIL_MESSAGE__';
+            last if $e =~ $MarkingsOf->{'rfc822'};
             last if $e =~ $re_stop;
 
             next unless length $e;
             next if $e =~ $re_skip;
-            next if $e =~ m/\A[*]/;
+            next if index($e, '*') == 0;
 
             if( $e =~ $re_addr ) {
                 # May be an email address
@@ -452,7 +446,7 @@ sub scan {
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
-            if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
+            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ m/__\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
             }
@@ -472,7 +466,7 @@ sub scan {
         }
         $e->{'date'}   ||= $mhead->{'date'};
         $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'});
-        $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $Re1->{'command'};
+        $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $MarkingsOf->{'command'};
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
