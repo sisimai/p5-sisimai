@@ -30,7 +30,6 @@ my $MarkingsOf = {
 
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
-
 sub scan {
     # Detect an error for RFC3464
     # @param         [Hash] mhead       Message header of a bounce email
