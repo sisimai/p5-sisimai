@@ -104,8 +104,8 @@ sub scan {
             next unless length $e;
 
             $v = $dscontents->[-1];
-            if( $e =~ m/\A(?:[Ff]inal|[Oo]riginal)-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
-                $e =~ m/\A(?:[Ff]inal|[Oo]riginal)-[Rr]ecipient:[ ]*([^ ]+)\z/ ) {
+            if( $e =~ /\A(?:Final|Original)-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
+                $e =~ /\A(?:Final|Original)-Recipient:[ ]*([^ ]+)\z/ ) {
                 # 2.3.2 Final-Recipient field
                 #   The Final-Recipient field indicates the recipient for which this set
                 #   of per-recipient fields applies.  This field MUST be present in each
@@ -135,16 +135,15 @@ sub scan {
                 $v->{'recipient'} = $y;
                 $recipients++;
 
-            } elsif( $e =~ m/\A[Xx]-[Aa]ctual-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
+            } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                 # X-Actual-Recipient: 
-                if( $1 =~ m/[ \t]+/ ) {
+                if( $1 =~ /[ \t]+/ ) {
                     # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
-
                 } else {
                     # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
                     $v->{'alias'} = $1;
                 }
-            } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                 # 2.3.3 Action field
                 #   The Action field indicates the action performed by the Reporting-MTA
                 #   as a result of its attempt to deliver the message to this recipient
@@ -159,12 +158,11 @@ sub scan {
                 #   The action-value may be spelled in any combination of upper and lower
                 #   case characters.
                 $v->{'action'} = lc $1;
-
-                if( $v->{'action'} =~ m/\A([^ ]+)[ ]/ ) {
+                if( $v->{'action'} =~ /\A([^ ]+)[ ]/ ) {
                     # failed (bad destination mailbox address)
                     $v->{'action'} = $1;
                 }
-            } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+            } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # 2.3.4 Status field
                 #   The per-recipient Status field contains a transport-independent
                 #   status code that indicates the delivery status of the message to that
@@ -177,11 +175,11 @@ sub scan {
                 #       status-code = DIGIT "." 1*3DIGIT "." 1*3DIGIT
                 $v->{'status'} = $1;
 
-            } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d+[ ]+.+)\z/ ) {
+            } elsif( $e =~ /\AStatus:[ ]*(\d+[ ]+.+)\z/ ) {
                 # Status: 553 Exceeded maximum inbound message size
                 $v->{'alterrors'} = $1;
 
-            } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /Remote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                 # 2.3.5 Remote-MTA field
                 #   The value associated with the Remote-MTA DSN field is a printable
                 #   ASCII representation of the name of the "remote" MTA that reported
@@ -197,7 +195,7 @@ sub scan {
                 #   involved in the attempted delivery of the message to that recipient.
                 $v->{'rhost'} = lc $1;
 
-            } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
                 # 2.3.7 Last-Attempt-Date field
                 #   The Last-Attempt-Date field gives the date and time of the last
                 #   attempt to relay, gateway, or deliver the message (whether successful
@@ -213,7 +211,7 @@ sub scan {
                 $v->{'date'} = $1;
 
             } else {
-                if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                     # 2.3.6 Diagnostic-Code field
                     #   For a "failed" or "delayed" recipient, the Diagnostic-Code DSN field
                     #   contains the actual diagnostic code issued by the mail transport.
@@ -226,18 +224,18 @@ sub scan {
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
 
-                } elsif( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\ADiagnostic-Code:[ ]*(.+)\z/ ) {
                     # No value of "diagnostic-type"
                     # Diagnostic-Code: 554 ...
                     $v->{'diagnosis'} = $1;
 
-                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
+                } elsif( $p =~ /\ADiagnostic-Code:[ ]*/ && $e =~ /\A[ \t]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
 
                 } else {
-                    if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                    if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                         # 2.2.2 The Reporting-MTA DSN field
                         #
                         #       reporting-mta-field =
@@ -252,7 +250,7 @@ sub scan {
                         #   operation described in the DSN.  This field is required.
                         $connheader->{'rhost'} ||= lc $1;
 
-                    } elsif( $e =~ m/\A[Rr]eceived-[Ff]rom-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                    } elsif( $e =~ /\AReceived-From-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                         # 2.2.4 The Received-From-MTA DSN field
                         #   The optional Received-From-MTA field indicates the name of the MTA
                         #   from which the message was received.
@@ -267,7 +265,7 @@ sub scan {
                         #   parentheses.  (In this case, the MTA-name-type will be "dns".)
                         $connheader->{'lhost'} = lc $1;
 
-                    } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
+                    } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
                         # 2.2.5 The Arrival-Date DSN field
                         #   The optional Arrival-Date field indicates the date and time at which
                         #   the message arrived at the Reporting MTA.  If the Last-Attempt-Date
@@ -280,7 +278,7 @@ sub scan {
 
                     } else {
                         # Get error message
-                        next if $e =~ m/\A[ -]+/;
+                        next if $e =~ /\A[ -]+/;
                         next unless $e =~ $MarkingsOf->{'error'};
 
                         # 500 User Unknown
@@ -407,7 +405,7 @@ sub scan {
                 $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
                 $recipients++;
 
-            } elsif( $e =~ m/[(](?:expanded|generated)[ ]from:?[ ]([^@]+[@][^@]+)[)]/ ) {
+            } elsif( $e =~ /[(](?:expanded|generated)[ ]from:?[ ]([^@]+[@][^@]+)[)]/ ) {
                 # (expanded from: neko@example.jp)
                 $b->{'alias'} = Sisimai::Address->s3s4($1);
             }
@@ -446,7 +444,7 @@ sub scan {
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
-            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ m/__\z/ ) {
+            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ /__\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
             }
