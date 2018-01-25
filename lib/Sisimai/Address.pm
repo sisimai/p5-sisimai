@@ -29,7 +29,7 @@ sub undisclosed {
     my $atype = shift || return undef;
     my $local = '';
 
-    return undef unless $atype =~ m/\A(?:r|s)\z/;
+    return undef unless $atype =~ /\A(?:r|s)\z/;
     $local = $atype eq 'r' ? 'recipient' : 'sender';
     return sprintf("undisclosed-%s-in-headers%s%s", $local, '@', $undisclosed);
 }
@@ -98,12 +98,12 @@ sub make {
         }
         $thing->{'user'} = $lpart;
         $thing->{'host'} = $dpart;
-        $thing->{'address'} = sprintf("%s@%s", $lpart, $dpart);
+        $thing->{'address'} = $lpart.'@'.$dpart;
 
     } else {
         # The argument does not include "@"
         return undef unless Sisimai::RFC5322->is_mailerdaemon($argvs->{'address'});
-        return undef if $argvs->{'address'} =~ /[ ]/;
+        return undef if index($argvs->{'address'}, ' ') > -1;
 
         # The argument does not include " "
         $thing->{'user'}    = $argvs->{'address'};
@@ -213,20 +213,20 @@ sub find {
                 # The beginning of a comment block or not
                 if( $readcursor & $indicators->{'email-address'} ) {
                     # <"neko(nyaan)"@example.org> or <neko(nyaan)@example.org>
-                    if( $v->{'address'} =~ /["]/ ) {
+                    if( index($v->{'address'}, '"') > -1 ) {
                         # Quoted local part: <"neko(nyaan)"@example.org>
                         $v->{'address'} .= $e;
 
                     } else {
                         # Comment: <neko(nyaan)@example.org>
                         $readcursor |= $indicators->{'comment-block'};
-                        $v->{'comment'} .= ' ' if $v->{'comment'} =~ /[)]\z/;
+                        $v->{'comment'} .= ' ' if substr($v->{'comment'}, -1, 1) eq ')';
                         $v->{'comment'} .= $e;
                         $p = 'comment';
                     }
                 } elsif( $readcursor & $indicators->{'comment-block'} ) {
                     # Comment at the outside of an email address (...(...)
-                    $v->{'comment'} .= ' ' if $v->{'comment'} =~ /[)]\z/;
+                    $v->{'comment'} .= ' ' if substr($v->{'comment'}, -1, 1) eq ')';
                     $v->{'comment'} .= $e;
 
                 } elsif( $readcursor & $indicators->{'quoted-string'} ) {
@@ -236,7 +236,7 @@ sub find {
                 } else {
                     # The beginning of a comment block
                     $readcursor |= $indicators->{'comment-block'};
-                    $v->{'comment'} .= ' ' if $v->{'comment'} =~ /[)]\z/;
+                    $v->{'comment'} .= ' ' if substr($v->{'comment'}, -1, 1) eq ')';
                     $v->{'comment'} .= $e;
                     $p = 'comment';
                 }
@@ -247,7 +247,7 @@ sub find {
                 # The end of a comment block or not
                 if( $readcursor & $indicators->{'email-address'} ) {
                     # <"neko(nyaan)"@example.org> OR <neko(nyaan)@example.org>
-                    if( $v->{'address'} =~ /["]/ ) {
+                    if( index($v->{'address'}, '"') > -1 ) {
                         # Quoted string in the local part: <"neko(nyaan)"@example.org>
                         $v->{'address'} .= $e;
 
@@ -307,7 +307,7 @@ sub find {
         # No email address like <neko@example.org> in the argument
         if( $v->{'name'} =~ $validemail ) {
             # String like an email address will be set to the value of "address"
-             $v->{'address'} = sprintf("%s@%s", $1, $2);
+             $v->{'address'} = $1.'@'.$2;
 
         } elsif( Sisimai::RFC5322->is_mailerdaemon($v->{'name'}) ) {
             # Allow if the argument is MAILER-DAEMON
@@ -328,7 +328,7 @@ sub find {
 
     for my $e ( @$readbuffer ) {
         # The element must not include any character except from 0x20 to 0x7e.
-        next if $e->{'address'} =~ m/[^\x20-\x7e]/;
+        next if $e->{'address'} =~ /[^\x20-\x7e]/;
 
         unless( $e->{'address'} =~ /\A.+[@].+\z/ ) {
             # Allow if the argument is MAILER-DAEMON
@@ -343,8 +343,8 @@ sub find {
 
         unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
             # Remove double-quotations
-            $e->{'address'} =~ s/\A["]//;
-            $e->{'address'} =~ s/["]\z//;
+            substr($e->{'address'},  0, 1, '') if substr($e->{'address'},  0, 1) eq '"';
+            substr($e->{'address'}, -1, 1, '') if substr($e->{'address'}, -1, 1) eq '"';
         }
 
         if( $addrs ) {
@@ -354,13 +354,12 @@ sub find {
 
         } else {
             # Remove double-quotations, trailing spaces.
-            for my $f ( 'name', 'comment' ) {
+            for my $f ('name', 'comment') {
                 # Remove traliing spaces
                 $e->{ $f } =~ s/\A\s*//;
                 $e->{ $f } =~ s/\s*\z//;
             }
-
-            $e->{'comment'} = '' unless $e->{'comment'} =~ /\A[(].+[)]\z/;
+            $e->{'comment'} = ''   unless $e->{'comment'} =~ /\A[(].+[)]\z/;
             $e->{'name'} =~ y/ //s    unless $e->{'name'} =~ /\A["].+["]\z/;
             $e->{'name'} =~ s/\A["]// unless $e->{'name'} =~ /\A["].+["][@]/;
             $e->{'name'} =~ s/["]\z//;
@@ -396,9 +395,9 @@ sub expand_verp {
     my $local = (split('@', $email, 2))[0];
     my $verp0 = '';
 
-    if( $local =~ m/\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/ ) {
+    if( $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/ ) {
         # bounce+neko=example.org@example.org => neko@example.org
-        $verp0 = sprintf("%s@%s", $1, $2);
+        $verp0 = $1.'@'.$2;
         return $verp0 if Sisimai::RFC5322->is_emailaddress($verp0);
     } else {
         return '';
@@ -416,9 +415,9 @@ sub expand_alias {
     return '' unless Sisimai::RFC5322->is_emailaddress($email);
 
     my @local = split('@', $email);
-    if( $local[0] =~ m/\A([-_\w]+?)[+].+\z/ ) {
+    if( $local[0] =~ /\A([-_\w]+?)[+].+\z/ ) {
         # neko+straycat@example.org => neko@example.org
-        $alias = sprintf("%s@%s", $1, $local[1]);
+        $alias = $1.'@'.$local[1];
     }
     return $alias;
 }
