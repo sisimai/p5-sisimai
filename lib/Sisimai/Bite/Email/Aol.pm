@@ -4,20 +4,16 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'    => qr/\APostmaster [<]Postmaster[@]AOL[.]com[>]\z/,
-    'subject' => qr/\AUndeliverable: /,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Content-Type: message/delivery-status'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
 };
-my $Re1 = {
-    'begin'   => qr|\AContent-Type: message/delivery-status|,
-    'rfc822'  => qr|\AContent-Type: message/rfc822|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     'hostunknown' => qr/Host[ ]or[ ]domain[ ]name[ ]not[ ]found/,
     'notaccept'   => qr/type=MX:[ ]Malformed[ ]or[ ]unexpected[ ]name[ ]server[ ]reply/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-AOL-IP: 192.0.2.135
 # X-AOL-VSS-INFO: 5600.1067/98281
@@ -48,6 +44,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # 'from'    => qr/\APostmaster [<]Postmaster[@]AOL[.]com[>]\z/,
+    # 'subject' => qr/\AUndeliverable: /,
     return undef unless $mhead->{'x-aol-ip'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -67,10 +65,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -78,7 +76,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

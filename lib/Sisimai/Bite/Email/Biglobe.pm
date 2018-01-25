@@ -4,21 +4,17 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'subject' => qr/\AReturned mail:/,
-    'from'    => qr/postmaster[@](?:biglobe|inacatv|tmtv|ttv)[.]ne[.]jp/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['   ----- The following addresses had delivery problems -----'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
+    'error'   => ['   ----- Non-delivered information -----'],
 };
-my $Re1 = {
-    'begin'  => qr/\A   ----- The following addresses had delivery problems -----\z/,
-    'error'  => qr/\A   ----- Non-delivered information -----\z/,
-    'rfc822' => qr|\AContent-Type: message/rfc822\z|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     'filtered'    => qr/Mail Delivery Failed[.]+ User unknown/,
     'mailboxfull' => qr/The number of messages in recipient's mailbox exceeded the local limit[.]/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
 sub scan {
@@ -38,8 +34,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless $mhead->{'from'} =~ /postmaster[@](?:biglobe|inacatv|tmtv|ttv)[.]ne[.]jp/;
+    return undef unless index($mhead->{'subject'}, 'Returned mail:') == 0;
 
     require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -52,10 +48,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -63,7 +59,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

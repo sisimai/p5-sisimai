@@ -4,28 +4,21 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'       => qr/no-reply[@].+[.]dion[.]ne[.]jp/,
-    'reply-to'   => qr/\Afrom[ \t]+\w+[.]auone[-]net[.]jp[ \t]/,
-    'received'   => qr/\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/,
-    'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-};
-my $Re1 = {
-    'begin' => qr/\AYour[ ]mail[ ](?:
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = { 'rfc822' => ['Content-Type: message/rfc822'] };
+my $MarkingsOf = {
+    'message' => qr/\AYour[ ]mail[ ](?:
          sent[ ]on:?[ ][A-Z][a-z]{2}[,]
         |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
         )
     /x,
-    'rfc822' => qr|\AContent-Type: message/rfc822\z|,
-    'error'  => qr/Could not be delivered to:? /,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
+
 my $ReFailure = {
     'mailboxfull' => qr/As[ ]their[ ]mailbox[ ]is[ ]full/x,
     'norelaying'  => qr/Due[ ]to[ ]the[ ]following[ ]SMTP[ ]relay[ ]error/x,
     'hostunknown' => qr/As[ ]the[ ]remote[ ]domain[ ]doesnt[ ]exist/x,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'au by KDDI: http://www.au.kddi.com' }
 sub scan {
@@ -46,9 +39,10 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match ||= 1 if $mhead->{'from'} =~ $Re0->{'from'};
-    $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} =~ $Re0->{'reply-to'};
-    $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    # 'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
+    $match ||= 1 if $mhead->{'from'} =~ /no-reply[@].+[.]dion[.]ne[.]jp/;
+    $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} =~ /\Afrom[ \t]+\w+[.]auone[-]net[.]jp[ \t]/;
+    $match ||= 1 if grep { $_ =~ /\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/ } @{ $mhead->{'received'} };
     return undef unless $match;
 
     require Sisimai::String;
@@ -64,10 +58,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -75,7 +69,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

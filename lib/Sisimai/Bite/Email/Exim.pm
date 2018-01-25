@@ -4,55 +4,35 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $ReE = {
-    'from'      => qr/[@].+[.]mail[.]ru[>]?/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'deliverystatus' => ['Content-type: message/delivery-status'],
+    'endof'          => ['__END_OF_EMAIL_MESSAGE__'],
 };
-my $Re0 = {
-    'from'      => qr/\AMail Delivery System/,
-    'subject'   => qr{(?:
-         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
-        |Warning:[ ]message[ ].+[ ]delayed[ ]+
-        |Delivery[ ]Status[ ]Notification
-        |Mail[ ]failure
-        |Message[ ]frozen
-        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
-        )
-    }x,
-    #'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
-    # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
-};
-
-# Error text regular expressions which defined in exim/src/deliver.c
-#
-# deliver.c:6292| fprintf(f,
-# deliver.c:6293|"This message was created automatically by mail delivery software.\n");
-# deliver.c:6294|        if (to_sender)
-# deliver.c:6295|          {
-# deliver.c:6296|          fprintf(f,
-# deliver.c:6297|"\nA message that you sent could not be delivered to one or more of its\n"
-# deliver.c:6298|"recipients. This is a permanent error. The following address(es) failed:\n");
-# deliver.c:6299|          }
-# deliver.c:6300|        else
-# deliver.c:6301|          {
-# deliver.c:6302|          fprintf(f,
-# deliver.c:6303|"\nA message sent by\n\n  <%s>\n\n"
-# deliver.c:6304|"could not be delivered to one or more of its recipients. The following\n"
-# deliver.c:6305|"address(es) failed:\n", sender_address);
-# deliver.c:6306|          }
-#
-# deliver.c:6423|          if (bounce_return_body) fprintf(f,
-# deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
-# deliver.c:6425|          else fprintf(f,
-# deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
-my $Re1 = {
-    'alias'  => qr/\A([ ]+an[ ]undisclosed[ ]address)\z/,
-    'frozen' => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
-    'rfc822' => qr{\A(?:
-         [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+headers[.][ ][-]+
-        |Content-Type:[ ]*message/rfc822
-        )\z
-    }x,
-    'begin'  => qr{\A(?>
+my $MarkingsOf = {
+    # Error text regular expressions which defined in exim/src/deliver.c
+    #
+    # deliver.c:6292| fprintf(f,
+    # deliver.c:6293|"This message was created automatically by mail delivery software.\n");
+    # deliver.c:6294|        if (to_sender)
+    # deliver.c:6295|          {
+    # deliver.c:6296|          fprintf(f,
+    # deliver.c:6297|"\nA message that you sent could not be delivered to one or more of its\n"
+    # deliver.c:6298|"recipients. This is a permanent error. The following address(es) failed:\n");
+    # deliver.c:6299|          }
+    # deliver.c:6300|        else
+    # deliver.c:6301|          {
+    # deliver.c:6302|          fprintf(f,
+    # deliver.c:6303|"\nA message sent by\n\n  <%s>\n\n"
+    # deliver.c:6304|"could not be delivered to one or more of its recipients. The following\n"
+    # deliver.c:6305|"address(es) failed:\n", sender_address);
+    # deliver.c:6306|          }
+    #
+    # deliver.c:6423|          if (bounce_return_body) fprintf(f,
+    # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
+    # deliver.c:6425|          else fprintf(f,
+    # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
+    'message' => qr{\A(?>
          This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
         |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
         |A[ ]message[ ]that[ ]you[ ]sent[ ]contained[ ]one[ ]or[ ]more[ ]recipient[ ]addresses[ ]
@@ -60,8 +40,13 @@ my $Re1 = {
         |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
         )
     }x,
-    'deliverystatus' => qr|\AContent-type: message/delivery-status|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
+    'frozen'  => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
+    'rfc822'  => qr{\A(?:
+         [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+headers[.][ ][-]+
+        |Content-Type:[ ]*message/rfc822
+        )\z
+    }x,
+    'alias'  => qr/\A([ ]+an[ ]undisclosed[ ]address)\z/,
 };
 
 my $ReCommand = [
@@ -141,7 +126,6 @@ my $ReDelayed = qr{(?:
     |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival[ ]by[ ])
     )
 }x;
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-Failed-Recipients: kijitora@example.ed.jp
 sub headerlist  { return ['X-Failed-Recipients'] }
@@ -163,9 +147,19 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef if     $mhead->{'from'}    =~ $ReE->{'from'};
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    #'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
+    # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
+    return undef if $mhead->{'from'} =~/[@].+[.]mail[.]ru[>]?/;
+    return undef unless index($mhead->{'from'}, 'Mail Delivery System') == 0;
+    return undef unless $mhead->{'subject'} =~ qr{(?:
+         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
+        |Warning:[ ]message[ ].+[ ]delayed[ ]+
+        |Delivery[ ]Status[ ]Notification
+        |Mail[ ]failure
+        |Message[ ]frozen
+        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
+        )
+    }x;
 
     require Sisimai::String;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -190,20 +184,20 @@ sub scan {
     }
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
-        last if $e =~ $Re1->{'endof'};
+        # Read each line between the start of the message and the start of rfc822 part.
+        last if $e eq $StartingOf->{'endof'}->[0];
 
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
-                next unless $e =~ $Re1->{'frozen'};
+                next unless $e =~ $MarkingsOf->{'frozen'};
             }
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -235,7 +229,7 @@ sub scan {
 
             if( $e =~ m/\A[ \t]{2}([^ \t]+[@][^ \t]+[.]?[a-zA-Z]+)(:.+)?\z/ ||
                 $e =~ m/\A[ \t]{2}[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ||
-                $e =~ $Re1->{'alias'} ) {
+                $e =~ $MarkingsOf->{'alias'} ) {
                 #   kijitora@example.jp
                 #   sabineko@example.jp: forced freeze
                 #   mikeneko@example.jp <nekochan@example.org>: ...
@@ -276,7 +270,7 @@ sub scan {
             } else {
                 next unless length $e;
 
-                if( $e =~ $Re1->{'frozen'} ) {
+                if( $e =~ $MarkingsOf->{'frozen'} ) {
                     # Message *** has been frozen by the system filter.
                     # Message *** was frozen on arrival by ACL.
                     $v->{'alterrors'} .= $e.' ';
@@ -312,8 +306,8 @@ sub scan {
                             # Error message ?
                             unless( $havepassed->{'deliverystatus'} ) {
                                 # Content-type: message/delivery-status
-                                $havepassed->{'deliverystatus'} = 1 if $e =~ $Re1->{'deliverystatus'};
-                                $v->{'alterrors'} .= $e.' ' if $e =~ m/\A[ ]+/;
+                                $havepassed->{'deliverystatus'} = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
+                                $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
                             }
                         }
                     } else {
@@ -412,7 +406,7 @@ sub scan {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
 
-            if( $e->{'diagnosis'} =~ m/\A[-]+/ || $e->{'diagnosis'} =~ m/__\z/ ) {
+            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ /__\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
 
@@ -459,7 +453,7 @@ sub scan {
             }
 
             # Detect the reason of bounce
-            if( $e->{'command'} =~ m/\A(?:HELO|EHLO)\z/ ) {
+            if( $e->{'command'} eq 'HELO' || $e->{'command'} eq 'EHLO' ) {
                 # HELO | Connected to 192.0.2.135 but my name was rejected.
                 $e->{'reason'} = 'blocked';
 
@@ -528,7 +522,7 @@ sub scan {
 
             } else {
                 # Neither Status nor SMTP reply code exist
-                if( $e->{'reason'} =~ m/\A(?:expired|mailboxfull)/ ) {
+                if( $e->{'reason'} eq 'expired' || $e->{'reason'} eq 'mailboxfull' ) {
                     # Set pseudo DSN (temporary error)
                     $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 1);
 

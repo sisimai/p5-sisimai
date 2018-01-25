@@ -4,22 +4,16 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'     => qr/postmaster[@]/,
-    'subject'  => qr/Delivery Status Notification/,
-    'received' => qr/.+[.]hotmail[.]com\b/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['This is an automatically generated Delivery Status Notification'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
 };
-my $Re1 = {
-    'begin'  => qr/\AThis is an automatically generated Delivery Status Notification/,
-    'error'  => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822' => qr|\AContent-Type: message/rfc822\z|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     'hostunknown' => qr/The mail could not be delivered to the recipient because the domain is not reachable/,
     'userunknown' => qr/Requested action not taken: mailbox unavailable/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-Message-Delivery: Vj0xLjE7RD0wO0dEPTA7U0NMPTk7bD0xO3VzPTE=
 # X-Message-Info: AuEzbeVr9u5fkDpn2vR5iCu5wb6HBeY4iruBjnutBzpStnUabbM...
@@ -43,10 +37,11 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match++ if $mhead->{'subject'} =~ $Re0->{'subject'};
+    # 'from'     => qr/postmaster[@]/,
+    $match++ if index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     $match++ if $mhead->{'x-message-delivery'};
     $match++ if $mhead->{'x-message-info'};
-    $match++ if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    $match++ if grep { $_ =~ /.+[.]hotmail[.]com\b/ } @{ $mhead->{'received'} };
     return undef if $match < 2;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -66,10 +61,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -77,7 +72,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

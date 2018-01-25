@@ -4,23 +4,19 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'    => qr/[@]googlemail[.]com[>]?\z/,
-    'subject' => qr/Delivery[ ]Status[ ]Notification/,
-};
-my $Re1 = {
-    'begin'   => qr/\A[*][*][ ].+[ ][*][*]\z/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $MarkingsOf = {
+    'message' => qr/\A[*][*][ ].+[ ][*][*]\z/,
     'error'   => qr/\AThe[ ]response([ ]from[ ]the[ ]remote[ ]server)?[ ]was:\z/,
     'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
+
 my $ErrorMayBe = {
     'userunknown'  => qr/because the address couldn't be found/,
     'notaccept'    => qr/Null MX/,
     'networkerror' => qr/DNS type .+ lookup of .+ responded with code NXDOMAIN/
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-Gm-Message-State'] }
 sub description { 'G Suite: https://gsuite.google.com/' }
@@ -41,8 +37,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless index($mhead->{'from'}, '<mailer-daemon@googlemail.com>') > -1;
+    return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     return undef unless $mhead->{'x-gm-message-state'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -65,15 +61,15 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
+            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -138,10 +134,10 @@ sub scan {
                         # Append error messages continued from the previous line
                         if( $endoferror == 0 && length $v->{'diagnosis'} ) {
                             $endoferror = 1 if $e eq '';
-                            $endoferror = 1 if $e =~ m/\A--/;
+                            $endoferror = 1 if index($e, '--') == 0;
 
                             next if $endoferror;
-                            next unless $e =~ m/\A[ ]/;
+                            next unless index($e, ' ') == 0;
                             $v->{'diagnosis'} .= $e;
                         }
                     }
@@ -165,7 +161,7 @@ sub scan {
 
                 } else {
                     # Detect SMTP session error or connection error
-                    if( $e =~ $Re1->{'error'} ) {
+                    if( $e =~ $MarkingsOf->{'error'} ) {
                         # The response from the remote server was:
                         $anotherset->{'diagnosis'} .= $e;
 
@@ -177,7 +173,7 @@ sub scan {
                         #
                         # The response from the remote server was:
                         # 550 #5.1.0 Address rejected.
-                        next if $e =~ $Re1->{'html'};
+                        next if $e =~ $MarkingsOf->{'html'};
 
                         if( length $anotherset->{'diagnosis'} ) {
                             # Continued error messages from the previous line like
@@ -196,7 +192,7 @@ sub scan {
                             # Your message wasn't delivered to * because the address couldn't be found.
                             # Check for typos or unnecessary spaces and try again.
                             next unless $e;
-                            next unless $e =~ $Re1->{'begin'};
+                            next unless $e =~ $MarkingsOf->{'message'};
                             $anotherset->{'diagnosis'} = $e;
                         }
                     }
@@ -226,16 +222,16 @@ sub scan {
                 my $as = undef; # status
                 my $ar = undef; # replycode
 
-                if( $e->{'status'} eq '' || $e->{'status'} =~ m/\A[45][.]0[.]0\z/ ) {
+                if( $e->{'status'} eq '' || $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {
                     # Check the value of D.S.N. in $anotherset
                     $as = Sisimai::SMTP::Status->find($anotherset->{'diagnosis'});
-                    if( length($as) > 0 && substr($as, -3, 3) ne '0.0' ) {
+                    if( length($as) > 0 && substr($as, -4, 4) ne '.0.0' ) {
                         # The D.S.N. is neither an empty nor *.0.0
                         $e->{'status'} = $as;
                     }
                 }
 
-                if( $e->{'replycode'} eq '' || $e->{'replycode'} =~ m/\A[45]00\z/ ) {
+                if( $e->{'replycode'} eq '' || $e->{'replycode'} eq '500' || $e->{'replycode'} eq '400' ) {
                     # Check the value of SMTP reply code in $anotherset
                     $ar = Sisimai::SMTP::Reply->find($anotherset->{'diagnosis'});
                     if( length($ar) > 0 && substr($ar, -2, 2) ne '00' ) {

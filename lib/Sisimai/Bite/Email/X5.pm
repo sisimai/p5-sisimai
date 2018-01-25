@@ -4,16 +4,11 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from' => qr/\bTWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0\b/,
-    'to'   => qr/\bNotificationRecipients\b/,
-};
-my $Re1 = {
-    'begin'    => qr|\AContent-Type: message/delivery-status|,
-    'rfc822'   => qr|\AContent-Type: message/rfc822|,
-    'endof'    => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Content-Type: message/delivery-status'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
+};
 
 sub description { 'Unknown MTA #5' }
 sub scan {
@@ -35,17 +30,15 @@ sub scan {
     my $match = 0;
     my $plain = '';
 
-    # To: "NotificationRecipients" <...>
-    $match++ if defined $mhead->{'to'} && $mhead->{'to'} =~ $Re0->{'to'};
-
     require Sisimai::MIME;
-    if( $mhead->{'from'} =~ $Re0->{'from'} ) {
+    $match++ if defined $mhead->{'to'} && index($mhead->{'to'}, 'NotificationRecipients') > -1;
+    if( index($mhead->{'from'}, 'TWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0') > -1 ) {
         # From: "=?iso-2022-jp?B?TWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0=?=" <...>
         #       Mail Delivery Subsystem
         for my $f ( split(' ', $mhead->{'from'}) ) {
             # Check each element of From: header
             next unless Sisimai::MIME->is_mimeencoded(\$f);
-            $match++ if Sisimai::MIME->mimedecode([$f]) =~ m/Mail Delivery Subsystem/;
+            $match++ if index(Sisimai::MIME->mimedecode([$f]), 'Mail Delivery Subsystem') > -1;
             last;
         }
     }
@@ -53,7 +46,7 @@ sub scan {
     if( Sisimai::MIME->is_mimeencoded(\$mhead->{'subject'}) ) {
         # Subject: =?iso-2022-jp?B?UmV0dXJuZWQgbWFpbDogVXNlciB1bmtub3du?=
         $plain = Sisimai::MIME->mimedecode([$mhead->{'subject'}]);
-        $match++ if $plain =~ m/Mail Delivery Subsystem/;
+        $match++ if index($plain, 'Mail Delivery Subsystem') > -1;
     }
     return undef if $match < 2;
 
@@ -69,10 +62,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -80,7 +73,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

@@ -65,7 +65,7 @@ sub load {
     my @modulelist = ();
     my $tobeloaded = [];
 
-    for my $e ( 'load', 'order' ) {
+    for my $e ('load', 'order') {
         # The order of MTA modules specified by user
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
@@ -298,7 +298,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

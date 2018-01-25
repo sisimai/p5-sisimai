@@ -112,7 +112,7 @@ sub load {
     my @modulelist = ();
     my $tobeloaded = [];
 
-    for my $e ( 'load', 'order' ) {
+    for my $e ('load', 'order') {
         # The order of MTA modules specified by user
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
@@ -393,7 +393,7 @@ sub parse {
     my $mesgformat = lc($mailheader->{'content-type'} || '');
     my $ctencoding = lc($mailheader->{'content-transfer-encoding'} || '');
 
-    if( $mesgformat =~ m{text/(?:plain|html);?} ) {
+    if( index($mesgformat, 'text/plain') == 0 || index($mesgformat, 'text/html') == 0 ) {
         # Content-Type: text/plain; charset=UTF-8
         if( $ctencoding eq 'base64' || $ctencoding eq 'quoted-printable' ) {
             # Content-Transfer-Encoding: base64
@@ -423,7 +423,7 @@ sub parse {
             $$bodystring =~ $ReEncoding->{'some-iso2022'} ) {
             # Content-Transfer-Encoding: 7bit
             # Content-Type: text/plain; charset=ISO-2022-JP
-            unless( $1 =~ m/(?:us-ascii|utf[-]?8)/i ) {
+            unless( $1 =~ /(?:us-ascii|utf[-]?8)/i ) {
                 # Convert to UTF-8
                 $bodystring = Sisimai::String->to_utf8($bodystring, $1);
             }
@@ -446,7 +446,7 @@ sub parse {
     # Check whether or not the message is a bounce mail.
     # Pre-Process email body if it is a forwarded bounce message.
     # Get the original text when the subject begins from 'fwd:' or 'fw:'
-    if( $mailheader->{'subject'} =~ m/\A[ \t]*fwd?:/i ) {
+    if( $mailheader->{'subject'} =~ /\A[ \t]*fwd?:/i ) {
         # Delete quoted strings, quote symbols(>)
         $$bodystring =~ s/^[>]+[ ]//gm;
         $$bodystring =~ s/^[>]$//gm;
@@ -641,7 +641,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

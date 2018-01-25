@@ -94,7 +94,7 @@ sub is_domainpart {
     my $dpart = shift // return 0;
 
     return 0 if $dpart =~ m/(?:[\x00-\x1f]|\x1f)/;
-    return 0 if $dpart =~ m/[@]/;
+    return 0 if index($dpart, '@') > -1;
     return 1 if $dpart =~ $Re->{'domain'};
     return 0;
 }
@@ -124,10 +124,7 @@ sub received {
     my $class = shift;
     my $argv1 = shift || return [];
     my $hosts = [];
-    my $value = {
-        'from' => '',
-        'by'   => '',
-    };
+    my $value = { 'from' => '', 'by'   => '' };
 
     # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
     return [] if $argv1 =~ m/qmail[ \t]+.+invoked[ \t]+/;
@@ -173,7 +170,7 @@ sub received {
 
         for my $e ( @namelist ) {
             # 1. Hostname takes priority over all other IP addresses
-            next unless $e =~ m/[.]/;
+            next unless index($e, '.') > -1;
             $hostname = $e;
             last;
         }
@@ -182,9 +179,10 @@ sub received {
             # 2. Use IP address as a remote host name
             for my $e ( @addrlist ) {
                 # Skip if the address is a private address
-                next if $e =~ m/\A(?:10|127)[.]/;
-                next if $e =~ m/\A172[.](?:1[6-9]|2[0-9]|3[0-1])[.]/;
-                next if $e =~ m/\A192[.]168[.]/;
+                next if index($e, '10.') == 0;
+                next if index($e, '127.') == 0;
+                next if index($e, '192.168.') == 0;
+                next if $e =~ /\A172[.](?:1[6-9]|2[0-9]|3[0-1])[.]/;
                 $hostaddr = $e;
                 last;
             }
@@ -193,7 +191,7 @@ sub received {
         $value->{'from'} = $hostname || $hostaddr || $addrlist[-1];
     }
 
-    for my $e ( 'from', 'by' ) {
+    for my $e ('from', 'by') {
         # Copy entries into $hosts
         next unless defined $value->{ $e };
         $value->{ $e } =~ y/()[];?//d;
@@ -332,7 +330,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

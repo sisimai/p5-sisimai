@@ -4,16 +4,12 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'x-nai'   => qr/Modified by McAfee /,
-    'subject' => qr/\ADelivery Status\z/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['--- The following addresses had delivery problems ---'],
+    'rfc822'  => ['Content-Type: message/rfc822'],
 };
-my $Re1 = {
-    'begin'   => qr/[-]+ The following addresses had delivery problems [-]+\z/,
-    'error'   => qr|\AContent-Type: [^ ]+/[^ ]+; name="deliveryproblems[.]txt"|,
-    'rfc822'  => qr|\AContent-Type: message/rfc822\z|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     'userunknown' => qr{(?:
          User[ ][(].+[@].+[)][ ]unknown[.]
@@ -21,7 +17,6 @@ my $ReFailure = {
         )
     }x,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-NAI-Header: Modified by McAfee Email and Web Security Virtual Appliance
 sub headerlist  { return ['X-NAI-Header'] }
@@ -44,8 +39,8 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless defined $mhead->{'x-nai-header'};
-    return undef unless $mhead->{'x-nai-header'} =~ $Re0->{'x-nai'};
-    return undef unless $mhead->{'subject'}      =~ $Re0->{'subject'};
+    return undef unless index($mhead->{'x-nai-header'}, 'Modified by McAfee') > -1;
+    return undef unless $mhead->{'subject'} eq 'Delivery Status';
 
     require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -61,10 +56,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) > -1 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -72,7 +67,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

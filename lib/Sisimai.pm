@@ -41,7 +41,7 @@ sub make {
             # The argument may be a path to email
             $input = 'email';
 
-        } elsif( $rtype =~ m/\A(?:ARRAY|HASH)\z/ ) {
+        } elsif( $rtype eq 'ARRAY' || $rtype eq 'HASH' ) {
             # The argument may be a decoded JSON object
             $input = 'json';
         }
@@ -143,11 +143,11 @@ sub engine {
         my $r = 'Sisimai::'.$e;
         Module::Load::load $r;
 
-        if( $e =~ m/\ABite::(?:Email|JSON)\z/ ) {
+        if( $e eq 'Bite::Email' || $e eq 'Bite::JSON' ) {
             # Sisimai::Bite::Email or Sisimai::Bite::JSON
             for my $ee ( @{ $r->index } ) {
                 # Load and get the value of "description" from each module
-                my $rr = sprintf("Sisimai::%s::%s", $e, $ee);
+                my $rr = 'Sisimai::'.$e.'::'.$ee;
                 Module::Load::load $rr;
                 $table->{ $rr } = $rr->description;
             }

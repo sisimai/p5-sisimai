@@ -4,17 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'     => qr/[@]bigfoot[.]com[>]/,
-    'subject'  => qr/\AReturned mail: /,
-    'received' => qr/\w+[.]bigfoot[.]com\b/,
-};
-my $Re1 = {
-    'begin'  => qr/\A[ \t]+[-]+[ \t]*Transcript of session follows/,
-    'rfc822' => qr|\AContent-Type: message/partial|,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = { 'rfc822'  => ['Content-Type: message/partial'] };
+my $MarkingsOf = { 'message' => qr/\A[ \t]+[-]+[ \t]*Transcript of session follows/ };
 
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub scan {
@@ -35,8 +27,9 @@ sub scan {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match ||= 1 if $mhead->{'from'} =~ $Re0->{'from'};
-    $match ||= 1 if grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    # 'subject'  => qr/\AReturned mail: /,
+    $match ||= 1 if index($mhead->{'from'}, '@bigfoot.com>') > -1;
+    $match ||= 1 if grep { $_ =~ /\w+[.]bigfoot[.]com\b/ } @{ $mhead->{'received'} };
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -59,10 +52,10 @@ sub scan {
 
     require Sisimai::Address;
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -70,7 +63,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

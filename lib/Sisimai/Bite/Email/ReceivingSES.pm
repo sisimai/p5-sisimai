@@ -5,15 +5,12 @@ use strict;
 use warnings;
 
 # http://aws.amazon.com/ses/
-my $Re0 = {
-    'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
-    'received'=> qr/.+[.]smtp-out[.].+[.]amazonses[.]com\b/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['This message could not be delivered.'],
+    'rfc822'  => ['content-type: text/rfc822-headers'],
 };
-my $Re1 = {
-    'begin'   => qr/\AThis message could not be delivered[.]\z/,
-    'rfc822'  => qr|\Acontent-type: text/rfc822-headers\z|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     # The followings are error messages in Rule sets/*/Actions/Template
     'filtered'      => qr/Mailbox does not exist/,
@@ -21,7 +18,6 @@ my $ReFailure = {
     'mailboxfull'   => qr/Mailbox full/,
     'contenterror'  => qr/Message content rejected/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-SES-Outgoing: 2015.10.01-54.240.27.7
 # Feedback-ID: 1.us-west-2.HX6/J9OVlHTadQhEu1+wdF9DBj6n6Pa9sW5Y/0pSOi8=:AmazonSES
@@ -44,6 +40,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # 'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
+    # 'received'=> qr/.+[.]smtp-out[.].+[.]amazonses[.]com\b/,
     return undef unless $mhead->{'x-ses-outgoing'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -63,10 +61,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e eq $StartingOf->{'message'}->[0] ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -74,7 +72,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

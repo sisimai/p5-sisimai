@@ -4,22 +4,18 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'    => qr/\AMail Delivery Subsystem/,
-    'subject' => qr/(?:see transcript for details\z|\AWarning: )/,
-};
-# Error text regular expressions which defined in sendmail/savemail.c
-#   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
-#   savemail.c:1041|          mci))
-#   savemail.c:1042|  goto writeerr;
-#
-my $Re1 = {
-    'begin'   => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
-    'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
 my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'rfc822'  => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],
+};
+my $MarkingsOf = {
+    # Error text regular expressions which defined in sendmail/savemail.c
+    #   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
+    #   savemail.c:1041|          mci))
+    #   savemail.c:1042|  goto writeerr;
+    'message' => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
+    'error'   => qr/\A[.]+ while talking to .+[:]\z/,
+};
 
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub scan {
@@ -39,11 +35,11 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless $mhead->{'subject'} =~ /(?:see transcript for details\z|\AWarning: )/;
     unless( $mhead->{'subject'} =~ m/\A[ \t]*Fwd?:/i ) {
         # Fwd: Returned mail: see transcript for details
         # Do not execute this code if the bounce mail is a forwarded message.
-        return undef unless $mhead->{'from'} =~ $Re0->{'from'};
+        return undef unless index($mhead->{'from'}, 'Mail Delivery Subsystem') > -1;
     }
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -67,10 +63,10 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -78,7 +74,8 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ||
+                index($e, $StartingOf->{'rfc822'}->[1]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -194,7 +191,7 @@ sub scan {
                 } else {
                     # Detect SMTP session error or connection error
                     next if $sessionerr;
-                    if( $e =~ $Re1->{'error'} ) { 
+                    if( $e =~ $MarkingsOf->{'error'} ) { 
                         # ----- Transcript of session follows -----
                         # ... while talking to mta.example.org.:
                         $sessionerr = 1;
@@ -219,7 +216,7 @@ sub scan {
                             $anotherset->{'status'} = $1;
                             $anotherset->{'diagnosis'} .= ' '.$e;
 
-                        } elsif( $e =~ m/\A(?:Message|Warning:) / ) {
+                        } elsif( index($e, 'Message: ') == 0 || index($e, 'Warning: ') == 0 ) {
                             # Message could not be delivered for too long
                             # Warning: message still undelivered after 4 hours
                             $anotherset->{'diagnosis'} .= ' '.$e;

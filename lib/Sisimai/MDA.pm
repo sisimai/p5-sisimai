@@ -3,10 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from' => qr/\A(?:Mail Delivery Subsystem|MAILER-DAEMON|postmaster)/i,
-};
-my $Re1 = {
+my $AgentNames = {
     # dovecot/src/deliver/deliver.c
     # 11: #define DEFAULT_MAIL_REJECTION_HUMAN_REASON \
     # 12: "Your message to <%t> was automatically rejected:%n%r"
@@ -17,11 +14,13 @@ my $Re1 = {
     'vpopmail'   => qr/\Avdelivermail: /,
     'vmailmgr'   => qr/\Avdeliver: /,
 };
-my $Re2 = qr{\A(?>
-             Your[ ]message[ ]to[ ].+[ ]was[ ]automatically[ ]rejected:\z
-            |(?:mail[.]local|procmail|maildrop|vdelivermail|vdeliver):[ ]
-            )
-          }x;
+my $MarkingsOf = {
+    'message' => qr{\A(?>
+                     Your[ ]message[ ]to[ ].+[ ]was[ ]automatically[ ]rejected:\z
+                    |(?:mail[.]local|procmail|maildrop|vdelivermail|vdeliver):[ ]
+                    )
+                  }x,
+};
 
 # dovecot/src/deliver/mail-send.c:94
 my $ReFailure = {
@@ -97,7 +96,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless ref($mhead) eq 'HASH';
-    return undef unless $mhead->{'from'} =~ $Re0->{'from'};
+    return undef unless $mhead->{'from'} =~ /\A(?:Mail Delivery Subsystem|MAILER-DAEMON|postmaster)/i;
     return undef unless ref($mbody) eq 'SCALAR';
     return undef unless length $$mbody;
 
@@ -112,11 +111,11 @@ sub scan {
         if( $agentname0 eq '' ) {
             # Try to match with each regular expression
             next unless $e;
-            next unless $e =~ $Re2;
+            next unless $e =~ $MarkingsOf->{'message'};
 
-            for my $f ( keys %$Re1 ) {
+            for my $f ( keys %$AgentNames ) {
                 # Detect the agent name from the line
-                next unless $e =~ $Re1->{ $f };
+                next unless $e =~ $AgentNames->{ $f };
                 $agentname0 = $f;
                 last;
             }
@@ -192,7 +191,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

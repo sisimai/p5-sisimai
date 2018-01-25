@@ -4,41 +4,37 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'     => qr/\AMailer Daemon [<][^ ]+[@]/,
-    'subject'  => qr/\ADelivery status notification/,
-    'received' => qr/[ ][(]OpenSMTPD[)][ ]with[ ]/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    # http://www.openbsd.org/cgi-bin/man.cgi?query=smtpd&sektion=8
+    # opensmtpd-5.4.2p1/smtpd/
+    #   bounce.c/317:#define NOTICE_INTRO \
+    #   bounce.c/318:    "    Hi!\n\n"    \
+    #   bounce.c/319:    "    This is the MAILER-DAEMON, please DO NOT REPLY to this e-mail.\n"
+    #   bounce.c/320:
+    #   bounce.c/321:const char *notice_error =
+    #   bounce.c/322:    "    An error has occurred while attempting to deliver a message for\n"
+    #   bounce.c/323:    "    the following list of recipients:\n\n";
+    #   bounce.c/324:
+    #   bounce.c/325:const char *notice_warning =
+    #   bounce.c/326:    "    A message is delayed for more than %s for the following\n"
+    #   bounce.c/327:    "    list of recipients:\n\n";
+    #   bounce.c/328:
+    #   bounce.c/329:const char *notice_warning2 =
+    #   bounce.c/330:    "    Please note that this is only a temporary failure report.\n"
+    #   bounce.c/331:    "    The message is kept in the queue for up to %s.\n"
+    #   bounce.c/332:    "    You DO NOT NEED to re-send the message to these recipients.\n\n";
+    #   bounce.c/333:
+    #   bounce.c/334:const char *notice_success =
+    #   bounce.c/335:    "    Your message was successfully delivered to these recipients.\n\n";
+    #   bounce.c/336:
+    #   bounce.c/337:const char *notice_relay =
+    #   bounce.c/338:    "    Your message was relayed to these recipients.\n\n";
+    #   bounce.c/339:
+    'message' => [' This is the MAILER-DAEMON, please DO NOT REPLY to this'],
+    'rfc822'  => [' Below is a copy of the original message:'],
 };
-# http://www.openbsd.org/cgi-bin/man.cgi?query=smtpd&sektion=8
-# opensmtpd-5.4.2p1/smtpd/
-#   bounce.c/317:#define NOTICE_INTRO \
-#   bounce.c/318:    "    Hi!\n\n"    \
-#   bounce.c/319:    "    This is the MAILER-DAEMON, please DO NOT REPLY to this e-mail.\n"
-#   bounce.c/320:
-#   bounce.c/321:const char *notice_error =
-#   bounce.c/322:    "    An error has occurred while attempting to deliver a message for\n"
-#   bounce.c/323:    "    the following list of recipients:\n\n";
-#   bounce.c/324:
-#   bounce.c/325:const char *notice_warning =
-#   bounce.c/326:    "    A message is delayed for more than %s for the following\n"
-#   bounce.c/327:    "    list of recipients:\n\n";
-#   bounce.c/328:
-#   bounce.c/329:const char *notice_warning2 =
-#   bounce.c/330:    "    Please note that this is only a temporary failure report.\n"
-#   bounce.c/331:    "    The message is kept in the queue for up to %s.\n"
-#   bounce.c/332:    "    You DO NOT NEED to re-send the message to these recipients.\n\n";
-#   bounce.c/333:
-#   bounce.c/334:const char *notice_success =
-#   bounce.c/335:    "    Your message was successfully delivered to these recipients.\n\n";
-#   bounce.c/336:
-#   bounce.c/337:const char *notice_relay =
-#   bounce.c/338:    "    Your message was relayed to these recipients.\n\n";
-#   bounce.c/339:
-my $Re1 = {
-    'begin'  => qr/\A[ \t]*This is the MAILER-DAEMON, please DO NOT REPLY to this e[-]?mail[.]\z/,
-    'rfc822' => qr/\A[ \t]*Below is a copy of the original message:\z/,
-    'endof'  => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+
 my $ReFailure = {
     'expired' => qr{
         # smtpd/queue.c:221|  envelope_set_errormsg(&evp, "Envelope expired");
@@ -75,7 +71,6 @@ my $ReFailure = {
         Could[ ]not[ ]retrieve[ ]credentials
     }x,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub description { 'OpenSMTPD' }
 sub scan {
@@ -95,9 +90,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    return undef unless grep { $_ =~ $Re0->{'received'} } @{ $mhead->{'received'} };
+    return undef unless index($mhead->{'subject'}, 'Delivery status notification') == 0;
+    return undef unless $mhead->{'from'} =~ /\AMailer Daemon [<][^ ]+[@]/;
+    return undef unless grep { index($_, ' (OpenSMTPD) with ') > -1 } @{ $mhead->{'received'} };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -109,10 +104,10 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) > -1 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -120,7 +115,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) > -1 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

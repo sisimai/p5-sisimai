@@ -42,7 +42,7 @@ sub is_8bit {
 
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
-    return 1 unless $$argv1 =~ m/\A[\x00-\x7f]+\z/;
+    return 1 unless $$argv1 =~ /\A[\x00-\x7f]+\z/;
     return 0;
 }
 
@@ -230,7 +230,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

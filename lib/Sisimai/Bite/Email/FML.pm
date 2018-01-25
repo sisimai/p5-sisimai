@@ -4,14 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'       => qr/.+[-]admin[@].+/,
-    'message-id' => qr/\A[<]\d+[.]FML.+[@].+[>]\z/,
-};
-my $Re1 = {
-    'rfc822'  => qr/\AOriginal[ ]mail[ ]as[ ]follows:\z/,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = { 'rfc822' => ['Original mail as follows:'] };
+
 my $ErrorTitle = {
     'rejected' => qr{(?>
          (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
@@ -48,7 +43,6 @@ my $ErrorTable = {
     }x,
     'securityerror' => qr/Security[ ]alert:/,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-MLServer'] }
 sub description { 'fml mailing list server/manager' };
@@ -70,8 +64,8 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless defined $mhead->{'x-mlserver'};
-    return undef unless $mhead->{'from'} =~ $Re0->{'from'};
-    return undef unless $mhead->{'message-id'} =~ $Re0->{'message-id'};
+    return undef unless $mhead->{'from'} =~ /.+[-]admin[@].+/;
+    return undef unless $mhead->{'message-id'} =~ /\A[<]\d+[.]FML.+[@].+[>]\z/;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -84,10 +78,10 @@ sub scan {
 
     $readcursor |= $Indicators->{'deliverystatus'};
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

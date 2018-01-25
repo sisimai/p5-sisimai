@@ -4,21 +4,20 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Re0 = {
-    'from'    => qr/[@]googlemail[.]com[>]?\z/,
-    'subject' => qr/Delivery[ ]Status[ ]Notification/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['Delivery to the following recipient'],
+    'error'   => ['The error that the other server returned was:'],
 };
-my $Re1 = {
-    'begin'   => qr/Delivery to the following recipient/,
+my $MarkingsOf = {
     'start'   => qr/Technical details of (?:permanent|temporary) failure:/,
-    'error'   => qr/The error that the other server returned was:/,
     'rfc822'  => qr{\A(?:
          -----[ ]Original[ ]message[ ]-----
         |[ \t]*-----[ ]Message[ ]header[ ]follows[ ]-----
         )\z
     }x,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
+
 my $ReFailure = {
     'expired' => qr{(?:
          DNS[ ]Error:[ ]Could[ ]not[ ]contact[ ]DNS[ ]servers
@@ -105,7 +104,6 @@ my $StateTable = {
     # 550 550 Unknown user *****@***.**.*** (state 18).
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 sub headerlist  { return ['X-Failed-Recipients'] }
 sub description { 'Google Gmail: https://mail.google.com' }
@@ -173,8 +171,8 @@ sub scan {
     #   The error that the other server returned was:
     #   550 5.1.1 <userunknown@example.jp>... User Unknown
     #
-    return undef unless $mhead->{'from'}    =~ $Re0->{'from'};
-    return undef unless $mhead->{'subject'} =~ $Re0->{'subject'};
+    return undef unless index($mhead->{'from'}, '<mailer-daemon@googlemail.com>') > -1;
+    return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
 
     require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -188,15 +186,15 @@ sub scan {
     my $v = undef;
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $Re1->{'begin'};
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) > -1;
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

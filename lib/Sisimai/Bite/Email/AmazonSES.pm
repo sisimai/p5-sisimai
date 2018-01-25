@@ -5,26 +5,15 @@ use strict;
 use warnings;
 
 # http://aws.amazon.com/ses/
-my $Re0 = {
-    'from'    => qr/\AMAILER-DAEMON[@]email[-]bounces[.]amazonses[.]com\z/,
-    'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
+my $Indicators = __PACKAGE__->INDICATORS;
+my $StartingOf = {
+    'message' => ['The following message to <', 'An error occurred while trying to deliver the mail '],
+    'rfc822'  => ['content-type: message/rfc822'],
 };
-my $Re1 = {
-    'begin'   => qr/\A(?:
-         The[ ]following[ ]message[ ]to[ ][<]
-        |An[ ]error[ ]occurred[ ]while[ ]trying[ ]to[ ]deliver[ ]the[ ]mail[ ]
-        )
-    /x,
-    'rfc822'  => qr|\Acontent-type: message/rfc822\z|,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
-};
-my $ReE = {
-    'x-mailer' => qr/Amazon[ ]WorkMail/,
-};
+
 my $ReFailure = {
     'expired' => qr/Delivery[ ]expired/x,
 };
-my $Indicators = __PACKAGE__->INDICATORS;
 
 # X-SenderID: Sendmail Sender-ID Filter v1.0.0 nijo.example.jp p7V3i843003008
 # X-Original-To: 000001321defbd2a-788e31c8-2be1-422f-a8d4-cf7765cc9ed7-000000@email-bounces.amazonses.com
@@ -51,7 +40,9 @@ sub scan {
     my $match = 0;
     my $xmail = $mhead->{'x-mailer'} || '';
 
-    return undef if $xmail =~ $ReE->{'x-mailer'};
+    # 'from'    => qr/\AMAILER-DAEMON[@]email[-]bounces[.]amazonses[.]com\z/,
+    # 'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
+    return undef if index($xmail, 'Amazon WorkMail') > -1;
     $match ||= 1 if $mhead->{'x-aws-outgoing'};
     $match ||= 1 if $mhead->{'x-ses-outgoing'};
     return undef unless $match;
@@ -71,10 +62,11 @@ sub scan {
     my $p = '';
 
     for my $e ( @hasdivided ) {
-        # Read each line between $Re1->{'begin'} and $Re1->{'rfc822'}.
+        # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $Re1->{'begin'} ) {
+            if( index($e, $StartingOf->{'message'}->[0]) == 0 ||
+                index($e, $StartingOf->{'message'}->[1]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -82,7 +74,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $Re1->{'rfc822'} ) {
+            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
