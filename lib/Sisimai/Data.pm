@@ -83,11 +83,10 @@ sub new {
     # Callback method
     $thing->{'catch'} = $argvs->{'catch'} // undef;
 
-    my @v1 = (
-        'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
-        'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost',
-        'smtpcommand', 'feedbacktype', 'action', 'softbounce', 'replycode',
-    );
+    my @v1 = (qw|
+        listid subject messageid smtpagent diagnosticcode diagnostictype deliverystatus
+        reason lhost rhost smtpcommand feedbacktype action softbounce replycode
+    |);
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
     $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find($argvs->{'diagnosticcode'});
 
