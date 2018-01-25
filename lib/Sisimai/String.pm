@@ -56,12 +56,11 @@ sub sweep {
     my $argv1 = shift // return undef;
 
     chomp $argv1;
-    $argv1 =~ y{ }{}s;
-    $argv1 =~ s{\t}{}g;
-    $argv1 =~ s{\A }{}g;
-    $argv1 =~ s{ \z}{}g;
-    $argv1 =~ s{ [-]{2,}[^ \t].+\z}{};
-
+    $argv1 =~ y/ //s;
+    $argv1 =~ s/\t//g;
+    $argv1 =~ s/\A //g;
+    $argv1 =~ s/ \z//g;
+    $argv1 =~ s/ [-]{2,}[^ \t].+\z//;
     return $argv1;
 }
 
