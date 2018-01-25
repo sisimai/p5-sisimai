@@ -12,6 +12,14 @@ v4.22.3p1
   - Pull-Request #254, Remove unused method: Sisimai::Bite::Email->pattern and
     the same methods defined in each child class.
   - Obsoleted method Sisimai::Address->parse has been removed.
+  - Less regular expression #255. Thanks to @xtetsuji.
+    - The following Pull-Requests have been imported from rb-Sisimai.
+      - sisimai/rb-Sisimai#105
+      - sisimai/rb-Sisimai#107
+      - sisimai/rb-Sisimai#108
+    - Replace `$v =~ /\A...\z/` with `$v eq '...'`
+    - Replace `$v =~ /\A.../` with `index($v, '...') == 0`
+    - Replace `$v =~ /.../` with `index($v, '...') > -1`
 
 v4.22.3
 --------------------------------------------------------------------------------
