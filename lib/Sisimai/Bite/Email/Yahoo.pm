@@ -83,7 +83,7 @@ sub scan {
             # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[<](.+[@].+)[>]:[ \t]*\z/ ) {
+            if( $e =~ /\A[<](.+[@].+)[>]:[ \t]*\z/ ) {
                 # <kijitora@example.org>:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -98,7 +98,7 @@ sub scan {
                     # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
                     $v->{'diagnosis'} = $e;
 
-                    if( $e =~ m/\[([A-Z]{4}).*\]\z/ ) {
+                    if( $e =~ /\[([A-Z]{4}).*\]\z/ ) {
                         # Get SMTP command from the value of "Remote host said:"
                         $v->{'command'} = $1;
                     }
@@ -110,7 +110,7 @@ sub scan {
                     if( $v->{'diagnosis'} eq 'Remote host said:' ) {
                         # Remote host said:
                         # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
-                        if( $e =~ m/\[([A-Z]{4}).*\]\z/ ) {
+                        if( $e =~ /\[([A-Z]{4}).*\]\z/ ) {
                             # [RCPT_TO]
                             $v->{'command'} = $1;
 
@@ -127,7 +127,7 @@ sub scan {
     require Sisimai::String;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} =~ s{\\n}{ }g;
+        $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
     }

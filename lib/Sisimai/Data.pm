@@ -536,7 +536,7 @@ method like the following codes:
         my $argv = shift;
         my $fish = { 'x-mailer' => '' };
 
-        if( $argv->{'message'} =~ m/^X-Mailer:\s*(.+)$/m ) {
+        if( $argv->{'message'} =~ /^X-Mailer:\s*(.+)$/m ) {
             $fish->{'x-mailer'} = $1;
         }
 

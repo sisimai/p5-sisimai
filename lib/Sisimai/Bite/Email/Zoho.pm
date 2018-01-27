@@ -9,10 +9,7 @@ my $StartingOf = {
     'message' => ['This message was created automatically by mail delivery'],
     'rfc822'  => ['from mail.zoho.com by mx.zohomail.com'],
 };
-
-my $ReFailure = {
-    'expired' => qr/Host not reachable/
-};
+my $ReFailures = { 'expired' => qr/Host not reachable/ };
 
 # X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
 # X-Zoho-Virus-Status: 2
@@ -96,7 +93,7 @@ sub scan {
             # shironeko@example.org Invalid Address, ERROR_CODE :550, ERROR_CODE :Requested action not taken: mailbox unavailable
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A([^ ]+[@][^ ]+)[ \t]+(.+)\z/ ) {
+            if( $e =~ /\A([^ ]+[@][^ ]+)[ \t]+(.+)\z/ ) {
                 # kijitora@example.co.jp Invalid Address, ERROR_CODE :550, ERROR_CODE :5.1.=
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -108,12 +105,12 @@ sub scan {
 
                 if( substr($v->{'diagnosis'}, -1, 1) eq '=' ) {
                     # Quoted printable
-                    $v->{'diagnosis'} =~ s/=\z//;
+                    substr($v->{'diagnosis'}, -1, 1, '');
                     $qprintable = 1;
                 }
                 $recipients++;
 
-            } elsif( $e =~ m/\A\[Status: .+[<]([^ ]+[@][^ ]+)[>],/ ) {
+            } elsif( $e =~ /\A\[Status: .+[<]([^ ]+[@][^ ]+)[>],/ ) {
                 # Expired
                 # [Status: Error, Address: <kijitora@6kaku.example.co.jp>, ResponseCode 421, , Host not reachable.]
                 if( length $v->{'recipient'} ) {
@@ -137,12 +134,12 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} =~ s{\\n}{ }g;
+        $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

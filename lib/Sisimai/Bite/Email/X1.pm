@@ -81,7 +81,7 @@ sub scan {
             # kijitora@example.co.jp [User unknown]
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A([^ ]+?[@][^ ]+?)[ \t]+\[(.+)\]\z/ ) {
+            if( $e =~ /\A([^ ]+?[@][^ ]+?)[ \t]+\[(.+)\]\z/ ) {
                 # kijitora@example.co.jp [User unknown]
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.

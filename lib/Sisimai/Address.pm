@@ -362,7 +362,7 @@ sub find {
             $e->{'comment'} = ''   unless $e->{'comment'} =~ /\A[(].+[)]\z/;
             $e->{'name'} =~ y/ //s    unless $e->{'name'} =~ /\A["].+["]\z/;
             $e->{'name'} =~ s/\A["]// unless $e->{'name'} =~ /\A["].+["][@]/;
-            $e->{'name'} =~ s/["]\z//;
+            substr($e->{'name'}, -1, 1, '') if substr($e->{'name'}, -1, 1) eq '"';
         }
         push @$addrtables, $e;
     }
@@ -377,11 +377,9 @@ sub s3s4 {
     # @return   [String]        Email address without comment, brackets
     my $class = shift;
     my $input = shift // return undef;
-    my $addrs = [];
-
     return $input if ref $input;
 
-    $addrs = __PACKAGE__->find($input, 1) || [];
+    my $addrs = __PACKAGE__->find($input, 1) || [];
     return $input unless scalar @$addrs;
     return $addrs->[0]->{'address'};
 }

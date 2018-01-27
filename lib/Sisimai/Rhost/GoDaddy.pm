@@ -37,16 +37,12 @@ my $MesgTable = {
         qr/Delivery timeout/,
         qr/451 Sorry, I wasn't able to establish an SMTP connection[.]/,
     ],
-    'mailboxfull' => [
-        qr/Account storage limit/,
-    ],
+    'mailboxfull' => [qr/Account storage limit/],
     'userunknown' => [
         qr/Account does not exist/,
         qr/550 Recipient not found[.]/,
     ],
-    'suspend' => [
-        qr/Account disabled/,
-    ],
+    'suspend' => [qr/Account disabled/],
 };
 
 sub get {
@@ -111,7 +107,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

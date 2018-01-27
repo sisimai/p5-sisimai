@@ -44,7 +44,6 @@ sub scan {
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-
     my $v = undef;
     my $p = '';
 
@@ -91,7 +90,7 @@ sub scan {
             # --- Message non-deliverable.
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\AAddressed To:[ \t]*([^ ]+?[@][^ ]+?)\z/ ) {
+            if( $e =~ /\AAddressed To:[ \t]*([^ ]+?[@][^ ]+?)\z/ ) {
                 # Addressed To: kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -101,32 +100,32 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ m/\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ \t,]/ ) {
+            } elsif( $e =~ /\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ \t,]/ ) {
                 # Thu 29 Apr 2010 23:34:45 +0900
                 $v->{'date'} = $e;
 
-            } elsif( $e =~ m/\A[^ ]+[@][^ ]+:[ \t]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ \t]*(.+)\z/ ) {
+            } elsif( $e =~ /\A[^ ]+[@][^ ]+:[ \t]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ \t]*(.+)\z/ ) {
                 # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
                 $v->{'rhost'} = $1;
                 $v->{'diagnosis'} = $2;
 
             } else {
                 # Fallback, parse RFC3464 headers.
-                if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
 
-                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
+                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
 
-                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.0.-
                     $v->{'status'} = $1;
                 }

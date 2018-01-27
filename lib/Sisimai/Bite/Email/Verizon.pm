@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+
 sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
 sub scan {
     # Detect an error from Verizon
@@ -27,7 +28,7 @@ sub scan {
     while(1) {
         # Check the value of "From" header
         # 'subject' => qr/Undeliverable Message/,
-        last unless grep { $_ =~ /by .+[.]vtext[.]com / } @{ $mhead->{'received'} };
+        last unless grep { index($_, '.vtext.com (') > -1 } @{ $mhead->{'received'} };
         $match = 1 if $mhead->{'from'} eq 'post_master@vtext.com';
         $match = 0 if $mhead->{'from'} =~ /[<]?sysadmin[@].+[.]vzwpix[.]com[>]?\z/;
         last;
@@ -61,10 +62,8 @@ sub scan {
             'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/,
         };
         $ReFailures = {
-            'userunknown' => qr{
-                # The attempted recipient address does not exist.
-                550[ ][-][ ]Requested[ ]action[ ]not[ ]taken:[ ]no[ ]such[ ]user[ ]here
-            }x,
+            # The attempted recipient address does not exist.
+            'userunknown' => qr/550 [-] Requested action not taken: no such user here/,
         };
 
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
@@ -113,7 +112,7 @@ sub scan {
                 #   RCPT TO: *****@vtext.com
                 $v = $dscontents->[-1];
 
-                if( $e =~ m/\A[ \t]+RCPT TO: (.*)\z/ ) {
+                if( $e =~ /\A[ \t]+RCPT TO: (.*)\z/ ) {
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -123,17 +122,17 @@ sub scan {
                     $recipients++;
                     next;
 
-                } elsif( $e =~ m/\A[ \t]+MAIL FROM:[ \t](.+)\z/ ) {
+                } elsif( $e =~ /\A[ \t]+MAIL FROM:[ \t](.+)\z/ ) {
                     #   MAIL FROM: *******@hg.example.com
                     $senderaddr ||= $1;
 
-                } elsif( $e =~ m/\A[ \t]+Subject:[ \t](.+)\z/ ) {
+                } elsif( $e =~ /\A[ \t]+Subject:[ \t](.+)\z/ ) {
                     #   Subject:
                     $subjecttxt ||= $1;
 
                 } else {
                     # 550 - Requested action not taken: no such user here
-                    $v->{'diagnosis'} = $e if $e =~ m/\A(\d{3})[ \t][-][ \t](.*)\z/;
+                    $v->{'diagnosis'} = $e if $e =~ /\A(\d{3})[ \t][-][ \t](.*)\z/;
                 }
             } # End of if: rfc822
         }
@@ -141,11 +140,7 @@ sub scan {
         # vzwpix.com
         $StartingOf = { 'message' => ['Message could not be delivered to mobile'] };
         $MarkingsOf = { 'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/ };
-        $ReFailures = {
-            'userunknown' => qr{
-                No[ ]valid[ ]recipients[ ]for[ ]this[ ]MM
-            }x,
-        };
+        $ReFailures = { 'userunknown' => qr/No valid recipients for this MM/ };
 
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
         if( length $boundary00 ) {
@@ -193,7 +188,7 @@ sub scan {
                 # Date:  Wed, 20 Jun 2013 10:29:52 +0000
                 $v = $dscontents->[-1];
 
-                if( $e =~ m/\ATo:[ \t]+(.*)\z/ ) {
+                if( $e =~ /\ATo:[ \t]+(.*)\z/ ) {
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -203,18 +198,18 @@ sub scan {
                     $recipients++;
                     next;
 
-                } elsif( $e =~ m/\AFrom:[ \t](.+)\z/ ) {
+                } elsif( $e =~ /\AFrom:[ \t](.+)\z/ ) {
                     # From: kijitora <kijitora@example.jp>
                     $senderaddr ||= Sisimai::Address->s3s4($1);
 
-                } elsif( $e =~ m/\ASubject:[ \t](.+)\z/ ) {
+                } elsif( $e =~ /\ASubject:[ \t](.+)\z/ ) {
                     #   Subject:
                     $subjecttxt ||= $1;
 
                 } else {
                     # Message could not be delivered to mobile.
                     # Error: No valid recipients for this MM
-                    $v->{'diagnosis'} = $e if $e =~ m/\AError:[ \t]+(.+)\z/;
+                    $v->{'diagnosis'} = $e if $e =~ /\AError:[ \t]+(.+)\z/;
                 }
             } # End of if: rfc822
         }
@@ -223,11 +218,11 @@ sub scan {
 
     if( ! grep { index($_, 'From: ') == 0 } @$rfc822list ) {
         # Set the value of "MAIL FROM:" or "From:"
-        push @$rfc822list, sprintf("From: %s", $senderaddr);
+        push @$rfc822list, 'From: '.$senderaddr;
 
     } elsif( ! grep { index($_, 'Subject: ') == 0 } @$rfc822list ) {
         # Set the value of "Subject"
-        push @$rfc822list, sprintf("Subject: %s", $subjecttxt);
+        push @$rfc822list, 'Subject: '.$subjecttxt;
     }
 
     for my $e ( @$dscontents ) {

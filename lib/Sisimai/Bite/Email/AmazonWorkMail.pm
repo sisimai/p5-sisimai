@@ -97,7 +97,7 @@ sub scan {
                 # Status: 4.4.7
                 $v = $dscontents->[-1];
 
-                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
+                if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: RFC822; kijitora@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -107,16 +107,16 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.1.1
                     $v->{'status'} = $1;
 
                 } else {
-                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <kijitora@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
@@ -127,7 +127,7 @@ sub scan {
                 #
                 # Reporting-MTA: dsn; a27-85.smtp-out.us-west-2.amazonses.com
                 #
-                if( $e =~ m/\A[Rr]eporting-MTA:[ ]*[DNSdns]+;[ ]*(.+)\z/ ) {
+                if( $e =~ /\AReporting-MTA:[ ]*[DNSdns]+;[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
                     next if length $connheader->{'lhost'};
                     $connheader->{'lhost'} = lc $1;
@@ -152,12 +152,12 @@ sub scan {
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( $e->{'status'} =~ m/\A[45][.][01][.]0\z/ ) {
+        if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
             # Get other D.S.N. value from the error message
             my $pseudostatus = '';
             my $errormessage = $e->{'diagnosis'};
 
-            if( $e->{'diagnosis'} =~ m/["'](\d[.]\d[.]\d.+)['"]/ ) {
+            if( $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/ ) {
                 # 5.1.0 - Unknown address error 550-'5.7.1 ...
                 $errormessage = $1;
             }
@@ -166,7 +166,7 @@ sub scan {
             $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
-        if( $e->{'diagnosis'} =~ m/[<]([245]\d\d)[ ].+[>]/ ) {
+        if( $e->{'diagnosis'} =~ /[<]([245]\d\d)[ ].+[>]/ ) {
             # 554 4.4.7 Message expired: unable to deliver in 840 minutes.
             # <421 4.4.2 Connection timed out>
             $e->{'replycode'} = $1;

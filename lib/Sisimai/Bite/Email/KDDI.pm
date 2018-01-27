@@ -13,11 +13,10 @@ my $MarkingsOf = {
         )
     /x,
 };
-
-my $ReFailure = {
-    'mailboxfull' => qr/As[ ]their[ ]mailbox[ ]is[ ]full/x,
-    'norelaying'  => qr/Due[ ]to[ ]the[ ]following[ ]SMTP[ ]relay[ ]error/x,
-    'hostunknown' => qr/As[ ]the[ ]remote[ ]domain[ ]doesnt[ ]exist/x,
+my $ReFailures = {
+    'mailboxfull' => qr/As their mailbox is full/,
+    'norelaying'  => qr/Due to the following SMTP relay error/,
+    'hostunknown' => qr/As the remote domain doesnt exist/,
 };
 
 sub description { 'au by KDDI: http://www.au.kddi.com' }
@@ -41,8 +40,8 @@ sub scan {
 
     # 'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
     $match ||= 1 if $mhead->{'from'} =~ /no-reply[@].+[.]dion[.]ne[.]jp/;
-    $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} =~ /\Afrom[ \t]+\w+[.]auone[-]net[.]jp[ \t]/;
-    $match ||= 1 if grep { $_ =~ /\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/ } @{ $mhead->{'received'} };
+    $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} eq 'no-reply@app.auone-net.jp';
+    $match ||= 1 if grep { index($_, 'ezweb.ne.jp (') > -1 } @{ $mhead->{'received'} };
     return undef unless $match;
 
     require Sisimai::String;
@@ -90,7 +89,7 @@ sub scan {
             next unless length $e;
 
             $v = $dscontents->[-1];
-            if( $e =~ m/\A[ \t]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
+            if( $e =~ /\A[ \t]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
                 # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
                 #     Could not be delivered to: <******@**.***.**>
                 #     As their mailbox is full.
@@ -105,13 +104,13 @@ sub scan {
                     $v->{'recipient'} = $r;
                     $recipients++;
                 }
-            } elsif( $e =~ m/Your mail sent on: (.+)\z/ ) {
+            } elsif( $e =~ /Your mail sent on: (.+)\z/ ) {
                 # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
                 $v->{'date'} = $1;
 
             } else {
                 #     As their mailbox is full.
-                $v->{'diagnosis'} .= $e.' ' if $e =~ m/\A[ \t]+/;
+                $v->{'diagnosis'} .= $e.' ' if $e =~ /\A[ \t]+/;
             }
         } # End of if: rfc822
     }
@@ -134,9 +133,9 @@ sub scan {
 
             } else {
                 # SMTP command is not RCPT
-                SESSION: for my $r ( keys %$ReFailure ) {
+                SESSION: for my $r ( keys %$ReFailures ) {
                     # Verify each regular expression of session errors
-                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                    next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
                     $e->{'reason'} = $r;
                     last;
                 }

@@ -173,7 +173,7 @@ method like the following codes:
         }
 
         # Message body of the bounced email
-        if( $argv->{'message'} =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
+        if( $argv->{'message'} =~ /^X-Postfix-Queue-ID:\s*(.+)$/m ) {
             $data->{'queue-id'} = $1;
         }
 

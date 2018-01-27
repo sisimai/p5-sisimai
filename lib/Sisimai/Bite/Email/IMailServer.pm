@@ -22,27 +22,13 @@ my $ReSMTP = {
     'rcpt' => qr|Additional RCPT TO generated following response:|,
     'data' => qr|DATA command generated response:|,
 };
-my $ReFailure = {
-    'hostunknown' => qr{
-        Unknown[ ]host
-    },
-    'userunknown' => qr{\A(?:
-         Unknown[ ]user
-        |Invalid[ ]final[ ]delivery[ ]userid    # Filtered ?
-        )
-    }x,
-    'mailboxfull' => qr{
-        \AUser[ ]mailbox[ ]exceeds[ ]allowed[ ]size
-    }x,
-    'securityerr' => qr{
-        \ARequested[ ]action[ ]not[ ]taken:[ ]virus[ ]detected
-    }x,
-    'undefined' => qr{
-        \Aundeliverable[ ]to[ ]
-    }x,
-    'expired' => qr{
-        \ADelivery[ ]failed[ ]\d+[ ]attempts
-    }x,
+my $ReFailures = {
+    'hostunknown' => qr/Unknown host/,
+    'userunknown' => qr/\A(?:Unknown user|Invalid final delivery userid)/,
+    'mailboxfull' => qr/\AUser mailbox exceeds allowed size/,
+    'securityerr' => qr/\ARequested action not taken: virus detected/,
+    'undefined'   => qr/\Aundeliverable to/,
+    'expired'     => qr/\ADelivery failed \d+ attempts/,
 };
 
 # X-Mailer: <SMTP32 v8.22>
@@ -115,7 +101,7 @@ sub scan {
             # Original message follows.
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A([^ ]+)[ ]([^ ]+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
+            if( $e =~ /\A([^ ]+)[ ]([^ ]+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
                 # Unknown user: kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -126,7 +112,7 @@ sub scan {
                 $v->{'recipient'} = $3;
                 $recipients++;
 
-            } elsif( $e =~ m/\Aundeliverable[ ]+to[ ]+(.+)\z/ ) {
+            } elsif( $e =~ /\Aundeliverable[ ]+to[ ]+(.+)\z/ ) {
                 # undeliverable to kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -169,9 +155,9 @@ sub scan {
             last;
         }
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

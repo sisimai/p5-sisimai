@@ -9,8 +9,7 @@ my $StartingOf = {
     'message' => ['--- The following addresses had delivery problems ---'],
     'rfc822'  => ['Content-Type: message/rfc822'],
 };
-
-my $ReFailure = {
+my $ReFailures = {
     'userunknown' => qr{(?:
          User[ ][(].+[@].+[)][ ]unknown[.]
         |550[ ]Unknown[ ]user[ ][^ ]+[@][^ ]+
@@ -98,7 +97,7 @@ sub scan {
             #
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>][ \t]+[(](.+)[)]\z/ ) {
+            if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ \t]+[(](.+)[)]\z/ ) {
                 # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -109,25 +108,25 @@ sub scan {
                 $diagnostic = $2;
                 $recipients++;
 
-            } elsif( $e =~ m/\A[Oo]riginal-[Rr]ecipient:[ ]*([^ ]+)\z/ ) {
+            } elsif( $e =~ /\AOriginal-Recipient:[ ]*([^ ]+)\z/ ) {
                 # Original-Recipient: <kijitora@example.co.jp>
                 $v->{'alias'} = Sisimai::Address->s3s4($1);
 
-            } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                 # Action: failed
                 $v->{'action'} = lc $1;
 
-            } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\ARemote-MTA:[ ]*(.+)\z/ ) {
                 # Remote-MTA: 192.0.2.192
                 $v->{'rhost'} = lc $1;
 
             } else {
-                if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
 
-                } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A\t+(.+)\z/ ) {
+                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A\t+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
@@ -146,9 +145,9 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

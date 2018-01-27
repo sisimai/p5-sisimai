@@ -11,7 +11,6 @@ my $MarkingsOf = {
     'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
     'rhost'   => qr/\AGenerating[ ]server:[ ]?(.*)/,
 };
-
 my $NDRSubject = {
     'SMTPSEND.DNS.NonExistentDomain'=> 'hostunknown',   # 554 5.4.4 SMTPSEND.DNS.NonExistentDomain
     'SMTPSEND.DNS.MxLoopback'       => 'networkerror',  # 554 5.4.4 SMTPSEND.DNS.MxLoopback
@@ -106,7 +105,7 @@ sub scan {
                 # Original message headers:
                 $v = $dscontents->[-1];
 
-                if( $e =~ m/\A([^ @]+[@][^ @]+)\z/ ) {
+                if( $e =~ /\A([^ @]+[@][^ @]+)\z/ ) {
                     # kijitora@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -116,7 +115,7 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\A[#]([45]\d{2})[ ]([45][.]\d[.]\d+)[ ].+\z/ ) {
+                } elsif( $e =~ /\A[#]([45]\d{2})[ ]([45][.]\d[.]\d+)[ ].+\z/ ) {
                     # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
                     # #550 5.2.3 RESOLVER.RST.RecipSizeLimit; message too large for this recipien=
                     # t ##
@@ -125,10 +124,9 @@ sub scan {
                     $v->{'diagnosis'} = $e;
 
                 } else {
-                    if( length $v->{'diagnosis'} && $v->{'diagnosis'} =~ m/=\z/ ) {
+                    if( length $v->{'diagnosis'} && substr($v->{'diagnosis'}, -1, 1) eq '=' ) {
                         # Continued line of error messages
-                        $v->{'diagnosis'} =~ s/=\z//;
-                        $v->{'diagnosis'} .= $e;
+                        substr($v->{'diagnosis'}, -1, 1, $e);
                     }
                 }
             } else {

@@ -9,8 +9,7 @@ my $StartingOf = {
     'message' => ['Your message'],
     'rfc822'  => ['Content-Type: message/delivery-status'],
 };
-
-my $ReFailure = {
+my $ReFailures = {
     'userunknown' => qr{(?>
          not[ ]listed[ ]in[ ](?:
              Domino[ ]Directory
@@ -19,12 +18,8 @@ my $ReFailure = {
         |Domino[ ]ディレクトリには見つかりません
         )
     }x,
-    'filtered' => qr{
-        Cannot[ ]route[ ]mail[ ]to[ ]user
-    }x,
-    'systemerror' => qr{
-        Several[ ]matches[ ]found[ ]in[ ]Domino[ ]Directory
-    }x,
+    'filtered'    => qr/Cannot route mail to user/,
+    'systemerror' => qr/Several matches found in Domino Directory/x,
 };
 
 sub description { 'IBM Domino Server' }
@@ -115,7 +110,7 @@ sub scan {
                 $v->{'recipient'} ||= $e;
                 $recipients++;
 
-            } elsif( $e =~ m/\A[ ][ ]([^ ]+[@][^ ]+)\z/ ) {
+            } elsif( $e =~ /\A[ ][ ]([^ ]+[@][^ ]+)\z/ ) {
                 # Continued from the line "was not delivered to:"
                 #   kijitora@example.net
                 $v->{'recipient'} = Sisimai::Address->s3s4($1);
@@ -129,7 +124,7 @@ sub scan {
                     # Error message, continued from the line "because:"
                     $v->{'diagnosis'} = $e;
 
-                } elsif( $e =~ m/\A[ ][ ]Subject: (.+)\z/ ) {
+                } elsif( $e =~ /\A[ ][ ]Subject: (.+)\z/ ) {
                     #   Subject: Nyaa
                     $subjecttxt = $1;
                 }
@@ -146,9 +141,9 @@ sub scan {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
 
-        for my $r ( keys %$ReFailure ) {
+        for my $r ( keys %$ReFailures ) {
             # Check each regular expression of Domino error messages
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             my $pseudostatus = Sisimai::SMTP::Status->code($r, 0);
             $e->{'status'} = $pseudostatus if length $pseudostatus;
@@ -159,7 +154,7 @@ sub scan {
     unless( grep { index($_, 'Subject:') == 0 } @$rfc822list ) {
         # Set the value of $subjecttxt as a Subject if there is no original
         # message in the bounce mail.
-        push @$rfc822list, sprintf("Subject: %s", $subjecttxt);
+        push @$rfc822list, 'Subject: '.$subjecttxt;
     }
 
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

@@ -17,8 +17,7 @@ my $MarkingsOf = {
         )
     }x,
 };
-
-my $CodeTable = {
+my $StatusList = {
     # https://support.office.com/en-us/article/Email-non-delivery-reports-in-Office-365-51daa6b9-2e35-49c4-a0c9-df85bf8533c3
     qr/\A4[.]4[.]7\z/        => 'expired',
     qr/\A4[.]7[.]26\z/       => 'securityerror',
@@ -148,7 +147,7 @@ sub scan {
             # nding the message.
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ) {
+            if( $e =~ /\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ) {
                 # kijitora@example.com<mailto:kijitora@example.com>
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -158,7 +157,7 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ m/\AGenerating server: (.+)\z/ ) {
+            } elsif( $e =~ /\AGenerating server: (.+)\z/ ) {
                 # Generating server: FFFFFFFFFFFF.e0.prod.outlook.com
                 $connheader->{'lhost'} = lc $1;
 
@@ -171,23 +170,23 @@ sub scan {
                         next;
                     }
 
-                    if( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+                    if( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                         # Action: failed
                         $v->{'action'} = lc $1;
 
-                    } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+                    } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                         # Status:5.2.0
                         $v->{'status'} = $1;
 
-                    } elsif( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                    } elsif( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                         # Reporting-MTA: dns;BLU004-OMC3S13.hotmail.example.com
                         $connheader->{'lhost'} = lc $1;
 
-                    } elsif( $e =~ m/\A[Rr]eceived-[Ff]rom-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                    } elsif( $e =~ /\AReceived-From-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                         # Reporting-MTA: dns;BLU004-OMC3S13.hotmail.example.com
                         $connheader->{'rhost'} = lc $1;
 
-                    } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
+                    } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
                         # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                         next if length $connheader->{'date'};
                         $connheader->{'date'} = $1;
@@ -210,7 +209,7 @@ sub scan {
                             $endoferror = 1;
                             next;
                         }
-                        $v->{'diagnosis'}  .= ' '.$e;
+                        $v->{'diagnosis'} .= ' '.$e;
                     }
                 }
             }
@@ -234,11 +233,11 @@ sub scan {
         }
         next unless $e->{'status'};
 
-        # Find the error code from $CodeTable
-        for my $f ( keys %$CodeTable ) {
+        # Find the error code from $StatusList
+        for my $f ( keys %$StatusList ) {
             # Try to match with each key as a regular expression
             next unless $e->{'status'} =~ $f;
-            $e->{'reason'} = $CodeTable->{ $f };
+            $e->{'reason'} = $StatusList->{ $f };
             last;
         }
     }

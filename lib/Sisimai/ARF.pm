@@ -275,7 +275,7 @@ sub scan {
         }
     }
 
-    if( $mhead->{'subject'} =~ /complaint about message from ((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))/ ) {
+    if( $mhead->{'subject'} =~ /complaint about message from (\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3})/ ) {
         # Microsoft ARF: remote host address.
         $arfheaders->{'rhost'} = $1;
         $commondata->{'diagnosis'} = sprintf(

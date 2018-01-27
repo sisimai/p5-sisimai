@@ -44,7 +44,7 @@ sub adapt {
         #   'smtp-id' => '<201709042010.v84KAQ5T032530@example.nyaan.jp>',
         #   'status' => '5.2.2'
         # },
-        return undef unless $argvs->{'event'} =~ qr/\A(?:bounce|deferred|delivered|spamreport)\z/;
+        return undef unless $argvs->{'event'} =~ /\A(?:bounce|deferred|delivered|spamreport)\z/;
         use Sisimai::Time;
         $dscontents = [__PACKAGE__->DELIVERYSTATUS];
         $v = $dscontents->[-1];
@@ -81,7 +81,6 @@ sub adapt {
             'from'       => Sisimai::Address->undisclosed('s'),
             'message-id' => $argvs->{'sg_message_id'},
         };
-
     } else {
         #   {
         #       "status": "4.0.0",
@@ -98,11 +97,11 @@ sub adapt {
         my $statuscode = $argvs->{'status'} || '';
         my $diagnostic = Sisimai::String->sweep($argvs->{'reason'}) || '';
 
-        if( $statuscode =~ m/\A[245]\d\d\z/ ) {
+        if( $statuscode =~ /\A[245]\d\d\z/ ) {
             # "status": "550"
             $v->{'replycode'} = $statuscode;
 
-        } elsif( $statuscode =~ m/\A[245][.]\d[.]\d+\z/ ) {
+        } elsif( $statuscode =~ /\A[245][.]\d[.]\d+\z/ ) {
             # "status": "5.1.1"
             $v->{'status'} = $statuscode;
         }
@@ -164,7 +163,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -51,11 +51,9 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    my $statuscode = $argvs->deliverystatus // '';
-    my $reasontext = __PACKAGE__->text;
+    return undef unless $argvs->deliverystatus;
 
-    return undef unless length $statuscode;
-    return 1 if $argvs->reason eq $reasontext;
+    return 1 if $argvs->reason eq __PACKAGE__->text;
     return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
     return 0
 }
@@ -107,7 +105,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

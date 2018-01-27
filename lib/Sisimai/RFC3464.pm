@@ -228,7 +228,7 @@ sub scan {
                     # Diagnostic-Code: 554 ...
                     $v->{'diagnosis'} = $1;
 
-                } elsif( $p =~ /\ADiagnostic-Code:[ ]*/ && $e =~ /\A[ \t]+(.+)\z/ ) {
+                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
@@ -297,7 +297,7 @@ sub scan {
         last if $recipients;
 
         # Failed to get a recipient address at code above
-        $match ||= 1 if $mhead->{'from'} =~ /\b(?:postmaster|mailer-daemon|root)[@]/i;
+        $match ||= 1 if lc($mhead->{'from'}) =~ /\b(?:postmaster|mailer-daemon|root)[@]/;
         $match ||= 1 if $mhead->{'subject'} =~ qr{(?>
              delivery[ ](?:failed|failure|report)
             |failure[ ]notice
@@ -443,7 +443,7 @@ sub scan {
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
-            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ /__\z/ ) {
+            if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__') {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
             }

@@ -9,10 +9,7 @@ my $StartingOf = {
     'message' => ['This message was created automatically by mail delivery software'],
     'rfc822'  => ['--- The header of the original message is following'],
 };
-
-my $ReFailure = {
-    'expired' => qr/delivery[ ]retry[ ]timeout[ ]exceeded/x,
-};
+my $ReFailures = { 'expired' => qr/delivery retry timeout exceeded/ };
 
 # Envelope-To: <kijitora@mail.example.com>
 # X-GMX-Antispam: 0 (Mail was not recognized as spam); Detail=V3;
@@ -94,8 +91,8 @@ sub scan {
             # 5.1.1 <shironeko@example.jp>... User Unknown
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A["]([^ ]+[@][^ ]+)["]:\z/ ||
-                $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
+            if( $e =~ /\A["]([^ ]+[@][^ ]+)["]:\z/ ||
+                $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
                 # "shironeko@example.jp":
                 # ---- OR ----
                 # <kijitora@6jo.example.co.jp>
@@ -110,19 +107,19 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ m/\ASMTP error .+ ([A-Z]{4}) command:\z/ ) {
+            } elsif( $e =~ /\ASMTP error .+ ([A-Z]{4}) command:\z/ ) {
                 # SMTP error from remote server after RCPT command:
                 $v->{'command'} = $1;
 
-            } elsif( $e =~ m/\Ahost:[ \t]*(.+)\z/ ) {
+            } elsif( $e =~ /\Ahost:[ \t]*(.+)\z/ ) {
                 # host: mx.example.jp
                 $v->{'rhost'} = $1;
 
             } else {
                 # Get error message
-                if( $e =~ m/\b[45][.]\d[.]\d\b/  ||
-                    $e =~ m/[<][^ ]+[@][^ ]+[>]/ ||
-                    $e =~ m/\b[45]\d{2}\b/ ) {
+                if( $e =~ /\b[45][.]\d[.]\d\b/  ||
+                    $e =~ /[<][^ ]+[@][^ ]+[>]/ ||
+                    $e =~ /\b[45]\d{2}\b/ ) {
 
                     $v->{'diagnosis'} ||= $e;
 
@@ -146,12 +143,12 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} =~ s{\\n}{ }g;
+        $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

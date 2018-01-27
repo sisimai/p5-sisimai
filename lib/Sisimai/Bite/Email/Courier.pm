@@ -12,18 +12,14 @@ my $StartingOf = {
     'rfc822'  => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],
 };
 
-my $ReFailure = {
+my $ReFailures = {
     # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
-    'hostunknown' => qr{
-        \ANo[ ]such[ ]domain[.]\z
-    }x,
+    'hostunknown' => qr/\ANo such domain[.]\z/,
     # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
     # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
-    'systemerror' => qr{
-        \AThis[ ]domain's[ ]DNS[ ]violates[ ]RFC[ ]1035[.]\z
-    }x,
+    'systemerror' => qr/\AThis domain's DNS violates RFC 1035[.]\z/,
 };
-my $ReDelayed = {
+my $ReDelaying = {
     # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
     'networkerror' => qr/\ADNS[ ]lookup[ ]failed[.]\z/,
 };
@@ -114,7 +110,7 @@ sub scan {
                 # Diagnostic-Code: smtp; 550 5.1.1 <kijitora@example.co.jp>... User Unknown
                 $v = $dscontents->[-1];
 
-                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
+                if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: rfc822; kijitora@example.co.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -124,40 +120,38 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\A[Xx]-[Aa]ctual-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
+                } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # X-Actual-Recipient: RFC822; kijitora@example.co.jp
                     $v->{'alias'} = $1;
 
-                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.1.1
                     # Status:5.2.0
                     # Status: 5.1.0 (permanent failure)
                     $v->{'status'} = $1;
 
-                } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Remote-MTA: DNS; mx.example.jp
                     $v->{'rhost'} = lc $1;
-                    if( $v->{'rhost'} =~ m/ / ) {
+                    if( index($v->{'rhost'}, ' ') > -1 ) {
                         # Get the first element
                         $v->{'rhost'} = (split(' ', $v->{'rhost'}))[0];
                     }
-
-                } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
                     # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                     $v->{'date'} = $1;
 
                 } else {
-
-                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
+                    } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
@@ -182,24 +176,24 @@ sub scan {
                 # <<< 550 5.1.1 <kijitora@example.co.jp>... User Unknown
                 #
                 # ---------------------------------------------------------------------------
-                if( $e =~ m/\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
+                if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
                     # >>> DATA
                     next if $commandtxt;
                     $commandtxt = $1;
 
-                } elsif( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
                     next if $connheader->{'rhost'};
                     $connheader->{'rhost'} = lc $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\A[Rr]eceived-[Ff]rom-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AReceived-From-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Received-From-MTA: DNS; x1x2x3x4.dhcp.example.ne.jp
                     next if $connheader->{'lhost'};
                     $connheader->{'lhost'} = lc $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                     next if $connheader->{'date'};
                     $connheader->{'date'} = $1;
@@ -220,17 +214,17 @@ sub scan {
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        HARD_E: for my $r ( keys %$ReFailure ) {
+        HARD_E: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }
 
         unless( $e->{'reason'} ) {
-            for my $r ( keys %$ReDelayed ) {
+            for my $r ( keys %$ReDelaying ) {
                 # Verify each regular expression of session errors
-                next unless $e->{'diagnosis'} =~ $ReDelayed->{ $r };
+                next unless $e->{'diagnosis'} =~ $ReDelaying->{ $r };
                 $e->{'reason'} = $r;
                 last;
             }

@@ -58,35 +58,18 @@ sub true {
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
     my $tempreason = Sisimai::SMTP::Status->name($statuscode);
-    my $reasontext = __PACKAGE__->text;
-    my $v = 0;
 
     return 0 if $tempreason eq 'suspend';
-
-    if( $tempreason eq $reasontext ) {
+    if( $tempreason eq __PACKAGE__->text ) {
         # Delivery status code points "filtered".
-        if( Sisimai::Reason::UserUnknown->match($diagnostic) ||
-            __PACKAGE__->match($diagnostic) ) {
+        return 1 if( Sisimai::Reason::UserUnknown->match($diagnostic) || __PACKAGE__->match($diagnostic) );
 
-            $v = 1 
-        }
-    } else {
+    } elsif( $commandtxt ne 'RCPT' && $commandtxt ne 'MAIL' ) {
         # Check the value of Diagnostic-Code and the last SMTP command
-        if( $commandtxt ne 'RCPT' && $commandtxt ne 'MAIL' ) {
-            # Check the last SMTP command of the session. 
-            if( __PACKAGE__->match($diagnostic) ) {
-                # Matched with a pattern in this class
-                $v = 1;
-
-            } else {
-                # Did not match with patterns in this class,
-                # Check the value of "Diagnostic-Code" with other error patterns.
-                $v = 1 if Sisimai::Reason::UserUnknown->match($diagnostic);
-            }
-        }
+        return 1 if __PACKAGE__->match($diagnostic);
+        return 1 if Sisimai::Reason::UserUnknown->match($diagnostic);
     }
-
-    return $v;
+    return 0;
 }
 
 
@@ -148,7 +131,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

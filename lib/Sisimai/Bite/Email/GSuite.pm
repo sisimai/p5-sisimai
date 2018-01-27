@@ -11,7 +11,6 @@ my $MarkingsOf = {
     'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
 };
-
 my $ErrorMayBe = {
     'userunknown'  => qr/because the address couldn't be found/,
     'notaccept'    => qr/Null MX/,
@@ -97,7 +96,7 @@ sub scan {
                 # Last-Attempt-Date: Fri, 24 Mar 2017 23:34:10 -0700 (PDT)
                 $v = $dscontents->[-1];
 
-                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
+                if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: rfc822; kijitora@example.de
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -107,25 +106,25 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.0.0
                     $v->{'status'} = $1;
 
-                } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Remote-MTA: dns; 192.0.2.222 (192.0.2.222, the server for the domain.)
                     $v->{'rhost'} = lc $1;
-                    $v->{'rhost'} = '' if $v->{'rhost'} =~ m/\A\s+\z/;  # Remote-MTA: DNS; 
+                    $v->{'rhost'} = '' if $v->{'rhost'} =~ /\A\s+\z/;  # Remote-MTA: DNS; 
 
-                } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
                     # Last-Attempt-Date: Fri, 24 Mar 2017 23:34:10 -0700 (PDT)
                     $v->{'date'} = $1;
 
                 } else {
-                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: smtp; 550 #5.1.0 Address rejected.
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
@@ -147,13 +146,13 @@ sub scan {
                 # Received-From-MTA: dns; sironeko@example.jp
                 # Arrival-Date: Fri, 24 Mar 2017 23:34:07 -0700 (PDT)
                 # X-Original-Message-ID: <06C1ED5C-7E02-4036-AEE1-AA448067FB2C@example.jp>
-                if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; googlemail.com
                     next if length $connheader->{'lhost'};
                     $connheader->{'lhost'} = lc $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                     next if length $connheader->{'date'};
                     $connheader->{'date'} = $1;
@@ -213,7 +212,7 @@ sub scan {
         if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
-            if( $e->{'diagnosis'} =~ m/\A\d+\z/ ) {
+            if( $e->{'diagnosis'} =~ /\A\d+\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $anotherset->{'diagnosis'};
 

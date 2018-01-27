@@ -57,22 +57,18 @@ sub true {
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
-    my $tempreason = Sisimai::SMTP::Status->name($statuscode);
-    my $reasontext = __PACKAGE__->text;
-    my $v = 0;
 
-    if( $tempreason eq $reasontext ) {
+    if( Sisimai::SMTP::Status->name($statuscode) eq __PACKAGE__->text ) {
         # Status: 5.1.2
         # Diagnostic-Code: SMTP; 550 Host unknown
         require Sisimai::Reason::NetworkError;
-        $v = 1 unless Sisimai::Reason::NetworkError->match($diagnostic);
+        return 1 unless Sisimai::Reason::NetworkError->match($diagnostic);
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
-        $v = 1 if __PACKAGE__->match($diagnostic);
+        return 1 if __PACKAGE__->match($diagnostic);
     }
-
-    return $v;
+    return 0;
 }
 
 1;
@@ -130,7 +126,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

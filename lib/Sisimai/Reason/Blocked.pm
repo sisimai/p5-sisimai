@@ -161,21 +161,9 @@ sub true {
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::SMTP::Status;
-    my $statuscode = $argvs->deliverystatus // '';
-    my $diagnostic = $argvs->diagnosticcode // '';
-    my $tempreason = Sisimai::SMTP::Status->name($statuscode);
-    my $reasontext = __PACKAGE__->text;
-    my $v = 0;
-
-    if( $tempreason eq $reasontext ) {
-        # Delivery status code points "blocked".
-        $v = 1;
-
-    } else {
-        # Matched with a pattern in this class
-        $v = 1 if __PACKAGE__->match($diagnostic);
-    }
-    return $v;
+    return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus // '') eq __PACKAGE__->text;
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
+    return 0;
 }
 
 1;
@@ -230,7 +218,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -57,7 +57,7 @@ sub sweep {
 
     chomp $argv1;
     $argv1 =~ y/ //s;
-    $argv1 =~ s/\t//g;
+    $argv1 =~ y/\t//d;
     $argv1 =~ s/\A //g;
     $argv1 =~ s/ \z//g;
     $argv1 =~ s/ [-]{2,}[^ \t].+\z//;

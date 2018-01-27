@@ -89,7 +89,7 @@ sub scan {
             # ============================================================================
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[ \t]+[*][ \t]([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ /\A[ \t]+[*][ \t]([^ ]+[@][^ ]+)\z/ ) {
                 #   * kijitora@example.com
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -101,12 +101,12 @@ sub scan {
 
             } else {
                 # Detect error message
-                if( $e =~ m/\ASMTP:([^ ]+)[ \t](.+)\z/ ) {
+                if( $e =~ /\ASMTP:([^ ]+)[ \t](.+)\z/ ) {
                     # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
                     $v->{'command'} = uc $1;
                     $v->{'diagnosis'} = $2;
 
-                } elsif( $e =~ m/\ARouting: (.+)/ ) {
+                } elsif( $e =~ /\ARouting: (.+)/ ) {
                     # Routing: Could not find a gateway for kijitora@example.co.jp
                     $v->{'diagnosis'} = $1;
                 }

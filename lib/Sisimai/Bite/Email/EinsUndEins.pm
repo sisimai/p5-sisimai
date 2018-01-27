@@ -10,10 +10,7 @@ my $StartingOf = {
     'rfc822'  => ['--- The header of the original message is following'],
     'error'   => ['For the following reason:'],
 };
-
-my $ReFailure = {
-    'mesgtoobig' => qr/Mail[ ]size[ ]limit[ ]exceeded/x,
-};
+my $ReFailures = { 'mesgtoobig' => qr/Mail size limit exceeded/, };
 
 # X-UI-Out-Filterresults: unknown:0;
 # sub headerlist  { return ['X-UI-Out-Filterresults'] }
@@ -89,7 +86,7 @@ sub scan {
             # http://postmaster.1and1.com/en/error-messages?ip=%1s
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
                 # general@example.eu
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -121,9 +118,9 @@ sub scan {
         $e->{'diagnosis'} =~ s/\A$StartingOf->{'error'}->[0]//g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }
@@ -182,5 +179,4 @@ Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
-
 

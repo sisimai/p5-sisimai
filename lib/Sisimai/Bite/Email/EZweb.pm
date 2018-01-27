@@ -16,13 +16,10 @@ my $MarkingsOf = {
     'rfc822'   => qr#\A(?:[-]{50}|Content-Type:[ ]*message/rfc822)#,
     'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
 };
-
-my $ReFailure = {
-    #'notaccept' => [ qr/The following recipients did not receive this message:/ ],
-    'mailboxfull' => [
-        qr/The user[(]s[)] account is temporarily over quota/,
-    ],
-    'suspend' => [
+my $ReFailures = {
+    #'notaccept'  => [qr/The following recipients did not receive this message:/],
+    'mailboxfull' => [qr/The user[(]s[)] account is temporarily over quota/],
+    'suspend'     => [
         # http://www.naruhodo-au.kddi.com/qa3429203.html
         # The recipient may be unpaid user...?
         qr/The user[(]s[)] account is disabled[.]/,
@@ -33,9 +30,7 @@ my $ReFailure = {
         # Remote host is not responding.
         qr/Your message was not delivered within /,
     ],
-    'onhold' => [
-        qr/Each of the following recipients was rejected by a remote mail server/,
-    ],
+    'onhold' => [qr/Each of the following recipients was rejected by a remote mail server/],
 };
 
 sub headerlist  { return ['X-SPASIGN'] }
@@ -67,9 +62,9 @@ sub scan {
     #
     $match++ if index($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
     $match++ if $mhead->{'subject'} eq 'Mail System Error - Returned Mail';
-    $match++ if grep { $_ =~ /\Afrom[ ](?:.+[.])?ezweb[.]ne[.]jp[ ]/ } @{ $mhead->{'received'} };
+    $match++ if grep { index($_, 'ezweb.ne.jp (EZweb Mail) with') > -1 } @{ $mhead->{'received'} };
     if( defined $mhead->{'message-id'} ) {
-        $match++ if $mhead->{'message-id'} =~ /[.]ezweb[.]ne[.]jp[>]\z/;
+        $match++ if substr($mhead->{'message-id'}, -13, 13) eq '.ezweb.ne.jp>';
     }
     return undef if $match < 2;
 
@@ -95,7 +90,7 @@ sub scan {
             $MarkingsOf->{'boundary'} = qr/\A\Q$b0\E\z/;
         }
     }
-    my @rxmessages = (); map { push @rxmessages, @{ $ReFailure->{ $_ } } } (keys %$ReFailure);
+    my @rxmessages = (); map { push @rxmessages, @{ $ReFailures->{ $_ } } } (keys %$ReFailures);
 
     for my $e ( @hasdivided ) {
         # Read each line between the start of the message and the start of rfc822 part.
@@ -139,9 +134,9 @@ sub scan {
             #    <<< 550 <******@ezweb.ne.jp>: User unknown
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
-                $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
-                $e =~ m/\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
+            if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
+                $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
+                $e =~ /\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
 
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -154,27 +149,27 @@ sub scan {
                     $v->{'recipient'} = $r;
                     $recipients++;
                 }
-            } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+            } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # Status: 5.1.1
                 # Status:5.2.0
                 # Status: 5.1.0 (permanent failure)
                 $v->{'status'} = $1;
 
-            } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                 # Action: failed
                 $v->{'action'} = lc $1;
 
-            } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                 # Remote-MTA: DNS; mx.example.jp
                 $v->{'rhost'} = lc $1;
 
-            } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
                 # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                 $v->{'date'} = $1;
 
             } else {
                 next if Sisimai::String->is_8bit(\$e);
-                if( $e =~ m/\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
+                if( $e =~ /\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
                     #    >>> RCPT TO:<******@ezweb.ne.jp>
                     $v->{'command'} = $1;
 
@@ -197,7 +192,7 @@ sub scan {
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
-            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ /__\z/ ) {
+            if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__' ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
             }
@@ -218,9 +213,9 @@ sub scan {
 
             } else {
                 # SMTP command is not RCPT
-                SESSION: for my $r ( keys %$ReFailure ) {
+                SESSION: for my $r ( keys %$ReFailures ) {
                     # Verify each regular expression of session errors
-                    PATTERN: for my $rr ( @{ $ReFailure->{ $r } } ) {
+                    PATTERN: for my $rr ( @{ $ReFailures->{ $r } } ) {
                         # Check each regular expression
                         next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
                         $e->{'reason'} = $r;
@@ -232,7 +227,7 @@ sub scan {
 
         unless( $e->{'reason'} ) {
             # The value of "reason" is not set yet.
-            unless( $e->{'recipient'} =~ m/[@]ezweb[.]ne[.]jp\z/ ) {
+            unless( substr($e->{'recipient'}, -12, -12) eq '@ezweb.ne.jp' ) {
                 # Deal as "userunknown" when the domain part of the recipient
                 # is "ezweb.ne.jp".
                 $e->{'reason'} = 'userunknown';

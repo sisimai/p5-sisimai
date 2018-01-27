@@ -18,7 +18,7 @@ my $MarkingsOf = {
     }x,
 };
 
-my $ReFailure = {
+my $ReFailures = {
     'expired' => qr{(?:
          DNS[ ]Error:[ ]Could[ ]not[ ]contact[ ]DNS[ ]servers
         |Delivery[ ]to[ ]the[ ]following[ ]recipient[ ]has[ ]been[ ]delayed
@@ -143,15 +143,15 @@ sub scan {
     #
     #   -- OR --
     #   THIS IS A WARNING MESSAGE ONLY.
-    #   
+    #
     #   YOU DO NOT NEED TO RESEND YOUR MESSAGE.
-    #   
+    #
     #   Delivery to the following recipient has been delayed:
-    #   
+    #
     #        mailboxfull@example.jp
-    #   
+    #
     #   Message will be retried for 2 more day(s)
-    #   
+    #
     #   Technical details of temporary failure:
     #   Google tried to deliver your message, but it was rejected by the recipient
     #   domain. We recommend contacting the other email provider for further infor-
@@ -161,13 +161,13 @@ sub scan {
     #   -- OR --
     #
     #   Delivery to the following recipient failed permanently:
-    #   
+    #
     #        userunknown@example.jp
-    #   
+    #
     #   Technical details of permanent failure:=20
     #   Google tried to deliver your message, but it was rejected by the server for=
     #    the recipient domain example.jp by mx.example.jp. [192.0.2.59].
-    #   
+    #
     #   The error that the other server returned was:
     #   550 5.1.1 <userunknown@example.jp>... User Unknown
     #
@@ -231,7 +231,7 @@ sub scan {
             #
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[ \t]+([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ /\A[ \t]+([^ ]+[@][^ ]+)\z/ ) {
                 # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -260,12 +260,12 @@ sub scan {
 
         unless( $e->{'rhost'} ) {
             # Get the value of remote host
-            if( $e->{'diagnosis'} =~ m/[ \t]+by[ \t]+([^ ]+)[.][ \t]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
+            if( $e->{'diagnosis'} =~ /[ \t]+by[ \t]+([^ ]+)[.][ \t]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
                 # Google tried to deliver your message, but it was rejected by # the server 
                 # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
                 my $hostname = $1;
                 my $ipv4addr = $2;
-                if( $hostname =~ m/[-0-9a-zA-Z]+[.][a-zA-Z]+\z/ ) {
+                if( $hostname =~ /[-0-9a-zA-Z]+[.][a-zA-Z]+\z/ ) {
                     # Maybe valid hostname
                     $e->{'rhost'} = $hostname;
                 } else {
@@ -275,7 +275,7 @@ sub scan {
             }
         }
 
-        $statecode0 = $1 if $e->{'diagnosis'} =~ m/[(]state[ ](\d+)[)][.]/;
+        $statecode0 = $1 if $e->{'diagnosis'} =~ /[(]state[ ](\d+)[)][.]/;
         if( exists $StateTable->{ $statecode0 } ) {
             # (state *)
             $e->{'reason'}  = $StateTable->{ $statecode0 }->{'reason'};
@@ -283,9 +283,9 @@ sub scan {
 
         } else {
             # No state code
-            SESSION: for my $r ( keys %$ReFailure ) {
+            SESSION: for my $r ( keys %$ReFailures ) {
                 # Verify each regular expression of session errors
-                next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
                 $e->{'reason'} = $r;
                 last;
             }
@@ -294,10 +294,9 @@ sub scan {
 
         # Set pseudo status code
         $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'});
-        if( $e->{'status'} =~ m/\A[45][.][1-7][.][1-9]\z/ ) {
+        if( $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/ ) {
             # Override bounce reason 
             $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'});
-
         }
     }
 

@@ -36,22 +36,15 @@ sub true {
     return undef unless length $statuscode;
     return 1 if $argvs->reason eq $reasontext;
 
+    # Delivery status code points "exceedlimit".
+    # Status: 5.2.3
+    # Diagnostic-Code: SMTP; 552 5.2.3 Message size exceeds fixed maximum message size
     require Sisimai::SMTP::Status;
-    my $diagnostic = $argvs->diagnosticcode // '';
-    my $v = 0;
+    return 1 if Sisimai::SMTP::Status->name($statuscode) eq $reasontext;
 
-    if( Sisimai::SMTP::Status->name($statuscode) eq $reasontext ) {
-        # Delivery status code points "exceedlimit".
-        # Status: 5.2.3
-        # Diagnostic-Code: SMTP; 552 5.2.3 Message size exceeds fixed maximum message size
-        $v = 1;
-
-    } else {
-        # Check the value of Diagnosic-Code: header with patterns
-        $v = 1 if __PACKAGE__->match($diagnostic);
-    }
-
-    return $v;
+    # Check the value of Diagnosic-Code: header with patterns
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
+    return 0;
 }
 
 1;
@@ -115,7 +108,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

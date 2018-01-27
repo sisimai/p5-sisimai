@@ -85,37 +85,29 @@ sub true {
     my $statuscode = $argvs->deliverystatus // '';
     my $reasontext = __PACKAGE__->text;
     my $tempreason = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
+    my $diagnostic = $argvs->diagnosticcode // '';
 
     return 1 if $argvs->reason eq $reasontext;
+    return 1 if $tempreason eq $reasontext; # Delivery status code points "rejected".
 
-    my $diagnostic = $argvs->diagnosticcode // '';
-    my $v = 0;
+    # Check the value of Diagnosic-Code: header with patterns
+    if( $argvs->smtpcommand eq 'MAIL' ) {
+        # The session was rejected at 'MAIL FROM' command
+        return 1 if __PACKAGE__->match($diagnostic);
 
-    if( $tempreason eq $reasontext ) {
-        # Delivery status code points "rejected".
-        $v = 1;
-    } else {
-        # Check the value of Diagnosic-Code: header with patterns
-        if( $argvs->smtpcommand eq 'MAIL' ) {
-            # The session was rejected at 'MAIL FROM' command
-            $v = 1 if __PACKAGE__->match($diagnostic);
-
-        } elsif( $argvs->smtpcommand eq 'DATA' ) {
-            # The session was rejected at 'DATA' command
-            if( $tempreason ne 'userunknown' ) {
-                # Except "userunknown"
-                $v = 1 if __PACKAGE__->match($diagnostic);
-            }
-        } else {
-            if( $tempreason =~ /\A(?:onhold|undefined|securityerror|systemerror)\z/ ) {
-                # Try to match with message patterns when the temporary reason
-                # is "onhold", "undefined", "securityerror", or "systemerror"
-                $v = 1 if __PACKAGE__->match($diagnostic);
-            }
+    } elsif( $argvs->smtpcommand eq 'DATA' ) {
+        # The session was rejected at 'DATA' command
+        if( $tempreason ne 'userunknown' ) {
+            # Except "userunknown"
+            return 1 if __PACKAGE__->match($diagnostic);
         }
+    } elsif( $tempreason =~ /\A(?:onhold|undefined|securityerror|systemerror)\z/ ) {
+        # Try to match with message patterns when the temporary reason
+        # is "onhold", "undefined", "securityerror", or "systemerror"
+        return 1 if __PACKAGE__->match($diagnostic);
     }
 
-    return $v;
+    return 0;
 }
 
 1;
@@ -171,7 +163,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

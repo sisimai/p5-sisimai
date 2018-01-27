@@ -80,7 +80,7 @@ sub scan {
             # This has been a permanent failure.  No further delivery attempts will be made.
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\AUnable to deliver message to: [<]([^ ]+[@][^ ]+)[>]\z/ ) {
+            if( $e =~ /\AUnable to deliver message to: [<]([^ ]+[@][^ ]+)[>]\z/ ) {
                 # Unable to deliver message to: <kijitora@example.org>
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
