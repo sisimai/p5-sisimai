@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.3p1
+v4.22.3p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -12,7 +12,8 @@ v4.22.3p1
   - Pull-Request #254, Remove unused method: Sisimai::Bite::Email->pattern and
     the same methods defined in each child class.
   - Obsoleted method Sisimai::Address->parse has been removed.
-  - Less regular expression #255. Thanks to @xtetsuji.
+  - The following performance improvements makes 1.34 times faster.
+    - Less regular expression #255. Thanks to @xtetsuji.
     - The following Pull-Requests have been imported from rb-Sisimai.
       - sisimai/rb-Sisimai#105
       - sisimai/rb-Sisimai#107
@@ -20,6 +21,7 @@ v4.22.3p1
     - Replace `$v =~ /\A...\z/` with `$v eq '...'`
     - Replace `$v =~ /\A.../` with `index($v, '...') == 0`
     - Replace `$v =~ /.../` with `index($v, '...') > -1`
+    - Replace `$v =~ /.\z/` with `substr($v, -1, 1) eq '.'`
 
 v4.22.3
 --------------------------------------------------------------------------------
