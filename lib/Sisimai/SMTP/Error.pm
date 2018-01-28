@@ -24,13 +24,10 @@ sub is_permanent {
     my $class = shift;
     my $argv1 = shift || return undef;
 
-    my $statuscode = undef;
-    my $classvalue = undef;
+    my $statuscode   = Sisimai::SMTP::Status->find($argv1);
+       $statuscode ||= Sisimai::SMTP::Reply->find($argv1);
+    my $classvalue   = int(substr($statuscode, 0, 1) || 0);
     my $getchecked = undef;
-
-    $statuscode   = Sisimai::SMTP::Status->find($argv1);
-    $statuscode ||= Sisimai::SMTP::Reply->find($argv1);
-    $classvalue   = int(substr($statuscode, 0, 1) || 0);
 
     if( $classvalue > 0 ) {
         # 2, 4, or 5
@@ -48,11 +45,12 @@ sub is_permanent {
         }
     } else {
         # Check with regular expression
-        if( $argv1 =~ m/(?:temporar|persistent)/i ) {
+        my $v = lc $argv1;
+        if( index($v, 'temporar') > -1 || index($v, 'persistent') > -1 ) {
             # Temporary failure
             $getchecked = 0;
 
-        } elsif( $argv1 =~ m/permanent/i ) {
+        } elsif( index($v, 'permanent') > -1 ) {
             # Permanently failure
             $getchecked = 1;
 
@@ -105,14 +103,8 @@ sub soft_or_hard {
             $statuscode   = Sisimai::SMTP::Status->find($argv2);
             $statuscode ||= Sisimai::SMTP::Reply->find($argv2);
             $classvalue   = int(substr($statuscode, 0, 1) || 0);
+            $softorhard   = $classvalue == 4 ? 'soft' : 'hard';
 
-            if( $classvalue == 4 ) {
-                # Deal as a "soft bounce"
-                $softorhard = 'soft';
-            } else {
-                # 5 or 0, deal as a "hard bounce"
-                $softorhard = 'hard';
-            }
         } else {
             # "notaccept" is a hard bounce
             $softorhard = 'hard';

@@ -34,24 +34,15 @@ my $StartingOf = {
     'message' => [' This is the MAILER-DAEMON, please DO NOT REPLY to this'],
     'rfc822'  => [' Below is a copy of the original message:'],
 };
-
-my $ReFailure = {
-    'expired' => qr{
-        # smtpd/queue.c:221|  envelope_set_errormsg(&evp, "Envelope expired");
-        Envelope[ ]expired
-    }x,
-    'hostunknown' => qr{(?:
-        # smtpd/mta.c:976|  relay->failstr = "Invalid domain name";
-         Invalid[ ]domain[ ]name
-        # smtpd/mta.c:980|  relay->failstr = "Domain does not exist";
-        |Domain[ ]does[ ]not[ ]exist
-        )
-    }x,
-    'notaccept' => qr{
-        # smtp/mta.c:1085|  relay->failstr = "Destination seem to reject all mails";
-        Destination[ ]seem[ ]to[ ]reject[ ]all[ ]mails
-    }x,
-    'networkerror' => qr{(?>
+my $ReFailures = {
+    # smtpd/queue.c:221|  envelope_set_errormsg(&evp, "Envelope expired");
+    'expired'     => qr/Envelope expired/,
+    # smtpd/mta.c:976|  relay->failstr = "Invalid domain name";
+    # smtpd/mta.c:980|  relay->failstr = "Domain does not exist";
+    'hostunknown' => qr/(?:Invalid domain name|Domain does not exist)/,
+    # smtp/mta.c:1085|  relay->failstr = "Destination seem to reject all mails";
+    'notaccept'   => qr/Destination seem to reject all mails/,
+    'networkerror'=> qr{(?>
         #  smtpd/mta.c:972|  relay->failstr = "Temporary failure in MX lookup";
          Address[ ]family[ ]mismatch[ ]on[ ]destination[ ]MXs
         |All[ ]routes[ ]to[ ]destination[ ]blocked
@@ -66,10 +57,8 @@ my $ReFailure = {
         |Temporary[ ]failure[ ]in[ ]MX[ ]lookup
         )
     }x,
-    'securityerror' => qr{
-        # smtpd/mta.c:1013|  relay->failstr = "Could not retrieve credentials";
-        Could[ ]not[ ]retrieve[ ]credentials
-    }x,
+    # smtpd/mta.c:1013|  relay->failstr = "Could not retrieve credentials";
+    'securityerror' => qr/Could not retrieve credentials/,
 };
 
 sub description { 'OpenSMTPD' }
@@ -91,7 +80,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless index($mhead->{'subject'}, 'Delivery status notification') == 0;
-    return undef unless $mhead->{'from'} =~ /\AMailer Daemon [<][^ ]+[@]/;
+    return undef unless index($mhead->{'from'}, 'Mailer Daemon <') == 0;
     return undef unless grep { index($_, ' (OpenSMTPD) with ') > -1 } @{ $mhead->{'received'} };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -147,7 +136,7 @@ sub scan {
             #    Below is a copy of the original message:
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A([^ ]+?[@][^ ]+?):?[ ](.+)\z/ ) {
+            if( $e =~ /\A([^ ]+?[@][^ ]+?):?[ ](.+)\z/ ) {
                 # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -160,17 +149,16 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

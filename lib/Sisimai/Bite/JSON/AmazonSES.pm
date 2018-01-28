@@ -19,6 +19,7 @@ my $BounceType = {
         'AttachmentRejected' => '',
     },
 };
+
 sub description { 'Amazon SES(JSON): http://aws.amazon.com/ses/' };
 sub scan {
     # Detect an error from Amazon SES(JSON)
@@ -56,7 +57,7 @@ sub scan {
 
         if( substr($e, -1, 1) eq '!' ) {
             # ... long long line ...![\n]
-            $e =~ s/!\z//;
+            substr($e, -1, 1, '');
             $foldedline = 1;
         }
         $jsonstring .= $e;
@@ -137,7 +138,7 @@ sub adapt {
                 $v->{'action'} = $e->{'action'};
                 $v->{'status'} = $e->{'status'};
 
-                if( $e->{'diagnosticCode'} =~ m/\A(.+?);[ ]*(.+)\z/ ) {
+                if( $e->{'diagnosticCode'} =~ /\A(.+?);[ ]*(.+)\z/ ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                     $v->{'spec'} = uc $1;
                     $v->{'diagnosis'} = $2;
@@ -146,10 +147,8 @@ sub adapt {
                     $v->{'diagnosis'} = $e->{'diagnosticCode'};
                 }
 
-                if( $o->{'reportingMTA'} =~ m/\Adsn;[ ](.+)\z/ ) {
-                    # 'reportingMTA' => 'dsn; a27-23.smtp-out.us-west-2.amazonses.com',
-                    $v->{'lhost'} = $1;
-                }
+                # 'reportingMTA' => 'dsn; a27-23.smtp-out.us-west-2.amazonses.com',
+                $v->{'lhost'} = $1 if $o->{'reportingMTA'} =~ /\Adsn;[ ](.+)\z/;
 
                 if( exists $BounceType->{ $o->{'bounceType'} } &&
                     exists $BounceType->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} } ) {
@@ -223,17 +222,15 @@ sub adapt {
         # "headers":[ { ...
         for my $e ( @{ $argvs->{'mail'}->{'headers'} } ) {
             # 'headers' => [ { 'name' => 'From', 'value' => 'neko@nyaan.jp' }, ... ],
-            next unless $e->{'name'} =~ m/\A(?:From|To|Subject|Message-ID|Date)\z/;
+            next unless $e->{'name'} =~ /\A(?:From|To|Subject|Message-ID|Date)\z/;
             $rfc822head->{ lc $e->{'name'} } = $e->{'value'};
         }
     }
 
     unless( $rfc822head->{'message-id'} ) {
         # Try to get the value of "Message-Id".
-        if( $argvs->{'mail'}->{'messageId'} ) {
-            # 'messageId' => '01010157e48f9b9b-891e9a0e-9c9d-4773-9bfe-608f2ef4756d-000000'
-            $rfc822head->{'message-id'} = $argvs->{'mail'}->{'messageId'};
-        }
+        # 'messageId' => '01010157e48f9b9b-891e9a0e-9c9d-4773-9bfe-608f2ef4756d-000000'
+        $rfc822head->{'message-id'} = $argvs->{'mail'}->{'messageId'} if $argvs->{'mail'}->{'messageId'};
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822head };
 }

@@ -29,12 +29,10 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
     return undef unless index($mhead->{'subject'}, 'Undeliverable Mail: "') == 0;
 
     require Sisimai::MIME;
     require Sisimai::String;
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -94,7 +92,7 @@ sub scan {
             #    dummyuser@blabla.xxxxxxxxxxxx.com
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[ \t]{4}([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ /\A[ \t]{4}([^ ]+[@][^ ]+)\z/ ) {
                 # The following recipients were affected: 
                 #    dummyuser@blabla.xxxxxxxxxxxx.com
                 if( length $v->{'recipient'} ) {
@@ -129,17 +127,17 @@ sub scan {
                     # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
                     # MessageName:        <B549996730000.000000000001.0003.mml>
                     # Last-Attempt-Date:  <16:21:07 seg, 22 Dezembro 2014>
-                    if( $e =~ m/\AOriginal Sender:[ \t]+[<](.+)[>]\z/ ) {
+                    if( $e =~ /\AOriginal Sender:[ \t]+[<](.+)[>]\z/ ) {
                         # Original Sender:    <originalsender@example.com>
                         # Use this line instead of "From" header of the original
                         # message.
-                        push @$rfc822list, sprintf("From: %s", $1);
+                        push @$rfc822list, 'From: '.$1;
 
-                    } elsif( $e =~ m/\ASender-MTA:[ \t]+[<](.+)[>]\z/ ) {
+                    } elsif( $e =~ /\ASender-MTA:[ \t]+[<](.+)[>]\z/ ) {
                         # Sender-MTA:         <10.11.12.13>
                         $v->{'lhost'} = $1;
 
-                    } elsif( $e =~ m/\AReporting-MTA:[ \t]+[<](.+)[>]\z/ ) {
+                    } elsif( $e =~ /\AReporting-MTA:[ \t]+[<](.+)[>]\z/ ) {
                         # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
                         $v->{'rhost'} = $1;
                     }
@@ -147,7 +145,6 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {

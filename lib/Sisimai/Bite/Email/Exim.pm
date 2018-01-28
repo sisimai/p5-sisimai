@@ -32,6 +32,7 @@ my $MarkingsOf = {
     # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
     # deliver.c:6425|          else fprintf(f,
     # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
+    'alias'   => qr/\A([ ]+an undisclosed address)\z/,
     'message' => qr{\A(?>
          This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
         |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
@@ -46,10 +47,9 @@ my $MarkingsOf = {
         |Content-Type:[ ]*message/rfc822
         )\z
     }x,
-    'alias'  => qr/\A([ ]+an[ ]undisclosed[ ]address)\z/,
 };
 
-my $ReCommand = [
+my $ReCommands = [
     # transports/smtp.c:564|  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
     # transports/smtp.c:837|  string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
@@ -57,11 +57,10 @@ my $ReCommand = [
     qr/LMTP error after ([A-Za-z]{4})/,
     qr/LMTP error after end of ([A-Za-z]{4})/,
 ];
-
-# find exim/ -type f -exec grep 'message = US' {} /dev/null \;
-my $ReFailure = {
+my $ReFailures = {
+    # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
     # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
-    'userunknown' => qr/user[ ]not[ ]found/x,
+    'userunknown' => qr/user not found/,
     # transports/smtp.c:3524|  addr->message = US"all host address lookups failed permanently";
     # routers/dnslookup.c:331|  addr->message = US"all relevant MX records point to non-existent hosts";
     # route.c:1826|  uschar *message = US"Unrouteable address";
@@ -76,7 +75,7 @@ my $ReFailure = {
     # transports/appendfile.c:2567|  addr->user_message = US"mailbox is full";
     # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "
     # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);
-    'mailboxfull' => qr/(?:mailbox[ ]is[ ]full:?|error:[ ]quota[ ]exceed)/x,
+    'mailboxfull' => qr/(?:mailbox is full:?|error: quota exceed)/,
     # routers/dnslookup.c:328|  addr->message = US"an MX or SRV record indicated no SMTP service";
     # transports/smtp.c:3502|  addr->message = US"no host found for existing SMTP connection";
     'notaccept' => qr{(?:
@@ -105,19 +104,19 @@ my $ReFailure = {
         )
     }x,
     # deliver.c:5425|  new->message = US"Too many \"Received\" headers - suspected mail loop";
-    'contenterror' => qr/Too[ ]many[ ]["]Received["][ ]headers/x,
+    'contenterror' => qr/Too many ["]Received["] headers/,
 };
 
-# retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
-# deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
-# smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
-# smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
-#                 "after this message arrived";
-# deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
-# deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
-# receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
-# receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
-my $ReDelayed = qr{(?:
+my $ReDelaying = qr{(?:
+    # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
+    # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
+    # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
+    # smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
+    #                 "after this message arrived";
+    # deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
+    # deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
+    # receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
+    # receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
      retry[ ]timeout[ ]exceeded
     |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
     |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
@@ -227,8 +226,8 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[ \t]{2}([^ \t]+[@][^ \t]+[.]?[a-zA-Z]+)(:.+)?\z/ ||
-                $e =~ m/\A[ \t]{2}[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ||
+            if( $e =~ /\A[ \t]{2}([^ \t]+[@][^ \t]+[.]?[a-zA-Z]+)(:.+)?\z/ ||
+                $e =~ /\A[ \t]{2}[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ||
                 $e =~ $MarkingsOf->{'alias'} ) {
                 #   kijitora@example.jp
                 #   sabineko@example.jp: forced freeze
@@ -245,7 +244,7 @@ sub scan {
                     $v = $dscontents->[-1];
                 }
 
-                if( $e =~ m/\A[ \t]+[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ) {
+                if( $e =~ /\A[ \t]+[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ) {
                     # parser.c:743| while (bracket_count-- > 0) if (*s++ != '>')
                     # parser.c:744|   {
                     # parser.c:745|   *errorptr = s[-1] == 0
@@ -260,8 +259,8 @@ sub scan {
                 $v->{'recipient'} = $r;
                 $recipients++;
 
-            } elsif( $e =~ m/\A[ ]+[(]generated[ ]from[ ](.+)[)]\z/ ||
-                     $e =~ m/\A[ ]+generated[ ]by[ ]([^ \t]+[@][^ \t]+)/ ) {
+            } elsif( $e =~ /\A[ ]+[(]generated[ ]from[ ](.+)[)]\z/ ||
+                     $e =~ /\A[ ]+generated[ ]by[ ]([^ \t]+[@][^ \t]+)/ ) {
                 #     (generated from kijitora@example.jp)
                 #  pipe to |/bin/echo "Some pipe output"
                 #    generated by userx@myhost.test.ex
@@ -280,27 +279,27 @@ sub scan {
                         # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
                         # Content-type: message/delivery-status
                         # ...
-                        if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                        if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                             # Reporting-MTA: dns; mx.example.jp
                             $v->{'lhost'} = $1;
 
-                        } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+                        } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                             # Action: failed
                             $v->{'action'} = lc $1;
 
-                        } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+                        } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                             # Status: 5.0.0
                             $v->{'status'} = $1;
 
-                        } elsif( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                        } elsif( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                             # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                             $v->{'spec'} = uc $1;
                             $v->{'diagnosis'} = $2;
 
-                        } elsif( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
+                        } elsif( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
                             # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
                             my $c = $1;
-                            $v->{'spec'} ||= $c =~ m/[@]/ ? 'SMTP' : 'X-UNIX';
+                            $v->{'spec'} ||= index($c, '@') > -1 ? 'SMTP' : 'X-UNIX';
 
                         } else {
                             # Error message ?
@@ -325,7 +324,7 @@ sub scan {
                                 $v->{'diagnosis'} = $e;
 
                             } else {
-                                next unless $e =~ m/\A[ ]{4}/;
+                                next unless index($e, '    ') == 0;
                                 $v->{'alterrors'} .= $e.' ';
                             }
                         }
@@ -340,7 +339,7 @@ sub scan {
         for my $q ( @$dscontents ) {
             # Replace the recipient address with the value of "alias"
             next unless $q->{'alias'};
-            if( length($q->{'recipient'}) == 0 || $q->{'recipient'} !~ m/[@]/ ) {
+            if( length($q->{'recipient'}) == 0 || index($q->{'recipient'}, '@') == -1 ) {
                 # The value of "recipient" is empty or does not include "@"
                 $q->{'recipient'} = $q->{'alias'};
             }
@@ -366,12 +365,11 @@ sub scan {
     if( scalar @{ $mhead->{'received'} } ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ m/from[ \t]([^ ]+) /;
+        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ \t]([^ ]+) /;
     }
 
     require Sisimai::SMTP::Reply;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'agent'}   = __PACKAGE__->smtpagent;
@@ -406,7 +404,7 @@ sub scan {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
 
-            if( index($e->{'diagnosis'}, '-') == 0 || $e->{'diagnosis'} =~ /__\z/ ) {
+            if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__' ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
 
@@ -425,14 +423,12 @@ sub scan {
             delete $e->{'alterrors'};
         }
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'diagnosis'} =~ s{\b__.+\z}{};
+        $e->{'diagnosis'} =~ s/\b__.+\z//;
 
         unless( $e->{'rhost'} ) {
             # Get the remote host name
-            if( $e->{'diagnosis'} =~ m/host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/ ) {
-                # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-                $e->{'rhost'} = $1;
-            }
+            # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
+            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
 
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {
@@ -445,7 +441,7 @@ sub scan {
 
         unless( $e->{'command'} ) {
             # Get the SMTP command name for the session
-            SMTP: for my $r ( @$ReCommand ) {
+            SMTP: for my $r ( @$ReCommands ) {
                 # Verify each regular expression of SMTP commands
                 next unless $e->{'diagnosis'} =~ $r;
                 $e->{'command'} = uc $1;
@@ -464,16 +460,16 @@ sub scan {
 
             } else {
                 # Verify each regular expression of session errors
-                SESSION: for my $r ( keys %$ReFailure ) {
+                SESSION: for my $r ( keys %$ReFailures ) {
                     # Check each regular expression
-                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                    next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
                     $e->{'reason'} = $r;
                     last;
                 }
 
                 unless( $e->{'reason'} ) {
                     # The reason "expired"
-                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelayed;
+                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelaying;
                 }
             }
         }
@@ -494,21 +490,23 @@ sub scan {
             my $r1 = 0; # First character of SMTP reply code as integer
             my $v1 = 0;
 
-            # "Status:" field did not exist in the bounce message
-            unless( length $sv ) {
-                # Check SMTP reply code
-                if( length $rv ) {
-                    # Generate pseudo DSN code from SMTP reply code
-                    $r1 = substr($rv, 0, 1);
-                    if( $r1 == 4 ) {
-                        # Get the internal DSN(temporary error)
-                        $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 1);
+            FIND_CODE: while(1) {
+                # "Status:" field did not exist in the bounce message
+                last if length $sv;
+                last unless length $rv;
 
-                    } elsif( $r1 == 5 ) {
-                        # Get the internal DSN(permanent error)
-                        $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 0);
-                    }
+                # Check SMTP reply code
+                # Generate pseudo DSN code from SMTP reply code
+                $r1 = substr($rv, 0, 1);
+                if( $r1 == 4 ) {
+                    # Get the internal DSN(temporary error)
+                    $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 1);
+
+                } elsif( $r1 == 5 ) {
+                    # Get the internal DSN(permanent error)
+                    $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 0);
                 }
+                last;
             }
 
             $s1  = substr($sv, 0, 1) if length $sv;

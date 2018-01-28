@@ -29,14 +29,13 @@ sub make {
     require Sisimai::Message;
 
     my $argv1 = { @_ };
-    my $rtype = undef;
     my $input = $argv1->{'input'} || undef;
     my $field = $argv1->{'field'} || [];
 
     die ' ***error: "field" accepts an array reference only' if ref $field ne 'ARRAY';
     unless( $input ) {
         # "input" did not specified, try to detect automatically.
-        $rtype = ref $argv0;
+        my $rtype = ref $argv0;
         if( length $rtype == 0 ) {
             # The argument may be a path to email
             $input = 'email';
@@ -72,7 +71,6 @@ sub make {
             my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
             push @$bouncedata, @$data if scalar @$data;
         }
-
     } elsif( $input eq 'json' ) {
         # Decoded JSON object: 'input' => 'json'
         my $type = ref $argv0;
@@ -96,7 +94,6 @@ sub make {
             my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
             push @$bouncedata, @$data if scalar @$data;
         }
-
     } else {
         # The value of "input" neither "email" nor "json"
         die ' ***error: invalid value of "input"';
@@ -136,7 +133,7 @@ sub engine {
     # Parser engine list (MTA modules)
     # @return   [Hash]     Parser engine table
     my $class = shift;
-    my $names = ['Bite::Email', 'Bite::JSON', 'ARF', 'RFC3464', 'RFC3834'];
+    my $names = [qw|Bite::Email Bite::JSON ARF RFC3464 RFC3834|];
     my $table = {};
 
     for my $e ( @$names ) {
@@ -163,14 +160,13 @@ sub reason {
     # Reason list Sisimai can detect
     # @return   [Hash]     Reason list table
     my $class = shift;
-    my $names = [];
     my $table = {};
 
     require Sisimai::Reason;
-    $names = Sisimai::Reason->index;
+    my $names = Sisimai::Reason->index;
 
     # These reasons are not included in the results of Sisimai::Reason->index
-    push @$names, ('Delivered', 'Feedback', 'Undefined', 'Vacation');
+    push @$names, (qw|Delivered Feedback Undefined Vacation|);
 
     for my $e ( @$names ) {
         # Call ->description() method of Sisimai::Reason::*
@@ -289,7 +285,7 @@ method like the following codes:
         }
 
         # Message body of the bounced email
-        if( $argv->{'message'} =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
+        if( $argv->{'message'} =~ /^X-Postfix-Queue-ID:\s*(.+)$/m ) {
             $data->{'queue-id'} = $1;
         }
 
@@ -365,7 +361,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

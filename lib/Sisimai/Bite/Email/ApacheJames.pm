@@ -96,7 +96,7 @@ sub scan {
             #   Number of lines: 64
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[ ][ ]RCPT[ ]TO:[ ]([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ /\A[ ][ ]RCPT[ ]TO:[ ]([^ ]+[@][^ ]+)\z/ ) {
                 #   RCPT TO: kijitora@example.org
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -106,11 +106,11 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ m/\A[ ][ ]Sent[ ]date:[ ](.+)\z/ ) {
+            } elsif( $e =~ /\A[ ][ ]Sent[ ]date:[ ](.+)\z/ ) {
                 #   Sent date: Thu Apr 29 01:20:50 JST 2015
                 $v->{'date'} = $1;
 
-            } elsif( $e =~ m/\A[ ][ ]Subject:[ ](.+)\z/ ) {
+            } elsif( $e =~ /\A[ ][ ]Subject:[ ](.+)\z/ ) {
                 #   Subject: Nyaaan
                 $subjecttxt = $1;
 
@@ -119,7 +119,7 @@ sub scan {
 
                 if( $v->{'diagnosis'} ) {
                     # Get an error message text
-                    if( $e =~ m/\AMessage[ ]details:\z/ ) {
+                    if( $e eq 'Message details:' ) {
                         # Message details:
                         #   Subject: nyaan
                         #   ...
@@ -131,7 +131,6 @@ sub scan {
                         #   550 - Requested action not taken: no such user here
                         $v->{'diagnosis'} .= ' '.$e;
                     }
-
                 } else {
                     # Error message below:
                     # 550 - Requested action not taken: no such user here
@@ -140,16 +139,15 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
-    unless( grep { $_ =~ /^Subject:/ } @$rfc822list ) {
+    unless( grep { index($_, 'Subject:') == 0 } @$rfc822list ) {
         # Set the value of $subjecttxt as a Subject if there is no original
         # message in the bounce mail.
-        push @$rfc822list, sprintf("Subject: %s", $subjecttxt);
+        push @$rfc822list, 'Subject: '.$subjecttxt;
     }
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);

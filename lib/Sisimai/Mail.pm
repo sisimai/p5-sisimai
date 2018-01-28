@@ -22,11 +22,7 @@ sub new {
     my $class = shift;
     my $argv1 = shift;
     my $klass = undef;
-    my $param = { 
-        'type' => '', 
-        'mail' => undef,
-        'path' => $argv1,
-    };
+    my $param = { 'type' => '', 'mail' => undef, 'path' => $argv1 };
 
     # The argumenet is a mailbox or a Maildir/.
     if( -f $argv1 ) {
@@ -47,7 +43,6 @@ sub new {
             $param->{'type'} = 'stdin';
         }
     }
-
     return undef unless $klass;
     Module::Load::load $klass;
     $param->{'mail'} = $klass->new($argv1);

@@ -23,7 +23,7 @@ my $MarkingsOf = {
 };
 
 # dovecot/src/deliver/mail-send.c:94
-my $ReFailure = {
+my $ReFailures = {
     'dovecot' => {
         'userunknown' => qr/\AMailbox doesn't exist: /i,
         'mailboxfull' => qr{\A(?:
@@ -96,7 +96,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless ref($mhead) eq 'HASH';
-    return undef unless $mhead->{'from'} =~ /\A(?:Mail Delivery Subsystem|MAILER-DAEMON|postmaster)/i;
+    return undef unless lc($mhead->{'from'}) =~ /\A(?:mail delivery subsystem|mailer-daemon|postmaster)/;
     return undef unless ref($mbody) eq 'SCALAR';
     return undef unless length $$mbody;
 
@@ -128,11 +128,11 @@ sub scan {
     return undef unless $agentname0;
     return undef unless scalar @linebuffer;
 
-    for my $e ( keys %{ $ReFailure->{ $agentname0 } } ) {
+    for my $e ( keys %{ $ReFailures->{ $agentname0 } } ) {
         # Detect an error reason from message patterns of the MDA.
         for my $f ( @linebuffer ) {
             # Try to match with each regular expression
-            next unless $f =~ $ReFailure->{ $agentname0 }->{ $e };
+            next unless $f =~ $ReFailures->{ $agentname0 }->{ $e };
             $reasonname = $e;
             $bouncemesg = $f;
             last;

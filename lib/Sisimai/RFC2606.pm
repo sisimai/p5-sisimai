@@ -12,8 +12,7 @@ sub is_reserved {
     my $argv1 = shift || return undef;
 
     return 1 if $argv1 =~ /[.](?:test|example|invalid|localhost)\z/;
-    return 1 if $argv1 =~ /example[.](?:com|net|org)\z/;
-    return 1 if $argv1 =~ /example[.]jp\z/;
+    return 1 if $argv1 =~ /example[.](?:com|net|org|jp)\z/;
     return 1 if $argv1 =~ /example[.](?:ac|ad|co|ed|go|gr|lg|ne|or)[.]jp\z/;
     return 0;
 }
@@ -53,7 +52,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -731,7 +731,7 @@ sub name {
     my $class = shift;
     my $argv1 = shift || return '';
 
-    return '' unless $argv1 =~ m/\A[245][.]\d[.]\d+\z/;
+    return '' unless $argv1 =~ /\A[245][.]\d[.]\d+\z/;
     return $StandardCode->{ $argv1 } // '';
 }
 
@@ -757,7 +757,7 @@ sub find {
         next unless $argv1 =~ $e;
         $foundvalue = $1;
 
-        if( $argv1 =~ m/\b(?:${foundvalue}[.]\d{1,3}|\d{1,3}[.]${foundvalue})\b/ ) {
+        if( $argv1 =~ /\b(?:${foundvalue}[.]\d{1,3}|\d{1,3}[.]${foundvalue})\b/ ) {
             # Clear and skip if the value is an IPv4 address
             $foundvalue = '';
             next;
@@ -819,7 +819,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

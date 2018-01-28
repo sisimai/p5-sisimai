@@ -81,7 +81,7 @@ sub scan {
             # kijitora@example.co.jp [User unknown]
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A([^ ]+?[@][^ ]+?)[ \t]+\[(.+)\]\z/ ) {
+            if( $e =~ /\A([^ ]+?[@][^ ]+?)[ \t]+\[(.+)\]\z/ ) {
                 # kijitora@example.co.jp [User unknown]
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -99,8 +99,8 @@ sub scan {
         } # End of if: rfc822
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'date'}      = $datestring || '';

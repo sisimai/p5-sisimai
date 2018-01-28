@@ -93,7 +93,7 @@ sub scan {
             # -------original message
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
                 # 以下のメールアドレスへの送信に失敗しました。
                 # kijitora@example.jp
                 if( length $v->{'recipient'} ) {
@@ -104,7 +104,7 @@ sub scan {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ m/\A[A-Z]{4}/ ) {
+            } elsif( $e =~ /\A[A-Z]{4}/ ) {
                 # -------SMTP command
                 # DATA
                 next if $v->{'command'};
@@ -129,10 +129,9 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
@@ -142,7 +141,7 @@ sub scan {
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($rheads->[0]) };
             for my $ee ( @$rhosts ) {
                 # Avoid "... by m-FILTER"
-                next unless $ee =~ m/[.]/;
+                next unless index($ee, '.') > -1;
                 $e->{'rhost'} = $ee;
             }
         }

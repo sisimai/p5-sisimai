@@ -21,21 +21,21 @@ my $StartingOf = {
 my $ReSMTP = {
     # Error text regular expressions which defined in qmail-remote.c
     # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
-    'conn'  => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]greeting[ ]failed[.]/x,
+    'conn' => qr/(?:Error:)?Connected to .+ but greeting failed[.]/,
     # qmail-remote.c:231|  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
-    'ehlo' => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]my[ ]name[ ]was[ ]rejected[.]/x,
+    'ehlo' => qr/(?:Error:)?Connected to .+ but my name was rejected[.]/,
     # qmail-remote.c:238|  if (code >= 500) quit("DConnected to "," but sender was rejected");
     # reason = rejected
-    'mail'  => qr/(?:Error:)?Connected[ ]to[ ].+[ ]but[ ]sender[ ]was[ ]rejected[.]/x,
+    'mail' => qr/(?:Error:)?Connected to .+ but sender was rejected[.]/,
     # qmail-remote.c:249|  out("h"); outhost(); out(" does not like recipient.\n");
     # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
     # reason = userunknown
-    'rcpt'  => qr/(?:Error:)?.+[ ]does[ ]not[ ]like[ ]recipient[.]/x,
+    'rcpt' => qr/(?:Error:)?.+ does not like recipient[.]/,
     # qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
     # qmail-remote.c:266|  if (code >= 400) quit("Z"," failed on DATA command");
     # qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
     # qmail-remote.c:272|  if (code >= 400) quit("Z"," failed after I sent the message");
-    'data'  => qr{(?:
+    'data' => qr{(?:
          (?:Error:)?.+[ ]failed[ ]on[ ]DATA[ ]command[.]
         |(?:Error:)?.+[ ]failed[ ]after[ ]I[ ]sent[ ]the[ ]message[.]
         )
@@ -75,45 +75,39 @@ my $ReLDAP = {
     }x,
 };
 
-# userunknown + expired
-my $ReOnHold  = qr/\A[^ ]+ does not like recipient[.][ \t]+.+this message has been in the queue too long[.]\z/;
+# qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
+my $ReDelaying = qr/this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z/x;
+my $ReIsOnHold = qr/\A[^ ]+ does not like recipient[.][ \t]+.+this message has been in the queue too long[.]\z/;
 
 # qmail-remote-fallback.patch
-my $ReCommand = qr/Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]/x;
-my $ReFailure = {
+my $ReCommands = qr/Sorry, no SMTP connection got far enough; most progress was ([A-Z]{4}) /;
+my $ReFailures = {
     # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
     # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
-    'userunknown' => qr{(?:
-         no[ ]mailbox[ ]here[ ]by[ ]that[ ]name
-        |[ ]does[ ]not[ ]like[ ]recipient[.]
-        )
-    }x,
+    'userunknown' => qr/(?:no mailbox here by that name| does not like recipient[.])/,
     # error_str.c:192|  X(EDQUOT,"disk quota exceeded")
-    'mailboxfull' => qr/disk[ ]quota[ ]exceeded/x,
+    'mailboxfull' => qr/disk quota exceeded/,
     # qmail-qmtpd.c:233| ... result = "Dsorry, that message size exceeds my databytes limit (#5.3.4)";
     # qmail-smtpd.c:391| ... out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return;
-    'mesgtoobig' => qr/Message[ ]size[ ]exceeds[ ]fixed[ ]maximum[ ]message[ ]size:/x,
+    'mesgtoobig'  => qr/Message size exceeds fixed maximum message size:/,
     # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie();
     # qmail-remote.c:78|  Sorry, I couldn't find any host named ");
-    'hostunknown' => qr/\ASorry[,][ ]I[ ]couldn[']t[ ]find[ ]any[ ]host[ ]/x,
+    'hostunknown' => qr/\ASorry, I couldn't find any host /,
+    'systemfull'  => qr/Requested action not taken: mailbox unavailable [(]not enough free space[)]/,
     'systemerror' => qr{(?>
          bad[ ]interpreter:[ ]No[ ]such[ ]file[ ]or[ ]directory
         |system[ ]error
         |Unable[ ]to\b
         )
     }x,
-    'networkerror' => qr{Sorry(?:
+    'networkerror'=> qr{Sorry(?:
          [,][ ]I[ ]wasn[']t[ ]able[ ]to[ ]establish[ ]an[ ]SMTP[ ]connection
         |[,][ ]I[ ]couldn[']t[ ]find[ ]a[ ]mail[ ]exchanger[ ]or[ ]IP[ ]address
         |[.][ ]Although[ ]I[']m[ ]listed[ ]as[ ]a[ ]best[-]preference[ ]MX[ ]
             or[ ]A[ ]for[ ]that[ ]host
         )
     }x,
-    'systemfull' => qr/Requested action not taken: mailbox unavailable [(]not enough free space[)]/,
 };
-
-# qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
-my $ReDelayed = qr/this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z/x;
 
 sub description { 'qmail' }
 sub scan {
@@ -190,7 +184,7 @@ sub scan {
             # Giving up on 192.0.2.153.
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ \t]*\z/ ) {
+            if( $e =~ /\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ \t]*\z/ ) {
                 # <kijitora@example.jp>:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -211,11 +205,10 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -230,7 +223,7 @@ sub scan {
 
             unless( $e->{'command'} ) {
                 # Verify each regular expression of patches
-                $e->{'command'} = uc $1 if $e->{'diagnosis'} =~ $ReCommand;
+                $e->{'command'} = uc $1 if $e->{'diagnosis'} =~ $ReCommands;
             }
         }
 
@@ -245,22 +238,22 @@ sub scan {
 
         } else {
             # Try to match with each error message in the table
-            if( $e->{'diagnosis'} =~ $ReOnHold ) {
+            if( $e->{'diagnosis'} =~ $ReIsOnHold ) {
                 # To decide the reason require pattern match with 
                 # Sisimai::Reason::* modules
                 $e->{'reason'} = 'onhold';
 
             } else {
-                SESSION: for my $r ( keys %$ReFailure ) {
+                SESSION: for my $r ( keys %$ReFailures ) {
                     # Verify each regular expression of session errors
                     if( $e->{'alterrors'} ) {
                         # Check the value of "alterrors"
-                        next unless $e->{'alterrors'} =~ $ReFailure->{ $r };
+                        next unless $e->{'alterrors'} =~ $ReFailures->{ $r };
                         $e->{'reason'} = $r;
                     }
                     last if $e->{'reason'};
 
-                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                    next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
                     $e->{'reason'} = $r;
                     last;
                 }
@@ -275,7 +268,7 @@ sub scan {
                 }
 
                 unless( $e->{'reason'} ) {
-                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelayed;
+                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelaying;
                 }
             }
         }

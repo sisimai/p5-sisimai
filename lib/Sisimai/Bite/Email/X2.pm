@@ -79,7 +79,7 @@ sub scan {
             # This user doesn't have a example.com account (kijitora@example.com) [0]
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[<]([^ ]+[@][^ ]+)[>]:\z/ ) {
+            if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:\z/ ) {
                 # <kijitora@example.com>:
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -95,10 +95,9 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;

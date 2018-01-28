@@ -7,9 +7,7 @@ use warnings;
 sub index {
     # Module list for parsing bounce data in JSON
     # @return   [Array] list with order
-    my $class = shift;
-    my $index = ['SendGrid', 'AmazonSES'];
-    return $index;
+    return [qw|SendGrid AmazonSES|];
 }
 
 sub scan {
@@ -56,7 +54,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

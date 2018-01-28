@@ -9,8 +9,7 @@ my $StartingOf = {
     'message' => ['This message was created automatically by Facebook.'],
     'rfc822'  => ['Content-Disposition: inline'],
 };
-
-my $ReFailure = {
+my $ErrorCodes = {
     # http://postmaster.facebook.com/response_codes
     # NOT TESTD EXCEPT RCP-P2
     'userunknown' => [
@@ -104,7 +103,6 @@ sub scan {
         'date'    => '',    # The value of Arrival-Date header
         'lhost'   => '',    # The value of Reporting-MTA header
     };
-
     my $v = undef;
     my $p = '';
 
@@ -145,7 +143,7 @@ sub scan {
                 # Arrival-Date: Thu, 23 Jun 2011 02:29:43 -0700
                 $v = $dscontents->[-1];
 
-                if( $e =~ m/\A[Ff]inal-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
+                if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
                     if( length $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
@@ -155,49 +153,49 @@ sub scan {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ m/\A[Xx]-[Aa]ctual-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
                     # X-Actual-Recipient: RFC822; kijitora@example.co.jp
                     $v->{'alias'} = $1;
 
-                } elsif( $e =~ m/\A[Aa]ction:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                     # Action: failed
                     $v->{'action'} = lc $1;
 
-                } elsif( $e =~ m/\A[Ss]tatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
+                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                     # Status: 5.1.1
                     # Status:5.2.0
                     # Status: 5.1.0 (permanent failure)
                     $v->{'status'} = $1;
 
-                } elsif( $e =~ m/\A[Rr]emote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Remote-MTA: DNS; mx.example.jp
                     $v->{'rhost'} = lc $1;
 
-                } elsif( $e =~ m/\A[Ll]ast-[Aa]ttempt-[Dd]ate:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
                     # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
                     $v->{'date'} = $1;
 
                 } else {
-                    if( $e =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: smtp; 550 5.1.1 RCP-P2 
                         #     http://postmaster.facebook.com/response_codes?ip=192.0.2.135#rcp Refused due to recipient preferences
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
 
-                    } elsif( $p =~ m/\A[Dd]iagnostic-[Cc]ode:[ ]*/ && $e =~ m/\A[ \t]+(.+)\z/ ) {
+                    } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
                         # Continued line of the value of Diagnostic-Code header
                         $v->{'diagnosis'} .= ' '.$1;
                         $e = 'Diagnostic-Code: '.$e;
                     }
                 }
             } else {
-                if( $e =~ m/\A[Rr]eporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+                if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; mx.example.jp
                     next if $connheader->{'lhost'};
                     $connheader->{'lhost'} = lc $1;
                     $connvalues++;
 
-                } elsif( $e =~ m/\A[Aa]rrival-[Dd]ate:[ ]*(.+)\z/ ) {
+                } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
                     next if $connheader->{'date'};
                     $connheader->{'date'} = $1;
@@ -210,25 +208,24 @@ sub scan {
         $p = $e;
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'lhost'}   ||= $connheader->{'lhost'};
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( $e->{'diagnosis'} =~ m/\b([A-Z]{3})[-]([A-Z])(\d)\b/ ) {
+        if( $e->{'diagnosis'} =~ /\b([A-Z]{3})[-]([A-Z])(\d)\b/ ) {
             # Diagnostic-Code: smtp; 550 5.1.1 RCP-P2 
             my $lhs = $1;
             my $rhs = $2;
             my $num = $3;
-
             $fbresponse = sprintf("%s-%s%d", $lhs, $rhs, $num);
         }
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ErrorCodes ) {
             # Verify each regular expression of session errors
-            PATTERN: for my $rr ( @{ $ReFailure->{ $r } } ) {
+            PATTERN: for my $rr ( @{ $ErrorCodes->{ $r } } ) {
                 # Check each regular expression
                 next(PATTERN) unless $fbresponse eq $rr;
                 $e->{'reason'} = $r;
@@ -248,7 +245,7 @@ sub scan {
         # https://groups.google.com/forum/#!topic/cdmix/eXfi4ddgYLQ
         # This block has not been tested because we have no email sample
         # including "INT-T?" error code.
-        next unless $fbresponse =~ m/\AINT-T\d+\z/;
+        next unless $fbresponse =~ /\AINT-T\d+\z/;
         $e->{'reason'} = 'systemerror';
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

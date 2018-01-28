@@ -148,25 +148,20 @@ sub true {
     return 1 if $argvs->reason eq __PACKAGE__->text;
 
     require Sisimai::SMTP::Status;
-    my $prematches = [
-        'NoRelaying', 'Blocked', 'MailboxFull', 'HasMoved',
-        'Blocked', 'Rejected',
-    ];
-    my $matchother = 0;
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
     my $tempreason = Sisimai::SMTP::Status->name($statuscode);
-    my $reasontext = __PACKAGE__->text;
-    my $v = 0;
 
     return 0 if $tempreason eq 'suspend';
-
-    if( $tempreason eq $reasontext ) {
+    if( $tempreason eq __PACKAGE__->text ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
         #   Diagnostic-Code: SMTP; 550 5.1.1 <***@example.jp>:
         #     Recipient address rejected: User unknown in local recipient table
+        my $prematches = [qw|NoRelaying Blocked MailboxFull HasMoved Blocked Rejected|];
+        my $matchother = 0;
         require Module::Load;
+
         for my $e ( @$prematches ) {
             # Check the value of "Diagnostic-Code" with other error patterns.
             my $p = 'Sisimai::Reason::'.$e;
@@ -177,20 +172,17 @@ sub true {
             $matchother = 1;
             last;
         }
-
-        # Did not match with other message patterns
-        $v = 1 if $matchother == 0;
+        return 1 if $matchother == 0;   # Did not match with other message patterns
 
     } else {
         # Check the last SMTP command of the session. 
         if( $argvs->smtpcommand eq 'RCPT' ) {
             # When the SMTP command is not "RCPT", the session rejected by other
             # reason, maybe.
-            $v = 1 if __PACKAGE__->match($diagnostic);
+            return 1 if __PACKAGE__->match($diagnostic);
         }
     }
-
-    return $v;
+    return 0;
 }
 
 1;
@@ -248,7 +240,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -7,11 +7,7 @@ use Sisimai::Bite::JSON;
 
 my $DefaultOrder = __PACKAGE__->default;
 my $PatternTable = {
-    'keyname' => {
-        'notificationType' => [
-            'Sisimai::Bite::JSON::AmazonSES',
-        ],
-    }
+    'keyname' => { 'notificationType' => ['Sisimai::Bite::JSON::AmazonSES'] }
 };
 
 sub default {
@@ -71,7 +67,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

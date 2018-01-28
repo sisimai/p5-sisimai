@@ -39,13 +39,7 @@ my $SubjectSet = qr{\A(?>
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }
-sub headerlist  {
-    return [
-        'Auto-Submitted',
-        'Precedence',
-        'X-Auto-Response-Suppress',
-    ];
-}
+sub headerlist  { [qw|Auto-Submitted Precedence X-Auto-Response-Suppress|] }
 sub scan {
     # Detect auto reply message as RFC3834
     # @param         [Hash] mhead       Message header of a bounce email
@@ -90,7 +84,6 @@ sub scan {
 
     require Sisimai::Bite::Email;
     require Sisimai::Address;
-
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -158,10 +151,8 @@ sub scan {
     $v->{'date'}      = $mhead->{'date'};
     $v->{'status'}    = '';
 
-    if( $mhead->{'subject'} =~ $SubjectSet ) {
-        # Get the Subject header from the original message
-        $rfc822part = 'Subject: '.$1."\n";
-    }
+    # Get the Subject header from the original message
+    $rfc822part = 'Subject: '.$1."\n" if $mhead->{'subject'} =~ $SubjectSet;
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

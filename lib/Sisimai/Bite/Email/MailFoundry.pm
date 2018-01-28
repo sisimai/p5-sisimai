@@ -80,7 +80,7 @@ sub scan {
             # This has been a permanent failure.  No further delivery attempts will be made.
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\AUnable to deliver message to: [<]([^ ]+[@][^ ]+)[>]\z/ ) {
+            if( $e =~ /\AUnable to deliver message to: [<]([^ ]+[@][^ ]+)[>]\z/ ) {
                 # Unable to deliver message to: <kijitora@example.org>
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -108,10 +108,9 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});

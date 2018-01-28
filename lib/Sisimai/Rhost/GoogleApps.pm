@@ -7,13 +7,13 @@ my $CodeTable = {
     'X.1.1' => [
         {
             'reason' => 'userunknown',
-            'regexp' => [ qr/The email account that you tried to reach does not exist[.]/ ],
+            'regexp' => [qr/The email account that you tried to reach does not exist[.]/],
         }
     ],
     'X.1.2' => [
         {
             'reason' => 'hostunknown',
-            'regexp' => [ qr/We weren't able to find the recipient domain[.]/ ],
+            'regexp' => [qr/We weren't able to find the recipient domain[.]/],
         },
     ],
     'X.2.1' => [
@@ -26,19 +26,19 @@ my $CodeTable = {
         },
         {
             'reason' => 'suspend',
-            'regexp' => [ qr/The email account that you tried to reach is disabled[.]/ ],
+            'regexp' => [qr/The email account that you tried to reach is disabled[.]/],
         },
     ],
     'X.2.2' => [
         {
             'reason' => 'mailboxfull',
-            'regexp' => [ qr/The email account that you tried to reach is over quota[.]/ ],
+            'regexp' => [qr/The email account that you tried to reach is over quota[.]/],
         },
     ],
     'X.2.3' => [
         {
             'reason' => 'exceedlimit',
-            'regexp' => [ qr/Your message exceeded Google's message size limits[.]/ ],
+            'regexp' => [qr/Your message exceeded Google's message size limits[.]/],
         },
     ],
     'X.3.0' => [
@@ -53,17 +53,17 @@ my $CodeTable = {
     'X.4.2' => [
         {
             'reason' => 'expired',
-            'regexp' => [ qr/Timeout [-] closing connection[.]/ ],
+            'regexp' => [qr/Timeout [-] closing connection[.]/],
         },
     ],
     'X.4.5' => [
         {
             'reason' => 'undefined',
-            'regexp' => [ qr/Server busy, try again later[.]/ ],
+            'regexp' => [qr/Server busy, try again later[.]/],
         },
         {
             'reason' => 'exceedlimit',
-            'regexp' => [ qr/Daily sending quota exceeded[.]/ ],
+            'regexp' => [qr/Daily sending quota exceeded[.]/],
         },
     ],
     'X.5.0' => [
@@ -90,17 +90,17 @@ my $CodeTable = {
         },
         {
             'reason' => 'securityerror',
-            'regexp' => [ qr/Authentication Required[.]/ ],
+            'regexp' => [qr/Authentication Required[.]/],
         },
     ],
     'X.5.2' => [
         {
             'reason' => 'undefined',
-            'regexp' => [ qr/Cannot Decode response[.]/ ],
+            'regexp' => [qr/Cannot Decode response[.]/],
         },
         {
             'reason' => 'syntaxerror',
-            'regexp' => [ qr/Syntax error[.]/ ],
+            'regexp' => [qr/Syntax error[.]/],
         },
     ],
     'X.5.3' => [
@@ -115,7 +115,7 @@ my $CodeTable = {
     'X.5.4' => [
         {
             'reason' => 'syntaxerror',
-            'regexp' => [ qr/Optional Argument not permitted for that AUTH mode[.]/ ],
+            'regexp' => [qr/Optional Argument not permitted for that AUTH mode[.]/],
         },
     ],
     'X.6.0' => [
@@ -153,15 +153,15 @@ my $CodeTable = {
         },
         {
             'reason' => 'systemerror',
-            'regexp' => [ qr/Cannot authenticate due to temporary system problem[.]/ ],
+            'regexp' => [qr/Cannot authenticate due to temporary system problem[.]/],
         },
         {
             'reason' => 'norelaying',
-            'regexp' => [ qr/Mail relay denied[.]/ ],
+            'regexp' => [qr/Mail relay denied[.]/],
         },
         {
             'reason' => 'rejected',
-            'regexp' => [ qr/Mail Sending denied[.]/ ],
+            'regexp' => [qr/Mail Sending denied[.]/],
         },
     ],
     'X.7.1' => [
@@ -175,7 +175,7 @@ my $CodeTable = {
         },
         {
             'reason' => 'mailboxfull',
-            'regexp' => [ qr/Email quota exceeded[.]/ ],
+            'regexp' => [qr/Email quota exceeded[.]/],
         },
         {
             'reason' => 'blocked',
@@ -186,21 +186,21 @@ my $CodeTable = {
         },
         {
             'reason' => 'contenterror',
-            'regexp' => [ qr/Our system has detected that this message is likely unsolicited mail[.]/ ],
+            'regexp' => [qr/Our system has detected that this message is likely unsolicited mail[.]/],
         },
         {
             'reason' => 'filtered',
-            'regexp' => [ qr/The user or domain that you are sending to [(]or from[)] has a policy/ ],
+            'regexp' => [qr/The user or domain that you are sending to [(]or from[)] has a policy/],
         },
         {
             'reason' => 'rejected',
-            'regexp' => [ qr/Unauthenticated email is not accepted from this domain[.]/ ],
+            'regexp' => [qr/Unauthenticated email is not accepted from this domain[.]/],
         },
     ],
     'X.7.4' => [
         {
             'reason' => 'securityerror',
-            'regexp' => [ qr/Unrecognized Authentication Type[.]/ ],
+            'regexp' => [qr/Unrecognized Authentication Type[.]/],
         },
     ],
 };
@@ -216,9 +216,7 @@ sub get {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return $argvs->reason if length $argvs->reason;
 
-    my $statuscode =  $argvs->deliverystatus;
-       $statuscode =~ s/\A\d[.](\d+[.]\d+)\z/X.$1/;
-
+    my $statuscode = $argvs->deliverystatus; $statuscode =~ s/\A\d[.](\d+[.]\d+)\z/X.$1/;
     my $statusmesg = $argvs->diagnosticcode;
     my $reasontext = '';
     my $errortable = $CodeTable->{ $statuscode } || [];
@@ -229,7 +227,6 @@ sub get {
         $reasontext = $e->{'reason'};
         last;
     }
-
     return $reasontext;
 }
 
@@ -264,7 +261,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

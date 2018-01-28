@@ -11,14 +11,12 @@ my $StartingOf = {
     'rfc822'  => ['Included is a copy of the message header:'],
 };
 
-my $ReCommand = [
+my $ReCommands = [
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
 ];
-my $ReFailure = {
-    'userunknown' => qr{
-        user[ ]not[ ]found
-    }x,
+my $ReFailures = {
+    'userunknown' => qr/user not found/,
     'hostunknown' => qr{(?>
          all[ ](?:
              host[ ]address[ ]lookups[ ]failed[ ]permanently
@@ -27,11 +25,7 @@ my $ReFailure = {
         |Unrouteable[ ]address
         )
     }x,
-    'mailboxfull' => qr{(?:
-         mailbox[ ]is[ ]full:?
-        |error:[ ]quota[ ]exceed
-        )
-    }x,
+    'mailboxfull' => qr/(?:mailbox is full:?|error: quota exceed)/,
     'notaccept' => qr{(?:
          an[ ]MX[ ]or[ ]SRV[ ]record[ ]indicated[ ]no[ ]SMTP[ ]service
         |no[ ]host[ ]found[ ]for[ ]existing[ ]SMTP[ ]connection
@@ -43,11 +37,9 @@ my $ReFailure = {
         |LMTP[ ]error[ ]after[ ]
         )
     }x,
-    'contenterror' => qr{
-        Too[ ]many[ ]["]Received["][ ]headers
-    }x,
+    'contenterror'=> qr/Too many ["]Received["] headers/,
 };
-my $ReDelayed = qr{(?:
+my $ReDelaying = qr{(?:
      retry[ ]timeout[ ]exceeded
     |No[ ]action[ ]is[ ]required[ ]on[ ]your[ ]part
     |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
@@ -145,7 +137,7 @@ sub scan {
             #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[ \t]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
+            if( $e =~ /\A[ \t]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
                 # A message that you have sent could not be delivered to one or more
                 # recipients.  This is a permanent error.  The following address failed:
                 #
@@ -171,7 +163,7 @@ sub scan {
     if( scalar @{ $mhead->{'received'} } ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ m/from[ \t]([^ ]+) /;
+        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ \t]([^ ]+) /;
     }
 
     require Sisimai::String;
@@ -182,12 +174,10 @@ sub scan {
         $e->{'diagnosis'} =~ s/[-]{2}.*\z//g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( ! $e->{'rhost'} ) {
+        unless( $e->{'rhost'} ) {
             # Get the remote host name
-            if( $e->{'diagnosis'} =~ m/host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/ ) {
-                # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-                $e->{'rhost'} = $1;
-            }
+            # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
+            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
 
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {
@@ -197,9 +187,9 @@ sub scan {
             }
         }
 
-        if( ! $e->{'command'} ) {
+        unless( $e->{'command'} ) {
             # Get the SMTP command name for the session
-            SMTP: for my $r ( @$ReCommand ) {
+            SMTP: for my $r ( @$ReCommands ) {
                 # Verify each regular expression of SMTP commands
                 next unless $e->{'diagnosis'} =~ $r;
                 $e->{'command'} = uc $1;
@@ -217,16 +207,16 @@ sub scan {
 
             } else {
                 # Verify each regular expression of session errors
-                SESSION: for my $r ( keys %$ReFailure ) {
+                SESSION: for my $r ( keys %$ReFailures ) {
                     # Check each regular expression
-                    next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+                    next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
                     $e->{'reason'} = $r;
                     last;
                 }
 
                 unless( $e->{'reason'} ) {
                     # The reason "expired"
-                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelayed;
+                    $e->{'reason'} = 'expired' if $e->{'diagnosis'} =~ $ReDelaying;
                 }
             }
         }

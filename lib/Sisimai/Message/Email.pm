@@ -19,9 +19,8 @@ my $ToBeLoaded = [];
 my $TryOnFirst = [];
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 my @RFC3834Set = (map { lc $_ } @{ Sisimai::RFC3834->headerlist });
-my @HeaderList = ('from', 'to', 'date', 'subject', 'content-type', 'reply-to',
-                  'message-id', 'received', 'content-transfer-encoding', 
-                  'return-path', 'x-mailer');
+my @HeaderList = (qw|from to date subject content-type reply-to message-id
+                     received content-transfer-encoding return-path x-mailer|);
 my $MultiHeads = { 'received' => 1 };
 my $IgnoreList = { 'dkim-signature' => 1 };
 my $Indicators = { 
@@ -156,15 +155,15 @@ sub divideup {
     my $pseudofrom = 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
 
-    $$email =~ s/\r\n/\n/gm  if $$email =~ m/\r\n/;
-    $$email =~ s/[ \t]+$//gm if $$email =~ m/[ \t]+$/;
+    $$email =~ s/\r\n/\n/gm  if $$email =~ /\r\n/;
+    $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
     @hasdivided = split("\n", $$email);
     return {} unless scalar @hasdivided;
 
     if( substr($hasdivided[0], 0, 5) eq 'From ' ) {
         # From MAILER-DAEMON Tue Feb 11 00:00:00 2014
         $aftersplit->{'from'} =  shift @hasdivided;
-        $aftersplit->{'from'} =~ y{\r\n}{}d;
+        $aftersplit->{'from'} =~ y/\r\n//d;
     }
 
     SPLIT_EMAIL: for my $e ( @hasdivided ) {
@@ -213,7 +212,7 @@ sub headers {
 
     SPLIT_HEADERS: for my $e ( split("\n", $$heads) ) {
         # Convert email headers to hash
-        if( $e =~ m/\A([^ ]+?)[:][ ]*(.+?)\z/ ) {
+        if( $e =~ /\A([^ ]+?)[:][ ]*(.+?)\z/ ) {
             # split the line into a header name and a header content
             my $lhs = $1;
             my $rhs = $2;
@@ -235,8 +234,7 @@ sub headers {
                 }
                 $structured->{ $currheader } = $rhs;
             }
-
-        } elsif( $e =~ m/\A[ \t]+(.+?)\z/ ) {
+        } elsif( $e =~ /\A[ \t]+(.+?)\z/ ) {
             # Ignore header?
             next if exists $IgnoreList->{ $currheader };
 
@@ -295,7 +293,7 @@ sub takeapart {
 
     for my $e ( @hasdivided ) {
         # Header name as a key, The value of header as a value
-        if( $e =~ m/\A([-0-9A-Za-z]+?)[:][ ]*(.*)\z/ ) {
+        if( $e =~ /\A([-0-9A-Za-z]+?)[:][ ]*(.*)\z/ ) {
             # Header
             my $lhs = lc $1;
             my $rhs = $2;
@@ -307,7 +305,7 @@ sub takeapart {
 
         } else {
             # Continued line from the previous line
-            next unless $e =~ m/\A[ \t]+/;
+            next unless $e =~ /\A[ \t]+/;
             next unless $previousfn;
 
             # Concatenate the line if it is the value of required header
@@ -408,10 +406,9 @@ sub parse {
             }
         }
 
-        if( $mesgformat =~ m|text/html;?| ) {
-            # Content-Type: text/html;...
-            $bodystring = Sisimai::String->to_plain($bodystring, 1);
-        }
+        # Content-Type: text/html;...
+        $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
+
     } else {
         # NOT text/plain
         if( $$bodystring =~ $ReEncoding->{'quoted-print'} ) {
@@ -423,7 +420,7 @@ sub parse {
             $$bodystring =~ $ReEncoding->{'some-iso2022'} ) {
             # Content-Transfer-Encoding: 7bit
             # Content-Type: text/plain; charset=ISO-2022-JP
-            unless( $1 =~ /(?:us-ascii|utf[-]?8)/i ) {
+            unless( lc($1) =~ /(?:us-ascii|utf[-]?8)/ ) {
                 # Convert to UTF-8
                 $bodystring = Sisimai::String->to_utf8($bodystring, $1);
             }
@@ -446,7 +443,7 @@ sub parse {
     # Check whether or not the message is a bounce mail.
     # Pre-Process email body if it is a forwarded bounce message.
     # Get the original text when the subject begins from 'fwd:' or 'fw:'
-    if( $mailheader->{'subject'} =~ /\A[ \t]*fwd?:/i ) {
+    if( lc($mailheader->{'subject'}) =~ /\A[ \t]*fwd?:/ ) {
         # Delete quoted strings, quote symbols(>)
         $$bodystring =~ s/^[>]+[ ]//gm;
         $$bodystring =~ s/^[>]$//gm;
@@ -583,7 +580,7 @@ method like the following codes:
         }
 
         # Message body of the bounced email
-        if( $argv->{'message'} =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
+        if( $argv->{'message'} =~ /^X-Postfix-Queue-ID:\s*(.+)$/m ) {
             $data->{'queue-id'} = $1;
         }
 

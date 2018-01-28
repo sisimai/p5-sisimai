@@ -86,8 +86,8 @@ sub scan {
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
-                $e =~ m/\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/ ) {
+            if( $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
+                $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/ ) {
                 # Sent <<< RCPT TO:<kijitora@example.co.jp>
                 # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
                 my $cr = $1;
@@ -100,31 +100,30 @@ sub scan {
                 $recipients = scalar @$dscontents;
             }
 
-            if( $e =~ m/\ASent[ \t]+[<]{3}[ \t]+([A-Z]{4})[ \t]/ ) {
+            if( $e =~ /\ASent[ \t]+[<]{3}[ \t]+([A-Z]{4})[ \t]/ ) {
                 # Sent <<< RCPT TO:<kijitora@example.co.jp>
                 $v->{'command'} = $1
 
-            } elsif( $e =~ m/\AReceived[ \t]+[>]{3}[ \t]+(\d{3}[ \t]+.+)\z/ ) {
+            } elsif( $e =~ /\AReceived[ \t]+[>]{3}[ \t]+(\d{3}[ \t]+.+)\z/ ) {
                 # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
                 $v->{'diagnosis'} = $1;
 
             } else {
                 # Error message in non-English
-                if( $e =~ m/[ ][>]{3}[ ]([A-Z]{4})/ ) {
+                if( $e =~ /[ ][>]{3}[ ]([A-Z]{4})/ ) {
                     # >>> RCPT TO ...
                     $v->{'command'} = $1;
 
-                } elsif( $e =~ m/[ ][<]{3}[ ](.+)/ ) {
+                } elsif( $e =~ /[ ][<]{3}[ ](.+)/ ) {
                     # <<< 550 5.1.1 User unknown
                     $v->{'diagnosis'} = $1;
                 }
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});

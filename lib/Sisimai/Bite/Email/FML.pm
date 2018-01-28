@@ -6,7 +6,6 @@ use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = { 'rfc822' => ['Original mail as follows:'] };
-
 my $ErrorTitle = {
     'rejected' => qr{(?>
          (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
@@ -22,7 +21,7 @@ my $ErrorTitle = {
         |WARNING:[ ]UNIX[ ]FROM[ ]Loop
         )
     }x,
-    'securityerror' => qr/Security[ ]Alert/,
+    'securityerror' => qr/Security Alert/,
 };
 my $ErrorTable = {
     'rejected' => qr{(?>
@@ -41,7 +40,7 @@ my $ErrorTable = {
         |Loop[ ]Back[ ]Warning:
         )
     }x,
-    'securityerror' => qr/Security[ ]alert:/,
+    'securityerror' => qr/Security alert:/,
 };
 
 sub headerlist  { return ['X-MLServer'] }
@@ -98,7 +97,7 @@ sub scan {
                 last if $blanklines > 1;
                 next;
             }
-            $e =~ s/\A[ ]{3}//;
+            substr($e, 0, 3, '') if substr($e, 0, 3) eq '   ';
             push @$rfc822list, $e;
 
         } else {
@@ -110,7 +109,7 @@ sub scan {
             # Original mail as follows:
             $v = $dscontents->[-1];
 
-            if( $e =~ m/[<]([^ ]+?[@][^ ]+?)[>][.]\z/ ) {
+            if( $e =~ /[<]([^ ]+?[@][^ ]+?)[>][.]\z/ ) {
                 # Duplicated Message-ID in <2ndml@example.com>.
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -128,10 +127,9 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;

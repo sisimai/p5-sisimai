@@ -52,29 +52,17 @@ sub true {
 
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
-    my $diagnostic = $argvs->diagnosticcode // '';
     my $tempreason = Sisimai::SMTP::Status->name($statuscode);
-    my $reasontext = __PACKAGE__->text;
-    my $v = 0;
 
-    if( $tempreason eq $reasontext ) {
-        # Delivery status code points "mesgtoobig".
-        # Status: 5.3.4
-        # Diagnostic-Code: SMTP; 552 5.3.4 Error: message file too big
-        $v = 1;
+    # Delivery status code points "mesgtoobig".
+    # Status: 5.3.4
+    # Diagnostic-Code: SMTP; 552 5.3.4 Error: message file too big
+    return 1 if $tempreason eq __PACKAGE__->text;
 
-    } else {
-        if( $tempreason eq 'exceedlimit' || $statuscode eq '5.2.3' ) {
-            #  5.2.3   Message length exceeds administrative limit
-            $v = 0;
-
-        } else {
-            # Check the value of Diagnosic-Code: header with patterns
-            $v = 1 if __PACKAGE__->match($diagnostic);
-        }
-    }
-
-    return $v;
+    #  5.2.3   Message length exceeds administrative limit
+    return 0 if( $tempreason eq 'exceedlimit' || $statuscode eq '5.2.3' );
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
+    return 0;
 }
 
 1;
@@ -137,7 +125,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -105,7 +105,7 @@ sub scan {
             # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A\d{3}[ \t]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ \t]*(.+)\z/ ) {
+            if( $e =~ /\A\d{3}[ \t]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ \t]*(.+)\z/ ) {
                 # 550 <kijitora@example.org>... User unknown
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -121,11 +121,11 @@ sub scan {
                 }
                 $recipients++;
 
-            } elsif( $e =~ m/\A[>]{3}[ \t]*([A-Z]{4})[ \t]*/ ) {
+            } elsif( $e =~ /\A[>]{3}[ \t]*([A-Z]{4})[ \t]*/ ) {
                 # >>> RCPT To:<kijitora@example.org>
                 $commandset[ $recipients ] = $1;
 
-            } elsif( $e =~ m/\A[<]{3}[ ]+(.+)\z/ ) {
+            } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
                 # <<< Response
                 # <<< 501 <shironeko@example.co.jp>... no access from mail server [192.0.2.55] which is an open relay.
                 # <<< 550 Requested User Mailbox not found. No such user here.
@@ -141,10 +141,8 @@ sub scan {
                     next;
                 }
 
-                if( $e =~ m/\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/ ) {
-                    # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
-                    $anotherset->{'diagnosis'} = $1;
-                }
+                # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
+                $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/;
             }
         } # End of if: rfc822
     }
@@ -153,7 +151,7 @@ sub scan {
     unless( $recipients ) {
         # Get the recipient address from the original message
         for my $e ( @$rfc822list ) {
-            if( $e =~ m/^To: (.+)$/ ) {
+            if( $e =~ /^To: (.+)$/ ) {
                 # The value of To: header in the original message
                 $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients = 1;
@@ -162,8 +160,8 @@ sub scan {
         }
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $errorindex++;
         $e->{'agent'}   = __PACKAGE__->smtpagent;
@@ -179,12 +177,10 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        unless( $e->{'recipient'} =~ m/\A[^ ]+[@][^ ]+\z/ ) {
+        unless( $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/ ) {
             # @example.jp, no local part
-            if( $e->{'diagnosis'} =~ m/[<]([^ ]+[@][^ ]+)[>]/ ) {
-                # Get email address from the value of Diagnostic-Code header
-                $e->{'recipient'} = $1;
-            }
+            # Get email address from the value of Diagnostic-Code header
+            $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
         }
         delete $e->{'sessionerr'};
     }

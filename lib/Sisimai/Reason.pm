@@ -30,7 +30,6 @@ sub get {
     # @see anotherone
     my $class = shift;
     my $argvs = shift // return undef;
-
     return undef unless ref $argvs eq 'Sisimai::Data';
 
     unless( grep { $argvs->reason eq $_ } @$RetryReasons ) {
@@ -75,7 +74,6 @@ sub get {
         $reasontext ||= 'onhold'  if length $argvs->diagnosticcode;
         $reasontext ||= 'undefined';
     }
-
     return $reasontext;
 }
 
@@ -180,7 +178,7 @@ sub match {
     |];
     my $statuscode = Sisimai::SMTP::Status->find($argv1);
     my $typestring = '';
-       $typestring = uc($1) if $argv1 =~ m/\A(SMTP|X-.+);/i;
+       $typestring = uc($1) if $argv1 =~ /\A(SMTP|X-.+);/i;
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( @$classorder ) {

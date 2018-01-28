@@ -35,7 +35,7 @@ sub is_mimeencoded {
     return undef unless ref $argv1 eq 'SCALAR';
     $$argv1 =~ y/"//d;
 
-    if( $$argv1 =~ /[ ]/ ) {
+    if( index($$argv1, ' ') > -1 ) {
         # Multiple MIME-Encoded strings in a line
         @piece = split(' ', $$argv1);
     } else {
@@ -66,7 +66,6 @@ sub mimedecode {
     my @decodedtext0 = ();
     my $decodedtext1 = '';
     my $utf8decoded1 = '';
-
     my $notmimetext0 = '';
     my $notmimetext1 = '';
 
@@ -101,19 +100,16 @@ sub mimedecode {
             push @decodedtext0, $e;
         }
     }
-
     return '' unless scalar @decodedtext0;
-    $decodedtext1 = join('', @decodedtext0);
 
+    $decodedtext1 = join('', @decodedtext0);
     if( $characterset && $encodingname ) {
         # utf-8 => utf8
         $characterset = 'utf8' if $characterset eq 'utf-8';
 
         if( $characterset ne 'utf8' ) {
             # Characterset is not UTF-8
-            eval {
-                Encode::from_to($decodedtext1, $characterset, 'utf8');
-            };
+            eval { Encode::from_to($decodedtext1, $characterset, 'utf8') };
             $decodedtext1 = 'FAILED TO CONVERT THE SUBJECT' if $@;
         }
     }
@@ -143,7 +139,6 @@ sub qprintd {
 
     # Quoted-printable encoded part is the part of the text
     my $boundary00 = __PACKAGE__->boundary($heads->{'content-type'}, 0);
-
     if( length($boundary00) == 0 || $$argv1 !~ $ReE->{'quoted-print'} ) {
         # There is no boundary string or no
         # Content-Transfer-Encoding: quoted-printable field.
@@ -184,14 +179,13 @@ sub qprintd {
                 $mimeinside = 0;
                 $ctencoding = undef;
                 $encodename = undef;
-
             } else {
                 # Inside of Queoted printable encoded text
                 $notdecoded .= $e . "\n";
             }
         } else {
             # NOT Quoted-Printable encoded text block
-            if( $e =~ m/\A[-]{2}[^\s]+[^-]\z/ ) {
+            if( $e =~ /\A[-]{2}[^\s]+[^-]\z/ ) {
                 # Start of the boundary block
                 # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
                 unless( $e eq $boundary00 ) {
@@ -235,10 +229,8 @@ sub base64d {
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
 
-    if( $$argv1 =~ m|([+/=0-9A-Za-z\r\n]+)| ) {
-        # Decode BASE64
-        $plain = MIME::Base64::decode($1);
-    }
+    # Decode BASE64
+    $plain = MIME::Base64::decode($1) if $$argv1 =~ m|([+/=0-9A-Za-z\r\n]+)|;
     return \$plain;
 }
 
@@ -254,7 +246,7 @@ sub boundary {
     my $start = shift // -1;
     my $value = '';
 
-    if( $argv1 =~ m/\bboundary=([^ ]+)/i ) {
+    if( $argv1 =~ /\bboundary=([^ ]+)/i ) {
         # Content-Type: multipart/mixed; boundary=Apple-Mail-5--931376066
         # Content-Type: multipart/report; report-type=delivery-status;
         #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"

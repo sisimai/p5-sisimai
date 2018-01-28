@@ -13,7 +13,7 @@ sub match {
     # @since v4.1.25
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr/address[ ].+[ ]has[ ]been[ ]replaced[ ]by[ ]/ix;
+    my $regex = qr/address .+ has been replaced by /i;
 
     return 1 if $argv1 =~ $regex;
     return 0;

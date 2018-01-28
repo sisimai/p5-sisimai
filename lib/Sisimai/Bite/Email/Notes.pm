@@ -10,8 +10,7 @@ my $StartingOf = {
     'message' => ['------- Failure Reasons '],
     'rfc822'  => ['------- Returned Message '],
 };
-
-my $ReFailure = {
+my $ReFailures = {
     'userunknown' => qr{(?:
          User[ ]not[ ]listed[ ]in[ ]public[ ]Name[ ][&][ ]Address[ ]Book
         |ディレクトリのリストにありません
@@ -37,10 +36,9 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
     return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
-    require Sisimai::Address;
 
+    require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -73,10 +71,8 @@ sub scan {
 
         unless( length $characters ) {
             # Get character set name
-            if( $mhead->{'content-type'} =~ m/\A.+;[ ]*charset=(.+)\z/ ) {
-                # Content-Type: text/plain; charset=ISO-2022-JP
-                $characters = lc $1;
-            }
+            # Content-Type: text/plain; charset=ISO-2022-JP
+            $characters = lc $1 if $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/;
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
@@ -99,7 +95,7 @@ sub scan {
             #
             # ------- Returned Message --------
             $v = $dscontents->[-1];
-            if( $e =~ m/\A[^ ]+[@][^ ]+/ ) {
+            if( $e =~ /\A[^ ]+[@][^ ]+/ ) {
                 # kijitora@notes.example.jp
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -113,16 +109,13 @@ sub scan {
                 next if $e eq '';
                 next if index($e, '-') == 0;
 
-                if( $e =~ m/[^\x20-\x7e]/ ) {
+                if( $e =~ /[^\x20-\x7e]/ ) {
                     # Error message is not ISO-8859-1
                     $encodedmsg = $e;
                     if( length $characters ) {
                         # Try to convert string
                         eval { Encode::from_to($encodedmsg, $characters, 'utf8'); };
-                        if( $@ ) {
-                            # Failed to convert
-                            $encodedmsg = $removedmsg;
-                        }
+                        $encodedmsg = $removedmsg if $@;    # Failed to convert
 
                     } else {
                         # No character set in Content-Type header
@@ -141,7 +134,7 @@ sub scan {
     unless( $recipients ) {
         # Fallback: Get the recpient address from RFC822 part
         for my $e ( @$rfc822list ) {
-            if( $e =~ m/^To:[ ]*(.+)$/ ) {
+            if( $e =~ /^To:[ ]*(.+)$/ ) {
                 $v->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients++ if $v->{'recipient'};
                 last;
@@ -149,17 +142,17 @@ sub scan {
         }
     }
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
 
-        for my $r ( keys %$ReFailure ) {
+        for my $r ( keys %$ReFailures ) {
             # Check each regular expression of Notes error messages
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
 
             my $pseudostatus = Sisimai::SMTP::Status->code($r);

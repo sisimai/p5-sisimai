@@ -10,8 +10,7 @@ my $StartingOf = {
     'rfc822'  => ['Content-Type: message/rfc822'],
     'error'   => ['   ----- Non-delivered information -----'],
 };
-
-my $ReFailure = {
+my $ReFailures = {
     'filtered'    => qr/Mail Delivery Failed[.]+ User unknown/,
     'mailboxfull' => qr/The number of messages in recipient's mailbox exceeded the local limit[.]/,
 };
@@ -95,7 +94,7 @@ sub scan {
             #
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A([^ ]+[@][^ ]+)\z/ ) {
+            if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
                 #    ----- The following addresses had delivery problems -----
                 # ********@***.biglobe.ne.jp
                 if( length $v->{'recipient'} ) {
@@ -110,22 +109,21 @@ sub scan {
                     $recipients++;
                 }
             } else {
-                next if $e =~ m/\A[^\w]/;
+                next if $e =~ /\A[^\w]/;
                 $v->{'diagnosis'} .= $e.' ';
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailure ) {
+        SESSION: for my $r ( keys %$ReFailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailure->{ $r };
+            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

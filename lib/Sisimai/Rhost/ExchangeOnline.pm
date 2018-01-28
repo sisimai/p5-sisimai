@@ -20,7 +20,7 @@ my $CodeTable = {
     qr/\A4[.]4[.][17]\z/ => [
         {
             'reason' => 'expired',
-            'regexp' => qr/(?:Connection[ ]timed[ ]out|Message[ ]expired)/x,
+            'regexp' => qr/(?:Connection timed out|Message expired)/,
         },
     ],
     qr/\A4[.]4[.]2\z/ => [
@@ -50,7 +50,7 @@ my $CodeTable = {
     qr/\A5[.]1[.][07]\z/ => [
         {
             'reason' => 'rejected',
-            'regexp' => qr/(?:Sender[ ]denied|Invalid[ ]address)/x,
+            'regexp' => qr/(?:Sender denied|Invalid address)/,
         },
     ],
     qr/\A5[.]1[.][123]\z/ => [
@@ -121,13 +121,13 @@ my $CodeTable = {
     qr/\A5[.]4[.][46]\z/ => [
         {
             'reason' => 'networkerror',
-            'regexp' => qr/(?:Invalid[ ]arguments|Routing[ ]loop[ ]detected)/x,
+            'regexp' => qr/(?:Invalid arguments|Routing loop detected)/,
         },
     ],
     qr/\A5[.]4[.]14\z/ => [
         {
             'reason' => 'networkerror',
-            'regexp' => qr/Hop[ ]count[ ]exceeded/x
+            'regexp' => qr/Hop count exceeded/,
         },
     ],
     qr/\A5[.]5[.]2\z/ => [
@@ -157,13 +157,13 @@ my $CodeTable = {
     qr/\A5[.]7[.][13]\z/ => [
         {
             'reason' => 'securityerror',
-            'regexp' => qr/(?:Delivery[ ]not[ ]authorized|Not[ ]Authorized)/x,
+            'regexp' => qr/(?:Delivery not authorized|Not Authorized)/,
         },
     ],
     qr/\A5[.]7[.]1\z/ => [
         {
             'reason' => 'securityerror',
-            'regexp' => qr/(?:Delivery[ ]not[ ]authorized|Client[ ]was[ ]not[ ]authenticated)/x,
+            'regexp' => qr/(?:Delivery not authorized|Client was not authenticated)/,
         },
         {
             'reason' => 'norelaying',
@@ -179,7 +179,7 @@ my $CodeTable = {
     qr/\A5[.]7[.]50[1-3]\z/ => [
         {
             'reason' => 'spamdetected',
-            'regexp' => qr/Access[ ]denied,[ ](?:spam[ ]abuse[ ]detected|banned[ ]sender)/x,
+            'regexp' => qr/Access denied, (?:spam abuse detected|banned sender)/,
         },
     ],
     qr/\A5[.]7[.]50[457]\z/ => [
@@ -234,7 +234,7 @@ my $CodeTable = {
     qr/\A5[.]7[.]6\d{2}\z/ => [
         {
             'reason' => 'blocked',
-            'regexp' => qr/Access[ ]denied,[ ]banned[ ]sending[ ]IP[ ].+/,
+            'regexp' => qr/Access denied, banned sending IP .+/,
         },
     ],
     qr/\A5[.]7[.]7\d{2}\z/ => [
@@ -329,7 +329,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

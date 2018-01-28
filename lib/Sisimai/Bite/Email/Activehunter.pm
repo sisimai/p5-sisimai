@@ -82,7 +82,7 @@ sub scan {
             # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
             $v = $dscontents->[-1];
 
-            if( $e =~ m/\A[>]{3}[ \t]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
+            if( $e =~ /\A[>]{3}[ \t]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
                 # >>> kijitora@example.org <kijitora@example.org>
                 if( length $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
@@ -95,7 +95,7 @@ sub scan {
             } else {
                 #  ----- Transcript of session follows -----
                 # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
-                next unless $e =~ m/\A[0-9A-Za-z]+/;
+                next unless $e =~ /\A[0-9A-Za-z]+/;
                 $v->{'diagnosis'} = $e;
             }
         } # End of if: rfc822

@@ -83,11 +83,10 @@ sub new {
     # Callback method
     $thing->{'catch'} = $argvs->{'catch'} // undef;
 
-    my @v1 = (
-        'listid', 'subject', 'messageid', 'smtpagent', 'diagnosticcode',
-        'diagnostictype', 'deliverystatus', 'reason', 'lhost', 'rhost',
-        'smtpcommand', 'feedbacktype', 'action', 'softbounce', 'replycode',
-    );
+    my @v1 = (qw|
+        listid subject messageid smtpagent diagnosticcode diagnostictype deliverystatus
+        reason lhost rhost smtpcommand feedbacktype action softbounce replycode
+    |);
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
     $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find($argvs->{'diagnosticcode'});
 
@@ -115,7 +114,6 @@ sub make {
     my $rfc822data = $messageobj->rfc822;
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
-    my $rxcommands = qr/\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
     my $givenorder = $argvs->{'order'} ? $argvs->{'order'} : {};
 
     # Decide the order of email headers: user specified or system default.
@@ -133,10 +131,10 @@ sub make {
 
     for my $e ( keys %$fieldorder ) {
         # If the order is empty, use default order.
-        if( not scalar @{ $fieldorder->{ $e } } ) {
-            # Load default order of each accessor.
-            $fieldorder->{ $e } = $AddrHeader->{ $e };
-        }
+        next if scalar @{ $fieldorder->{ $e } };
+
+        # Load default order of each accessor.
+        $fieldorder->{ $e } = $AddrHeader->{ $e };
     }
 
     LOOP_DELIVERY_STATUS: for my $e ( @{ $messageobj->ds } ) {
@@ -205,10 +203,8 @@ sub make {
                 push @datevalues, $rfc822data->{ lc $f };
             }
 
-            if( scalar(@datevalues) < 2 ) {
-                # Set "date" getting from the value of "Date" in the bounce message
-                push @datevalues, $messageobj->{'header'}->{'date'}; 
-            }
+            # Set "date" getting from the value of "Date" in the bounce message
+            push @datevalues, $messageobj->{'header'}->{'date'} if scalar(@datevalues) < 2;
 
             while( my $v = shift @datevalues ) {
                 # Parse each date value in the array
@@ -218,7 +214,7 @@ sub make {
 
             if( defined $datestring ) {
                 # Get the value of timezone offset from $datestring
-                if( $datestring =~ m/\A(.+)[ ]+([-+]\d{4})\z/ ) {
+                if( $datestring =~ /\A(.+)[ ]+([-+]\d{4})\z/ ) {
                     # Wed, 26 Feb 2014 06:05:48 -0500
                     $datestring = $1;
                     $zoneoffset = Sisimai::DateTime->tz2second($2);
@@ -245,16 +241,13 @@ sub make {
                 $e->{'rhost'} ||= pop   @{ Sisimai::RFC5322->received($recvheader->[-1]) };
             }
 
-            for my $v ( 'rhost', 'lhost' ) {
+            for my $v ('rhost', 'lhost') {
                 $p->{ $v } =~ y/[]()//d;    # Remove square brackets and curly brackets from the host variable
                 $p->{ $v } =~ s/\A.+=//;    # Remove string before "="
                 $p->{ $v } =~ s/\r\z//g;    # Remove CR at the end of the value
 
-                # Check space character in each value
-                if( $p->{ $v } =~ m/ / ) {
-                    # Get the first element
-                    $p->{ $v } = (split(' ', $p->{ $v }, 2))[0];
-                }
+                # Check space character in each value and get the first element
+                $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if index($p->{ $v }, ' ') > -1;
             }
 
             # Subject: header of the original message
@@ -264,21 +257,18 @@ sub make {
             # The value of "List-Id" header
             $p->{'listid'} =  $rfc822data->{'list-id'} // '';
             if( length $p->{'listid'} ) {
-                # Get the value of List-Id header
-                if( $p->{'listid'} =~ m/\A.*([<].+[>]).*\z/ ) {
-                    # List name <list-id@example.org>
-                    $p->{'listid'} = $1 
-                }
+                # Get the value of List-Id header: "List name <list-id@example.org>"
+                $p->{'listid'} =  $1 if $p->{'listid'} =~ /\A.*([<].+[>]).*\z/;
                 $p->{'listid'} =~ y/<>//d;
                 $p->{'listid'} =~ s/\r\z//g;
-                $p->{'listid'} =  '' if $p->{'listid'} =~ m/ /;
+                $p->{'listid'} =  '' if index($p->{'listid'}, ' ') > -1;
             }
 
             # The value of "Message-Id" header
             $p->{'messageid'} = $rfc822data->{'message-id'} // '';
             if( length $p->{'messageid'} ) {
                 # Remove angle brackets
-                $p->{'messageid'} =  $1 if $p->{'messageid'} =~ m/\A([^ ]+)[ ].*/;
+                $p->{'messageid'} =  $1 if $p->{'messageid'} =~ /\A([^ ]+)[ ].*/;
                 $p->{'messageid'} =~ y/<>//d;
                 $p->{'messageid'} =~ s/\r\z//g;
             }
@@ -293,12 +283,11 @@ sub make {
                     my $vs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
                     my $vr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'});
                     my $vm = 0;
-                    my $re = undef;
 
                     if( length $vs ) {
                         # How many times does the D.S.N. appeared
                         $vm += 1 while $p->{'diagnosticcode'} =~ /\b\Q$vs\E\b/g;
-                        $p->{'deliverystatus'} = $vs if $vs =~ m/\A[45][.][1-9][.][1-9]\z/;
+                        $p->{'deliverystatus'} = $vs if $vs =~ /\A[45][.][1-9][.][1-9]\z/;
                     }
 
                     if( length $vr ) {
@@ -310,7 +299,7 @@ sub make {
                     if( $vm > 2 ) {
                         # Build regular expression for removing string like '550-5.1.1'
                         # from the value of "diagnosticcode"
-                        $re = qr/[ ]$vr[- ](?:\Q$vs\E)?/;
+                        my $re = qr/[ ]$vr[- ](?:\Q$vs\E)?/;
 
                         # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
                         # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
@@ -321,17 +310,15 @@ sub make {
                     }
                 }
                 $p->{'diagnostictype'} ||= 'X-UNIX' if $p->{'reason'} eq 'mailererror';
-                $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ m/\A(?:feedback|vacation)\z/;
+                $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ /\A(?:feedback|vacation)\z/;
             }
 
             # Check the value of SMTP command
-            $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ $rxcommands;
+            $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ /\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
 
             if( $p->{'action'} ) {
-                if( $p->{'action'} =~ m/\A(.+?) .+/ ) {
-                    # Action: expanded (to multi-recipient alias)
-                    $p->{'action'} = $1;
-                }
+                # Action: expanded (to multi-recipient alias)
+                $p->{'action'} = $1 if $p->{'action'} =~ /\A(.+?) .+/;
 
                 unless( $p->{'action'} =~ /\A(?:failed|delayed|delivered|relayed|expanded)\z/ ) {
                     # The value of "action" is not in the following values:
@@ -347,7 +334,7 @@ sub make {
                     # Action: delayed
                     $p->{'action'} = 'delayed';
 
-                } elsif( $p->{'deliverystatus'} =~ m/\A[45]/ ) {
+                } elsif( index($p->{'deliverystatus'}, '5') == 0 || index($p->{'deliverystatus'}, '4') == 0 ) {
                     # Action: failed
                     $p->{'action'} = 'failed';
                 }
@@ -358,17 +345,14 @@ sub make {
 
         if( $o->reason eq '' || grep { $o->reason eq $_ } @$RetryIndex ) {
             # Decide the reason of email bounce
-            if( Sisimai::Rhost->match($o->rhost) ) {
-                # Remote host dependent error
-                $r = Sisimai::Rhost->get($o);
-            }
+            $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->rhost);   # Remote host dependent error
             $r ||= Sisimai::Reason->get($o);
             $r ||= 'undefined';
             $o->reason($r);
         }
 
-        if( $o->reason =~ m/\A(?:delivered|feedback|vacation)\z/ ) {
-            # The value of reason is "vacation" or "feedback".
+        if( $o->reason eq 'delivered' || $o->reason eq 'feedback' || $o->reason eq 'vacation' ) {
+            # The value of reason is "delivered", "vacation" or "feedback".
             $o->softbounce(-1);
             $o->replycode('') unless $o->reason eq 'delivered';
 
@@ -447,12 +431,12 @@ sub damn {
 
     eval {
         my $v = {};
-        my @stringdata = ( qw|
+        my @stringdata = (qw|
             token lhost rhost listid alias reason subject messageid smtpagent 
             smtpcommand destination diagnosticcode senderdomain deliverystatus
             timezoneoffset feedbacktype diagnostictype action replycode catch
-            softbounce|
-        );
+            softbounce
+        |);
 
         for my $e ( @stringdata ) {
             # Copy string data
@@ -463,7 +447,6 @@ sub damn {
         $v->{'timestamp'} = $self->timestamp->epoch;
         $data = $v;
     };
-
     return $data;
 }
 
@@ -474,8 +457,7 @@ sub dump {
     #                           argument is neither "json" nor "yaml"
     my $self = shift;
     my $type = shift || 'json';
-
-    return undef unless $type =~ m/\A(?:json|yaml)\z/;
+    return undef unless $type =~ /\A(?:json|yaml)\z/;
 
     my $dumpeddata = '';
     my $referclass = 'Sisimai::Data::'.uc($type);
@@ -539,7 +521,7 @@ method like the following codes:
         my $argv = shift;
         my $fish = { 'x-mailer' => '' };
 
-        if( $argv->{'message'} =~ m/^X-Mailer:\s*(.+)$/m ) {
+        if( $argv->{'message'} =~ /^X-Mailer:\s*(.+)$/m ) {
             $fish->{'x-mailer'} = $1;
         }
 
