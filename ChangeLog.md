@@ -22,6 +22,7 @@ v4.22.3p2
     - Replace `$v =~ /\A.../` with `index($v, '...') == 0`
     - Replace `$v =~ /.../` with `index($v, '...') > -1`
     - Replace `$v =~ /.\z/` with `substr($v, -1, 1) eq '.'`
+  - #251 Declaration of the version has been changed: use version;
 
 v4.22.3
 --------------------------------------------------------------------------------

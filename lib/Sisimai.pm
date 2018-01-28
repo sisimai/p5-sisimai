@@ -2,10 +2,12 @@ package Sisimai;
 use feature ':5.10';
 use strict;
 use warnings;
+use version;
 use Module::Load '';
 
-our $VERSION = '4.22.3p1';
-sub version { return $VERSION }
+our $VERSION = version->declare('v4.22.3');
+our $PATCHLV = 2;
+sub version { return $VERSION.($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer'  }
 sub libname { 'Sisimai'       }
 
