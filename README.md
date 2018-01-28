@@ -248,7 +248,7 @@ and Sisimai. More information about differences are available at
 | WebUI/API                                      | Included      | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A[1]      |
 | Analytical precision ratio(2000 emails)[2]     | 0.49          | 1.00        |
-| The speed of parsing email(1000 emails)        | 4.24s         | 2.10s       |
+| The speed of parsing email(1000 emails)        | 4.24s         | 1.95s       |
 | The number of detectable bounce reasons        | 19            | 29          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | Unable        | OK          |
@@ -257,7 +257,7 @@ and Sisimai. More information about differences are available at
 | Easy to install                                | No            | Yes         |
 | Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 9800 lines  |
+| LOC:Source lines of code                       | 18200 lines   | 9000 lines  |
 | The number of tests in t/, xt/ directory       | 27365 tests   | 230000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
@@ -318,7 +318,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2017 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2018 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================
