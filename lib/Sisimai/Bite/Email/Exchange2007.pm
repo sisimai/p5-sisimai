@@ -157,7 +157,7 @@ sub scan {
             }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'agent'}  = __PACKAGE__->smtpagent;
+        $e->{'agent'} = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

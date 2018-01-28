@@ -126,17 +126,13 @@ sub scan {
                 # Other error message text
                 $v->{'alterrors'} //= '';
                 $v->{'alterrors'}  .= ' '.$e if length $v->{'alterrors'};
-                if( index($e, $StartingOf->{'error'}->[0]) > -1 ) {
-                    # Body of message generated response:
-                    $v->{'alterrors'} = $e;
-                }
+                $v->{'alterrors'}   = $e if index($e, $StartingOf->{'error'}->[0]) > -1;
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'} = __PACKAGE__->smtpagent;
 

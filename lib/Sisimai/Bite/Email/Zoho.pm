@@ -130,8 +130,8 @@ sub scan {
         } # End of if: rfc822
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
         $e->{'diagnosis'} =~ s/\\n/ /g;

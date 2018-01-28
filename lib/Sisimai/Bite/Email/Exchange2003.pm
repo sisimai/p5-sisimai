@@ -106,7 +106,6 @@ sub scan {
         'date'    => '',    # The value of "Date"
         'subject' => '',    # The value of "Subject"
     };
-
     my $v = undef;
 
     for my $e ( @hasdivided ) {
@@ -216,11 +215,10 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -250,7 +248,7 @@ sub scan {
                 delete $e->{'alterrors'};
             }
         }
-        $e->{'agent'}  = __PACKAGE__->smtpagent;
+        $e->{'agent'} = __PACKAGE__->smtpagent;
         delete $e->{'msexch'};
     }
 

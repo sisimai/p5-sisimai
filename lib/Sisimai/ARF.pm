@@ -79,10 +79,9 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
     return undef unless is_arf(undef, $mhead);
-    require Sisimai::Address;
 
+    require Sisimai::Address;
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part

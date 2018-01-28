@@ -234,7 +234,6 @@ sub headers {
                 }
                 $structured->{ $currheader } = $rhs;
             }
-
         } elsif( $e =~ /\A[ \t]+(.+?)\z/ ) {
             # Ignore header?
             next if exists $IgnoreList->{ $currheader };
@@ -407,10 +406,9 @@ sub parse {
             }
         }
 
-        if( $mesgformat =~ m|text/html;?| ) {
-            # Content-Type: text/html;...
-            $bodystring = Sisimai::String->to_plain($bodystring, 1);
-        }
+        # Content-Type: text/html;...
+        $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
+
     } else {
         # NOT text/plain
         if( $$bodystring =~ $ReEncoding->{'quoted-print'} ) {

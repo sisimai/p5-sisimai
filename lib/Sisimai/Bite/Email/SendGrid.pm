@@ -168,18 +168,14 @@ sub scan {
         # Save the current line for the next loop
         $p = $e;
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         # Get the value of SMTP status code as a pseudo D.S.N.
-        if( $e->{'diagnosis'} =~ /\b([45])\d\d[ \t]*/ ) {
-            # 4xx or 5xx
-            $e->{'status'} = $1.'.0.0';
-        }
+        $e->{'status'} = $1.'.0.0' if $e->{'diagnosis'} =~ /\b([45])\d\d[ \t]*/;
 
         if( $e->{'status'} =~ /[45][.]0[.]0/ ) {
             # Get the value of D.S.N. from the error message or the value of

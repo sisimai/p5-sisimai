@@ -29,12 +29,10 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
     return undef unless index($mhead->{'subject'}, 'Undeliverable Mail: "') == 0;
 
     require Sisimai::MIME;
     require Sisimai::String;
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -147,7 +145,6 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {

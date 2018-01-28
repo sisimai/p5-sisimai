@@ -101,18 +101,14 @@ sub scan {
                 $v->{'diagnosis'} = $e;
 
             } else {
-                # Get error message
-                if( length $v->{'diagnosis'} ) {
-                    # Append error message strings
-                    $v->{'diagnosis'} .= ' '.$e;
-                }
+                # Get error message and append the error message strings
+                $v->{'diagnosis'} .= ' '.$e if length $v->{'diagnosis'};
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
         $e->{'diagnosis'} =~ s/\A$StartingOf->{'error'}->[0]//g;

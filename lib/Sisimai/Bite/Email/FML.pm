@@ -21,7 +21,7 @@ my $ErrorTitle = {
         |WARNING:[ ]UNIX[ ]FROM[ ]Loop
         )
     }x,
-    'securityerror' => qr/Security[ ]Alert/,
+    'securityerror' => qr/Security Alert/,
 };
 my $ErrorTable = {
     'rejected' => qr{(?>
@@ -40,7 +40,7 @@ my $ErrorTable = {
         |Loop[ ]Back[ ]Warning:
         )
     }x,
-    'securityerror' => qr/Security[ ]alert:/,
+    'securityerror' => qr/Security alert:/,
 };
 
 sub headerlist  { return ['X-MLServer'] }
@@ -127,10 +127,9 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;

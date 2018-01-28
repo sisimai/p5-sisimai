@@ -205,11 +205,10 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 

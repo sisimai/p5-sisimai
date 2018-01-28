@@ -10,8 +10,8 @@ my $StartingOf = {
     'rfc822'  => ['Content-Type: message/rfc822'],
 };
 my $ReFailures = {
-    'hostunknown' => qr/Host[ ]or[ ]domain[ ]name[ ]not[ ]found/,
-    'notaccept'   => qr/type=MX:[ ]Malformed[ ]or[ ]unexpected[ ]name[ ]server[ ]reply/,
+    'hostunknown' => qr/Host or domain name not found/,
+    'notaccept'   => qr/type=MX: Malformed or unexpected name server reply/,
 };
 
 # X-AOL-IP: 192.0.2.135
@@ -59,7 +59,6 @@ sub scan {
         'date'  => '',      # The value of Arrival-Date header
         'lhost' => '',      # The value of Reporting-MTA header
     };
-
     my $v = undef;
     my $p = '';
 
@@ -166,8 +165,8 @@ sub scan {
         $p = $e;
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;

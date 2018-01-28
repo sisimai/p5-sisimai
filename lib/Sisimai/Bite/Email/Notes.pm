@@ -36,10 +36,9 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
     return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
-    require Sisimai::Address;
 
+    require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -72,10 +71,8 @@ sub scan {
 
         unless( length $characters ) {
             # Get character set name
-            if( $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/ ) {
-                # Content-Type: text/plain; charset=ISO-2022-JP
-                $characters = lc $1;
-            }
+            # Content-Type: text/plain; charset=ISO-2022-JP
+            $characters = lc $1 if $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/;
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
@@ -145,9 +142,9 @@ sub scan {
         }
     }
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});

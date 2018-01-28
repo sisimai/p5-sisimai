@@ -103,14 +103,8 @@ sub soft_or_hard {
             $statuscode   = Sisimai::SMTP::Status->find($argv2);
             $statuscode ||= Sisimai::SMTP::Reply->find($argv2);
             $classvalue   = int(substr($statuscode, 0, 1) || 0);
+            $softorhard   = $classvalue == 4 ? 'soft' : 'hard';
 
-            if( $classvalue == 4 ) {
-                # Deal as a "soft bounce"
-                $softorhard = 'soft';
-            } else {
-                # 5 or 0, deal as a "hard bounce"
-                $softorhard = 'hard';
-            }
         } else {
             # "notaccept" is a hard bounce
             $softorhard = 'hard';

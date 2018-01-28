@@ -157,22 +157,17 @@ sub scan {
             my $pseudostatus = '';
             my $errormessage = $e->{'diagnosis'};
 
-            if( $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/ ) {
-                # 5.1.0 - Unknown address error 550-'5.7.1 ...
-                $errormessage = $1;
-            }
-
+            # 5.1.0 - Unknown address error 550-'5.7.1 ...
+            $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
             $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
             $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
-        if( $e->{'diagnosis'} =~ /[<]([245]\d\d)[ ].+[>]/ ) {
-            # 554 4.4.7 Message expired: unable to deliver in 840 minutes.
-            # <421 4.4.2 Connection timed out>
-            $e->{'replycode'} = $1;
-        }
-        $e->{'reason'} ||= Sisimai::SMTP::Status->name($e->{'status'});
-        $e->{'agent'}    = __PACKAGE__->smtpagent;
+        # 554 4.4.7 Message expired: unable to deliver in 840 minutes.
+        # <421 4.4.2 Connection timed out>
+        $e->{'replycode'} = $1 if $e->{'diagnosis'} =~ /[<]([245]\d\d)[ ].+[>]/;
+        $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'});
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

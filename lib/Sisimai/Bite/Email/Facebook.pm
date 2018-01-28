@@ -103,7 +103,6 @@ sub scan {
         'date'    => '',    # The value of Arrival-Date header
         'lhost'   => '',    # The value of Reporting-MTA header
     };
-
     my $v = undef;
     my $p = '';
 
@@ -209,8 +208,8 @@ sub scan {
         $p = $e;
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'lhost'}   ||= $connheader->{'lhost'};

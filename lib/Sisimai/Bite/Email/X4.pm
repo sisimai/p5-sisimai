@@ -233,7 +233,7 @@ sub scan {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( ! $e->{'command'} ) {
+        unless( $e->{'command'} ) {
             # Get the SMTP command name for the session
             SMTP: for my $r ( keys %$ReSMTP ) {
                 # Verify each regular expression of SMTP commands

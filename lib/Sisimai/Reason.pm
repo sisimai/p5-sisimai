@@ -74,7 +74,6 @@ sub get {
         $reasontext ||= 'onhold'  if length $argvs->diagnosticcode;
         $reasontext ||= 'undefined';
     }
-
     return $reasontext;
 }
 

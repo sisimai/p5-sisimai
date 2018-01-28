@@ -41,7 +41,6 @@ sub read {
     # Maildir reader, works as a iterator.
     # @return       [String] Contents of file in Maildir/
     my $self = shift;
-
     return undef unless defined $self->{'dir'};
     return undef unless -d $self->{'dir'};
 

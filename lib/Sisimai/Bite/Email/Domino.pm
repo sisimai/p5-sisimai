@@ -39,7 +39,6 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
     return undef unless index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -135,7 +134,6 @@ sub scan {
 
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});

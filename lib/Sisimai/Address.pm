@@ -27,10 +27,9 @@ sub undisclosed {
     #                           Undef when the $argv1 is neither 'r' nor 's'
     my $class = shift;
     my $atype = shift || return undef;
-    my $local = '';
 
     return undef unless $atype =~ /\A(?:r|s)\z/;
-    $local = $atype eq 'r' ? 'recipient' : 'sender';
+    my $local = $atype eq 'r' ? 'recipient' : 'sender';
     return sprintf("undisclosed-%s-in-headers%s%s", $local, '@', $undisclosed);
 }
 
@@ -56,7 +55,6 @@ sub make {
     # @since    v4.22.1
     my $class = shift;
     my $argvs = shift // return undef;
-    my $email = undef;
     my $thing = {
         'address' => '',    # Entire email address
         'user'    => '',    # Local part
@@ -157,7 +155,6 @@ sub find {
                 # Separator of email addresses or not
                 if( $v->{'address'} =~ /\A[<].+[@].+[>]\z/ ) {
                     # An email address has already been picked
-
                     if( $readcursor & $indicators->{'comment-block'} ) {
                         # The cursor is in the comment block (Neko, Nyaan)
                         $v->{'comment'} .= $e;
@@ -391,11 +388,10 @@ sub expand_verp {
     my $class = shift;
     my $email = shift // return undef;
     my $local = (split('@', $email, 2))[0];
-    my $verp0 = '';
 
     if( $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/ ) {
         # bounce+neko=example.org@example.org => neko@example.org
-        $verp0 = $1.'@'.$2;
+        my $verp0 = $1.'@'.$2;
         return $verp0 if Sisimai::RFC5322->is_emailaddress($verp0);
     } else {
         return '';
@@ -408,11 +404,10 @@ sub expand_alias {
     # @return   [String]        Expanded email address
     my $class = shift;
     my $email = shift // return undef;
-    my $alias = '';
-
     return '' unless Sisimai::RFC5322->is_emailaddress($email);
 
     my @local = split('@', $email);
+    my $alias = '';
     if( $local[0] =~ /\A([-_\w]+?)[+].+\z/ ) {
         # neko+straycat@example.org => neko@example.org
         $alias = $1.'@'.$local[1];

@@ -77,12 +77,10 @@ sub find {
 
     return '' if uc($argv1) =~ /X-UNIX;/;
 
-    if( $argv1 =~ $ip4re ) {
-        # Convert found IPv4 addresses to '***.***.***.***' to avoid that the
-        # following code detects an octet of the IPv4 adress as an SMTP reply
-        # code.
-        $argv1 =~ s/$ip4re/***.***.***.***/g 
-    }
+    # Convert found IPv4 addresses to '***.***.***.***' to avoid that the
+    # following code detects an octet of the IPv4 adress as an SMTP reply
+    # code.
+    $argv1 =~ s/$ip4re/***.***.***.***/g if $argv1 =~ $ip4re;
 
     if( $argv1 =~ /\b([45][0-5][0-9])\b/ || $argv1 =~ /\b(25[0-3])\b/ ) {
         # 550, 447, or 250

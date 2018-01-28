@@ -168,11 +168,10 @@ sub scan {
         # Save the current line for the next loop
         $p = $e;
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
@@ -185,11 +184,8 @@ sub scan {
             my $pseudostatus = '';
             my $errormessage = $e->{'diagnosis'};
 
-            if( $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/ ) {
-                # 5.1.0 - Unknown address error 550-'5.7.1 ...
-                $errormessage = $1;
-            }
-
+            # 5.1.0 - Unknown address error 550-'5.7.1 ...
+            $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
             $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
             $e->{'status'} = $pseudostatus if length $pseudostatus;
         }

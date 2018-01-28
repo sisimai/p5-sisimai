@@ -194,10 +194,8 @@ sub scan {
 
         unless( $e->{'rhost'} ) {
             # Get the remote host name
-            if( $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/ ) {
-                # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-                $e->{'rhost'} = $1;
-            }
+            # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
+            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
 
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {

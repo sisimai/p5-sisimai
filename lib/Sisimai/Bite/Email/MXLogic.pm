@@ -174,12 +174,10 @@ sub scan {
         $e->{'diagnosis'} =~ s/[-]{2}.*\z//g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( ! $e->{'rhost'} ) {
+        unless( $e->{'rhost'} ) {
             # Get the remote host name
-            if( $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/ ) {
-                # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-                $e->{'rhost'} = $1;
-            }
+            # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
+            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
 
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {
@@ -189,7 +187,7 @@ sub scan {
             }
         }
 
-        if( ! $e->{'command'} ) {
+        unless( $e->{'command'} ) {
             # Get the SMTP command name for the session
             SMTP: for my $r ( @$ReCommands ) {
                 # Verify each regular expression of SMTP commands

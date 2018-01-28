@@ -199,12 +199,11 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Reply;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;

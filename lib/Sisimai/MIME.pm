@@ -66,7 +66,6 @@ sub mimedecode {
     my @decodedtext0 = ();
     my $decodedtext1 = '';
     my $utf8decoded1 = '';
-
     my $notmimetext0 = '';
     my $notmimetext1 = '';
 
@@ -101,10 +100,9 @@ sub mimedecode {
             push @decodedtext0, $e;
         }
     }
-
     return '' unless scalar @decodedtext0;
-    $decodedtext1 = join('', @decodedtext0);
 
+    $decodedtext1 = join('', @decodedtext0);
     if( $characterset && $encodingname ) {
         # utf-8 => utf8
         $characterset = 'utf8' if $characterset eq 'utf-8';
@@ -181,7 +179,6 @@ sub qprintd {
                 $mimeinside = 0;
                 $ctencoding = undef;
                 $encodename = undef;
-
             } else {
                 # Inside of Queoted printable encoded text
                 $notdecoded .= $e . "\n";
@@ -232,10 +229,8 @@ sub base64d {
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
 
-    if( $$argv1 =~ m|([+/=0-9A-Za-z\r\n]+)| ) {
-        # Decode BASE64
-        $plain = MIME::Base64::decode($1);
-    }
+    # Decode BASE64
+    $plain = MIME::Base64::decode($1) if $$argv1 =~ m|([+/=0-9A-Za-z\r\n]+)|;
     return \$plain;
 }
 

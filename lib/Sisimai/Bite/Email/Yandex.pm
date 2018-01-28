@@ -173,10 +173,9 @@ sub scan {
         # Save the current line for the next loop
         $p = $e;
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;

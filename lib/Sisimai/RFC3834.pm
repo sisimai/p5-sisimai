@@ -84,7 +84,6 @@ sub scan {
 
     require Sisimai::Bite::Email;
     require Sisimai::Address;
-
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -152,10 +151,8 @@ sub scan {
     $v->{'date'}      = $mhead->{'date'};
     $v->{'status'}    = '';
 
-    if( $mhead->{'subject'} =~ $SubjectSet ) {
-        # Get the Subject header from the original message
-        $rfc822part = 'Subject: '.$1."\n";
-    }
+    # Get the Subject header from the original message
+    $rfc822part = 'Subject: '.$1."\n" if $mhead->{'subject'} =~ $SubjectSet;
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

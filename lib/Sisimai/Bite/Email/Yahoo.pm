@@ -98,10 +98,8 @@ sub scan {
                     # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
                     $v->{'diagnosis'} = $e;
 
-                    if( $e =~ /\[([A-Z]{4}).*\]\z/ ) {
-                        # Get SMTP command from the value of "Remote host said:"
-                        $v->{'command'} = $1;
-                    }
+                    # Get SMTP command from the value of "Remote host said:"
+                    $v->{'command'} = $1 if $e =~ /\[([A-Z]{4}).*\]\z/;
                 } else {
                     # <mailboxfull@example.jp>:
                     # Remote host said:
@@ -124,8 +122,8 @@ sub scan {
         } # End of if: rfc822
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});

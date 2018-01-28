@@ -228,8 +228,8 @@ sub scan {
         $p = $e;
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
@@ -242,11 +242,7 @@ sub scan {
             # Copy alternative error message
             $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A[ \t]+\z/;
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
-
-            if( $e->{'diagnosis'} =~ /\A\d+\z/ ) {
-                # Override the value of diagnostic code message
-                $e->{'diagnosis'} = $anotherset->{'diagnosis'};
-            }
+            $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A\d+\z/;
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -260,10 +256,8 @@ sub scan {
 
         unless( $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/ ) {
             # @example.jp, no local part
-            if( $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/ ) {
-                # Get email address from the value of Diagnostic-Code header
-                $e->{'recipient'} = $1;
-            }
+            # Get email address from the value of Diagnostic-Code header
+            $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
         }
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

@@ -32,6 +32,7 @@ my $MarkingsOf = {
     # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
     # deliver.c:6425|          else fprintf(f,
     # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
+    'alias'   => qr/\A([ ]+an undisclosed address)\z/,
     'message' => qr{\A(?>
          This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
         |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scanning[ ]code
@@ -46,7 +47,6 @@ my $MarkingsOf = {
         |Content-Type:[ ]*message/rfc822
         )\z
     }x,
-    'alias'  => qr/\A([ ]+an[ ]undisclosed[ ]address)\z/,
 };
 
 my $ReCommands = [
@@ -370,7 +370,6 @@ sub scan {
 
     require Sisimai::SMTP::Reply;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'agent'}   = __PACKAGE__->smtpagent;
@@ -428,10 +427,8 @@ sub scan {
 
         unless( $e->{'rhost'} ) {
             # Get the remote host name
-            if( $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/ ) {
-                # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-                $e->{'rhost'} = $1;
-            }
+            # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
+            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
 
             unless( $e->{'rhost'} ) {
                 if( scalar @{ $mhead->{'received'} } ) {
@@ -493,21 +490,23 @@ sub scan {
             my $r1 = 0; # First character of SMTP reply code as integer
             my $v1 = 0;
 
-            # "Status:" field did not exist in the bounce message
-            unless( length $sv ) {
-                # Check SMTP reply code
-                if( length $rv ) {
-                    # Generate pseudo DSN code from SMTP reply code
-                    $r1 = substr($rv, 0, 1);
-                    if( $r1 == 4 ) {
-                        # Get the internal DSN(temporary error)
-                        $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 1);
+            FIND_CODE: while(1) {
+                # "Status:" field did not exist in the bounce message
+                last if length $sv;
+                last unless length $rv;
 
-                    } elsif( $r1 == 5 ) {
-                        # Get the internal DSN(permanent error)
-                        $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 0);
-                    }
+                # Check SMTP reply code
+                # Generate pseudo DSN code from SMTP reply code
+                $r1 = substr($rv, 0, 1);
+                if( $r1 == 4 ) {
+                    # Get the internal DSN(temporary error)
+                    $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 1);
+
+                } elsif( $r1 == 5 ) {
+                    # Get the internal DSN(permanent error)
+                    $sv = Sisimai::SMTP::Status->code($e->{'reason'}, 0);
                 }
+                last;
             }
 
             $s1  = substr($sv, 0, 1) if length $sv;

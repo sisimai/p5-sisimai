@@ -147,10 +147,8 @@ sub adapt {
                     $v->{'diagnosis'} = $e->{'diagnosticCode'};
                 }
 
-                if( $o->{'reportingMTA'} =~ /\Adsn;[ ](.+)\z/ ) {
-                    # 'reportingMTA' => 'dsn; a27-23.smtp-out.us-west-2.amazonses.com',
-                    $v->{'lhost'} = $1;
-                }
+                # 'reportingMTA' => 'dsn; a27-23.smtp-out.us-west-2.amazonses.com',
+                $v->{'lhost'} = $1 if $o->{'reportingMTA'} =~ /\Adsn;[ ](.+)\z/;
 
                 if( exists $BounceType->{ $o->{'bounceType'} } &&
                     exists $BounceType->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} } ) {
@@ -231,10 +229,8 @@ sub adapt {
 
     unless( $rfc822head->{'message-id'} ) {
         # Try to get the value of "Message-Id".
-        if( $argvs->{'mail'}->{'messageId'} ) {
-            # 'messageId' => '01010157e48f9b9b-891e9a0e-9c9d-4773-9bfe-608f2ef4756d-000000'
-            $rfc822head->{'message-id'} = $argvs->{'mail'}->{'messageId'};
-        }
+        # 'messageId' => '01010157e48f9b9b-891e9a0e-9c9d-4773-9bfe-608f2ef4756d-000000'
+        $rfc822head->{'message-id'} = $argvs->{'mail'}->{'messageId'} if $argvs->{'mail'}->{'messageId'};
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822head };
 }

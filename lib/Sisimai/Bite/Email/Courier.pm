@@ -21,7 +21,7 @@ my $ReFailures = {
 };
 my $ReDelaying = {
     # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
-    'networkerror' => qr/\ADNS[ ]lookup[ ]failed[.]\z/,
+    'networkerror' => qr/\ADNS lookup failed[.]\z/,
 };
 
 sub description { 'Courier MTA' }
@@ -205,10 +205,9 @@ sub scan {
         # Save the current line for the next loop
         $p = $e;
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;

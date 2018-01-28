@@ -131,10 +131,10 @@ sub make {
 
     for my $e ( keys %$fieldorder ) {
         # If the order is empty, use default order.
-        if( not scalar @{ $fieldorder->{ $e } } ) {
-            # Load default order of each accessor.
-            $fieldorder->{ $e } = $AddrHeader->{ $e };
-        }
+        next if scalar @{ $fieldorder->{ $e } };
+
+        # Load default order of each accessor.
+        $fieldorder->{ $e } = $AddrHeader->{ $e };
     }
 
     LOOP_DELIVERY_STATUS: for my $e ( @{ $messageobj->ds } ) {
@@ -203,10 +203,8 @@ sub make {
                 push @datevalues, $rfc822data->{ lc $f };
             }
 
-            if( scalar(@datevalues) < 2 ) {
-                # Set "date" getting from the value of "Date" in the bounce message
-                push @datevalues, $messageobj->{'header'}->{'date'}; 
-            }
+            # Set "date" getting from the value of "Date" in the bounce message
+            push @datevalues, $messageobj->{'header'}->{'date'} if scalar(@datevalues) < 2;
 
             while( my $v = shift @datevalues ) {
                 # Parse each date value in the array
@@ -248,11 +246,8 @@ sub make {
                 $p->{ $v } =~ s/\A.+=//;    # Remove string before "="
                 $p->{ $v } =~ s/\r\z//g;    # Remove CR at the end of the value
 
-                # Check space character in each value
-                if( index($p->{ $v }, ' ') > -1 ) {
-                    # Get the first element
-                    $p->{ $v } = (split(' ', $p->{ $v }, 2))[0];
-                }
+                # Check space character in each value and get the first element
+                $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if index($p->{ $v }, ' ') > -1;
             }
 
             # Subject: header of the original message
@@ -262,11 +257,8 @@ sub make {
             # The value of "List-Id" header
             $p->{'listid'} =  $rfc822data->{'list-id'} // '';
             if( length $p->{'listid'} ) {
-                # Get the value of List-Id header
-                if( $p->{'listid'} =~ /\A.*([<].+[>]).*\z/ ) {
-                    # List name <list-id@example.org>
-                    $p->{'listid'} = $1 
-                }
+                # Get the value of List-Id header: "List name <list-id@example.org>"
+                $p->{'listid'} =  $1 if $p->{'listid'} =~ /\A.*([<].+[>]).*\z/;
                 $p->{'listid'} =~ y/<>//d;
                 $p->{'listid'} =~ s/\r\z//g;
                 $p->{'listid'} =  '' if index($p->{'listid'}, ' ') > -1;
@@ -291,7 +283,6 @@ sub make {
                     my $vs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
                     my $vr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'});
                     my $vm = 0;
-                    my $re = undef;
 
                     if( length $vs ) {
                         # How many times does the D.S.N. appeared
@@ -308,7 +299,7 @@ sub make {
                     if( $vm > 2 ) {
                         # Build regular expression for removing string like '550-5.1.1'
                         # from the value of "diagnosticcode"
-                        $re = qr/[ ]$vr[- ](?:\Q$vs\E)?/;
+                        my $re = qr/[ ]$vr[- ](?:\Q$vs\E)?/;
 
                         # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
                         # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
@@ -326,10 +317,8 @@ sub make {
             $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ /\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
 
             if( $p->{'action'} ) {
-                if( $p->{'action'} =~ /\A(.+?) .+/ ) {
-                    # Action: expanded (to multi-recipient alias)
-                    $p->{'action'} = $1;
-                }
+                # Action: expanded (to multi-recipient alias)
+                $p->{'action'} = $1 if $p->{'action'} =~ /\A(.+?) .+/;
 
                 unless( $p->{'action'} =~ /\A(?:failed|delayed|delivered|relayed|expanded)\z/ ) {
                     # The value of "action" is not in the following values:
@@ -356,17 +345,14 @@ sub make {
 
         if( $o->reason eq '' || grep { $o->reason eq $_ } @$RetryIndex ) {
             # Decide the reason of email bounce
-            if( Sisimai::Rhost->match($o->rhost) ) {
-                # Remote host dependent error
-                $r = Sisimai::Rhost->get($o);
-            }
+            $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->rhost);   # Remote host dependent error
             $r ||= Sisimai::Reason->get($o);
             $r ||= 'undefined';
             $o->reason($r);
         }
 
         if( $o->reason eq 'delivered' || $o->reason eq 'feedback' || $o->reason eq 'vacation' ) {
-            # The value of reason is "vacation" or "feedback".
+            # The value of reason is "delivered", "vacation" or "feedback".
             $o->softbounce(-1);
             $o->replycode('') unless $o->reason eq 'delivered';
 
@@ -461,7 +447,6 @@ sub damn {
         $v->{'timestamp'} = $self->timestamp->epoch;
         $data = $v;
     };
-
     return $data;
 }
 

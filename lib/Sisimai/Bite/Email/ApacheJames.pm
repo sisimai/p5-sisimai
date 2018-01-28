@@ -131,7 +131,6 @@ sub scan {
                         #   550 - Requested action not taken: no such user here
                         $v->{'diagnosis'} .= ' '.$e;
                     }
-
                 } else {
                     # Error message below:
                     # 550 - Requested action not taken: no such user here
@@ -140,9 +139,7 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
     unless( grep { index($_, 'Subject:') == 0 } @$rfc822list ) {
         # Set the value of $subjecttxt as a Subject if there is no original
@@ -150,6 +147,7 @@ sub scan {
         push @$rfc822list, 'Subject: '.$subjecttxt;
     }
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);

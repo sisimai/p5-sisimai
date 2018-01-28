@@ -66,7 +66,6 @@ sub scan {
         'rhost'   => '',    # The value of Reporting-MTA header
         'lhost'   => '',    # The value of Received-From-MTA header
     };
-
     my $v = undef;
     my $p = '';
 
@@ -157,10 +156,8 @@ sub scan {
                 #   The action-value may be spelled in any combination of upper and lower
                 #   case characters.
                 $v->{'action'} = lc $1;
-                if( $v->{'action'} =~ /\A([^ ]+)[ ]/ ) {
-                    # failed (bad destination mailbox address)
-                    $v->{'action'} = $1;
-                }
+                $v->{'action'} = $1 if $v->{'action'} =~ /\A([^ ]+)[ ]/; # failed (bad destination mailbox address)
+
             } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # 2.3.4 Status field
                 #   The per-recipient Status field contains a transport-independent
@@ -431,11 +428,10 @@ sub scan {
             }
         }
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;

@@ -55,7 +55,6 @@ sub scan {
         'date'  => '',      # The value of Arrival-Date header
         'lhost' => '',      # The value of Reporting-MTA header
     };
-
     my $v = undef;
     my $p = '';
 
@@ -123,7 +122,6 @@ sub scan {
                     $v->{'status'} = $1;
 
                 } else {
-
                     if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
@@ -158,8 +156,8 @@ sub scan {
         $p = $e;
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;

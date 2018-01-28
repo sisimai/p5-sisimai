@@ -137,7 +137,6 @@ sub scan {
                     $v->{'date'} = $1;
 
                 } else {
-
                     if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
@@ -184,11 +183,10 @@ sub scan {
             $recipients = scalar @{ $j->{'ds'} };
         }
     }
-
     return undef unless $recipients;
+
     require Sisimai::String;
     require Sisimai::SMTP::Status;
-
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
@@ -202,11 +200,8 @@ sub scan {
             my $pseudostatus = '';
             my $errormessage = $e->{'diagnosis'};
 
-            if( $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/ ) {
-                # 5.1.0 - Unknown address error 550-'5.7.1 ...
-                $errormessage = $1;
-            }
-
+            # 5.1.0 - Unknown address error 550-'5.7.1 ...
+            $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
             $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
             $e->{'status'} = $pseudostatus if length $pseudostatus;
         }

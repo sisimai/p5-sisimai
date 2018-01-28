@@ -91,8 +91,7 @@ sub scan {
             # 5.1.1 <shironeko@example.jp>... User Unknown
             $v = $dscontents->[-1];
 
-            if( $e =~ /\A["]([^ ]+[@][^ ]+)["]:\z/ ||
-                $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
+            if( $e =~ /\A["]([^ ]+[@][^ ]+)["]:\z/ || $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
                 # "shironeko@example.jp":
                 # ---- OR ----
                 # <kijitora@6jo.example.co.jp>
@@ -117,10 +116,7 @@ sub scan {
 
             } else {
                 # Get error message
-                if( $e =~ /\b[45][.]\d[.]\d\b/  ||
-                    $e =~ /[<][^ ]+[@][^ ]+[>]/ ||
-                    $e =~ /\b[45]\d{2}\b/ ) {
-
+                if( $e =~ /\b[45][.]\d[.]\d\b/  || $e =~ /[<][^ ]+[@][^ ]+[>]/ || $e =~ /\b[45]\d{2}\b/ ) {
                     $v->{'diagnosis'} ||= $e;
 
                 } else {
@@ -137,10 +133,9 @@ sub scan {
             }
         } # End of if: rfc822
     }
-
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
         $e->{'diagnosis'} =~ s/\\n/ /g;

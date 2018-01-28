@@ -141,10 +141,8 @@ sub scan {
                     next;
                 }
 
-                if( $e =~ /\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/ ) {
-                    # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
-                    $anotherset->{'diagnosis'} = $1;
-                }
+                # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
+                $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/;
             }
         } # End of if: rfc822
     }
@@ -162,8 +160,8 @@ sub scan {
         }
     }
     return undef unless $recipients;
-    require Sisimai::String;
 
+    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $errorindex++;
         $e->{'agent'}   = __PACKAGE__->smtpagent;
@@ -181,10 +179,8 @@ sub scan {
 
         unless( $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/ ) {
             # @example.jp, no local part
-            if( $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/ ) {
-                # Get email address from the value of Diagnostic-Code header
-                $e->{'recipient'} = $1;
-            }
+            # Get email address from the value of Diagnostic-Code header
+            $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
         }
         delete $e->{'sessionerr'};
     }
