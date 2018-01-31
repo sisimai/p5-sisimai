@@ -121,7 +121,6 @@ sub soft_or_hard {
             }
         }
     }
-
     $softorhard //= '';
     return $softorhard;
 }

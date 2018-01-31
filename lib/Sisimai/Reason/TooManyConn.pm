@@ -49,14 +49,11 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return 1 if $argvs->reason eq __PACKAGE__->text;
-
-    my $statuscode = $argvs->deliverystatus // '';
-    my $diagnostic = $argvs->diagnosticcode // '';
+    return 1 if $argvs->reason eq 'toomanyconn';
 
     require Sisimai::SMTP::Status;
-    return 1 if Sisimai::SMTP::Status->name($statuscode) eq __PACKAGE__->text;
-    return 1 if __PACKAGE__->match($diagnostic);
+    return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'toomanyconn';
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
     return 0;
 }
 

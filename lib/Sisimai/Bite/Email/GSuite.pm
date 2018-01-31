@@ -132,8 +132,8 @@ sub scan {
                     } else {
                         # Append error messages continued from the previous line
                         if( $endoferror == 0 && length $v->{'diagnosis'} ) {
-                            $endoferror = 1 if $e eq '';
-                            $endoferror = 1 if index($e, '--') == 0;
+                            $endoferror ||= 1 if $e eq '';
+                            $endoferror ||= 1 if index($e, '--') == 0;
 
                             next if $endoferror;
                             next unless index($e, ' ') == 0;

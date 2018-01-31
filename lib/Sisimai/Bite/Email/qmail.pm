@@ -76,7 +76,7 @@ my $ReLDAP = {
 };
 
 # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
-my $ReDelaying = qr/this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long[.]\z/x;
+my $ReDelaying = qr/this message has been in the queue too long[.]\z/;
 my $ReIsOnHold = qr/\A[^ ]+ does not like recipient[.][ \t]+.+this message has been in the queue too long[.]\z/;
 
 # qmail-remote-fallback.patch
@@ -103,8 +103,7 @@ my $ReFailures = {
     'networkerror'=> qr{Sorry(?:
          [,][ ]I[ ]wasn[']t[ ]able[ ]to[ ]establish[ ]an[ ]SMTP[ ]connection
         |[,][ ]I[ ]couldn[']t[ ]find[ ]a[ ]mail[ ]exchanger[ ]or[ ]IP[ ]address
-        |[.][ ]Although[ ]I[']m[ ]listed[ ]as[ ]a[ ]best[-]preference[ ]MX[ ]
-            or[ ]A[ ]for[ ]that[ ]host
+        |[.][ ]Although[ ]I[']m[ ]listed[ ]as[ ]a[ ]best[-]preference[ ]MX[ ]or[ ]A[ ]for[ ]that[ ]host
         )
     }x,
 };

@@ -52,18 +52,17 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return 1 if $argvs->reason eq __PACKAGE__->text;
+    return 1 if $argvs->reason eq 'hostunknown';
 
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
 
-    if( Sisimai::SMTP::Status->name($statuscode) eq __PACKAGE__->text ) {
+    if( Sisimai::SMTP::Status->name($statuscode) eq 'hostunknown' ) {
         # Status: 5.1.2
         # Diagnostic-Code: SMTP; 550 Host unknown
         require Sisimai::Reason::NetworkError;
         return 1 unless Sisimai::Reason::NetworkError->match($diagnostic);
-
     } else {
         # Check the value of Diagnosic-Code: header with patterns
         return 1 if __PACKAGE__->match($diagnostic);

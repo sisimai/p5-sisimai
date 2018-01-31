@@ -112,8 +112,8 @@ sub is_mailerdaemon {
         |\A(?:mailer-daemon|postmaster)\z
         |[ ]?mailer-daemon[ ]
         )
-    }xi;
-    return 1 if $email =~ $rxmds;
+    }x;
+    return 1 if lc($email) =~ $rxmds;
     return 0;
 }
 

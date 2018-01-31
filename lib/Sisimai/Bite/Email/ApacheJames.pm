@@ -37,7 +37,7 @@ sub scan {
     # 'received'   => qr/JAMES SMTP Server/,
     # 'message-id' => qr/\d+[.]JavaMail[.].+[@]/,
     $match ||= 1 if $mhead->{'subject'} eq '[BOUNCE]';
-    $match ||= 1 if defined $mhead->{'message-id'} && $mhead->{'message-id'} =~ /\d+[.]JavaMail[.].+[@]/;
+    $match ||= 1 if defined $mhead->{'message-id'} && index($mhead->{'message-id'}, '.JavaMail.') > -1;
     $match ||= 1 if grep { index($_, 'JAMES SMTP Server') > -1 } @{ $mhead->{'received'} };
     return undef unless $match;
 

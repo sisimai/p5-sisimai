@@ -50,24 +50,24 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return 1 if $argvs->reason eq __PACKAGE__->text;
+    return 1 if $argvs->reason eq 'filtered';
 
     require Sisimai::SMTP::Status;
     require Sisimai::Reason::UserUnknown;
     my $commandtxt = $argvs->smtpcommand // '';
-    my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = $argvs->diagnosticcode // '';
-    my $tempreason = Sisimai::SMTP::Status->name($statuscode);
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
+    my $alterclass = 'Sisimai::Reason::UserUnknown';
 
     return 0 if $tempreason eq 'suspend';
-    if( $tempreason eq __PACKAGE__->text ) {
+    if( $tempreason eq 'filtered' ) {
         # Delivery status code points "filtered".
-        return 1 if( Sisimai::Reason::UserUnknown->match($diagnostic) || __PACKAGE__->match($diagnostic) );
+        return 1 if( $alterclass->match($diagnostic) || __PACKAGE__->match($diagnostic) );
 
     } elsif( $commandtxt ne 'RCPT' && $commandtxt ne 'MAIL' ) {
         # Check the value of Diagnostic-Code and the last SMTP command
         return 1 if __PACKAGE__->match($diagnostic);
-        return 1 if Sisimai::Reason::UserUnknown->match($diagnostic);
+        return 1 if $alterclass->match($diagnostic);
     }
     return 0;
 }

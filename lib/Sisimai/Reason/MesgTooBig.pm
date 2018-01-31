@@ -48,7 +48,7 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return 1 if $argvs->reason eq __PACKAGE__->text;
+    return 1 if $argvs->reason eq 'mesgtoobig';
 
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
@@ -57,11 +57,11 @@ sub true {
     # Delivery status code points "mesgtoobig".
     # Status: 5.3.4
     # Diagnostic-Code: SMTP; 552 5.3.4 Error: message file too big
-    return 1 if $tempreason eq __PACKAGE__->text;
+    return 1 if $tempreason eq 'mesgtoobig';
 
     #  5.2.3   Message length exceeds administrative limit
     return 0 if( $tempreason eq 'exceedlimit' || $statuscode eq '5.2.3' );
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
     return 0;
 }
 

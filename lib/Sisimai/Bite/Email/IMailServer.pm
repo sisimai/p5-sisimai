@@ -12,11 +12,7 @@ my $StartingOf = {
 };
 
 my $ReSMTP = {
-    'conn' => qr{(?:
-         SMTP[ ]connection[ ]failed,
-        |Unexpected[ ]connection[ ]response[ ]from[ ]server:
-        )
-    },
+    'conn' => qr/(?:SMTP connection failed,|Unexpected connection response from server:)/,
     'ehlo' => qr|Unexpected response to EHLO/HELO:|,
     'mail' => qr|Server response to MAIL FROM:|,
     'rcpt' => qr|Additional RCPT TO generated following response:|,

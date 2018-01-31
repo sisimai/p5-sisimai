@@ -307,7 +307,7 @@ sub scan {
         }xi;
         if( defined $mhead->{'return-path'} ) {
             # Check the value of Return-Path of the message
-            $match ||= 1 if $mhead->{'return-path'} =~ /(?:[<][>]|mailer-daemon)/i;
+            $match ||= 1 if lc($mhead->{'return-path'}) =~ /(?:[<][>]|mailer-daemon)/;
         }
         last unless $match;
 
@@ -417,10 +417,8 @@ sub scan {
                 my $r = Sisimai::Address->find($1, 1) || [];
                 my $b = undef;
                 next unless scalar @$r;
+                push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
 
-                if( scalar @$dscontents == $recipients ) {
-                    push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
-                }
                 $b = $dscontents->[-1];
                 $b->{'recipient'} = $r->[0]->{'address'};
                 $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';

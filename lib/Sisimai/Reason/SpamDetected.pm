@@ -152,15 +152,12 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    my $statuscode = $argvs->deliverystatus // '';
-    my $reasontext = __PACKAGE__->text;
-
-    return undef unless length $statuscode;
-    return 1 if $argvs->reason eq $reasontext;
+    return undef unless $argvs->deliverystatus;
+    return 1 if $argvs->reason eq 'spamdetected';
 
     require Sisimai::SMTP::Status;
-    return 1 if Sisimai::SMTP::Status->name($statuscode) eq $reasontext;
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
+    return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'spamdetected';
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
     return 0;
 }
 

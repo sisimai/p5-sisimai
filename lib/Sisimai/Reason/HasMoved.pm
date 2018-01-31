@@ -30,7 +30,7 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return 1 if $argvs->reason eq __PACKAGE__->text;
+    return 1 if $argvs->reason eq 'hasmoved';
     return 1 if __PACKAGE__->match($argvs->diagnosticcode);
     return 0;
 }

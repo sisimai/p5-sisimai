@@ -158,12 +158,11 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return 1 if $argvs->reason eq __PACKAGE__->text;
+    return 1 if $argvs->reason eq 'blocked';
 
     require Sisimai::SMTP::Status;
-    return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus // '') eq __PACKAGE__->text;
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
-    return 0;
+    return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'blocked';
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
 }
 
 1;

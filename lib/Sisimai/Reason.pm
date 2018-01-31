@@ -71,7 +71,7 @@ sub get {
             Module::Load::load 'Sisimai::Reason::Vacation';
             $reasontext = 'vacation' if Sisimai::Reason::Vacation->match($argvs->diagnosticcode);
         }
-        $reasontext ||= 'onhold'  if length $argvs->diagnosticcode;
+        $reasontext ||= 'onhold' if length $argvs->diagnosticcode;
         $reasontext ||= 'undefined';
     }
     return $reasontext;

@@ -174,7 +174,7 @@ sub scan {
 
                 } else {
                     next if $v->{'msexch'};
-                    if( $v->{'diagnosis'} =~ /\AMSEXCH:.+/ ) {
+                    if( index($v->{'diagnosis'}, 'MSEXCH:') == 0 ) {
                         # Continued from MEEXCH in the previous line
                         $v->{'msexch'} = 1;
                         $v->{'diagnosis'} .= ' '.$e;

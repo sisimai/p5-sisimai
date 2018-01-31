@@ -53,8 +53,8 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return undef unless $argvs->deliverystatus;
 
-    return 1 if $argvs->reason eq __PACKAGE__->text;
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
+    return 1 if $argvs->reason eq 'suspend';
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
     return 0
 }
 

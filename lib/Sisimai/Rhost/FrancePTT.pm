@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $CodeTable = {
+my $ErrorCodes = {
     '103' => 'blocked',       # Service refuse. Veuillez essayer plus tard.
     '104' => 'toomanyconn',   # Too many connections, slow down. LPN105_104
     '105' => undef,           # Veuillez essayer plus tard.
@@ -44,7 +44,7 @@ sub get {
     if( $statusmesg =~ /\b(LPN|OFR|OUK)(_[0-9]{3}|[0-9]{3}[-_][0-9]{3})\b/ ) {
         # OUK_513, LPN105-104, OFR102-104
         my $v = sprintf("%03d", substr($1.$2, -3, 3));
-        $reasontext = $CodeTable->{ $v } || 'undefined';
+        $reasontext = $ErrorCodes->{ $v } || 'undefined';
     }
     return $reasontext;
 }

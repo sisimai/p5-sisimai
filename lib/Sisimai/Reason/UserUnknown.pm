@@ -145,15 +145,14 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return 1 if $argvs->reason eq __PACKAGE__->text;
+    return 1 if $argvs->reason eq 'userunknown';
 
     require Sisimai::SMTP::Status;
-    my $statuscode = $argvs->deliverystatus // '';
-    my $diagnostic = $argvs->diagnosticcode // '';
-    my $tempreason = Sisimai::SMTP::Status->name($statuscode);
-
+    my $diagnostic = $argvs->diagnosticcode;
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
     return 0 if $tempreason eq 'suspend';
-    if( $tempreason eq __PACKAGE__->text ) {
+
+    if( $tempreason eq 'userunknown' ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
         #   Diagnostic-Code: SMTP; 550 5.1.1 <***@example.jp>:
@@ -174,13 +173,10 @@ sub true {
         }
         return 1 if $matchother == 0;   # Did not match with other message patterns
 
-    } else {
-        # Check the last SMTP command of the session. 
-        if( $argvs->smtpcommand eq 'RCPT' ) {
-            # When the SMTP command is not "RCPT", the session rejected by other
-            # reason, maybe.
-            return 1 if __PACKAGE__->match($diagnostic);
-        }
+    } elsif( $argvs->smtpcommand eq 'RCPT' ) {
+        # When the SMTP command is not "RCPT", the session rejected by other
+        # reason, maybe.
+        return 1 if __PACKAGE__->match($diagnostic);
     }
     return 0;
 }

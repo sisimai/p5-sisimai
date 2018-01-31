@@ -82,13 +82,11 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     require Sisimai::SMTP::Status;
 
-    my $statuscode = $argvs->deliverystatus // '';
-    my $reasontext = __PACKAGE__->text;
-    my $tempreason = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
-    my $diagnostic = $argvs->diagnosticcode // '';
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || 'undefined';
+    my $diagnostic = $argvs->diagnosticcode;
 
-    return 1 if $argvs->reason eq $reasontext;
-    return 1 if $tempreason eq $reasontext; # Delivery status code points "rejected".
+    return 1 if $argvs->reason eq 'rejected';
+    return 1 if $tempreason eq 'rejected';  # Delivery status code points "rejected".
 
     # Check the value of Diagnosic-Code: header with patterns
     if( $argvs->smtpcommand eq 'MAIL' ) {
@@ -106,7 +104,6 @@ sub true {
         # is "onhold", "undefined", "securityerror", or "systemerror"
         return 1 if __PACKAGE__->match($diagnostic);
     }
-
     return 0;
 }
 

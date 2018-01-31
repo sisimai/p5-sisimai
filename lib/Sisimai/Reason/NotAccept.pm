@@ -36,12 +36,12 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return 1 if $argvs->reason eq __PACKAGE__->text;
+    return 1 if $argvs->reason eq 'notaccept';
 
     # SMTP Reply Code is 521, 554 or 556
     return 1 if $argvs->replycode =~ /\A(?:521|554|556)\z/;
     return 0 unless $argvs->smtpcommand eq 'MAIL';
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode // '');
+    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
     return 0;
 }
 

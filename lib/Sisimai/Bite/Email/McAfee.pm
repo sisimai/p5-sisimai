@@ -10,11 +10,7 @@ my $StartingOf = {
     'rfc822'  => ['Content-Type: message/rfc822'],
 };
 my $ReFailures = {
-    'userunknown' => qr{(?:
-         User[ ][(].+[@].+[)][ ]unknown[.]
-        |550[ ]Unknown[ ]user[ ][^ ]+[@][^ ]+
-        )
-    }x,
+    'userunknown' => qr/(?: User [(].+[@].+[)] unknown[.] |550 Unknown user [^ ]+[@][^ ]+)/,
 };
 
 # X-NAI-Header: Modified by McAfee Email and Web Security Virtual Appliance

@@ -408,7 +408,6 @@ sub parse {
 
         # Content-Type: text/html;...
         $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
-
     } else {
         # NOT text/plain
         if( $$bodystring =~ $ReEncoding->{'quoted-print'} ) {
