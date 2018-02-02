@@ -15,7 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
          exceeded[ ]maximum[ ]inbound[ ]message[ ]size
-        |Line[ ]limit[ ]exceeded
+        |line[ ]limit[ ]exceeded
         |max[ ]message[ ]size[ ]exceeded
         |message[ ](?:
              file[ ]too[ ]big
@@ -29,9 +29,9 @@ sub match {
             |too[ ]large[ ]for[ ]this[ ].+
             )
         |size[ ]limit
-        |Taille[ ]limite[ ]du[ ]message[ ]atteinte.+[A-Z]{3}.+514
+        |taille[ ]limite[ ]du[ ]message[ ]atteinte.+[a-z]{3}.+514
         )
-    }ix;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -61,7 +61,7 @@ sub true {
 
     #  5.2.3   Message length exceeds administrative limit
     return 0 if( $tempreason eq 'exceedlimit' || $statuscode eq '5.2.3' );
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
+    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     return 0;
 }
 

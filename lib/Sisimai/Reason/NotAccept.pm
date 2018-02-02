@@ -16,10 +16,10 @@ sub match {
 
     # Destination mail server does not accept any message
     my $regex = qr{(?:
-         Name[ ]server:[ ][.]:[ ]host[ ]not[ ]found # Sendmail
+         name[ ]server:[ ][.]:[ ]host[ ]not[ ]found # Sendmail
         |55[46][ ]smtp[ ]protocol[ ]returned[ ]a[ ]permanent[ ]error
         )
-    }ix;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -41,7 +41,7 @@ sub true {
     # SMTP Reply Code is 521, 554 or 556
     return 1 if $argvs->replycode =~ /\A(?:521|554|556)\z/;
     return 0 unless $argvs->smtpcommand eq 'MAIL';
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
+    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     return 0;
 }
 

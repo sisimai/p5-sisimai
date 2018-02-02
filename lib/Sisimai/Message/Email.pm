@@ -410,13 +410,14 @@ sub parse {
         $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
     } else {
         # NOT text/plain
-        if( $$bodystring =~ $ReEncoding->{'quoted-print'} ) {
+        my $lowercased = lc $$bodystring;
+        if( $lowercased =~ $ReEncoding->{'quoted-print'} ) {
             # Content-Transfer-Encoding: quoted-printable
             $bodystring = Sisimai::MIME->qprintd($bodystring, $mailheader);
         }
 
-        if( $$bodystring =~ $ReEncoding->{'7bit-encoded'} &&
-            $$bodystring =~ $ReEncoding->{'some-iso2022'} ) {
+        if( $lowercased =~ $ReEncoding->{'7bit-encoded'} &&
+            $lowercased =~ $ReEncoding->{'some-iso2022'} ) {
             # Content-Transfer-Encoding: 7bit
             # Content-Type: text/plain; charset=ISO-2022-JP
             unless( lc($1) =~ /(?:us-ascii|utf[-]?8)/ ) {

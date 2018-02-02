@@ -10,22 +10,22 @@ my $Indicators = Sisimai::Bite::Email->INDICATORS;
 my $MarkingsOf = {
     'command' => qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
     'message' => qr{\A(?>
-         Content-Type:[ ]*(?:
+         content-type:[ ]*(?:
               message/delivery-status
              |message/disposition-notification
              |text/plain;[ ]charset=
              )
-        |The[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
-        |This[ ]report[ ]relates[ ]to[ ]your[ ]message
-        |Your[ ]message[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
+        |the[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
+        |this[ ]report[ ]relates[ ]to[ ]your[ ]message
+        |your[ ]message[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
         )
-    }xi,
-    'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/i,
+    }x,
+    'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/,
     'rfc822' => qr{\A(?>
-         Content-Type:[ ]*(?:message/rfc822|text/rfc822-headers)
-        |Return-Path:[ ]*[<].+[>]\z
+         content-type:[ ]*(?:message/rfc822|text/rfc822-headers)
+        |return-path:[ ]*[<].+[>]\z
         )\z
-    }xi,
+    }x,
 };
 
 sub description { 'Fallback Module for MTAs' };
@@ -68,12 +68,14 @@ sub scan {
     };
     my $v = undef;
     my $p = '';
+    my $d = '';
 
     for my $e ( @hasdivided ) {
         # Read each line between the start of the message and the start of rfc822 part.
+        $d = lc $e;
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( $e =~ $MarkingsOf->{'message'} ) {
+            if( $d =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -81,7 +83,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( $e =~ $MarkingsOf->{'rfc822'} ) {
+            if( $d =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
@@ -295,16 +297,16 @@ sub scan {
 
         # Failed to get a recipient address at code above
         $match ||= 1 if lc($mhead->{'from'}) =~ /\b(?:postmaster|mailer-daemon|root)[@]/;
-        $match ||= 1 if $mhead->{'subject'} =~ qr{(?>
+        $match ||= 1 if lc($mhead->{'subject'}) =~ qr{(?>
              delivery[ ](?:failed|failure|report)
             |failure[ ]notice
             |mail[ ](?:delivery|error)
             |non[-]delivery
             |returned[ ]mail
             |undeliverable[ ]mail
-            |Warning:[ ]
+            |warning:[ ]
             )
-        }xi;
+        }x;
         if( defined $mhead->{'return-path'} ) {
             # Check the value of Return-Path of the message
             $match ||= 1 if lc($mhead->{'return-path'}) =~ /(?:[<][>]|mailer-daemon)/;
@@ -316,77 +318,78 @@ sub scan {
             |\A\s+\z
             |\A\s*--
             |\A\s+[=]\d+
-            |\AHi[ ][!]
-            |Content-(?:Description|Disposition|Transfer-Encoding|Type):[ ]
+            |\Ahi[ ][!]
+            |content-(?:description|disposition|transfer-encoding|type):[ ]
             |(?:name|charset)=
             |--\z
             |:[ ]--------
             )
-        }xi;
+        }x;
 
         my $re_stop  = qr{(?:
              \A[*][*][*][ ].+[ ].+[ ][*][*][*]
-            |\AContent-Type:[ ]message/delivery-status
-            |\AHere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
-            |\AThe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
-            |\AReceived:[ \t]*
-            |\AReceived-From-MTA:[ \t]*
-            |\AReporting-MTA:[ \t]*
-            |\AReturn-Path:[ \t]*
-            |\AA[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
-            |Attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
-            |Below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
-            |Below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
-            |Message[ ]contains[ ].+[ ]file[ ]attachments
-            |Message[ ]text[ ]follows:[ ]
-            |Original[ ]message[ ]follows
-            |The[ ]attachment[ ]contains[ ]the[ ]original[ ]mail[ ]headers
-            |The[ ]first[ ]\d+[ ]lines[ ]
-            |Unsent[ ]Message[ ]below
-            |Your[ ]message[ ]reads[ ][(]in[ ]part[)]:
+            |\Acontent-type:[ ]message/delivery-status
+            |\Ahere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
+            |\Athe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
+            |\Areceived:[ \t]*
+            |\Areceived-from-mta:[ \t]*
+            |\Areporting-mta:[ \t]*
+            |\Areturn-path:[ \t]*
+            |\Aa[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
+            |attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
+            |below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
+            |below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
+            |message[ ]contains[ ].+[ ]file[ ]attachments
+            |message[ ]text[ ]follows:[ ]
+            |original[ ]message[ ]follows
+            |the[ ]attachment[ ]contains[ ]the[ ]original[ ]mail[ ]headers
+            |the[ ]first[ ]\d+[ ]lines[ ]
+            |unsent[ ]message[ ]below
+            |your[ ]message[ ]reads[ ][(]in[ ]part[)]:
             )
-        }xi;
+        }x;
 
         my $re_addr = qr{(?:
              \A\s*
             |\A["].+["]\s*
-            |\A[ \t]*Recipient:[ \t]*
-            |\A[ ]*Address:[ ]
+            |\A[ \t]*recipient:[ \t]*
+            |\A[ ]*address:[ ]
             |addressed[ ]to[ ]
-            |Could[ ]not[ ]be[ ]delivered[ ]to:[ ]
+            |could[ ]not[ ]be[ ]delivered[ ]to:[ ]
             |delivered[ ]to[ ]+
             |delivery[ ]failed:[ ]
-            |Did[ ]not[ ]reach[ ]the[ ]following[ ]recipient:[ ]
-            |Error-for:[ ]+
-            |Failed[ ]Recipient:[ ]
-            |Failed[ ]to[ ]deliver[ ]to[ ]
-            |Intended[ ]recipient:[ ]
-            |Mailbox[ ]is[ ]full:[ ]
-            |RCPT[ ]To:
-            |SMTP[ ]Server[ ][<].+[>][ ]rejected[ ]recipient[ ]
-            |The[ ]following[ ]recipients[ ]returned[ ]permanent[ ]errors:[ ]
-            |The[ ]following[ ]message[ ]to[ ]
-            |Unknown[ ]User:[ ]
+            |did[ ]not[ ]reach[ ]the[ ]following[ ]recipient:[ ]
+            |error-for:[ ]+
+            |failed[ ]recipient:[ ]
+            |failed[ ]to[ ]deliver[ ]to[ ]
+            |intended[ ]recipient:[ ]
+            |mailbox[ ]is[ ]full:[ ]
+            |rcpt[ ]to:
+            |smtp[ ]server[ ][<].+[>][ ]rejected[ ]recipient[ ]
+            |the[ ]following[ ]recipients[ ]returned[ ]permanent[ ]errors:[ ]
+            |the[ ]following[ ]message[ ]to[ ]
+            |unknown[ ]User:[ ]
             |undeliverable[ ]to[ ]
-            |Undeliverable[ ]Address:[ ]*
-            |You[ ]sent[ ]mail[ ]to[ ]
-            |Your[ ]message[ ]to[ ]
+            |undeliverable[ ]address:[ ]*
+            |you[ ]sent[ ]mail[ ]to[ ]
+            |your[ ]message[ ]to[ ]
             )
             ['"]?[<]?([^\s\n\r@=<>]+[@][-.0-9A-Za-z]+[.][0-9A-Za-z]+)[>]?['"]?
-        }xi;
+        }x;
 
         my $b = $dscontents->[-1];
         for my $e ( split("\n", $$mbody) ) {
             # Get the recipient's email address and error messages.
             last if $e eq '__END_OF_EMAIL_MESSAGE__';
-            last if $e =~ $MarkingsOf->{'rfc822'};
-            last if $e =~ $re_stop;
+            $d = lc $e;
+            last if $d =~ $MarkingsOf->{'rfc822'};
+            last if $d =~ $re_stop;
 
             next unless length $e;
-            next if $e =~ $re_skip;
+            next if $d =~ $re_skip;
             next if index($e, '*') == 0;
 
-            if( $e =~ $re_addr ) {
+            if( $d =~ $re_addr ) {
                 # May be an email address
                 my $x = $b->{'recipient'} || '';
                 my $y = Sisimai::Address->s3s4($1);

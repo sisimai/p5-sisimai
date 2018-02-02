@@ -13,7 +13,7 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr/message too large/i;
+    my $regex = qr/message too large/;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -40,7 +40,7 @@ sub true {
     return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'exceedlimit';
 
     # Check the value of Diagnosic-Code: header with patterns
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
+    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     return 0;
 }
 

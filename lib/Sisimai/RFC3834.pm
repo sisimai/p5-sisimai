@@ -7,35 +7,35 @@ use warnings;
 my $MarkingsOf = { 'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/ };
 my $AutoReply1 = {
     # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
-    'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/i,
+    'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/,
     # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
-    'x-auto-response-suppress' => qr/(?:OOF|AutoReply)/i,
+    'x-auto-response-suppress' => qr/(?:oof|autoreply)/,
     'precedence' => qr/\Aauto_reply\z/,
     'subject' => qr/\A(?>
-         Auto:
-        |Auto[ ]Response:
-        |Automatic[ ]reply:
-        |Out[ ]of[ ](?:the[ ])*Office:
+         auto:
+        |auto[ ]response:
+        |automatic[ ]reply:
+        |out[ ]of[ ](?:the[ ])*office:
         )
-    /xi,
+    /x,
 };
 my $Excludings = {
     'subject' => qr{(?:
-          SECURITY[ ]information[ ]for  # sudo
-         |Mail[ ]failure[ ][-]          # Exim
+          security[ ]information[ ]for  # sudo
+         |mail[ ]failure[ ][-]          # Exim
          )
     }x,
-    'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/i,
+    'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/,
     'to'      => qr/root[@]/,
 };
 my $SubjectSet = qr{\A(?>
-     (?:.+?)?Re:
-    |Auto(?:[ ]Response):
-    |Automatic[ ]reply:
-    |Out[ ]of[ ]Office:
+     (?:.+?)?re:
+    |auto(?:[ ]response):
+    |automatic[ ]reply:
+    |out[ ]of[ ]office:
     )
     [ ]*(.+)\z
-}xi;
+}x;
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }
@@ -66,7 +66,7 @@ sub scan {
         # Exclude message from root@
         next unless exists $mhead->{ $e };
         next unless defined $mhead->{ $e };
-        next unless $mhead->{ $e } =~ $Excludings->{ $e };
+        next unless lc($mhead->{ $e }) =~ $Excludings->{ $e };
         $leave = 1;
         last;
     }
@@ -76,7 +76,7 @@ sub scan {
         # RFC3834 Auto-Submitted and other headers
         next unless exists $mhead->{ $e };
         next unless defined $mhead->{ $e };
-        next unless $mhead->{ $e } =~ $AutoReply1->{ $e };
+        next unless lc($mhead->{ $e }) =~ $AutoReply1->{ $e };
         $match++;
         last;
     }
@@ -152,7 +152,7 @@ sub scan {
     $v->{'status'}    = '';
 
     # Get the Subject header from the original message
-    $rfc822part = 'Subject: '.$1."\n" if $mhead->{'subject'} =~ $SubjectSet;
+    $rfc822part = 'Subject: '.$1."\n" if lc($mhead->{'subject'}) =~ $SubjectSet;
 
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

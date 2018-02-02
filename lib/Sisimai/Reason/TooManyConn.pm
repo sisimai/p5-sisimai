@@ -14,25 +14,25 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
-         All[ ]available[ ]IPs[ ]are[ ]at[ ]maximum[ ]connection[ ]limit    # SendGrid
+         all[ ]available[ ]ips[ ]are[ ]at[ ]maximum[ ]connection[ ]limit    # SendGrid
         |connection[ ]rate[ ]limit[ ]exceeded
         |domain[ ].+[ ]has[ ]exceeded[ ]the[ ]max[ ]emails[ ]per[ ]hour[ ].+[ ]allowed
-        |no[ ]IPs[ ]available[ ][-][ ].+[ ]exceeds[ ]per[-]domain[ ]connection[ ]limit[ ]for
-        |Throttling[ ]failure:[ ](?:
-             Daily[ ]message[ ]quota[ ]exceeded
-            |Maximum[ ]sending[ ]rate[ ]exceeded
+        |no[ ]ips[ ]available[ ][-][ ].+[ ]exceeds[ ]per[-]domain[ ]connection[ ]limit[ ]for
+        |throttling[ ]failure:[ ](?:
+             daily[ ]message[ ]quota[ ]exceeded
+            |maximum[ ]sending[ ]rate[ ]exceeded
             )
-        |Too[ ]many[ ](?:
+        |too[ ]many[ ](?:
              connections
             |connections[ ]from[ ]your[ ]host[.]    # Microsoft
-            |concurrent[ ]SMTP[ ]connections        # Microsoft
-            |errors[ ]from[ ]your[ ]IP              # Free.fr
-            |SMTP[ ]sessions[ ]for[ ]this[ ]host    # Sendmail(daemon.c)
+            |concurrent[ ]smtp[ ]connections        # Microsoft
+            |errors[ ]from[ ]your[ ]ip              # Free.fr
+            |smtp[ ]sessions[ ]for[ ]this[ ]host    # Sendmail(daemon.c)
             )
-        |Trop[ ]de[ ]connexions,[ ].+[A-Z]{3}.+104
-        |We[ ]have[ ]already[ ]made[ ]numerous[ ]attempts[ ]to[ ]deliver[ ]this[ ]message
+        |trop[ ]de[ ]connexions,[ ].+[a-z]{3}.+104
+        |we[ ]have[ ]already[ ]made[ ]numerous[ ]attempts[ ]to[ ]deliver[ ]this[ ]message
         )
-    }xi;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -53,7 +53,7 @@ sub true {
 
     require Sisimai::SMTP::Status;
     return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'toomanyconn';
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
+    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     return 0;
 }
 

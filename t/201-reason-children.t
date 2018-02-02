@@ -47,7 +47,7 @@ for my $e ( keys %$reasonchildren ) {
 
     next if $e eq 'OnHold';
     for my $v ( @{ $reasonchildren->{ $e } } ) {
-        is $r->match($v), 1, $r.'->match('.$v.') = 1';
+        is $r->match(lc $v), 1, $r.'->match('.$v.') = 1';
     }
 } 
 
