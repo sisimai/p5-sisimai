@@ -24,18 +24,18 @@ sub match {
             |unknown
             |unreachable
             )
-        |Mail[ ]domain[ ]mentioned[ ]in[ ]email[ ]address[ ]is[ ]unknown
+        |mail[ ]domain[ ]mentioned[ ]in[ ]email[ ]address[ ]is[ ]unknown
         |name[ ]or[ ]service[ ]not[ ]known
         |no[ ]such[ ]domain
         |recipient[ ](?:
              address[ ]rejected:[ ]unknown[ ]domain[ ]name
             |domain[ ]must[ ]exist
             )
-        |The[ ]account[ ]or[ ]domain[ ]may[ ]not[ ]exist
+        |the[ ]account[ ]or[ ]domain[ ]may[ ]not[ ]exist
         |unknown[ ]host
-        |Unrouteable[ ]address
+        |unrouteable[ ]address
         )
-    }ix;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -56,7 +56,7 @@ sub true {
 
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
-    my $diagnostic = $argvs->diagnosticcode // '';
+    my $diagnostic = lc $argvs->diagnosticcode // '';
 
     if( Sisimai::SMTP::Status->name($statuscode) eq 'hostunknown' ) {
         # Status: 5.1.2

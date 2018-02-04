@@ -7,12 +7,12 @@ use MIME::QuotedPrint ();
 use Sisimai::String;
 
 my $ReE = {
-    '7bit-encoded' => qr/^Content-Transfer-Encoding:[ ]*7bit$/im,
-    'quoted-print' => qr/^Content-Transfer-Encoding:[ ]*quoted-printable$/im,
-    'some-iso2022' => qr/^Content-Type:[ ]*.+;[ ]*charset=["']?(iso-2022-[-a-z0-9]+)['"]?/im,
-    'with-charset' => qr/^Content[-]Type:[ ]*.+[;][ ]*charset=['"]?([-0-9a-z]+)['"]?/i,
-    'only-charset' => qr/^[\s\t]+charset=['"]?([-0-9a-z]+)['"]?/i,
-    'html-message' => qr|^Content-Type:[ ]*text/html;|mi,
+    '7bit-encoded' => qr/^content-transfer-encoding:[ ]*7bit$/m,
+    'quoted-print' => qr/^content-transfer-encoding:[ ]*quoted-printable$/m,
+    'some-iso2022' => qr/^content-type:[ ]*.+;[ ]*charset=["']?(iso-2022-[-a-z0-9]+)['"]?/m,
+    'with-charset' => qr/^content[-]type:[ ]*.+[;][ ]*charset=['"]?([-0-9a-z]+)['"]?/,
+    'only-charset' => qr/^[\s\t]+charset=['"]?([-0-9a-z]+)['"]?/,
+    'html-message' => qr|^content-type:[ ]*text/html;|m,
 };
 
 sub patterns {
@@ -139,7 +139,7 @@ sub qprintd {
 
     # Quoted-printable encoded part is the part of the text
     my $boundary00 = __PACKAGE__->boundary($heads->{'content-type'}, 0);
-    if( length($boundary00) == 0 || $$argv1 !~ $ReE->{'quoted-print'} ) {
+    if( length($boundary00) == 0 || lc($$argv1) !~ $ReE->{'quoted-print'} ) {
         # There is no boundary string or no
         # Content-Transfer-Encoding: quoted-printable field.
         $plain = MIME::QuotedPrint::decode($$argv1);
@@ -154,6 +154,7 @@ sub qprintd {
     my $bodystring = '';
     my $notdecoded = '';
     my $getencoded = '';
+    my $lowercased = '';
 
     my $encodename = undef;
     my $ctencoding = undef;
@@ -185,6 +186,7 @@ sub qprintd {
             }
         } else {
             # NOT Quoted-Printable encoded text block
+            $lowercased = lc $e;
             if( $e =~ /\A[-]{2}[^\s]+[^-]\z/ ) {
                 # Start of the boundary block
                 # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
@@ -197,12 +199,12 @@ sub qprintd {
                         'until' => qr/\Q$boundary01\E\z/,
                     };
                 }
-            } elsif( $e =~ $ReE->{'with-charset'} || $e =~ $ReE->{'only-charset'} ) {
+            } elsif( $lowercased =~ $ReE->{'with-charset'} || $lowercased =~ $ReE->{'only-charset'} ) {
                 # Content-Type: text/plain; charset=ISO-2022-JP
                 $encodename = $1;
                 $mimeinside = 1 if $ctencoding;
 
-            } elsif( $e =~ $ReE->{'quoted-print'} ){
+            } elsif( $lowercased =~ $ReE->{'quoted-print'} ){
                 # Content-Transfer-Encoding: quoted-printable
                 $ctencoding = $e;
                 $mimeinside = 1 if $encodename;
@@ -246,7 +248,7 @@ sub boundary {
     my $start = shift // -1;
     my $value = '';
 
-    if( $argv1 =~ /\bboundary=([^ ]+)/i ) {
+    if( lc $argv1 =~ /\bboundary=([^ ]+)/ ) {
         # Content-Type: multipart/mixed; boundary=Apple-Mail-5--931376066
         # Content-Type: multipart/report; report-type=delivery-status;
         #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"

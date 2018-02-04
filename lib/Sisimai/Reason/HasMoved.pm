@@ -13,7 +13,7 @@ sub match {
     # @since v4.1.25
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr/address .+ has been replaced by /i;
+    my $regex = qr/address .+ has been replaced by /;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -31,7 +31,7 @@ sub true {
 
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq 'hasmoved';
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
+    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     return 0;
 }
 

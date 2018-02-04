@@ -15,7 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
     my $regex = qr{(?> 
          as[ ]a[ ]relay
-        |Insecure[ ]Mail[ ]Relay
+        |insecure[ ]mail[ ]relay
         |mail[ ]server[ ]requires[ ]authentication[ ]when[ ]attempting[ ]to[ ]
             send[ ]to[ ]a[ ]non-local[ ]e-mail[ ]address    # MailEnable 
         |not[ ](?:
@@ -29,10 +29,10 @@ sub match {
             )
         |relaying[ ]denied  # Sendmail
         |that[ ]domain[ ]isn[']t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthost
-        |This[ ]system[ ]is[ ]not[ ]configured[ ]to[ ]relay[ ]mail
-        |Unable[ ]to[ ]relay[ ]for
+        |this[ ]system[ ]is[ ]not[ ]configured[ ]to[ ]relay[ ]mail
+        |unable[ ]to[ ]relay[ ]for
         )
-    }ix;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -56,7 +56,7 @@ sub true {
         return 0 if $currreason =~ /\A(?:securityerror|systemerror|undefined)\z/;
     } else {
         # Check the value of Diagnosic-Code: header with patterns
-        return 1 if __PACKAGE__->match($argvs->diagnosticcode);
+        return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     }
     return 0;
 }

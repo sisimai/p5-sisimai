@@ -17,13 +17,13 @@ sub match {
          .+[ ]user[ ]unknown
         |[#]5[.]1[.]1[ ]bad[ ]address
         |[<].+[>][ ]not[ ]found
-        |[<].+[@].+[>][.][.][.][ ]Blocked[ ]by[ ]
-        |5[.]0[.]0[.][ ]Mail[ ]rejected[.]
-        |5[.]1[.]0[ ]Address[ ]rejected[.]
-        |Adresse[ ]d[ ]au[ ]moins[ ]un[ ]destinataire[ ]invalide.+[A-Z]{3}.+(?:416|418)
+        |[<].+[@].+[>][.][.][.][ ]blocked[ ]by[ ]
+        |5[.]0[.]0[.][ ]mail[ ]rejected[.]
+        |5[.]1[.]0[ ]address[ ]rejected[.]
+        |adresse[ ]d[ ]au[ ]moins[ ]un[ ]destinataire[ ]invalide.+[a-z]{3}.+(?:416|418)
         |address[ ](?:does[ ]not[ ]exist|unknown)
         |archived[ ]recipient
-        |BAD[-_ \t]RECIPIENT
+        |bad[-_ \t]recipient
         |can[']t[ ]accept[ ]user
         |destination[ ](?:
              addresses[ ]were[ ]unknown
@@ -65,7 +65,7 @@ sub match {
                 |recipient
                 |user(?:[ ]here)?
                 )
-            |thank[ ]you[ ]rejected:[ ]Account[ ]Unavailable:
+            |thank[ ]you[ ]rejected:[ ]account[ ]unavailable:
             |valid[ ]recipients[,][ ]bye    # Microsoft
             )
         |non[- ]?existent[ ]user
@@ -78,7 +78,7 @@ sub match {
         |rece?ipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in
             |address[ ]rejected:[ ](?:
-                 Access[ ]denied
+                 access[ ]denied
                 |invalid[ ]user
                 |user[ ].+[ ]does[ ]not[ ]exist
                 |user[ ]unknown[ ]in[ ].+[ ]table
@@ -86,13 +86,13 @@ sub match {
                 )
             |does[ ]not[ ]exist(?:[ ]on[ ]this[ ]system)?
             |is[ ]not[ ]local
-            |not[ ](?:exist|found|OK)
+            |not[ ](?:exist|found|ok)
             |unknown
             )
         |requested[ ]action[ ]not[ ]taken:[ ]mailbox[ ]unavailable
-        |RESOLVER[.]ADR[.]Recip(?:ient)NotFound # Microsoft
+        |resolver[.]adr[.]recip(?:ient)notfound # Microsoft
         |said:[ ]550[-[ ]]5[.]1[.]1[ ].+[ ]user[ ]unknown[ ]
-        |SMTP[ ]error[ ]from[ ]remote[ ]mail[ ]server[ ]after[ ]end[ ]of[ ]data:[ ]553.+does[ ]not[ ]exist
+        |smtp[ ]error[ ]from[ ]remote[ ]mail[ ]server[ ]after[ ]end[ ]of[ ]data:[ ]553.+does[ ]not[ ]exist
         |sorry,[ ](?:
              user[ ]unknown
             |badrcptto
@@ -103,7 +103,7 @@ sub match {
             |following[ ]recipients[ ]was[ ]undeliverable
             |user[']s[ ]email[ ]name[ ]is[ ]not[ ]found
             )
-        |There[ ]is[ ]no[ ]one[ ]at[ ]this[ ]address
+        |there[ ]is[ ]no[ ]one[ ]at[ ]this[ ]address
         |this[ ](?:
              address[ ]no[ ]longer[ ]accepts[ ]mail
             |email[ ]address[ ]is[ ]wrong[ ]or[ ]no[ ]longer[ ]valid
@@ -128,7 +128,7 @@ sub match {
         |vdeliver:[ ]invalid[ ]or[ ]unknown[ ]virtual[ ]user
         |your[ ]envelope[ ]recipient[ ]is[ ]in[ ]my[ ]badrcptto[ ]list
         )
-    }xi;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -148,7 +148,7 @@ sub true {
     return 1 if $argvs->reason eq 'userunknown';
 
     require Sisimai::SMTP::Status;
-    my $diagnostic = $argvs->diagnosticcode;
+    my $diagnostic = lc $argvs->diagnosticcode;
     my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
     return 0 if $tempreason eq 'suspend';
 

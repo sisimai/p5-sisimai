@@ -69,7 +69,7 @@ sub get {
         unless( $reasontext ) {
             # Try to match with message patterns in Sisimai::Reason::Vacation
             Module::Load::load 'Sisimai::Reason::Vacation';
-            $reasontext = 'vacation' if Sisimai::Reason::Vacation->match($argvs->diagnosticcode);
+            $reasontext = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->diagnosticcode);
         }
         $reasontext ||= 'onhold' if length $argvs->diagnosticcode;
         $reasontext ||= 'undefined';
@@ -89,8 +89,8 @@ sub anotherone {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return $argvs->reason if $argvs->reason;
 
+    my $diagnostic = lc $argvs->diagnosticcode // '';
     my $statuscode = $argvs->deliverystatus // '';
-    my $diagnostic = $argvs->diagnosticcode // '';
     my $commandtxt = $argvs->smtpcommand    // '';
     my $trytomatch = undef;
     my $reasontext = '';
@@ -177,8 +177,9 @@ sub match {
         NotAccept MailerError NoRelaying SyntaxError OnHold
     |];
     my $statuscode = Sisimai::SMTP::Status->find($argv1);
+    my $diagnostic = lc $argv1;
     my $typestring = '';
-       $typestring = uc($1) if $argv1 =~ /\A(SMTP|X-.+);/i;
+       $typestring = uc($1) if uc($argv1) =~ /\A(SMTP|X-.+);/;
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( @$classorder ) {
@@ -187,7 +188,7 @@ sub match {
         my $p = 'Sisimai::Reason::'.$e;
         Module::Load::load($p);
 
-        next unless $p->match($argv1);
+        next unless $p->match($diagnostic);
         $reasontext = $p->text;
         last;
     }

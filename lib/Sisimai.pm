@@ -187,7 +187,7 @@ sub match {
     my $argvs = shift || return undef;
 
     require Sisimai::Reason;
-    return Sisimai::Reason->match($argvs);
+    return Sisimai::Reason->match(lc $argvs);
 }
 
 1;

@@ -25,57 +25,57 @@ my $MarkingsOf = {
 # dovecot/src/deliver/mail-send.c:94
 my $ReFailures = {
     'dovecot' => {
-        'userunknown' => qr/\AMailbox doesn't exist: /i,
+        'userunknown' => qr/\Amailbox doesn't exist: /,
         'mailboxfull' => qr{\A(?:
-             Quota[ ]exceeded # Dovecot 1.2 dovecot/src/plugins/quota/quota.c
-            |Quota[ ]exceeded[ ][(]mailbox[ ]for[ ]user[ ]is[ ]full[)]  # dovecot/src/plugins/quota/quota.c
-            |Not[ ]enough[ ]disk[ ]space
+             quota[ ]exceeded # Dovecot 1.2 dovecot/src/plugins/quota/quota.c
+            |quota[ ]exceeded[ ][(]mailbox[ ]for[ ]user[ ]is[ ]full[)]  # dovecot/src/plugins/quota/quota.c
+            |not[ ]enough[ ]disk[ ]space
             )
-        }xi,
+        }x,
     },
     'mail.local' => {
         'userunknown' => qr{[:][ ](?:
              unknown[ ]user[:]
-            |User[ ]unknown
-            |Invalid[ ]mailbox[ ]path
-            |User[ ]missing[ ]home[ ]directory
+            |user[ ]unknown
+            |invalid[ ]mailbox[ ]path
+            |user[ ]missing[ ]home[ ]directory
             )
-        }xi,
+        }x,
         'mailboxfull' => qr{(?:
-             Disc[ ]quota[ ]exceeded
-            |Mailbox[ ]full[ ]or[ ]quota[ ]exceeded
+             disc[ ]quota[ ]exceeded
+            |mailbox[ ]full[ ]or[ ]quota[ ]exceeded
             )
-        }xi,
-        'systemerror' => qr/Temporary file write error/i,
+        }x,
+        'systemerror' => qr/temporary file write error/,
     },
     'procmail' => {
-        'mailboxfull' => qr/Quota exceeded while writing/i,
-        'systemfull'  => qr/No space left to finish writing/i,
+        'mailboxfull' => qr/quota exceeded while writing/,
+        'systemfull'  => qr/no space left to finish writing/,
     },
     'maildrop' => {
         'userunknown' => qr{(?:
-             Invalid[ ]user[ ]specified[.]
-            |Cannot[ ]find[ ]system[ ]user
+             invalid[ ]user[ ]specified[.]
+            |cannot[ ]find[ ]system[ ]user
             )
-        }xi,
-        'mailboxfull' => qr/maildir over quota[.]\z/i,
+        }x,
+        'mailboxfull' => qr/maildir over quota[.]\z/,
     },
     'vpopmail' => {
-        'userunknown' => qr/Sorry, no mailbox here by that name[.]/i,
+        'userunknown' => qr/sorry, no mailbox here by that name[.]/,
         'filtered'    => qr{(?:
              account[ ]is[ ]locked[ ]email[ ]bounced
             |user[ ]does[ ]not[ ]exist,[ ]but[ ]will[ ]deliver[ ]to[ ]
             )
-        }xi,
-        'mailboxfull' => qr/(?:domain|user) is over quota/i,
+        }x,
+        'mailboxfull' => qr/(?:domain|user) is over quota/,
     },
     'vmailmgr' => {
         'userunknown' => qr{(?>
-             Invalid[ ]or[ ]unknown[ ](?:base[ ]user[ ]or[ ]domain|virtual[ ]user)
-            |User[ ]name[ ]does[ ]not[ ]refer[ ]to[ ]a[ ]virtual[ ]user/
+             invalid[ ]or[ ]unknown[ ](?:base[ ]user[ ]or[ ]domain|virtual[ ]user)
+            |user[ ]name[ ]does[ ]not[ ]refer[ ]to[ ]a[ ]virtual[ ]user/
             )
         }ix,
-        'mailboxfull' => qr/Delivery failed due to system quota violation/i,
+        'mailboxfull' => qr/delivery failed due to system quota violation/,
     },
 };
 
@@ -132,7 +132,7 @@ sub scan {
         # Detect an error reason from message patterns of the MDA.
         for my $f ( @linebuffer ) {
             # Try to match with each regular expression
-            next unless $f =~ $ReFailures->{ $agentname0 }->{ $e };
+            next unless lc($f) =~ $ReFailures->{ $agentname0 }->{ $e };
             $reasonname = $e;
             $bouncemesg = $f;
             last;

@@ -116,11 +116,11 @@ sub to_utf8 {
     my $argv2 = shift;
 
     my $tobeutf8ed = $$argv1;
-    my $encodefrom = $argv2 || '';
+    my $encodefrom = lc $argv2 || '';
     my $hasencoded = undef;
     my $hasguessed = Encode::Guess->guess($tobeutf8ed);
-    my $encodingto = ref $hasguessed ? $hasguessed->name : '';
-    my $dontencode = qr/\A(?>utf[-]?8|(?:us[-])?ascii)\z/i;
+    my $encodingto = ref $hasguessed ? lc($hasguessed->name) : '';
+    my $dontencode = qr/\A(?>utf[-]?8|(?:us[-])?ascii)\z/;
 
     if( length $encodefrom ) {
         # The 2nd argument is a encoding name of the 1st argument

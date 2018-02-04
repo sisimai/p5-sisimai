@@ -14,13 +14,13 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
-         Account[ ]disabled[ ]temporarly[ ]for[ ]exceeding[ ]receiving[ ]limits
+         account[ ]disabled[ ]temporarly[ ]for[ ]exceeding[ ]receiving[ ]limits
         |account[ ]is[ ](?:
              exceeding[ ]their[ ]quota
             |over[ ]quota
             |temporarily[ ]over[ ]quota
             )
-        |Boite[ ]du[ ]destinataire[ ]pleine.+[A-Z]{3}.+417
+        |boite[ ]du[ ]destinataire[ ]pleine.+[a-z]{3}.+417
         |delivery[ ]failed:[ ]over[ ]quota
         |disc[ ]quota[ ]exceeded
         |does[ ]not[ ]have[ ]enough[ ]space
@@ -45,7 +45,7 @@ sub match {
             |size[ ]limit[ ]exceeded
             )
         |maildir[ ](?:
-             delivery[ ]failed:[ ](?:User|Domain)disk[ ]quota[ ]?.*[ ]exceeded
+             delivery[ ]failed:[ ](?:user|domain)disk[ ]quota[ ]?.*[ ]exceeded
             |over[ ]quota
             )
         |mailfolder[ ]is[ ]full
@@ -59,7 +59,7 @@ sub match {
              reached[ ]disk[ ]quota
             |rejected:[ ]mailbox[ ]would[ ]exceed[ ]maximum[ ]allowed[ ]storage
             )
-        |The[ ](?:
+        |the[ ](?:
              recipient[ ]mailbox[ ]has[ ]exceeded[ ]its[ ]disk[ ]space[ ]limit
             |user[']s[ ]space[ ]has[ ]been[ ]used[ ]up
             |user[ ]you[ ]are[ ]trying[ ]to[ ]reach[ ]is[ ]over[ ]quota
@@ -77,7 +77,7 @@ sub match {
         |was[ ]automatically[ ]rejected:[ ]quota[ ]exceeded
         |would[ ]be[ ]over[ ]the[ ]allowed[ ]quota
         )
-    }ix;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
@@ -104,7 +104,7 @@ sub true {
     return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'mailboxfull';
 
     # Check the value of Diagnosic-Code: header with patterns
-    return 1 if __PACKAGE__->match($argvs->diagnosticcode);
+    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     return 0;
 }
 
