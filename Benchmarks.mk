@@ -50,7 +50,6 @@ loc:
 		echo "$$x - ( $$x - $$y ) - $$z" | bc ;\
 	done | awk '{ s += $$1 } END { print s }'
 
-
 clean:
 	$(RM) -r nytprof*
 
