@@ -24,9 +24,9 @@ sub match {
         |exit[ ]\d+
         |mailer[ ]error
         |pipe[ ]to[ ][|][/].+
-        |X[-]UNIX[;][ ]\d+  # X-UNIX; 127
+        |x[-]unix[;][ ]\d+  # X-UNIX; 127
         )
-    }ix;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
