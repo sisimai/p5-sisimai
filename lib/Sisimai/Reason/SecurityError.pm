@@ -36,7 +36,7 @@ sub match {
         |you[ ]are[ ]not[ ]authorized[ ]to[ ]send[ ]mail,[ ]authentication[ ]is[ ]required
         |verification[ ]failure
         )
-    }ix;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;

@@ -35,7 +35,7 @@ my $MarkingsOf = {
             )
         |We're[ ]sorry[.]
         )
-    }ix,
+    }x,
 };
 
 my $ReSMTP = {

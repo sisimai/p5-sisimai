@@ -74,7 +74,7 @@ my $ReFailures = {
              invalid[ ]or[ ]unknown[ ](?:base[ ]user[ ]or[ ]domain|virtual[ ]user)
             |user[ ]name[ ]does[ ]not[ ]refer[ ]to[ ]a[ ]virtual[ ]user/
             )
-        }ix,
+        }x,
         'mailboxfull' => qr/delivery failed due to system quota violation/,
     },
 };

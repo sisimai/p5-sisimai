@@ -15,10 +15,10 @@ sub match {
     my $argv1 = shift // return undef;
     my $regex = qr{(?>
          can[']t[ ]create[ ]user[ ]output[ ]file
-        |Could[ ]not[ ]load[ ]DRD[ ]for[ ]domain
-        |Internal[ ](?:
+        |could[ ]not[ ]load[ ]drd[ ]for[ ]domain
+        |internal[ ](?:
              error[ ]reading[ ]data                             # Microsoft
-            |server[ ]error:[ ]Operation[ ]now[ ]in[ ]progress  # Microsoft
+            |server[ ]error:[ ]operation[ ]now[ ]in[ ]progress  # Microsoft
             )
         |interrupted[ ]system[ ]call
         |it[ ](?:
@@ -29,7 +29,7 @@ sub match {
              configuration[ ]error
             |error[ ]in[ ]processing
             )
-        |loop[ ]was[ ]found[ ]in[ ]the[ ]Mail[ ]eXchanger
+        |loop[ ]was[ ]found[ ]in[ ]the[ ]mail[ ]exchanger
         |mail[ ](?:
              for[ ].+[ ]loops[ ]back[ ]to[ ]myself
             |system[ ]configuration[ ]error
@@ -37,10 +37,10 @@ sub match {
         |server[ ]configuration[ ]error
         |service[ ]currently[ ]unavailable
         |system[ ]config[ ]error
-        |Temporary[ ]local[ ]problem
+        |temporary[ ]local[ ]problem
         |timeout[ ]waiting[ ]for[ ]input
         )
-    }ix;
+    }x;
 
     return 1 if $argv1 =~ $regex;
     return 0;
