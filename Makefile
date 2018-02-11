@@ -94,4 +94,5 @@ remove-added-file: git-rm-cached
 clean:
 	$(MAKE) -f Repository.mk clean
 	$(MAKE) -f Developers.mk clean
+	$(MAKE) -f Benchmarks.mk clean
 

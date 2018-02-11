@@ -51,5 +51,5 @@ loc:
 	done | awk '{ s += $$1 } END { print s }'
 
 clean:
-	$(RM) -r nytprof*
+	find . -type f -name 'nytprof*' -ctime +1 -delete
 
