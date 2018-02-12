@@ -352,7 +352,7 @@ sub scan {
             map { $_ =~ s/\A[ ]+//; $_ =~ s/[ ]+\z// } @rcptinhead;
             $recipients = scalar @rcptinhead;
 
-            for my $e ( @rcptinhead ) {
+            while( my $e = shift @rcptinhead ) {
                 # Insert each recipient address into @$dscontents
                 $dscontents->[-1]->{'recipient'} = $e;
                 next if scalar @$dscontents == $recipients;

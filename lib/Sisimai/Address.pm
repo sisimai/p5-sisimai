@@ -152,7 +152,9 @@ sub find {
             # The character is a delimiter character
             if( $e eq ',' ) {
                 # Separator of email addresses or not
-                if( $v->{'address'} =~ /\A[<].+[@].+[>]\z/ ) {
+                if( index($v->{'address'}, '<') == 0 &&
+                    index($v->{'address'}, '@') > -1 &&
+                    substr($v->{'address'}, -1, 1) eq '>' ) {
                     # An email address has already been picked
                     if( $readcursor & $Indicators->{'comment-block'} ) {
                         # The cursor is in the comment block (Neko, Nyaan)
@@ -322,7 +324,7 @@ sub find {
         }
     }
 
-    for my $e ( @$readbuffer ) {
+    while( my $e = shift @$readbuffer ) {
         # The element must not include any character except from 0x20 to 0x7e.
         next if $e->{'address'} =~ /[^\x20-\x7e]/;
 

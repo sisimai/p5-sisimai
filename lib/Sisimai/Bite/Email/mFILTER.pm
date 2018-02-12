@@ -139,7 +139,7 @@ sub scan {
             my $rhosts = Sisimai::RFC5322->received($rheads->[-1]);
 
             $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($rheads->[0]) };
-            for my $ee ( @$rhosts ) {
+            while( my $ee = shift @$rhosts ) {
                 # Avoid "... by m-FILTER"
                 next unless index($ee, '.') > -1;
                 $e->{'rhost'} = $ee;

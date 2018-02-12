@@ -49,11 +49,11 @@ sub true {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    my $currreason = $argvs->reason // '';
+    my $r = $argvs->reason // '';
 
-    if( $currreason ) {
+    if( $r ) {
         # Do not overwrite the reason
-        return 0 if $currreason =~ /\A(?:securityerror|systemerror|undefined)\z/;
+        return 0 if( $r eq 'securityerror' || $r eq 'systemerror' || $r eq 'undefined' );
     } else {
         # Check the value of Diagnosic-Code: header with patterns
         return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);

@@ -154,7 +154,7 @@ sub received {
         my $hostname = '';
         my $hostaddr = '';
 
-        for my $e ( @received ) {
+        while( my $e = shift @received ) {
             # Received: from [10.22.22.222] (smtp-gateway.kyoto.ocn.ne.jp [192.0.2.222])
             if( $e =~ /\A[(\[]\d+[.]\d+[.]\d+[.]\d+[)\]]\z/ ) {
                 # [192.0.2.1] or (192.0.2.1)
@@ -168,7 +168,7 @@ sub received {
             }
         }
 
-        for my $e ( @namelist ) {
+        while( my $e = shift @namelist ) {
             # 1. Hostname takes priority over all other IP addresses
             next unless index($e, '.') > -1;
             $hostname = $e;

@@ -40,7 +40,7 @@ sub scan {
     $match++ if index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     $match++ if $mhead->{'x-message-delivery'};
     $match++ if $mhead->{'x-message-info'};
-    $match++ if grep { $_ =~ /.+[.]hotmail[.]com\b/ } @{ $mhead->{'received'} };
+    $match++ if grep { index($_, '.hotmail.com') > -1 } @{ $mhead->{'received'} };
     return undef if $match < 2;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
