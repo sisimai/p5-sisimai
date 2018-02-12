@@ -42,7 +42,7 @@ sub is_mimeencoded {
         push @piece, $$argv1;
     }
 
-    for my $e ( @piece ) {
+    while( my $e = shift @piece ) {
         # Check all the string in the array
         next unless $e =~ /[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*/;
         $mime1 = 1;

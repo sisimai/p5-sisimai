@@ -155,7 +155,7 @@ sub divideup {
     my $pseudofrom = 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
 
-    $$email =~ s/\r\n/\n/gm  if $$email =~ /\r\n/;
+    $$email =~ s/\r\n/\n/gm  if index($$email, "\r\n") > -1;
     $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
     @hasdivided = split("\n", $$email);
     return {} unless scalar @hasdivided;
@@ -204,13 +204,14 @@ sub headers {
     my $currheader = '';
     my $allheaders = {};
     my $structured = {};
+    my @hasdivided = split("\n", $$heads);
 
     map { $allheaders->{ $_ } = 1 } (@HeaderList, @RFC3834Set, keys %$ExtHeaders);
     map { $allheaders->{ lc $_ } = 1 } @$field if scalar @$field;
     map { $structured->{ $_ } = undef } @HeaderList;
     map { $structured->{ lc $_ } = [] } keys %$MultiHeads;
 
-    SPLIT_HEADERS: for my $e ( split("\n", $$heads) ) {
+    SPLIT_HEADERS: while( my $e = shift @hasdivided ) {
         # Convert email headers to hash
         if( $e =~ /\A([^ ]+?)[:][ ]*(.+?)\z/ ) {
             # split the line into a header name and a header content
@@ -420,7 +421,7 @@ sub parse {
             $lowercased =~ $ReEncoding->{'some-iso2022'} ) {
             # Content-Transfer-Encoding: 7bit
             # Content-Type: text/plain; charset=ISO-2022-JP
-            unless( lc($1) =~ /(?:us-ascii|utf[-]?8)/ ) {
+            if( index($1, 'us-ascii') == -1 && index($1, 'utf-8') == -1 ) {
                 # Convert to UTF-8
                 $bodystring = Sisimai::String->to_utf8($bodystring, $1);
             }

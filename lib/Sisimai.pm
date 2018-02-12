@@ -88,7 +88,7 @@ sub make {
             push @$list, $argv0;
         }
 
-        for my $e ( @$list ) {
+        while( my $e = shift @$list ) {
             $methodargv = { 'data' => $e, 'hook' => $hookmethod, 'input' => 'json' };
             my $mesg = Sisimai::Message->new(%$methodargv);
             next unless defined $mesg;
@@ -138,7 +138,7 @@ sub engine {
     my $names = [qw|Bite::Email Bite::JSON ARF RFC3464 RFC3834|];
     my $table = {};
 
-    for my $e ( @$names ) {
+    while( my $e = shift @$names ) {
         my $r = 'Sisimai::'.$e;
         Module::Load::load $r;
 
@@ -170,7 +170,7 @@ sub reason {
     # These reasons are not included in the results of Sisimai::Reason->index
     push @$names, (qw|Delivered Feedback Undefined Vacation|);
 
-    for my $e ( @$names ) {
+    while( my $e = shift @$names ) {
         # Call ->description() method of Sisimai::Reason::*
         my $r = 'Sisimai::Reason::'.$e;
         Module::Load::load $r;
