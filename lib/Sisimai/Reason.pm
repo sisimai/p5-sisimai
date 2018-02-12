@@ -4,7 +4,21 @@ use strict;
 use warnings;
 use Module::Load '';
 
-my $RetryReasons = __PACKAGE__->retry;
+my $GetRetried = __PACKAGE__->retry;
+my $ClassOrder = [
+    [qw|MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown
+        Filtered Rejected HostUnknown SpamDetected TooManyConn Blocked
+    |],
+    [qw|MailboxFull SpamDetected PolicyViolation VirusDetected SecurityError
+        SystemError NetworkError Suspend Expired ContentError SystemFull
+        NotAccept MailerError
+    |],
+    [qw|MailboxFull MesgTooBig ExceedLimit Suspend UserUnknown Filtered Rejected
+        HostUnknown SpamDetected TooManyConn Blocked SpamDetected SecurityError
+        SystemError NetworkError Suspend Expired ContentError HasMoved SystemFull
+        NotAccept MailerError NoRelaying SyntaxError OnHold
+    |],
+];
 sub retry {
     # Reason list better to retry detecting an error reason
     # @return   [Array] Reason list
@@ -32,7 +46,7 @@ sub get {
     my $argvs = shift // return undef;
     return undef unless ref $argvs eq 'Sisimai::Data';
 
-    unless( grep { $argvs->reason eq $_ } @$RetryReasons ) {
+    unless( grep { $argvs->reason eq $_ } @$GetRetried ) {
         # Return reason text already decided except reason match with the
         # regular expression of ->retry() method.
         return $argvs->reason if length $argvs->reason;
@@ -41,14 +55,10 @@ sub get {
 
     my $statuscode = $argvs->deliverystatus || '';
     my $reasontext = '';
-    my $classorder = [qw|
-        MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown
-        Filtered Rejected HostUnknown SpamDetected TooManyConn Blocked
-    |];
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
-        for my $e ( @$classorder ) {
+        for my $e ( @{ $ClassOrder->[0] } ) {
             # Check the value of Diagnostic-Code: and the value of Status:, it is a
             # deliverystats, with true() method in each Sisimai::Reason::* class.
             my $p = 'Sisimai::Reason::'.$e;
@@ -94,23 +104,18 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $trytomatch = undef;
     my $reasontext = '';
-    my $classorder = [qw|
-        MailboxFull SpamDetected PolicyViolation VirusDetected SecurityError
-        SystemError NetworkError Suspend Expired ContentError SystemFull
-        NotAccept MailerError
-    |];
 
     require Sisimai::SMTP::Status;
     $reasontext = Sisimai::SMTP::Status->name($statuscode);
 
     TRY_TO_MATCH: while(1) {
         $trytomatch ||= 1 if $reasontext eq '';
-        $trytomatch ||= 1 if grep { $reasontext eq $_ } @$RetryReasons;
+        $trytomatch ||= 1 if grep { $reasontext eq $_ } @$GetRetried;
         $trytomatch ||= 1 if $argvs->diagnostictype ne 'SMTP';
         last unless $trytomatch;
 
         # Could not decide the reason by the value of Status:
-        for my $e ( @$classorder ) {
+        for my $e ( @{ $ClassOrder->[1] } ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
             my $p = 'Sisimai::Reason::'.$e;
             Module::Load::load($p);
@@ -170,19 +175,13 @@ sub match {
 
     require Sisimai::SMTP::Status;
     my $reasontext = '';
-    my $classorder = [qw|
-        MailboxFull MesgTooBig ExceedLimit Suspend UserUnknown Filtered Rejected
-        HostUnknown SpamDetected TooManyConn Blocked SpamDetected SecurityError
-        SystemError NetworkError Suspend Expired ContentError HasMoved SystemFull
-        NotAccept MailerError NoRelaying SyntaxError OnHold
-    |];
     my $statuscode = Sisimai::SMTP::Status->find($argv1);
     my $diagnostic = lc $argv1;
     my $typestring = '';
        $typestring = uc($1) if uc($argv1) =~ /\A(SMTP|X-.+);/;
 
     # Diagnostic-Code: SMTP; ... or empty value
-    for my $e ( @$classorder ) {
+    for my $e ( @{ $ClassOrder->[2] } ) {
         # Check the value of Diagnostic-Code: and the value of Status:, it is a
         # deliverystats, with true() method in each Sisimai::Reason::* class.
         my $p = 'Sisimai::Reason::'.$e;

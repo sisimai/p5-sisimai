@@ -10,6 +10,7 @@ use Sisimai::RFC3834;
 use Sisimai::RFC5322;
 use Sisimai::Order::Email;
 
+my $BorderLine = '__MIME_ENCODED_BOUNDARY__';
 my $EndOfEmail = Sisimai::String->EOM;
 my $DefaultSet = Sisimai::Order::Email->another;
 my $SubjectTab = Sisimai::Order::Email->by('subject');
@@ -152,7 +153,6 @@ sub divideup {
 
     my @hasdivided = undef;
     my $readcursor = 0;
-    my $pseudofrom = 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
 
     $$email =~ s/\r\n/\n/gm  if index($$email, "\r\n") > -1;
@@ -189,7 +189,7 @@ sub divideup {
     return {} unless length $aftersplit->{'header'};
     return {} unless length $aftersplit->{'body'};
 
-    $aftersplit->{'from'} ||= $pseudofrom;
+    $aftersplit->{'from'} ||= 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     return $aftersplit;
 }
 
@@ -289,7 +289,6 @@ sub takeapart {
     my $takenapart = {};
     my @hasdivided = split("\n", $$heads);
     my $previousfn = ''; # Previous field name
-    my $borderline = '__MIME_ENCODED_BOUNDARY__';
     my $mimeborder = {};
 
     for my $e ( @hasdivided ) {
@@ -314,7 +313,7 @@ sub takeapart {
                 # The line is MIME-Encoded test
                 if( $previousfn eq 'subject' ) {
                     # Subject: header
-                    $takenapart->{ $previousfn } .= $borderline.$e;
+                    $takenapart->{ $previousfn } .= $BorderLine.$e;
 
                 } else {
                     # Is not Subject header
@@ -346,7 +345,7 @@ sub takeapart {
 
             if( $mimeborder->{'subject'} ) {
                 # split the value of Subject by $borderline
-                for my $m ( split($borderline, $v) ) {
+                for my $m ( split($BorderLine, $v) ) {
                     # Insert value to the array if the string is MIME
                     # encoded text
                     push @$r, $m if Sisimai::MIME->is_mimeencoded(\$m);

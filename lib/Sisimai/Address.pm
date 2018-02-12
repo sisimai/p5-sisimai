@@ -10,6 +10,12 @@ my $Indicators = {
     'quoted-string' => (1 << 1),    # "Neko, Nyaan"
     'comment-block' => (1 << 2),    # (neko)
 };
+my $ValidEmail = qr{(?>
+    (?:([^\s]+|["].+?["]))          # local part
+    [@]
+    (?:([^@\s]+|[0-9A-Za-z:\.]+))   # domain part
+    )
+}x;
 my $undisclosed = 'libsisimai.org.invalid';
 my $roaccessors = [
     'address',  # [String] Email address
@@ -136,19 +142,13 @@ sub find {
     my $addrtables = [];
     my $readbuffer = [];
     my $readcursor = 0;
-    my $delimiters = ['<', '>', '(', ')', '"', ','];
-    my $validemail = qr{(?>
-        (?:([^\s]+|["].+?["]))          # local part
-        [@]
-        (?:([^@\s]+|[0-9A-Za-z:\.]+))   # domain part
-        )
-    }x;
+
     my $v = $emailtable;   # temporary buffer
     my $p = '';            # current position
 
     for my $e ( split('', $argv1) ) {
         # Check each characters
-        if( grep { $e eq $_ } @$delimiters ) {
+        if( grep { $e eq $_ } ('<', '>', '(', ')', '"', ',') ) {
             # The character is a delimiter character
             if( $e eq ',' ) {
                 # Separator of email addresses or not
@@ -303,7 +303,7 @@ sub find {
 
     } else {
         # No email address like <neko@example.org> in the argument
-        if( $v->{'name'} =~ $validemail ) {
+        if( $v->{'name'} =~ $ValidEmail ) {
             # String like an email address will be set to the value of "address"
              $v->{'address'} = $1.'@'.$2;
 
