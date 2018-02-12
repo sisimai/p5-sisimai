@@ -536,7 +536,7 @@ mail server. This reason has been divided from C<securityerror> at Sisimai 4.22.
 
 L<Sisimai::ARF>
 L<http://tools.ietf.org/html/rfc5965>
-L<http://libsisimai.org/reason/>
+L<https://libsisimai.org/en/reason/>
 
 =head1 AUTHOR
 

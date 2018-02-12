@@ -1,4 +1,4 @@
-![](http://libsisimai.org/static/images/logo/sisimai-x01.png)
+![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-Sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
@@ -42,7 +42,7 @@ Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析�
 __シシマイ__ はbounceHammer version 4として開発していたものであり、Version 4なので
 __シ(Si)__ から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名前になりました。
 
-![](http://libsisimai.org/static/images/figure/sisimai-overview-1.png)
+![](https://libsisimai.org/static/images/figure/sisimai-overview-1.png)
 
 Key features
 -------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ Command line demo
 -------------------------------------------------------------------------------
 次の画像のように、Perl版シシマイ(p5-Sisimai)もRuby版シシマイ(rb-Sisimai)も、
 コマンドラインから簡単にバウンスメールを解析することができます。
-![](http://libsisimai.org/static/images/demo/sisimai-dump-01.gif)
+![](https://libsisimai.org/static/images/demo/sisimai-dump-01.gif)
 
 Setting Up Sisimai
 ===============================================================================
@@ -74,7 +74,7 @@ System requirements
 -------------------------------------------------------------------------------
 
 シシマイの動作環境についての詳細は
-[Sisimai | シシマイを使ってみる](http://libsisimai.org/ja/start)をご覧ください。
+[Sisimai | シシマイを使ってみる](https://libsisimai.org/ja/start/)をご覧ください。
 
 * [Perl 5.10.1 or later](http://www.perl.org/)
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
@@ -207,7 +207,7 @@ print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
 ```
 
 コールバック機能のより詳細な使い方は
-[Sisimai | 解析方法 - コールバック機能](http://libsisimai.org/ja/usage/#callback)
+[Sisimai | 解析方法 - コールバック機能](https://libsisimai.org/ja/usage/#callback)
 をご覧ください。
 
 One-Liner
@@ -221,7 +221,7 @@ $ perl -MSisimai -lE 'print Sisimai->dump(shift)' /path/to/mbox
 
 Output example
 -------------------------------------------------------------------------------
-![](http://libsisimai.org/static/images/demo/sisimai-dump-02.gif)
+![](https://libsisimai.org/static/images/demo/sisimai-dump-02.gif)
 
 ```json
 [{"recipient": "kijitora@example.jp", "addresser": "shironeko@1jo.example.org", "feedbacktype": "", "action": "failed", "subject": "Nyaaaaan", "smtpcommand": "DATA", "diagnosticcode": "550 Unknown user kijitora@example.jp", "listid": "", "destination": "example.jp", "smtpagent": "Email::Courier", "lhost": "1jo.example.org", "deliverystatus": "5.0.0", "timestamp": 1291954879, "messageid": "201012100421.oBA4LJFU042012@1jo.example.org", "diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "filtered", "token": "ce999a4c869e3f5e4d8a77b2e310b23960fb32ab", "alias": "", "senderdomain": "1jo.example.org", "rhost": "mfsmax.example.jp"}, {"diagnostictype": "SMTP", "timezoneoffset": "+0900", "reason": "userunknown", "timestamp": 1381900535, "messageid": "E1C50F1B-1C83-4820-BC36-AC6FBFBE8568@example.org", "token": "9fe754876e9133aae5d20f0fd8dd7f05b4e9d9f0", "alias": "", "senderdomain": "example.org", "rhost": "mx.bouncehammer.jp", "action": "failed", "addresser": "kijitora@example.org", "recipient": "userunknown@bouncehammer.jp", "feedbacktype": "", "smtpcommand": "DATA", "subject": "バウンスメールのテスト(日本語)", "destination": "bouncehammer.jp", "listid": "", "diagnosticcode": "550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown", "deliverystatus": "5.1.1", "lhost": "p0000-ipbfpfx00kyoto.kyoto.example.co.jp", "smtpagent": "Email::Sendmail"}]
@@ -233,7 +233,7 @@ Sisimai Specification
 Differences between bounceHammer and Sisimai
 -------------------------------------------------------------------------------
 bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあります。
-違いの詳細については[Sisimai | 違いの一覧](http://libsisimai.org/ja/diff)
+違いの詳細については[Sisimai | 違いの一覧](https://libsisimai.org/ja/diff/)
 をご覧ください。
 
 | 機能                                           | bounceHammer  | Sisimai     |
@@ -263,9 +263,9 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 
 Other spec of Sisimai
 -------------------------------------------------------------------------------
-- [**解析モジュールの一覧**](http://libsisimai.org/ja/engine)
-- [**バウンス理由の一覧**](http://libsisimai.org/ja/reason)
-- [**Sisimai::Dataのデータ構造**](http://libsisimai.org/ja/data)
+- [**解析モジュールの一覧**](https://libsisimai.org/ja/engine/)
+- [**バウンス理由の一覧**](https://libsisimai.org/ja/reason/)
+- [**Sisimai::Dataのデータ構造**](https://libsisimai.org/ja/data/)
 
 Contributing
 ===============================================================================
@@ -287,7 +287,7 @@ Other Information
 Related sites
 -------------------------------------------------------------------------------
 * __@libsisimai__ | [Sisimai on Twitter (@libsisimai)](https://twitter.com/libsisimai)
-* __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](http://libsisimai.org/)
+* __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](https://libsisimai.org/)
 * __Sisimai Blog__ | [blog.libsisimai.org](http://blog.libsisimai.org/)
 * __Facebook Page__ | [facebook.com/libsisimai](https://www.facebook.com/libsisimai/)
 * __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)

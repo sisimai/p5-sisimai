@@ -62,7 +62,7 @@
       "bugtracker" : {
          "web" : "https://github.com/sisimai/p5-Sisimai/issues"
       },
-      "homepage" : "http://libsisimai.org/",
+      "homepage" : "https://libsisimai.org/",
       "repository" : {
          "type" : "git",
          "url" : "git://github.com/sisimai/p5-Sisimai.git",

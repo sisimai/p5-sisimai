@@ -182,8 +182,8 @@ v4.19.0 - Callback Feature
   - Implement a callback feature at `Sisimai->make()` and `Sisimai->dump()`
     methods. More imformation about the feature are available at the following
     pages:
-    - http://libsisimai.org/en/usage#callback
-    - http://libsisimai.org/ja/usage#callback
+    - https://libsisimai.org/en/usage#callback
+    - https://libsisimai.org/ja/usage#callback
   - Implement `Sisimai->match()` method: issue #173.
   - Minor bug fix in `Sisimai::MSP::US::AmazonSES->scan()` method.
 
@@ -389,7 +389,7 @@ v4.1.29
     This module parse bounce mails from Amazon SES(Receiving).
   - Improved code for getting and setting the value of `Status:` field.
   - Improved document in Sisimai::Data and Sisimai::Reason, imported from web
-    site: http://libsisimai.org/ .
+    site: https://libsisimai.org/ .
   - Added new sample email rfc3834-03.eml to test code for Sisimai::RFC3834.
   - Added new sample emails: sendmail-26,27,28,29,30,31,32.eml. 
 

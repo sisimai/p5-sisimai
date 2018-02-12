@@ -682,7 +682,7 @@ address. Sisimai::Address object have the following accessors:
 C<reason> is the value of bounce reason Sisimai detected. When this value is 
 C<undefined> or C<onhold>, it means that Sisimai could not decide the reason. 
 All the reasons Sisismai can detect are available at L<Sisimai::Reason> or web
-site L<http://libsisimai.org/reason>.
+site L<https://libsisimai.org/en/reason/>.
 
 =head2 C<replycode> (I<Integer>)
 
@@ -779,7 +779,7 @@ set as C<+0000>.
 
 =head1 SEE ALSO
 
-L<http://libsisimai.org/data/>
+L<https://libsisimai.org/en/data/>
 
 =head1 AUTHOR
 

@@ -335,7 +335,7 @@ C<reason> method provides table including all the reasons Sisimai can detect
 
 =item L<Sisimai::Data> - Parsed data object
 
-=item L<http://libsisimai.org/> - Sisimai — A successor to bounceHammer, Library to parse error mails
+=item L<https://libsisimai.org/> - Sisimai — A successor to bounceHammer, Library to parse error mails
 
 =item L<https://tools.ietf.org/html/rfc3463> - RFC3463: Enhanced Mail System Status Codes
 
@@ -353,7 +353,7 @@ L<https://github.com/sisimai/p5-Sisimai> - Sisimai on GitHub
 
 =head1 WEB SITE
 
-L<http://libsisimai.org/> - A successor to bounceHammer, Library to parse error mails.
+L<https://libsisimai.org/> - A successor to bounceHammer, Library to parse error mails.
 
 L<https://github.com/sisimai/rb-Sisimai> - Ruby version of Sisimai
 
