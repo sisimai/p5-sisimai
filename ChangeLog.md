@@ -24,6 +24,7 @@ v4.22.3p3
     - Replace `$v =~ /.\z/` with `substr($v, -1, 1) eq '.'`
     - Pull-Req #258 Remove /i modifier from each regular expression as possible
       and call lc() function before calling Sisimai::Reason::*->match method.
+    - Import Pull-Request sisimai/rb-Sisimai#111, Loop improvement.
   - #251 Declaration of the version has been changed: use version;
 
 v4.22.3
