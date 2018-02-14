@@ -3,10 +3,10 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.3p3
+v4.22.4
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Wed, 14 Feb 2018 10:44:00 +0900 (JST)"
+- version: "4.22.4"
 - changes:
   - Issue #253, Add status code 4.7.25(RFC-7372) as "blocked".
   - Pull-Request #254, Remove unused method: Sisimai::Bite::Email->pattern and

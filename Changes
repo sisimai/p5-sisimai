@@ -3,6 +3,30 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.4
+--------------------------------------------------------------------------------
+- release: "Wed, 14 Feb 2018 10:44:00 +0900 (JST)"
+- version: "4.22.4"
+- changes:
+  - Issue #253, Add status code 4.7.25(RFC-7372) as "blocked".
+  - Pull-Request #254, Remove unused method: Sisimai::Bite::Email->pattern and
+    the same methods defined in each child class.
+  - Obsoleted method Sisimai::Address->parse has been removed.
+  - The following performance improvements makes 1.34 times faster.
+    - Less regular expression #255. Thanks to @xtetsuji.
+    - The following Pull-Requests have been imported from rb-Sisimai.
+      - sisimai/rb-Sisimai#105
+      - sisimai/rb-Sisimai#107
+      - sisimai/rb-Sisimai#108
+    - Replace `$v =~ /\A...\z/` with `$v eq '...'`
+    - Replace `$v =~ /\A.../` with `index($v, '...') == 0`
+    - Replace `$v =~ /.../` with `index($v, '...') > -1`
+    - Replace `$v =~ /.\z/` with `substr($v, -1, 1) eq '.'`
+    - Pull-Req #258 Remove /i modifier from each regular expression as possible
+      and call lc() function before calling Sisimai::Reason::*->match method.
+    - Import Pull-Request sisimai/rb-Sisimai#111, Loop improvement.
+  - #251 Declaration of the version has been changed: use version;
+
 v4.22.3
 --------------------------------------------------------------------------------
 - release: "Tue, 26 Dec 2017 09:22:22 +0900 (JST)"
@@ -158,8 +182,8 @@ v4.19.0 - Callback Feature
   - Implement a callback feature at `Sisimai->make()` and `Sisimai->dump()`
     methods. More imformation about the feature are available at the following
     pages:
-    - http://libsisimai.org/en/usage#callback
-    - http://libsisimai.org/ja/usage#callback
+    - https://libsisimai.org/en/usage#callback
+    - https://libsisimai.org/ja/usage#callback
   - Implement `Sisimai->match()` method: issue #173.
   - Minor bug fix in `Sisimai::MSP::US::AmazonSES->scan()` method.
 
@@ -365,7 +389,7 @@ v4.1.29
     This module parse bounce mails from Amazon SES(Receiving).
   - Improved code for getting and setting the value of `Status:` field.
   - Improved document in Sisimai::Data and Sisimai::Reason, imported from web
-    site: http://libsisimai.org/ .
+    site: https://libsisimai.org/ .
   - Added new sample email rfc3834-03.eml to test code for Sisimai::RFC3834.
   - Added new sample emails: sendmail-26,27,28,29,30,31,32.eml. 
 
@@ -781,7 +805,7 @@ v4.0.1
   - Refactoring around codes to return the parsed data.
   - Implement `make()` method to get bounce data at Sisimai.pm.
 
-v4.0.0 - The First Release
+v4.0.0 - the first release
 --------------------------------------------------------------------------------
 - release: "Sat, 16 Aug 2014 20:00:00 +0900 (JST)"
 - version: "4.0.0"
