@@ -3,6 +3,13 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.4p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #260 The order for loading MTA modules improvement.
+
 v4.22.4
 --------------------------------------------------------------------------------
 - release: "Wed, 14 Feb 2018 10:44:00 +0900 (JST)"
