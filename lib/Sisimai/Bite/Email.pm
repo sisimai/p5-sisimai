@@ -18,8 +18,7 @@ sub headerlist { return [] }
 sub index {
     # MTA list
     # @return   [Array] MTA list with order
-    my $class = shift;
-    my $index = [qw|
+    return [qw|
         Sendmail Postfix qmail Exim Courier OpenSMTPD Exchange2007 Exchange2003
         Google Yahoo GSuite Aol Outlook Office365 SendGrid AmazonSES MailRu
         Yandex MessagingServer Domino Notes ReceivingSES AmazonWorkMail Verizon
@@ -28,17 +27,16 @@ sub index {
         mFILTER Activehunter InterScanMSS SurfControl MailMarshalSMTP
         X1 X2 X3 X4 X5 V5sendmail FML
     |];
-    return $index;
 }
 
 sub extra {
     # MTA list which have one or more extra headers
     # @return   [Array] MTA list (have extra headers)
-    my $class = shift;
-    my $extra = [qw|
+    return [qw|
         Exim Exchange2007 Exchange2003 Google GSuite Office365 Outlook SendGrid
-        AmazonSES ReceivingSES AmazonWorkMail Aol GMX MailRu MessageLabs Yahoo Yandex
-        Zoho EinsUndEins MXLogic McAfee mFILTER EZweb Activehunter IMailServer SurfControl FML
+        AmazonSES ReceivingSES AmazonWorkMail Aol GMX MailRu MessageLabs Yahoo
+        Yandex Zoho EinsUndEins MXLogic McAfee mFILTER EZweb Activehunter IMailServer
+        SurfControl FML
     |];
 }
 
