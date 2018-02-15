@@ -31,6 +31,17 @@ sub index {
     return $index;
 }
 
+sub extra {
+    # MTA list which have one or more extra headers
+    # @return   [Array] MTA list (have extra headers)
+    my $class = shift;
+    my $extra = [qw|
+        Exim Exchange2007 Exchange2003 Google GSuite Office365 Outlook SendGrid
+        AmazonSES ReceivingSES AmazonWorkMail Aol GMX MailRu MessageLabs Yahoo Yandex
+        Zoho EinsUndEins MXLogic McAfee mFILTER EZweb Activehunter IMailServer SurfControl FML
+    |];
+}
+
 sub scan {
     # Method of a parent class to parse a bounce message of each MTA
     # @param         [Hash] mhead       Message headers of a bounce email
