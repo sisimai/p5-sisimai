@@ -29,7 +29,7 @@ sub index {
     |];
 }
 
-sub extra {
+sub heads {
     # MTA list which have one or more extra headers
     # @return   [Array] MTA list (have extra headers)
     return [qw|
