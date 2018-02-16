@@ -6,7 +6,6 @@ use warnings;
 use Module::Load '';
 use Sisimai::Bite::Email;
 
-my $DefaultOrder = [];
 my $EngineOrder1 = [
     # These modules have many subject patterns or have MIME encoded subjects
     # which is hard to code as regular expression
@@ -164,13 +163,7 @@ sub default {
     # Make default order of MTA modules to be loaded
     # @return   [Array] Default order list of MTA modules
     # @since v4.13.1
-    my $class = shift;
-    my $order = [];
-
-    return $DefaultOrder if scalar @$DefaultOrder;
-    push @$order, map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->index() };
-    $DefaultOrder = $order;
-    return $order;
+    return [map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->index() }];
 }
 
 sub another {
@@ -190,9 +183,7 @@ sub headers {
     my $class = shift;
     my $table = {};
     my $skips = { 'return-path' => 1, 'x-mailer' => 1 };
-    my $order = [];
-
-    push @$order, map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->extra };
+    my $order = [map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->heads }];
 
     LOAD_MODULES: for my $e ( @$order ) {
         # Load email headers from each MTA module
