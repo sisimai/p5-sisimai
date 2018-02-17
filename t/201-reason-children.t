@@ -1,9 +1,9 @@
 use strict;
 use feature ':5.10';
+use lib qw(./lib ./blib/lib);
 use Test::More;
 use Module::Load;
 use Sisimai;
-use lib qw(./lib ./blib/lib);
 
 my $reasonchildren = {
     'Blocked'         => ['550 Access from ip address 192.0.2.1 blocked.'],
