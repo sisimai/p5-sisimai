@@ -34,6 +34,7 @@ sub new {
     $param->{'size'}   = -s $argv1;
     $param->{'file'}   = File::Basename::basename $argv1;
     $param->{'handle'} = ref $argv1 ? $argv1 : IO::File->new($argv1, 'r');
+    binmode $param->{'handle'};
 
     return bless($param, __PACKAGE__);
 }
