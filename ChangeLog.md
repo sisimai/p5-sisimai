@@ -9,6 +9,7 @@ v4.22.4p1
 - version: ""
 - changes:
   - #260 The order for loading MTA modules improvement.
+  - #261 "make test" now passes on Windows. Thanks to @charsbar.
 
 v4.22.4
 --------------------------------------------------------------------------------
