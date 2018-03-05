@@ -169,6 +169,23 @@ my $isexpected = [
     { 'n' => '01163', 'r' => qr/mailboxfull/     },
     { 'n' => '01164', 'r' => qr/blocked/         },
     { 'n' => '01165', 'r' => qr/spamdetected/    },
+    { 'n' => '01166', 'r' => qr/(?:hostunknown|expired|undefined)/ },
+    { 'n' => '01167', 'r' => qr/(?:onhold|undefined|mailererror)/ },
+    { 'n' => '01168', 'r' => qr/expired/         },
+    { 'n' => '01169', 'r' => qr/systemerror/     },
+    { 'n' => '01170', 'r' => qr/systemerror/     },
+    { 'n' => '01171', 'r' => qr/mailboxfull/     },
+    { 'n' => '01172', 'r' => qr/hostunknown/     },
+    { 'n' => '01173', 'r' => qr/networkerror/    },
+    { 'n' => '01174', 'r' => qr/(?:expired|systemerror)/ },
+    { 'n' => '01175', 'r' => qr/expired/         },
+    { 'n' => '01176', 'r' => qr/userunknown/     },
+    { 'n' => '01177', 'r' => qr/filtered/        },
+    { 'n' => '01178', 'r' => qr/expired/         },
+    { 'n' => '01179', 'r' => qr/mailererror/     },
+    { 'n' => '01180', 'r' => qr/blocked/         },
+    { 'n' => '01181', 'r' => qr/mailererror/     },
+
 ];
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

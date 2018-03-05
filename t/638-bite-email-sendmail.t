@@ -29,7 +29,6 @@ my $isexpected = [
     { 'n' => '20', 's' => qr/\A5[.]4[.]6\z/,    'r' => qr/networkerror/,    'b' => qr/\A1\z/ },
     { 'n' => '21', 's' => qr/\A4[.]4[.]7\z/,    'r' => qr/blocked/,         'b' => qr/\A1\z/ },
     { 'n' => '22', 's' => qr/\A5[.]1[.]6\z/,    'r' => qr/hasmoved/,        'b' => qr/\A0\z/ },
-    { 'n' => '23', 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/spamdetected/,    'b' => qr/\A1\z/ },
     { 'n' => '24', 's' => qr/\A5[.]1[.]2\z/,    'r' => qr/hostunknown/,     'b' => qr/\A0\z/ },
     { 'n' => '25', 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,     'b' => qr/\A0\z/ },
     { 'n' => '26', 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,     'b' => qr/\A0\z/ },
