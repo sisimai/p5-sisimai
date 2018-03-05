@@ -6,10 +6,10 @@ use version;
 use Module::Load '';
 
 our $VERSION = version->declare('v4.22.4');
-our $PATCHLV = 1;
+our $PATCHLV = 2;
 sub version { return $VERSION.($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
-sub sysname { 'bouncehammer'  }
-sub libname { 'Sisimai'       }
+sub sysname { 'bouncehammer' }
+sub libname { 'Sisimai'      }
 
 sub make {
     # Wrapper method for parsing mailbox or Maildir/

@@ -3,13 +3,15 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.4p1
+v4.22.4p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
   - #260 The order for loading MTA modules improvement.
   - #261 "make test" now passes on Windows. Thanks to @charsbar.
+  - Sample emails in set-of-emails/ which are not owned by Sisimai project have
+    been removed.
 
 v4.22.4
 --------------------------------------------------------------------------------
