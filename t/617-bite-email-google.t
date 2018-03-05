@@ -18,8 +18,6 @@ my $isexpected = [
     { 'n' => '09', 's' => qr/\A4[.]0[.]\d+\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
     { 'n' => '10', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
     { 'n' => '11', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
-    { 'n' => '12', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/onhold/,        'b' => qr/\d\z/ },
-    { 'n' => '13', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
     { 'n' => '14', 's' => qr/\A5[.]1[.]1\z/,   'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
     { 'n' => '15', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
     { 'n' => '16', 's' => qr/\A5[.]2[.]2\z/,   'r' => qr/mailboxfull/,   'b' => qr/\A1\z/ },
