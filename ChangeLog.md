@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.4p2
+v4.22.4p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -12,6 +12,7 @@ v4.22.4p2
   - #261 "make test" now passes on Windows. Thanks to @charsbar.
   - Sample emails in set-of-emails/ which are not owned by Sisimai project have
     been removed.
+  - Update error message patterns in Sisimai::Reason::Expired.
 
 v4.22.4
 --------------------------------------------------------------------------------
