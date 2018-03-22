@@ -19,6 +19,7 @@ sub match {
         |delivery[ ]time[ ]expired
         |failed[ ]to[ ]deliver[ ]to[ ]domain[ ].+[ ]after[ ]\d+[ ]tries
         |giving[ ]up[ ]on
+        |has[ ]been[ ]delayed
         |it[ ]has[ ]not[ ]been[ ]collected[ ]after
         |message[ ](?:
              expired[ ]after[ ]sitting[ ]in[ ]queue[ ]for
@@ -92,7 +93,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
