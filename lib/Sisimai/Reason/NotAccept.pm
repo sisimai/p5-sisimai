@@ -15,13 +15,12 @@ sub match {
     my $argv1 = shift // return undef;
 
     # Destination mail server does not accept any message
-    my $regex = qr{(?:
-         name[ ]server:[ ][.]:[ ]host[ ]not[ ]found # Sendmail
-        |55[46][ ]smtp[ ]protocol[ ]returned[ ]a[ ]permanent[ ]error
-        )
-    }x;
+    my $index = [
+        'name server: .: host not found',   # Sendmail
+        'smtp protocol returned a permanent error',
+    ];
 
-    return 1 if $argv1 =~ $regex;
+    return 1 if grep { index($argv1, $_) > -1 } @$index;
     return 0;
 }
 
