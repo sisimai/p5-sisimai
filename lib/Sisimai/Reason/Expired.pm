@@ -13,27 +13,24 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?>
-         connection[ ]timed[ ]out
-        |could[ ]not[ ]find[ ]a[ ]gateway[ ]for
-        |delivery[ ]time[ ]expired
-        |failed[ ]to[ ]deliver[ ]to[ ]domain[ ].+[ ]after[ ]\d+[ ]tries
-        |giving[ ]up[ ]on
-        |has[ ]been[ ]delayed
-        |it[ ]has[ ]not[ ]been[ ]collected[ ]after
-        |message[ ](?:
-             expired[ ]after[ ]sitting[ ]in[ ]queue[ ]for
-            |timed[ ]out
-            )
-        |retry[ ]time[ ]not[ ]reached[ ]for[ ]any[ ]host[ ]after[ ]a[ ]long[ ]failure[ ]period
-        |server[ ]did[ ]not[ ]respond
-        |this[ ]message[ ]has[ ]been[ ]in[ ]the[ ]queue[ ]too[ ]long
-        |was[ ]not[ ]reachable[ ]within[ ]the[ ]allowed[ ]queue[ ]period
-        |your[ ]message[ ]could[ ]not[ ]be[ ]delivered[ ]for[ ]more[ ]than
-        )
-    }x;
+    my $index = [
+        'connection timed out',
+        'could not find a gateway for',
+        'delivery time expired',
+        'failed to deliver to domain ',
+        'giving up on',
+        'has been delayed',
+        'it has not been collected after',
+        'message expired after sitting in queue for',
+        'message timed out',
+        'retry time not reached for any host after a long failure period',
+        'server did not respond',
+        'this message has been in the queue too long',
+        'was not reachable within the allowed queue period',
+        'your message could not be delivered for more than',
+    ];
 
-    return 1 if $argv1 =~ $regex;
+    return 1 if grep { index($argv1, $_) > -1 } @$index;
     return 0;
 }
 

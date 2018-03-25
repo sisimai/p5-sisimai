@@ -13,27 +13,22 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?>
-         exceeded[ ]maximum[ ]inbound[ ]message[ ]size
-        |line[ ]limit[ ]exceeded
-        |max[ ]message[ ]size[ ]exceeded
-        |message[ ](?:
-             file[ ]too[ ]big
-            |length[ ]exceeds[ ]administrative[ ]limit
-            |size[ ]exceeds[ ](?:
-                 fixed[ ]limit
-                |fixed[ ]maximum[ ]message[ ]size
-                |maximum[ ]value
-                )
-            |too[ ]big
-            |too[ ]large[ ]for[ ]this[ ].+
-            )
-        |size[ ]limit
-        |taille[ ]limite[ ]du[ ]message[ ]atteinte.+[a-z]{3}.+514
-        )
-    }x;
+    my $index = [
+        'exceeded maximum inbound message size',
+        'line limit exceeded',
+        'max message size exceeded',
+        'message file too big',
+        'message length exceeds administrative limit',
+        'message size exceeds fixed limit',
+        'message size exceeds fixed maximum message size',
+        'message size exceeds maximum value',
+        'message too big',
+        'message too large for this ',
+        'size limit',
+        'taille limite du message atteinte',
+    ];
 
-    return 1 if $argv1 =~ $regex;
+    return 1 if grep { index($argv1, $_) > -1 } @$index;
     return 0;
 }
 
@@ -132,3 +127,4 @@ Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+
