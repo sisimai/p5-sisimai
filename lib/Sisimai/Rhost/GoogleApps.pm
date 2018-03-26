@@ -122,7 +122,7 @@ sub get {
 
     for my $e ( @{ $StatusList->{ $statuscode } } ) {
         # Try to match
-        next unless grep { index($argvs->diagnosticcode, $_) > -1 } @{ $e->{'string'} };
+        next unless grep { rindex($argvs->diagnosticcode, $_) > -1 } @{ $e->{'string'} };
         $reasontext = $e->{'reason'};
         last;
     }

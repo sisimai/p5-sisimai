@@ -94,7 +94,7 @@ sub is_domainpart {
     my $dpart = shift // return 0;
 
     return 0 if $dpart =~ /(?:[\x00-\x1f]|\x1f)/;
-    return 0 if index($dpart, '@') > -1;
+    return 0 if rindex($dpart, '@') > -1;
     return 1 if $dpart =~ $Re->{'domain'};
     return 0;
 }
@@ -170,7 +170,7 @@ sub received {
 
         while( my $e = shift @namelist ) {
             # 1. Hostname takes priority over all other IP addresses
-            next unless index($e, '.') > -1;
+            next unless rindex($e, '.') > -1;
             $hostname = $e;
             last;
         }

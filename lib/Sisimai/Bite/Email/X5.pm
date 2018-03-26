@@ -31,14 +31,14 @@ sub scan {
     my $plain = '';
 
     require Sisimai::MIME;
-    $match++ if defined $mhead->{'to'} && index($mhead->{'to'}, 'NotificationRecipients') > -1;
-    if( index($mhead->{'from'}, 'TWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0') > -1 ) {
+    $match++ if defined $mhead->{'to'} && rindex($mhead->{'to'}, 'NotificationRecipients') > -1;
+    if( rindex($mhead->{'from'}, 'TWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0') > -1 ) {
         # From: "=?iso-2022-jp?B?TWFpbCBEZWxpdmVyeSBTdWJzeXN0ZW0=?=" <...>
         #       Mail Delivery Subsystem
         for my $f ( split(' ', $mhead->{'from'}) ) {
             # Check each element of From: header
             next unless Sisimai::MIME->is_mimeencoded(\$f);
-            $match++ if index(Sisimai::MIME->mimedecode([$f]), 'Mail Delivery Subsystem') > -1;
+            $match++ if rindex(Sisimai::MIME->mimedecode([$f]), 'Mail Delivery Subsystem') > -1;
             last;
         }
     }
@@ -46,7 +46,7 @@ sub scan {
     if( Sisimai::MIME->is_mimeencoded(\$mhead->{'subject'}) ) {
         # Subject: =?iso-2022-jp?B?UmV0dXJuZWQgbWFpbDogVXNlciB1bmtub3du?=
         $plain = Sisimai::MIME->mimedecode([$mhead->{'subject'}]);
-        $match++ if index($plain, 'Mail Delivery Subsystem') > -1;
+        $match++ if rindex($plain, 'Mail Delivery Subsystem') > -1;
     }
     return undef if $match < 2;
 

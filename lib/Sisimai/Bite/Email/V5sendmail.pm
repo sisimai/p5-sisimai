@@ -69,7 +69,7 @@ sub scan {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) > -1 ) {
+            if( rindex($e, $StartingOf->{'message'}->[0]) > -1 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }

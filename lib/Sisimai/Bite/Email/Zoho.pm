@@ -60,7 +60,7 @@ sub scan {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) > -1 ) {
+            if( rindex($e, $StartingOf->{'rfc822'}->[0]) > -1 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }

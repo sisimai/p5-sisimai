@@ -28,7 +28,7 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless index($mhead->{'from'}, 'MAILER-DAEMON@') > -1;
+    return undef unless rindex($mhead->{'from'}, 'MAILER-DAEMON@') > -1;
     return undef unless $mhead->{'subject'} =~ /\A(?>Delivery[ ]failure|fail(?:ure|ed)[ ]delivery)/;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

@@ -35,7 +35,7 @@ sub is_mimeencoded {
     return undef unless ref $argv1 eq 'SCALAR';
     $$argv1 =~ y/"//d;
 
-    if( index($$argv1, ' ') > -1 ) {
+    if( rindex($$argv1, ' ') > -1 ) {
         # Multiple MIME-Encoded strings in a line
         @piece = split(' ', $$argv1);
     } else {

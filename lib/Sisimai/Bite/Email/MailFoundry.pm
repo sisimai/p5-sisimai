@@ -30,7 +30,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'subject'} eq 'Message delivery has failed';
-    return undef unless grep { index($_, '(MAILFOUNDRY) id') > -1 } @{ $mhead->{'received'} };
+    return undef unless grep { rindex($_, '(MAILFOUNDRY) id') > -1 } @{ $mhead->{'received'} };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);

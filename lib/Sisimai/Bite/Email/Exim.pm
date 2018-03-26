@@ -299,7 +299,7 @@ sub scan {
                         } elsif( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
                             # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
                             my $c = $1;
-                            $v->{'spec'} ||= index($c, '@') > -1 ? 'SMTP' : 'X-UNIX';
+                            $v->{'spec'} ||= rindex($c, '@') > -1 ? 'SMTP' : 'X-UNIX';
 
                         } else {
                             # Error message ?
@@ -339,7 +339,7 @@ sub scan {
         for my $q ( @$dscontents ) {
             # Replace the recipient address with the value of "alias"
             next unless $q->{'alias'};
-            if( length($q->{'recipient'}) == 0 || index($q->{'recipient'}, '@') == -1 ) {
+            if( length($q->{'recipient'}) == 0 || rindex($q->{'recipient'}, '@') == -1 ) {
                 # The value of "recipient" is empty or does not include "@"
                 $q->{'recipient'} = $q->{'alias'};
             }

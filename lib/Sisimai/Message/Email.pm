@@ -155,7 +155,7 @@ sub divideup {
     my $readcursor = 0;
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
 
-    $$email =~ s/\r\n/\n/gm  if index($$email, "\r\n") > -1;
+    $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
     $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
     @hasdivided = split("\n", $$email);
     return {} unless scalar @hasdivided;

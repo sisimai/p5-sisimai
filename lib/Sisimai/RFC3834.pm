@@ -133,7 +133,7 @@ sub scan {
                 last if $blanklines > $countuntil;
                 next;
             }
-            next unless index($e, ' ') > -1;
+            next unless rindex($e, ' ') > -1;
             next if index($e, 'Content-Type') == 0;
             next if index($e, 'Content-Transfer') == 0;
 

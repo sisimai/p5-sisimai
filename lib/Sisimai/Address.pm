@@ -112,7 +112,7 @@ sub make {
     } else {
         # The argument does not include "@"
         return undef unless Sisimai::RFC5322->is_mailerdaemon($argvs->{'address'});
-        return undef if index($argvs->{'address'}, ' ') > -1;
+        return undef if rindex($argvs->{'address'}, ' ') > -1;
 
         # The argument does not include " "
         $thing->{'user'}    = $argvs->{'address'};
@@ -152,8 +152,8 @@ sub find {
             # The character is a delimiter character
             if( $e eq ',' ) {
                 # Separator of email addresses or not
-                if( index($v->{'address'}, '<') == 0 &&
-                    index($v->{'address'}, '@') > -1 &&
+                if(  index($v->{'address'}, '<') == 0 &&
+                    rindex($v->{'address'}, '@') > -1 &&
                     substr($v->{'address'}, -1, 1) eq '>' ) {
                     # An email address has already been picked
                     if( $readcursor & $Indicators->{'comment-block'} ) {
@@ -211,7 +211,7 @@ sub find {
                 # The beginning of a comment block or not
                 if( $readcursor & $Indicators->{'email-address'} ) {
                     # <"neko(nyaan)"@example.org> or <neko(nyaan)@example.org>
-                    if( index($v->{'address'}, '"') > -1 ) {
+                    if( rindex($v->{'address'}, '"') > -1 ) {
                         # Quoted local part: <"neko(nyaan)"@example.org>
                         $v->{'address'} .= $e;
 
@@ -245,7 +245,7 @@ sub find {
                 # The end of a comment block or not
                 if( $readcursor & $Indicators->{'email-address'} ) {
                     # <"neko(nyaan)"@example.org> OR <neko(nyaan)@example.org>
-                    if( index($v->{'address'}, '"') > -1 ) {
+                    if( rindex($v->{'address'}, '"') > -1 ) {
                         # Quoted string in the local part: <"neko(nyaan)"@example.org>
                         $v->{'address'} .= $e;
 

@@ -29,7 +29,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless index($mhead->{'subject'}, 'Returned Mail: ') == 0;
-    return undef unless index($mhead->{'from'}, '"Mail Deliver System" ') > -1;
+    return undef unless index($mhead->{'from'}, '"Mail Deliver System" ') == 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);

@@ -46,11 +46,11 @@ sub is_permanent {
     } else {
         # Check with regular expression
         my $v = lc $argv1;
-        if( index($v, 'temporar') > -1 || index($v, 'persistent') > -1 ) {
+        if( rindex($v, 'temporar') > -1 || rindex($v, 'persistent') > -1 ) {
             # Temporary failure
             $getchecked = 0;
 
-        } elsif( index($v, 'permanent') > -1 ) {
+        } elsif( rindex($v, 'permanent') > -1 ) {
             # Permanently failure
             $getchecked = 1;
 

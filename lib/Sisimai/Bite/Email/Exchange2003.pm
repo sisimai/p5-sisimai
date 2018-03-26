@@ -84,7 +84,7 @@ sub scan {
         last unless scalar @{ $mhead->{'received'} };
         for my $e ( @{ $mhead->{'received'} } ) {
             # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
-            next unless index($e, ' with Internet Mail Service (') > -1;
+            next unless rindex($e, ' with Internet Mail Service (') > -1;
             $match = 1;
             last(EXCHANGE_OR_NOT);
         }

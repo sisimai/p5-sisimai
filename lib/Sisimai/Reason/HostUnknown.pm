@@ -30,7 +30,7 @@ sub match {
         'unrouteable address',
     ];
 
-    return 1 if grep { index($argv1, $_) > -1 } @$index;
+    return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }
 
