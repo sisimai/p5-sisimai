@@ -61,10 +61,13 @@ sub scan {
     #   Received: from nmomta.auone-net.jp ([aaa.bbb.ccc.ddd]) by ...
     #
     $match++ if rindex($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
+    $match++ if rindex($mhead->{'from'}, 'Postmaster@au.com') > -1;
     $match++ if $mhead->{'subject'} eq 'Mail System Error - Returned Mail';
     $match++ if grep { rindex($_, 'ezweb.ne.jp (EZweb Mail) with') > -1 } @{ $mhead->{'received'} };
+    $match++ if grep { rindex($_, '.au.com (') > -1 } @{ $mhead->{'received'} };
     if( defined $mhead->{'message-id'} ) {
         $match++ if substr($mhead->{'message-id'}, -13, 13) eq '.ezweb.ne.jp>';
+        $match++ if substr($mhead->{'message-id'}, -8, 8) eq '.au.com>';
     }
     return undef if $match < 2;
 
@@ -228,7 +231,8 @@ sub scan {
         next if $e->{'reason'};
 
         # The value of "reason" is not set yet.
-        next if substr($e->{'recipient'}, -12, -12) eq '@ezweb.ne.jp';
+        next if $e->{'recipient'} =~ /[@](?:ezweb[.]ne[.]jp|au[.]com)\z/;
+
         # Deal as "userunknown" when the domain part of the recipient
         # is "ezweb.ne.jp".
         $e->{'reason'} = 'userunknown';
