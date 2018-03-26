@@ -58,8 +58,8 @@ sub match {
         'you are sending to/from an address that has been blacklisted',
     ];
 
-    return 0 if grep { index($argv1, $_) > -1 } @$isnot;
-    return 1 if grep { index($argv1, $_) > -1 } @$index;
+    return 0 if grep { rindex($argv1, $_) > -1 } @$isnot;
+    return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }
 

@@ -247,7 +247,7 @@ sub make {
                 $p->{ $v } =~ s/\r\z//g;    # Remove CR at the end of the value
 
                 # Check space character in each value and get the first element
-                $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if index($p->{ $v }, ' ') > -1;
+                $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if rindex($p->{ $v }, ' ') > -1;
             }
 
             # Subject: header of the original message
@@ -261,7 +261,7 @@ sub make {
                 $p->{'listid'} =  $1 if $p->{'listid'} =~ /\A.*([<].+[>]).*\z/;
                 $p->{'listid'} =~ y/<>//d;
                 $p->{'listid'} =~ s/\r\z//g;
-                $p->{'listid'} =  '' if index($p->{'listid'}, ' ') > -1;
+                $p->{'listid'} =  '' if rindex($p->{'listid'}, ' ') > -1;
             }
 
             # The value of "Message-Id" header

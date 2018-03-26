@@ -39,7 +39,7 @@ sub scan {
     my $mbody = shift // return undef;
 
     return undef unless defined $mhead->{'x-msg-ref'};
-    return undef unless index($mhead->{'from'}, 'MAILER-DAEMON@messagelabs.com') > -1;
+    return undef unless rindex($mhead->{'from'}, 'MAILER-DAEMON@messagelabs.com') > -1;
     return undef unless index($mhead->{'subject'}, 'Mail Delivery Failure') == 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

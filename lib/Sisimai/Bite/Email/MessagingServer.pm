@@ -29,7 +29,7 @@ sub scan {
     my $match = 0;
 
     # 'received' => qr/[ ][(]MessagingServer[)][ ]with[ ]/,
-    $match ||= 1 if index($mhead->{'content-type'}, 'Boundary_(ID_') > -1;
+    $match ||= 1 if rindex($mhead->{'content-type'}, 'Boundary_(ID_') > -1;
     $match ||= 1 if index($mhead->{'subject'}, 'Delivery Notification: ') == 0;
     return undef unless $match;
 

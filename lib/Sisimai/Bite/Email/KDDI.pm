@@ -41,7 +41,7 @@ sub scan {
     # 'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
     $match ||= 1 if $mhead->{'from'} =~ /no-reply[@].+[.]dion[.]ne[.]jp/;
     $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} eq 'no-reply@app.auone-net.jp';
-    $match ||= 1 if grep { index($_, 'ezweb.ne.jp (') > -1 } @{ $mhead->{'received'} };
+    $match ||= 1 if grep { rindex($_, 'ezweb.ne.jp (') > -1 } @{ $mhead->{'received'} };
     return undef unless $match;
 
     require Sisimai::String;

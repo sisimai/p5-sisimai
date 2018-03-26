@@ -23,7 +23,7 @@ sub match {
         'this message contain text that uses unnecessary base64 encoding',
     ];
 
-    return 1 if grep { index($argv1, $_) > -1 } @$index;
+    return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }
 

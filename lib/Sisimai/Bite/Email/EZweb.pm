@@ -60,9 +60,9 @@ sub scan {
     #   Received: from ezweb.ne.jp (wmflb12na02.ezweb.ne.jp [222.15.69.197])
     #   Received: from nmomta.auone-net.jp ([aaa.bbb.ccc.ddd]) by ...
     #
-    $match++ if index($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
+    $match++ if rindex($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
     $match++ if $mhead->{'subject'} eq 'Mail System Error - Returned Mail';
-    $match++ if grep { index($_, 'ezweb.ne.jp (EZweb Mail) with') > -1 } @{ $mhead->{'received'} };
+    $match++ if grep { rindex($_, 'ezweb.ne.jp (EZweb Mail) with') > -1 } @{ $mhead->{'received'} };
     if( defined $mhead->{'message-id'} ) {
         $match++ if substr($mhead->{'message-id'}, -13, 13) eq '.ezweb.ne.jp>';
     }

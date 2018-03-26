@@ -31,8 +31,8 @@ my $StartingOf = {
     #   bounce.c/337:const char *notice_relay =
     #   bounce.c/338:    "    Your message was relayed to these recipients.\n\n";
     #   bounce.c/339:
-    'message' => [' This is the MAILER-DAEMON, please DO NOT REPLY to this'],
-    'rfc822'  => [' Below is a copy of the original message:'],
+    'message' => ['    This is the MAILER-DAEMON, please DO NOT REPLY to this'],
+    'rfc822'  => ['    Below is a copy of the original message:'],
 };
 my $ReFailures = {
     # smtpd/queue.c:221|  envelope_set_errormsg(&evp, "Envelope expired");
@@ -79,9 +79,9 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless index($mhead->{'subject'}, 'Delivery status notification') == 0;
-    return undef unless index($mhead->{'from'}, 'Mailer Daemon <') == 0;
-    return undef unless grep { index($_, ' (OpenSMTPD) with ') > -1 } @{ $mhead->{'received'} };
+    return undef unless index($mhead->{'subject'}, 'Delivery status notification') > -1;
+    return undef unless index($mhead->{'from'}, 'Mailer Daemon <') > -1;
+    return undef unless grep { rindex($_, ' (OpenSMTPD) with ') > -1 } @{ $mhead->{'received'} };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);

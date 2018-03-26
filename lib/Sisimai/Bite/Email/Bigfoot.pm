@@ -28,8 +28,8 @@ sub scan {
     my $match = 0;
 
     # 'subject'  => qr/\AReturned mail: /,
-    $match ||= 1 if index($mhead->{'from'}, '@bigfoot.com>') > -1;
-    $match ||= 1 if grep { index($_, '.bigfoot.com ') > -1 } @{ $mhead->{'received'} };
+    $match ||= 1 if rindex($mhead->{'from'}, '@bigfoot.com>') > -1;
+    $match ||= 1 if grep { rindex($_, '.bigfoot.com ') > -1 } @{ $mhead->{'received'} };
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

@@ -28,7 +28,7 @@ sub scan {
     while(1) {
         # Check the value of "From" header
         # 'subject' => qr/Undeliverable Message/,
-        last unless grep { index($_, '.vtext.com (') > -1 } @{ $mhead->{'received'} };
+        last unless grep { rindex($_, '.vtext.com (') > -1 } @{ $mhead->{'received'} };
         $match = 1 if $mhead->{'from'} eq 'post_master@vtext.com';
         $match = 0 if $mhead->{'from'} =~ /[<]?sysadmin[@].+[.]vzwpix[.]com[>]?\z/;
         last;

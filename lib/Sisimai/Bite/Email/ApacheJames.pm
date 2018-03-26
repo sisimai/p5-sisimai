@@ -37,8 +37,8 @@ sub scan {
     # 'received'   => qr/JAMES SMTP Server/,
     # 'message-id' => qr/\d+[.]JavaMail[.].+[@]/,
     $match ||= 1 if $mhead->{'subject'} eq '[BOUNCE]';
-    $match ||= 1 if defined $mhead->{'message-id'} && index($mhead->{'message-id'}, '.JavaMail.') > -1;
-    $match ||= 1 if grep { index($_, 'JAMES SMTP Server') > -1 } @{ $mhead->{'received'} };
+    $match ||= 1 if defined $mhead->{'message-id'} && rindex($mhead->{'message-id'}, '.JavaMail.') > -1;
+    $match ||= 1 if grep { rindex($_, 'JAMES SMTP Server') > -1 } @{ $mhead->{'received'} };
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

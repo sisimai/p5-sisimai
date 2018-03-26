@@ -72,8 +72,8 @@ sub scan {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) > -1 ||
-                index($e, $StartingOf->{'message'}->[1]) > -1 ) {
+            if( rindex($e, $StartingOf->{'message'}->[0]) > -1 ||
+                rindex($e, $StartingOf->{'message'}->[1]) > -1 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }
@@ -137,7 +137,7 @@ sub scan {
                 } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Remote-MTA: DNS; mx.example.jp
                     $v->{'rhost'} = lc $1;
-                    if( index($v->{'rhost'}, ' ') > -1 ) {
+                    if( rindex($v->{'rhost'}, ' ') > -1 ) {
                         # Get the first element
                         $v->{'rhost'} = (split(' ', $v->{'rhost'}))[0];
                     }
