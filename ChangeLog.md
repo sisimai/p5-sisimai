@@ -16,6 +16,8 @@ v4.22.4p3
   - Many error message patterns in Sisimai::Reason have been converted to fixed
     strings #266 #268.
   - Use rindex() instead of index() #267, #269.
+  - #232, #270, Pre-Updates for au.com, the new domain of EZweb announced at
+    http://news.kddi.com/kddi/corporate/newsrelease/2017/08/22/2637.html
 
 v4.22.4
 --------------------------------------------------------------------------------
