@@ -13,28 +13,23 @@ sub match {
     # @since v4.1.26
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?>
-         all[ ]available[ ]ips[ ]are[ ]at[ ]maximum[ ]connection[ ]limit    # SendGrid
-        |connection[ ]rate[ ]limit[ ]exceeded
-        |domain[ ].+[ ]has[ ]exceeded[ ]the[ ]max[ ]emails[ ]per[ ]hour[ ].+[ ]allowed
-        |no[ ]ips[ ]available[ ][-][ ].+[ ]exceeds[ ]per[-]domain[ ]connection[ ]limit[ ]for
-        |throttling[ ]failure:[ ](?:
-             daily[ ]message[ ]quota[ ]exceeded
-            |maximum[ ]sending[ ]rate[ ]exceeded
-            )
-        |too[ ]many[ ](?:
-             connections
-            |connections[ ]from[ ]your[ ]host[.]    # Microsoft
-            |concurrent[ ]smtp[ ]connections        # Microsoft
-            |errors[ ]from[ ]your[ ]ip              # Free.fr
-            |smtp[ ]sessions[ ]for[ ]this[ ]host    # Sendmail(daemon.c)
-            )
-        |trop[ ]de[ ]connexions,[ ].+[a-z]{3}.+104
-        |we[ ]have[ ]already[ ]made[ ]numerous[ ]attempts[ ]to[ ]deliver[ ]this[ ]message
-        )
-    }x;
+    my $index = [
+        'all available ips are at maximum connection limit',    # SendGrid
+        'connection rate limit exceeded',
+        'exceeds per-domain connection limit for',
+        'has exceeded the max emails per hour ',
+        'throttling failure: daily message quota exceeded',
+        'throttling failure: maximum sending rate exceeded',
+        'too many connections',
+        'too many connections from your host.', # Microsoft
+        'too many concurrent smtp connections', # Microsoft
+        'too many errors from your ip',         # Free.fr
+        'too many smtp sessions for this host', # Sendmail(daemon.c)
+        'trop de connexions, ',
+        'we have already made numerous attempts to deliver this message',
+    ];
 
-    return 1 if $argv1 =~ $regex;
+    return 1 if grep { index($argv1, $_) > -1 } @$index;
     return 0;
 }
 
@@ -115,4 +110,5 @@ Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+
 

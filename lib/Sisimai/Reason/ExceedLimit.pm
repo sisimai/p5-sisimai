@@ -13,9 +13,9 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr/message too large/;
+    my $index = ['message too large'];
 
-    return 1 if $argv1 =~ $regex;
+    return 1 if grep { index($argv1, $_) > -1 } @$index;
     return 0;
 }
 
