@@ -15,6 +15,7 @@ v4.22.4p3
   - Update error message patterns in Sisimai::Reason::Expired.
   - Many error message patterns in Sisimai::Reason have been converted to fixed
     strings #266 #268.
+  - Use rindex() instead of index() #267, #269.
 
 v4.22.4
 --------------------------------------------------------------------------------
