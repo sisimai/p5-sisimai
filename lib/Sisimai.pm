@@ -6,7 +6,7 @@ use version;
 use Module::Load '';
 
 our $VERSION = version->declare('v4.22.4');
-our $PATCHLV = 2;
+our $PATCHLV = 3;
 sub version { return $VERSION.($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
 sub libname { 'Sisimai'      }
