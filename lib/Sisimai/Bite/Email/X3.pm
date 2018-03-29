@@ -6,7 +6,7 @@ use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = {
-    'message' => [' This is an automatically generated Delivery Status Notification'],
+    'message' => ['      This is an automatically generated Delivery Status Notification.'],
     'rfc822'  => ['Content-Type: message/rfc822'],
 };
 
@@ -44,7 +44,7 @@ sub scan {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
-            if( rindex($e, $StartingOf->{'message'}->[0]) > -1 ) {
+            if( index($e, $StartingOf->{'message'}->[0]) > -1 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
             }

@@ -37,7 +37,7 @@ sub scan {
     ];
 
     # 'received' => qr/[ ][(]InterScanMSS[)][ ]with[ ]/,
-    $match ||= 1 if index($mhead->{'from'}, 'InterScan MSS') > -1;
+    $match ||= 1 if index($mhead->{'from'}, '"InterScan MSS"') == 0;
     $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
     return undef unless $match;
 

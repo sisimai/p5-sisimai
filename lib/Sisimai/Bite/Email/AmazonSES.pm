@@ -39,7 +39,7 @@ sub scan {
 
     # 'from'    => qr/\AMAILER-DAEMON[@]email[-]bounces[.]amazonses[.]com\z/,
     # 'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
-    return undef if rindex($xmail, 'Amazon WorkMail') > -1;
+    return undef if index($xmail, 'Amazon WorkMail') > -1;
     $match ||= 1 if $mhead->{'x-aws-outgoing'};
     $match ||= 1 if $mhead->{'x-ses-outgoing'};
     return undef unless $match;
