@@ -5,8 +5,8 @@ use warnings;
 use version;
 use Module::Load '';
 
-our $VERSION = version->declare('v4.22.4');
-our $PATCHLV = 3;
+our $VERSION = version->declare('v4.22.5');
+our $PATCHLV = 0;
 sub version { return $VERSION.($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
 sub libname { 'Sisimai'      }

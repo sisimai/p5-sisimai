@@ -3,6 +3,22 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.5
+--------------------------------------------------------------------------------
+- release: "Fri, 30 Mar 2018 12:29:16 +0900 (JST)"
+- version: "4.22.5"
+- changes:
+  - #260 The order for loading MTA modules improvement.
+  - #261 "make test" now passes on Windows. Thanks to @charsbar.
+  - Sample emails in set-of-emails/ which are not owned by Sisimai project have
+    been removed.
+  - Update error message patterns in Sisimai::Reason::Expired.
+  - Many error message patterns in Sisimai::Reason have been converted to fixed
+    strings #266 #268.
+  - Use rindex() instead of index() #267, #269.
+  - #232, #270, Pre-Updates for au.com, the new domain of EZweb announced at
+    http://news.kddi.com/kddi/corporate/newsrelease/2017/08/22/2637.html
+
 v4.22.4
 --------------------------------------------------------------------------------
 - release: "Wed, 14 Feb 2018 10:44:00 +0900 (JST)"
