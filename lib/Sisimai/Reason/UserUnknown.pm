@@ -159,12 +159,13 @@ sub true {
         #     Recipient address rejected: User unknown in local recipient table
         my $prematches = [qw|NoRelaying Blocked MailboxFull HasMoved Blocked Rejected|];
         my $matchother = 0;
-        require Module::Load;
+        my $modulepath = '';
 
         for my $e ( @$prematches ) {
             # Check the value of "Diagnostic-Code" with other error patterns.
             my $p = 'Sisimai::Reason::'.$e;
-            Module::Load::load($p);
+            ($modulepath = $p) =~ s|::|/|g; 
+            require $modulepath.'.pm';
 
             next unless $p->match($diagnostic);
             # Match with reason defined in Sisimai::Reason::* except UserUnknown.

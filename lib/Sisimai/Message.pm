@@ -2,7 +2,6 @@ package Sisimai::Message;
 use feature ':5.10';
 use strict;
 use warnings;
-use Module::Load '';
 use Class::Accessor::Lite;
 
 my $rwaccessors = [
@@ -53,11 +52,8 @@ sub new {
         return undef;
     }
 
-    eval { Module::Load::load $child };
-    if( $@ ) {
-        warn sprintf(" ***warning: Failed to load module: %s", $@);
-        return undef;
-    }
+    (my $modulepath = $child) =~ s|::|/|g; 
+    require $modulepath.'.pm';
 
     my $methodargv = {
         'data'  => $email,

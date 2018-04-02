@@ -111,6 +111,7 @@ sub load {
 
     my @modulelist = ();
     my $tobeloaded = [];
+    my $modulepath = '';
 
     for my $e ('load', 'order') {
         # The order of MTA modules specified by user
@@ -124,7 +125,10 @@ sub load {
         # Load user defined MTA module
         for my $v ( @{ $argvs->{'load'} } ) {
             # Load user defined MTA module
-            eval { Module::Load::load $v };
+            eval {
+                ($modulepath = $v) =~ s|::|/|g; 
+                require $modulepath.'.pm';
+            };
             next if $@;
 
             for my $w ( @{ $v->headerlist } ) {
@@ -453,6 +457,7 @@ sub parse {
 
     my $haveloaded = {};
     my $hasscanned = undef;
+    my $modulepath = '';
 
     SCANNER: while(1) {
         # 1. Sisimai::ARF 
@@ -480,7 +485,8 @@ sub parse {
             # Try MTA module candidates which are detected from MTA specific
             # mail headers on first
             next if exists $haveloaded->{ $r };
-            Module::Load::load $r;
+            ($modulepath = $r) =~ s|::|/|g; 
+            require $modulepath.'.pm';
             $hasscanned = $r->scan($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             last(SCANNER) if $hasscanned;
@@ -490,7 +496,8 @@ sub parse {
             # MTA modules which does not have MTA specific header and did not
             # match with any regular expressions of Subject header.
             next if exists $haveloaded->{ $r };
-            Module::Load::load $r;
+            ($modulepath = $r) =~ s|::|/|g; 
+            require $modulepath.'.pm';
             $hasscanned = $r->scan($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             last(SCANNER) if $hasscanned;

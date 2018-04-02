@@ -3,7 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
-use Module::Load '';
 
 my $roaccessors = [
     'path',     # [String] path to mbox or Maildir/
@@ -22,29 +21,34 @@ sub new {
     my $class = shift;
     my $argv1 = shift;
     my $klass = undef;
+    my $loads = 'Sisimai/Mail/';
     my $param = { 'type' => '', 'mail' => undef, 'path' => $argv1 };
 
     # The argumenet is a mailbox or a Maildir/.
     if( -f $argv1 ) {
         # The argument is a file, it is an mbox or email file in Maildir/
-        $klass = __PACKAGE__.'::Mbox';
+        $klass  = __PACKAGE__.'::Mbox';
+        $loads .= 'Mbox.pm';
         $param->{'type'} = 'mailbox';
 
     } elsif( -d $argv1 ) {
         # The agument is not a file, it is a Maildir/
-        $klass = __PACKAGE__.'::Maildir';
+        $klass  = __PACKAGE__.'::Maildir';
+        $loads .= 'Maildir.pm';
         $param->{'type'} = 'maildir';
 
     } else {
         # The argumen1 neither a mailbox nor a Maildir/.
         if( ref($argv1) eq 'GLOB' || $argv1 eq 'STDIN' ) {
             # Read from STDIN
-            $klass = __PACKAGE__.'::STDIN';
+            $klass  = __PACKAGE__.'::STDIN';
+            $loads .= 'STDIN.pm';
             $param->{'type'} = 'stdin';
         }
     }
     return undef unless $klass;
-    Module::Load::load $klass;
+
+    require $loads;
     $param->{'mail'} = $klass->new($argv1);
 
     return bless($param, __PACKAGE__);

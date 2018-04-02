@@ -2,7 +2,6 @@ package Sisimai::Rhost;
 use feature ':5.10';
 use strict;
 use warnings;
-use Module::Load '';
 
 my $RhostClass = {
     qr/\Aaspmx[.]l[.]google[.]com\z/                 => 'GoogleApps',
@@ -50,6 +49,7 @@ sub get {
     my $reasontext = '';
     my $remotehost = lc $argvs->rhost;
     my $rhostclass = '';
+    my $modulepath = '';
 
     for my $e ( keys %$RhostClass ) {
         # Try to match with each key of $RhostClass
@@ -59,7 +59,8 @@ sub get {
     }
 
     return undef unless length $rhostclass;
-    Module::Load::load($rhostclass);
+    ($modulepath = $rhostclass) =~ s|::|/|g; 
+    require $modulepath.'.pm';
     $reasontext = $rhostclass->get($argvs);
 
     return $reasontext;

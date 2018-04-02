@@ -3,7 +3,6 @@ use parent 'Sisimai::Order';
 use feature ':5.10';
 use strict;
 use warnings;
-use Module::Load '';
 use Sisimai::Bite::Email;
 
 my $EngineOrder1 = [
@@ -187,7 +186,9 @@ sub headers {
 
     LOAD_MODULES: for my $e ( @$order ) {
         # Load email headers from each MTA module
-        Module::Load::load $e;
+        (my $p = $e) =~ s|::|/|g; 
+        require $p.'.pm';
+
         for my $v ( @{ $e->headerlist } ) {
             # Get header name which required each MTA module
             my $q = lc $v;
