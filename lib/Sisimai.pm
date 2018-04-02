@@ -3,7 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 use version;
-use Module::Load '';
 
 our $VERSION = version->declare('v4.22.5');
 our $PATCHLV = 0;
@@ -123,6 +122,7 @@ sub dump {
     my $nyaan = __PACKAGE__->make($argv0, %$argv1) // [];
 
     # Dump as JSON
+    require Module::Load;
     Module::Load::load('JSON', '-convert_blessed_universally');
     my $jsonparser = JSON->new->allow_blessed->convert_blessed;
     my $jsonstring = $jsonparser->encode($nyaan);
@@ -137,17 +137,20 @@ sub engine {
     my $class = shift;
     my $names = [qw|Bite::Email Bite::JSON ARF RFC3464 RFC3834|];
     my $table = {};
+    my $loads = '';
 
     while( my $e = shift @$names ) {
         my $r = 'Sisimai::'.$e;
-        Module::Load::load $r;
+        ($loads = $r) =~ s|::|/|g; 
+        require $loads.'.pm';
 
         if( $e eq 'Bite::Email' || $e eq 'Bite::JSON' ) {
             # Sisimai::Bite::Email or Sisimai::Bite::JSON
             for my $ee ( @{ $r->index } ) {
                 # Load and get the value of "description" from each module
                 my $rr = 'Sisimai::'.$e.'::'.$ee;
-                Module::Load::load $rr;
+                ($loads = $rr) =~ s|::|/|g; 
+                require $loads.'.pm';
                 $table->{ $rr } = $rr->description;
             }
         } else {
@@ -166,6 +169,7 @@ sub reason {
 
     require Sisimai::Reason;
     my $names = Sisimai::Reason->index;
+    my $loads = '';
 
     # These reasons are not included in the results of Sisimai::Reason->index
     push @$names, (qw|Delivered Feedback Undefined Vacation|);
@@ -173,7 +177,8 @@ sub reason {
     while( my $e = shift @$names ) {
         # Call ->description() method of Sisimai::Reason::*
         my $r = 'Sisimai::Reason::'.$e;
-        Module::Load::load $r;
+        ($loads = $r) =~ s|::|/|g; 
+        require $loads.'.pm';
         $table->{ $e } = $r->description;
     }
     return $table;
