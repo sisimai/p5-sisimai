@@ -3,7 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
-use Module::Load '';
 use Sisimai::Address;
 use Sisimai::RFC5322;
 use Sisimai::SMTP::Error;
@@ -461,8 +460,9 @@ sub dump {
 
     my $dumpeddata = '';
     my $referclass = 'Sisimai::Data::'.uc($type);
+    my $modulepath = 'Sisimai/Data/'.uc($type).'.pm';
 
-    eval { Module::Load::load $referclass };
+    require $modulepath;
     $dumpeddata = $referclass->dump($self);
 
     return $dumpeddata;

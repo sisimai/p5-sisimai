@@ -64,6 +64,7 @@ sub load {
 
     my @modulelist = ();
     my $tobeloaded = [];
+    my $modulepath = '';
 
     for my $e ('load', 'order') {
         # The order of MTA modules specified by user
@@ -77,7 +78,10 @@ sub load {
         # Load user defined MTA module
         for my $v ( @{ $argvs->{'load'} } ) {
             # Load user defined MTA module
-            eval { Module::Load::load $v };
+            eval { 
+                ($modulepath = $v) =~ s|::|/|g; 
+                require $modulepath.'.pm';
+            };
             next if $@;
             push @$tobeloaded, $v;
         }
@@ -129,6 +133,7 @@ sub parse {
     my $havecaught = undef;
     my $haveloaded = {};
     my $hasadapted = undef;
+    my $modulepath = undef;
 
     if( ref $hookmethod eq 'CODE' ) {
         # Call hook method
@@ -150,7 +155,10 @@ sub parse {
         USER_DEFINED: for my $r ( @$ToBeLoaded ) {
             # Call user defined MTA modules
             next if exists $haveloaded->{ $r };
-            eval { Module::Load::load $r };
+            eval {
+                ($modulepath = $r) =~ s|::|/|g; 
+                require $modulepath.'.pm';
+            };
             if( $@ ) {
                 warn sprintf(" ***warning: Failed to load %s: %s", $r, $@);
                 next;
@@ -163,7 +171,8 @@ sub parse {
         TRY_ON_FIRST: while( my $r = shift @$TryOnFirst ) {
             # Try MTA module candidates which are detected from object key names
             next if exists $haveloaded->{ $r };
-            eval { Module::Load::load $r };
+            ($modulepath = $r) =~ s|::|/|g; 
+            require $modulepath.'.pm';
             next if $@;
 
             $hasadapted = $r->adapt($bouncedata);
@@ -174,7 +183,8 @@ sub parse {
         DEFAULT_LIST: for my $r ( @$DefaultSet ) {
             # Default order of MTA modules
             next if exists $haveloaded->{ $r };
-            eval { Module::Load::load $r };
+            ($modulepath = $r) =~ s|::|/|g; 
+            require $modulepath.'.pm';
             next if $@;
 
             $hasadapted = $r->adapt($bouncedata);

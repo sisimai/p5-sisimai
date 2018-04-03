@@ -2,7 +2,6 @@ package Sisimai::Reason;
 use feature ':5.10';
 use strict;
 use warnings;
-use Module::Load '';
 
 my $GetRetried = __PACKAGE__->retry;
 my $ClassOrder = [
@@ -55,6 +54,7 @@ sub get {
 
     my $statuscode = $argvs->deliverystatus || '';
     my $reasontext = '';
+    my $modulepath = '';
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
@@ -62,7 +62,8 @@ sub get {
             # Check the value of Diagnostic-Code: and the value of Status:, it is a
             # deliverystats, with true() method in each Sisimai::Reason::* class.
             my $p = 'Sisimai::Reason::'.$e;
-            Module::Load::load($p);
+            ($modulepath = $p) =~ s|::|/|g; 
+            require $modulepath.'.pm';
 
             next unless $p->true($argvs);
             $reasontext = $p->text;
@@ -78,7 +79,7 @@ sub get {
 
         unless( $reasontext ) {
             # Try to match with message patterns in Sisimai::Reason::Vacation
-            Module::Load::load 'Sisimai::Reason::Vacation';
+            require Sisimai::Reason::Vacation;
             $reasontext = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->diagnosticcode);
         }
         $reasontext ||= 'onhold' if length $argvs->diagnosticcode;
@@ -104,6 +105,7 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $trytomatch = undef;
     my $reasontext = '';
+    my $modulepath = '';
 
     require Sisimai::SMTP::Status;
     $reasontext = Sisimai::SMTP::Status->name($statuscode);
@@ -118,7 +120,8 @@ sub anotherone {
         for my $e ( @{ $ClassOrder->[1] } ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
             my $p = 'Sisimai::Reason::'.$e;
-            Module::Load::load($p);
+            ($modulepath = $p) =~ s|::|/|g; 
+            require $modulepath.'.pm';
 
             next unless $p->match($diagnostic);
             $reasontext = lc $e;
@@ -174,6 +177,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     require Sisimai::SMTP::Status;
+    my $modulepath = '';
     my $reasontext = '';
     my $statuscode = Sisimai::SMTP::Status->find($argv1);
     my $diagnostic = lc $argv1;
@@ -185,7 +189,8 @@ sub match {
         # Check the value of Diagnostic-Code: and the value of Status:, it is a
         # deliverystats, with true() method in each Sisimai::Reason::* class.
         my $p = 'Sisimai::Reason::'.$e;
-        Module::Load::load($p);
+        ($modulepath = $p) =~ s|::|/|g; 
+        require $modulepath.'.pm';
 
         next unless $p->match($diagnostic);
         $reasontext = $p->text;
