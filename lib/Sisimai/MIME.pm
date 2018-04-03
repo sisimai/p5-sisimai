@@ -147,10 +147,6 @@ sub qprintd {
     }
 
     my $boundary01 = Sisimai::MIME->boundary($heads->{'content-type'}, 1);
-    my $reboundary = {
-        'begin' => qr/\A\Q$boundary00\E/,
-        'until' => qr/\Q$boundary01\E\z/,
-    };
     my $bodystring = '';
     my $notdecoded = '';
     my $getencoded = '';
@@ -168,7 +164,7 @@ sub qprintd {
         # Content-Transfer-Encoding: quoted-printable
         if( $mimeinside ) {
             # Quoted-Printable encoded text block
-            if( $e =~ $reboundary->{'begin'} ) {
+            if( $e eq $boundary00 ) {
                 # The next boundary string has appeared
                 # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
                 $getencoded  = MIME::QuotedPrint::decode($notdecoded);
@@ -194,10 +190,6 @@ sub qprintd {
                     # New boundary string has appeared
                     $boundary00 = $e;
                     $boundary01 = $e . '--';
-                    $reboundary = {
-                        'begin' => qr/\A\Q$boundary00\E/,
-                        'until' => qr/\Q$boundary01\E\z/,
-                    };
                 }
             } elsif( $lowercased =~ $ReE->{'with-charset'} || $lowercased =~ $ReE->{'only-charset'} ) {
                 # Content-Type: text/plain; charset=ISO-2022-JP
@@ -209,7 +201,7 @@ sub qprintd {
                 $ctencoding = $e;
                 $mimeinside = 1 if $encodename;
 
-            } elsif( $e =~ $reboundary->{'until'} ) {
+            } elsif( $e eq $boundary01 ) {
                 # The end of boundary block
                 # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ--
                 $mimeinside = 0;
@@ -217,6 +209,8 @@ sub qprintd {
             $bodystring .= $e . "\n";
         }
     }
+
+    $bodystring .= $notdecoded if length $notdecoded;
     return \$bodystring;
 }
 
