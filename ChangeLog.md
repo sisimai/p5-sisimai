@@ -3,6 +3,14 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.5p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #271 Most `Module::Load::load` have been replaced with `require`.
+  - #272 Fix bug in Sisimai::MIME->qprintd().
+
 v4.22.5
 --------------------------------------------------------------------------------
 - release: "Fri, 30 Mar 2018 12:29:16 +0900 (JST)"
