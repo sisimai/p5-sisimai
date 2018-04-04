@@ -10,6 +10,9 @@ v4.22.5p1
 - changes:
   - #271 Most `Module::Load::load` have been replaced with `require`.
   - #272 Fix bug in Sisimai::MIME->qprintd().
+  - #273 Error message patterns in Sisimai::Reason::Filtered have been replaced
+    with fixed strings.
+  - #274 Fix many spelling errors in some Pods. Thanks to @guimard.
 
 v4.22.5
 --------------------------------------------------------------------------------
