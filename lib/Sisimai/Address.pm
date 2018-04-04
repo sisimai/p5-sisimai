@@ -554,7 +554,7 @@ C<alias()> returns an email address (alias)
 
 =head2 C<B<name()>>
 
-C<name()> returns a dislay name
+C<name()> returns a display name
 
     my $e = '"Neko, Nyaan" <neko@example.org>';
     my $r = Sisimai::Address->find($e);

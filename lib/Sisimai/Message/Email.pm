@@ -572,7 +572,7 @@ in the argument of this method as an array reference like following code:
                         'load' => ['Your::Custom::MTA::Module']
                   );
 
-Beggining from v4.19.0, `hook` argument is available to callback user defined
+Beginning from v4.19.0, `hook` argument is available to callback user defined
 method like the following codes:
 
     my $cmethod = sub {

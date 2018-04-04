@@ -514,7 +514,7 @@ option to make() method like the following:
 
     my $data = Sisimai::Data->make('data' => $mesg, 'delivered' => 1);
 
-Beggining from v4.19.0, `hook` argument is available to callback user defined
+Beginning from v4.19.0, `hook` argument is available to callback user defined
 method like the following codes:
 
     my $call = sub {
