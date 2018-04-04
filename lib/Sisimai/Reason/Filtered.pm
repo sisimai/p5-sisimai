@@ -13,29 +13,21 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?>
-         because[ ]the[ ]recipient[ ]is[ ]only[ ]accepting[ ]mail[ ]from[ ]
-            specific[ ]email[ ]addresses    # AOL Phoenix
-        |bounced[ ]address  # SendGrid|a message to an address has previously been Bounced.
-        |due[ ]to[ ]extended[ ]inactivity[ ]new[ ]mail[ ]is[ ]not[ ]currently[ ]
-            being[ ]accepted[ ]for[ ]this[ ]mailbox
-        |has[ ]restricted[ ]sms[ ]e-mail    # AT&T
-        |http://postmaster[.]facebook[.]com/.+refused[ ]due[ ]to[ ]recipient[ ]preferences # Facebook
-        |is[ ]not[ ]accepting[ ]any[ ]mail
-        |permanent[ ]failure[ ]for[ ]one[ ]or[ ]more[ ]recipients[ ][(].+:blocked[)]
-        |resolver[.]rst[.]notauthorized # Microsoft Exchange
-        |this[ ]account[ ]is[ ]protected[ ]by
-        |user[ ](?:
-             not[ ]found  # Filter on MAIL.RU
-            |reject
-            )
-        |we[ ]failed[ ]to[ ]deliver[ ]mail[ ]because[ ]the[ ]following[ ]address
-            [ ]recipient[ ]id[ ]refuse[ ]to[ ]receive[ ]mail    # Willcom
-        |you[ ]have[ ]been[ ]blocked[ ]by[ ]the[ ]recipient
-        )
-    }x;
-
-    return 1 if $argv1 =~ $regex;
+    my $index = [
+        'because the recipient is only accepting mail from specific email addresses',   # AOL Phoenix
+        'bounced address',  # SendGrid|a message to an address has previously been Bounced.
+        'due to extended inactivity new mail is not currently being accepted for this mailbox',
+        'has restricted sms e-mail',    # AT&T
+        'is not accepting any mail',
+        'refused due to recipient preferences', # Facebook
+        'resolver.rst.notauthorized',   # Microsoft Exchange
+        'this account is protected by',
+        'user not found',   # Filter on MAIL.RU
+        'user reject',
+        'we failed to deliver mail because the following address recipient id refuse to receive mail',  # Willcom
+        'you have been blocked by the recipient',
+    ];
+    return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }
 
