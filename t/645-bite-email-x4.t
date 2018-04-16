@@ -7,7 +7,7 @@ require './t/600-bite-email-code';
 my $enginename = 'X4';
 my $enginetest = Sisimai::Bite::Email::Code->maketest;
 my $isexpected = [
-    { 'n' => '07', 's' => qr/\A4[.]4[.]1\z/,   'r' => qr/networkerror/,'b' => qr/\A1\z/ },
+    { 'n' => '08', 's' => qr/\A4[.]4[.]1\z/,  'r' => qr/networkerror/, 'b' => qr/\A1\z/ },
 ];
 
 $enginetest->($enginename, $isexpected);

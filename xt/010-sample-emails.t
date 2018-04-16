@@ -7,8 +7,8 @@ my $publicfile = [
     './set-of-emails/maildir/err',
     './set-of-emails/maildir/bsd',
     './set-of-emails/maildir/dos',
-    './set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet',
-    './set-of-emails/to-be-debugged-because/reason-is-undefined',
+    './set-of-emails/to-be-debugged-because/something-is-wrong',
+    './set-of-emails/to-be-parsed-for-test',
 ];
 my $privatefile = './set-of-emails/private';
 

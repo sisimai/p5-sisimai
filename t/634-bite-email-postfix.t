@@ -18,18 +18,18 @@ my $isexpected = [
     { 'n' => '09', 's' => qr/\A4[.]3[.]2\z/,    'r' => qr/toomanyconn/,'b' => qr/\A1\z/ },
     { 'n' => '10', 's' => qr/\A5[.]1[.]8\z/,    'r' => qr/rejected/,   'b' => qr/\A1\z/ },
     { 'n' => '11', 's' => qr/\A5[.]1[.]8\z/,    'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '12', 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
     { 'n' => '13', 's' => qr/\A5[.]2[.][12]\z/, 'r' => qr/(?:userunknown|mailboxfull)/, 'b' => qr/\d\z/ },
     { 'n' => '14', 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
     { 'n' => '15', 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/expired/,    'b' => qr/\A1\z/ },
     { 'n' => '16', 's' => qr/\A5[.]1[.]6\z/,    'r' => qr/hasmoved/,   'b' => qr/\A0\z/ },
     { 'n' => '17', 's' => qr/\A5[.]4[.]4\z/,    'r' => qr/networkerror/, 'b' => qr/\A1\z/ },
-    { 'n' => '21', 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/networkerror/, 'b' => qr/\A1\z/ },
     { 'n' => '28', 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/policyviolation/, 'b' => qr/\A1\z/ },
     { 'n' => '29', 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/policyviolation/, 'b' => qr/\A1\z/ },
     { 'n' => '30', 's' => qr/\A5[.]4[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
     { 'n' => '31', 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
     { 'n' => '32', 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
+    { 'n' => '33', 's' => qr/\A5[.]1[.]1\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
+    { 'n' => '34', 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/networkerror/, 'b' => qr/\A1\z/ },
 ];
 
 $enginetest->($enginename, $isexpected);
