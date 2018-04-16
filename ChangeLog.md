@@ -13,6 +13,8 @@ v4.22.5p1
   - #273 Error message patterns in Sisimai::Reason::Filtered have been replaced
     with fixed strings.
   - #274 Fix many spelling errors in some Pods. Thanks to @guimard.
+  - #275 Remove sample email files listed in sisimai/set-of-emails#6 to clarify
+    copyrights for libsisimai-perl package on Debian. Thanks to @guimard.
 
 v4.22.5
 --------------------------------------------------------------------------------
