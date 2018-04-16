@@ -8,7 +8,7 @@ my $PackageName = 'Sisimai';
 my $ThatsOnHold = './set-of-emails/to-be-debugged-because/reason-is-onhold';
 
 MAKE_TEST: {
-
+    plan 'skip_all', sprintf("%s does not exist", $ThatsOnHold) unless -d $ThatsOnHold;
     my $v = $PackageName->make($ThatsOnHold);
     isa_ok $v, 'ARRAY';
     ok scalar @$v, 'entries = '.scalar @$v;

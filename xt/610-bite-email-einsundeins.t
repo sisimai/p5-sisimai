@@ -10,6 +10,7 @@ my $enginetest = Sisimai::Bite::Email::Code->maketest;
 my $isexpected = [
     { 'n' => '01001', 'r' => qr/undefined/ },
     { 'n' => '01002', 'r' => qr/undefined/ },
+    { 'n' => '01003', 'r' => qr/mesgtoobig/ },
 ];
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

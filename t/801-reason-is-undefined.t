@@ -7,6 +7,7 @@ my $PackageName = 'Sisimai';
 my $UndefinedES = './set-of-emails/to-be-debugged-because/reason-is-undefined';
 
 MAKE_TEST: {
+    plan 'skip_all', sprintf("%s does not exist", $UndefinedES) unless -d $UndefinedES;
     my $v = $PackageName->make($UndefinedES);
     isa_ok $v, 'ARRAY';
     ok scalar @$v, 'entries = '.scalar @$v;
