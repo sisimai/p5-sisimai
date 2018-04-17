@@ -15,6 +15,8 @@ v4.22.5p1
   - #274 Fix many spelling errors in some Pods. Thanks to @guimard.
   - #275 Remove sample email files listed in sisimai/set-of-emails#6 to clarify
     copyrights for libsisimai-perl package on Debian. Thanks to @guimard.
+  - The value of "softbounce" in the parsed results is always "1" when a reason
+    is "undefined" or "onhold".
 
 v4.22.5
 --------------------------------------------------------------------------------
