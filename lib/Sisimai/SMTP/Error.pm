@@ -85,17 +85,9 @@ sub soft_or_hard {
         $softorhard = '';
 
     } elsif( $argv1 eq 'onhold' || $argv1 eq 'undefined' ) {
-        # Check with the value of D.S.N. in $argv2
-        $getchecked = $class->is_permanent($argv2);
+        # It should be "soft" when a reason is "onhold" or "undefined"
+        $softorhard = 'soft';
 
-        if( defined $getchecked ) {
-            # The value is 0 or 1
-            $softorhard = $getchecked == 1 ? 'hard' : 'soft';
-
-        } else {
-            # The value is not defined (returned undef)
-            $softorhard = '';
-        }
     } elsif( $argv1 eq 'notaccept' ) {
         # NotAccept: 5xx => hard bounce, 4xx => soft bounce
         if( length $argv2 ) {
