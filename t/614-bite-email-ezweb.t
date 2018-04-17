@@ -8,7 +8,7 @@ my $enginename = 'EZweb';
 my $enginetest = Sisimai::Bite::Email::Code->maketest;
 my $isexpected = [
     { 'n' => '01', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
-    { 'n' => '02', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/(?:suspend|undefined)/, 'b' => qr/\d\z/ },
+    { 'n' => '02', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/suspend/,       'b' => qr/\A1\z/ },
     { 'n' => '03', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/suspend/,       'b' => qr/\A1\z/ },
     { 'n' => '04', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
     { 'n' => '05', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
