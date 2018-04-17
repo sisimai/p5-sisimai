@@ -18,10 +18,10 @@ MAKE_TEST: {
         'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
         'norelaying', 'rejected', 'securityerror',
         'spamdetected', 'suspend', 'systemerror', 'systemfull', 'toomanyconn',
+        'undefined', 'onhold',
     ];
     my $hardbounces = ['userunknown', 'hostunknown', 'hasmoved', 'notaccept'];
     my $isntbounces = ['delivered', 'feedback', 'vacation'];
-    my $dependondsn = ['undefined', 'onhold'];
 
     my $isnterrors = [
         'smtp; 2.1.5 250 OK',
