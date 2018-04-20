@@ -9,9 +9,9 @@ my $StartingOf = {
     'message' => ['Content-Type: message/delivery-status'],
     'rfc822'  => ['Content-Type: message/rfc822'],
 };
-my $ReFailures = {
-    'hostunknown' => qr/Host or domain name not found/,
-    'notaccept'   => qr/type=MX: Malformed or unexpected name server reply/,
+my $MessagesOf = {
+    'hostunknown' => ['Host or domain name not found'],
+    'notaccept'   => ['type=MX: Malformed or unexpected name server reply'],
 };
 
 # X-AOL-IP: 192.0.2.135
@@ -175,9 +175,9 @@ sub scan {
         $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

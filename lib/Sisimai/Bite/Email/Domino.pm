@@ -9,17 +9,14 @@ my $StartingOf = {
     'message' => ['Your message'],
     'rfc822'  => ['Content-Type: message/delivery-status'],
 };
-my $ReFailures = {
-    'userunknown' => qr{(?>
-         not[ ]listed[ ]in[ ](?:
-             Domino[ ]Directory
-            |public[ ]Name[ ][&][ ]Address[ ]Book
-            )
-        |Domino[ ]ディレクトリには見つかりません
-        )
-    }x,
-    'filtered'    => qr/Cannot route mail to user/,
-    'systemerror' => qr/Several matches found in Domino Directory/x,
+my $MessagesOf = {
+    'userunknown' => [
+        'not listed in Domino Directory',
+        'not listed in public Name & Address Book',
+        'Domino ディレクトリには見つかりません',
+    ],
+    'filtered'    => ['Cannot route mail to user'],
+    'systemerror' => ['Several matches found in Domino Directory'],
 };
 
 sub description { 'IBM Domino Server' }
@@ -139,9 +136,9 @@ sub scan {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
 
-        for my $r ( keys %$ReFailures ) {
+        for my $r ( keys %$MessagesOf ) {
             # Check each regular expression of Domino error messages
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             my $pseudostatus = Sisimai::SMTP::Status->code($r, 0);
             $e->{'status'} = $pseudostatus if length $pseudostatus;
