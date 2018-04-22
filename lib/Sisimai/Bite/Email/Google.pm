@@ -18,18 +18,16 @@ my $MarkingsOf = {
     }x,
 };
 
-my $ReFailures = {
-    'expired' => qr{(?:
-         DNS[ ]Error:[ ]Could[ ]not[ ]contact[ ]DNS[ ]servers
-        |Delivery[ ]to[ ]the[ ]following[ ]recipient[ ]has[ ]been[ ]delayed
-        |The[ ]recipient[ ]server[ ]did[ ]not[ ]accept[ ]our[ ]requests[ ]to[ ]connect
-        )
-    }x,
-    'hostunknown' => qr{DNS[ ]Error:[ ](?:
-         Domain[ ]name[ ]not[ ]found
-        |DNS[ ]server[ ]returned[ ]answer[ ]with[ ]no[ ]data
-        )
-    }x,
+my $MessagesOf = {
+    'expired' => [
+        'DNS Error: Could not contact DNS servers',
+        'Delivery to the following recipient has been delayed',
+        'The recipient server did not accept our requests to connect',
+    ],
+    'hostunknown' => [
+        'DNS Error: Domain name not found',
+        'DNS Error: DNS server returned answer with no data',
+    ],
 };
 my $StateTable = {
     # Technical details of permanent failure: 
@@ -282,9 +280,9 @@ sub scan {
 
         } else {
             # No state code
-            SESSION: for my $r ( keys %$ReFailures ) {
+            SESSION: for my $r ( keys %$MessagesOf ) {
                 # Verify each regular expression of session errors
-                next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+                next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
                 $e->{'reason'} = $r;
                 last;
             }

@@ -7,7 +7,7 @@ use warnings;
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = { 'message' => ['This report relates to a message you sent with the following header fields:'] };
 my $MarkingsOf = { 'rfc822'  => qr!\A(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)! };
-my $ReFailures = { 'hostunknown' => qr|Illegal host/domain name found| };
+my $MessagesOf = { 'hostunknown' => ['Illegal host/domain name found'] };
 
 sub description { 'Oracle Communications Messaging Server' }
 sub scan {
@@ -173,9 +173,9 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

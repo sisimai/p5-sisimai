@@ -10,13 +10,12 @@ my $StartingOf = {
     'message' => ['------- Failure Reasons '],
     'rfc822'  => ['------- Returned Message '],
 };
-my $ReFailures = {
-    'userunknown' => qr{(?:
-         User[ ]not[ ]listed[ ]in[ ]public[ ]Name[ ][&][ ]Address[ ]Book
-        |ディレクトリのリストにありません
-        )
-    }x,
-    'networkerror' => qr/Message has exceeded maximum hop count/,
+my $MessagesOf = {
+    'userunknown' => [
+        'User not listed in public Name & Address Book',
+        'ディレクトリのリストにありません',
+    ],
+    'networkerror' => ['Message has exceeded maximum hop count'],
 };
 
 sub description { 'Lotus Notes' }
@@ -150,9 +149,9 @@ sub scan {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
 
-        for my $r ( keys %$ReFailures ) {
+        for my $r ( keys %$MessagesOf ) {
             # Check each regular expression of Notes error messages
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
 
             my $pseudostatus = Sisimai::SMTP::Status->code($r);

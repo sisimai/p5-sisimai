@@ -13,10 +13,10 @@ my $MarkingsOf = {
         )
     /x,
 };
-my $ReFailures = {
-    'mailboxfull' => qr/As their mailbox is full/,
-    'norelaying'  => qr/Due to the following SMTP relay error/,
-    'hostunknown' => qr/As the remote domain doesnt exist/,
+my $MessagesOf = {
+    'mailboxfull' => ['As their mailbox is full'],
+    'norelaying'  => ['Due to the following SMTP relay error'],
+    'hostunknown' => ['As the remote domain doesnt exist'],
 };
 
 sub description { 'au by KDDI: http://www.au.kddi.com' }
@@ -133,9 +133,9 @@ sub scan {
 
             } else {
                 # SMTP command is not RCPT
-                SESSION: for my $r ( keys %$ReFailures ) {
+                SESSION: for my $r ( keys %$MessagesOf ) {
                     # Verify each regular expression of session errors
-                    next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
                     $e->{'reason'} = $r;
                     last;
                 }

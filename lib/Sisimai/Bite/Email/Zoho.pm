@@ -9,7 +9,7 @@ my $StartingOf = {
     'message' => ['This message was created automatically by mail delivery'],
     'rfc822'  => ['from mail.zoho.com by mx.zohomail.com'],
 };
-my $ReFailures = { 'expired' => qr/Host not reachable/ };
+my $MessagesOf = { 'expired' => ['Host not reachable'] };
 
 # X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
 # X-Zoho-Virus-Status: 2
@@ -137,9 +137,9 @@ sub scan {
         $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

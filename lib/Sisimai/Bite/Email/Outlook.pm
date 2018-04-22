@@ -9,9 +9,9 @@ my $StartingOf = {
     'message' => ['This is an automatically generated Delivery Status Notification'],
     'rfc822'  => ['Content-Type: message/rfc822'],
 };
-my $ReFailures = {
-    'hostunknown' => qr/The mail could not be delivered to the recipient because the domain is not reachable/,
-    'userunknown' => qr/Requested action not taken: mailbox unavailable/,
+my $MessagesOf = {
+    'hostunknown' => ['The mail could not be delivered to the recipient because the domain is not reachable'],
+    'userunknown' => ['Requested action not taken: mailbox unavailable'],
 };
 
 # X-Message-Delivery: Vj0xLjE7RD0wO0dEPTA7U0NMPTk7bD0xO3VzPTE=
@@ -178,9 +178,9 @@ sub scan {
             }
         }
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
         }
