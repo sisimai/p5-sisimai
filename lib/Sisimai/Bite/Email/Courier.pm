@@ -12,16 +12,14 @@ my $StartingOf = {
     'rfc822'  => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],
 };
 
-my $ReFailures = {
+my $MessagesOf = {
     # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
-    'hostunknown' => qr/\ANo such domain[.]\z/,
+    'hostunknown' => ['No such domain.'],
     # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
     # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
-    'systemerror' => qr/\AThis domain's DNS violates RFC 1035[.]\z/,
-};
-my $ReDelaying = {
+    'systemerror' => ["This domain's DNS violates RFC 1035."],
     # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
-    'networkerror' => qr/\ADNS lookup failed[.]\z/,
+    'networkerror'=> ['DNS lookup failed.'],
 };
 
 sub description { 'Courier MTA' }
@@ -213,20 +211,11 @@ sub scan {
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        HARD_E: for my $r ( keys %$ReFailures ) {
+        for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
-        }
-
-        unless( $e->{'reason'} ) {
-            for my $r ( keys %$ReDelaying ) {
-                # Verify each regular expression of session errors
-                next unless $e->{'diagnosis'} =~ $ReDelaying->{ $r };
-                $e->{'reason'} = $r;
-                last;
-            }
         }
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';

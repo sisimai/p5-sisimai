@@ -9,7 +9,7 @@ my $StartingOf = {
     'message' => ['This message was created automatically by mail delivery software'],
     'rfc822'  => ['--- The header of the original message is following'],
 };
-my $ReFailures = { 'expired' => qr/delivery retry timeout exceeded/ };
+my $MessagesOf = { 'expired' => ['delivery retry timeout exceeded'] };
 
 # Envelope-To: <kijitora@mail.example.com>
 # X-GMX-Antispam: 0 (Mail was not recognized as spam); Detail=V3;
@@ -141,9 +141,9 @@ sub scan {
         $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

@@ -10,12 +10,12 @@ my $StartingOf = {
     'message' => ['This message could not be delivered.'],
     'rfc822'  => ['content-type: text/rfc822-headers'],
 };
-my $ReFailures = {
+my $MessagesOf = {
     # The followings are error messages in Rule sets/*/Actions/Template
-    'filtered'     => qr/Mailbox does not exist/,
-    'mesgtoobig'   => qr/Message too large/,
-    'mailboxfull'  => qr/Mailbox full/,
-    'contenterror' => qr/Message content rejected/,
+    'filtered'     => ['Mailbox does not exist'],
+    'mesgtoobig'   => ['Message too large'],
+    'mailboxfull'  => ['Mailbox full'],
+    'contenterror' => ['Message content rejected'],
 };
 
 # X-SES-Outgoing: 2015.10.01-54.240.27.7
@@ -190,9 +190,9 @@ sub scan {
             $e->{'status'} = $pseudostatus if length $pseudostatus;
         }
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

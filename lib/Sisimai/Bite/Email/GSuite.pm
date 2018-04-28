@@ -11,10 +11,10 @@ my $MarkingsOf = {
     'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
 };
-my $ErrorMayBe = {
-    'userunknown'  => qr/because the address couldn't be found/,
-    'notaccept'    => qr/Null MX/,
-    'networkerror' => qr/DNS type .+ lookup of .+ responded with code NXDOMAIN/
+my $MessagesOf = {
+    'userunknown'  => ["because the address couldn't be found"],
+    'notaccept'    => ['Null MX'],
+    'networkerror' => [' responded with code NXDOMAIN'],
 };
 
 sub headerlist  { return ['X-Gm-Message-State'] }
@@ -247,9 +247,9 @@ sub scan {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;
 
-        for my $q ( keys %$ErrorMayBe ) {
+        for my $q ( keys %$MessagesOf ) {
             # Guess an reason of the bounce
-            next unless $e->{'diagnosis'} =~ $ErrorMayBe->{ $q };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $q } };
             $e->{'reason'} = $q;
             last;
         }

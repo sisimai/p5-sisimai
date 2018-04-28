@@ -10,9 +10,9 @@ my $StartingOf = {
     'rfc822'  => ['Content-Type: message/rfc822'],
     'error'   => ['   ----- Non-delivered information -----'],
 };
-my $ReFailures = {
-    'filtered'    => qr/Mail Delivery Failed[.]+ User unknown/,
-    'mailboxfull' => qr/The number of messages in recipient's mailbox exceeded the local limit[.]/,
+my $MessagesOf = {
+    'filtered'    => ['Mail Delivery Failed... User unknown'],
+    'mailboxfull' => ["The number of messages in recipient's mailbox exceeded the local limit."],
 };
 
 sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
@@ -121,9 +121,9 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

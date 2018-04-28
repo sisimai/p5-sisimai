@@ -51,7 +51,7 @@ sub scan {
 
     my $StartingOf = {};    # (Ref->Hash) Delimiter strings
     my $MarkingsOf = {};    # (Ref->Hash) Delimiter patterns
-    my $ReFailures = {};    # (Ref->Hash) Error message patterns
+    my $MessagesOf = {};    # (Ref->Hash) Error message patterns
     my $boundary00 = '';    # (String) Boundary string
     my $v = undef;
 
@@ -61,9 +61,9 @@ sub scan {
             'message' => qr/\AError:[ \t]/,
             'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/,
         };
-        $ReFailures = {
+        $MessagesOf = {
             # The attempted recipient address does not exist.
-            'userunknown' => qr/550 [-] Requested action not taken: no such user here/,
+            'userunknown' => ['550 - Requested action not taken: no such user here'],
         };
 
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
@@ -140,7 +140,7 @@ sub scan {
         # vzwpix.com
         $StartingOf = { 'message' => ['Message could not be delivered to mobile'] };
         $MarkingsOf = { 'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/ };
-        $ReFailures = { 'userunknown' => qr/No valid recipients for this MM/ };
+        $MessagesOf = { 'userunknown' => ['No valid recipients for this MM'] };
 
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
         if( length $boundary00 ) {
@@ -229,9 +229,9 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

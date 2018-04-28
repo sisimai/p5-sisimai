@@ -15,25 +15,31 @@ my $ReCommands = [
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
 ];
-my $ReFailures = {
-    'expired'     => qr/(?:retry timeout exceeded|No action is required on your part)/,
-    'userunknown' => qr/user not found/,
-    'hostunknown' => qr{(?>
-         all[ ](?:
-             host[ ]address[ ]lookups[ ]failed[ ]permanently
-            |relevant[ ]MX[ ]records[ ]point[ ]to[ ]non[-]existent[ ]hosts
-            )
-        |Unrouteable[ ]address
-        )
-    }x,
-    'mailboxfull' => qr/(?:mailbox is full:?|error: quota exceed)/,
-    'notaccept'   => qr{(?:
-         an[ ]MX[ ]or[ ]SRV[ ]record[ ]indicated[ ]no[ ]SMTP[ ]service
-        |no[ ]host[ ]found[ ]for[ ]existing[ ]SMTP[ ]connection
-        )
-    }x,
-    'systemerror' => qr/(?:delivery to (?:file|pipe) forbidden|local delivery failed)/,
-    'contenterror'=> qr/Too many ["]Received["] headers /,
+my $MessagesOf = {
+    'expired'     => [
+        'retry timeout exceeded',
+        'No action is required on your part',
+    ],
+    'userunknown' => ['user not found'],
+    'hostunknown' => [
+        'all host address lookups failed permanently',
+        'all relevant MX records point to non-existent hosts',
+        'Unrouteable address',
+    ],
+    'mailboxfull' => [
+        'mailbox is full',
+        'error: quota exceed',
+    ],
+    'notaccept'   => [
+        'an MX or SRV record indicated no SMTP service',
+        'no host found for existing SMTP connection',
+    ],
+    'systemerror' => [
+        'delivery to file forbidden',
+        'delivery to pipe forbidden',
+        'local delivery failed',
+    ],
+    'contenterror'=> ['Too many "Received" headers '],
 };
 
 sub headerlist  { return ['X-Failed-Recipients'] }
@@ -227,9 +233,9 @@ sub scan {
                     $e->{'reason'} = 'blocked';
 
                 } else {
-                    SESSION: for my $r ( keys %$ReFailures ) {
+                    SESSION: for my $r ( keys %$MessagesOf ) {
                         # Verify each regular expression of session errors
-                        next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+                        next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
                         $e->{'reason'} = $r;
                         last;
                     }
