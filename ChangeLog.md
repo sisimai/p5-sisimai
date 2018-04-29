@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.5p1
+v4.22.5p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -17,6 +17,7 @@ v4.22.5p1
     copyrights for libsisimai-perl package on Debian. Thanks to @guimard.
   - The value of "softbounce" in the parsed results is always "1" when a reason
     is "undefined" or "onhold".
+  - #278 Less regular expression in each class of Sisimai::Bite::Email.
 
 v4.22.5
 --------------------------------------------------------------------------------
