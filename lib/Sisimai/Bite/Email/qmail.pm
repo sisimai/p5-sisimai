@@ -60,8 +60,8 @@ my $FailOnLDAP = {
     'userunknown' => ['Sorry, no mailbox here by that name'],           # 5.1.1
     'exceedlimit' => ['The message exeeded the maximum size the user accepts'], # 5.2.3
     'systemerror' => [
-        'Automatic homedir creator crashed',    # 4.3.0
-        'Illegal value in LDAP attribute',      # 5.3.5
+        'Automatic homedir creator crashed',                # 4.3.0
+        'Illegal value in LDAP attribute',                  # 5.3.5
         'LDAP attribute is not given but mandatory',        # 5.3.5
         'Timeout while performing search on LDAP server',   # 4.4.3
         'Too many results returned but needs to be unique', # 5.3.5
