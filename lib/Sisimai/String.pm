@@ -21,7 +21,7 @@ sub token {
     # @return   [String]        Message token(MD5 hex digest) or empty string 
     #                           if the any argument is missing
     # @see       http://en.wikipedia.org/wiki/ASCII
-    # @see       http://search.cpan.org/~gaas/Digest-MD5-2.39/MD5.pm
+    # @see       https://metacpan.org/pod/Digest::MD5
     my $class = shift || return '';
     my $addr1 = shift || return '';
     my $addr2 = shift || return '';
