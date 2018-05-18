@@ -277,6 +277,7 @@ of dump() and make() method like following command:
 
 Beginning from v4.19.0, `hook` argument is available to callback user defined
 method like the following codes:
+
     my $cmethod = sub {
         my $argv = shift;
         my $data = {
