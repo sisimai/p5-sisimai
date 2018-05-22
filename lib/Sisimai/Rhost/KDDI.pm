@@ -14,7 +14,6 @@ sub get {
     # @return   [String]                The bounce reason au.com and ezweb.ne.jp
     my $class = shift;
     my $argvs = shift // return undef;
-
     return undef unless ref $argvs eq 'Sisimai::Data';
 
     my $statusmesg = $argvs->diagnosticcode;
