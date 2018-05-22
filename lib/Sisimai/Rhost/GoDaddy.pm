@@ -84,7 +84,7 @@ Sisimai::Rhost::GoDaddy - Detect the bounce reason returned from GoDaddy.
 
 Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
 object as an argument of get() method when the value of C<rhost> of the object
-is "aspmx.l.google.com". This class is called only Sisimai::Data class.
+end with "secureserver.net". This class is called only Sisimai::Data class.
 
 =head1 CLASS METHODS
 

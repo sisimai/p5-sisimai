@@ -67,7 +67,8 @@ La Poste.
 
 Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
 object as an argument of get() method when the value of C<rhost> of the object
-is "aspmx.l.google.com". This class is called only Sisimai::Data class.
+end with "laposte.net" or "orange.fr".
+This class is called only Sisimai::Data class.
 
 =head1 CLASS METHODS
 
