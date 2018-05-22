@@ -87,7 +87,6 @@ sub new {
         reason lhost rhost smtpcommand feedbacktype action softbounce replycode
     |);
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
-    $thing->{ $_ } =~ s/[.]\z//g for ('rhost', 'lhost');
     $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find($argvs->{'diagnosticcode'});
 
     return bless($thing, __PACKAGE__);
@@ -248,6 +247,7 @@ sub make {
 
                 # Check space character in each value and get the first element
                 $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if rindex($p->{ $v }, ' ') > -1;
+                $p->{ $v } =~ s/[.]\z//;    # Remove "." at the end of the value
             }
 
             # Subject: header of the original message
