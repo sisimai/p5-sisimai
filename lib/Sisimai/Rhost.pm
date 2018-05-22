@@ -8,6 +8,7 @@ my $RhostClass = {
     qr/[.](?:prod|protection)[.]outlook[.]com\z/     => 'ExchangeOnline',
     qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/ => 'GoDaddy',
     qr/\b(?:laposte[.]net|orange[.]fr)\z/            => 'FrancePTT',
+    qr/[.](?:ezweb[.]ne[.]jp|au[.]com)\z/            => 'KDDI',
 };
 
 sub list {
@@ -44,7 +45,6 @@ sub get {
     my $argvs = shift // return undef;
 
     return undef unless ref $argvs eq 'Sisimai::Data';
-    return $argvs->reason if length $argvs->reason;
 
     my $reasontext = '';
     my $remotehost = lc $argvs->rhost;
