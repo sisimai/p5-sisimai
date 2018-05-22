@@ -87,6 +87,7 @@ sub new {
         reason lhost rhost smtpcommand feedbacktype action softbounce replycode
     |);
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
+    $thing->{ $_ } =~ s/[.]\z//g for ('rhost', 'lhost');
     $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find($argvs->{'diagnosticcode'});
 
     return bless($thing, __PACKAGE__);
