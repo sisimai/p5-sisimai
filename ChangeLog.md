@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.5p2
+v4.22.5p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -19,6 +19,8 @@ v4.22.5p2
     is "undefined" or "onhold".
   - #278 Less regular expression in each class of Sisimai::Bite::Email.
   - #279 Cool logo for "set-of-emails". Thanks to @batarian71.
+  - #281 Implement Sisimai::Rhost::KDDI for detecting a bounce reason of au via
+    msmx.au.com or lsean.ezweb.ne.jp. Thanks to @kokubumotohiro.
 
 v4.22.5
 --------------------------------------------------------------------------------
