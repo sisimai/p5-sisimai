@@ -142,9 +142,9 @@ sub scan {
             next unless length $e;
 
             # kijitora@example.com<mailto:kijitora@example.com>
-            # The email address wasn=92t found at the destination domain. It might be mis=
-            # spelled or it might not exist any longer. Try retyping the address and rese=
-            # nding the message.
+            # The email address wasn't found at the destination domain. It might
+            # be misspelled or it might not exist any longer. Try retyping the
+            # address and resending the message.
             $v = $dscontents->[-1];
 
             if( $e =~ /\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ) {
