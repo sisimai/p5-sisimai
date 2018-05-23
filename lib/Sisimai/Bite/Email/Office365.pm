@@ -43,6 +43,9 @@ my $StatusList = {
     qr/\A5[.]7[.]6[1-4]\d\z/ => 'blocked',
     qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
 };
+my $ReCommands = {
+    'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<].+[@].+[>]/,
+};
 
 sub headerlist  { 
     # X-MS-Exchange-Message-Is-Ndr:
@@ -231,6 +234,14 @@ sub scan {
             my $r = Sisimai::SMTP::Status->find($e->{'diagnosis'});
             $e->{'status'} = $r if length $r;
         }
+
+        for my $p ( keys %$ReCommands ) {
+            # Try to match with regular expressions defined in ReCommands
+            next unless $e->{'diagnosis'} =~ $ReCommands->{ $p };
+            $e->{'command'} = $p;
+            last;
+        }
+
         next unless $e->{'status'};
 
         # Find the error code from $StatusList
