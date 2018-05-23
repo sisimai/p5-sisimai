@@ -116,6 +116,9 @@ sub scan {
                             # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
                             $v->{'diagnosis'} = $e;
                         }
+                    } else {
+                        # Error message which does not start with 'Remote host said:'
+                        $v->{'diagnosis'} .= ' '.$e;
                     }
                 }
             }
@@ -128,6 +131,7 @@ sub scan {
         $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
+        $e->{'command'} ||=  'RCPT' if $e->{'diagnosis'} =~ /[<].+[@].+[>]/;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
