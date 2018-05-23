@@ -4,8 +4,8 @@ use strict;
 use warnings;
 use version;
 
-our $VERSION = version->declare('v4.22.5');
-our $PATCHLV = 2;
+our $VERSION = version->declare('v4.22.6');
+our $PATCHLV = 0;
 sub version { return $VERSION.($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
 sub libname { 'Sisimai'      }

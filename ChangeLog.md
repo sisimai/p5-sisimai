@@ -3,10 +3,10 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.5p3
+v4.22.6
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Wed, 23 May 2018 20:00:00 +0900 (JST)"
+- version: "4.22.6"
 - changes:
   - #271 Most `Module::Load::load` have been replaced with `require`.
   - #272 Fix bug in Sisimai::MIME->qprintd().
@@ -21,6 +21,9 @@ v4.22.5p3
   - #279 Cool logo for "set-of-emails". Thanks to @batarian71.
   - #281 Implement Sisimai::Rhost::KDDI for detecting a bounce reason of au via
     msmx.au.com or lsean.ezweb.ne.jp. Thanks to @kokubumotohiro.
+  - #282 Update sample emails and codes for getting error messages in a bounced
+    email on Oath(Yahoo!).
+  - Add many sample emails for "notaccept" and "rejected".
 
 v4.22.5
 --------------------------------------------------------------------------------

@@ -3,6 +3,28 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.6
+--------------------------------------------------------------------------------
+- release: "Wed, 23 May 2018 20:00:00 +0900 (JST)"
+- version: "4.22.6"
+- changes:
+  - #271 Most `Module::Load::load` have been replaced with `require`.
+  - #272 Fix bug in Sisimai::MIME->qprintd().
+  - #273 Error message patterns in Sisimai::Reason::Filtered have been replaced
+    with fixed strings.
+  - #274 Fix many spelling errors in some Pods. Thanks to @guimard.
+  - #275 Remove sample email files listed in sisimai/set-of-emails#6 to clarify
+    copyrights for libsisimai-perl package on Debian. Thanks to @guimard.
+  - The value of "softbounce" in the parsed results is always "1" when a reason
+    is "undefined" or "onhold".
+  - #278 Less regular expression in each class of Sisimai::Bite::Email.
+  - #279 Cool logo for "set-of-emails". Thanks to @batarian71.
+  - #281 Implement Sisimai::Rhost::KDDI for detecting a bounce reason of au via
+    msmx.au.com or lsean.ezweb.ne.jp. Thanks to @kokubumotohiro.
+  - #282 Update sample emails and codes for getting error messages in a bounced
+    email on Oath(Yahoo!).
+  - Add many sample emails for "notaccept" and "rejected".
+
 v4.22.5
 --------------------------------------------------------------------------------
 - release: "Fri, 30 Mar 2018 12:29:16 +0900 (JST)"
