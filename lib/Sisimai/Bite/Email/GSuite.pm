@@ -12,7 +12,7 @@ my $MarkingsOf = {
     'rfc822'  => qr{\AContent-Type:[ ]*(?:message/rfc822|text/rfc822-headers)\z},
 };
 my $MessagesOf = {
-    'userunknown'  => ["because the address couldn't be found"],
+    'userunknown'  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
     'notaccept'    => ['Null MX'],
     'networkerror' => [' responded with code NXDOMAIN'],
 };
