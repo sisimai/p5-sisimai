@@ -20,11 +20,13 @@ my $MarkingsOf = {
 my $StatusList = {
     # https://support.office.com/en-us/article/Email-non-delivery-reports-in-Office-365-51daa6b9-2e35-49c4-a0c9-df85bf8533c3
     qr/\A4[.]4[.]7\z/        => 'expired',
+    qr/\A4[.]4[.]312\z/      => 'networkerror',
     qr/\A4[.]7[.]26\z/       => 'securityerror',
     qr/\A4[.]7[.][56]\d\d\z/ => 'blocked',
     qr/\A4[.]7[.]8[5-9]\d\z/ => 'blocked',
     qr/\A5[.]4[.]1\z/        => 'norelaying',
     qr/\A5[.]4[.]6\z/        => 'networkerror',
+    qr/\A5[.]4[.]312\z/      => 'networkerror',
     qr/\A5[.]6[.]11\z/       => 'contenterror',
     qr/\A5[.]7[.]1\z/        => 'rejected',
     qr/\A5[.]7[.]1[23]\z/    => 'rejected',
