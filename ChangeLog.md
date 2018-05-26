@@ -3,6 +3,13 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.6p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Register D.S.N. "4.4.312" and "5.4.312" on Office 365 as "networkerror".
+
 v4.22.6
 --------------------------------------------------------------------------------
 - release: "Wed, 23 May 2018 20:00:00 +0900 (JST)"
