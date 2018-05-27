@@ -247,8 +247,8 @@ and Sisimai. More information about differences are available at
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | Included      | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A[1]      |
-| Analytical precision ratio(2000 emails)[2]     | 0.49          | 1.00        |
-| The speed of parsing email(1000 emails)        | 4.24s         | 1.95s       |
+| Analytical precision ratio(2000 emails)[2]     | 0.58          | 1.00        |
+| The speed of parsing email(1000 emails)        | 4.24s         | 1.70s[3]    |
 | The number of detectable bounce reasons        | 19            | 29          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | Unable        | OK          |
@@ -264,6 +264,7 @@ and Sisimai. More information about differences are available at
 
 1. Implement yourself with using DBI or any O/R Mapper you like
 2. See [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-Sisimai/blob/master/ANALYTICAL-PRECISION)
+3. Xeon E5-2640 2.5GHz x 2 cores | 5000 bogomips | 1GB RAM | Perl 5.24.1
 
 Other specification of Sisimai
 -------------------------------------------------------------------------------
