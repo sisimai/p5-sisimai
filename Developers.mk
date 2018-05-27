@@ -14,25 +14,24 @@ MKDIR := mkdir -p
 LS    := ls -1
 CP    := cp
 
-BH_LATESTVER := 2.7.13p3
+THELASTBHVER := 2.7.13p3
 BOUNCEHAMMER := /usr/local/bouncehammer
 MBOXPARSERV0 := $(BOUNCEHAMMER)/bin/mailboxparser -T
 MBOXPARSERV6 := $(BOUNCEHAMMER)/bin/mailboxparser -Tvvvvvv
 PRECISIONTAB := ANALYTICAL-PRECISION
-PARSERLOGDIR := var/log
+PARSERLOGDIR := tmp/parser-logs
 MAILCLASSDIR := lib/$(NAME)/Bite/Email
 JSONCLASSDIR := lib/$(NAME)/Bite/JSON
 MTARELATIVES := ARF RFC3464 RFC3834
 
-BENCHMARKDIR := tmp/benchmark
-BENCHMARKSET := tmp/sample
-SPEEDTESTDIR := tmp/emails-for-speed-test
+PRECISIONDIR := tmp/emails-for-precision
+COMPARINGDIR := tmp/emails-for-comparing
 SAMPLEPREFIX := eml
 
 PARSERSCRIPT := $(PERL) sbin/emparser --delivered
 RELEASEVERMP := $(PERL) -MSisimai
 DEVELOPVERMP := $(PERL) -I./lib -MSisimai
-HOWMANYMAILS := $(DEVELOPVERMP) -lE 'print scalar @{ Sisimai->make(shift, delivered => 1) }' $(SPEEDTESTDIR)
+HOWMANYMAILS := $(DEVELOPVERMP) -lE 'print scalar @{ Sisimai->make(shift, delivered => 1) }' $(COMPARINGDIR)
 
 SET_OF_EMAIL := set-of-emails
 PRIVATEMAILS := $(SET_OF_EMAIL)/private
@@ -42,7 +41,9 @@ MACFORMATSET := $(SET_OF_EMAIL)/maildir/mac
 
 INDEX_LENGTH := 24
 DESCR_LENGTH := 50
-BH_CAN_PARSE := Courier Exim OpenSMTPD Postfix qmail Sendmail EZweb KDDI Facebook Google Verizon
+BH_CAN_PARSE := AmazonSES AmazonWorkMail Aol Bigfoot Biglobe Courier EZweb Exim \
+				Facebook GSuite Google KDDI MessageLabs MessagingServer Office365 \
+				Postfix SendGrid Sendmail Verizon X5 Yandex qmail
 
 # -----------------------------------------------------------------------------
 .PHONY: clean
@@ -74,8 +75,8 @@ private-sample:
 		break; \
 	done
 
-precision-table:
-	@ printf " %s\n" 'bounceHammer $(BH_LATESTVER)'
+precision-table: emails-for-precision
+	@ printf " %s\n" 'bounceHammer $(THELASTBHVER)'
 	@ printf " %s\n" 'MTA MODULE NAME          CAN PARSE   RATIO   NOTES'
 	@ printf "%s\n" '--------------------------------------------------------------------------------'
 	@ for v in `$(LS) ./$(MAILCLASSDIR)/*.pm | grep -v 'UserDefined'`; do \
@@ -88,8 +89,8 @@ precision-table:
 			l=`expr $$l + 1` ;\
 		done ;\
 		printf "%s" ' ' ;\
-		n0=`$(PARSERSCRIPT) --count-only $(BENCHMARKSET)/email-$$d` ;\
-		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/email-$$d 2>&1 | grep 'debug0:' \
+		n0=`$(PARSERSCRIPT) --count-only $(PRECISIONDIR)/email-$$d` ;\
+		r0=`$(MBOXPARSERV6) $(PRECISIONDIR)/email-$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
 		if [ $$rn -lt $$n0 ]; then \
@@ -110,8 +111,8 @@ precision-table:
 			l=`expr $$l + 1` ;\
 		done ;\
 		printf "%s" ' ' ;\
-		n0=`$(PARSERSCRIPT) --count-only $(BENCHMARKSET)/email-$$d` ;\
-		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/email-$$d 2>&1 | grep 'debug0:' \
+		n0=`$(PARSERSCRIPT) --count-only $(PRECISIONDIR)/email-$$d` ;\
+		r0=`$(MBOXPARSERV6) $(PRECISIONDIR)/email-$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
 		if [ $$rn -lt $$n0 ]; then \
@@ -132,8 +133,8 @@ precision-table:
 			l=`expr $$l + 1` ;\
 		done ;\
 		printf "%s" ' ' ;\
-		n0=`$(PARSERSCRIPT) --count-only $(BENCHMARKSET)/$$d` ;\
-		r0=`$(MBOXPARSERV6) $(BENCHMARKSET)/$$d 2>&1 | grep 'debug0:' \
+		n0=`$(PARSERSCRIPT) --count-only $(PRECISIONDIR)/$$d` ;\
+		r0=`$(MBOXPARSERV6) $(PRECISIONDIR)/$$d 2>&1 | grep 'debug0:' \
 			| sed 's/^.*debug0:/0 /g' | cut -d' ' -f9,10` ;\
 		rn="`echo $$r0 | cut -d/ -f1`" ;\
 		if [ $$rn -lt $$n0 ]; then \
@@ -146,7 +147,7 @@ precision-table:
 	done
 	@ printf "%s\n" '--------------------------------------------------------------------------------'
 
-update-analytical-precision-table: sample
+update-analytical-precision-table: emails-for-precision
 	$(CP) /dev/null $(PRECISIONTAB)
 	$(MAKE) -f Developers.mk precision-table 2> /dev/null >> $(PRECISIONTAB)
 	grep '^[A-Z]' ./$(PRECISIONTAB) | tr '/' ' ' | \
@@ -158,7 +159,7 @@ update-analytical-precision-table: sample
 				sisimai_cmd | getline sisimai_ver; \
 				close(sisimai_cmd); \
 				printf(" %s %4d/%04d  %0.4f\n %s %s %9s %4d/%04d  %0.4f\n", \
-					"bounceHammer $(BH_LATESTVER)   ", x, y, x / y, \
+					"bounceHammer $(THELASTBHVER)   ", x, y, x / y, \
 					"Sisimai", sisimai_ver, " ", y, y, 1 ); \
 			} ' \
 			>> $(PRECISIONTAB)
@@ -224,28 +225,29 @@ mta-module-table:
 		printf " %s\n" ' |' ;\
 	done
 
-update-sample-emails:
+update-other-format-emails:
 	for v in `find $(PUBLICEMAILS) -name '*-01.eml' -type f`; do \
 		f="`basename $$v`" ;\
 		nkf -Lw $$v > $(DOSFORMATSET)/$$f ;\
 		nkf -Lm $$v > $(MACFORMATSET)/$$f ;\
 	done
 
-sample:
+emails-for-precision:
 	for v in `$(LS) ./$(MAILCLASSDIR)/*.pm | grep -v UserDefined`; do \
 		MTA=`echo $$v | cut -d/ -f6 | tr '[A-Z]' '[a-z]' | sed 's/.pm//g'` ;\
-		$(MKDIR) $(BENCHMARKSET)/email-$$MTA ;\
-		$(CP) $(PUBLICEMAILS)/email-$$MTA-*.eml $(BENCHMARKSET)/email-$$MTA/ ;\
-		$(CP) $(PRIVATEMAILS)/email-$$MTA/* $(BENCHMARKSET)/email-$$MTA/ ;\
+		$(MKDIR) $(PRECISIONDIR)/email-$$MTA ;\
+		$(CP) $(PUBLICEMAILS)/email-$$MTA-*.eml $(PRECISIONDIR)/email-$$MTA/ ;\
+		$(CP) $(PRIVATEMAILS)/email-$$MTA/* $(PRECISIONDIR)/email-$$MTA/ ;\
 	done
 	for v in arf rfc3464 rfc3834; do \
-		$(MKDIR) $(BENCHMARKSET)/$$v ;\
-		$(CP) $(PUBLICEMAILS)/$$v*.eml $(BENCHMARKSET)/$$v/ ;\
-		$(CP) $(PRIVATEMAILS)/$$v/* $(BENCHMARKSET)/$$v/ ;\
+		$(MKDIR) $(PRECISIONDIR)/$$v ;\
+		$(CP) $(PUBLICEMAILS)/$$v*.eml $(PRECISIONDIR)/$$v/ ;\
+		$(CP) $(PRIVATEMAILS)/$$v/* $(PRECISIONDIR)/$$v/ ;\
 	done
 
 parser-log:
 	$(MKDIR) $(PARSERLOGDIR)
+	test -d $(PRIVATEMAILS)
 	for v in `$(LS) $(PRIVATEMAILS)`; do \
 		$(CP) /dev/null $(PARSERLOGDIR)/$$v.log; \
 		for r in `find $(PRIVATEMAILS)/$$v -type f -name '*.eml'`; do \
@@ -256,26 +258,26 @@ parser-log:
 		done; \
 	done
 
-samples-for-speedtest:
-	@ rm -fr ./$(SPEEDTESTDIR)
-	@ $(MKDIR) $(SPEEDTESTDIR)
+emails-for-comparing:
+	@ rm -fr ./$(COMPARINGDIR)
+	@ $(MKDIR) $(COMPARINGDIR)
 	@ for v in $(BH_CAN_PARSE); do \
-		$(CP) $(PUBLICEMAILS)/email-`echo $$v | tr '[A-Z]' '[a-z]'`-*.eml $(SPEEDTESTDIR)/; \
-		test -d $(PRIVATEEMAILS) && $(CP) $(PRIVATEMAILS)/email-`echo $$v | tr '[A-Z]' '[a-z]'`/*.eml $(SPEEDTESTDIR)/; \
+		$(CP) $(PUBLICEMAILS)/email-`echo $$v | tr '[A-Z]' '[a-z]'`-*.eml $(COMPARINGDIR)/; \
+		test -d $(PRIVATEEMAILS) && $(CP) $(PRIVATEMAILS)/email-`echo $$v | tr '[A-Z]' '[a-z]'`/*.eml $(COMPARINGDIR)/; \
 	done
 
-velocity-measurement: samples-for-speedtest
+comparison: emails-for-comparing
 	@ echo -------------------------------------------------------------------
-	@ echo `$(HOWMANYMAILS)` emails in $(SPEEDTESTDIR)
+	@ echo `$(HOWMANYMAILS)` emails in $(COMPARINGDIR)
 	@ echo -n 'Calculating the velocity of parsing 1000 mails: multiply by '
 	@ echo "scale=6; 1000 / `$(HOWMANYMAILS)`" | bc
 	@ echo -------------------------------------------------------------------
 	@ uptime
 	@ echo -------------------------------------------------------------------
 	@ if [ -x "$(BOUNCEHAMMER)/bin/mailboxparser" ]; then \
-		echo bounceHammer $(BH_LATESTVER); \
+		echo bounceHammer $(THELASTBHVER); \
 		n=1; while [ $$n -le 5 ]; do \
-			/usr/bin/time $(MBOXPARSERV0) -Fjson $(SPEEDTESTDIR) > /dev/null ;\
+			/usr/bin/time $(MBOXPARSERV0) -Fjson $(COMPARINGDIR) > /dev/null ;\
 			sleep 1; \
 			n=`expr $$n + 1`; \
 		done; \
@@ -283,28 +285,24 @@ velocity-measurement: samples-for-speedtest
 	fi
 	@ echo 'Sisimai' `$(RELEASEVERMP) -le 'print Sisimai->version'` $(RELEASEVERMP)
 	@ n=1; while [ $$n -le 5 ]; do \
-		/usr/bin/time $(RELEASEVERMP) -lE 'Sisimai->make(shift, "deliverd" => 1)' $(SPEEDTESTDIR) > /dev/null ;\
+		/usr/bin/time $(RELEASEVERMP) -lE 'Sisimai->make(shift, "deliverd" => 1)' $(COMPARINGDIR) > /dev/null ;\
 		sleep 1; \
 		n=`expr $$n + 1`; \
 	done
 	@ echo -------------------------------------------------------------------
 	@ echo 'Sisimai' `$(DEVELOPVERMP) -le 'print Sisimai->version'` $(DEVELOPVERMP)
 	@ n=1; while [ $$n -le 5 ]; do \
-		/usr/bin/time $(DEVELOPVERMP) -lE 'Sisimai->make(shift, "deliverd" => 1)' $(SPEEDTESTDIR) > /dev/null ;\
+		/usr/bin/time $(DEVELOPVERMP) -lE 'Sisimai->make(shift, "deliverd" => 1)' $(COMPARINGDIR) > /dev/null ;\
 		sleep 1; \
 		n=`expr $$n + 1`; \
 	done
 	@ echo -------------------------------------------------------------------
 
-benchmark-mbox: sample
-	$(MKDIR) -p $(BENCHMARKDIR)
-	$(CP) `find $(BENCHMARKSET) -type f` $(BENCHMARKDIR)/
-
-header-content-list: sample
+header-content-list: emails-for-precision
 	/bin/cp /dev/null ./subject-list
 	/bin/cp /dev/null ./senders-list
-	for v in `ls -1 $(BENCHMARKSET) | grep -v rfc | grep -v arf`; do \
-		for w in `find $(BENCHMARKSET)/$$v -type f`; do \
+	for v in `ls -1 $(PRECISIONDIR) | grep -v rfc | grep -v arf`; do \
+		for w in `find $(PRECISIONDIR)/$$v -type f`; do \
 			grep '^Subject:' $$w | head -1 | sed -e "s/^Subject:/[$$v]/g" >> ./subject-list; \
 			grep '^From: ' $$w | head -1 | sed -e "s/^From:/[$$v]/g" >> ./senders-list; \
 		done; \
@@ -316,7 +314,7 @@ header-content-list: sample
 clean:
 	$(RM) -r cover_db
 	$(RM) -r ./build
-	$(RM) -r ./$(BENCHMARKSET)
-	$(RM) -r ./$(BENCHMARKDIR)
+	$(RM) -r ./$(PRECISIONDIR)
+	$(RM) -r ./$(COMPARINGDIR)
 	$(RM) -f tmp/subject-list tmp/senders-list
 
