@@ -32,6 +32,7 @@ sub match {
         |sorry,[ ]you[ ]don'?t[ ]authenticate[ ]or[ ]the[ ]domain[ ]isn'?t[ ]in[ ]
                 my[ ]list[ ]of[ ]allowed[ ]rcpthosts
         |TLS[ ]required[ ]but[ ]not[ ]supported # SendGrid:the recipient mailserver does not support TLS or have a valid certificate
+        |unauthenticated[ ]senders[ ]not[ ]allowed
         |User[ ].+[ ]is[ ]not[ ]authorized[ ]to[ ]perform[ ]ses:SendRawEmail[ ]on[ ]resource
         |you[ ]are[ ]not[ ]authorized[ ]to[ ]send[ ]mail,[ ]authentication[ ]is[ ]required
         |verification[ ]failure
