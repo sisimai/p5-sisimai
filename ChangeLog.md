@@ -9,6 +9,7 @@ v4.22.6p1
 - version: ""
 - changes:
   - Register D.S.N. "4.4.312" and "5.4.312" on Office 365 as "networkerror".
+  - Fix error message pattern in Sisimai::Reason::SecurityError.
 
 v4.22.6
 --------------------------------------------------------------------------------
