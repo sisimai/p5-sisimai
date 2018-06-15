@@ -63,7 +63,7 @@ sub scan {
 
     # Message-Id: <E1P1YNN-0003AD-Ga@*.mail.ru>
     return undef unless lc($mhead->{'from'}) =~ /[<]?mailer-daemon[@].*mail[.]ru[>]?/;
-    return undef unless substr($mhead->{'message-id'}, -9, 9) eq '.mail.ru>';
+    return undef unless $mhead->{'message-id'} =~ /[.](?:mail[.]ru|smailru[.]net)[>]\z/;
     return undef unless $mhead->{'subject'} =~ qr{(?:
          Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
         |Warning:[ ]message[ ].+[ ]delayed[ ]+
