@@ -44,6 +44,11 @@ DESCR_LENGTH := 50
 BH_CAN_PARSE := AmazonSES AmazonWorkMail Aol Bigfoot Biglobe Courier EZweb Exim \
 				Facebook GSuite Google KDDI MessageLabs MessagingServer Office365 \
 				Postfix SendGrid Sendmail Verizon X5 Yandex qmail
+REASON_TABLE := Blocked ContentError Delivered ExceedLimit Expired Feedback Filtered \
+				HasMoved HostUnknown MailboxFull MailerError MesgTooBig NetworkError \
+				NoRelaying NotAccept OnHold PolicyViolation Rejected SecurityError \
+				SpamDetected Suspend SyntaxError SystemError SystemFull TooManyConn	\
+				Undefined UserUnknown Vacation VirusDetected
 
 # -----------------------------------------------------------------------------
 .PHONY: clean
@@ -297,6 +302,26 @@ comparison: emails-for-comparing
 		n=`expr $$n + 1`; \
 	done
 	@ echo -------------------------------------------------------------------
+
+reason-coverage:
+	@ for v in `ls -1 $(MAILCLASSDIR) | grep -v UserDefined | sort | tr '[A-Z]' '[a-z]' | sed -e 's|.pm||g' -e 's|^|bite-email-|g'`; do \
+		for e in `echo $(REASON_TABLE) | tr '[A-Z]' '[a-z]'`; do \
+			printf "%d," `grep $$e t/*-$$v.t | wc -l`; \
+		done; \
+		echo; \
+	done
+	@ for v in `ls -1 $(JSONCLASSDIR) | sort | tr '[A-Z]' '[a-z]' | sed -e 's|.pm||g' -e 's|^|bite-json-|g'`; do \
+		for e in `echo $(REASON_TABLE) | tr '[A-Z]' '[a-z]'`; do \
+			printf "%d," `grep $$e t/*-$$v.t | wc -l`; \
+		done; \
+		echo; \
+	done
+	@ for v in rfc3464 rfc3834 arf mda; do \
+		for e in `echo $(REASON_TABLE) | tr '[A-Z]' '[a-z]'`; do \
+			printf "%d," `grep $$e t/*-$$v.t | wc -l`; \
+		done; \
+		echo; \
+	done
 
 header-content-list: emails-for-precision
 	/bin/cp /dev/null ./subject-list
