@@ -18,6 +18,8 @@ my $isexpected = [
     { 'n' => '09', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/notaccept/, 'b' => qr/\A0\z/ },
     { 'n' => '10', 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
     { 'n' => '11', 's' => qr/\A5[.]1[.]8\z/, 'r' => qr/rejected/,    'b' => qr/\A1\z/ },
+    { 'n' => '12', 's' => qr/\A5[.]1[.]8\z/, 'r' => qr/rejected/,    'b' => qr/\A1\z/ },
+    { 'n' => '13', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,   'b' => qr/\A1\z/ },
 ];
 
 $enginetest->($enginename, $isexpected);
