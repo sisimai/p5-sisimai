@@ -21,6 +21,7 @@ sub match {
         |banned[ ]sending[ ]ip  # Office365
         |blacklisted[ ]by
         |(?:blocked|refused)[ ]-[ ]see[ ]https?://
+        |blocked[ ]using[ ]
         |can[']t[ ]determine[ ]purported[ ]responsible[ ]address
         |cannot[ ](?:
              find[ ]your[ ]hostname
