@@ -210,10 +210,9 @@ Sisimai - Mail Analyzing Interface for bounce mails.
 
 =head1 DESCRIPTION
 
-Sisimai is the system formerly known as C<bounceHammer> 4, is a Perl module for
-analyzing bounce mails and generate structured data in a JSON format (YAML is 
-also available if "YAML" module is installed on your system) from parsed bounce
-messages. C<Sisimai> is a coined word: Sisi (the number 4 is pronounced "Si" in
+C<Sisimai> is a Mail Analyzing Interface for email bounce, is a Perl module to
+parse RFC5322 bounce mails and generating structured data as JSON from parsed
+results. C<Sisimai> is a coined word: Sisi (the number 4 is pronounced "Si" in
 Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
 =head1 BASIC USAGE

@@ -19,6 +19,14 @@ my $isexpected = [
     { 'n' => '11', 's' => qr/\A\z/,          'r' => qr/feedback/,      'b' => qr/\A-1\z/ },
     { 'n' => '12', 's' => qr/\A2[.]6[.]0\z/, 'r' => qr/delivered/,     'b' => qr/\A-1\z/ },
     { 'n' => '13', 's' => qr/\A2[.]6[.]0\z/, 'r' => qr/delivered/,     'b' => qr/\A-1\z/ },
+    { 'n' => '14', 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/blocked/,       'b' => qr/\A1\z/ },
+    { 'n' => '15', 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/blocked/,       'b' => qr/\A1\z/ },
+    { 'n' => '16', 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/blocked/,       'b' => qr/\A1\z/ },
+    { 'n' => '17', 's' => qr/\A4[.]4[.]7\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
+    { 'n' => '18', 's' => qr/\A5[.]4[.]4\z/, 'r' => qr/hostunknown/,   'b' => qr/\A0\z/ },
+    { 'n' => '19', 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/suspend/,       'b' => qr/\A1\z/ },
+    { 'n' => '20', 's' => qr/\A5[.]2[.]1\z/, 'r' => qr/suspend/,       'b' => qr/\A1\z/ },
+    { 'n' => '21', 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/norelaying/,    'b' => qr/\A1\z/ },
 ];
 
 $enginetest->($enginename, $isexpected);
