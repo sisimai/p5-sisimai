@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.6p2
+v4.22.6p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -12,6 +12,7 @@ v4.22.6p2
   - Fix error message pattern in Sisimai::Reason::SecurityError.
   - Fix code to get the original Message-Id field which continued to the next
     line. Thanks to Andreas Mock.
+  - Update error message pattern in Sisimai::Reason::SpamDetected.
   - Add some sample emails in set-of-emails/.
 
 v4.22.6
