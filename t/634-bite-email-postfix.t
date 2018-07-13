@@ -33,6 +33,13 @@ my $isexpected = [
     { 'n' => '35', 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/filtered/,   'b' => qr/\A1\z/ },
     { 'n' => '36', 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/userunknown/,'b' => qr/\A0\z/ },
     { 'n' => '37', 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/expired/,    'b' => qr/\A1\z/ },
+    { 'n' => '38', 's' => qr/\A4[.]0[.]0\z/,    'r' => qr/blocked/,    'b' => qr/\A1\z/ },
+    { 'n' => '39', 's' => qr/\A5[.]6[.]0\z/,    'r' => qr/spamdetected/, 'b' => qr/\A1\z/ },
+    { 'n' => '40', 's' => qr/\A4[.]0[.]0\z/,    'r' => qr/systemerror/,'b' => qr/\A1\z/ },
+    { 'n' => '41', 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/policyviolation/, 'b' => qr/\A1\z/ },
+    { 'n' => '42', 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/policyviolation/, 'b' => qr/\A1\z/ },
+    { 'n' => '43', 's' => qr/\A4[.]3[.]0\z/,    'r' => qr/mailererror/,'b' => qr/\A1\z/ },
+    { 'n' => '44', 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/norelaying/, 'b' => qr/\A1\z/ },
 ];
 
 $enginetest->($enginename, $isexpected);
