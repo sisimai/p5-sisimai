@@ -3,6 +3,20 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.7
+--------------------------------------------------------------------------------
+- release: "Mon, 16 Jul 2018 13:02:54 +0900 (JST)"
+- version: "4.22.7"
+- changes:
+  - Register D.S.N. "4.4.312" and "5.4.312" on Office 365 as "networkerror".
+  - Fix error message pattern in Sisimai::Reason::SecurityError.
+  - Fix code to get the original Message-Id field which continued to the next
+    line. Thanks to Andreas Mock.
+  - Update error message pattern in Sisimai::Reason::SpamDetected.
+  - Add 15 sample emails for Postfix, Outlook and others.
+  - Add 3 sample emails for Sisimai::RFC3464.
+  - Add 2 sample vacation emails for Sisimai::RFC3834.
+
 v4.22.6
 --------------------------------------------------------------------------------
 - release: "Wed, 23 May 2018 20:00:00 +0900 (JST)"
