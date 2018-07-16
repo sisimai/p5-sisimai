@@ -59,5 +59,5 @@ loc:
 
 clean:
 	find . -type f -name 'nytprof*' -ctime +1 -delete
-	rm -r $(SPEEDTESTDIR)
+	rm -f -r $(SPEEDTESTDIR)
 
