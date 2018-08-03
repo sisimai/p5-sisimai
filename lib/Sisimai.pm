@@ -44,6 +44,11 @@ sub make {
         } elsif( $rtype eq 'ARRAY' || $rtype eq 'HASH' ) {
             # The argument may be a decoded JSON object
             $input = 'json';
+
+        } elsif( $rtype eq 'SCALAR' ) {
+            # The argument is a scalar reference to mailbox or json text
+            my $first = substr($$argv0, 0, 1) || ''; 
+            $input = ($first eq '[' || $first eq '{') ? 'json' : 'email';
         }
     }
 

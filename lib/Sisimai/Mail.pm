@@ -9,7 +9,7 @@ my $roaccessors = [
     'type',     # [String] Data type: mailbox, maildir, or stdin
 ];
 my $rwaccessors = [
-    'mail',     # [Sisimai::Mail::Mbox, Sisimai::Mail::Maildir] Object
+    'mail',     # [Sisimai::Mail::Mbox, Sisimai::Mail::Maildir, Sisimai::Mail::Memory] Object
 ];
 Class::Accessor::Lite->mk_accessors(@$rwaccessors);
 Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
@@ -30,6 +30,7 @@ sub new {
         $klass  = __PACKAGE__.'::Mbox';
         $loads .= 'Mbox.pm';
         $param->{'type'} = 'mailbox';
+        $param->{'path'} = $argv1;
 
     } elsif( -d $argv1 ) {
         # The agument is not a file, it is a Maildir/
@@ -44,6 +45,13 @@ sub new {
             $klass  = __PACKAGE__.'::STDIN';
             $loads .= 'STDIN.pm';
             $param->{'type'} = 'stdin';
+
+        } elsif( ref($argv1) eq 'SCALAR' ) {
+            # Read from a variable as a scalar reference
+            $klass  = __PACKAGE__.'::Memory';
+            $loads .= 'Memory.pm';
+            $param->{'type'} = 'memory';
+            $param->{'path'} = 'MEMORY';
         }
     }
     return undef unless $klass;
@@ -99,11 +107,21 @@ Sisimai::Mail - Handler of Mbox/Maildir for reading each mail.
     }
     $maildir->close;
 
+    my $mailtxt = 'From Mailer-Daemon ...';
+    my $mailobj = Sisimai::Mail->new(\$mailtxt);
+    while( my $r = $mailobj->read ) {
+        print $r;
+    }
 
 =head1 DESCRIPTION
 
-Sisimai::Mail is a handler of UNIX mbox or Maildir for reading each mail. It is
-wrapper class of Sisimai::Mail::Mbox and Sisimai::Mail::Maildir classes.
+Sisimai::Mail is a handler for reading a UNIX mbox, a Maildir, a bounce object
+as a JSON string, or any email message input from STDIN, variable.
+It is a wrapper class of the following child classes:
+    * Sisimai::Mail::Mbox
+    * Sisimai::Mail::Maildir
+    * Sisimai::Mail::STDIN
+    * Sisimai::Mail::Memory
 
 =head1 CLASS METHODS
 
@@ -113,6 +131,8 @@ C<new()> is a constructor of Sisimai::Mail
 
     my $mailbox = Sisimai::Mail->new('/var/mail/root');
     my $maildir = Sisimai::Mail->new('/home/nyaa/Maildir/cur');
+    my $mailtxt = 'From Mailer-Daemon ...';
+    my $mailobj = Sisimai::Mail->new(\$mailtxt);
 
 =head1 INSTANCE METHODS
 
