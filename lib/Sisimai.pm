@@ -229,6 +229,7 @@ messages like following.
 
     use Sisimai;
     my $v = Sisimai->make('/path/to/mbox'); # or Path to Maildir/
+    #  $v = Sisimai->make(\'From Mailer-Daemon ...'); 
 
     if( defined $v ) {
         for my $e ( @$v ) {
