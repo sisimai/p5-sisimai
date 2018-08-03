@@ -16,7 +16,8 @@ my $MethodNames = {
 my $SampleEmail = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
     'maildir' => './set-of-emails/maildir/bsd',
-    'jsonobj' => './set-of-emails/jsonobj/json-amazonses-01.json'
+    'jsonobj' => './set-of-emails/jsonobj/json-amazonses-01.json',
+    'memory'  => './set-of-emails/mailbox/mbox-1',
 };
 my $IsNotBounce = {
     'maildir' => './set-of-emails/maildir/not',
@@ -47,7 +48,7 @@ MAKE_TEST: {
     eval { $PackageName->make('/dev/null', 'field' => 22) };
     like $@, qr/error: "field" accepts an array reference only/;
 
-    for my $e ( 'mailbox', 'maildir', 'jsonobj' ) {
+    for my $e ( 'mailbox', 'maildir', 'jsonobj', 'memory' ) {
         MAKE: {
             my $parseddata = undef;
             my $damnedhash = undef;
@@ -65,6 +66,17 @@ MAKE_TEST: {
 
                 $parseddata = $PackageName->make($jsonobject);
                 $parseddata = $PackageName->make([$jsonobject]);
+
+            } elsif( $e eq 'memory' ) {
+                my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
+                my $entiremail = undef;
+
+                { local $/ = undef; $entiremail = <$filehandle>; }
+                ok ref $filehandle;
+                ok length $entiremail;
+                $filehandle->close;
+
+                $parseddata = $PackageName->make(\$entiremail);
 
             } else {
                 $parseddata = $PackageName->make($SampleEmail->{ $e });
