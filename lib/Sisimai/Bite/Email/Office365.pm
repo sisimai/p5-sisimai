@@ -48,7 +48,7 @@ my $StatusList = {
     qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
 };
 my $ReCommands = {
-    'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<].+[@].+[>]/,
+    'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<]?.+[@].+[.][a-zA-Z]+[>]?/,
 };
 
 sub headerlist  { 
