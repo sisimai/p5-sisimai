@@ -3,6 +3,14 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.22.7p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: "4.22.7p1"
+- changes:
+  - Update regular expression in Sisimai::Bite::Email::Office365 for detecting
+    failure on SMTP RCPT.
+
 v4.22.7
 --------------------------------------------------------------------------------
 - release: "Mon, 16 Jul 2018 13:02:54 +0900 (JST)"
