@@ -9,7 +9,7 @@ my $roaccessors = [
     'type',     # [String] Data type: mailbox, maildir, or stdin
 ];
 my $rwaccessors = [
-    'mail',     # [Sisimai::Mail::Mbox, Sisimai::Mail::Maildir, Sisimai::Mail::Memory] Object
+    'mail',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
 ];
 Class::Accessor::Lite->mk_accessors(@$rwaccessors);
 Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
