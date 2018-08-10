@@ -6,7 +6,6 @@ use Class::Accessor::Lite;
 
 my $roaccessors = [
     'size',     # [Integer] data size
-    'type',     # [String] Data type(mbox, json)
 ];
 my $rwaccessors = [
     'data',     # [Array] entire bounce mail message
@@ -19,28 +18,24 @@ sub new {
     # Constructor of Sisimai::Mail::Memory
     # @param    [String] argv1          Path to mbox
     # @return   [Sisimai::Mail::Memory] Object or Undef if the argument is not 
-    #                                   a file or does not exist
+    #                                   valid email text
     my $class = shift;
     my $argv1 = shift // return undef;
     my $first = substr($$argv1, 0, 5) || '';
     my $param = { 
         'data'   => [],
         'size'   => length $$argv1 || 0,
-        'type'   => '',
         'offset' => 0,
     };
 
     return undef unless $param->{'size'};
     if( $first eq 'From ') {
         # UNIX mbox
-        $param->{'type'} = 'mbox';
         $param->{'data'} = [split(/^From /m, $$argv1)];
         shift @{ $param->{'data'} };
         map { $_ = 'From '.$_ } @{ $param->{'data'} };
 
     } else {
-        $first = substr($first, 0, 1);
-        $param->{'type'} = ($first eq '{' || $first eq '[') ? 'json' : 'mail';
         $param->{'data'} = [$$argv1];
     }
     return bless($param, __PACKAGE__);
