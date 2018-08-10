@@ -37,18 +37,14 @@ sub make {
     unless( $input ) {
         # "input" did not specified, try to detect automatically.
         my $rtype = ref $argv0;
-        if( length $rtype == 0 ) {
-            # The argument may be a path to email
+        if( length $rtype == 0 || $rtype eq 'SCALAR' ) {
+            # The argument may be a path to email OR a scalar reference to an
+            # email text
             $input = 'email';
 
         } elsif( $rtype eq 'ARRAY' || $rtype eq 'HASH' ) {
             # The argument may be a decoded JSON object
             $input = 'json';
-
-        } elsif( $rtype eq 'SCALAR' ) {
-            # The argument is a scalar reference to mailbox or json text
-            my $first = substr($$argv0, 0, 1) || ''; 
-            $input = ($first eq '[' || $first eq '{') ? 'json' : 'email';
         }
     }
 
