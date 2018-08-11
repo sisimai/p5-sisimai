@@ -9,7 +9,7 @@ my $roaccessors = [
 ];
 my $rwaccessors = [
     'data',     # [Array] entire bounce mail message
-    'offset',   # [Integer]  Offset position for seeking
+    'offset',   # [Integer] Index of "data"
 ];
 Class::Accessor::Lite->mk_accessors(@$rwaccessors);
 Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
