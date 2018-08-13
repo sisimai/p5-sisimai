@@ -18,6 +18,9 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
+    is undef, $PackageName->new();
+    is undef, $PackageName->new(\'');
+
     MAILBOX: {
         my $handler = IO::File->new($SampleEmail->[0], 'r');
         my $mailset = undef;
