@@ -130,7 +130,7 @@ C<file()> returns current file name of the Maildir.
 
     print $maildir->file;
 
-=head2 C<B<files()>>
+=head2 C<B<inodes()>>
 
 C<inodes()> returns i-node list of each email in Maildir.
 

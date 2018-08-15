@@ -68,6 +68,7 @@ sub list {
         Mail.pm
             Mail/Mbox.pm
             Mail/Maildir.pm
+            Mail/Memory.pm
             Mail/STDIN.pm
         Message.pm
             Message/Email.pm

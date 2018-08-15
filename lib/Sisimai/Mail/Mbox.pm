@@ -102,7 +102,7 @@ C<new()> is a constructor of Sisimai::Mail::Mbox
 
 =head1 INSTANCE METHODS
 
-=head2 C<B<base()>>
+=head2 C<B<dir()>>
 
 C<dir()> returns the directory name of mbox
 

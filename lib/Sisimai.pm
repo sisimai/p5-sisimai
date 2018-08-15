@@ -37,8 +37,9 @@ sub make {
     unless( $input ) {
         # "input" did not specified, try to detect automatically.
         my $rtype = ref $argv0;
-        if( length $rtype == 0 ) {
-            # The argument may be a path to email
+        if( length $rtype == 0 || $rtype eq 'SCALAR' ) {
+            # The argument may be a path to email OR a scalar reference to an
+            # email text
             $input = 'email';
 
         } elsif( $rtype eq 'ARRAY' || $rtype eq 'HASH' ) {
@@ -224,6 +225,7 @@ messages like following.
 
     use Sisimai;
     my $v = Sisimai->make('/path/to/mbox'); # or Path to Maildir/
+    #  $v = Sisimai->make(\'From Mailer-Daemon ...'); 
 
     if( defined $v ) {
         for my $e ( @$v ) {

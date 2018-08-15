@@ -91,6 +91,46 @@ MAKE_TEST: {
         is $mailobj->close, 0, 'mailobj->close';
         is $emindex, 0;
     }
+
+    MEMORY: {
+        use IO::File;
+        my $handler = undef;
+        my $mailset = '';
+        my $mailobj = undef;
+        my $emindex = 0;
+
+        MAILBOX: {
+            $handler = IO::File->new($SampleEmail->{'mailbox'}, 'r');
+            { local $/ = undef; $mailset = <$handler>; }
+            $handler->close;
+            $mailobj = $PackageName->new(\$mailset);
+
+            isa_ok $mailobj, $PackageName;
+            can_ok $mailobj, @{ $MethodNames->{'object'} };
+            is $mailobj->path, 'MEMORY', '->path = '.$mailobj->path;
+            is $mailobj->type, 'memory', '->type = memory';
+            isa_ok $mailobj->mail, $PackageName.'::Memory';
+
+            is $mailobj->close, 0, 'mailobj->close';
+            is $emindex, 0;
+        }
+
+        MAILDIR: {
+            $handler = IO::File->new($SampleEmail->{'maildir'}.'/make-test-01.eml', 'r');
+            { local $/ = undef; $mailset = <$handler>; }
+            $handler->close;
+            $mailobj = $PackageName->new(\$mailset);
+
+            isa_ok $mailobj, $PackageName;
+            can_ok $mailobj, @{ $MethodNames->{'object'} };
+            is $mailobj->path, 'MEMORY', '->path = '.$mailobj->path;
+            is $mailobj->type, 'memory', '->type = memory';
+            isa_ok $mailobj->mail, $PackageName.'::Memory';
+
+            is $mailobj->close, 0, 'mailobj->close';
+            is $emindex, 0;
+        }
+    }
 }
 
 done_testing;
