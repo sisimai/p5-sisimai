@@ -118,7 +118,8 @@ Basic usage
 use Sisimai;
 my $v = Sisimai->make('/path/to/mbox'); # or path to Maildir/
 
-# Read bounce messages from variable instead of a path to mailbox
+# Beginning with v4.22.7p2, both make() and dump() method of Sisimai class can
+# read bounce messages from variable instead of a path to mailbox
 use IO::File;
 my $r = '';
 my $f = IO::File->new('/path/to/mbox'); # or path to Maildir/
