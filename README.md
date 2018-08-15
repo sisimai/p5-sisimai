@@ -112,13 +112,20 @@ Usage
 
 Basic usage
 -------------------------------------------------------------------------------
-`Sisimai->make()` method provides feature for getting parsed data as Perl Hash reference
-from bounced email messages like following.
+`Sisimai->make()` method provides feature for getting parsed data as Perl Hash
+reference from bounced email messages like following.
 
 ```perl
 #! /usr/bin/env perl
 use Sisimai;
 my $v = Sisimai->make('/path/to/mbox'); # or path to Maildir/
+
+# Read bounce messages from variable instead of a path to mailbox
+use IO::File;
+my $r = '';
+my $f = IO::File->new('/path/to/mbox'); # or path to Maildir/
+{ local $/ = undef; $r = <$f>; $f->close }
+my $v = Sisimai->make(\$r);
 
 # If you want to get bounce records which reason is "delivered", set "delivered"
 # option to make() method like the following:
@@ -258,7 +265,7 @@ and Sisimai. More information about differences are available at
 | Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 8600 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 235000 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 236000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 

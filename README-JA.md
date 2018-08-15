@@ -118,6 +118,13 @@ Basic usage
 use Sisimai;
 my $v = Sisimai->make('/path/to/mbox'); # or path to Maildir/
 
+# Read bounce messages from variable instead of a path to mailbox
+use IO::File;
+my $r = '';
+my $f = IO::File->new('/path/to/mbox'); # or path to Maildir/
+{ local $/ = undef; $r = <$f>; $f->close }
+my $v = Sisimai->make(\$r);
+
 # If you want to get bounce records which reason is "delivered", set "delivered"
 # option to make() method like the following:
 my $v = Sisimai->make('/path/to/mbox', 'delivered' => 1);
@@ -254,7 +261,7 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 | cpan, cpanm, cpmコマンドでのインストール       | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 8600行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 235000件    |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 236000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
