@@ -76,7 +76,7 @@ sub new {
     };
 
     # Create Sisimai::Time object
-    $thing->{'timestamp'} = localtime Sisimai::Time->new($argvs->{'timestamp'});
+    $thing->{'timestamp'} = gmtime Sisimai::Time->new($argvs->{'timestamp'});
     $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
 
     # Callback method
