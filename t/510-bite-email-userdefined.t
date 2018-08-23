@@ -47,8 +47,8 @@ MAKE_TEST: {
             isa_ok $e->timestamp, 'Sisimai::Time';
             is $e->timestamp->year, 2010, 'timestamp->year = '.$e->timestamp->year;
             is $e->timestamp->month, 'Apr', 'timestamp->month = '.$e->timestamp->month;
-            is $e->timestamp->mday, 29, 'timestamp->mday = '.$e->timestamp->mday;
-            is $e->timestamp->day, 'Thu', 'timestamp->day = '.$e->timestamp->day;
+            like $e->timestamp->mday, qr/(?:29|30)/, 'timestamp->mday = '.$e->timestamp->mday;
+            like $e->timestamp->day, qr/(?:Thu|Fri)/, 'timestamp->day = '.$e->timestamp->day;
 
             isa_ok $e->addresser, 'Sisimai::Address';
             ok length $e->addresser->host, 'addresser->host = '.$e->addresser->host;
