@@ -49,7 +49,7 @@ sub adapt {
         $dscontents = [__PACKAGE__->DELIVERYSTATUS];
         $v = $dscontents->[-1];
 
-        $v->{'date'}      = localtime(Sisimai::Time->new($argvs->{'timestamp'}));
+        $v->{'date'}      = gmtime(Sisimai::Time->new($argvs->{'timestamp'}));
         $v->{'agent'}     = __PACKAGE__->smtpagent;
         $v->{'lhost'}     = $argvs->{'ip'};
         $v->{'status'}    = $argvs->{'status'} || '';
