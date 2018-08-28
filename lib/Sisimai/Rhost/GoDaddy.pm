@@ -43,8 +43,6 @@ sub get {
     # @see      https://www.godaddy.com/help/what-does-my-email-bounceback-mean-3568
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return undef unless ref $argvs eq 'Sisimai::Data';
     return $argvs->reason if length $argvs->reason;
 
     my $statusmesg = $argvs->diagnosticcode;

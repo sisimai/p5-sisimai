@@ -42,9 +42,7 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless ref $argvs eq 'Sisimai::Data';
     my $r = $argvs->reason // '';
-
     if( $r ) {
         # Do not overwrite the reason
         return 0 if( $r eq 'securityerror' || $r eq 'systemerror' || $r eq 'undefined' );

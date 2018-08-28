@@ -43,7 +43,6 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq 'toomanyconn';
     return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'toomanyconn';
     return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);

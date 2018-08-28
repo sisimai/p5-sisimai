@@ -113,8 +113,6 @@ sub get {
     # @see      https://technet.microsoft.com/en-us/library/bb232118
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return undef unless ref $argvs eq 'Sisimai::Data';
     return $argvs->reason if length $argvs->reason;
 
     my $statuscode = $argvs->deliverystatus;

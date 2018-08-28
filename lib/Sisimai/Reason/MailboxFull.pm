@@ -74,7 +74,6 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless ref $argvs eq 'Sisimai::Data';
     return undef unless $argvs->deliverystatus;
     return 1 if $argvs->reason eq 'mailboxfull';
 
