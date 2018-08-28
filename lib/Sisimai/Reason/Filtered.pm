@@ -44,7 +44,6 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq 'filtered';
 
-    require Sisimai::SMTP::Status;
     require Sisimai::Reason::UserUnknown;
     my $commandtxt = $argvs->smtpcommand // '';
     my $diagnostic = lc $argvs->diagnosticcode // '';

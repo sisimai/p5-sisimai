@@ -147,7 +147,6 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq 'userunknown';
 
-    require Sisimai::SMTP::Status;
     my $diagnostic = lc $argvs->diagnosticcode;
     my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
     return 0 if $tempreason eq 'suspend';

@@ -110,7 +110,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});

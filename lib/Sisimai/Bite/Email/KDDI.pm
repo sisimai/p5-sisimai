@@ -45,8 +45,6 @@ sub scan {
     $match ||= 1 if grep { rindex($_, '.au.com (') > -1 } @{ $mhead->{'received'} };
     return undef unless $match;
 
-    require Sisimai::String;
-    require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part

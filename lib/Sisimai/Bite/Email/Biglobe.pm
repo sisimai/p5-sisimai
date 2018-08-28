@@ -36,7 +36,6 @@ sub scan {
     return undef unless $mhead->{'from'} =~ /postmaster[@](?:biglobe|inacatv|tmtv|ttv)[.]ne[.]jp/;
     return undef unless index($mhead->{'subject'}, 'Returned mail:') == 0;
 
-    require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -116,7 +115,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});

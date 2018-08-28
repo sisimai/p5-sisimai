@@ -4,10 +4,6 @@ use strict;
 use warnings;
 use Class::Accessor::Lite;
 use Sisimai::Address;
-use Sisimai::RFC5322;
-use Sisimai::SMTP::Error;
-use Sisimai::SMTP::Reply;
-use Sisimai::SMTP::Status;
 use Sisimai::String;
 use Sisimai::Reason;
 use Sisimai::Rhost;
@@ -106,7 +102,6 @@ sub make {
     return undef unless $argvs->{'data'}->ds;
     return undef unless $argvs->{'data'}->rfc822;
 
-    require Sisimai::SMTP;
     my $delivered1 = $argvs->{'delivered'} // 0;
     my $messageobj = $argvs->{'data'};
     my $mailheader = $argvs->{'data'}->{'header'};

@@ -71,8 +71,6 @@ sub scan {
     }
     return undef if $match < 2;
 
-    require Sisimai::String;
-    require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -85,7 +83,6 @@ sub scan {
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
-        require Sisimai::MIME;
         my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1);
         if( length $b0 ) {
             # Convert to regular expression

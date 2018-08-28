@@ -36,7 +36,6 @@ sub scan {
     return undef unless $mhead->{'return-path'} eq '<apps@sendgrid.net>';
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
 
-    require Sisimai::DateTime;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -170,8 +169,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
-    require Sisimai::SMTP::Status;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         # Get the value of SMTP status code as a pseudo D.S.N.

@@ -131,7 +131,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
         $e->{'diagnosis'} =~ s/\\n/ /g;

@@ -144,7 +144,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         if( $e->{'diagnosis'} =~ $MarkingsOf->{'error'} ) {
             # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##

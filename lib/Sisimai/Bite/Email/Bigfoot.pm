@@ -49,7 +49,6 @@ sub scan {
     my $v = undef;
     my $p = '';
 
-    require Sisimai::Address;
     for my $e ( @hasdivided ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
@@ -170,8 +169,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;

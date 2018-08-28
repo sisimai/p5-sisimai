@@ -147,7 +147,6 @@ sub scan {
         push @$rfc822list, 'Subject: '.$subjecttxt;
     }
 
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);

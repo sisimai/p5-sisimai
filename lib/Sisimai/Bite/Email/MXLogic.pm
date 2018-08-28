@@ -171,7 +171,6 @@ sub scan {
         $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ \t]([^ ]+) /;
     }
 
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'lhost'} ||= $localhost0;

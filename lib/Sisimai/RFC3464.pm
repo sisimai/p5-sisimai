@@ -3,7 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::Bite::Email;
-use Sisimai::RFC5322;
 
 # http://tools.ietf.org/html/rfc3464
 my $Indicators = Sisimai::Bite::Email->INDICATORS;
@@ -51,8 +50,6 @@ sub scan {
     return undef unless ref $mbody eq 'SCALAR';
 
     require Sisimai::MDA;
-    require Sisimai::Address;
-
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $scannedset = Sisimai::MDA->scan($mhead, $mbody);
@@ -431,8 +428,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
-    require Sisimai::SMTP::Status;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;

@@ -157,7 +157,6 @@ sub scan {
         )
     }x;
 
-    require Sisimai::String;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -175,7 +174,6 @@ sub scan {
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
-        require Sisimai::MIME;
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
     }
 
@@ -365,8 +363,6 @@ sub scan {
         $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ \t]([^ ]+) /;
     }
 
-    require Sisimai::SMTP::Reply;
-    require Sisimai::SMTP::Status;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'agent'}   = __PACKAGE__->smtpagent;

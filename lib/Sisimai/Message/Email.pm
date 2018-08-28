@@ -5,9 +5,7 @@ use strict;
 use warnings;
 use Sisimai::ARF;
 use Sisimai::MIME;
-use Sisimai::String;
 use Sisimai::RFC3834;
-use Sisimai::RFC5322;
 use Sisimai::Order::Email;
 
 my $BorderLine = '__MIME_ENCODED_BOUNDARY__';
@@ -510,7 +508,6 @@ sub parse {
         last(SCANNER) if $hasscanned;
 
         # Try to parse the message as auto reply message defined in RFC3834
-        require Sisimai::RFC3834;
         $hasscanned = Sisimai::RFC3834->scan($mailheader, $bodystring);
         last(SCANNER) if $hasscanned;
 

@@ -36,7 +36,6 @@ sub true {
     # Delivery status code points "exceedlimit".
     # Status: 5.2.3
     # Diagnostic-Code: SMTP; 552 5.2.3 Message size exceeds fixed maximum message size
-    require Sisimai::SMTP::Status;
     return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'exceedlimit';
 
     # Check the value of Diagnosic-Code: header with patterns

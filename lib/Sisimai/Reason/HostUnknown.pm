@@ -47,7 +47,6 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq 'hostunknown';
 
-    require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = lc $argvs->diagnosticcode // '';
 

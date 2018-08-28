@@ -45,7 +45,6 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq 'mesgtoobig';
 
-    require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
     my $tempreason = Sisimai::SMTP::Status->name($statuscode);
 

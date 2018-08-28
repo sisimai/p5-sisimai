@@ -184,7 +184,6 @@ sub scan {
         $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ \t]([^ ]+) /;
     }
 
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
             # Copy alternative error message

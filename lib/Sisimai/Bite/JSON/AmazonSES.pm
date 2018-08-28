@@ -170,9 +170,6 @@ sub adapt {
         }
     } elsif( $argvs->{'notificationType'} eq 'Delivery' ) {
         # { "notificationType":"Delivery", "delivery": { ...
-        require Sisimai::SMTP::Status;
-        require Sisimai::SMTP::Reply;
-
         my $o = $argvs->{'delivery'};
         my $r = $o->{'recipients'} || [];
 

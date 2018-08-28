@@ -35,10 +35,6 @@ sub scan {
     }
     return undef if $match < 0;
 
-    require Sisimai::MIME;
-    require Sisimai::String;
-    require Sisimai::Address;
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part

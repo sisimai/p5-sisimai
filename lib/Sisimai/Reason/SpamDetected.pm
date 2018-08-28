@@ -155,8 +155,6 @@ sub true {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return undef unless $argvs->deliverystatus;
     return 1 if $argvs->reason eq 'spamdetected';
-
-    require Sisimai::SMTP::Status;
     return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'spamdetected';
     return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     return 0;

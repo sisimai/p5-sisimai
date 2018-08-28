@@ -49,7 +49,6 @@ sub scan {
     my $v = undef;
     my $p = '';
 
-    require Sisimai::Address;
     for my $e ( @hasdivided ) {
         # Read each line between the start of the message and the start of rfc822 part.
         next unless length $e;
@@ -129,8 +128,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
-    require Sisimai::SMTP::Status;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});

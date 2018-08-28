@@ -131,7 +131,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
     for my $e ( @$dscontents ) {
         if( scalar @{ $mhead->{'received'} } ) {
             # Get localhost and remote host name from Received header.
