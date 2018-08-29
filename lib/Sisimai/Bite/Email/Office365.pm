@@ -231,7 +231,7 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( length($e->{'status'}) == 0 || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
+        if( ! $e->{'status'} || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
             my $r = Sisimai::SMTP::Status->find($e->{'diagnosis'});
             $e->{'status'} = $r if length $r;

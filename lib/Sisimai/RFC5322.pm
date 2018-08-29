@@ -175,7 +175,7 @@ sub received {
             last;
         }
 
-        if( length($hostname) == 0 ) {
+        unless( $hostname ) {
             # 2. Use IP address as a remote host name
             for my $e ( @addrlist ) {
                 # Skip if the address is a private address

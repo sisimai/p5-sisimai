@@ -34,7 +34,7 @@ sub make {
     unless( $input ) {
         # "input" did not specified, try to detect automatically.
         my $rtype = ref $argv0;
-        if( length $rtype == 0 || $rtype eq 'SCALAR' ) {
+        if( ! $rtype || $rtype eq 'SCALAR' ) {
             # The argument may be a path to email OR a scalar reference to an
             # email text
             $input = 'email';

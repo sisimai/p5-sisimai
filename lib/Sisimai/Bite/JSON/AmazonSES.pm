@@ -208,7 +208,7 @@ sub adapt {
         # or "Delivery".
         return undef;
     }
-    return undef if $recipients == 0;
+    return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
         $e->{'agent'} = __PACKAGE__->smtpagent;

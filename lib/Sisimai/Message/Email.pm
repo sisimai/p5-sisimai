@@ -177,7 +177,7 @@ sub divideup {
         } else {
             # The boundary for splitting headers and a body part does not
             # appeare yet.
-            if( length $e == 0 ) {
+            if( not $e ) {
                 # Blank line, it is a boundary of headers and a body part
                 $readcursor |= $Indicators->{'endof'} if $readcursor & $Indicators->{'begin'};
 

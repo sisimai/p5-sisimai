@@ -164,7 +164,7 @@ sub scan {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( length $e->{'diagnosis'} == 0 ) {
+        unless( $e->{'diagnosis'} ) {
             # No message in 'diagnosis'
             if( $e->{'action'} eq 'delayed' ) {
                 # Set pseudo diagnostic code message for delaying

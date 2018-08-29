@@ -250,7 +250,7 @@ sub scan {
         delete $e->{'msexch'};
     }
 
-    if( scalar(@$rfc822list) == 0 ) {
+    unless( @$rfc822list ) {
         # When original message does not included in the bounce message
         push @$rfc822list, 'From: '.$connheader->{'to'};
         push @$rfc822list, 'Date: '.$connheader->{'date'};

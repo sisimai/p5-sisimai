@@ -109,7 +109,7 @@ sub scan {
                     # 550 5.1.1 User unknown
                     $v->{'diagnosis'} = $e;
 
-                } elsif( length $v->{'diagnosis'} && $endoferror == 0 ) {
+                } elsif( length $v->{'diagnosis'} && ! $endoferror ) {
                     # Append error messages
                     $endoferror = 1 if index($e, $StartingOf->{'rcpts'}->[0]) == 0;
                     next if $endoferror;
