@@ -687,7 +687,7 @@ site L<https://libsisimai.org/en/reason/>.
 
 =head2 C<replycode> (I<Integer>)
 
-C<replyacode> is the value of SMTP reply code picked from the error message or 
+C<replycode> is the value of SMTP reply code picked from the error message or
 the value of Diagnostic-Code: field in a bounce message. The range of values is
 only 4xx or 5xx.
 
