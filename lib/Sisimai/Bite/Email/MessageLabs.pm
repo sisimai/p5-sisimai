@@ -125,7 +125,7 @@ sub scan {
 
                 if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                     # Final-Recipient: rfc822; maria@dest.example.net
-                    if( length $v->{'recipient'} ) {
+                    if( $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                         $v = $dscontents->[-1];
@@ -158,13 +158,13 @@ sub scan {
                 # Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
                 if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
                     # Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
-                    next if length $connheader->{'lhost'};
+                    next if $connheader->{'lhost'};
                     $connheader->{'lhost'} = lc $1;
                     $connvalues++;
 
                 } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
                     # Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
-                    next if length $connheader->{'date'};
+                    next if $connheader->{'date'};
                     $connheader->{'date'} = $1;
                     $connvalues++;
                 }

@@ -34,7 +34,7 @@ sub get {
     # @return   [String]                The bounce reason for Orange, La Poste
     my $class = shift;
     my $argvs = shift // return undef;
-    return $argvs->reason if length $argvs->reason;
+    return $argvs->reason if $argvs->reason;
 
     my $statusmesg = $argvs->diagnosticcode;
     my $reasontext = '';

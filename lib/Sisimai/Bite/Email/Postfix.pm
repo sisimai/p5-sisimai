@@ -110,7 +110,7 @@ sub scan {
 
                 if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
                     # Final-Recipient: RFC822; userunknown@example.jp
-                    if( length $v->{'recipient'} ) {
+                    if( $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                         $v = $dscontents->[-1];
@@ -230,7 +230,7 @@ sub scan {
 
     unless( $recipients ) {
         # Fallback: set recipient address from error message
-        if( defined $anotherset->{'recipient'} && length $anotherset->{'recipient'} ) {
+        if( defined $anotherset->{'recipient'} && $anotherset->{'recipient'} ) {
             # Set recipient address
             $dscontents->[-1]->{'recipient'} = $anotherset->{'recipient'};
             $recipients++;
@@ -242,7 +242,7 @@ sub scan {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
-        if( exists $anotherset->{'diagnosis'} && length $anotherset->{'diagnosis'} ) {
+        if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
             if( $e->{'diagnosis'} =~ /\A\d+\z/ ) {

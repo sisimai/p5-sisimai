@@ -110,7 +110,7 @@ sub get {
     # @see      https://support.google.com/a/answer/3726730?hl=en
     my $class = shift;
     my $argvs = shift // return undef;
-    return $argvs->reason if length $argvs->reason;
+    return $argvs->reason if $argvs->reason;
 
     my $reasontext = '';
     my $statuscode = $argvs->deliverystatus;

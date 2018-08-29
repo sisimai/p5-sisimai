@@ -91,7 +91,7 @@ sub scan {
                 # Sent <<< RCPT TO:<kijitora@example.co.jp>
                 # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
                 my $cr = $1;
-                if( length $v->{'recipient'} && $cr ne $v->{'recipient'} ) {
+                if( $v->{'recipient'} && $cr ne $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];

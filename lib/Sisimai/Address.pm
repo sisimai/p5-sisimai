@@ -88,10 +88,10 @@ sub make {
         my $email = __PACKAGE__->expand_verp($argvs->{'address'});
         my $alias = 0;
 
-        unless( length $email ) {
+        unless( $email ) {
             # Is not VERP address, try to expand the address as an alias
             $email = __PACKAGE__->expand_alias($argvs->{'address'});
-            $alias = 1 if length $email;
+            $alias = 1 if $email;
         }
 
         if( $email =~ /\A.+[@].+?\z/ ) {
@@ -173,15 +173,15 @@ sub find {
                     }
                 } else {
                     # "Neko, Nyaan" <neko@nyaan.example.org> OR <"neko,nyaan"@example.org>
-                    length $p ? ($v->{ $p } .= $e) : ($v->{'name'} .= $e);
+                    $p ? ($v->{ $p } .= $e) : ($v->{'name'} .= $e);
                 }
                 next;
             } # End of if(',')
 
             if( $e eq '<' ) {
                 # <: The beginning of an email address or not
-                if( length $v->{'address'} ) {
-                    length $p ? ($v->{ $p } .= $e) : ($v->{'name'} .= $e);
+                if( $v->{'address'} ) {
+                    $p ? ($v->{ $p } .= $e) : ($v->{'name'} .= $e);
 
                 } else {
                     # <neko@nyaan.example.org>
@@ -202,7 +202,7 @@ sub find {
 
                 } else {
                     # a comment block or a display name
-                    length $p ? ($v->{'comment'} .= $e) : ($v->{'name'} .= $e);
+                    $p ? ($v->{'comment'} .= $e) : ($v->{'name'} .= $e);
                 }
                 next;
             } # End of if('>')
@@ -272,7 +272,7 @@ sub find {
 
             if( $e eq '"' ) {
                 # The beginning or the end of a quoted-string
-                if( length $p ) {
+                if( $p ) {
                     # email-address or comment-block
                     $v->{ $p } .= $e;
 
@@ -292,12 +292,12 @@ sub find {
             } # End of if('"')
         } else {
             # The character is not a delimiter
-            length $p ? ($v->{ $p } .= $e) : ($v->{'name'} .= $e);
+            $p ? ($v->{ $p } .= $e) : ($v->{'name'} .= $e);
             next;
         }
     }
 
-    if( length $v->{'address'} ) {
+    if( $v->{'address'} ) {
         # Push the latest values
         push @$readbuffer, $v;
 
@@ -312,7 +312,7 @@ sub find {
             $v->{'address'} = $v->{'name'};
         }
 
-        if( length $v->{'address'} ) {
+        if( $v->{'address'} ) {
             # Remove the comment from the address
             if( $v->{'address'} =~ /(.*)([(].+[)])(.*)/ ) {
                 # (nyaan)nekochan@example.org, nekochan(nyaan)cat@example.org or

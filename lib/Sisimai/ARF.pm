@@ -194,7 +194,7 @@ sub scan {
                 # number of times as appropriate:
                 # Original-Rcpt-To: <user@example.com>
                 # Redacted-Address: localpart@
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -266,7 +266,7 @@ sub scan {
 
     unless( $rfc822part =~ /\bFrom: [^ ]+[@][^ ]+\b/ ) {
         # There is no "From:" header in the original message
-        if( length $commondata->{'from'} ) {
+        if( $commondata->{'from'} ) {
             # Append the value of "Original-Mail-From" value as a sender address.
             $rfc822part .= 'From: '.$commondata->{'from'}."\n";
         }
@@ -294,7 +294,7 @@ sub scan {
 
         unless( $e->{'rhost'} ) {
             # Get the remote IP address from the message body
-            if( length $commondata->{'rhost'} ) {
+            if( $commondata->{'rhost'} ) {
                 # The value of "Reporting-MTA" header
                 $e->{'rhost'} = $commondata->{'rhost'};
 

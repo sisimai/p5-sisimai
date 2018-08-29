@@ -88,7 +88,7 @@ sub scan {
 
             if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
                 # general@example.eu
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -102,7 +102,7 @@ sub scan {
 
             } else {
                 # Get error message and append the error message strings
-                $v->{'diagnosis'} .= ' '.$e if length $v->{'diagnosis'};
+                $v->{'diagnosis'} .= ' '.$e if $v->{'diagnosis'};
             }
         } # End of if: rfc822
     }

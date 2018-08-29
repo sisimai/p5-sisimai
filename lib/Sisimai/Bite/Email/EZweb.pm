@@ -84,10 +84,7 @@ sub scan {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
         my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1);
-        if( length $b0 ) {
-            # Convert to regular expression
-            $MarkingsOf->{'boundary'} = qr/\A\Q$b0\E\z/;
-        }
+        $MarkingsOf->{'boundary'} = qr/\A\Q$b0\E\z/ if $b0; # Convert to regular expression
     }
     my @rxmessages = (); map { push @rxmessages, @{ $ReFailures->{ $_ } } } (keys %$ReFailures);
 
@@ -137,7 +134,7 @@ sub scan {
                 $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
                 $e =~ /\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
 
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -188,12 +185,12 @@ sub scan {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+        if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
             if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__' ) {
                 # Override the value of diagnostic code message
-                $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+                $e->{'diagnosis'} = $e->{'alterrors'} if $e->{'alterrors'};
             }
             delete $e->{'alterrors'};
         }

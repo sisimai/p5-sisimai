@@ -188,8 +188,8 @@ sub divideup {
             }
         }
     }
-    return {} unless length $aftersplit->{'header'};
-    return {} unless length $aftersplit->{'body'};
+    return {} unless $aftersplit->{'header'};
+    return {} unless $aftersplit->{'body'};
 
     $aftersplit->{'from'} ||= 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     return $aftersplit;

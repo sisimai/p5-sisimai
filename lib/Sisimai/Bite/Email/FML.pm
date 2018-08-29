@@ -111,7 +111,7 @@ sub scan {
 
             if( $e =~ /[<]([^ ]+?[@][^ ]+?)[>][.]\z/ ) {
                 # Duplicated Message-ID in <2ndml@example.com>.
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];

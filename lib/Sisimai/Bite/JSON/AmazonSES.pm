@@ -39,8 +39,8 @@ sub scan {
     my $mbody = shift // return undef;
     my $stuff = undef;
 
-    return undef unless defined $mhead->{'x-amz-sns-message-id'};
-    return undef unless length  $mhead->{'x-amz-sns-message-id'};
+    return undef unless exists $mhead->{'x-amz-sns-message-id'};
+    return undef unless $mhead->{'x-amz-sns-message-id'};
 
     my @hasdivided = split("\n", $$mbody);
     my $jsonstring = '';
@@ -120,7 +120,7 @@ sub adapt {
             next unless Sisimai::RFC5322->is_emailaddress($e->{'emailAddress'});
 
             $v = $dscontents->[-1];
-            if( length $v->{'recipient'} ) {
+            if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
@@ -186,7 +186,7 @@ sub adapt {
             next unless Sisimai::RFC5322->is_emailaddress($e);
 
             $v = $dscontents->[-1];
-            if( length $v->{'recipient'} ) {
+            if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];

@@ -138,7 +138,7 @@ sub scan {
 
             if( $e =~ /\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)\z/ ) {
                 #   kijitora@example.jp
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -185,12 +185,12 @@ sub scan {
     }
 
     for my $e ( @$dscontents ) {
-        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+        if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
             if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__' ) {
                 # Override the value of diagnostic code message
-                $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+                $e->{'diagnosis'} = $e->{'alterrors'} if $e->{'alterrors'};
             }
             delete $e->{'alterrors'};
         }

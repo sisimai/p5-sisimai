@@ -82,7 +82,7 @@ sub scan {
 
             if( $e =~ /\AUnable to deliver message to: [<]([^ ]+[@][^ ]+)[>]\z/ ) {
                 # Unable to deliver message to: <kijitora@example.org>
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -99,7 +99,7 @@ sub scan {
                 } else {
                     # Detect error message
                     next unless length $e;
-                    next unless length $v->{'diagnosis'};
+                    next unless $v->{'diagnosis'};
                     next if index($e, '-') == 0;
 
                     # Server mx22.example.org[192.0.2.222] failed with: 550 <kijitora@example.org> No such user here

@@ -63,7 +63,7 @@ sub scan {
         };
 
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
-        if( length $boundary00 ) {
+        if( $boundary00 ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
             $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
@@ -109,7 +109,7 @@ sub scan {
                 $v = $dscontents->[-1];
 
                 if( $e =~ /\A[ \t]+RCPT TO: (.*)\z/ ) {
-                    if( length $v->{'recipient'} ) {
+                    if( $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                         $v = $dscontents->[-1];
@@ -139,7 +139,7 @@ sub scan {
         $MessagesOf = { 'userunknown' => ['No valid recipients for this MM'] };
 
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
-        if( length $boundary00 ) {
+        if( $boundary00 ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
             $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
@@ -185,7 +185,7 @@ sub scan {
                 $v = $dscontents->[-1];
 
                 if( $e =~ /\ATo:[ \t]+(.*)\z/ ) {
-                    if( length $v->{'recipient'} ) {
+                    if( $v->{'recipient'} ) {
                         # There are multiple recipient addresses in the message body.
                         push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                         $v = $dscontents->[-1];

@@ -97,7 +97,7 @@ sub scan {
             $v = $dscontents->[-1];
             if( $e eq 'was not delivered to:' ) {
                 # was not delivered to:
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -138,7 +138,7 @@ sub scan {
             next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
             my $pseudostatus = Sisimai::SMTP::Status->code($r, 0);
-            $e->{'status'} = $pseudostatus if length $pseudostatus;
+            $e->{'status'} = $pseudostatus if $pseudostatus;
             last;
         }
     }

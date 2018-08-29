@@ -233,7 +233,7 @@ sub scan {
                 #     (generated from kijitora@example.jp)
                 my $r = $1;
 
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -270,7 +270,7 @@ sub scan {
                     $v->{'alterrors'} .= $e.' ';
 
                 } else {
-                    if( length $boundary00 ) {
+                    if( $boundary00 ) {
                         # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
                         # Content-type: message/delivery-status
                         # ...
@@ -334,7 +334,7 @@ sub scan {
         for my $q ( @$dscontents ) {
             # Replace the recipient address with the value of "alias"
             next unless $q->{'alias'};
-            if( length($q->{'recipient'}) == 0 || rindex($q->{'recipient'}, '@') == -1 ) {
+            if( ! $q->{'recipient'} || rindex($q->{'recipient'}, '@') == -1 ) {
                 # The value of "recipient" is empty or does not include "@"
                 $q->{'recipient'} = $q->{'alias'};
             }
@@ -393,13 +393,13 @@ sub scan {
             }
         }
 
-        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+        if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
 
             if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__' ) {
                 # Override the value of diagnostic code message
-                $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+                $e->{'diagnosis'} = $e->{'alterrors'} if $e->{'alterrors'};
 
             } else {
                 # Check the both value and try to match 
@@ -485,8 +485,8 @@ sub scan {
 
             FIND_CODE: while(1) {
                 # "Status:" field did not exist in the bounce message
-                last if length $sv;
-                last unless length $rv;
+                last if $sv;
+                last unless $rv;
 
                 # Check SMTP reply code
                 # Generate pseudo DSN code from SMTP reply code
@@ -502,9 +502,9 @@ sub scan {
                 last;
             }
 
-            $s1  = substr($sv, 0, 1) if length $sv;
+            $s1  = substr($sv, 0, 1) if $sv;
             $v1  = $s1 + $r1;
-            $v1 += substr($e->{'status'}, 0, 1) if length $e->{'status'};
+            $v1 += substr($e->{'status'}, 0, 1) if $e->{'status'};
 
             if( $v1 > 0 ) {
                 # Status or SMTP reply code exists

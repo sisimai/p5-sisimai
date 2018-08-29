@@ -156,7 +156,7 @@ sub scan {
 
             if( $e =~ /\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ) {
                 # kijitora@example.com<mailto:kijitora@example.com>
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -195,7 +195,7 @@ sub scan {
 
                     } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
                         # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
-                        next if length $connheader->{'date'};
+                        next if $connheader->{'date'};
                         $connheader->{'date'} = $1;
 
                     } else {
@@ -234,7 +234,7 @@ sub scan {
         if( ! $e->{'status'} || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
             my $r = Sisimai::SMTP::Status->find($e->{'diagnosis'});
-            $e->{'status'} = $r if length $r;
+            $e->{'status'} = $r if $r;
         }
 
         for my $p ( keys %$ReCommands ) {

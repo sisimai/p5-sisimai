@@ -26,7 +26,7 @@ sub match {
     my $rhost = shift // return undef;
     my $host0 = lc $rhost;
     my $match = 0;
-    return $match unless length $rhost;
+    return $match unless $rhost;
 
     for my $e ( keys %$RhostClass ) {
         # Try to match with each key of $RhostClass
@@ -58,7 +58,7 @@ sub get {
         last;
     }
 
-    return undef unless length $rhostclass;
+    return undef unless $rhostclass;
     ($modulepath = $rhostclass) =~ s|::|/|g; 
     require $modulepath.'.pm';
     $reasontext = $rhostclass->get($argvs);

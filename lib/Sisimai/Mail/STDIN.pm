@@ -44,7 +44,7 @@ sub read {
 
         while( my $r = <$readhandle> ) {
             # Read an email from the mailbox file
-            last if( length $readbuffer && substr($r, 0, 5) eq 'From ' );
+            last if( $readbuffer && substr($r, 0, 5) eq 'From ' );
             $readbuffer .= $r;
         }
     };

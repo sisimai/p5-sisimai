@@ -124,7 +124,7 @@ sub scan {
                 my $x = $v->{'recipienet'} || '';
                 my $y = Sisimai::Address->s3s4($1);
 
-                if( length $x && $x ne $y ) {
+                if( $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -392,7 +392,7 @@ sub scan {
                 my $y = Sisimai::Address->s3s4($1);
                 next unless Sisimai::RFC5322->is_emailaddress($y);
 
-                if( length $x && $x ne $y ) {
+                if( $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
                     $b = $dscontents->[-1];
@@ -432,12 +432,12 @@ sub scan {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
-        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+        if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
             if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__') {
                 # Override the value of diagnostic code message
-                $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+                $e->{'diagnosis'} = $e->{'alterrors'} if $e->{'alterrors'};
             }
             delete $e->{'alterrors'};
         }
@@ -447,7 +447,7 @@ sub scan {
             # Make bounce data by the values returned from Sisimai::MDA->scan()
             $e->{'agent'}     = $scannedset->{'mda'} || __PACKAGE__->smtpagent;
             $e->{'reason'}    = $scannedset->{'reason'} || 'undefined';
-            $e->{'diagnosis'} = $scannedset->{'message'} if length $scannedset->{'message'};
+            $e->{'diagnosis'} = $scannedset->{'message'} if $scannedset->{'message'};
             $e->{'command'}   = '';
         } else {
             # Set the value of smtpagent
