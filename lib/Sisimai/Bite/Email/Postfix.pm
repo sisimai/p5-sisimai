@@ -150,7 +150,7 @@ sub scan {
                     $v->{'date'} = $1;
 
                 } else {
-                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.*)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
                         $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
