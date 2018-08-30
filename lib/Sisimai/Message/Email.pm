@@ -5,9 +5,7 @@ use strict;
 use warnings;
 use Sisimai::ARF;
 use Sisimai::MIME;
-use Sisimai::String;
 use Sisimai::RFC3834;
-use Sisimai::RFC5322;
 use Sisimai::Order::Email;
 
 my $BorderLine = '__MIME_ENCODED_BOUNDARY__';
@@ -179,7 +177,7 @@ sub divideup {
         } else {
             # The boundary for splitting headers and a body part does not
             # appeare yet.
-            if( length $e == 0 ) {
+            if( not $e ) {
                 # Blank line, it is a boundary of headers and a body part
                 $readcursor |= $Indicators->{'endof'} if $readcursor & $Indicators->{'begin'};
 
@@ -190,8 +188,8 @@ sub divideup {
             }
         }
     }
-    return {} unless length $aftersplit->{'header'};
-    return {} unless length $aftersplit->{'body'};
+    return {} unless $aftersplit->{'header'};
+    return {} unless $aftersplit->{'body'};
 
     $aftersplit->{'from'} ||= 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     return $aftersplit;
@@ -510,7 +508,6 @@ sub parse {
         last(SCANNER) if $hasscanned;
 
         # Try to parse the message as auto reply message defined in RFC3834
-        require Sisimai::RFC3834;
         $hasscanned = Sisimai::RFC3834->scan($mailheader, $bodystring);
         last(SCANNER) if $hasscanned;
 

@@ -96,7 +96,7 @@ sub scan {
     return undef unless ref($mhead) eq 'HASH';
     return undef unless lc($mhead->{'from'}) =~ /\A(?:mail delivery subsystem|mailer-daemon|postmaster)/;
     return undef unless ref($mbody) eq 'SCALAR';
-    return undef unless length $$mbody;
+    return undef unless $$mbody;
 
     my $agentname0 = '';    # [String] MDA name
     my $reasonname = '';    # [String] Error reason

@@ -3,6 +3,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Class::Accessor::Lite;
+use Sisimai::RFC5322;
+use Sisimai::Address;
+use Sisimai::String;
+use Sisimai::SMTP::Error;
 
 my $rwaccessors = [
     'from',     # [String] UNIX From line
@@ -32,7 +36,7 @@ sub new {
 
     if( $input eq 'email' ) {
         # Sisimai::Message::Email
-        return undef unless length $email;
+        return undef unless $email;
         $child = 'Sisimai::Message::Email';
 
     } elsif( $input eq 'json' ) {

@@ -37,7 +37,6 @@ sub scan {
     my $mbody = shift // return undef;
     return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
 
-    require Sisimai::Address;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -68,7 +67,7 @@ sub scan {
             }
         }
 
-        unless( length $characters ) {
+        unless( $characters ) {
             # Get character set name
             # Content-Type: text/plain; charset=ISO-2022-JP
             $characters = lc $1 if $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/;
@@ -96,7 +95,7 @@ sub scan {
             $v = $dscontents->[-1];
             if( $e =~ /\A[^ ]+[@][^ ]+/ ) {
                 # kijitora@notes.example.jp
-                if( length $v->{'recipient'} ) {
+                if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -111,7 +110,7 @@ sub scan {
                 if( $e =~ /[^\x20-\x7e]/ ) {
                     # Error message is not ISO-8859-1
                     $encodedmsg = $e;
-                    if( length $characters ) {
+                    if( $characters ) {
                         # Try to convert string
                         eval { Encode::from_to($encodedmsg, $characters, 'utf8'); };
                         $encodedmsg = $removedmsg if $@;    # Failed to convert
@@ -142,8 +141,6 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
-    require Sisimai::SMTP::Status;
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
@@ -155,7 +152,7 @@ sub scan {
             $e->{'reason'} = $r;
 
             my $pseudostatus = Sisimai::SMTP::Status->code($r);
-            $e->{'status'} = $pseudostatus if length $pseudostatus;
+            $e->{'status'} = $pseudostatus if $pseudostatus;
             last;
         }
     }

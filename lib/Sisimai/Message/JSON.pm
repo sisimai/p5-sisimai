@@ -4,6 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::Order::JSON;
+use JSON;
 
 my $ToBeLoaded = [];
 my $TryOnFirst = [];

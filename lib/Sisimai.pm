@@ -26,9 +26,6 @@ sub make {
     my $argv0 = shift // return undef;
     die ' ***error: wrong number of arguments' if scalar @_ % 2;
 
-    require Sisimai::Data;
-    require Sisimai::Message;
-
     my $argv1 = { @_ };
     my $input = $argv1->{'input'} || undef;
     my $field = $argv1->{'field'} || [];
@@ -37,7 +34,7 @@ sub make {
     unless( $input ) {
         # "input" did not specified, try to detect automatically.
         my $rtype = ref $argv0;
-        if( length $rtype == 0 || $rtype eq 'SCALAR' ) {
+        if( ! $rtype || $rtype eq 'SCALAR' ) {
             # The argument may be a path to email OR a scalar reference to an
             # email text
             $input = 'email';
@@ -52,6 +49,9 @@ sub make {
     my $delivered1 = { 'delivered' => $argv1->{'delivered'} // 0 };
     my $hookmethod = $argv1->{'hook'} || undef;
     my $bouncedata = [];
+
+    require Sisimai::Data;
+    require Sisimai::Message;
 
     if( $input eq 'email' ) {
         # Path to mailbox or Maildir/, or STDIN: 'input' => 'email'

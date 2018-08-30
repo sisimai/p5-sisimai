@@ -73,9 +73,6 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless ref $argvs eq 'Sisimai::Data';
-    require Sisimai::SMTP::Status;
-
     my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || 'undefined';
     my $diagnostic = lc $argvs->diagnosticcode;
 

@@ -122,7 +122,7 @@ sub to_utf8 {
     my $encodingto = ref $hasguessed ? lc($hasguessed->name) : '';
     my $dontencode = qr/\A(?>utf[-]?8|(?:us[-])?ascii)\z/;
 
-    if( length $encodefrom ) {
+    if( $encodefrom ) {
         # The 2nd argument is a encoding name of the 1st argument
         while(1) {
             # Encode a given string when the encoding of the string is neigther
@@ -142,7 +142,7 @@ sub to_utf8 {
     unless( $hasencoded ) {
         # The 2nd argument was not given or failed to convert from $encodefrom
         # to UTF-8
-        if( length $encodingto ) {
+        if( $encodingto ) {
             # Guessed encoding name is available, try to encode using it.
             unless( $encodingto =~ $dontencode ) {
                 # Encode a given string when the encoding of the string is neigther

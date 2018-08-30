@@ -48,7 +48,7 @@ sub get {
     unless( grep { $argvs->reason eq $_ } @$GetRetried ) {
         # Return reason text already decided except reason match with the
         # regular expression of ->retry() method.
-        return $argvs->reason if length $argvs->reason;
+        return $argvs->reason if $argvs->reason;
     }
     return 'delivered' if substr($argvs->deliverystatus, 0, 2) eq '2.';
 
@@ -82,7 +82,7 @@ sub get {
             require Sisimai::Reason::Vacation;
             $reasontext = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->diagnosticcode);
         }
-        $reasontext ||= 'onhold' if length $argvs->diagnosticcode;
+        $reasontext ||= 'onhold' if $argvs->diagnosticcode;
         $reasontext ||= 'undefined';
     }
     return $reasontext;

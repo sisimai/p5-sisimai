@@ -110,9 +110,7 @@ sub get {
     # @see      https://support.google.com/a/answer/3726730?hl=en
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return undef unless ref $argvs eq 'Sisimai::Data';
-    return $argvs->reason if length $argvs->reason;
+    return $argvs->reason if $argvs->reason;
 
     my $reasontext = '';
     my $statuscode = $argvs->deliverystatus;

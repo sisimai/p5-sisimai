@@ -131,7 +131,7 @@ sub qprintd {
     return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
 
-    if( ! exists $heads->{'content-type'} || length($heads->{'content-type'}) == 0 ) {
+    if( ! exists $heads->{'content-type'} || ! $heads->{'content-type'} ) {
         # There is no Content-Type: field
         $plain = MIME::QuotedPrint::decode($$argv1);
         return \$plain;
@@ -139,7 +139,7 @@ sub qprintd {
 
     # Quoted-printable encoded part is the part of the text
     my $boundary00 = __PACKAGE__->boundary($heads->{'content-type'}, 0);
-    if( length($boundary00) == 0 || lc($$argv1) !~ $ReE->{'quoted-print'} ) {
+    if( ! $boundary00 || lc($$argv1) !~ $ReE->{'quoted-print'} ) {
         # There is no boundary string or no
         # Content-Transfer-Encoding: quoted-printable field.
         $plain = MIME::QuotedPrint::decode($$argv1);

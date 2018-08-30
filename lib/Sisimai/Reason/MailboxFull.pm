@@ -74,14 +74,12 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless ref $argvs eq 'Sisimai::Data';
     return undef unless $argvs->deliverystatus;
     return 1 if $argvs->reason eq 'mailboxfull';
 
     # Delivery status code points "mailboxfull".
     # Status: 4.2.2
     # Diagnostic-Code: SMTP; 450 4.2.2 <***@example.jp>... Mailbox Full
-    require Sisimai::SMTP::Status;
     return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'mailboxfull';
 
     # Check the value of Diagnosic-Code: header with patterns

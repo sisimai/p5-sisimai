@@ -3,7 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::Bite::Email;
-use Sisimai::RFC5322;
 
 # http://tools.ietf.org/html/rfc3464
 my $Indicators = Sisimai::Bite::Email->INDICATORS;
@@ -51,8 +50,6 @@ sub scan {
     return undef unless ref $mbody eq 'SCALAR';
 
     require Sisimai::MDA;
-    require Sisimai::Address;
-
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $scannedset = Sisimai::MDA->scan($mhead, $mbody);
@@ -127,7 +124,7 @@ sub scan {
                 my $x = $v->{'recipienet'} || '';
                 my $y = Sisimai::Address->s3s4($1);
 
-                if( length $x && $x ne $y ) {
+                if( $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
@@ -395,7 +392,7 @@ sub scan {
                 my $y = Sisimai::Address->s3s4($1);
                 next unless Sisimai::RFC5322->is_emailaddress($y);
 
-                if( length $x && $x ne $y ) {
+                if( $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
                     $b = $dscontents->[-1];
@@ -431,18 +428,16 @@ sub scan {
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
-    require Sisimai::SMTP::Status;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
 
-        if( exists $e->{'alterrors'} && length $e->{'alterrors'} ) {
+        if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
             if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__') {
                 # Override the value of diagnostic code message
-                $e->{'diagnosis'} = $e->{'alterrors'} if length $e->{'alterrors'};
+                $e->{'diagnosis'} = $e->{'alterrors'} if $e->{'alterrors'};
             }
             delete $e->{'alterrors'};
         }
@@ -452,7 +447,7 @@ sub scan {
             # Make bounce data by the values returned from Sisimai::MDA->scan()
             $e->{'agent'}     = $scannedset->{'mda'} || __PACKAGE__->smtpagent;
             $e->{'reason'}    = $scannedset->{'reason'} || 'undefined';
-            $e->{'diagnosis'} = $scannedset->{'message'} if length $scannedset->{'message'};
+            $e->{'diagnosis'} = $scannedset->{'message'} if $scannedset->{'message'};
             $e->{'command'}   = '';
         } else {
             # Set the value of smtpagent

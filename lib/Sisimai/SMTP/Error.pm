@@ -90,7 +90,7 @@ sub soft_or_hard {
 
     } elsif( $argv1 eq 'notaccept' ) {
         # NotAccept: 5xx => hard bounce, 4xx => soft bounce
-        if( length $argv2 ) {
+        if( $argv2 ) {
             # Get D.S.N. or SMTP reply code from The 2nd argument string
             $statuscode   = Sisimai::SMTP::Status->find($argv2);
             $statuscode ||= Sisimai::SMTP::Reply->find($argv2);

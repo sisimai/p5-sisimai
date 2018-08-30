@@ -143,11 +143,8 @@ sub true {
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return undef unless ref $argvs eq 'Sisimai::Data';
     return 1 if $argvs->reason eq 'userunknown';
 
-    require Sisimai::SMTP::Status;
     my $diagnostic = lc $argvs->diagnosticcode;
     my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
     return 0 if $tempreason eq 'suspend';
@@ -172,7 +169,7 @@ sub true {
             $matchother = 1;
             last;
         }
-        return 1 if $matchother == 0;   # Did not match with other message patterns
+        return 1 if not $matchother;    # Did not match with other message patterns
 
     } elsif( $argvs->smtpcommand eq 'RCPT' ) {
         # When the SMTP command is not "RCPT", the session rejected by other
