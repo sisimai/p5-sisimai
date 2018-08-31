@@ -3,15 +3,15 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.22.7p4
+v4.23.0
 --------------------------------------------------------------------------------
 - release: ""
-- version: "4.22.7p4"
+- version: "4.23.0"
 - changes:
-  - Update regular expression in Sisimai::Bite::Email::Office365 for detecting
-    failure on SMTP RCPT.
   - #195 Implement Sisimai::Mail::Memory class for reading bounce messages from
     memory(variable).
+  - Update regular expression in Sisimai::Bite::Email::Office365 for detecting
+    failure on SMTP RCPT.
   - Fix #288, test fails when localtime and gmtime differs. Thanks to @guimard.
   - Follow up Pull-Req #289 (issue #288): Some test code have been loosened for
     UTC+13(Pacific/Tongatapu), UTC+14(Pacific/Kiritimati).
