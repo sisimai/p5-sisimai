@@ -5,7 +5,7 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.23.0
 --------------------------------------------------------------------------------
-- release: ""
+- release: "Fri, 31 Aug 2018 20:18:35 +0900 (JST)"
 - version: "4.23.0"
 - changes:
   - #195 Implement Sisimai::Mail::Memory class for reading bounce messages from
