@@ -104,7 +104,6 @@ sub make {
 
     my $delivered1 = $argvs->{'delivered'} // 0;
     my $messageobj = $argvs->{'data'};
-    my $mailheader = $argvs->{'data'}->{'header'};
     my $rfc822data = $messageobj->rfc822;
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
     my $objectlist = [];
@@ -227,7 +226,7 @@ sub make {
 
         OTHER_TEXT_HEADERS: {
             # Scan "Received:" header of the original message
-            my $recvheader = $mailheader->{'received'} || [];
+            my $recvheader = $argvs->{'data'}->{'header'}->{'received'} || [];
 
             if( scalar @$recvheader ) {
                 # Get localhost and remote host name from Received header.
