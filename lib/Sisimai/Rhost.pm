@@ -43,13 +43,11 @@ sub get {
     # @return   [String]                The value of bounce reason
     my $class = shift;
     my $argvs = shift // return undef;
-
     return undef unless ref $argvs eq 'Sisimai::Data';
 
     my $reasontext = '';
     my $remotehost = lc $argvs->rhost;
     my $rhostclass = '';
-    my $modulepath = '';
 
     for my $e ( keys %$RhostClass ) {
         # Try to match with each key of $RhostClass
@@ -57,9 +55,9 @@ sub get {
         $rhostclass = __PACKAGE__.'::'.$RhostClass->{ $e };
         last;
     }
-
     return undef unless $rhostclass;
-    ($modulepath = $rhostclass) =~ s|::|/|g; 
+
+    (my $modulepath = $rhostclass) =~ s|::|/|g; 
     require $modulepath.'.pm';
     $reasontext = $rhostclass->get($argvs);
 

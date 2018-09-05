@@ -133,13 +133,10 @@ sub scan {
                 $recipients++;
 
             } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
-                # X-Actual-Recipient: 
-                if( $1 =~ /[ \t]+/ ) {
-                    # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
-                } else {
-                    # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
-                    $v->{'alias'} = $1;
-                }
+                # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
+                # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
+                $v->{'alias'} = $1 unless $1 =~ /[ \t]+/;
+
             } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
                 # 2.3.3 Action field
                 #   The Action field indicates the action performed by the Reporting-MTA
