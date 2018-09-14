@@ -239,7 +239,7 @@ sub boundary {
         # Content-Type: multipart/report; report-type=delivery-status;
         #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"
         $value =  $1;
-        $value =~ y/"'//d;
+        $value =~ y/"';\\//d;
         $value =  '--'.$value if $start > -1;
         $value =  $value.'--' if $start >  0;
     }
