@@ -283,10 +283,10 @@ sub breaksup {
     if( index($mimeformat, 'multipart/') == 0 ) {
         # Content-Type: multipart/*
         my $mpboundary = __PACKAGE__->boundary($upperchunk, 0);
-        my $innerparts = [split(/\Q$mpboundary\E\n/, $lowerchunk)];
+        my @innerparts = split(/\Q$mpboundary\E\n/, $lowerchunk);
 
-        shift @$innerparts unless length $innerparts->[0];
-        while( my $e = shift @$innerparts ) {
+        shift @innerparts unless length $innerparts[0];
+        while( my $e = shift @innerparts ) {
             # Find internal multipart/* blocks and decode
             if( $e =~ $thisformat ) {
                 # Found Content-Type field at the first or second line of this
@@ -377,7 +377,6 @@ sub makeflat {
 
     my $ehboundary = __PACKAGE__->boundary($argv0, 0);
     my $mimeformat = $argv0 =~ qr|\A([0-9a-z]+/[^ ;]+)| ? $1 : '';
-    my $multiparts = [];
     my $bodystring = '';
 
     return \'' unless index($mimeformat, 'multipart/') > -1;
@@ -397,10 +396,10 @@ sub makeflat {
     $$argv1 =~ s/(Content-[A-Za-z-]+?):[ ]*([^\s]+)/$1.': '.lc($2)/eg;
     $$argv1 =~ s/^Content-(?:Description|Disposition):.+\n//gm;
 
-    $multiparts = [split(/\Q$ehboundary\E\n/, $$argv1)];
-    shift @$multiparts unless length $multiparts->[0];
+    my @multiparts = split(/\Q$ehboundary\E\n/, $$argv1);
+    shift @multiparts unless length $multiparts[0];
 
-    while( my $e = shift @$multiparts ) {
+    while( my $e = shift @multiparts ) {
         # Find internal multipart blocks and decode
         if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r\n)?Content-Type:[ ]*[^\s]+/ ) {
             # Content-Type: multipart/*
