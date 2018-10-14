@@ -107,7 +107,6 @@ sub list {
             Reason/UserUnknown.pm
             Reason/Vacation.pm
             Reason/VirusDetected.pm
-        RFC2606.pm
         RFC3464.pm
         RFC3834.pm
         RFC5322.pm

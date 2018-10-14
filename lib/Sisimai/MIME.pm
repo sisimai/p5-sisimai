@@ -62,12 +62,9 @@ sub mimedecode {
 
     my $characterset = '';
     my $encodingname = '';
-    my $mimeencoded0 = '';
     my @decodedtext0 = ();
     my $decodedtext1 = '';
     my $utf8decoded1 = '';
-    my $notmimetext0 = '';
-    my $notmimetext1 = '';
 
     for my $e ( @$argvs ) {
         # Check and decode each element
@@ -79,22 +76,19 @@ sub mimedecode {
             # MIME Encoded string
             if( $e =~ m{\A(.*)=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=?(.*)\z} ) {
                 # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
-                $notmimetext0   = $1;
                 $characterset ||= lc $2;
                 $encodingname ||= uc $3;
-                $mimeencoded0   = $4;
-                $notmimetext1   = $5;
 
-                push @decodedtext0, $notmimetext0;
+                push @decodedtext0, $1;
                 if( $encodingname eq 'Q' ) {
                     # Quoted-Printable
-                    push @decodedtext0, MIME::QuotedPrint::decode($mimeencoded0);
+                    push @decodedtext0, MIME::QuotedPrint::decode($4);
 
                 } elsif( $encodingname eq 'B' ) {
                     # Base64
-                    push @decodedtext0, MIME::Base64::decode($mimeencoded0);
+                    push @decodedtext0, MIME::Base64::decode($4);
                 }
-                push @decodedtext0, $notmimetext1;
+                push @decodedtext0, $5;
             }
         } else {
             push @decodedtext0, $e;
@@ -149,8 +143,6 @@ sub qprintd {
     my $boundary01 = Sisimai::MIME->boundary($heads->{'content-type'}, 1);
     my $bodystring = '';
     my $notdecoded = '';
-    my $getencoded = '';
-    my $lowercased = '';
 
     my $encodename = undef;
     my $ctencoding = undef;
@@ -167,8 +159,8 @@ sub qprintd {
             if( $e eq $boundary00 ) {
                 # The next boundary string has appeared
                 # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
-                $getencoded  = MIME::QuotedPrint::decode($notdecoded);
-                $getencoded  = Sisimai::String->to_utf8(\$getencoded, $encodename);
+                my $getencoded = MIME::QuotedPrint::decode($notdecoded);
+                   $getencoded = Sisimai::String->to_utf8(\$getencoded, $encodename);
                 $bodystring .= $$getencoded;
                 $bodystring .= $e . "\n";
 
@@ -182,7 +174,7 @@ sub qprintd {
             }
         } else {
             # NOT Quoted-Printable encoded text block
-            $lowercased = lc $e;
+            my $lowercased = lc $e;
             if( $e =~ /\A[-]{2}[^\s]+[^-]\z/ ) {
                 # Start of the boundary block
                 # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ

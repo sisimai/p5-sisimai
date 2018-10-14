@@ -37,14 +37,8 @@ my $HEADERTABLE = {
     'subject'   => ['Subject'],
     'listid'    => ['List-Id'],
     'date'      => [qw|Date Posted-Date Posted Resent-Date|],
-    'addresser' => [qw|
-        From Return-Path Reply-To Errors-To Reverse-Path X-Postfix-Sender
-        Envelope-From X-Envelope-From
-    |],
-    'recipient' => [qw|
-        To Delivered-To Forward-Path Envelope-To X-Envelope-To Resent-To
-        Apparently-To
-    |],
+    'addresser' => [qw|From Return-Path Reply-To Errors-To Reverse-Path X-Postfix-Sender Envelope-From X-Envelope-From|],
+    'recipient' => [qw|To Delivered-To Forward-Path Envelope-To X-Envelope-To Resent-To Apparently-To|],
 };
 
 BUILD_FLATTEN_RFC822HEADER_LIST: {
