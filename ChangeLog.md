@@ -3,6 +3,19 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.23.0p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: "4.23.0p1"
+- changes:
+  - Variable improvement (remove redundant substitution)
+  - Remove Sisimai::RFC2606 (Unused module)
+  - MIME decoding improvement (Import Pull-Request from sisimai/rb-Sisimai#131)
+    - Implement Sisimai::MIME->makeflat
+    - Implement Sisimai::MIME->breaksup
+    - Call Sisimai::MIME.makeflat at Sisimai::Message::Email->parse
+    - Other related updates in Sisimai::Bite::Email::*
+
 v4.23.0
 --------------------------------------------------------------------------------
 - release: "Fri, 31 Aug 2018 20:18:35 +0900 (JST)"
