@@ -6,7 +6,7 @@ use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = {
-    'message' => ['Content-type: text/plain'],
+    'message' => [''],
     'rfc822'  => ['Content-type: message/rfc822'],
 };
 

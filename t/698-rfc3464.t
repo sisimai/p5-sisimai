@@ -8,7 +8,6 @@ my $enginename = 'RFC3464';
 my $enginetest = Sisimai::Bite::Email::Code->maketest;
 my $isexpected = [
     { 'n' => '01', 's' => qr/\A5[.]1[.]1\z/,      'r' => qr/mailboxfull/,   'a' => qr/dovecot/, 'b' => qr/\A1\z/ },
-    { 'n' => '02', 's' => qr/\A5[.]0[.]0\z/,      'r' => qr/networkerror/,  'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
     { 'n' => '03', 's' => qr/\A5[.]0[.]0\z/,      'r' => qr/policyviolation/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
     { 'n' => '04', 's' => qr/\A5[.]5[.]0\z/,      'r' => qr/mailererror/,   'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },
     { 'n' => '05', 's' => qr/\A5[.]2[.]1\z/,      'r' => qr/filtered/,      'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },

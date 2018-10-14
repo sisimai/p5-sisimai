@@ -9,7 +9,7 @@ my $StartingOf = {
     # apache-james-2.3.2/src/java/org/apache/james/transport/mailets/
     #   AbstractNotify.java|124:  out.println("Error message below:");
     #   AbstractNotify.java|128:  out.println("Message details:");
-    'message' => ['Content-Disposition: inline'],
+    'message' => [''],
     'rfc822'  => ['Content-Type: message/rfc822'],
     'error'   => ['Error message below:'],
 };
@@ -50,7 +50,7 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $diagnostic = '';    # (String) Alternative diagnostic message
     my $subjecttxt = undef; # (String) Alternative Subject text
-    my $gotmessage = -1;    # (Integer) Flag for error message
+    my $gotmessage = 0;     # (Integer) Flag for error message
     my $v = undef;
 
     for my $e ( @hasdivided ) {
@@ -135,6 +135,7 @@ sub scan {
                     # Error message below:
                     # 550 - Requested action not taken: no such user here
                     $v->{'diagnosis'} = $e if $e eq $StartingOf->{'error'}->[0];
+                    $v->{'diagnosis'} .= ' '.$e unless $gotmessage;
                 }
             }
         } # End of if: rfc822

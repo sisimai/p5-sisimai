@@ -13,7 +13,6 @@ my $EndOfEmail = Sisimai::String->EOM;
 my $DefaultSet = Sisimai::Order::Email->another;
 my $SubjectTab = Sisimai::Order::Email->by('subject');
 my $ExtHeaders = Sisimai::Order::Email->headers;
-my $ReEncoding = Sisimai::MIME->patterns;
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
@@ -413,20 +412,10 @@ sub parse {
         $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
     } else {
         # NOT text/plain
-        my $lowercased = lc $$bodystring;
-        if( $lowercased =~ $ReEncoding->{'quoted-print'} ) {
-            # Content-Transfer-Encoding: quoted-printable
-            $bodystring = Sisimai::MIME->qprintd($bodystring, $mailheader);
-        }
-
-        if( $lowercased =~ $ReEncoding->{'7bit-encoded'} &&
-            $lowercased =~ $ReEncoding->{'some-iso2022'} ) {
-            # Content-Transfer-Encoding: 7bit
-            # Content-Type: text/plain; charset=ISO-2022-JP
-            if( index($1, 'us-ascii') == -1 && index($1, 'utf-8') == -1 ) {
-                # Convert to UTF-8
-                $bodystring = Sisimai::String->to_utf8($bodystring, $1);
-            }
+        if( index($mesgformat, 'multipart/') == 0 ) {
+            # In case of Content-Type: multipart/*
+            my $p = Sisimai::MIME->makeflat($mailheader->{'content-type'}, $bodystring);
+            $bodystring = $p if length $$p;
         }
     }
 

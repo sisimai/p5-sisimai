@@ -96,7 +96,8 @@ sub scan {
                 #  ----- Transcript of session follows -----
                 # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
                 next unless $e =~ /\A[0-9A-Za-z]+/;
-                $v->{'diagnosis'} = $e;
+                next if length $v->{'diagnosis'};
+                $v->{'diagnosis'} ||= $e;
             }
         } # End of if: rfc822
     }
