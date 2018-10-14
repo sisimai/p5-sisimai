@@ -395,6 +395,8 @@ sub parse {
 
     if( index($mesgformat, 'text/plain') == 0 || index($mesgformat, 'text/html') == 0 ) {
         # Content-Type: text/plain; charset=UTF-8
+        $bodystring = Sisimai::MIME->breaksup($bodystring, 'text/plain');
+if(0) {
         if( $ctencoding eq 'base64' || $ctencoding eq 'quoted-printable' ) {
             # Content-Transfer-Encoding: base64
             # Content-Transfer-Encoding: quoted-printable
@@ -407,7 +409,7 @@ sub parse {
                 $bodystring = Sisimai::MIME->qprintd($bodystring);
             }
         }
-
+}
         # Content-Type: text/html;...
         $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
     } else {
