@@ -10,7 +10,7 @@ my $MarkingsOf = {
     'command' => qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
     'message' => qr{\A(?>
          content-type:[ ]*(?:
-              message/delivery-status
+              message/x?delivery-status
              |message/disposition-notification
              |text/plain;[ ]charset=
              )
