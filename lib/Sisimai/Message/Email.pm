@@ -387,6 +387,18 @@ sub parse {
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
 
+    if( ref $hookmethod eq 'CODE' ) {
+        # Call hook method
+        my $p = { 
+            'datasrc' => 'email',
+            'headers' => $mailheader, 
+            'message' => $$bodystring,
+            'bounces' => undef,
+        };
+        eval { $havecaught = $hookmethod->($p) };
+        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
+    }
+
     # Decode BASE64 Encoded message body
     my $mesgformat = lc($mailheader->{'content-type'} || '');
     my $ctencoding = lc($mailheader->{'content-transfer-encoding'} || '');
@@ -411,18 +423,6 @@ sub parse {
             my $p = Sisimai::MIME->makeflat($mailheader->{'content-type'}, $bodystring);
             $bodystring = $p if length $$p;
         }
-    }
-
-    if( ref $hookmethod eq 'CODE' ) {
-        # Call hook method
-        my $p = { 
-            'datasrc' => 'email',
-            'headers' => $mailheader, 
-            'message' => $$bodystring,
-            'bounces' => undef,
-        };
-        eval { $havecaught = $hookmethod->($p) };
-        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
     }
 
     # EXPAND_FORWARDED_MESSAGE:
