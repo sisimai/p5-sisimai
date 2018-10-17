@@ -284,9 +284,7 @@ sub takeapart {
     # @return        [Hash]         Structured message headers
     my $class = shift;
     my $heads = shift || return {};
-
-    # Convert from string to hash reference
-    $$heads =~ s/^[>]+[ ]//mg;
+    $$heads =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
 
     my $takenapart = {};
     my @hasdivided = split("\n", $$heads);
@@ -395,21 +393,15 @@ sub parse {
 
     if( index($mesgformat, 'text/plain') == 0 || index($mesgformat, 'text/html') == 0 ) {
         # Content-Type: text/plain; charset=UTF-8
-        $bodystring = Sisimai::MIME->breaksup($bodystring, 'text/plain');
-if(0) {
-        if( $ctencoding eq 'base64' || $ctencoding eq 'quoted-printable' ) {
+        if( $ctencoding eq 'base64' ) {
             # Content-Transfer-Encoding: base64
-            # Content-Transfer-Encoding: quoted-printable
-            if( $ctencoding eq 'base64' ) {
-                # Content-Transfer-Encoding: base64
-                $bodystring = Sisimai::MIME->base64d($bodystring);
+            $bodystring = Sisimai::MIME->base64d($bodystring);
 
-            } else {
-                # Content-Transfer-Encoding: quoted-printable
-                $bodystring = Sisimai::MIME->qprintd($bodystring);
-            }
+        } elsif( $ctencoding eq 'quoted-printable' ) {
+            # Content-Transfer-Encoding: quoted-printable
+            $bodystring = Sisimai::MIME->qprintd($bodystring);
         }
-}
+
         # Content-Type: text/html;...
         $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
     } else {
