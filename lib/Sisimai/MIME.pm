@@ -333,11 +333,7 @@ sub breaksup {
                 # Content-Transfer-Encoding: 8bit, binary, and so on
                 $getdecoded = $lowerchunk;
             }
-
-            # - Convert CRLF to LF
-            # - Delete HTML tags inside of text/html part whenever possible
-            $getdecoded =~ s|\r\n|\n|g;
-            $getdecoded =~ s|[<][^@ ]+?[>]||g if $mimeformat eq 'text/html';
+            $getdecoded =~ s|\r\n|\n|g; # Convert CRLF to LF
 
             if( $mimeformat =~ $alsoappend ) {
                 # Append field when the value of Content-Type: begins with
@@ -345,6 +341,10 @@ sub breaksup {
                 $upperchunk =~ s/Content-Transfer-Encoding:.+\z//;
                 $upperchunk =~ s/[ ]\z//g;
                 $hasflatten .= $upperchunk;
+
+            } elsif( $mimeformat eq 'text/html' ) {
+                # Delete HTML tags inside of text/html part whenever possible
+                $getdecoded = ${ Sisimai::String->to_plain(\$getdecoded) };
             }
             $hasflatten .= $getdecoded."\n\n" if length $getdecoded;
 
@@ -398,10 +398,9 @@ sub makeflat {
 
     my @multiparts = split(/\Q$ehboundary\E\n/, $$argv1);
     shift @multiparts unless length $multiparts[0];
-
     while( my $e = shift @multiparts ) {
         # Find internal multipart blocks and decode
-        if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r\n)?Content-Type:[ ]*[^\s]+/ ) {
+        if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r\n)?Content-Type:[ ]*([^\s]+)/ ) {
             # Content-Type: multipart/*
             $bodystring .= ${ __PACKAGE__->breaksup(\$e, $mimeformat) };
 
@@ -417,10 +416,9 @@ sub makeflat {
     # Content-Type: message/rfc822 field so Sisimai does not read the message
     # body for detecting a bounce reason, for getting email header fields of
     # the original message.
-    #$bodystring =~ s{^(Content-Type:\s*message/(?:rfc822|partial)\s.+?)\n\n.+\z}{$1\n\n}sim;
-    #$bodystring =~ s{^(Content-Type:\s*text/rfc822-headers\s.+?)\n\n.+\z}{$1\n\n}sim;
     $bodystring =~ s{^(Content-Type:\s*message/(?:rfc822|delivery-status)).+$}{$1}gm;
     $bodystring =~ s|^\n{2,}|\n|gm;
+
     return \$bodystring;
 }
 
