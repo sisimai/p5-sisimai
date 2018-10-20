@@ -284,9 +284,7 @@ sub takeapart {
     # @return        [Hash]         Structured message headers
     my $class = shift;
     my $heads = shift || return {};
-
-    # Convert from string to hash reference
-    $$heads =~ s/^[>]+[ ]//mg;
+    $$heads =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
 
     my $takenapart = {};
     my @hasdivided = split("\n", $$heads);
@@ -389,23 +387,31 @@ sub parse {
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
 
+    if( ref $hookmethod eq 'CODE' ) {
+        # Call hook method
+        my $p = { 
+            'datasrc' => 'email',
+            'headers' => $mailheader, 
+            'message' => $$bodystring,
+            'bounces' => undef,
+        };
+        eval { $havecaught = $hookmethod->($p) };
+        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
+    }
+
     # Decode BASE64 Encoded message body
     my $mesgformat = lc($mailheader->{'content-type'} || '');
     my $ctencoding = lc($mailheader->{'content-transfer-encoding'} || '');
 
     if( index($mesgformat, 'text/plain') == 0 || index($mesgformat, 'text/html') == 0 ) {
         # Content-Type: text/plain; charset=UTF-8
-        if( $ctencoding eq 'base64' || $ctencoding eq 'quoted-printable' ) {
+        if( $ctencoding eq 'base64' ) {
             # Content-Transfer-Encoding: base64
-            # Content-Transfer-Encoding: quoted-printable
-            if( $ctencoding eq 'base64' ) {
-                # Content-Transfer-Encoding: base64
-                $bodystring = Sisimai::MIME->base64d($bodystring);
+            $bodystring = Sisimai::MIME->base64d($bodystring);
 
-            } else {
-                # Content-Transfer-Encoding: quoted-printable
-                $bodystring = Sisimai::MIME->qprintd($bodystring);
-            }
+        } elsif( $ctencoding eq 'quoted-printable' ) {
+            # Content-Transfer-Encoding: quoted-printable
+            $bodystring = Sisimai::MIME->qprintd($bodystring);
         }
 
         # Content-Type: text/html;...
@@ -417,18 +423,6 @@ sub parse {
             my $p = Sisimai::MIME->makeflat($mailheader->{'content-type'}, $bodystring);
             $bodystring = $p if length $$p;
         }
-    }
-
-    if( ref $hookmethod eq 'CODE' ) {
-        # Call hook method
-        my $p = { 
-            'datasrc' => 'email',
-            'headers' => $mailheader, 
-            'message' => $$bodystring,
-            'bounces' => undef,
-        };
-        eval { $havecaught = $hookmethod->($p) };
-        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
     }
 
     # EXPAND_FORWARDED_MESSAGE:

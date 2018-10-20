@@ -283,10 +283,10 @@ sub breaksup {
     if( index($mimeformat, 'multipart/') == 0 ) {
         # Content-Type: multipart/*
         my $mpboundary = __PACKAGE__->boundary($upperchunk, 0);
-        my $innerparts = [split(/\Q$mpboundary\E\n/, $lowerchunk)];
+        my @innerparts = split(/\Q$mpboundary\E\n/, $lowerchunk);
 
-        shift @$innerparts unless length $innerparts->[0];
-        while( my $e = shift @$innerparts ) {
+        shift @innerparts unless length $innerparts[0];
+        while( my $e = shift @innerparts ) {
             # Find internal multipart/* blocks and decode
             if( $e =~ $thisformat ) {
                 # Found Content-Type field at the first or second line of this
@@ -333,11 +333,7 @@ sub breaksup {
                 # Content-Transfer-Encoding: 8bit, binary, and so on
                 $getdecoded = $lowerchunk;
             }
-
-            # - Convert CRLF to LF
-            # - Delete HTML tags inside of text/html part whenever possible
-            $getdecoded =~ s|\r\n|\n|g;
-            $getdecoded =~ s|[<][^@ ]+?[>]||g if $mimeformat eq 'text/html';
+            $getdecoded =~ s|\r\n|\n|g; # Convert CRLF to LF
 
             if( $mimeformat =~ $alsoappend ) {
                 # Append field when the value of Content-Type: begins with
@@ -345,6 +341,10 @@ sub breaksup {
                 $upperchunk =~ s/Content-Transfer-Encoding:.+\z//;
                 $upperchunk =~ s/[ ]\z//g;
                 $hasflatten .= $upperchunk;
+
+            } elsif( $mimeformat eq 'text/html' ) {
+                # Delete HTML tags inside of text/html part whenever possible
+                $getdecoded = ${ Sisimai::String->to_plain(\$getdecoded) };
             }
             $hasflatten .= $getdecoded."\n\n" if length $getdecoded;
 
@@ -377,7 +377,6 @@ sub makeflat {
 
     my $ehboundary = __PACKAGE__->boundary($argv0, 0);
     my $mimeformat = $argv0 =~ qr|\A([0-9a-z]+/[^ ;]+)| ? $1 : '';
-    my $multiparts = [];
     my $bodystring = '';
 
     return \'' unless index($mimeformat, 'multipart/') > -1;
@@ -397,10 +396,9 @@ sub makeflat {
     $$argv1 =~ s/(Content-[A-Za-z-]+?):[ ]*([^\s]+)/$1.': '.lc($2)/eg;
     $$argv1 =~ s/^Content-(?:Description|Disposition):.+\n//gm;
 
-    $multiparts = [split(/\Q$ehboundary\E\n/, $$argv1)];
-    shift @$multiparts unless length $multiparts->[0];
-
-    while( my $e = shift @$multiparts ) {
+    my @multiparts = split(/\Q$ehboundary\E\n/, $$argv1);
+    shift @multiparts unless length $multiparts[0];
+    while( my $e = shift @multiparts ) {
         # Find internal multipart blocks and decode
         if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r\n)?Content-Type:[ ]*[^\s]+/ ) {
             # Content-Type: multipart/*
@@ -418,10 +416,9 @@ sub makeflat {
     # Content-Type: message/rfc822 field so Sisimai does not read the message
     # body for detecting a bounce reason, for getting email header fields of
     # the original message.
-    #$bodystring =~ s{^(Content-Type:\s*message/(?:rfc822|partial)\s.+?)\n\n.+\z}{$1\n\n}sim;
-    #$bodystring =~ s{^(Content-Type:\s*text/rfc822-headers\s.+?)\n\n.+\z}{$1\n\n}sim;
     $bodystring =~ s{^(Content-Type:\s*message/(?:rfc822|delivery-status)).+$}{$1}gm;
     $bodystring =~ s|^\n{2,}|\n|gm;
+
     return \$bodystring;
 }
 

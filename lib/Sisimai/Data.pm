@@ -261,10 +261,9 @@ sub make {
             # The value of "Message-Id" header
             $p->{'messageid'} = $rfc822data->{'message-id'} // '';
             if( $p->{'messageid'} ) {
-                # Remove angle brackets
-                $p->{'messageid'} =  $1 if $p->{'messageid'} =~ /\A([^ ]+)[ ].*/;
-                $p->{'messageid'} =~ y/<>//d;
-                $p->{'messageid'} =~ s/\r\z//g;
+                # Leave only string inside of angle brackets(<>)
+                $p->{'messageid'} = $1 if $p->{'messageid'} =~ /\A([^ ]+)[ ].*/;
+                $p->{'messageid'} = $1 if $p->{'messageid'} =~ /[<]([^ ]+?)[>]/;
             }
 
             CHECK_DELIVERY_STATUS_VALUE: {
