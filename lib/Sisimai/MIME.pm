@@ -400,7 +400,7 @@ sub makeflat {
     shift @multiparts unless length $multiparts[0];
     while( my $e = shift @multiparts ) {
         # Find internal multipart blocks and decode
-        if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r\n)?Content-Type:[ ]*([^\s]+)/ ) {
+        if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r\n)?Content-Type:[ ]*[^\s]+/ ) {
             # Content-Type: multipart/*
             $bodystring .= ${ __PACKAGE__->breaksup(\$e, $mimeformat) };
 
