@@ -3,10 +3,10 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.24.0 Thu,  1 Nov 2018 18:00:00 +0900 (JST)
+v4.24.0
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Thu,  1 Nov 2018 18:00:00 +0900 (JST)"
+- version: "4.24.0"
 - changes:
   - Variable improvement (remove redundant substitution)
   - Remove Sisimai::RFC2606 (Unused module)
