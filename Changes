@@ -3,9 +3,26 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.23.0
+v4.24.0 Thu,  1 Nov 2018 18:00:00 +0900 (JST)
 --------------------------------------------------------------------------------
 - release: ""
+- version: ""
+- changes:
+  - Variable improvement (remove redundant substitution)
+  - Remove Sisimai::RFC2606 (Unused module)
+  - MIME decoding improvement (Import Pull-Request from sisimai/rb-Sisimai#131)
+    - Implement Sisimai::MIME->makeflat
+    - Implement Sisimai::MIME->breaksup
+    - Call Sisimai::MIME.makeflat at Sisimai::Message::Email->parse
+    - Other related updates in Sisimai::Bite::Email::*
+  - Tiny improvement in Sisimai::String->to_plain
+  - Update "blocked" error message patterns for iCloud.
+    - A client IP address has no PTR record
+    - Invalid HELO/EHLO name
+
+v4.23.0
+--------------------------------------------------------------------------------
+- release: "Fri, 31 Aug 2018 20:18:35 +0900 (JST)"
 - version: "4.23.0"
 - changes:
   - #195 Implement Sisimai::Mail::Memory class for reading bounce messages from
