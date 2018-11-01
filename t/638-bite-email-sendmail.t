@@ -61,6 +61,7 @@ my $isexpected = [
     { 'n' => '53', 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/securityerror/,   'b' => qr/\A1\z/ },
     { 'n' => '54', 's' => qr/\A4[.]4[.]7\z/,    'r' => qr/expired/,         'b' => qr/\A1\z/ },
     { 'n' => '55', 's' => qr/\A4[.]5[.]0\z/,    'r' => qr/mailererror/,     'b' => qr/\A1\z/ },
+    { 'n' => '56', 's' => qr/\A5[.]5[.]0\z/,    'r' => qr/blocked/,         'b' => qr/\A1\z/ },
 ];
 
 $enginetest->($enginename, $isexpected);
