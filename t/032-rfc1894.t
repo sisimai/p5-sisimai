@@ -36,9 +36,9 @@ MAKE_TEST: {
     my $v = $PackageName->table;
 
     isa_ok $v, 'HASH', '->table returns Hash';
-    ok scalar keys $v, '->table returns Hash';
+    ok scalar keys %$v, '->table returns Hash';
 
-    $r = $PackageName->HEADERFIELDS();
+    my $r = $PackageName->HEADERFIELDS();
     isa_ok $r, 'HASH';
     for my $e ( keys %$r ) {
         ok length $e, $e;
