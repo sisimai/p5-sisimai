@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $FieldIndex = [
+my $FieldNames = [
     # https://tools.ietf.org/html/rfc3464#section-2.2
     #   Some fields of a DSN apply to all of the delivery attempts described by
     #   that DSN. At most, these fields may appear once in any DSN. These fields
@@ -22,8 +22,8 @@ my $FieldIndex = [
     #   The following fields are not used in Sisimai:
     #     - Will-Retry-Until
     #     - Final-Log-ID
-    [qw|Original-Recipient Final-Recipient Action Status Remote-MTA Diagnostic-Code
-        Last-Attempt-Date X-Actual-Recipient|],
+    [qw|Original-Recipient Final-Recipient Action Status Remote-MTA
+        Diagnostic-Code Last-Attempt-Date X-Actual-Recipient|],
 ];
 my $CapturesOn = {
     'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*([^ ]+)/,
@@ -35,7 +35,19 @@ my $CapturesOn = {
    #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
 };
 
-sub table {
+sub FIELDINDEX {
+    # Return field name list defined in RFC3464
+    # @param    [String] argv0 Field group name: "rcpt", "mesg" or ""
+    # @return   [Array]        [Field-Name1, Field-Name2,...]
+    my $class = shift;
+    my $group = shift || '';
+    return $FieldNames->[0] if $group eq 'mesg';
+    return $FieldNames->[1] if $group eq 'rcpt';
+    return [@{ $FieldNames->[0] }, @{ $FieldNames->[1] }];
+}
+
+sub FIELDTABLE {
+    # Return pairs that a field name and key name defined in Sisimai::Bite class
     return {
         'action'            => 'action',
         'arrival-date'      => 'date',
@@ -59,8 +71,8 @@ sub match {
     my $class = shift;
     my $argv0 = shift || return undef;
 
-    return 1 if grep { index($argv0, $_) == 0 } @{ $FieldIndex->[0] };
-    return 2 if grep { index($argv0, $_) == 0 } @{ $FieldIndex->[1] };
+    return 1 if grep { index($argv0, $_) == 0 } @{ $FieldNames->[0] };
+    return 2 if grep { index($argv0, $_) == 0 } @{ $FieldNames->[1] };
     return 0;
 }
 
