@@ -41,7 +41,9 @@ sub scan {
     }
 
     require Sisimai::RFC1894;
-    my $fieldtable = Sisimai::RFC1894->table;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
+    my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
+    my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -95,9 +97,8 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
             my $o = [];
-            my $r = Sisimai::RFC1894->match($e);
 
-            if( $r ) {
+            if( grep { index($e, $_) == 0 } @$fieldindex ) {
                 # $e matched with any field defined in RFC3464
                 $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
@@ -127,7 +128,7 @@ sub scan {
                 } else {
                     # Other DSN fields defined in RFC3464
                     $v->{ $fieldtable->{ $o->[0] } } = $o->[2] if exists $fieldtable->{ $o->[0] };
-                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2] if $r == 1;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2] if grep { index($e, $_) == 0 } @$mesgfields;
                 }
             } else {
                 # The line does not begin with a DSN field defined in RFC3464
