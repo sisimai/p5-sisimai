@@ -42,18 +42,18 @@ MAKE_TEST: {
 
     $v = $PackageName->FIELDINDEX();
     isa_ok $v, 'ARRAY', '->FIELDINDEX() returns Array';
-    ok scalar keys @$v, '->FIELDINDEX() returns Array';
+    ok scalar @$v, '->FIELDINDEX() returns Array';
     ok grep { index('Reporting-MTA:', $_) == 0 } @$v;
     ok grep { index('Final-Recipient:', $_) == 0 } @$v;
 
     $v = $PackageName->FIELDINDEX('mesg');
     isa_ok $v, 'ARRAY', '->FIELDINDEX(mesg) returns Array';
-    ok scalar keys @$v, '->FIELDINDEX(mesg) returns Array';
+    ok scalar @$v, '->FIELDINDEX(mesg) returns Array';
     ok grep { index('Reporting-MTA:', $_) == 0 } @$v;
 
     $v = $PackageName->FIELDINDEX('rcpt');
     isa_ok $v, 'ARRAY', '->FIELDINDEX(rcpt) returns Array';
-    ok scalar keys @$v, '->FIELDINDEX(rcpt) returns Array';
+    ok scalar @$v, '->FIELDINDEX(rcpt) returns Array';
     ok grep { index('Final-Recipient:', $_) == 0 } @$v;
 
     for my $e ( @$RFC1894Field1 ) {
