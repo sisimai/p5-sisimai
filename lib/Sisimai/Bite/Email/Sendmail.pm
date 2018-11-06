@@ -127,8 +127,11 @@ sub scan {
 
                 } else {
                     # Other DSN fields defined in RFC3464
-                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2] if exists $fieldtable->{ $o->[0] };
-                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2] if grep { index($e, $_) == 0 } @$mesgfields;
+                    next unless exists $fieldtable->{ $o->[0] };
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                    next unless grep { index($e, $_) == 0 } @$mesgfields;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
                 }
             } else {
                 # The line does not begin with a DSN field defined in RFC3464
