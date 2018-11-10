@@ -162,12 +162,17 @@ MAKE_TEST: {
         }
     }
 
-    $file = './set-of-emails/maildir/not/is-not-bounce-01.eml';
-    $mail = Sisimai::Mail->new($file);
+    $file = [
+        './set-of-emails/maildir/not/is-not-bounce-01.eml',
+        './set-of-emails/maildir/not/is-not-bounce-02.eml',
+    ];
+    IS_NOT_A_BOUNCE: for my $e ( @$file ) {
+        $mail = Sisimai::Mail->new($e);
 
-    NOT_BOUNCE: while( my $r = $mail->read ){ 
-        $mesg = Sisimai::Message->new('data' => $r); 
-        is $mesg, undef;
+        NOT_BOUNCE: while( my $r = $mail->read ){ 
+            $mesg = Sisimai::Message->new('data' => $r); 
+            is $mesg, undef;
+        }
     }
 }
 done_testing;
