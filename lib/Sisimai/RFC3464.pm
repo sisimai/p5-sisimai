@@ -58,6 +58,7 @@ sub scan {
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
+    my $itisbounce = 0;     # (Integer) Flag for that an email is a bounce
     my $connheader = {
         'date'    => '',    # The value of Arrival-Date header
         'rhost'   => '',    # The value of Reporting-MTA header
@@ -131,6 +132,7 @@ sub scan {
                 }
                 $v->{'recipient'} = $y;
                 $recipients++;
+                $itisbounce ||= 1;
 
             } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                 # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
@@ -397,6 +399,7 @@ sub scan {
                 $b->{'recipient'} = $y;
                 $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
                 $recipients++;
+                $itisbounce ||= 1;
 
             } elsif( $e =~ /[(](?:expanded|generated)[ ]from:?[ ]([^@]+[@][^@]+)[)]/ ) {
                 # (expanded from: neko@example.jp)
@@ -405,6 +408,7 @@ sub scan {
             $b->{'diagnosis'} .= ' '.$e;
         }
     }
+    return undef unless $itisbounce;
 
     unless( $recipients ) {
         # Try to get a recipient address from email headers
