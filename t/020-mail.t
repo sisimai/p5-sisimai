@@ -74,7 +74,7 @@ MAKE_TEST: {
         }
         ok $maildir->close, 'maildir->close';
         is $maildir->close, 0, 'maildir->close';
-        is $emindex, 1;
+        is $emindex, 2;
     }
 
     DEVICE: {
