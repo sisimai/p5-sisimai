@@ -138,7 +138,6 @@ sub scan {
                     $v->{'diagnosis'} .= ' '.$1;
                 }
             }
-
         } # End of message/delivery-status
     } continue {
         # Save the current line for the next loop
