@@ -45,6 +45,10 @@ sub scan {
     }
     return undef if $match < 2;
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
+    my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
+    my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -52,16 +56,14 @@ sub scan {
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
-    my $connheader = {
-        'lhost' => '',      # The value of Reporting-MTA header
-    };
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $v = undef;
+    my $o = [];
 
     for my $e ( @hasdivided ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             if( $e eq $StartingOf->{'message'}->[0] ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
@@ -69,7 +71,7 @@ sub scan {
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
+            # Beginning of the original message part(message/rfc822)
             if( $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
@@ -77,61 +79,52 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # message/rfc822 or text/rfc822-headers part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            if( $connvalues == scalar(keys %$connheader) ) {
-                # Action: failed
-                # Final-Recipient: rfc822; kijitora@libsisimai.org
-                # Diagnostic-Code: smtp; 554 4.4.7 Message expired: unable to deliver in 840 minutes.<421 4.4.2 Connection timed out>
-                # Status: 4.4.7
+            if( grep { index($e, $_) == 0 } @$fieldindex ) {
+                # $e matched with any field defined in RFC3464
+                $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
-                if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
-                    # Final-Recipient: RFC822; kijitora@example.jp
-                    if( $v->{'recipient'} ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[-1];
+                if( $o->[-1] eq 'addr' ) {
+                    # Final-Recipient: rfc822; kijitora@example.jp
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    if( $o->[0] eq 'final-recipient' ) {
+                        # Final-Recipient: rfc822; kijitora@example.jp
+                        if( $v->{'recipient'} ) {
+                            # There are multiple recipient addresses in the message body.
+                            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                            $v = $dscontents->[-1];
+                        }
+                        $v->{'recipient'} = $o->[2];
+                        $recipients++;
+
+                    } else {
+                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                        $v->{'alias'} = $o->[2];
                     }
-                    $v->{'recipient'} = $1;
-                    $recipients++;
-
-                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                    # Action: failed
-                    $v->{'action'} = lc $1;
-
-                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                    # Status: 5.1.1
-                    $v->{'status'} = $1;
+                } elsif( $o->[-1] eq 'code' ) {
+                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                    $v->{'spec'} = $o->[1];
+                    $v->{'diagnosis'} = $o->[2];
 
                 } else {
-                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
-                        # Diagnostic-Code: SMTP; 550 5.1.1 <kijitora@example.jp>... User Unknown
-                        $v->{'spec'} = uc $1;
-                        $v->{'diagnosis'} = $2;
-                    }
-                }
-            } else {
-                # Technical report:
-                #
-                # Reporting-MTA: dsn; a27-85.smtp-out.us-west-2.amazonses.com
-                #
-                if( $e =~ /\AReporting-MTA:[ ]*[DNSdns]+;[ ]*(.+)\z/ ) {
-                    # Reporting-MTA: dns; mx.example.jp
-                    next if $connheader->{'lhost'};
-                    $connheader->{'lhost'} = lc $1;
-                    $connvalues++;
+                    # Other DSN fields defined in RFC3464
+                    next unless exists $fieldtable->{ $o->[0] };
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                    next unless grep { index($e, $_) == 0 } @$mesgfields;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
                 }
             }
 
@@ -140,13 +133,13 @@ sub scan {
             # <meta name="Generator" content="Amazon WorkMail v3.0-2023.77">
             # <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             last if index($e, '<!DOCTYPE HTML><html>') == 0;
-        } # End of if: rfc822
+        } # End of message/delivery-status
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
+        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
