@@ -58,6 +58,7 @@ sub scan {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $v = undef;
     my $p = '';
+    my $o = [];
 
     for my $e ( @hasdivided ) {
         # Read each line between the start of the message and the start of rfc822 part.
@@ -90,7 +91,6 @@ sub scan {
             # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
-            my $o = [];
 
             if( grep { index($e, $_) == 0 } @$fieldindex ) {
                 # $e matched with any field defined in RFC3464
@@ -135,7 +135,7 @@ sub scan {
                     $v->{'diagnosis'} .= ' '.$1;
                 }
             }
-        } # End of if: rfc822
+        } # End of message/delivery-status
     } continue {
         # Save the current line for the next loop
         $p = $e;
