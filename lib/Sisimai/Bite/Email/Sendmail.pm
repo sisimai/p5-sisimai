@@ -55,12 +55,8 @@ sub scan {
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
     my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
-    my $permessage = {
-        'date'  => '',      # The value of Arrival-Date field
-        'rhost' => '',      # The value of Reporting-MTA field
-        'lhost' => '',      # The value of Received-From-MTA field
-    };
-    my $anotherset = {};    # Another error information
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
+    my $anotherset = {};    # (Hash) Another error information
     my $v = undef;
     my $p = '';
 
@@ -86,8 +82,8 @@ sub scan {
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # message/rfc822 OR text/rfc822-headers part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                #$blanklines++;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
