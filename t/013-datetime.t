@@ -10,7 +10,7 @@ my $PackageName = 'Sisimai::DateTime';
 my $MethodNames = {
     'class' => [
         'to_second', 'monthname', 'hourname', 'dayofweek',
-        'o2d', 'parse', 'abbr2tz', 'tz2second', 'second2tz',
+        'parse', 'abbr2tz', 'tz2second', 'second2tz',
     ],
     'object' => [],
 };
@@ -90,40 +90,6 @@ MAKE_TEST: {
         is $hours->[6], 'Morning', $v.'->hourname(1)->[6]';
         is $hours->[12], 'Noon', $v.'->hourname(1)->[12]';
         is $hours->[18], 'Evening', $v.'->hourname(1)->[18]';
-    }
-
-    OFFSET2DATE: {
-        my $date = '';
-        my $base = new Time::Piece;
-        my $time = undef;
-
-        for my $e ( -65535, -2, -1, 0, 1, 2, 65535 ) {
-
-            if( abs $e > 10 && $^V lt v5.12 ) {
-                # Avoid failure for Year 2038 problem
-                # http://www.cpantesters.org/cpan/report/ace5c860-9f5f-11e4-b221-9e126cbd7f71
-                next;
-            }
-            $date = $v->o2d($e);
-            $base = Time::Piece->strptime($base->ymd, "%Y-%m-%d");
-            $time = Time::Piece->strptime($date, "%Y-%m-%d");
-
-            like $date, qr/\A\d{4}[-]\d{2}[-]\d{2}\z/, 'offset = '.$e.', date = '.$date;
-            if( abs($e) < 10 ) {
-                is $time->epoch, $base->epoch - ($e * 86400);
-
-            } else {
-                like $time->epoch, qr/\d+\z/;
-            }
-        }
-
-        for my $e ( 'a', ' ', 'string' ) {
-            $date = $v->o2d($e);
-            $base = Time::Piece->strptime($base->ymd, "%Y-%m-%d");
-            $time = Time::Piece->strptime($date, "%Y-%m-%d");
-            like $date, qr/\A\d{4}[-]\d{2}[-]\d{2}\z/, 'offset = '.$e.', date = '.$date;
-            is $time->epoch, $base->epoch;
-        }
     }
 
     PARSE: {
