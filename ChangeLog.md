@@ -10,6 +10,8 @@ v4.24.0p1
 - changes:
   - Fix bug in Sisimai::RFC3464: scan method unintentionally detects non-bounce
     mail as a bounce #296. Thanks to @whity.
+  - Remove unused method Sisimai::DateTime->o2d to avoid test failure with Perl
+    5.16.2 on NetBSD. Thanks to Nigel Horne and CPAN Testers.
 
 v4.24.0
 --------------------------------------------------------------------------------
