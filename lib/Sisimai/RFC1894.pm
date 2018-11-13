@@ -9,16 +9,24 @@ my $FieldNames = [
     #   that DSN. At most, these fields may appear once in any DSN. These fields
     #   are used to correlate the DSN with the original message transaction and
     #   to provide additional information which may be useful to gateways.
+    #
+    #   The following fields (not defined in RFC 3464) are used in Sisimai
+    #     - X-Original-Message-ID: <....> (GSuite)
+    #
     #   The following fields are not used in Sisimai:
     #     - Original-Envelope-Id
     #     - DSN-Gateway
-    [qw|Reporting-MTA Received-From-MTA Arrival-Date|],
+    [qw|Reporting-MTA Received-From-MTA Arrival-Date X-Original-Message-ID|],
 
     # https://tools.ietf.org/html/rfc3464#section-2.3
     #   A DSN contains information about attempts to deliver a message to one or
     #   more recipients. The delivery information for any particular recipient is
     #   contained in a group of contiguous per-recipient fields.
     #   Each group of per-recipient fields is preceded by a blank line.
+    #
+    #   The following fields (not defined in RFC 3464) are used in Sisimai
+    #     - X-Actual-Recipient: RFC822; ....
+    #
     #   The following fields are not used in Sisimai:
     #     - Will-Retry-Until
     #     - Final-Log-ID
@@ -32,6 +40,7 @@ my $CapturesOn = {
     'host' => qr/\A((?:Reporting|Received-From|Remote)-MTA):[ ]*(.+?);[ ]*(.+)/,
     'list' => qr/\A(Action):[ ]*(failed|delayed|delivered|relayed|expanded)/,
     'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
+    'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
    #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
 };
 
