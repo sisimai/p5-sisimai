@@ -3,6 +3,17 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
+v4.24.1
+--------------------------------------------------------------------------------
+- release: "Wed, 14 Nov 2018 11:09:44 +0900 (JST)"
+- version: "4.24.1"
+- changes:
+  - Fix bug in Sisimai::RFC3464: scan method unintentionally detects non-bounce
+    mail as a bounce #296. Thanks to @whity.
+  - Remove unused method Sisimai::DateTime->o2d to avoid test failure with Perl
+    5.16.2 on NetBSD #297. Thanks to Nigel Horne and CPAN Testers.
+  - Build test with Perl 5.28 on Travis CI.
+
 v4.24.0
 --------------------------------------------------------------------------------
 - release: "Thu,  1 Nov 2018 18:00:00 +0900 (JST)"
