@@ -84,7 +84,6 @@ sub scan {
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
             # message/rfc822 OR text/rfc822-headers part
             unless( length $e ) {
-                #$blanklines++;
                 last if ++$blanklines > 1;
                 next;
             }
