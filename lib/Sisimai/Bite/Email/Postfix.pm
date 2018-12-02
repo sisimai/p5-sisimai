@@ -49,6 +49,11 @@ sub scan {
     # 'from'    => qr/ [(]Mail Delivery System[)]\z/,
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
+    my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
+    my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -57,19 +62,16 @@ sub scan {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my @commandset = ();    # (Array) ``in reply to * command'' list
-    my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
-    my $connheader = {
-        'date'    => '',    # The value of Arrival-Date header
-        'lhost'   => '',    # The value of Received-From-MTA header
-    };
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $anotherset = {};    # Another error information
     my $v = undef;
     my $p = '';
+    my $o = [];
 
     for my $e ( @hasdivided ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             if( $e =~ $MarkingsOf->{'begin'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
@@ -77,7 +79,7 @@ sub scan {
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
+            # Beginning of the original message part(message/rfc822)
             if( $e eq $StartingOf->{'rfc822'}->[0] || $e eq $StartingOf->{'rfc822'}->[0] ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
@@ -85,10 +87,9 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # message/rfc822 OR text/rfc822-headers part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
@@ -98,69 +99,41 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            if( $connvalues == scalar(keys %$connheader) ) {
-                # Final-Recipient: RFC822; userunknown@example.jp
-                # X-Actual-Recipient: RFC822; kijitora@example.co.jp
-                # Action: failed
-                # Status: 5.1.1
-                # Remote-MTA: DNS; mx.example.jp
-                # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
+            if( grep { index($e, $_) == 0 } @$fieldindex ) {
+                # $e matched with any field defined in RFC3464
+                $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
-                if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
-                    # Final-Recipient: RFC822; userunknown@example.jp
-                    if( $v->{'recipient'} ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[-1];
+                if( $o->[-1] eq 'addr' ) {
+                    # Final-Recipient: rfc822; kijitora@example.jp
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    if( $o->[0] eq 'final-recipient' ) {
+                        # Final-Recipient: rfc822; kijitora@example.jp
+                        if( $v->{'recipient'} ) {
+                            # There are multiple recipient addresses in the message body.
+                            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                            $v = $dscontents->[-1];
+                        }
+                        $v->{'recipient'} = $o->[2];
+                        $recipients++;
+
+                    } else {
+                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                        $v->{'alias'} = $o->[2];
                     }
-                    $v->{'recipient'} = $1;
-                    $recipients++;
-
-                } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
-                         $e =~ /\AOriginal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
-                    # X-Actual-Recipient: RFC822; kijitora@example.co.jp
-                    # Original-Recipient: rfc822;kijitora@example.co.jp
-                    $v->{'alias'} = $1;
-
-                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                    # Action: failed
-                    $v->{'action'} = lc $1;
-
-                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                    # Status: 5.1.1
-                    # Status:5.2.0
-                    # Status: 5.1.0 (permanent failure)
-                    $v->{'status'} = $1;
-
-                } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                    # Remote-MTA: DNS; mx.example.jp
-                    $v->{'rhost'} = lc $1;
-
-                } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
-                    # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
-                    #
-                    # src/bounce/bounce_notify_util.c:
-                    #   681  #if 0
-                    #   682      if (dsn->time > 0)
-                    #   683          post_mail_fprintf(bounce, "Last-Attempt-Date: %s",
-                    #   684                            mail_date(dsn->time));
-                    #   685  #endif
-                    $v->{'date'} = $1;
+                } elsif( $o->[-1] eq 'code' ) {
+                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                    $v->{'spec'} = $o->[1];
+                    $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
+                    $v->{'diagnosis'} = $o->[2];
 
                 } else {
-                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.*)\z/ ) {
-                        # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                        $v->{'spec'} = uc $1;
-                        $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
-                        $v->{'diagnosis'} = $2;
+                    # Other DSN fields defined in RFC3464
+                    next unless exists $fieldtable->{ $o->[0] };
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                    } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
-                        # Continued line of the value of Diagnostic-Code header
-                        $v->{'diagnosis'} .= ' '.$1;
-                        $e = 'Diagnostic-Code: '.$e;
-                    }
+                    next unless grep { index($e, $_) == 0 } @$mesgfields;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
                 }
             } else {
                 # If you do so, please include this problem report. You can
@@ -171,58 +144,47 @@ sub scan {
                 # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                 # command)
-                if( $e =~ /[ \t][(]in reply to ([A-Z]{4}).*/ ) {
-                    # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                    push @commandset, $1;
-                    $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
+                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
+                    # Continued line of the value of Diagnostic-Code header
+                    $v->{'diagnosis'} .= ' '.$1;
+                    $e = 'Diagnostic-Code: '.$e;
 
-                } elsif( $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
-                    # to MAIL command)
-                    push @commandset, $1;
-                    $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
+                } elsif( $e =~ /\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
+                    # X-Postfix-Sender: rfc822; shironeko@example.org
+                    push @$rfc822list, $1.': '.$2;
 
                 } else {
-                    if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                        # Reporting-MTA: dns; mx.example.jp
-                        next if $connheader->{'lhost'};
-                        $connheader->{'lhost'} = lc $1;
-                        $connvalues++;
+                    # Alternative error message and recipient
 
-                    } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
-                        # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
-                        next if $connheader->{'date'};
-                        $connheader->{'date'} = $1;
-                        $connvalues++;
+                    if( $e =~ /[ \t][(]in reply to ([A-Z]{4}).*/ ) {
+                        # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
+                        push @commandset, $1;
+                        $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
-                    } elsif( $e =~ /\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
-                        # X-Postfix-Sender: rfc822; shironeko@example.org
-                        push @$rfc822list, $1.': '.$2;
+                    } elsif( $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
+                        # to MAIL command)
+                        push @commandset, $1;
+                        $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
+
+                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ \t]*(.+)\z/ ) {
+                        # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
+                        $anotherset->{'recipient'} = $1;
+                        $anotherset->{'alias'}     = $2;
+                        $anotherset->{'diagnosis'} = $3;
+
+                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:(.*)\z/ ) {
+                        # <kijitora@exmaple.jp>: ...
+                        $anotherset->{'recipient'} = $1;
+                        $anotherset->{'diagnosis'} = $2;
 
                     } else {
-                        # Alternative error message and recipient
-                        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ \t]*(.+)\z/ ) {
-                            # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
-                            $anotherset->{'recipient'} = $1;
-                            $anotherset->{'alias'}     = $2;
-                            $anotherset->{'diagnosis'} = $3;
-
-                        } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:(.*)\z/ ) {
-                            # <kijitora@exmaple.jp>: ...
-                            $anotherset->{'recipient'} = $1;
-                            $anotherset->{'diagnosis'} = $2;
-
-                        } else {
-                            # Get error message continued from the previous line
-                            next unless $anotherset->{'diagnosis'};
-                            if( $e =~ /\A[ \t]{4}(.+)\z/ ) {
-                                #    host mx.example.jp said:...
-                                $anotherset->{'diagnosis'} .= ' '.$e;
-                            }
-                        }
+                        # Get error message continued from the previous line
+                        next unless $anotherset->{'diagnosis'};
+                        $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ \t]{4}(.+)\z/;
                     }
                 }
             }
-        } # End of if: rfc822
+        } # End of message/delivery-status
     } continue {
         # Save the current line for the next loop
         $p = $e;
@@ -240,7 +202,8 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
+        $e->{'lhost'} ||= $permessage->{'rhost'};
+        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
