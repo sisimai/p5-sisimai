@@ -157,6 +157,12 @@ sub scan {
         )
     }x;
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
+    my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
+    my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -170,6 +176,7 @@ sub scan {
         'deliverystatus' => 0
     };
     my $v = undef;
+    my $o = [];
 
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
@@ -182,7 +189,7 @@ sub scan {
         last if $e eq $StartingOf->{'endof'}->[0];
 
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next unless $e =~ $MarkingsOf->{'frozen'};
@@ -190,7 +197,7 @@ sub scan {
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
+            # Beginning of the original message part(message/rfc822)
             if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
@@ -198,16 +205,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # message/rfc822 OR text/rfc822-headers part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -274,35 +280,33 @@ sub scan {
                         # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
                         # Content-type: message/delivery-status
                         # ...
-                        if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                            # Reporting-MTA: dns; mx.example.jp
-                            $v->{'lhost'} = $1;
+                        if( grep { index($e, $_) == 0 } @$fieldindex ) {
+                            # $e matched with any field defined in RFC3464
+                            $o = Sisimai::RFC1894->field($e) || next;
+                            if( $o->[-1] eq 'addr' ) {
+                                # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
+                                next unless $o->[0] eq 'final-recipient';
+                                $v->{'spec'} ||= rindex($o->[2], '@') > -1 ? 'SMTP' : 'X-UNIX';
 
-                        } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                            # Action: failed
-                            $v->{'action'} = lc $1;
+                            } elsif( $o->[-1] eq 'code' ) {
+                                # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                                $v->{'spec'} = uc $o->[1];
+                                $v->{'diagnosis'} = $o->[2];
 
-                        } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                            # Status: 5.0.0
-                            $v->{'status'} = $1;
+                            } else {
+                                # Other DSN fields defined in RFC3464
+                                next unless exists $fieldtable->{ $o->[0] };
+                                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                        } elsif( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
-                            # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                            $v->{'spec'} = uc $1;
-                            $v->{'diagnosis'} = $2;
-
-                        } elsif( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
-                            # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
-                            my $c = $1;
-                            $v->{'spec'} ||= rindex($c, '@') > -1 ? 'SMTP' : 'X-UNIX';
-
+                                next unless grep { index($e, $_) == 0 } @$mesgfields;
+                                $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                            }
                         } else {
                             # Error message ?
-                            unless( $havepassed->{'deliverystatus'} ) {
-                                # Content-type: message/delivery-status
-                                $havepassed->{'deliverystatus'} = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
-                                $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
-                            }
+                            next if $havepassed->{'deliverystatus'};
+                            # Content-type: message/delivery-status
+                            $havepassed->{'deliverystatus'} = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
+                            $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
                         }
                     } else {
                         if( scalar @$dscontents == $recipients ) {
@@ -326,7 +330,7 @@ sub scan {
                     }
                 }
             }
-        } # End of if: rfc822
+        } # End of message/delivery-status
     }
 
     if( $recipients ) {
