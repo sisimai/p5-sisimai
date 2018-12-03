@@ -34,7 +34,7 @@ my $FieldNames = [
         Diagnostic-Code Last-Attempt-Date X-Actual-Recipient|],
 ];
 my $CapturesOn = {
-    'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*([^ ]+)/,
+    'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*(.+)/,
     'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
     'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
     'host' => qr/\A((?:Reporting|Received-From|Remote)-MTA):[ ]*(.+?);[ ]*(.+)/,
