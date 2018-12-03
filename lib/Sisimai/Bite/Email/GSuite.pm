@@ -44,6 +44,7 @@ sub scan {
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
     my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -54,7 +55,6 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for a blank line after error messages
     my $emptylines = 0;     # (Integer) The number of empty lines
-    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $anotherset = {      # (Hash) Another error information
         'diagnosis' => '',
     };

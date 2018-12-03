@@ -44,6 +44,7 @@ sub scan {
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
     my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -56,7 +57,6 @@ sub scan {
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
     my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
-    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $anotherset = {};    # (Hash) Another error information
     my $v = undef;
     my $p = '';

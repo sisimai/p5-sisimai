@@ -94,6 +94,7 @@ sub scan {
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
     my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -103,7 +104,6 @@ sub scan {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $fbresponse = '';    # (String) Response code from Facebook
-    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $v = undef;
     my $p = '';
     my $o = [];

@@ -36,6 +36,7 @@ sub scan {
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
     my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -46,7 +47,6 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
-    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $v = undef;
     my $p = '';
     my $o = [];

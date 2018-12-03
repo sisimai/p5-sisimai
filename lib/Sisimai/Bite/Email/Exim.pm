@@ -161,7 +161,6 @@ sub scan {
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
     my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
-    my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
@@ -297,9 +296,6 @@ sub scan {
                                 # Other DSN fields defined in RFC3464
                                 next unless exists $fieldtable->{ $o->[0] };
                                 $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
-
-                                next unless grep { index($e, $_) == 0 } @$mesgfields;
-                                $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
                             }
                         } else {
                             # Error message ?
