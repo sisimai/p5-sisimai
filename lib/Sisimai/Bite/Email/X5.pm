@@ -61,7 +61,6 @@ sub scan {
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $v = undef;
     my $p = '';
     my $o = [];
