@@ -128,7 +128,7 @@ sub field {
         last;
     }
 
-    return [] unless scalar @$match;
+    return undef unless scalar @$match;
     return $match;
 }
 
