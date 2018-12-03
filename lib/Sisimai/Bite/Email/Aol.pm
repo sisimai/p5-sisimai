@@ -147,6 +147,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
+        $e->{'lhost'} ||= $permessage->{'rhost'};
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
 
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
