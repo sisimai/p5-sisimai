@@ -38,10 +38,13 @@ my $CapturesOn = {
     'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
     'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
     'host' => qr/\A((?:Reporting|Received-From|Remote)-MTA):[ ]*(.+?);[ ]*(.+)/,
-    'list' => qr/\A(Action):[ ]*(failed|delayed|delivered|relayed|expanded|expired)/,
+    'list' => qr/\A(Action):[ ]*(failed|delayed|delivered|relayed|expanded|expired|failure)/i,
     'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
     'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
    #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
+};
+my $Correction = {
+    'action' => { 'failure' => 'failed', 'expired' => 'delayed' },
 };
 
 sub FIELDINDEX {
@@ -116,6 +119,11 @@ sub field {
             # - Status: 5.2.2
             $match->[1] = '';
             $match->[2] = $e eq 'date' ? $2 : lc $2;
+
+            # Correct invalid value in Action field:
+            next unless $e eq 'list';
+            next unless exists $Correction->{'action'}->{ $match->[2] };
+            $match->[2] = $Correction->{'action'}->{ $match->[2] };
         }
         last;
     }
