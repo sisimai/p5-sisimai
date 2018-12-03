@@ -93,7 +93,7 @@ sub scan {
 
             if( grep { index($e, $_) == 0 } @$fieldindex ) {
                 # $e matched with any field defined in RFC3464
-                $o = Sisimai::RFC1894->field($e);
+                $o = Sisimai::RFC1894->field($e) || next;
                 $v = $dscontents->[-1];
 
                 if( $o->[-1] eq 'addr' ) {

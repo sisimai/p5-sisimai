@@ -87,7 +87,7 @@ MAKE_TEST: {
     for my $e ( @$IsNotDSNField ) {
         is $PackageName->match($e), 0, '->match('.$e.') returns 0';
         $v = $PackageName->field($e);
-        isa_ok $v, 'ARRAY', '->field('.$e.') returns Array';
+        is $v, undef, '->field('.$e.') returns undef';
         is scalar @$v, 0, '->field returns an empty array';
     }
 

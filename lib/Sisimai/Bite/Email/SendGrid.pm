@@ -90,7 +90,7 @@ sub scan {
                 $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
-                unless( scalar @$o ) {
+                unless( $o ) {
                     # Fallback code for empty value or invalid formatted value
                     # - Status: (empty)
                     # - Diagnostic-Code: 550 5.1.1 ... (No "diagnostic-type" sub field)
