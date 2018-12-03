@@ -84,7 +84,7 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Before "message/rfc822"
+            # message/delivery-status part
             next unless length $e;
             $v = $dscontents->[-1];
 
