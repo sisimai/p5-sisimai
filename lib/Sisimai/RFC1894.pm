@@ -43,9 +43,7 @@ my $CapturesOn = {
     'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
    #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
 };
-my $Correction = {
-    'action' => { 'failure' => 'failed', 'expired' => 'delayed' },
-};
+my $Correction = { 'action' => { 'failure' => 'failed', 'expired' => 'delayed' } };
 my $FieldGroup = {
     'original-recipient'    => 'addr',
     'final-recipient'       => 'addr',
