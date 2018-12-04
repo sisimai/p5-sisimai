@@ -159,11 +159,7 @@ sub scan {
 
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
-    my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
-    my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -175,7 +171,6 @@ sub scan {
         'deliverystatus' => 0
     };
     my $v = undef;
-    my $o = [];
 
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
@@ -183,7 +178,7 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
     }
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         last if $e eq $StartingOf->{'endof'}->[0];
 
@@ -279,9 +274,10 @@ sub scan {
                         # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
                         # Content-type: message/delivery-status
                         # ...
-                        if( grep { index($e, $_) == 0 } @$fieldindex ) {
+                        if( Sisimai::RFC1894->match($e) ) {
                             # $e matched with any field defined in RFC3464
-                            $o = Sisimai::RFC1894->field($e) || next;
+                            my $o = Sisimai::RFC1894->field($e) || next;
+
                             if( $o->[-1] eq 'addr' ) {
                                 # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
                                 next unless $o->[0] eq 'final-recipient';

@@ -51,11 +51,7 @@ sub scan {
 
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
-    my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
-    my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -63,9 +59,8 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
     my $p = '';
-    my $o = [];
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
@@ -88,9 +83,9 @@ sub scan {
             next unless length $e;
             $v = $dscontents->[-1];
 
-            if( grep { index($e, $_) == 0 } @$fieldindex ) {
+            if( Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
-                $o = Sisimai::RFC1894->field($e) || next;
+                my $o = Sisimai::RFC1894->field($e) || next;
                 $v = $dscontents->[-1];
 
                 if( $o->[-1] eq 'addr' ) {

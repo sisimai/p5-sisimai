@@ -38,12 +38,9 @@ sub scan {
 
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
-    my $fieldindex = Sisimai::RFC1894->FIELDINDEX;
-    my $mesgfields = Sisimai::RFC1894->FIELDINDEX('mesg');
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -52,9 +49,8 @@ sub scan {
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $v = undef;
     my $p = '';
-    my $o = [];
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
@@ -85,9 +81,9 @@ sub scan {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            if( grep { index($e, $_) == 0 } @$fieldindex ) {
+            if( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
-                $o = Sisimai::RFC1894->field($e);
+                my $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
                 unless( $o ) {
@@ -135,7 +131,7 @@ sub scan {
                     next unless exists $fieldtable->{ $o->[0] };
                     $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                    next unless grep { index($e, $_) == 0 } @$mesgfields;
+                    next unless $f == 1;
                     $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
                 }
             } else {
