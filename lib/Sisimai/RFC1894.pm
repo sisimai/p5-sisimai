@@ -61,17 +61,6 @@ my $FieldGroup = {
     'x-original-message-id' => 'text',
 };
 
-sub FIELDINDEX {
-    # Return field name list defined in RFC3464
-    # @param    [String] argv0 Field group name: "rcpt", "mesg" or ""
-    # @return   [Array]        [Field-Name1, Field-Name2,...]
-    my $class = shift;
-    my $group = shift || '';
-    return $FieldNames->[0] if $group eq 'mesg';
-    return $FieldNames->[1] if $group eq 'rcpt';
-    return [@{ $FieldNames->[0] }, @{ $FieldNames->[1] }];
-}
-
 sub FIELDTABLE {
     # Return pairs that a field name and key name defined in Sisimai::Bite class
     return {
@@ -92,7 +81,6 @@ sub FIELDTABLE {
 sub match {
     # Check the argument matches with a field defined in RFC3464
     # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
-    # @param    [String] argv1 Field type: r: Per Recipient, m: Per Message
     # @return   [Integer]      0: did not matched, 1,2: matched
     my $class = shift;
     my $argv0 = shift || return undef;
