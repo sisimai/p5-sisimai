@@ -46,6 +46,20 @@ my $CapturesOn = {
 my $Correction = {
     'action' => { 'failure' => 'failed', 'expired' => 'delayed' },
 };
+my $FieldGroup = {
+    'original-recipient'    => 'addr',
+    'final-recipient'       => 'addr',
+    'x-actual-recipient'    => 'addr',
+    'diagnostic-code'       => 'code',
+    'arrival-date'          => 'date',
+    'last-attempt-date'     => 'date',
+    'received-from-mta'     => 'host',
+    'remote-mta'            => 'host',
+    'reporting-mta'         => 'host',
+    'action'                => 'list',
+    'status'                => 'stat',
+    'x-original-message-id' => 'text',
+};
 
 sub FIELDINDEX {
     # Return field name list defined in RFC3464
@@ -94,35 +108,37 @@ sub field {
     # @return   [Array]        ['field-name', 'value-type', 'Value', 'field-group']
     my $class = shift;
     my $argv0 = shift || return undef;
+    my $group = $FieldGroup->{ lc((split(':', $argv0, 2))[0]) };
     my $match = [];
 
-    for my $e ( keys %$CapturesOn ) {
+    return undef unless $group;
+    return undef unless exists $CapturesOn->{ $group };
+    while( $argv0 =~ $CapturesOn->{ $group } ) {
         # Try to match with each pattern of Per-Message field, Per-Recipient field
         # - 0: Field-Name
         # - 1: Sub Type: RFC822, DNS, X-Unix, and so on)
         # - 2: Value
         # - 3: Field Group(addr, code, date, host, stat, text)
-        next unless $argv0 =~ $CapturesOn->{ $e };
         $match->[0] = lc $1;
-        $match->[3] = $e;
+        $match->[3] = $group;
 
-        if( $e eq 'addr' || $e eq 'code' || $e eq 'host' ) {
+        if( $group eq 'addr' || $group eq 'code' || $group eq 'host' ) {
             # - Final-Recipient: RFC822; kijitora@nyaan.jp
             # - Diagnostic-Code: SMTP; 550 5.1.1 <kijitora@example.jp>... User Unknown
             # - Remote-MTA: DNS; mx.example.jp
             $match->[1] = uc $2;
-            $match->[2] = $e eq 'host' ? lc $3 : $3;
+            $match->[2] = $group eq 'host' ? lc $3 : $3;
             $match->[2] = '' if $match->[2] =~ /\A\s+\z/;   # Remote-MTA: dns; 
 
         } else {
             # - Action: failed
             # - Status: 5.2.2
             $match->[1] = '';
-            $match->[2] = $e eq 'date' ? $2 : lc $2;
+            $match->[2] = $group eq 'date' ? $2 : lc $2;
 
             # Correct invalid value in Action field:
-            next unless $e eq 'list';
-            next unless exists $Correction->{'action'}->{ $match->[2] };
+            last unless $group eq 'list';
+            last unless exists $Correction->{'action'}->{ $match->[2] };
             $match->[2] = $Correction->{'action'}->{ $match->[2] };
         }
         last;
@@ -152,7 +168,7 @@ Sisimai::RFC1894 - DSN field defined in RFC3464 (obsoletes RFC1894)
     my $v = Sisimai::RFC1894->field('Reporting-MTA: DNS; mx.nyaan.jp');
     my $r = Sisimai::RFC1894->field('Status: 5.1.1');
     print Data::Dumper::Dumper $v;  # ['reporting-mta', 'dns', 'mx.nyaan.org', 'host'];
-    print Data::Dumper::Dumper $r;  # ['status', '', '5.1.1', 'text'];
+    print Data::Dumper::Dumper $r;  # ['status', '', '5.1.1', 'stat'];
 
 =head1 DESCRIPTION
 
@@ -176,7 +192,7 @@ including DSN fields defined in RFC3464.
     my $v = Sisimai::RFC1894->field('Remote-MTA: DNS; mx.nyaan.jp');
     my $r = Sisimai::RFC1894->field('Status: 5.1.1');
     print Data::Dumper::Dumper $v;  # ['remote-mta', 'dns', 'mx.nyaan.org', 'host'];
-    print Data::Dumper::Dumper $r;  # ['status', '', '5.1.1', 'text'];
+    print Data::Dumper::Dumper $r;  # ['status', '', '5.1.1', 'stat'];
 
 =head1 AUTHOR
 
