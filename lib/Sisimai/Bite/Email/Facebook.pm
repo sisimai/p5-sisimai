@@ -171,11 +171,10 @@ sub scan {
                     $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
                 }
             } else {
-                # The line does not begin with a DSN field defined in RFC3464
-                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
-                    # Continued line of the value of Diagnostic-Code field
-                    $v->{'diagnosis'} .= ' '.$1;
-                }
+                # Continued line of the value of Diagnostic-Code field
+                next unless index($p, 'Diagnostic-Code:') == 0;
+                next unless $e =~ /\A[ \t]+(.+)\z/;
+                $v->{'diagnosis'} .= ' '.$1;
             }
         } # End of message/delivery-status
     } continue {

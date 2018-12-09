@@ -178,11 +178,10 @@ sub scan {
                         }
                     }
                 } else {
-                    # Continued line (Folded)
-                    if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
-                        # Continued line of the value of Diagnostic-Code field
-                        $v->{'diagnosis'} .= ' '.$1;
-                    }
+                    # Continued line of the value of Diagnostic-Code field
+                    next unless index($p, 'Diagnostic-Code:') == 0;
+                    next unless $e =~ /\A[ \t]+(.+)\z/;
+                    $v->{'diagnosis'} .= ' '.$1;
                 }
             }
         } # End of message/delivery-status

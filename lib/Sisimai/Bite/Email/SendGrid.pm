@@ -118,14 +118,11 @@ sub scan {
 
                 } elsif( $o->[-1] eq 'date' ) {
                     # Arrival-Date: 2012-12-31 23-59-59
-                    if( $e =~ /\AArrival-Date: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/ ) {
-                        # Arrival-Date: 2011-08-12 01-05-05
-                        $o->[1] .= 'Thu, '.$3.' ';
-                        $o->[1] .= Sisimai::DateTime->monthname(0)->[int($2) - 1];
-                        $o->[1] .= ' '.$1.' '.join(':', $4, $5, $6);
-                        $o->[1] .= ' '.Sisimai::DateTime->abbr2tz('CDT');
-                    }
-
+                    next unless $e =~ /\AArrival-Date: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/;
+                    $o->[1] .= 'Thu, '.$3.' ';
+                    $o->[1] .= Sisimai::DateTime->monthname(0)->[int($2) - 1];
+                    $o->[1] .= ' '.$1.' '.join(':', $4, $5, $6);
+                    $o->[1] .= ' '.Sisimai::DateTime->abbr2tz('CDT');
                 } else {
                     # Other DSN fields defined in RFC3464
                     next unless exists $fieldtable->{ $o->[0] };
@@ -158,10 +155,10 @@ sub scan {
                     $commandtxt = $1;
 
                 } else {
-                    if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
-                        # Continued line of the value of Diagnostic-Code field
-                        $v->{'diagnosis'} .= ' '.$1;
-                    }
+                    # Continued line of the value of Diagnostic-Code field
+                    next unless index($p, 'Diagnostic-Code:') == 0;
+                    next unless $e =~ /\A[ \t]+(.+)\z/;
+                    $v->{'diagnosis'} .= ' '.$1;
                 }
             }
         } # End of message/delivery-status
