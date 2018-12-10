@@ -169,8 +169,8 @@ sub scan {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         # Get the value of SMTP status code as a pseudo D.S.N.
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'status'} = $1.'.0.0' if $e->{'diagnosis'} =~ /\b([45])\d\d[ \t]*/;
 
         if( $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {

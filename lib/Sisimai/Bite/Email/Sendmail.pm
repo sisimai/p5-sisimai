@@ -216,11 +216,10 @@ sub scan {
             }
         }
 
-        unless( $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/ ) {
-            # @example.jp, no local part
-            # Get email address from the value of Diagnostic-Code header
-            $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
-        }
+        # @example.jp, no local part
+        # Get email address from the value of Diagnostic-Code header
+        next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
+        $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

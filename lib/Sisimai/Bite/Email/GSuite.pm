@@ -215,7 +215,6 @@ sub scan {
             last;
         }
     }
-
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }

@@ -364,28 +364,26 @@ sub scan {
         $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 
-        unless( $e->{'diagnosis'} ) {
+        if( ! $e->{'diagnosis'} && length($boundary00) > 0 ) {
             # Empty Diagnostic-Code: or error message
-            if( $boundary00 ) {
-                # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
-                # Content-type: message/delivery-status
-                #
-                # Reporting-MTA: dns; the.local.host.name
-                #
-                # Action: failed
-                # Final-Recipient: rfc822;/a/b/c
-                # Status: 5.0.0
-                #
-                # Action: failed
-                # Final-Recipient: rfc822;|/p/q/r
-                # Status: 5.0.0
-                $e->{'diagnosis'} = $dscontents->[0]->{'diagnosis'} || '';
-                $e->{'spec'}    ||= $dscontents->[0]->{'spec'};
+            # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
+            # Content-type: message/delivery-status
+            #
+            # Reporting-MTA: dns; the.local.host.name
+            #
+            # Action: failed
+            # Final-Recipient: rfc822;/a/b/c
+            # Status: 5.0.0
+            #
+            # Action: failed
+            # Final-Recipient: rfc822;|/p/q/r
+            # Status: 5.0.0
+            $e->{'diagnosis'} = $dscontents->[0]->{'diagnosis'} || '';
+            $e->{'spec'}    ||= $dscontents->[0]->{'spec'};
 
-                if( $dscontents->[0]->{'alterrors'} ) {
-                    # The value of "alterrors" is also copied
-                    $e->{'alterrors'} = $dscontents->[0]->{'alterrors'};
-                }
+            if( $dscontents->[0]->{'alterrors'} ) {
+                # The value of "alterrors" is also copied
+                $e->{'alterrors'} = $dscontents->[0]->{'alterrors'};
             }
         }
 
@@ -419,12 +417,10 @@ sub scan {
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
 
-            unless( $e->{'rhost'} ) {
-                if( scalar @{ $mhead->{'received'} } ) {
-                    # Get localhost and remote host name from Received header.
-                    my $r0 = $mhead->{'received'};
-                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received($r0->[-1]) };
-                }
+            if( ! $e->{'rhost'} && scalar @{ $mhead->{'received'} } ) {
+                # Get localhost and remote host name from Received header.
+                my $r0 = $mhead->{'received'};
+                $e->{'rhost'} = pop @{ Sisimai::RFC5322->received($r0->[-1]) };
             }
         }
 
