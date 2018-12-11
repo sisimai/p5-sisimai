@@ -9,7 +9,7 @@ require './t/999-values.pl';
 my $PackageName = 'Sisimai::DateTime';
 my $MethodNames = {
     'class' => [
-        'to_second', 'monthname', 'hourname', 'dayofweek',
+        'to_second', 'monthname', 'dayofweek',
         'parse', 'abbr2tz', 'tz2second', 'second2tz',
     ],
     'object' => [],
@@ -80,16 +80,6 @@ MAKE_TEST: {
         isa_ok $dayofweek, 'ARRAY', $v.'->dayofweek(1)';
         is $dayofweek->[0], 'Sunday', $v.'->dayofweek(1)->[0]';
         is $dayofweek->[6], 'Saturday', $v.'->dayofweek(1)->[6]';
-    }
-
-    HOURS: {
-        my $hours = $v->hourname(1);
-
-        isa_ok $hours, 'ARRAY', $v.'->hourname(1)';
-        is $hours->[0], 'Midnight', $v.'->hourname(1)->[0]';
-        is $hours->[6], 'Morning', $v.'->hourname(1)->[6]';
-        is $hours->[12], 'Noon', $v.'->hourname(1)->[12]';
-        is $hours->[18], 'Evening', $v.'->hourname(1)->[18]';
     }
 
     PARSE: {
