@@ -37,6 +37,8 @@ sub scan {
     return undef unless $mhead->{'x-mailer'};
     return undef unless $mhead->{'x-mailer'} eq 'SurfControl E-mail Filter';
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
@@ -109,23 +111,18 @@ sub scan {
 
             } else {
                 # Fallback, parse RFC3464 headers.
-                if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
-                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                    $v->{'spec'} = uc $1;
-                    $v->{'diagnosis'} = $2;
+                if( my $f = Sisimai::RFC1894->match($e) ) {
+                    # $e matched with any field defined in RFC3464
+                    next unless my $o = Sisimai::RFC1894->field($e);
+                    next if $o->[0] eq 'final-recipient';
+                    next unless exists $fieldtable->{ $o->[0] };
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
-                    # Continued line of the value of Diagnostic-Code header
+                } else {
+                    # Continued line of the value of Diagnostic-Code field
+                    next unless index($p, 'Diagnostic-Code:') == 0;
+                    next unless $e =~ /\A[ \t]+(.+)\z/;
                     $v->{'diagnosis'} .= ' '.$1;
-                    $e = 'Diagnostic-Code: '.$e;
-
-                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                    # Action: failed
-                    $v->{'action'} = lc $1;
-
-                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                    # Status: 5.0.-
-                    $v->{'status'} = $1;
                 }
             }
         } # End of error message part
