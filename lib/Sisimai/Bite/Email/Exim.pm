@@ -157,8 +157,9 @@ sub scan {
         )
     }x;
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -177,12 +178,12 @@ sub scan {
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
     }
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         last if $e eq $StartingOf->{'endof'}->[0];
 
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next unless $e =~ $MarkingsOf->{'frozen'};
@@ -190,7 +191,7 @@ sub scan {
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
+            # Beginning of the original message part(message/rfc822)
             if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
@@ -198,16 +199,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # message/rfc822 OR text/rfc822-headers part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -274,35 +274,31 @@ sub scan {
                         # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
                         # Content-type: message/delivery-status
                         # ...
-                        if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                            # Reporting-MTA: dns; mx.example.jp
-                            $v->{'lhost'} = $1;
+                        if( Sisimai::RFC1894->match($e) ) {
+                            # $e matched with any field defined in RFC3464
+                            my $o = Sisimai::RFC1894->field($e) || next;
 
-                        } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                            # Action: failed
-                            $v->{'action'} = lc $1;
+                            if( $o->[-1] eq 'addr' ) {
+                                # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
+                                next unless $o->[0] eq 'final-recipient';
+                                $v->{'spec'} ||= rindex($o->[2], '@') > -1 ? 'SMTP' : 'X-UNIX';
 
-                        } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                            # Status: 5.0.0
-                            $v->{'status'} = $1;
+                            } elsif( $o->[-1] eq 'code' ) {
+                                # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                                $v->{'spec'} = uc $o->[1];
+                                $v->{'diagnosis'} = $o->[2];
 
-                        } elsif( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
-                            # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                            $v->{'spec'} = uc $1;
-                            $v->{'diagnosis'} = $2;
-
-                        } elsif( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*(.+)\z/ ) {
-                            # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
-                            my $c = $1;
-                            $v->{'spec'} ||= rindex($c, '@') > -1 ? 'SMTP' : 'X-UNIX';
-
+                            } else {
+                                # Other DSN fields defined in RFC3464
+                                next unless exists $fieldtable->{ $o->[0] };
+                                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                            }
                         } else {
                             # Error message ?
-                            unless( $havepassed->{'deliverystatus'} ) {
-                                # Content-type: message/delivery-status
-                                $havepassed->{'deliverystatus'} = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
-                                $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
-                            }
+                            next if $havepassed->{'deliverystatus'};
+                            # Content-type: message/delivery-status
+                            $havepassed->{'deliverystatus'} = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
+                            $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
                         }
                     } else {
                         if( scalar @$dscontents == $recipients ) {
@@ -326,7 +322,7 @@ sub scan {
                     }
                 }
             }
-        } # End of if: rfc822
+        } # End of message/delivery-status
     }
 
     if( $recipients ) {
@@ -368,28 +364,26 @@ sub scan {
         $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 
-        unless( $e->{'diagnosis'} ) {
+        if( ! $e->{'diagnosis'} && length($boundary00) > 0 ) {
             # Empty Diagnostic-Code: or error message
-            if( $boundary00 ) {
-                # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
-                # Content-type: message/delivery-status
-                #
-                # Reporting-MTA: dns; the.local.host.name
-                #
-                # Action: failed
-                # Final-Recipient: rfc822;/a/b/c
-                # Status: 5.0.0
-                #
-                # Action: failed
-                # Final-Recipient: rfc822;|/p/q/r
-                # Status: 5.0.0
-                $e->{'diagnosis'} = $dscontents->[0]->{'diagnosis'} || '';
-                $e->{'spec'}    ||= $dscontents->[0]->{'spec'};
+            # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
+            # Content-type: message/delivery-status
+            #
+            # Reporting-MTA: dns; the.local.host.name
+            #
+            # Action: failed
+            # Final-Recipient: rfc822;/a/b/c
+            # Status: 5.0.0
+            #
+            # Action: failed
+            # Final-Recipient: rfc822;|/p/q/r
+            # Status: 5.0.0
+            $e->{'diagnosis'} = $dscontents->[0]->{'diagnosis'} || '';
+            $e->{'spec'}    ||= $dscontents->[0]->{'spec'};
 
-                if( $dscontents->[0]->{'alterrors'} ) {
-                    # The value of "alterrors" is also copied
-                    $e->{'alterrors'} = $dscontents->[0]->{'alterrors'};
-                }
+            if( $dscontents->[0]->{'alterrors'} ) {
+                # The value of "alterrors" is also copied
+                $e->{'alterrors'} = $dscontents->[0]->{'alterrors'};
             }
         }
 
@@ -423,12 +417,10 @@ sub scan {
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
 
-            unless( $e->{'rhost'} ) {
-                if( scalar @{ $mhead->{'received'} } ) {
-                    # Get localhost and remote host name from Received header.
-                    my $r0 = $mhead->{'received'};
-                    $e->{'rhost'} = pop @{ Sisimai::RFC5322->received($r0->[-1]) };
-                }
+            if( ! $e->{'rhost'} && scalar @{ $mhead->{'received'} } ) {
+                # Get localhost and remote host name from Received header.
+                my $r0 = $mhead->{'received'};
+                $e->{'rhost'} = pop @{ Sisimai::RFC5322->received($r0->[-1]) };
             }
         }
 

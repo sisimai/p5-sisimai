@@ -45,7 +45,6 @@ my $AddrHeader = {
     'addresser' => $RFC822Head->{'addresser'},
     'recipient' => $RFC822Head->{'recipient'},
 };
-my $ActionHead = { 'failure' => 'failed', 'expired' => 'delayed' };
 
 sub new {
     # Constructor of Sisimai::Data
@@ -309,28 +308,15 @@ sub make {
             # Check the value of SMTP command
             $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ /\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
 
-            if( $p->{'action'} ) {
-                # Action: expanded (to multi-recipient alias)
-                $p->{'action'} = $1 if $p->{'action'} =~ /\A(.+?) .+/;
+            # Check "Action:" field
+            next if length $p->{'action'};
+            if( $p->{'reason'} eq 'expired' ) {
+                # Action: delayed
+                $p->{'action'} = 'delayed';
 
-                unless( $p->{'action'} =~ /\A(?:failed|delayed|delivered|relayed|expanded)\z/ ) {
-                    # The value of "action" is not in the following values:
-                    # "failed" / "delayed" / "delivered" / "relayed" / "expanded"
-                    for my $q ( keys %$ActionHead ) {
-                        next unless $p->{'action'} eq $q;
-                        $p->{'action'} = $ActionHead->{ $q };
-                        last;
-                    }
-                }
-            } else {
-                if( $p->{'reason'} eq 'expired' ) {
-                    # Action: delayed
-                    $p->{'action'} = 'delayed';
-
-                } elsif( index($p->{'deliverystatus'}, '5') == 0 || index($p->{'deliverystatus'}, '4') == 0 ) {
-                    # Action: failed
-                    $p->{'action'} = 'failed';
-                }
+            } elsif( index($p->{'deliverystatus'}, '5') == 0 || index($p->{'deliverystatus'}, '4') == 0 ) {
+                # Action: failed
+                $p->{'action'} = 'failed';
             }
         }
         $o = __PACKAGE__->new(%$p);

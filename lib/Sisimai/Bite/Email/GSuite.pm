@@ -40,8 +40,11 @@ sub scan {
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     return undef unless $mhead->{'x-gm-message-state'};
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -49,25 +52,20 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for a blank line after error messages
     my $emptylines = 0;     # (Integer) The number of empty lines
-    my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
     my $anotherset = {      # (Hash) Another error information
         'diagnosis' => '',
     };
-    my $connheader = {
-        'date'  => '',      # The value of Arrival-Date header
-        'lhost' => '',      # The value of Reporting-MTA header
-    };
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
+            # Beginning of the original message part(message/rfc822)
             if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
@@ -75,136 +73,101 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # message/rfc822 or text/rfc822-headers part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};
-
-            if( $connvalues == scalar(keys %$connheader) ) {
-                # Final-Recipient: rfc822; kijitora@example.de
-                # Action: failed
-                # Status: 5.0.0
-                # Remote-MTA: dns; 192.0.2.222 (192.0.2.222, the server for the domain.)
-                # Diagnostic-Code: smtp; 550 #5.1.0 Address rejected.
-                # Last-Attempt-Date: Fri, 24 Mar 2017 23:34:10 -0700 (PDT)
+            if( my $f = Sisimai::RFC1894->match($e) ) {
+                # $e matched with any field defined in RFC3464
+                my $o = Sisimai::RFC1894->field($e) || next;
                 $v = $dscontents->[-1];
 
-                if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
-                    # Final-Recipient: rfc822; kijitora@example.de
-                    if( $v->{'recipient'} ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[-1];
-                    }
-                    $v->{'recipient'} = $1;
-                    $recipients++;
-
-                } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                    # Action: failed
-                    $v->{'action'} = lc $1;
-
-                } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                    # Status: 5.0.0
-                    $v->{'status'} = $1;
-
-                } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                    # Remote-MTA: dns; 192.0.2.222 (192.0.2.222, the server for the domain.)
-                    $v->{'rhost'} = lc $1;
-                    $v->{'rhost'} = '' if $v->{'rhost'} =~ /\A\s+\z/;  # Remote-MTA: DNS; 
-
-                } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
-                    # Last-Attempt-Date: Fri, 24 Mar 2017 23:34:10 -0700 (PDT)
-                    $v->{'date'} = $1;
-
-                } else {
-                    if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
-                        # Diagnostic-Code: smtp; 550 #5.1.0 Address rejected.
-                        $v->{'spec'} = uc $1;
-                        $v->{'diagnosis'} = $2;
+                if( $o->[-1] eq 'addr' ) {
+                    # Final-Recipient: rfc822; kijitora@example.jp
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    if( $o->[0] eq 'final-recipient' ) {
+                        # Final-Recipient: rfc822; kijitora@example.jp
+                        if( $v->{'recipient'} ) {
+                            # There are multiple recipient addresses in the message body.
+                            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                            $v = $dscontents->[-1];
+                        }
+                        $v->{'recipient'} = $o->[2];
+                        $recipients++;
 
                     } else {
-                        # Append error messages continued from the previous line
-                        if( ! $endoferror && $v->{'diagnosis'} ) {
-                            $endoferror ||= 1 if $e eq '';
-                            $endoferror ||= 1 if index($e, '--') == 0;
-
-                            next if $endoferror;
-                            next unless index($e, ' ') == 0;
-                            $v->{'diagnosis'} .= $e;
-                        }
+                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                        $v->{'alias'} = $o->[2];
                     }
-                }
-            } else {
-                # Reporting-MTA: dns; googlemail.com
-                # Received-From-MTA: dns; sironeko@example.jp
-                # Arrival-Date: Fri, 24 Mar 2017 23:34:07 -0700 (PDT)
-                # X-Original-Message-ID: <06C1ED5C-7E02-4036-AEE1-AA448067FB2C@example.jp>
-                if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                    # Reporting-MTA: dns; googlemail.com
-                    next if $connheader->{'lhost'};
-                    $connheader->{'lhost'} = lc $1;
-                    $connvalues++;
-
-                } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
-                    # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
-                    next if $connheader->{'date'};
-                    $connheader->{'date'} = $1;
-                    $connvalues++;
+                } elsif( $o->[-1] eq 'code' ) {
+                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                    $v->{'spec'} = $o->[1];
+                    $v->{'diagnosis'} = $o->[2];
 
                 } else {
-                    # Detect SMTP session error or connection error
-                    if( $e =~ $MarkingsOf->{'error'} ) {
-                        # The response from the remote server was:
-                        $anotherset->{'diagnosis'} .= $e;
+                    # Other DSN fields defined in RFC3464
+                    next unless exists $fieldtable->{ $o->[0] };
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                    next unless $f == 1;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                }
+            } else {
+                # The line does not begin with a DSN field defined in RFC3464
+                if( ! $endoferror && $v->{'diagnosis'} ) {
+                    # Append error messages continued from the previous line
+                    $endoferror ||= 1 if $e eq '';
+                    next if $endoferror;
+                    $v->{'diagnosis'} .= $e;
+
+                } elsif( $e =~ $MarkingsOf->{'error'} ) {
+                    # The response from the remote server was:
+                    $anotherset->{'diagnosis'} .= $e;
+
+                } else {
+                    # ** Address not found **
+                    #
+                    # Your message wasn't delivered to * because the address couldn't be found.
+                    # Check for typos or unnecessary spaces and try again.
+                    #
+                    # The response from the remote server was:
+                    # 550 #5.1.0 Address rejected.
+                    next if $e =~ /\AContent-Type:/;
+                    if( $anotherset->{'diagnosis'} ) {
+                        # Continued error messages from the previous line like
+                        # "550 #5.1.0 Address rejected."
+                        next if $emptylines > 5;
+                        unless( length $e ) {
+                            # Count and next()
+                            $emptylines += 1;
+                            next;
+                        }
+                        $anotherset->{'diagnosis'} .= ' '.$e
 
                     } else {
                         # ** Address not found **
                         #
                         # Your message wasn't delivered to * because the address couldn't be found.
                         # Check for typos or unnecessary spaces and try again.
-                        #
-                        # The response from the remote server was:
-                        # 550 #5.1.0 Address rejected.
-                        next if $e =~ $MarkingsOf->{'html'};
-
-                        if( $anotherset->{'diagnosis'} ) {
-                            # Continued error messages from the previous line like
-                            # "550 #5.1.0 Address rejected."
-                            next if $e =~ /\AContent-Type:/;
-                            next if $emptylines > 5;
-                            unless( length $e ) {
-                                # Count and next()
-                                $emptylines += 1;
-                                next;
-                            }
-                            $anotherset->{'diagnosis'} .= ' '.$e
-
-                        } else {
-                            # ** Address not found **
-                            #
-                            # Your message wasn't delivered to * because the address couldn't be found.
-                            # Check for typos or unnecessary spaces and try again.
-                            next unless $e;
-                            next unless $e =~ $MarkingsOf->{'message'};
-                            $anotherset->{'diagnosis'} = $e;
-                        }
+                        next unless $e =~ $MarkingsOf->{'message'};
+                        $anotherset->{'diagnosis'} = $e;
                     }
                 }
             }
-        } # End of if: rfc822
+        } # End of message/delivery-status
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
+        $e->{'lhost'} ||= $permessage->{'rhost'};
+        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
@@ -252,7 +215,6 @@ sub scan {
             last;
         }
     }
-
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }

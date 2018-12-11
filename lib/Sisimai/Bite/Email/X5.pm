@@ -49,8 +49,9 @@ sub scan {
     }
     return undef if $match < 2;
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -59,10 +60,10 @@ sub scan {
     my $v = undef;
     my $p = '';
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
@@ -70,7 +71,7 @@ sub scan {
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
+            # Beginning of the original message part(message/rfc822)
             if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
@@ -78,67 +79,55 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Before "message/rfc822"
+            # message/delivery-status part
             next unless length $e;
             $v = $dscontents->[-1];
 
-            if( $e =~ /\AFinal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
-                # Final-Recipient: RFC822; kijitora@example.jp
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
+            if( Sisimai::RFC1894->match($e) ) {
+                # $e matched with any field defined in RFC3464
+                my $o = Sisimai::RFC1894->field($e) || next;
+                $v = $dscontents->[-1];
 
-            } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
-                     $e =~ /\AOriginal-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
-                # X-Actual-Recipient: RFC822; kijitora@example.co.jp
-                # Original-Recipient: rfc822;kijitora@example.co.jp
-                $v->{'alias'} = $1;
+                if( $o->[-1] eq 'addr' ) {
+                    # Final-Recipient: rfc822; kijitora@example.jp
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    if( $o->[0] eq 'final-recipient' ) {
+                        # Final-Recipient: rfc822; kijitora@example.jp
+                        if( $v->{'recipient'} ) {
+                            # There are multiple recipient addresses in the message body.
+                            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                            $v = $dscontents->[-1];
+                        }
+                        $v->{'recipient'} = $o->[2];
+                        $recipients++;
 
-            } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                # Action: failed
-                $v->{'action'} = lc $1;
-
-            } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                # Status: 5.1.1
-                $v->{'status'} = $1;
-
-            } elsif( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                # Reporting-MTA: dns; mx.example.jp
-                $v->{'lhost'} = lc $1;
-
-            } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                # Remote-MTA: DNS; mx.example.jp
-                $v->{'rhost'} = lc $1;
-
-            } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
-                # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
-                $v->{'date'} = $1;
-
-            } else {
-                # Get an error message from Diagnostic-Code: field
-                if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
+                    } else {
+                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                        $v->{'alias'} = $o->[2];
+                    }
+                } elsif( $o->[-1] eq 'code' ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                    $v->{'spec'} = uc $1;
-                    $v->{'diagnosis'} = $2;
+                    $v->{'spec'} = $o->[1];
+                    $v->{'diagnosis'} = $o->[2];
 
-                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
-                    # Continued line of the value of Diagnostic-Code header
-                    $v->{'diagnosis'} .= ' '.$1;
-                    $e = 'Diagnostic-Code: '.$e;
+                } else {
+                    # Other DSN fields defined in RFC3464
+                    next unless exists $fieldtable->{ $o->[0] };
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
                 }
+            } else {
+                # Continued line of the value of Diagnostic-Code field
+                next unless index($p, 'Diagnostic-Code:') == 0;
+                next unless $e =~ /\A[ \t]+(.+)\z/;
+                $v->{'diagnosis'} .= ' '.$1;
             }
         } else {
-            # After "message/rfc822"
+            # message/rfc822 OR text/rfc822-headers part
             next unless $recipients;
             next unless $readcursor & $Indicators->{'deliverystatus'};
 
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
@@ -153,7 +142,6 @@ sub scan {
         $e->{'diagnosis'} ||= Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}       = __PACKAGE__->smtpagent;
     }
-
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
 }
