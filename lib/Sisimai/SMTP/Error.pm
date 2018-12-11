@@ -24,9 +24,8 @@ sub is_permanent {
     my $class = shift;
     my $argv1 = shift || return undef;
 
-    my $statuscode   = Sisimai::SMTP::Status->find($argv1);
-       $statuscode ||= Sisimai::SMTP::Reply->find($argv1);
-    my $classvalue   = int(substr($statuscode, 0, 1) || 0);
+    my $statuscode = Sisimai::SMTP::Status->find($argv1) || Sisimai::SMTP::Reply->find($argv1);
+    my $classvalue = int(substr($statuscode, 0, 1) || 0);
     my $getchecked = undef;
 
     if( $classvalue > 0 ) {
@@ -74,32 +73,27 @@ sub soft_or_hard {
     my $class = shift;
     my $argv1 = shift || return '';
     my $argv2 = shift || '';
-
-    my $getchecked = undef;
-    my $statuscode = undef;
-    my $classvalue = undef;
-    my $softorhard = undef;
+    my $value = undef;
 
     if( $argv1 eq 'deliverd' || $argv1 eq 'feedback' || $argv1 eq 'vacation' ) {
         # These are not dealt as a bounce reason
-        $softorhard = '';
+        $value = '';
 
     } elsif( $argv1 eq 'onhold' || $argv1 eq 'undefined' ) {
         # It should be "soft" when a reason is "onhold" or "undefined"
-        $softorhard = 'soft';
+        $value = 'soft';
 
     } elsif( $argv1 eq 'notaccept' ) {
         # NotAccept: 5xx => hard bounce, 4xx => soft bounce
         if( $argv2 ) {
             # Get D.S.N. or SMTP reply code from The 2nd argument string
-            $statuscode   = Sisimai::SMTP::Status->find($argv2);
-            $statuscode ||= Sisimai::SMTP::Reply->find($argv2);
-            $classvalue   = int(substr($statuscode, 0, 1) || 0);
-            $softorhard   = $classvalue == 4 ? 'soft' : 'hard';
+            my $statuscode = Sisimai::SMTP::Status->find($argv2) || Sisimai::SMTP::Reply->find($argv2);
+            my $classvalue = int(substr($statuscode, 0, 1) || 0);
+            $value = $classvalue == 4 ? 'soft' : 'hard';
 
         } else {
             # "notaccept" is a hard bounce
-            $softorhard = 'hard';
+            $value = 'hard';
         }
     } else {
         # Check all the reasons defined at the above
@@ -108,13 +102,13 @@ sub soft_or_hard {
             for my $f ( @{ $SoftOrHard->{ $e } } ) {
                 # Hard bounce?
                 next unless $argv1 eq $f;
-                $softorhard = $e;
+                $value = $e;
                 last(SOFT_OR_HARD);
             }
         }
     }
-    $softorhard //= '';
-    return $softorhard;
+    $value //= '';
+    return $value;
 }
 
 1;

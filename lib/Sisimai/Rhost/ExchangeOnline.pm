@@ -130,36 +130,34 @@ sub get {
         }
         last if $reasontext;
     }
+    return $reasontext if $reasontext;
 
-    if( not $reasontext ) {
-        for my $e ( keys %$ReStatuses ) {
-            # Try to compare with each string of delivery status codes
-            next unless $statuscode =~ $e;
-            for my $f ( @{ $ReStatuses->{ $e } } ) {
-                # Try to compare with each string of error messages
-                for my $g ( @{ $f->{'string'} } ) {
-                    next if index($statusmesg, $g) == -1;
-                    $reasontext = $f->{'reason'};
-                    last;
-                }
-                last if $reasontext;
+    for my $e ( keys %$ReStatuses ) {
+        # Try to compare with each string of delivery status codes
+        next unless $statuscode =~ $e;
+        for my $f ( @{ $ReStatuses->{ $e } } ) {
+            # Try to compare with each string of error messages
+            for my $g ( @{ $f->{'string'} } ) {
+                next if index($statusmesg, $g) == -1;
+                $reasontext = $f->{'reason'};
+                last;
             }
             last if $reasontext;
         }
+        last if $reasontext;
+    }
+    return $reasontext if $reasontext;
 
-        if( not $reasontext ) {
-            # D.S.N. included in the error message did not matched with any key
-            # in $StatusList, $ReStatuses
-            for my $e ( keys %$MessagesOf ) {
-                # Try to compare with error messages defined in MessagesOf
-                for my $f ( @{ $MessagesOf->{ $e } } ) {
-                    next if index($statusmesg, $f) == -1;
-                    $reasontext = $e;
-                    last;
-                }
-                last if $reasontext;
-            }
+    # D.S.N. included in the error message did not matched with any key
+    # in $StatusList, $ReStatuses
+    for my $e ( keys %$MessagesOf ) {
+        # Try to compare with error messages defined in MessagesOf
+        for my $f ( @{ $MessagesOf->{ $e } } ) {
+            next if index($statusmesg, $f) == -1;
+            $reasontext = $e;
+            last;
         }
+        last if $reasontext;
     }
     return $reasontext;
 }

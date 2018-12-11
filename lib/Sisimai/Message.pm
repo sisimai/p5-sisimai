@@ -64,8 +64,6 @@ sub new {
         'hook'  => $argvs->{'hook'}  // undef,
         'field' => $field,
     };
-    my $datasource = undef;
-    my $mesgobject = undef;
 
     for my $e ('load', 'order') {
         # Order of MTA modules
@@ -75,10 +73,10 @@ sub new {
         $methodargv->{ $e } = $argvs->{ $e };
     }
 
-    $datasource = $child->make(%$methodargv);
+    my $datasource = $child->make(%$methodargv);
     return undef unless $datasource->{'ds'};
 
-    $mesgobject = {
+    my $mesgobject = {
         'from'   => $datasource->{'from'},
         'header' => $datasource->{'header'},
         'ds'     => $datasource->{'ds'},

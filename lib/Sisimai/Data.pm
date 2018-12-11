@@ -157,15 +157,13 @@ sub make {
 
         EMAIL_ADDRESS: {
             # Detect email address from message/rfc822 part
-            my $h = undef;
-            my $j = undef;
             for my $f ( @{ $fieldorder->{'addresser'} } ) {
                 # Check each header in message/rfc822 part
-                $h = lc $f;
+                my $h = lc $f;
                 next unless exists $rfc822data->{ $h };
                 next unless $rfc822data->{ $h };
 
-                $j = Sisimai::Address->find($rfc822data->{ $h }) || [];
+                my $j = Sisimai::Address->find($rfc822data->{ $h }) || [];
                 next unless scalar @$j;
                 $p->{'addresser'} = $j->[0];
                 last;
@@ -174,7 +172,7 @@ sub make {
             unless( $p->{'addresser'} ) {
                 # Fallback: Get the sender address from the header of the bounced
                 # email if the address is not set at loop above.
-                $j = Sisimai::Address->find($messageobj->{'header'}->{'to'}) || [];
+                my $j = Sisimai::Address->find($messageobj->{'header'}->{'to'}) || [];
                 $p->{'addresser'} = $j->[0] if scalar @$j;
             }
         }
@@ -204,14 +202,12 @@ sub make {
                 last if $datestring;
             }
 
-            if( defined $datestring ) {
+            if( defined $datestring && $datestring =~ /\A(.+)[ ]+([-+]\d{4})\z/ ) {
                 # Get the value of timezone offset from $datestring
-                if( $datestring =~ /\A(.+)[ ]+([-+]\d{4})\z/ ) {
-                    # Wed, 26 Feb 2014 06:05:48 -0500
-                    $datestring = $1;
-                    $zoneoffset = Sisimai::DateTime->tz2second($2);
-                    $p->{'timezoneoffset'} = $2;
-                }
+                # Wed, 26 Feb 2014 06:05:48 -0500
+                $datestring = $1;
+                $zoneoffset = Sisimai::DateTime->tz2second($2);
+                $p->{'timezoneoffset'} = $2;
             }
 
             eval {
@@ -226,7 +222,6 @@ sub make {
         OTHER_TEXT_HEADERS: {
             # Scan "Received:" header of the original message
             my $recvheader = $argvs->{'data'}->{'header'}->{'received'} || [];
-
             if( scalar @$recvheader ) {
                 # Get localhost and remote host name from Received header.
                 $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($recvheader->[0]) };
@@ -247,9 +242,7 @@ sub make {
             $p->{'subject'} =  $rfc822data->{'subject'} // '';
             $p->{'subject'} =~ s/\r\z//g;
 
-            # The value of "List-Id" header
-            $p->{'listid'} =  $rfc822data->{'list-id'} // '';
-            if( $p->{'listid'} ) {
+            if( $p->{'listid'} = $rfc822data->{'list-id'} // '' ) {
                 # Get the value of List-Id header: "List name <list-id@example.org>"
                 $p->{'listid'} =  $1 if $p->{'listid'} =~ /\A.*([<].+[>]).*\z/;
                 $p->{'listid'} =~ y/<>//d;
@@ -257,9 +250,7 @@ sub make {
                 $p->{'listid'} =  '' if rindex($p->{'listid'}, ' ') > -1;
             }
 
-            # The value of "Message-Id" header
-            $p->{'messageid'} = $rfc822data->{'message-id'} // '';
-            if( $p->{'messageid'} ) {
+            if( $p->{'messageid'} = $rfc822data->{'message-id'} // '' ) {
                 # Leave only string inside of angle brackets(<>)
                 $p->{'messageid'} = $1 if $p->{'messageid'} =~ /\A([^ ]+)[ ].*/;
                 $p->{'messageid'} = $1 if $p->{'messageid'} =~ /[<]([^ ]+?)[>]/;
@@ -365,18 +356,15 @@ sub make {
 
                 $textasargv =  $o->replycode.' '.$p->{'diagnosticcode'};
                 $textasargv =~ s/\A[ ]//g;
+                $getchecked =  Sisimai::SMTP::Error->is_permanent($textasargv);
+                $tmpfailure =  defined $getchecked ? ( $getchecked == 1 ? 0 : 1 ) : 0;
 
-                $getchecked = Sisimai::SMTP::Error->is_permanent($textasargv);
-                $tmpfailure = defined $getchecked ? ( $getchecked == 1 ? 0 : 1 ) : 0;
-                $pseudocode = Sisimai::SMTP::Status->code($o->reason, $tmpfailure);
-
-                if( $pseudocode ) {
+                if( $pseudocode = Sisimai::SMTP::Status->code($o->reason, $tmpfailure) ) {
                     # Set the value of "deliverystatus" and "softbounce".
                     $o->deliverystatus($pseudocode);
                     if( $o->softbounce == -1 ) {
                         # Set the value of "softbounce" again when the value is -1
-                        $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->reason, $pseudocode);
-                        if( $softorhard ) {
+                        if( $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->reason, $pseudocode) ) {
                             # Returned value is "soft" or "hard"
                             $o->softbounce($softorhard eq 'soft' ? 1 : 0);
 

@@ -42,13 +42,14 @@ sub true {
     my $argvs = shift // return undef;
     return 1 if $argvs->reason eq 'filtered';
 
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
+    return 0 if $tempreason eq 'suspend';
+
     require Sisimai::Reason::UserUnknown;
+    my $alterclass = 'Sisimai::Reason::UserUnknown';
     my $commandtxt = $argvs->smtpcommand // '';
     my $diagnostic = lc $argvs->diagnosticcode // '';
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
-    my $alterclass = 'Sisimai::Reason::UserUnknown';
 
-    return 0 if $tempreason eq 'suspend';
     if( $tempreason eq 'filtered' ) {
         # Delivery status code points "filtered".
         return 1 if( $alterclass->match($diagnostic) || __PACKAGE__->match($diagnostic) );
