@@ -115,7 +115,6 @@ sub scan {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for the end of error messages
-    my $htmlbegins = 0;     # (Integer) Flag for HTML part
     my $v = undef;
 
     for my $e ( split("\n", $$mbody) ) {
@@ -172,26 +171,15 @@ sub scan {
             } else {
                 if( $endoferror ) {
                     # After "Original message headers:"
-                    if( $htmlbegins ) {
-                        # <html> .. </html>
-                        $htmlbegins = 0 if index($e, '</html>') == 0;
-                        next;
-                    }
+                    next unless my $f = Sisimai::RFC1894->match($e);
+                    next unless my $o = Sisimai::RFC1894->field($e);
+                    next unless exists $fieldtable->{ $o->[0] };
+                    next if $o->[0] =~ /\A(?:diagnostic-code|final-recipient)\z/;
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                    if( my $f = Sisimai::RFC1894->match($e) ) {
-                        # $e matched with any field defined in RFC3464
-                        next unless my $o = Sisimai::RFC1894->field($e);
-                        next unless exists $fieldtable->{ $o->[0] };
-                        next if $o->[0] =~ /\A(?:diagnostic-code|final-recipient)\z/;
-                        $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                    next unless $f == 1;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                        next unless $f == 1;
-                        $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
-
-                    } else {
-                        # The line does not begin with a DSN field defined in RFC3464
-                        $htmlbegins = 1 if index($e, '<html>') == 0;
-                    }
                 } else {
                     if( $e eq $StartingOf->{'error'}->[0] ) {
                         # Diagnostic information for administrators:
