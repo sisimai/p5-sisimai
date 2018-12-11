@@ -34,7 +34,6 @@ sub scan {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -42,7 +41,7 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -61,16 +60,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -128,12 +126,12 @@ sub scan {
                 my $sessionlog = $2; # smtp session
                 $v->{'rhost'} = $remotehost;
 
-                if( $sessionlog =~ /\A[(]TCP|(.+)|\d+|(.+)|\d+[)]/ ) {
-                    # The value does not include ".", use IP address instead.
-                    # (TCP|17.111.174.67|47323|192.0.2.225|25)
-                    $v->{'lhost'} = $1;
-                    $v->{'rhost'} = $2 unless $remotehost =~ /[^.]+[.][^.]+/;
-                }
+                # The value does not include ".", use IP address instead.
+                # (TCP|17.111.174.67|47323|192.0.2.225|25)
+                next unless $sessionlog =~ /\A[(]TCP|(.+)|\d+|(.+)|\d+[)]/;
+                $v->{'lhost'} = $1;
+                $v->{'rhost'} = $2 unless $remotehost =~ /[^.]+[.][^.]+/;
+
             } else {
                 # Original-envelope-id: 0NFC009FLKOUVMA0@mr21p30im-asmtp004.me.com
                 # Reporting-MTA: dns;mr21p30im-asmtp004.me.com (tcp-daemon)
@@ -163,7 +161,7 @@ sub scan {
                     $v->{'lhost'}   = $localhost unless $v->{'lhost'} =~ /[^.]+[.][^ ]+/;
                 }
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 

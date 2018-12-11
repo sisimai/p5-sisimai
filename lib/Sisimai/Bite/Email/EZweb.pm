@@ -72,7 +72,6 @@ sub scan {
     return undef if $match < 2;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -88,7 +87,7 @@ sub scan {
     }
     my @rxmessages = (); map { push @rxmessages, @{ $ReFailures->{ $_ } } } (keys %$ReFailures);
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -104,16 +103,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -141,10 +139,10 @@ sub scan {
                 }
 
                 my $r = Sisimai::Address->s3s4($1);
-                if( Sisimai::RFC5322->is_emailaddress($r) ) {
-                    $v->{'recipient'} = $r;
-                    $recipients++;
-                }
+                next unless Sisimai::RFC5322->is_emailaddress($r);
+                $v->{'recipient'} = $r;
+                $recipients++;
+
             } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
                 # Status: 5.1.1
                 # Status:5.2.0
@@ -180,11 +178,13 @@ sub scan {
                     }
                 }
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
+        $e->{'agent'} = __PACKAGE__->smtpagent;
+
         if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
@@ -195,7 +195,6 @@ sub scan {
             delete $e->{'alterrors'};
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'agent'} = __PACKAGE__->smtpagent;
 
 
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {

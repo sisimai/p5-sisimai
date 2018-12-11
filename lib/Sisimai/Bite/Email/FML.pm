@@ -67,7 +67,6 @@ sub scan {
     return undef unless $mhead->{'message-id'} =~ /\A[<]\d+[.]FML.+[@].+[>]\z/;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -76,7 +75,7 @@ sub scan {
     my $v = undef;
 
     $readcursor |= $Indicators->{'deliverystatus'};
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
@@ -93,15 +92,14 @@ sub scan {
             #    Return-Path: <owner-2ndml@example.com>
             #    ...
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             substr($e, 0, 3, '') if substr($e, 0, 3) eq '   ';
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -125,7 +123,7 @@ sub scan {
                 # the mail body 
                 $v->{'diagnosis'} .= $e;
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 
@@ -139,15 +137,14 @@ sub scan {
             $e->{'reason'} = $f;
             last;
         }
+        next if $e->{'reason'};
 
-        unless( $e->{'reason'} ) {
-            # Error messages in the message body did not matched
-            for my $f ( keys %$ErrorTitle ) {
-                # Try to match with the Subject string
-                next unless $mhead->{'subject'} =~ $ErrorTitle->{ $f };
-                $e->{'reason'} = $f;
-                last;
-            }
+        # Error messages in the message body did not matched
+        for my $f ( keys %$ErrorTitle ) {
+            # Try to match with the Subject string
+            next unless $mhead->{'subject'} =~ $ErrorTitle->{ $f };
+            $e->{'reason'} = $f;
+            last;
         }
     }
 

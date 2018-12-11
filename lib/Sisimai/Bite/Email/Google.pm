@@ -173,7 +173,6 @@ sub scan {
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -182,7 +181,7 @@ sub scan {
     my $statecode0 = 0;     # (Integer) The value of (state *) in the error message
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -198,16 +197,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -236,15 +234,15 @@ sub scan {
                     $v = $dscontents->[-1];
                 }
 
-                my $addr0 = Sisimai::Address->s3s4($1);
-                if( Sisimai::RFC5322->is_emailaddress($addr0) ) {
-                    $v->{'recipient'} = $addr0;
-                    $recipients++;
-                }
+                my $r = Sisimai::Address->s3s4($1);
+                next unless Sisimai::RFC5322->is_emailaddress($r);
+                $v->{'recipient'} = $r;
+                $recipients++;
+
             } else {
                 $v->{'diagnosis'} .= $e.' ';
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 
@@ -286,12 +284,10 @@ sub scan {
         }
         next unless $e->{'reason'};
 
-        # Set pseudo status code
+        # Set pseudo status code and override bounce reason 
         $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'});
-        if( $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/ ) {
-            # Override bounce reason 
-            $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'});
-        }
+        next unless $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/;
+        $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'});
     }
 
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
