@@ -131,12 +131,10 @@ sub scan {
                 # Diagnostic information for administrators:
                 #
                 # Generating server: mta22.neko.example.org
-                if( $e =~ $MarkingsOf->{'rhost'} ) {
-                    # Generating server: mta22.neko.example.org
-                    next if $connheader->{'rhost'};
-                    $connheader->{'rhost'} = $1;
-                    $connvalues++;
-                }
+                next unless $e =~ $MarkingsOf->{'rhost'};
+                next if $connheader->{'rhost'};
+                $connheader->{'rhost'} = $1;
+                $connvalues++;
             }
         } # End of error message part
     }

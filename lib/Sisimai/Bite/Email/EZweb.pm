@@ -213,12 +213,7 @@ sub scan {
             }
         }
         next if $e->{'reason'};
-
-        # The value of "reason" is not set yet.
         next if $e->{'recipient'} =~ /[@](?:ezweb[.]ne[.]jp|au[.]com)\z/;
-
-        # Deal as "userunknown" when the domain part of the recipient
-        # is "ezweb.ne.jp".
         $e->{'reason'} = 'userunknown';
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
