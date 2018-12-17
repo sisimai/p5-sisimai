@@ -40,11 +40,6 @@ my $DayOfWeek = {
     'abbr' => [qw|Sun Mon Tue Wed Thu Fri Sat|],
 };
 
-my $HourName = {
-    'full' => [qw|Midnight 1 2 3 4 5 Morning 7 8 9 10 11 Noon 13 14 15 16 17 Evening 19 20 21 22 23|],
-    'abbr' => [0..23],
-};
-
 my $TimeZoneAbbr = {
     # http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations
     #'ACDT' => '+1030', # Australian Central Daylight Time  UTC+10:30
@@ -237,21 +232,6 @@ sub dayofweek {
 
     return @{ $DayOfWeek->{ $value } } if wantarray;
     return $DayOfWeek->{ $value };
-}
-
-sub hourname {
-    # Hour name list
-    # @param    [Integer] argv1 Require full name
-    # @return   [Array, String] Month name
-    # @example  Get the names of each hour
-    #   hourname()  #=> [0, 1, 2, ... 23]
-    #   hourname(1) #=> ['Midnight', 1, 2, ... 'Morning', 7, ... 'Noon', ... 23]
-    my $class = shift;
-    my $argv1 = shift // 1;
-    my $value = $argv1 ? 'full' : 'abbr';
-
-    return @{ $HourName->{ $value } } if wantarray;
-    return $HourName->{ $value };
 }
 
 sub parse {

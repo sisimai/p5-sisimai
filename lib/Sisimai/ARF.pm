@@ -81,7 +81,6 @@ sub scan {
     return undef unless is_arf(undef, $mhead);
 
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $previousfn = '';    # (String) Previous field name
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -121,10 +120,10 @@ sub scan {
     #      generator is using to generate the report.  The version number in
     #      this specification is set to "1".
     #
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             if( $e =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
@@ -141,7 +140,7 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # message/rfc822 OR text/rfc822-headers part
             if( $e =~ /X-HmXmrOriginalRecipient:[ ]*(.+)\z/ ) {
                 # Microsoft ARF: original recipient.
                 $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
@@ -175,7 +174,7 @@ sub scan {
                 $rcptintext .= $e if $previousfn eq 'to';
             }
         } else {
-            # Before "message/rfc822"
+            # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -266,10 +265,8 @@ sub scan {
 
     unless( $rfc822part =~ /\bFrom: [^ ]+[@][^ ]+\b/ ) {
         # There is no "From:" header in the original message
-        if( $commondata->{'from'} ) {
-            # Append the value of "Original-Mail-From" value as a sender address.
-            $rfc822part .= 'From: '.$commondata->{'from'}."\n";
-        }
+        # Append the value of "Original-Mail-From" value as a sender address.
+        $rfc822part .= 'From: '.$commondata->{'from'}."\n" if $commondata->{'from'};
     }
 
     if( $mhead->{'subject'} =~ /complaint about message from (\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3})/ ) {
@@ -291,23 +288,22 @@ sub scan {
         $e->{'softbounce'}  = -1;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
         $e->{'date'}      ||= $mhead->{'date'};
+        $e->{'reason'}      = 'feedback';
+        $e->{'command'}     = '';
+        $e->{'action'}      = '';
+        $e->{'agent'}     ||= __PACKAGE__->smtpagent;
 
-        unless( $e->{'rhost'} ) {
-            # Get the remote IP address from the message body
-            if( $commondata->{'rhost'} ) {
-                # The value of "Reporting-MTA" header
-                $e->{'rhost'} = $commondata->{'rhost'};
+        # Get the remote IP address from the message body
+        next if $e->{'rhost'};
+        if( $commondata->{'rhost'} ) {
+            # The value of "Reporting-MTA" header
+            $e->{'rhost'} = $commondata->{'rhost'};
 
-            } elsif( $e->{'diagnosis'} =~ /\breceived from IP address ([^ ]+)/ ) {
-                # This is an email abuse report for an email message received
-                # from IP address 24.64.1.1 on Thu, 29 Apr 2010 00:00:00 +0000
-                $e->{'rhost'} = $1;
-            }
+        } elsif( $e->{'diagnosis'} =~ /\breceived from IP address ([^ ]+)/ ) {
+            # This is an email abuse report for an email message received
+            # from IP address 24.64.1.1 on Thu, 29 Apr 2010 00:00:00 +0000
+            $e->{'rhost'} = $1;
         }
-        $e->{'reason'}  = 'feedback';
-        $e->{'command'} = '';
-        $e->{'action'}  = '';
-        $e->{'agent'} ||= __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }

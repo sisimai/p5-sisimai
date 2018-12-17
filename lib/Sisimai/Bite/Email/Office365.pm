@@ -104,19 +104,20 @@ sub scan {
     }
     return undef if $match < 2;
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $connheader = {};
     my $endoferror = 0;     # (Integer) Flag for the end of error messages
-    my $htmlbegins = 0;     # (Integer) Flag for HTML part
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -135,16 +136,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -166,41 +166,20 @@ sub scan {
 
             } elsif( $e =~ /\AGenerating server: (.+)\z/ ) {
                 # Generating server: FFFFFFFFFFFF.e0.prod.outlook.com
-                $connheader->{'lhost'} = lc $1;
+                $permessage->{'lhost'} = lc $1;
 
             } else {
                 if( $endoferror ) {
                     # After "Original message headers:"
-                    if( $htmlbegins ) {
-                        # <html> .. </html>
-                        $htmlbegins = 0 if index($e, '</html>') == 0;
-                        next;
-                    }
+                    next unless my $f = Sisimai::RFC1894->match($e);
+                    next unless my $o = Sisimai::RFC1894->field($e);
+                    next unless exists $fieldtable->{ $o->[0] };
+                    next if $o->[0] =~ /\A(?:diagnostic-code|final-recipient)\z/;
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                    if( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                        # Action: failed
-                        $v->{'action'} = lc $1;
+                    next unless $f == 1;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                    } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                        # Status:5.2.0
-                        $v->{'status'} = $1;
-
-                    } elsif( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                        # Reporting-MTA: dns;BLU004-OMC3S13.hotmail.example.com
-                        $connheader->{'lhost'} = lc $1;
-
-                    } elsif( $e =~ /\AReceived-From-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                        # Reporting-MTA: dns;BLU004-OMC3S13.hotmail.example.com
-                        $connheader->{'rhost'} = lc $1;
-
-                    } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
-                        # Arrival-Date: Wed, 29 Apr 2009 16:03:18 +0900
-                        next if $connheader->{'date'};
-                        $connheader->{'date'} = $1;
-
-                    } else {
-                        $htmlbegins = 1 if index($e, '<html>') == 0;
-                    }
                 } else {
                     if( $e eq $StartingOf->{'error'}->[0] ) {
                         # Diagnostic information for administrators:
@@ -220,14 +199,13 @@ sub scan {
                     }
                 }
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
-
+        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -244,9 +222,8 @@ sub scan {
             last;
         }
 
-        next unless $e->{'status'};
-
         # Find the error code from $StatusList
+        next unless $e->{'status'};
         for my $f ( keys %$StatusList ) {
             # Try to match with each key as a regular expression
             next unless $e->{'status'} =~ $f;

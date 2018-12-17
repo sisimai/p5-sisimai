@@ -42,8 +42,7 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    my $r = $argvs->reason // '';
-    if( $r ) {
+    if( my $r = $argvs->reason // '' ) {
         # Do not overwrite the reason
         return 0 if( $r eq 'securityerror' || $r eq 'systemerror' || $r eq 'undefined' );
     } else {

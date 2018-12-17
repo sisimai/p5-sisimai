@@ -53,7 +53,6 @@ sub scan {
     return undef unless $mhead->{'subject'} =~ /\AReturned mail: [A-Z]/;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -65,7 +64,7 @@ sub scan {
     my $errorindex = -1;
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -84,16 +83,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -144,25 +142,25 @@ sub scan {
                 # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
                 $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/;
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $readcursor & $Indicators->{'message-rfc822'};
 
     unless( $recipients ) {
         # Get the recipient address from the original message
         for my $e ( @$rfc822list ) {
-            if( $e =~ /^To: (.+)$/ ) {
-                # The value of To: header in the original message
-                $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
-                $recipients = 1;
-                last;
-            }
+            # The value of To: header in the original message
+            next unless $e =~ /^To: (.+)$/;
+            $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
+            $recipients = 1;
+            last;
         }
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
         $errorindex++;
+        delete $e->{'sessionerr'};
         $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'command'} = $commandset[$errorindex] || '';
 
@@ -176,12 +174,10 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        unless( $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/ ) {
-            # @example.jp, no local part
-            # Get email address from the value of Diagnostic-Code header
-            $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
-        }
-        delete $e->{'sessionerr'};
+        # @example.jp, no local part
+        # Get email address from the value of Diagnostic-Code header
+        next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
+        $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
     return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };

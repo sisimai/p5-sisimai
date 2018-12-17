@@ -28,8 +28,7 @@ sub token {
     my $epoch = shift // return '';
 
     # Format: STX(0x02) Sender-Address RS(0x1e) Recipient-Address ETX(0x03)
-    return Digest::SHA::sha1_hex(
-        sprintf("\x02%s\x1e%s\x1e%d\x03", lc $addr1, lc $addr2, $epoch));
+    return Digest::SHA::sha1_hex(sprintf("\x02%s\x1e%s\x1e%d\x03", lc $addr1, lc $addr2, $epoch));
 }
 
 sub is_8bit {
@@ -141,22 +140,14 @@ sub to_utf8 {
             last;
         }
     }
+    return \$tobeutf8ed if $hasencoded;
+    return \$tobeutf8ed unless $encodingto;
+    return \$tobeutf8ed if $encodingto =~ $dontencode;
 
-    unless( $hasencoded ) {
-        # The 2nd argument was not given or failed to convert from $encodefrom
-        # to UTF-8
-        if( $encodingto ) {
-            # Guessed encoding name is available, try to encode using it.
-            unless( $encodingto =~ $dontencode ) {
-                # Encode a given string when the encoding of the string is neigther
-                # utf8 nor ascii.
-                eval { 
-                    Encode::from_to($tobeutf8ed, $encodingto, 'utf8');
-                    $hasencoded = 1;
-                };
-            }
-        }
-    }
+    # a. The 2nd argument was not given or failed to convert from $encodefrom to UTF-8
+    # b. Guessed encoding name is available, try to encode using it.
+    # c. Encode a given string when the encoding of the string is neigther utf8 nor ascii.
+    eval { Encode::from_to($tobeutf8ed, $encodingto, 'utf8') };
     return \$tobeutf8ed;
 }
 

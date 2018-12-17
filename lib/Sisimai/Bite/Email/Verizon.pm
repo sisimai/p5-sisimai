@@ -48,7 +48,6 @@ sub scan {
     my $StartingOf = {};    # (Ref->Hash) Delimiter strings
     my $MarkingsOf = {};    # (Ref->Hash) Delimiter patterns
     my $MessagesOf = {};    # (Ref->Hash) Error message patterns
-    my $boundary00 = '';    # (String) Boundary string
     my $v = undef;
 
     if( $match == 1 ) {
@@ -62,8 +61,7 @@ sub scan {
             'userunknown' => ['550 - Requested action not taken: no such user here'],
         };
 
-        $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
-        if( $boundary00 ) {
+        if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
             $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
@@ -88,16 +86,15 @@ sub scan {
             }
 
             if( $readcursor & $Indicators->{'message-rfc822'} ) {
-                # After "message/rfc822"
+                # Inside of the original message part
                 unless( length $e ) {
-                    $blanklines++;
-                    last if $blanklines > 1;
+                    last if ++$blanklines > 1;
                     next;
                 }
                 push @$rfc822list, $e;
 
             } else {
-                # Before "message/rfc822"
+                # Error message part
                 next unless $readcursor & $Indicators->{'deliverystatus'};
                 next unless length $e;
 
@@ -130,7 +127,7 @@ sub scan {
                     # 550 - Requested action not taken: no such user here
                     $v->{'diagnosis'} = $e if $e =~ /\A(\d{3})[ \t][-][ \t](.*)\z/;
                 }
-            } # End of if: rfc822
+            } # End of error message part
         }
     } else {
         # vzwpix.com
@@ -138,8 +135,7 @@ sub scan {
         $MarkingsOf = { 'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/ };
         $MessagesOf = { 'userunknown' => ['No valid recipients for this MM'] };
 
-        $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
-        if( $boundary00 ) {
+        if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
             $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
@@ -164,16 +160,15 @@ sub scan {
             }
 
             if( $readcursor & $Indicators->{'message-rfc822'} ) {
-                # After "message/rfc822"
+                # Inside of the original message part
                 unless( length $e ) {
-                    $blanklines++;
-                    last if $blanklines > 1;
+                    last if ++$blanklines > 1;
                     next;
                 }
                 push @$rfc822list, $e;
 
             } else {
-                # Before "message/rfc822"
+                # Error message part
                 next unless $readcursor & $Indicators->{'deliverystatus'};
                 next unless length $e;
 
@@ -207,7 +202,7 @@ sub scan {
                     # Error: No valid recipients for this MM
                     $v->{'diagnosis'} = $e if $e =~ /\AError:[ \t]+(.+)\z/;
                 }
-            } # End of if: rfc822
+            } # End of error message part
         }
     }
     return undef unless $recipients;

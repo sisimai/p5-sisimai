@@ -138,11 +138,10 @@ sub engine {
     my $class = shift;
     my $names = [qw|Bite::Email Bite::JSON ARF RFC3464 RFC3834|];
     my $table = {};
-    my $loads = '';
 
     while( my $e = shift @$names ) {
         my $r = 'Sisimai::'.$e;
-        ($loads = $r) =~ s|::|/|g; 
+        (my $loads = $r) =~ s|::|/|g; 
         require $loads.'.pm';
 
         if( $e eq 'Bite::Email' || $e eq 'Bite::JSON' ) {
@@ -168,17 +167,15 @@ sub reason {
     my $class = shift;
     my $table = {};
 
+    # These reasons are not included in the results of Sisimai::Reason->index
     require Sisimai::Reason;
     my $names = Sisimai::Reason->index;
-    my $loads = '';
-
-    # These reasons are not included in the results of Sisimai::Reason->index
     push @$names, (qw|Delivered Feedback Undefined Vacation|);
 
     while( my $e = shift @$names ) {
         # Call ->description() method of Sisimai::Reason::*
         my $r = 'Sisimai::Reason::'.$e;
-        ($loads = $r) =~ s|::|/|g; 
+        (my $loads = $r) =~ s|::|/|g; 
         require $loads.'.pm';
         $table->{ $e } = $r->description;
     }

@@ -89,7 +89,7 @@ sub scan {
 
             if( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
-                my $o = Sisimai::RFC1894->field($e) || next;
+                next unless my $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
                 if( $o->[-1] eq 'addr' ) {
@@ -137,20 +137,17 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'} ||= $permessage->{'rhost'};
+        $e->{'lhost'}    ||= $permessage->{'rhost'};
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
-
         $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
             # Get other D.S.N. value from the error message
-            my $pseudostatus = '';
-            my $errormessage = $e->{'diagnosis'};
-
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
-            $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-            $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
+            my $errormessage = $e->{'diagnosis'};
+               $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
+            my $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
             $e->{'status'} = $pseudostatus if $pseudostatus;
         }
 

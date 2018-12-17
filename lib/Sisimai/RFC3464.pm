@@ -51,7 +51,6 @@ sub scan {
 
     require Sisimai::MDA;
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $scannedset = Sisimai::MDA->scan($mhead, $mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
@@ -68,11 +67,11 @@ sub scan {
     my $p = '';
     my $d = '';
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         $d = lc $e;
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             if( $d =~ $MarkingsOf->{'message'} ) {
                 $readcursor |= $Indicators->{'deliverystatus'};
                 next;
@@ -80,7 +79,7 @@ sub scan {
         }
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
+            # Beginning of the original message part(message/rfc822)
             if( $d =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
@@ -88,16 +87,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # message/rfc822 OR text/rfc822-headers part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -281,7 +279,7 @@ sub scan {
                     }
                 }
             }
-        } # End of if: rfc822
+        } # End of message/delivery-status
     } continue {
         # Save the current line for the next loop
         $p = $e;
@@ -414,17 +412,16 @@ sub scan {
         # Try to get a recipient address from email headers
         for my $e ( @$rfc822list ) {
             # Check To: header in the original message
-            if( $e =~ /\ATo:\s*(.+)\z/ ) {
-                my $r = Sisimai::Address->find($1, 1) || [];
-                my $b = undef;
-                next unless scalar @$r;
-                push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
+            next unless $e =~ /\ATo:\s*(.+)\z/;
+            my $r = Sisimai::Address->find($1, 1) || [];
+            my $b = undef;
+            next unless scalar @$r;
+            push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
 
-                $b = $dscontents->[-1];
-                $b->{'recipient'} = $r->[0]->{'address'};
-                $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
-                $recipients++;
-            }
+            $b = $dscontents->[-1];
+            $b->{'recipient'} = $r->[0]->{'address'};
+            $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
+            $recipients++;
         }
     }
     return undef unless $recipients;

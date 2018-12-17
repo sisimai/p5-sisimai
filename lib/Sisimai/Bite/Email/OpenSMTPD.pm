@@ -86,7 +86,6 @@ sub scan {
     return undef unless grep { rindex($_, ' (OpenSMTPD) with ') > -1 } @{ $mhead->{'received'} };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -94,7 +93,7 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -113,16 +112,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -149,7 +147,7 @@ sub scan {
                 $v->{'diagnosis'} = $2;
                 $recipients++;
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 

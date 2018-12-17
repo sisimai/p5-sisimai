@@ -84,7 +84,6 @@ sub scan {
 
     require Sisimai::Bite::Email;
     my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
@@ -121,14 +120,13 @@ sub scan {
 
     BODY_PARSER: {
         # Get vacation message
-        for my $e ( @hasdivided ) {
+        for my $e ( split("\n", $$mbody) ) {
             # Read the first 5 lines except a blank line
             $countuntil += 1 if $e =~ $MarkingsOf->{'boundary'};
 
             unless( length $e ) {
                 # Check a blank line
-                $blanklines++;
-                last if $blanklines > $countuntil;
+                last if ++$blanklines > $countuntil;
                 next;
             }
             next unless rindex($e, ' ') > -1;

@@ -112,12 +112,11 @@ sub get {
     my $argvs = shift // return undef;
     return $argvs->reason if $argvs->reason;
 
-    my $reasontext = '';
     my $statuscode = $argvs->deliverystatus;
-
     substr($statuscode, 0, 1, 'X');
     return '' unless scalar @{ $StatusList->{ $statuscode } };
 
+    my $reasontext = '';
     for my $e ( @{ $StatusList->{ $statuscode } } ) {
         # Try to match
         next unless grep { rindex($argvs->diagnosticcode, $_) > -1 } @{ $e->{'string'} };

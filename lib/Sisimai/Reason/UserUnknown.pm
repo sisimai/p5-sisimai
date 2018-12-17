@@ -145,10 +145,10 @@ sub true {
     my $argvs = shift // return undef;
     return 1 if $argvs->reason eq 'userunknown';
 
-    my $diagnostic = lc $argvs->diagnosticcode;
     my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
     return 0 if $tempreason eq 'suspend';
 
+    my $diagnostic = lc $argvs->diagnosticcode;
     if( $tempreason eq 'userunknown' ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
@@ -156,12 +156,11 @@ sub true {
         #     Recipient address rejected: User unknown in local recipient table
         my $prematches = [qw|NoRelaying Blocked MailboxFull HasMoved Blocked Rejected|];
         my $matchother = 0;
-        my $modulepath = '';
 
         for my $e ( @$prematches ) {
             # Check the value of "Diagnostic-Code" with other error patterns.
             my $p = 'Sisimai::Reason::'.$e;
-            ($modulepath = $p) =~ s|::|/|g; 
+            (my $modulepath = $p) =~ s|::|/|g; 
             require $modulepath.'.pm';
 
             next unless $p->match($diagnostic);

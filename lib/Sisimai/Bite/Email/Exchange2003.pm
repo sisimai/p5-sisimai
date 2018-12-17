@@ -93,7 +93,6 @@ sub scan {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -108,7 +107,7 @@ sub scan {
     };
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -127,16 +126,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next if $statuspart;
 
@@ -213,12 +211,14 @@ sub scan {
                     $connvalues++;
                 }
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
+        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        delete $e->{'msexch'};
 
         if( $e->{'diagnosis'} =~ /\AMSEXCH:.+[ \t]*[(]([0-9A-F]{8})[)][ \t]*(.*)\z/ ) {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
@@ -237,17 +237,13 @@ sub scan {
             $e->{'diagnosis'} = $errormessage;
         }
 
-        unless( $e->{'reason'} ) {
-            # Could not detect the reason from the value of "diagnosis".
-            if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
-                # Copy alternative error message
-                $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
-                $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-                delete $e->{'alterrors'};
-            }
-        }
-        $e->{'agent'} = __PACKAGE__->smtpagent;
-        delete $e->{'msexch'};
+        # Could not detect the reason from the value of "diagnosis", copy alternative error message
+        next if $e->{'reason'};
+        next unless exists $e->{'alterrors'};
+        next unless length $e->{'alterrors'};
+        $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        delete $e->{'alterrors'};
     }
 
     unless( @$rfc822list ) {

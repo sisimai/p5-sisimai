@@ -67,6 +67,8 @@ sub find {
     # @since v4.14.0
     my $class = shift;
     my $argv1 = shift || return '';
+    return '' if uc($argv1) =~ /X-UNIX;/;
+
     my $value = '';
     my $ip4re = qr{\b
         (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])[.]
@@ -75,7 +77,6 @@ sub find {
         (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])
     \b}x;
 
-    return '' if uc($argv1) =~ /X-UNIX;/;
 
     # Convert found IPv4 addresses to '***.***.***.***' to avoid that the
     # following code detects an octet of the IPv4 adress as an SMTP reply

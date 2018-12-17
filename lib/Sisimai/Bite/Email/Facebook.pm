@@ -137,7 +137,7 @@ sub scan {
 
             if( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
-                my $o = Sisimai::RFC1894->field($e) || next;
+                next unless my $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
                 if( $o->[-1] eq 'addr' ) {
@@ -205,14 +205,14 @@ sub scan {
                 last(SESSION);
             }
         }
+        next if $e->{'reason'};
 
         # http://postmaster.facebook.com/response_codes
         #   Facebook System Resource Issues
         #   These codes indicate a temporary issue internal to Facebook's 
         #   system. Administrators observing these issues are not required to
         #   take any action to correct them.
-        next if $e->{'reason'};
-
+        #
         # * INT-Tx
         #
         # https://groups.google.com/forum/#!topic/cdmix/eXfi4ddgYLQ

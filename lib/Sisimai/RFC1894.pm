@@ -80,6 +80,7 @@ sub match {
     # Check the argument matches with a field defined in RFC3464
     # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
     # @return   [Integer]      0: did not matched, 1,2: matched
+    # @since v4.25.0
     my $class = shift;
     my $argv0 = shift || return undef;
 
@@ -92,6 +93,7 @@ sub field {
     # Check the argument is including field defined in RFC3464 and return values
     # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
     # @return   [Array]        ['field-name', 'value-type', 'Value', 'field-group']
+    # @since v4.25.0
     my $class = shift;
     my $argv0 = shift || return undef;
     my $group = $FieldGroup->{ lc((split(':', $argv0, 2))[0]) };

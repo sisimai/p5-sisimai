@@ -39,7 +39,6 @@ sub make {
     my $argvs = { @_ };
     my $email = $argvs->{'data'};
 
-    my $methodargv = {};
     my $hookmethod = $argvs->{'hook'}  || undef;
     my $headerlist = $argvs->{'field'} || [];
     my $processing = {
@@ -49,8 +48,7 @@ sub make {
         'ds'     => [],     # Parsed data, Delivery Status
         'catch'  => undef,  # Data parsed by callback method
     };
-
-    $methodargv = {
+    my $methodargv = {
         'load'  => $argvs->{'load'}  || [],
         'order' => $argvs->{'order'} || [],
     };
@@ -108,7 +106,6 @@ sub load {
 
     my @modulelist = ();
     my $tobeloaded = [];
-    my $modulepath = '';
 
     for my $e ('load', 'order') {
         # The order of MTA modules specified by user
@@ -123,7 +120,7 @@ sub load {
         for my $v ( @{ $argvs->{'load'} } ) {
             # Load user defined MTA module
             eval {
-                ($modulepath = $v) =~ s|::|/|g; 
+                (my $modulepath = $v) =~ s|::|/|g; 
                 require $modulepath.'.pm';
             };
             next if $@;
@@ -152,13 +149,12 @@ sub divideup {
     my $class = shift;
     my $email = shift // return {};
 
-    my @hasdivided = undef;
     my $readcursor = 0;
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
 
     $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
     $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
-    @hasdivided = split("\n", $$email);
+    my @hasdivided = split("\n", $$email);
     return {} unless scalar @hasdivided;
 
     if( substr($hasdivided[0], 0, 5) eq 'From ' ) {
@@ -287,11 +283,10 @@ sub takeapart {
     $$heads =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
 
     my $takenapart = {};
-    my @hasdivided = split("\n", $$heads);
     my $previousfn = ''; # Previous field name
     my $mimeborder = {};
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$heads) ) {
         # Header name as a key, The value of header as a value
         if( $e =~ /\A([-0-9A-Za-z]+?)[:][ ]*(.*)\z/ ) {
             # Header

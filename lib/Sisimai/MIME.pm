@@ -56,7 +56,6 @@ sub mimedecode {
     # @return   [String]        MIME-Decoded text
     my $class = shift;
     my $argvs = shift;
-
     return '' unless ref $argvs;
     return '' unless ref $argvs eq 'ARRAY';
 
@@ -73,23 +72,22 @@ sub mimedecode {
         $e =~ y/"//d;
 
         if( __PACKAGE__->is_mimeencoded(\$e) ) {
-            # MIME Encoded string
-            if( $e =~ m{\A(.*)=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=?(.*)\z} ) {
-                # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
-                $characterset ||= lc $2;
-                $encodingname ||= uc $3;
+            # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
+            next unless $e =~ m{\A(.*)=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=?(.*)\z};
+            $characterset ||= lc $2;
+            $encodingname ||= uc $3;
 
-                push @decodedtext0, $1;
-                if( $encodingname eq 'Q' ) {
-                    # Quoted-Printable
-                    push @decodedtext0, MIME::QuotedPrint::decode($4);
+            push @decodedtext0, $1;
+            if( $encodingname eq 'Q' ) {
+                # Quoted-Printable
+                push @decodedtext0, MIME::QuotedPrint::decode($4);
 
-                } elsif( $encodingname eq 'B' ) {
-                    # Base64
-                    push @decodedtext0, MIME::Base64::decode($4);
-                }
-                push @decodedtext0, $5;
+            } elsif( $encodingname eq 'B' ) {
+                # Base64
+                push @decodedtext0, MIME::Base64::decode($4);
             }
+            push @decodedtext0, $5;
+
         } else {
             push @decodedtext0, $e;
         }

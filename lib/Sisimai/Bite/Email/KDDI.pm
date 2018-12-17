@@ -46,7 +46,6 @@ sub scan {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -54,7 +53,7 @@ sub scan {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -73,16 +72,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -98,10 +96,10 @@ sub scan {
                 }
 
                 my $r = Sisimai::Address->s3s4($1);
-                if( Sisimai::RFC5322->is_emailaddress($r) ) {
-                    $v->{'recipient'} = $r;
-                    $recipients++;
-                }
+                next unless Sisimai::RFC5322->is_emailaddress($r);
+                $v->{'recipient'} = $r;
+                $recipients++;
+
             } elsif( $e =~ /Your mail sent on: (.+)\z/ ) {
                 # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
                 $v->{'date'} = $1;
@@ -110,7 +108,7 @@ sub scan {
                 #     As their mailbox is full.
                 $v->{'diagnosis'} .= $e.' ' if $e =~ /\A[ \t]+/;
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 

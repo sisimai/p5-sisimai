@@ -71,8 +71,9 @@ sub scan {
     }
     return undef if $match < 2;
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -88,7 +89,7 @@ sub scan {
     }
     my @rxmessages = (); map { push @rxmessages, @{ $ReFailures->{ $_ } } } (keys %$ReFailures);
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -104,16 +105,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -141,29 +141,18 @@ sub scan {
                 }
 
                 my $r = Sisimai::Address->s3s4($1);
-                if( Sisimai::RFC5322->is_emailaddress($r) ) {
-                    $v->{'recipient'} = $r;
-                    $recipients++;
-                }
-            } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                # Status: 5.1.1
-                # Status:5.2.0
-                # Status: 5.1.0 (permanent failure)
-                $v->{'status'} = $1;
+                next unless Sisimai::RFC5322->is_emailaddress($r);
+                $v->{'recipient'} = $r;
+                $recipients++;
 
-            } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                # Action: failed
-                $v->{'action'} = lc $1;
-
-            } elsif( $e =~ /\ARemote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                # Remote-MTA: DNS; mx.example.jp
-                $v->{'rhost'} = lc $1;
-
-            } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
-                # Last-Attempt-Date: Fri, 14 Feb 2014 12:30:08 -0500
-                $v->{'date'} = $1;
+            } elsif( my $f = Sisimai::RFC1894->match($e) ) {
+                # $e matched with any field defined in RFC3464
+                next unless my $o = Sisimai::RFC1894->field($e);
+                next unless exists $fieldtable->{ $o->[0] };
+                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
             } else {
+                # The line does not begin with a DSN field defined in RFC3464
                 next if Sisimai::String->is_8bit(\$e);
                 if( $e =~ /\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
                     #    >>> RCPT TO:<******@ezweb.ne.jp>
@@ -180,11 +169,13 @@ sub scan {
                     }
                 }
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
+        $e->{'agent'} = __PACKAGE__->smtpagent;
+
         if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
@@ -195,8 +186,6 @@ sub scan {
             delete $e->{'alterrors'};
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'agent'} = __PACKAGE__->smtpagent;
-
 
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by EZweb)
@@ -223,12 +212,7 @@ sub scan {
             }
         }
         next if $e->{'reason'};
-
-        # The value of "reason" is not set yet.
         next if $e->{'recipient'} =~ /[@](?:ezweb[.]ne[.]jp|au[.]com)\z/;
-
-        # Deal as "userunknown" when the domain part of the recipient
-        # is "ezweb.ne.jp".
         $e->{'reason'} = 'userunknown';
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

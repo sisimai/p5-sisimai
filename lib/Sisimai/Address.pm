@@ -135,14 +135,12 @@ sub find {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $addrs = shift // undef;
-
     $argv1 =~ s/[\r\n]//g;  # Remove new line codes
 
     my $emailtable = { 'address' => '', 'name' => '', 'comment' => '' };
     my $addrtables = [];
     my $readbuffer = [];
     my $readcursor = 0;
-
     my $v = $emailtable;   # temporary buffer
     my $p = '';            # current position
 
@@ -390,13 +388,10 @@ sub expand_verp {
     my $email = shift // return undef;
     my $local = (split('@', $email, 2))[0];
 
-    if( $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/ ) {
-        # bounce+neko=example.org@example.org => neko@example.org
-        my $verp0 = $1.'@'.$2;
-        return $verp0 if Sisimai::RFC5322->is_emailaddress($verp0);
-    } else {
-        return '';
-    }
+    # bounce+neko=example.org@example.org => neko@example.org
+    return '' unless $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/;
+    my $verp0 = $1.'@'.$2;
+    return $verp0 if Sisimai::RFC5322->is_emailaddress($verp0);
 }
 
 sub expand_alias {
@@ -407,13 +402,10 @@ sub expand_alias {
     my $email = shift // return undef;
     return '' unless Sisimai::RFC5322->is_emailaddress($email);
 
+    # neko+straycat@example.org => neko@example.org
     my @local = split('@', $email);
-    my $alias = '';
-    if( $local[0] =~ /\A([-_\w]+?)[+].+\z/ ) {
-        # neko+straycat@example.org => neko@example.org
-        $alias = $1.'@'.$local[1];
-    }
-    return $alias;
+    return '' unless $local[0] =~ /\A([-_\w]+?)[+].+\z/;
+    return $1.'@'.$local[1];
 }
 
 sub is_undisclosed {

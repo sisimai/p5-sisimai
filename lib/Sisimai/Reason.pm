@@ -54,7 +54,6 @@ sub get {
 
     my $statuscode = $argvs->deliverystatus || '';
     my $reasontext = '';
-    my $modulepath = '';
 
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
@@ -62,7 +61,7 @@ sub get {
             # Check the value of Diagnostic-Code: and the value of Status:, it is a
             # deliverystats, with true() method in each Sisimai::Reason::* class.
             my $p = 'Sisimai::Reason::'.$e;
-            ($modulepath = $p) =~ s|::|/|g; 
+            (my $modulepath = $p) =~ s|::|/|g; 
             require $modulepath.'.pm';
 
             next unless $p->true($argvs);
@@ -105,13 +104,12 @@ sub anotherone {
     my $commandtxt = $argvs->smtpcommand    // '';
     my $trytomatch = undef;
     my $reasontext = '';
-    my $modulepath = '';
 
     require Sisimai::SMTP::Status;
     $reasontext = Sisimai::SMTP::Status->name($statuscode);
 
     TRY_TO_MATCH: while(1) {
-        $trytomatch ||= 1 if $reasontext eq '';
+        $trytomatch   = 1 if $reasontext eq '';
         $trytomatch ||= 1 if grep { $reasontext eq $_ } @$GetRetried;
         $trytomatch ||= 1 if $argvs->diagnostictype ne 'SMTP';
         last unless $trytomatch;
@@ -120,7 +118,7 @@ sub anotherone {
         for my $e ( @{ $ClassOrder->[1] } ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
             my $p = 'Sisimai::Reason::'.$e;
-            ($modulepath = $p) =~ s|::|/|g; 
+            (my $modulepath = $p) =~ s|::|/|g; 
             require $modulepath.'.pm';
 
             next unless $p->match($diagnostic);
@@ -149,19 +147,18 @@ sub anotherone {
                 $reasontext = 'syntaxerror' if Sisimai::Reason::SyntaxError->true($argvs);
             }
         }
+        last(TRY_TO_MATCH) if $reasontext;
 
-        if( not $reasontext ) {
-            # Check the value of Action: field, first
-            if( $argvs->action =~ /\A(?:delayed|expired)/ ) {
-                # Action: delayed, expired
-                $reasontext = 'expired';
+        # Check the value of Action: field, first
+        if( $argvs->action =~ /\A(?:delayed|expired)/ ) {
+            # Action: delayed, expired
+            $reasontext = 'expired';
 
-            } else {
-                # Check the value of SMTP command
-                if( $commandtxt eq 'EHLO' || $commandtxt eq 'HELO' ) {
-                    # Rejected at connection or after EHLO|HELO
-                    $reasontext = 'blocked';
-                }
+        } else {
+            # Check the value of SMTP command
+            if( $commandtxt eq 'EHLO' || $commandtxt eq 'HELO' ) {
+                # Rejected at connection or after EHLO|HELO
+                $reasontext = 'blocked';
             }
         }
         last(TRY_TO_MATCH);
@@ -177,36 +174,34 @@ sub match {
     my $argv1 = shift // return undef;
 
     require Sisimai::SMTP::Status;
-    my $modulepath = '';
     my $reasontext = '';
     my $statuscode = Sisimai::SMTP::Status->find($argv1);
     my $diagnostic = lc $argv1;
-    my $typestring = '';
-       $typestring = uc($1) if uc($argv1) =~ /\A(SMTP|X-.+);/;
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( @{ $ClassOrder->[2] } ) {
         # Check the value of Diagnostic-Code: and the value of Status:, it is a
         # deliverystats, with true() method in each Sisimai::Reason::* class.
         my $p = 'Sisimai::Reason::'.$e;
-        ($modulepath = $p) =~ s|::|/|g; 
+        (my $modulepath = $p) =~ s|::|/|g; 
         require $modulepath.'.pm';
 
         next unless $p->match($diagnostic);
         $reasontext = $p->text;
         last;
     }
+    return $reasontext if $reasontext;
 
-    if( not $reasontext ) {
-        # Check the value of $typestring
-        if( $typestring eq 'X-UNIX' ) {
-            # X-Unix; ...
-            $reasontext = 'mailererror';
+    # Check the value of $typestring
+    my $typestring = '';
+       $typestring = uc($1) if uc($argv1) =~ /\A(SMTP|X-.+);/;
+    if( $typestring eq 'X-UNIX' ) {
+        # X-Unix; ...
+        $reasontext = 'mailererror';
 
-        } else {
-            # Detect the bounce reason from "Status:" code
-            $reasontext = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
-        }
+    } else {
+        # Detect the bounce reason from "Status:" code
+        $reasontext = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
     }
     return $reasontext;
 }

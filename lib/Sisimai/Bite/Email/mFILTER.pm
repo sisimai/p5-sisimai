@@ -38,7 +38,6 @@ sub scan {
     return undef unless $mhead->{'subject'}  eq 'failure notice';
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -47,7 +46,7 @@ sub scan {
     my $markingset = { 'diagnosis' => 0, 'command' => 0 };
     my $v = undef;
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -63,16 +62,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -127,25 +125,25 @@ sub scan {
                     $v->{'diagnosis'} = $e;
                 }
             }
-        } # End of if: rfc822
+        } # End of error message part
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        if( scalar @{ $mhead->{'received'} } ) {
-            # Get localhost and remote host name from Received header.
-            my $rheads = $mhead->{'received'};
-            my $rhosts = Sisimai::RFC5322->received($rheads->[-1]);
-
-            $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($rheads->[0]) };
-            while( my $ee = shift @$rhosts ) {
-                # Avoid "... by m-FILTER"
-                next unless rindex($ee, '.') > -1;
-                $e->{'rhost'} = $ee;
-            }
-        }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;
+
+        # Get localhost and remote host name from Received header.
+        next unless scalar @{ $mhead->{'received'} };
+        my $rheads = $mhead->{'received'};
+        my $rhosts = Sisimai::RFC5322->received($rheads->[-1]);
+
+        $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($rheads->[0]) };
+        while( my $ee = shift @$rhosts ) {
+            # Avoid "... by m-FILTER"
+            next unless rindex($ee, '.') > -1;
+            $e->{'rhost'} = $ee;
+        }
     }
 
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

@@ -37,8 +37,9 @@ sub scan {
     return undef unless index($mhead->{'x-nai-header'}, 'Modified by McAfee') > -1;
     return undef unless $mhead->{'subject'} eq 'Delivery Status';
 
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -48,7 +49,7 @@ sub scan {
     my $v = undef;
     my $p = '';
 
-    for my $e ( @hasdivided ) {
+    for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
         unless( $readcursor ) {
             # Beginning of the bounce message or delivery status part
@@ -67,16 +68,15 @@ sub scan {
         }
 
         if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "message/rfc822"
+            # Inside of the original message part
             unless( length $e ) {
-                $blanklines++;
-                last if $blanklines > 1;
+                last if ++$blanklines > 1;
                 next;
             }
             push @$rfc822list, $e;
 
         } else {
-            # Before "message/rfc822"
+            # Error message part
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -102,31 +102,25 @@ sub scan {
                 $diagnostic = $2;
                 $recipients++;
 
-            } elsif( $e =~ /\AOriginal-Recipient:[ ]*([^ ]+)\z/ ) {
-                # Original-Recipient: <kijitora@example.co.jp>
-                $v->{'alias'} = Sisimai::Address->s3s4($1);
-
-            } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                # Action: failed
-                $v->{'action'} = lc $1;
-
-            } elsif( $e =~ /\ARemote-MTA:[ ]*(.+)\z/ ) {
-                # Remote-MTA: 192.0.2.192
-                $v->{'rhost'} = lc $1;
+            } elsif( my $f = Sisimai::RFC1894->match($e) ) {
+                # $e matched with any field defined in RFC3464
+                my $o = Sisimai::RFC1894->field($e);
+                unless( $o ) {
+                    # Fallback code for empty value or invalid formatted value
+                    # - Original-Recipient: <kijitora@example.co.jp>
+                    $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]*([^ ]+)\z/;
+                    next;
+                }
+                next unless exists $fieldtable->{ $o->[0] };
+                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
             } else {
-                if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
-                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                    $v->{'spec'} = uc $1;
-                    $v->{'diagnosis'} = $2;
-
-                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A\t+(.+)\z/ ) {
-                    # Continued line of the value of Diagnostic-Code header
-                    $v->{'diagnosis'} .= ' '.$1;
-                    $e = 'Diagnostic-Code: '.$e;
-                }
+                # Continued line of the value of Diagnostic-Code field
+                next unless index($p, 'Diagnostic-Code:') == 0;
+                next unless $e =~ /\A[ \t]+(.+)\z/;
+                $v->{'diagnosis'} .= ' '.$1;
             }
-        } # End of if: rfc822
+        } # End of error message part
     } continue {
         # Save the current line for the next loop
         $p = $e;
