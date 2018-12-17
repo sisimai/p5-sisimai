@@ -171,8 +171,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'} ||= $localhost0;
-
+        $e->{'lhost'}   ||=  $localhost0;
         $e->{'diagnosis'} =~ s/[-]{2}.*\z//g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 

@@ -147,7 +147,7 @@ sub scan {
 
             } elsif( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
-                my $o = Sisimai::RFC1894->field($e) || next;
+                next unless my $o = Sisimai::RFC1894->field($e);
                 next unless exists $fieldtable->{ $o->[0] };
                 $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
@@ -186,7 +186,6 @@ sub scan {
             delete $e->{'alterrors'};
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
 
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by EZweb)

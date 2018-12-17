@@ -86,7 +86,7 @@ sub scan {
 
             if( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
-                my $o = Sisimai::RFC1894->field($e) || next;
+                next unless my $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
                 if( $o->[-1] eq 'addr' ) {
@@ -148,10 +148,9 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'} ||= $permessage->{'rhost'};
+        $e->{'lhost'}    ||= $permessage->{'rhost'};
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
-        $e->{'command'} = shift @commandset || '';
-
+        $e->{'command'}   =  shift @commandset || '';
         $e->{'diagnosis'} =~ s/\\n/ /g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     =  __PACKAGE__->smtpagent;

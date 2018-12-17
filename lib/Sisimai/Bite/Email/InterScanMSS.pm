@@ -108,14 +108,9 @@ sub scan {
 
             } else {
                 # Error message in non-English
-                if( $e =~ /[ ][>]{3}[ ]([A-Z]{4})/ ) {
-                    # >>> RCPT TO ...
-                    $v->{'command'} = $1;
-
-                } elsif( $e =~ /[ ][<]{3}[ ](.+)/ ) {
-                    # <<< 550 5.1.1 User unknown
-                    $v->{'diagnosis'} = $1;
-                }
+                next unless $e =~ /[ ][<>]{3}[ ]/;
+                $v->{'command'}   = $1 if $e =~ /[ ][>]{3}[ ]([A-Z]{4})/; # >>> RCPT TO ...
+                $v->{'diagnosis'} = $1 if $e =~ /[ ][<]{3}[ ](.+)/;       # <<< 550 5.1.1 User unknown
             }
         } # End of error message part
     }

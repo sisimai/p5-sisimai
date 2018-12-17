@@ -276,7 +276,7 @@ sub scan {
                         # ...
                         if( Sisimai::RFC1894->match($e) ) {
                             # $e matched with any field defined in RFC3464
-                            my $o = Sisimai::RFC1894->field($e) || next;
+                            next unless my $o = Sisimai::RFC1894->field($e);
 
                             if( $o->[-1] eq 'addr' ) {
                                 # Final-Recipient: rfc822;|/bin/echo "Some pipe output"

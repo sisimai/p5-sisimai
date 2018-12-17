@@ -136,19 +136,17 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'} ||= $permessage->{'rhost'};
+        $e->{'lhost'}    ||= $permessage->{'rhost'};
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
-        $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'diagnosis'}  = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
             # Get other D.S.N. value from the error message
-            my $pseudostatus = '';
-            my $errormessage = $e->{'diagnosis'};
-
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
-            $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-            $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
-            $e->{'status'} = $pseudostatus if $pseudostatus;
+            my $errormessage = $e->{'diagnosis'};
+               $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
+            my $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
+            $e->{'status'}   = $pseudostatus if $pseudostatus;
         }
 
         # 554 4.4.7 Message expired: unable to deliver in 840 minutes.
