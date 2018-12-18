@@ -132,7 +132,6 @@ sub make {
     LOOP_DELIVERY_STATUS: for my $e ( @{ $messageobj->ds } ) {
         # Create parameters for new() constructor.
         my $o = undef;  # Sisimai::Data Object
-        my $r = undef;  # Reason text
         my $p = {
             'catch'          => $messageobj->catch   // undef,
             'lhost'          => $e->{'lhost'}        // '',
@@ -292,7 +291,7 @@ sub make {
                         $p->{'diagnosticcode'} =  Sisimai::String->sweep($p->{'diagnosticcode'});
                     }
                 }
-                $p->{'diagnostictype'} ||= 'X-UNIX' if $p->{'reason'} eq 'mailererror';
+                $p->{'diagnostictype'} ||= 'X-UNIX'   if $p->{'reason'} eq 'mailererror';
                 $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ /\A(?:feedback|vacation)\z/;
             }
 
@@ -315,9 +314,9 @@ sub make {
 
         if( $o->reason eq '' || grep { $o->reason eq $_ } @$RetryIndex ) {
             # Decide the reason of email bounce
-            $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->rhost);   # Remote host dependent error
-            $r ||= Sisimai::Reason->get($o);
-            $r ||= 'undefined';
+            my $r; $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->rhost);
+                   $r ||= Sisimai::Reason->get($o);
+                   $r ||= 'undefined';
             $o->reason($r);
         }
 
@@ -329,14 +328,11 @@ sub make {
         } else {
             # Bounce message which reason is "feedback" or "vacation" does
             # not have the value of "deliverystatus".
-            my $softorhard = undef;
-            my $textasargv = undef;
-
             unless( length $o->softbounce ) {
                 # Set the value of softbounce
-                $textasargv =  $p->{'deliverystatus'}.' '.$p->{'diagnosticcode'};
-                $textasargv =~ s/\A[ ]//g;
-                $softorhard =  Sisimai::SMTP::Error->soft_or_hard($o->reason, $textasargv);
+                my $textasargv =  $p->{'deliverystatus'}.' '.$p->{'diagnosticcode'};
+                   $textasargv =~ s/\A[ ]//g;
+                my $softorhard =  Sisimai::SMTP::Error->soft_or_hard($o->reason, $textasargv);
 
                 if( $softorhard ) {
                     # Returned value is "soft" or "hard"
@@ -351,20 +347,17 @@ sub make {
             unless( $o->deliverystatus ) {
                 # Set pseudo status code
                 my $pseudocode = undef; # Pseudo delivery status code
-                my $getchecked = undef; # Permanent error or not
-                my $tmpfailure = undef; # Temporary error
-
-                $textasargv =  $o->replycode.' '.$p->{'diagnosticcode'};
-                $textasargv =~ s/\A[ ]//g;
-                $getchecked =  Sisimai::SMTP::Error->is_permanent($textasargv);
-                $tmpfailure =  defined $getchecked ? ( $getchecked == 1 ? 0 : 1 ) : 0;
+                my $textasargv =  $o->replycode.' '.$p->{'diagnosticcode'};
+                   $textasargv =~ s/\A[ ]//g;
+                my $getchecked =  Sisimai::SMTP::Error->is_permanent($textasargv);
+                my $tmpfailure =  defined $getchecked ? ( $getchecked == 1 ? 0 : 1 ) : 0;
 
                 if( $pseudocode = Sisimai::SMTP::Status->code($o->reason, $tmpfailure) ) {
                     # Set the value of "deliverystatus" and "softbounce".
                     $o->deliverystatus($pseudocode);
                     if( $o->softbounce == -1 ) {
                         # Set the value of "softbounce" again when the value is -1
-                        if( $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->reason, $pseudocode) ) {
+                        if( my $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->reason, $pseudocode) ) {
                             # Returned value is "soft" or "hard"
                             $o->softbounce($softorhard eq 'soft' ? 1 : 0);
 
@@ -426,14 +419,11 @@ sub dump {
     my $type = shift || 'json';
     return undef unless $type =~ /\A(?:json|yaml)\z/;
 
-    my $dumpeddata = '';
     my $referclass = 'Sisimai::Data::'.uc($type);
     my $modulepath = 'Sisimai/Data/'.uc($type).'.pm';
 
     require $modulepath;
-    $dumpeddata = $referclass->dump($self);
-
-    return $dumpeddata;
+    return $referclass->dump($self);
 }
 
 1;
