@@ -42,7 +42,7 @@ sub true {
     my $argvs = shift // return undef;
     return 1 if $argvs->reason eq 'filtered';
 
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || '';
     return 0 if $tempreason eq 'suspend';
 
     require Sisimai::Reason::UserUnknown;

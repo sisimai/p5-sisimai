@@ -452,7 +452,7 @@ sub scan {
             $e->{'agent'} = __PACKAGE__->smtpagent;
         }
         $e->{'date'}   ||= $mhead->{'date'};
-        $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'});
+        $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $MarkingsOf->{'command'};
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

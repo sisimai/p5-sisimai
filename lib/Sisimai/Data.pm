@@ -82,7 +82,7 @@ sub new {
         reason lhost rhost smtpcommand feedbacktype action softbounce replycode
     |);
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
-    $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find($argvs->{'diagnosticcode'});
+    $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find($argvs->{'diagnosticcode'}) || '';
 
     return bless($thing, __PACKAGE__);
 }
@@ -263,8 +263,8 @@ sub make {
 
                 if( $p->{'diagnosticcode'} ) {
                     # Count the number of D.S.N. and SMTP Reply Code
-                    my $vs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
-                    my $vr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'});
+                    my $vs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'}) || '';
+                    my $vr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'})  || '';
                     my $vm = 0;
 
                     if( $vs ) {

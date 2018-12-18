@@ -44,7 +44,7 @@ sub true {
     return 1 if $argvs->reason eq 'mesgtoobig';
 
     my $statuscode = $argvs->deliverystatus // '';
-    my $tempreason = Sisimai::SMTP::Status->name($statuscode);
+    my $tempreason = Sisimai::SMTP::Status->name($statuscode) || '';
 
     # Delivery status code points "mesgtoobig".
     # Status: 5.3.4

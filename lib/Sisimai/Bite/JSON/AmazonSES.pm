@@ -195,8 +195,8 @@ sub adapt {
             $v->{'recipient'} = $e;
             $v->{'lhost'}     = $o->{'reportingMTA'} || '';
             $v->{'diagnosis'} = $o->{'smtpResponse'} || '';
-            $v->{'status'}    = Sisimai::SMTP::Status->find($v->{'diagnosis'});
-            $v->{'replycode'} = Sisimai::SMTP::Reply->find($v->{'diagnosis'});
+            $v->{'status'}    = Sisimai::SMTP::Status->find($v->{'diagnosis'}) || '';
+            $v->{'replycode'} = Sisimai::SMTP::Reply->find($v->{'diagnosis'})  || '';
             $v->{'reason'}    = 'delivered';
             $v->{'action'}    = 'deliverable';
 

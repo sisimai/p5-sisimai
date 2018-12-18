@@ -48,7 +48,7 @@ sub true {
     my $statuscode = $argvs->deliverystatus // '';
     my $diagnostic = lc $argvs->diagnosticcode // '';
 
-    if( Sisimai::SMTP::Status->name($statuscode) eq 'hostunknown' ) {
+    if( (Sisimai::SMTP::Status->name($statuscode) || '') eq 'hostunknown' ) {
         # Status: 5.1.2
         # Diagnostic-Code: SMTP; 550 Host unknown
         require Sisimai::Reason::NetworkError;

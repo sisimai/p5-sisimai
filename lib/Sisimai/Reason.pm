@@ -101,7 +101,7 @@ sub anotherone {
 
     require Sisimai::SMTP::Status;
     my $statuscode = $argvs->deliverystatus // '';
-    my $reasontext = Sisimai::SMTP::Status->name($statuscode);
+    my $reasontext = Sisimai::SMTP::Status->name($statuscode) || '';
 
     TRY_TO_MATCH: while(1) {
         my $diagnostic   = lc $argvs->diagnosticcode // '';
@@ -195,7 +195,7 @@ sub match {
     } else {
         # Detect the bounce reason from "Status:" code
         require Sisimai::SMTP::Status;
-        my $statuscode = Sisimai::SMTP::Status->find($argv1);
+        my $statuscode = Sisimai::SMTP::Status->find($argv1) || '';
         $reasontext = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
     }
     return $reasontext;

@@ -156,7 +156,7 @@ sub scan {
             $e->{'reason'} = $r;
             last;
         }
-        $e->{'reason'} ||= Sisimai::SMTP::Status->name($e->{'status'});
+        $e->{'reason'} ||= Sisimai::SMTP::Status->name($e->{'status'}) || '';
         $e->{'agent'}    = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

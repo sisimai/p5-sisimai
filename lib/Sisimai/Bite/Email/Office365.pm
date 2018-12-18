@@ -211,8 +211,7 @@ sub scan {
 
         if( ! $e->{'status'} || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
             # There is no value of Status header or the value is 5.0.0, 4.0.0
-            my $r = Sisimai::SMTP::Status->find($e->{'diagnosis'});
-            $e->{'status'} = $r if $r;
+            $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || $e->{'status'};
         }
 
         for my $p ( keys %$ReCommands ) {

@@ -85,12 +85,12 @@ sub make {
         # Get the local part and the domain part from the email address
         my $lpart = $1;
         my $dpart = $2;
-        my $email = __PACKAGE__->expand_verp($argvs->{'address'});
+        my $email = __PACKAGE__->expand_verp($argvs->{'address'}) || '';
         my $alias = 0;
 
         unless( $email ) {
             # Is not VERP address, try to expand the address as an alias
-            $email = __PACKAGE__->expand_alias($argvs->{'address'});
+            $email = __PACKAGE__->expand_alias($argvs->{'address'}) || '';
             $alias = 1 if $email;
         }
 
@@ -389,7 +389,7 @@ sub expand_verp {
     my $local = (split('@', $email, 2))[0];
 
     # bounce+neko=example.org@example.org => neko@example.org
-    return '' unless $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/;
+    return undef unless $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/;
     my $verp0 = $1.'@'.$2;
     return $verp0 if Sisimai::RFC5322->is_emailaddress($verp0);
 }
@@ -400,11 +400,11 @@ sub expand_alias {
     # @return   [String]        Expanded email address
     my $class = shift;
     my $email = shift // return undef;
-    return '' unless Sisimai::RFC5322->is_emailaddress($email);
+    return undef unless Sisimai::RFC5322->is_emailaddress($email);
 
     # neko+straycat@example.org => neko@example.org
     my @local = split('@', $email);
-    return '' unless $local[0] =~ /\A([-_\w]+?)[+].+\z/;
+    return undef unless $local[0] =~ /\A([-_\w]+?)[+].+\z/;
     return $1.'@'.$local[1];
 }
 

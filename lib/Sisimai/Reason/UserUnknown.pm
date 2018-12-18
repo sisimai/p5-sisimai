@@ -145,7 +145,7 @@ sub true {
     my $argvs = shift // return undef;
     return 1 if $argvs->reason eq 'userunknown';
 
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || '';
     return 0 if $tempreason eq 'suspend';
 
     my $diagnostic = lc $argvs->diagnosticcode;

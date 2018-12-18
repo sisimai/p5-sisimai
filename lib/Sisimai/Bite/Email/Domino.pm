@@ -135,7 +135,7 @@ sub scan {
             # Check each regular expression of Domino error messages
             next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
-            $e->{'status'} = Sisimai::SMTP::Status->code($r, 0);
+            $e->{'status'} = Sisimai::SMTP::Status->code($r, 0) || '';
             last;
         }
     }

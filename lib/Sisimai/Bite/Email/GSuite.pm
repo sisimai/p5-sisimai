@@ -183,7 +183,7 @@ sub scan {
 
                 if( $e->{'status'} eq '' || $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {
                     # Check the value of D.S.N. in $anotherset
-                    $as = Sisimai::SMTP::Status->find($anotherset->{'diagnosis'});
+                    $as = Sisimai::SMTP::Status->find($anotherset->{'diagnosis'}) || '';
                     if( length($as) > 0 && substr($as, -4, 4) ne '.0.0' ) {
                         # The D.S.N. is neither an empty nor *.0.0
                         $e->{'status'} = $as;
@@ -192,7 +192,7 @@ sub scan {
 
                 if( $e->{'replycode'} eq '' || $e->{'replycode'} eq '500' || $e->{'replycode'} eq '400' ) {
                     # Check the value of SMTP reply code in $anotherset
-                    $ar = Sisimai::SMTP::Reply->find($anotherset->{'diagnosis'});
+                    $ar = Sisimai::SMTP::Reply->find($anotherset->{'diagnosis'}) || '';
                     if( length($ar) > 0 && substr($ar, -2, 2) ne '00' ) {
                         # The SMTP reply code is neither an empty nor *00
                         $e->{'replycode'} = $ar;

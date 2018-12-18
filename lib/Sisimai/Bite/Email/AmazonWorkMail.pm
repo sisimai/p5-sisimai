@@ -151,7 +151,7 @@ sub scan {
         # 554 4.4.7 Message expired: unable to deliver in 840 minutes.
         # <421 4.4.2 Connection timed out>
         $e->{'replycode'} = $1 if $e->{'diagnosis'} =~ /[<]([245]\d\d)[ ].+[>]/;
-        $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'});
+        $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'}) || '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

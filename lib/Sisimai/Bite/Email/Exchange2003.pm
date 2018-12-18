@@ -229,7 +229,7 @@ sub scan {
                 # Find captured code from the error code table
                 next unless grep { $capturedcode eq $_ } @{ $ErrorCodes->{ $r } };
                 $e->{'reason'} = $r;
-                $e->{'status'} = Sisimai::SMTP::Status->code($r);
+                $e->{'status'} = Sisimai::SMTP::Status->code($r) || '';
                 last;
             }
             $e->{'diagnosis'} = $errormessage;
