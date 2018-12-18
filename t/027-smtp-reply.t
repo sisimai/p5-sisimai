@@ -93,7 +93,7 @@ MAKE_TEST: {
     ];
 
     my $v = '';
-    is $PackageName->find(''), '', '->find() returns ""';
+    is $PackageName->find(''), undef, '->find() returns undef';
     for my $e ( @$smtperrors ) {
         $v = $PackageName->find($e);
         ok $e, 'Error message text = '.$e;
