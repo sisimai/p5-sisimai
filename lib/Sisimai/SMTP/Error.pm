@@ -25,10 +25,9 @@ sub is_permanent {
     my $argv1 = shift || return undef;
 
     my $statuscode = Sisimai::SMTP::Status->find($argv1) || Sisimai::SMTP::Reply->find($argv1) || '';
-    my $classvalue = int(substr($statuscode, 0, 1) || 0);
     my $getchecked = undef;
 
-    if( $classvalue > 0 ) {
+    if( (my $classvalue = int(substr($statuscode, 0, 1) || 0)) > 0 ) {
         # 2, 4, or 5
         if( $classvalue == 5 ) {
             # Permanent error

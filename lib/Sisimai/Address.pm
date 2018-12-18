@@ -325,7 +325,6 @@ sub find {
     while( my $e = shift @$readbuffer ) {
         # The element must not include any character except from 0x20 to 0x7e.
         next if $e->{'address'} =~ /[^\x20-\x7e]/;
-
         unless( $e->{'address'} =~ /\A.+[@].+\z/ ) {
             # Allow if the argument is MAILER-DAEMON
             next unless Sisimai::RFC5322->is_mailerdaemon($e->{'address'});
