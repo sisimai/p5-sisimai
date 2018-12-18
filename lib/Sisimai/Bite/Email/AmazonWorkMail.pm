@@ -145,8 +145,7 @@ sub scan {
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
             my $errormessage = $e->{'diagnosis'};
                $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-            my $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
-            $e->{'status'}   = $pseudostatus if $pseudostatus;
+            $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
         }
 
         # 554 4.4.7 Message expired: unable to deliver in 840 minutes.

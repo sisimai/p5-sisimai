@@ -147,9 +147,7 @@ sub scan {
             # Check each regular expression of Notes error messages
             next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
             $e->{'reason'} = $r;
-
-            my $pseudostatus = Sisimai::SMTP::Status->code($r);
-            $e->{'status'} = $pseudostatus if $pseudostatus;
+            $e->{'status'} = Sisimai::SMTP::Status->code($r);
             last;
         }
     }

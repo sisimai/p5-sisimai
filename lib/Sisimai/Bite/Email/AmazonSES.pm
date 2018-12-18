@@ -160,13 +160,10 @@ sub scan {
 
         if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
             # Get other D.S.N. value from the error message
-            my $pseudostatus = '';
-            my $errormessage = $e->{'diagnosis'};
-
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
-            $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-            $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
-            $e->{'status'} = $pseudostatus if $pseudostatus;
+            my $errormessage = $e->{'diagnosis'};
+               $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
+            $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
         }
 
         SESSION: for my $r ( keys %$MessagesOf ) {
