@@ -131,7 +131,6 @@ sub make {
 
     LOOP_DELIVERY_STATUS: for my $e ( @{ $messageobj->ds } ) {
         # Create parameters for new() constructor.
-        my $o = undef;  # Sisimai::Data Object
         my $p = {
             'catch'          => $messageobj->catch   // undef,
             'lhost'          => $e->{'lhost'}        // '',
@@ -309,8 +308,7 @@ sub make {
                 $p->{'action'} = 'failed';
             }
         }
-        $o = __PACKAGE__->new(%$p);
-        next unless defined $o;
+        next unless my $o = __PACKAGE__->new(%$p);
 
         if( $o->reason eq '' || grep { $o->reason eq $_ } @$RetryIndex ) {
             # Decide the reason of email bounce
