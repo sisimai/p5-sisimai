@@ -26,7 +26,7 @@ sub true  {
 
     return undef unless $argvs->deliverystatus;
     return 1 if $argvs->reason eq 'onhold';
-    return 1 if Sisimai::SMTP::Status->name($argvs->deliverystatus) eq 'onhold';
+    return 1 if (Sisimai::SMTP::Status->name($argvs->deliverystatus) || '') eq 'onhold';
     return 0
 }
 

@@ -21,15 +21,14 @@ sub new {
     #                                   valid email text
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $first = substr($$argv1, 0, 5) || '';
     my $param = { 
         'data'   => [],
         'size'   => length $$argv1 || 0,
         'offset' => 0,
     };
-
     return undef unless $param->{'size'};
-    if( $first eq 'From ') {
+
+    if( (substr($$argv1, 0, 5) || '') eq 'From ') {
         # UNIX mbox
         $param->{'data'} = [split(/^From /m, $$argv1)];
         shift @{ $param->{'data'} };

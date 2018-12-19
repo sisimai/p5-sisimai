@@ -301,7 +301,6 @@ sub parse {
                 # Valid time format, maybe...
                 $v->{'T'} = sprintf("%02d:%02d:%02d", $1, $2, $3);
             }
-
         } elsif( $p =~ /\A([0-2]\d):([0-5]\d)\z/ ) {
             # Time; 12:34 => 12:34:00
             if( $1 < 24 && $2 < 60 ) {
@@ -370,7 +369,7 @@ sub parse {
     $v->{'a'} ||= 'Thu';   # There is no day of week
     if( defined $v->{'Y'} && $v->{'Y'} < 200 ) {
         # 99 -> 1999, 102 -> 2002
-        $v->{'Y'}  += 1900;
+        $v->{'Y'} += 1900;
     }
     $v->{'z'} ||= __PACKAGE__->second2tz(Time::Piece->new->tzoffset);
 

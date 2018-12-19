@@ -27,11 +27,10 @@ sub is_mimeencoded {
     # @return   [Integer]       0: Not MIME encoded string
     #                           1: MIME encoded string
     my $class = shift;
-    my $argv1 = shift || return 0;
+    my $argv1 = shift || return undef;
     my @piece = ();
     my $mime1 = 0;
 
-    return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
     $$argv1 =~ y/"//d;
 
@@ -56,14 +55,11 @@ sub mimedecode {
     # @return   [String]        MIME-Decoded text
     my $class = shift;
     my $argvs = shift;
-    return '' unless ref $argvs;
-    return '' unless ref $argvs eq 'ARRAY';
+    return undef unless ref $argvs eq 'ARRAY';
 
     my $characterset = '';
     my $encodingname = '';
     my @decodedtext0 = ();
-    my $decodedtext1 = '';
-    my $utf8decoded1 = '';
 
     for my $e ( @$argvs ) {
         # Check and decode each element
@@ -94,7 +90,7 @@ sub mimedecode {
     }
     return '' unless scalar @decodedtext0;
 
-    $decodedtext1 = join('', @decodedtext0);
+    my $decodedtext1 = join('', @decodedtext0);
     if( $characterset && $encodingname ) {
         # utf-8 => utf8
         $characterset = 'utf8' if $characterset eq 'utf-8';
@@ -105,9 +101,7 @@ sub mimedecode {
             $decodedtext1 = 'FAILED TO CONVERT THE SUBJECT' if $@;
         }
     }
-
-    $utf8decoded1 = Encode::decode_utf8 $decodedtext1;
-    return $utf8decoded1;
+    return Encode::decode_utf8 $decodedtext1;
 }
 
 sub qprintd {
@@ -119,8 +113,6 @@ sub qprintd {
     my $argv1 = shift // return undef;
     my $heads = shift // {};
     my $plain = '';
-
-    return \'' unless ref $argv1;
     return \'' unless ref $argv1 eq 'SCALAR';
 
     if( ! exists $heads->{'content-type'} || ! $heads->{'content-type'} ) {
@@ -172,8 +164,7 @@ sub qprintd {
             }
         } else {
             # NOT Quoted-Printable encoded text block
-            my $lowercased = lc $e;
-            if( $e =~ /\A[-]{2}[^\s]+[^-]\z/ ) {
+            if( (my $lowercased = lc $e) =~ /\A[-]{2}[^\s]+[^-]\z/ ) {
                 # Start of the boundary block
                 # --=_gy7C4Gpes0RP4V5Bs9cK4o2Us2ZT57b-3OLnRN+4klS8dTmQ
                 unless( $e eq $boundary00 ) {
@@ -211,8 +202,6 @@ sub base64d {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $plain = undef;
-
-    return \'' unless ref $argv1;
     return \'' unless ref $argv1 eq 'SCALAR';
 
     # Decode BASE64
@@ -306,10 +295,9 @@ sub breaksup {
         # Is not "Content-Type: multipart/*"
         if( $upperchunk =~ /Content-Transfer-Encoding: ([^\s;]+)/ ) {
             # Content-Transfer-Encoding: quoted-printable|base64|7bit|...
-            my $ctencoding = lc $1;
             my $getdecoded = '';
 
-            if( $ctencoding eq 'quoted-printable' ) {
+            if( (my $ctencoding = lc $1) eq 'quoted-printable' ) {
                 # Content-Transfer-Encoding: quoted-printable
                 $getdecoded = ${ __PACKAGE__->qprintd(\$lowerchunk) };
 
@@ -345,7 +333,6 @@ sub breaksup {
                 $getdecoded = ${ Sisimai::String->to_plain(\$getdecoded) };
             }
             $hasflatten .= $getdecoded."\n\n" if length $getdecoded;
-
         } else {
             # Content-Type: text/plain OR text/rfc822-headers OR message/*
             if( index($mimeformat, 'message/') == 0 || $mimeformat eq 'text/rfc822-headers' ) {

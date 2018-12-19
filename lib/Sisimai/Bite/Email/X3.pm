@@ -115,7 +115,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'});
+        $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
 

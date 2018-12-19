@@ -55,8 +55,7 @@ sub make {
     $ToBeLoaded = __PACKAGE__->load(%$methodargv);
 
     # 1. Split email data to headers and a body part.
-    my $aftersplit = __PACKAGE__->divideup(\$email);
-    return undef unless keys %$aftersplit;
+    return undef unless my $aftersplit = __PACKAGE__->divideup(\$email);
 
     # 2. Convert email headers from text to hash reference
     $TryOnFirst = [];
@@ -74,9 +73,7 @@ sub make {
         'mail' => $processing, 
         'body' => \$aftersplit->{'body'},
     };
-    my $bouncedata = __PACKAGE__->parse(%$methodargv);
-
-    return undef unless $bouncedata;
+    return undef unless my $bouncedata = __PACKAGE__->parse(%$methodargv);
     return undef unless keys %$bouncedata;
     $processing->{'ds'}    = $bouncedata->{'ds'};
     $processing->{'catch'} = $bouncedata->{'catch'};
@@ -147,7 +144,7 @@ sub divideup {
     # @return        [Hash]          Email data after split
     # @since v4.14.0
     my $class = shift;
-    my $email = shift // return {};
+    my $email = shift // return undef;
 
     my $readcursor = 0;
     my $aftersplit = { 'from' => '', 'header' => '', 'body' => '' };
@@ -155,7 +152,7 @@ sub divideup {
     $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
     $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
     my @hasdivided = split("\n", $$email);
-    return {} unless scalar @hasdivided;
+    return undef unless scalar @hasdivided;
 
     if( substr($hasdivided[0], 0, 5) eq 'From ' ) {
         # From MAILER-DAEMON Tue Feb 11 00:00:00 2014
@@ -168,14 +165,12 @@ sub divideup {
         if( $readcursor & $Indicators->{'endof'} ) {
             # The body part of the email
             $aftersplit->{'body'} .= $e."\n";
-
         } else {
             # The boundary for splitting headers and a body part does not
             # appeare yet.
             if( not $e ) {
                 # Blank line, it is a boundary of headers and a body part
                 $readcursor |= $Indicators->{'endof'} if $readcursor & $Indicators->{'begin'};
-
             } else {
                 # The header part of the email
                 $aftersplit->{'header'} .= $e."\n";
@@ -183,8 +178,8 @@ sub divideup {
             }
         }
     }
-    return {} unless $aftersplit->{'header'};
-    return {} unless $aftersplit->{'body'};
+    return undef unless $aftersplit->{'header'};
+    return undef unless $aftersplit->{'body'};
 
     $aftersplit->{'from'} ||= 'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     return $aftersplit;
@@ -223,7 +218,6 @@ sub headers {
                 $rhs =~ y/\t/ /;
                 $rhs =~ y/ //s;
                 push @{ $structured->{ $currheader } }, $rhs;
-
             } else {
                 # Other headers except "Received" and so on
                 if( $ExtHeaders->{ $currheader } ) {
@@ -240,7 +234,6 @@ sub headers {
             if( ref $structured->{ $currheader } eq 'ARRAY' ) {
                 # Concatenate a header which have multi-lines such as 'Received'
                 $structured->{ $currheader }->[-1] .= ' '.$1;
-
             } else {
                 $structured->{ $currheader } .= ' '.$1;
             }
@@ -266,9 +259,7 @@ sub makeorder {
     for my $e ( keys %$SubjectTab ) {
         # Get MTA list from the subject header
         next if index($title, $e) == -1;
-
-        # Matched and push MTA list
-        push @$order, @{ $SubjectTab->{ $e } };
+        push @$order, @{ $SubjectTab->{ $e } }; # Matched and push MTA list
         last;
     }
     return $order;
@@ -280,7 +271,7 @@ sub takeapart {
     # @return        [Hash]         Structured message headers
     my $class = shift;
     my $heads = shift || return {};
-    $$heads =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
+      $$heads =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
 
     my $takenapart = {};
     my $previousfn = ''; # Previous field name
@@ -297,7 +288,6 @@ sub takeapart {
             next unless exists $RFC822Head->{ $lhs };
             $previousfn = $lhs;
             $takenapart->{ $previousfn } //= $rhs;
-
         } else {
             # Continued line from the previous line
             next unless $e =~ /\A[ \t]+/;
@@ -309,13 +299,11 @@ sub takeapart {
                 if( $previousfn eq 'subject' ) {
                     # Subject: header
                     $takenapart->{ $previousfn } .= $BorderLine.$e;
-
                 } else {
                     # Is not Subject header
                     $takenapart->{ $previousfn } .= $e;
                 }
                 $mimeborder->{ $previousfn } = 1;
-
             } else {
                 # ASCII Characters only: Not MIME-Encoded
                 $e =~ s/\A[ \t]+//; # unfolding
@@ -333,7 +321,6 @@ sub takeapart {
             # The value of ``Subject'' header is including multibyte character,
             # is not MIME-Encoded text.
             $v = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';
-
         } else {
             # MIME-Encoded subject field or ASCII characters only
             my $r = [];

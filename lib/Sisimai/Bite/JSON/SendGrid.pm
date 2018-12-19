@@ -68,8 +68,8 @@ sub adapt {
             $v->{'reason'} = 'feedback';
             $v->{'feedbacktype'} = 'abuse';
         }
-        $v->{'status'}    ||= Sisimai::SMTP::Status->find($v->{'diagnosis'});
-        $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($v->{'diagnosis'});
+        $v->{'status'}    ||= Sisimai::SMTP::Status->find($v->{'diagnosis'}) || '';
+        $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($v->{'diagnosis'})  || '';
 
         # Generate pseudo message/rfc822 part
         $rfc822head = {
@@ -101,8 +101,8 @@ sub adapt {
             $v->{'status'} = $statuscode;
         }
 
-        $v->{'status'}    ||= Sisimai::SMTP::Status->find($diagnostic);
-        $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($diagnostic);
+        $v->{'status'}    ||= Sisimai::SMTP::Status->find($diagnostic) || '';
+        $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($diagnostic)  || '';
         $v->{'diagnosis'}   = $argvs->{'reason'} || '';
         $v->{'agent'}       = __PACKAGE__->smtpagent;
 

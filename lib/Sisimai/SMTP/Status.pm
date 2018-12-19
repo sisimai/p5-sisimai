@@ -711,7 +711,7 @@ sub code {
     # @see      name
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return '';
+    my $argv1 = shift || return undef;
     my $argv2 = shift // 0;
     my $table = undef;
     my $code0 = undef;
@@ -729,7 +729,7 @@ sub name {
     # @see      code
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return '';
+    my $argv1 = shift || return undef;
 
     return '' unless $argv1 =~ /\A[245][.]\d[.]\d+\z/;
     return $StandardCode->{ $argv1 } // '';
@@ -742,7 +742,7 @@ sub find {
     #                           not include DSN
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return '';
+    my $argv1 = shift || return undef;
 
     my $foundvalue = '';
     my $regularexp = [

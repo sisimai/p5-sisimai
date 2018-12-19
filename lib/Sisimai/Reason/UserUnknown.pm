@@ -145,7 +145,7 @@ sub true {
     my $argvs = shift // return undef;
     return 1 if $argvs->reason eq 'userunknown';
 
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus);
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || '';
     return 0 if $tempreason eq 'suspend';
 
     my $diagnostic = lc $argvs->diagnosticcode;
@@ -168,7 +168,7 @@ sub true {
             $matchother = 1;
             last;
         }
-        return 1 if not $matchother;    # Did not match with other message patterns
+        return 1 unless $matchother;    # Did not match with other message patterns
 
     } elsif( $argvs->smtpcommand eq 'RCPT' ) {
         # When the SMTP command is not "RCPT", the session rejected by other

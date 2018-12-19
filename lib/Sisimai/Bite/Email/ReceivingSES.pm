@@ -147,8 +147,7 @@ sub scan {
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
             my $errormessage = $e->{'diagnosis'};
                $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-            my $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
-            $e->{'status'} = $pseudostatus if $pseudostatus;
+            $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
         }
 
         SESSION: for my $r ( keys %$MessagesOf ) {
@@ -157,7 +156,7 @@ sub scan {
             $e->{'reason'} = $r;
             last;
         }
-        $e->{'reason'} ||= Sisimai::SMTP::Status->name($e->{'status'});
+        $e->{'reason'} ||= Sisimai::SMTP::Status->name($e->{'status'}) || '';
         $e->{'agent'}    = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

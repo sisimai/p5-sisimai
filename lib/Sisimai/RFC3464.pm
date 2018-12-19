@@ -65,11 +65,10 @@ sub scan {
     };
     my $v = undef;
     my $p = '';
-    my $d = '';
 
     for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
-        $d = lc $e;
+        my $d = lc $e;
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             if( $d =~ $MarkingsOf->{'message'} ) {
@@ -375,7 +374,7 @@ sub scan {
         for my $e ( split("\n", $$mbody) ) {
             # Get the recipient's email address and error messages.
             last if $e eq '__END_OF_EMAIL_MESSAGE__';
-            $d = lc $e;
+            my $d = lc $e;
             last if $d =~ $MarkingsOf->{'rfc822'};
             last if $d =~ $re_stop;
 
@@ -414,11 +413,10 @@ sub scan {
             # Check To: header in the original message
             next unless $e =~ /\ATo:\s*(.+)\z/;
             my $r = Sisimai::Address->find($1, 1) || [];
-            my $b = undef;
             next unless scalar @$r;
             push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
 
-            $b = $dscontents->[-1];
+            my $b = $dscontents->[-1];
             $b->{'recipient'} = $r->[0]->{'address'};
             $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
             $recipients++;
@@ -452,7 +450,7 @@ sub scan {
             $e->{'agent'} = __PACKAGE__->smtpagent;
         }
         $e->{'date'}   ||= $mhead->{'date'};
-        $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'});
+        $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $MarkingsOf->{'command'};
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

@@ -90,7 +90,7 @@ sub scan {
 
             if( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
-                my $o = Sisimai::RFC1894->field($e) || next;
+                next unless my $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
                 if( $o->[-1] eq 'addr' ) {
@@ -145,14 +145,13 @@ sub scan {
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
             my $errormessage = $e->{'diagnosis'};
                $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-            my $pseudostatus = Sisimai::SMTP::Status->find($errormessage);
-            $e->{'status'}   = $pseudostatus if $pseudostatus;
+            $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
         }
 
         # 554 4.4.7 Message expired: unable to deliver in 840 minutes.
         # <421 4.4.2 Connection timed out>
         $e->{'replycode'} = $1 if $e->{'diagnosis'} =~ /[<]([245]\d\d)[ ].+[>]/;
-        $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'});
+        $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'}) || '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);

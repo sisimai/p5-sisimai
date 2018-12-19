@@ -75,13 +75,12 @@ sub get {
         $reasontext   = __PACKAGE__->anotherone($argvs);
         $reasontext   = '' if $reasontext eq 'undefined';
         $reasontext ||= 'expired' if $argvs->action eq 'delayed';
+        return $reasontext if $reasontext;
 
-        unless( $reasontext ) {
-            # Try to match with message patterns in Sisimai::Reason::Vacation
-            require Sisimai::Reason::Vacation;
-            $reasontext = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->diagnosticcode);
-        }
-        $reasontext ||= 'onhold' if $argvs->diagnosticcode;
+        # Try to match with message patterns in Sisimai::Reason::Vacation
+        require Sisimai::Reason::Vacation;
+        $reasontext   = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->diagnosticcode);
+        $reasontext ||= 'onhold'   if $argvs->diagnosticcode;
         $reasontext ||= 'undefined';
     }
     return $reasontext;
@@ -99,19 +98,15 @@ sub anotherone {
     return undef unless ref $argvs eq 'Sisimai::Data';
     return $argvs->reason if $argvs->reason;
 
-    my $diagnostic = lc $argvs->diagnosticcode // '';
-    my $statuscode = $argvs->deliverystatus // '';
-    my $commandtxt = $argvs->smtpcommand    // '';
-    my $trytomatch = undef;
-    my $reasontext = '';
-
     require Sisimai::SMTP::Status;
-    $reasontext = Sisimai::SMTP::Status->name($statuscode);
+    my $statuscode = $argvs->deliverystatus // '';
+    my $reasontext = Sisimai::SMTP::Status->name($statuscode) || '';
 
     TRY_TO_MATCH: while(1) {
-        $trytomatch   = 1 if $reasontext eq '';
-        $trytomatch ||= 1 if grep { $reasontext eq $_ } @$GetRetried;
-        $trytomatch ||= 1 if $argvs->diagnostictype ne 'SMTP';
+        my $diagnostic   = lc $argvs->diagnosticcode // '';
+        my $trytomatch   = $reasontext eq '' ? 1 : 0;
+           $trytomatch ||= 1 if grep { $reasontext eq $_ } @$GetRetried;
+           $trytomatch ||= 1 if $argvs->diagnostictype ne 'SMTP';
         last unless $trytomatch;
 
         # Could not decide the reason by the value of Status:
@@ -125,27 +120,25 @@ sub anotherone {
             $reasontext = lc $e;
             last;
         }
+        last(TRY_TO_MATCH) if $reasontext;
 
-        if( not $reasontext ) {
-            # Check the value of Status:
-            my $v = substr($statuscode, 0, 3);
-            if( $v eq '5.6' || $v eq '4.6' ) {
-                #  X.6.0   Other or undefined media error
-                $reasontext = 'contenterror';
+        # Check the value of Status:
+        if( (my $v = substr($statuscode, 0, 3)) =~ /\A[45][.]6\z/ ) {
+            #  X.6.0   Other or undefined media error
+            $reasontext = 'contenterror';
 
-            } elsif( $v eq '5.7' || $v eq '4.7' ) {
-                #  X.7.0   Other or undefined security status
-                $reasontext = 'securityerror';
+        } elsif( $v eq '5.7' || $v eq '4.7' ) {
+            #  X.7.0   Other or undefined security status
+            $reasontext = 'securityerror';
 
-            } elsif( $argvs->diagnostictype eq 'X-UNIX' || $argvs->diagnostictype eq 'X-POSTFIX' ) {
-                # Diagnostic-Code: X-UNIX; ...
-                $reasontext = 'mailererror';
+        } elsif( $argvs->diagnostictype eq 'X-UNIX' || $argvs->diagnostictype eq 'X-POSTFIX' ) {
+            # Diagnostic-Code: X-UNIX; ...
+            $reasontext = 'mailererror';
 
-            } else {
-                # 50X Syntax Error?
-                require Sisimai::Reason::SyntaxError;
-                $reasontext = 'syntaxerror' if Sisimai::Reason::SyntaxError->true($argvs);
-            }
+        } else {
+            # 50X Syntax Error?
+            require Sisimai::Reason::SyntaxError;
+            $reasontext = 'syntaxerror' if Sisimai::Reason::SyntaxError->true($argvs);
         }
         last(TRY_TO_MATCH) if $reasontext;
 
@@ -153,9 +146,9 @@ sub anotherone {
         if( $argvs->action =~ /\A(?:delayed|expired)/ ) {
             # Action: delayed, expired
             $reasontext = 'expired';
-
         } else {
             # Check the value of SMTP command
+            my $commandtxt = $argvs->smtpcommand // '';
             if( $commandtxt eq 'EHLO' || $commandtxt eq 'HELO' ) {
                 # Rejected at connection or after EHLO|HELO
                 $reasontext = 'blocked';
@@ -173,9 +166,7 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
 
-    require Sisimai::SMTP::Status;
     my $reasontext = '';
-    my $statuscode = Sisimai::SMTP::Status->find($argv1);
     my $diagnostic = lc $argv1;
 
     # Diagnostic-Code: SMTP; ... or empty value
@@ -201,6 +192,8 @@ sub match {
 
     } else {
         # Detect the bounce reason from "Status:" code
+        require Sisimai::SMTP::Status;
+        my $statuscode = Sisimai::SMTP::Status->find($argv1) || '';
         $reasontext = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
     }
     return $reasontext;

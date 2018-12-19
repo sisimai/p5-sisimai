@@ -5,7 +5,7 @@ use warnings;
 use version;
 
 our $VERSION = version->declare('v4.24.1');
-our $PATCHLV = 2;
+our $PATCHLV = 3;
 sub version { return $VERSION.($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
 sub libname { 'Sisimai'      }
@@ -56,8 +56,7 @@ sub make {
     if( $input eq 'email' ) {
         # Path to mailbox or Maildir/, or STDIN: 'input' => 'email'
         require Sisimai::Mail;
-        my $mail = Sisimai::Mail->new($argv0);
-        return undef unless $mail;
+        my $mail = Sisimai::Mail->new($argv0) || return undef;
 
         while( my $r = $mail->read ) {
             # Read and parse each mail file
@@ -67,8 +66,7 @@ sub make {
                 'input' => 'email',
                 'field' => $field,
             };
-            my $mesg = Sisimai::Message->new(%$methodargv);
-            next unless defined $mesg;
+            next unless my $mesg = Sisimai::Message->new(%$methodargv);
 
             my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
             push @$bouncedata, @$data if scalar @$data;
@@ -90,8 +88,7 @@ sub make {
 
         while( my $e = shift @$list ) {
             $methodargv = { 'data' => $e, 'hook' => $hookmethod, 'input' => 'json' };
-            my $mesg = Sisimai::Message->new(%$methodargv);
-            next unless defined $mesg;
+            next unless my $mesg = Sisimai::Message->new(%$methodargv);
 
             my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
             push @$bouncedata, @$data if scalar @$data;

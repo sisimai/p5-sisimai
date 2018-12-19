@@ -46,7 +46,7 @@ MAKE_TEST: {
     ];
     my $v = '';
 
-    is $PackageName->code(''), '', '->code() = ""';
+    is $PackageName->code(''), undef, '->code() = undef';
     PSEUDO_STATUS_CODE: for my $e ( @$reasonlist ) {
         $v = $PackageName->code($e);
         like $v, qr/\A5[.]\d[.]9\d+/, 'pseudo status code('.$e.') = '.$v;
@@ -55,7 +55,7 @@ MAKE_TEST: {
         like $v, qr/\A[45][.]\d[.]9\d+/, 'pseudo status code('.$e.',1) = '.$v;
     }
 
-    is $PackageName->name(''), '', '->name() = ""';
+    is $PackageName->name(''), undef, '->name() = undef';
     STANRDARD_STATUS_CODE: for my $e ( @$statuslist ) {
         $v = $PackageName->name($e);
         if( $v eq 'delivered' ) {
@@ -66,7 +66,7 @@ MAKE_TEST: {
         }
     }
 
-    is $PackageName->find(''), '', '->find("") = ""';
+    is $PackageName->find(''), undef, '->find("") = undef';
     for my $e ( @$smtperrors ) {
         $v = $PackageName->find($e);
         like $v, qr/\A[245][.]\d[.]\d\z/, '->find() returns '.$v;

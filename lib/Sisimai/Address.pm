@@ -85,12 +85,12 @@ sub make {
         # Get the local part and the domain part from the email address
         my $lpart = $1;
         my $dpart = $2;
-        my $email = __PACKAGE__->expand_verp($argvs->{'address'});
+        my $email = __PACKAGE__->expand_verp($argvs->{'address'}) || '';
         my $alias = 0;
 
         unless( $email ) {
             # Is not VERP address, try to expand the address as an alias
-            $email = __PACKAGE__->expand_alias($argvs->{'address'});
+            $email = __PACKAGE__->expand_alias($argvs->{'address'}) || '';
             $alias = 1 if $email;
         }
 
@@ -275,16 +275,12 @@ sub find {
                     $v->{ $p } .= $e;
 
                 } else {
-                    # Display name
+                    # Display name like "Neko, Nyaan"
                     $v->{'name'} .= $e;
-                    if( $readcursor & $Indicators->{'quoted-string'} ) {
-                        # "Neko, Nyaan"
-                        unless( $v->{'name'} =~ /\x5c["]\z/ ) {
-                            # "Neko, Nyaan \"...
-                            $readcursor &= ~$Indicators->{'quoted-string'};
-                            $p = '';
-                        }
-                    }
+                    next unless $readcursor & $Indicators->{'quoted-string'};
+                    next if $v->{'name'} =~ /\x5c["]\z/;    # "Neko, Nyaan \"...
+                    $readcursor &= ~$Indicators->{'quoted-string'};
+                    $p = '';
                 }
                 next;
             } # End of if('"')
@@ -325,7 +321,6 @@ sub find {
     while( my $e = shift @$readbuffer ) {
         # The element must not include any character except from 0x20 to 0x7e.
         next if $e->{'address'} =~ /[^\x20-\x7e]/;
-
         unless( $e->{'address'} =~ /\A.+[@].+\z/ ) {
             # Allow if the argument is MAILER-DAEMON
             next unless Sisimai::RFC5322->is_mailerdaemon($e->{'address'});
@@ -373,8 +368,6 @@ sub s3s4 {
     # @return   [String]        Email address without comment, brackets
     my $class = shift;
     my $input = shift // return undef;
-    return $input if ref $input;
-
     my $addrs = __PACKAGE__->find($input, 1) || [];
     return $input unless scalar @$addrs;
     return $addrs->[0]->{'address'};
@@ -389,7 +382,7 @@ sub expand_verp {
     my $local = (split('@', $email, 2))[0];
 
     # bounce+neko=example.org@example.org => neko@example.org
-    return '' unless $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/;
+    return undef unless $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/;
     my $verp0 = $1.'@'.$2;
     return $verp0 if Sisimai::RFC5322->is_emailaddress($verp0);
 }
@@ -400,11 +393,11 @@ sub expand_alias {
     # @return   [String]        Expanded email address
     my $class = shift;
     my $email = shift // return undef;
-    return '' unless Sisimai::RFC5322->is_emailaddress($email);
+    return undef unless Sisimai::RFC5322->is_emailaddress($email);
 
     # neko+straycat@example.org => neko@example.org
     my @local = split('@', $email);
-    return '' unless $local[0] =~ /\A([-_\w]+?)[+].+\z/;
+    return undef unless $local[0] =~ /\A([-_\w]+?)[+].+\z/;
     return $1.'@'.$local[1];
 }
 

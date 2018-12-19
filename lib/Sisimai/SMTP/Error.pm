@@ -24,11 +24,10 @@ sub is_permanent {
     my $class = shift;
     my $argv1 = shift || return undef;
 
-    my $statuscode = Sisimai::SMTP::Status->find($argv1) || Sisimai::SMTP::Reply->find($argv1);
-    my $classvalue = int(substr($statuscode, 0, 1) || 0);
+    my $statuscode = Sisimai::SMTP::Status->find($argv1) || Sisimai::SMTP::Reply->find($argv1) || '';
     my $getchecked = undef;
 
-    if( $classvalue > 0 ) {
+    if( (my $classvalue = int(substr($statuscode, 0, 1) || 0)) > 0 ) {
         # 2, 4, or 5
         if( $classvalue == 5 ) {
             # Permanent error
@@ -71,7 +70,7 @@ sub soft_or_hard {
     #                           '':     May not be bounce ?
     # @since v4.17.3
     my $class = shift;
-    my $argv1 = shift || return '';
+    my $argv1 = shift || return undef;
     my $argv2 = shift || '';
     my $value = undef;
 
@@ -87,7 +86,7 @@ sub soft_or_hard {
         # NotAccept: 5xx => hard bounce, 4xx => soft bounce
         if( $argv2 ) {
             # Get D.S.N. or SMTP reply code from The 2nd argument string
-            my $statuscode = Sisimai::SMTP::Status->find($argv2) || Sisimai::SMTP::Reply->find($argv2);
+            my $statuscode = Sisimai::SMTP::Status->find($argv2) || Sisimai::SMTP::Reply->find($argv2) || '';
             my $classvalue = int(substr($statuscode, 0, 1) || 0);
             $value = $classvalue == 4 ? 'soft' : 'hard';
 

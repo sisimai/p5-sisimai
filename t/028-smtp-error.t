@@ -60,7 +60,7 @@ MAKE_TEST: {
         is $v, 1, '->is_permanent('.$e.') = 1';
     }
 
-    is $PackageName->soft_or_hard(), '';
+    is $PackageName->soft_or_hard(), undef;
     is $PackageName->soft_or_hard('neko'), '';
     for my $e ( @$softbounces ) {
         $v = $PackageName->soft_or_hard($e);

@@ -66,7 +66,7 @@ sub find {
     #                           did not include SMTP Reply Code value
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return '';
+    my $argv1 = shift || return undef;
     return '' if uc($argv1) =~ /X-UNIX;/;
 
     my $value = '';

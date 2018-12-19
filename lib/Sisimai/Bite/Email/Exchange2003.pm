@@ -224,14 +224,12 @@ sub scan {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
             my $capturedcode = $1;
             my $errormessage = $2;
-            my $pseudostatus = '';
 
             for my $r ( keys %$ErrorCodes ) {
                 # Find captured code from the error code table
                 next unless grep { $capturedcode eq $_ } @{ $ErrorCodes->{ $r } };
                 $e->{'reason'} = $r;
-                $pseudostatus = Sisimai::SMTP::Status->code($r);
-                $e->{'status'} = $pseudostatus if $pseudostatus;
+                $e->{'status'} = Sisimai::SMTP::Status->code($r) || '';
                 last;
             }
             $e->{'diagnosis'} = $errormessage;

@@ -261,7 +261,7 @@ sub scan {
             }
         }
         $e->{'command'} ||= '';
-        $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'});
+        $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
 

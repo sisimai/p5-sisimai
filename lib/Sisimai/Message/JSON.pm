@@ -39,9 +39,7 @@ sub make {
 
     # Rewrite message body for detecting the bounce reason
     $methodargv = { 'hook' => $hookmethod, 'json' => $argvs->{'data'} };
-    my $bouncedata = __PACKAGE__->parse(%$methodargv);
-
-    return undef unless $bouncedata;
+    return undef unless my $bouncedata = __PACKAGE__->parse(%$methodargv);
     return undef unless keys %$bouncedata;
 
     $processing->{'ds'}     = $bouncedata->{'ds'};

@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.24.1p2
+v4.24.1p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -12,6 +12,7 @@ v4.24.1p2
     message/delivery-status part. #298
   - Remove unused method Sisimai::DateTime->hourname and $HourNames.
   - Code refactoring: less lines of code and shallower indentation.
+  - Sisimai works with JSON 4.00
 
 v4.24.1
 --------------------------------------------------------------------------------

@@ -176,8 +176,7 @@ sub scan {
         if( $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {
             # Get the value of D.S.N. from the error message or the value of
             # Diagnostic-Code header.
-            my $pseudostatus = Sisimai::SMTP::Status->find($e->{'diagnosis'});
-            $e->{'status'} = $pseudostatus if $pseudostatus;
+            $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || $e->{'status'};
         }
 
         if( $e->{'action'} eq 'expired' ) {
@@ -186,8 +185,7 @@ sub scan {
             if( ! $e->{'status'} || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
                 # Set pseudo Status code value if the value of Status is not
                 # defined or 4.0.0 or 5.0.0.
-                my $pseudostatus = Sisimai::SMTP::Status->code('expired');
-                $e->{'status'} = $pseudostatus if $pseudostatus;
+                $e->{'status'} = Sisimai::SMTP::Status->code('expired') || $e->{'status'};
             }
         }
         $e->{'agent'}     = __PACKAGE__->smtpagent;

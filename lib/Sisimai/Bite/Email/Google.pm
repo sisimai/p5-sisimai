@@ -285,9 +285,9 @@ sub scan {
         next unless $e->{'reason'};
 
         # Set pseudo status code and override bounce reason 
-        $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'});
+        $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         next unless $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/;
-        $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'});
+        $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'}) || '';
     }
 
     $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
