@@ -187,8 +187,8 @@ sub make {
             # Date information did not exist in message/delivery-status part,...
             for my $f ( @{ $RFC822Head->{'date'} } ) {
                 # Get the value of Date header or other date related header.
-                next unless $rfc822data->{ lc $f };
-                push @datevalues, $rfc822data->{ lc $f };
+                next unless $rfc822data->{ $f };
+                push @datevalues, $rfc822data->{ $f };
             }
 
             # Set "date" getting from the value of "Date" in the bounce message

@@ -33,19 +33,19 @@ BUILD_REGULAR_EXPRESSIONS: {
 my $LONGHEADERS = __PACKAGE__->LONGFIELDS;
 my $HEADERINDEX = {};
 my $HEADERTABLE = {
-    'messageid' => ['Message-Id'],
-    'subject'   => ['Subject'],
-    'listid'    => ['List-Id'],
-    'date'      => [qw|Date Posted-Date Posted Resent-Date|],
-    'addresser' => [qw|From Return-Path Reply-To Errors-To Reverse-Path X-Postfix-Sender Envelope-From X-Envelope-From|],
-    'recipient' => [qw|To Delivered-To Forward-Path Envelope-To X-Envelope-To Resent-To Apparently-To|],
+    'messageid' => ['message-id'],
+    'subject'   => ['subject'],
+    'listid'    => ['list-id'],
+    'date'      => [qw|date posted-date posted resent-date|],
+    'addresser' => [qw|from return-path reply-to errors-to reverse-path x-postfix-sender envelope-from x-envelope-from|],
+    'recipient' => [qw|to delivered-to forward-path envelope-to x-envelope-to resent-to apparently-to|],
 };
 
 BUILD_FLATTEN_RFC822HEADER_LIST: {
     # Convert $HEADER: hash reference to flatten hash reference for being
     # called from Sisimai::Bite::Email::*
     for my $v ( values %$HEADERTABLE ) {
-        $HEADERINDEX->{ lc $_ } = 1 for @$v;
+        $HEADERINDEX->{ $_ } = 1 for @$v;
     }
 }
 
