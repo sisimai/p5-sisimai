@@ -79,20 +79,6 @@ sub is_emailaddress {
     return 0;
 }
 
-sub is_domainpart {
-    # Check that the argument is an domain part of email address or not
-    # @param    [String] dpart  Domain part of the email address
-    # @return   [Integer]       0: Not domain part
-    #                           1: Valid domain part
-    my $class = shift;
-    my $dpart = shift // return 0;
-
-    return 0 if $dpart =~ /(?:[\x00-\x1f]|\x1f)/;
-    return 0 if rindex($dpart, '@') > -1;
-    return 1 if $dpart =~ $Re->{'domain'};
-    return 0;
-}
-
 sub is_mailerdaemon {
     # Check that the argument is mailer-daemon or not
     # @param    [String] email  Email address

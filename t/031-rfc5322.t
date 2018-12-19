@@ -7,7 +7,7 @@ my $PackageName = 'Sisimai::RFC5322';
 my $MethodNames = {
     'class' => [
         'HEADERFIELDS', 'LONGFIELDS',
-        'is_emailaddress', 'is_domainpart', 'is_mailerdaemon', 'received',
+        'is_emailaddress', 'is_mailerdaemon', 'received',
         'weedout',
     ],
     'object' => [],
@@ -90,15 +90,6 @@ MAKE_TEST: {
     for my $e ( @$isnotaddrs ) {
         is $PackageName->is_emailaddress($e), 0, '->is_emailaddress('.$e.') = 0';
     }
-
-    ok $PackageName->is_domainpart('example.jp'), '->is_domainpart(example.jp) = 1';
-    for my $e ( @$emailaddrs ) {
-        is $PackageName->is_domainpart($e), 0, '->is_domainpart('.$e.') = 0';
-    }
-    is $PackageName->is_domainpart(undef), 0, '->is_domainpart(undef) = 0';
-    is $PackageName->is_domainpart('['), 0, '->is_domainpart([) = 0';
-    is $PackageName->is_domainpart(')'), 0, '->is_domainpart()) = 0';
-    is $PackageName->is_domainpart(';'), 0, '->is_domainpart(;) = 0';
 
     for my $e ( @$postmaster ) {
         is $PackageName->is_mailerdaemon($e), 1, '->is_mailerdaemon('.$e.') = 1';
