@@ -27,7 +27,7 @@ my $NDRSubject = {
 };
 
 # Content-Language: en-US
-sub headerlist  { return ['Content-Language'] };
+sub headerlist  { return ['content-language'] };
 sub description { 'Microsoft Exchange Server 2007' }
 sub scan {
     # Detect an error from Microsoft Exchange Server 2007

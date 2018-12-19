@@ -41,7 +41,7 @@ my $ErrorCodes = {
 # X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
 # X-Mailer: Internet Mail Service (5.5.1960.3)
 # X-MS-Embedded-Report: 
-sub headerlist  { return ['X-MS-Embedded-Report', 'X-MimeOLE'] };
+sub headerlist  { return ['x-ms-embedded-report', 'x-mimeole'] };
 sub description { 'Microsoft Exchange Server 2003' }
 sub scan {
     # Detect an error from Microsoft Exchange Server 2003

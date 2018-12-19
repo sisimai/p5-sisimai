@@ -57,7 +57,7 @@ my $DelayedFor = [
 # X-MX-Bounce: mta/src/queue/bounce
 # X-MXL-NoteHash: ffffffffffffffff-0000000000000000000000000000000000000000
 # X-MXL-Hash: 4c9d4d411993da17-bbd4212b6c887f6c23bab7db4bd87ef5edc00758
-sub headerlist  { return ['X-MXL-NoteHash', 'X-MXL-Hash', 'X-MX-Bounce'] }
+sub headerlist  { return ['x-mxl-notehash', 'x-mxl-hash', 'x-mx-bounce'] }
 sub description { 'McAfee SaaS' }
 sub scan {
     # Detect an error from MXLogic

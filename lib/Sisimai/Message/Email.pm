@@ -118,7 +118,7 @@ sub load {
 
             for my $w ( @{ $v->headerlist } ) {
                 # Get header name which required user defined MTA module
-                $ExtHeaders->{ lc $w }->{ $v } = 1;
+                $ExtHeaders->{ $w }->{ $v } = 1;
             }
             push @$tobeloaded, $v;
         }
@@ -177,7 +177,7 @@ sub headers {
     map { $allheaders->{ $_ } = 1 } (@HeaderList, @RFC3834Set, keys %$ExtHeaders);
     map { $allheaders->{ lc $_ } = 1 } @$field if scalar @$field;
     map { $structured->{ $_ } = undef } @HeaderList;
-    map { $structured->{ lc $_ } = [] } keys %$IsMultiple;
+    map { $structured->{ $_ } = [] } keys %$IsMultiple;
 
     SPLIT_HEADERS: while( my $e = shift @hasdivided ) {
         # Convert email headers to hash

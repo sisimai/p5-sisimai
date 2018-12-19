@@ -43,7 +43,7 @@ my $ErrorTable = {
     'securityerror' => qr/Security alert:/,
 };
 
-sub headerlist  { return ['X-MLServer'] }
+sub headerlist  { return ['x-mlserver'] }
 sub description { 'fml mailing list server/manager' };
 sub scan {
     # Detect an error from fml mailing list server/manager

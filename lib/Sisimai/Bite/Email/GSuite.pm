@@ -17,7 +17,7 @@ my $MessagesOf = {
     'networkerror' => [' responded with code NXDOMAIN'],
 };
 
-sub headerlist  { return ['X-Gm-Message-State'] }
+sub headerlist  { return ['x-gm-message-state'] }
 sub description { 'G Suite: https://gsuite.google.com/' }
 sub scan {
     # Detect an error from G Suite (Transfer from G Suite to a destination host)

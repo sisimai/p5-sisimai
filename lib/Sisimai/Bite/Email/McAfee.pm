@@ -14,7 +14,7 @@ my $ReFailures = {
 };
 
 # X-NAI-Header: Modified by McAfee Email and Web Security Virtual Appliance
-sub headerlist  { return ['X-NAI-Header'] }
+sub headerlist  { return ['x-nai-header'] }
 sub description { 'McAfee Email Appliance' }
 sub scan {
     # Detect an error from McAfee

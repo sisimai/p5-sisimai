@@ -42,7 +42,7 @@ my $MessagesOf = {
     'contenterror'=> ['Too many "Received" headers '],
 };
 
-sub headerlist  { return ['X-Failed-Recipients'] }
+sub headerlist  { return ['x-failed-recipients'] }
 sub description { '@mail.ru: https://mail.ru' }
 sub scan {
     # Detect an error from @mail.ru

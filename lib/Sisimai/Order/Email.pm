@@ -191,9 +191,8 @@ sub headers {
 
         for my $v ( @{ $e->headerlist } ) {
             # Get header name which required each MTA module
-            my $q = lc $v;
-            next if exists $skips->{ $q };
-            $table->{ $q }->{ $e } = 1;
+            next if exists $skips->{ $v };
+            $table->{ $v }->{ $e } = 1;
         }
     }
     return $table;

@@ -13,7 +13,7 @@ my $StartingOf = {
 # X-SEF-ZeroHour-RefID: fgs=000000000
 # X-SEF-Processed: 0_0_0_000__2010_04_29_23_34_45
 # X-Mailer: SurfControl E-mail Filter
-sub headerlist  { return ['X-SEF-Processed', 'X-Mailer'] }
+sub headerlist  { return ['x-sef-processed', 'x-mailer'] }
 sub description { 'WebSense SurfControl' }
 sub scan {
     # Detect an error from SurfControl

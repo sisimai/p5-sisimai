@@ -13,7 +13,6 @@ my $StartingOf = {
 my $MessagesOf = { 'mesgtoobig' => ['Mail size limit exceeded'] };
 
 # X-UI-Out-Filterresults: unknown:0;
-# sub headerlist  { return ['X-UI-Out-Filterresults'] }
 sub description { '1&1: http://www.1and1.de' }
 sub scan {
     # Detect an error from 1&1

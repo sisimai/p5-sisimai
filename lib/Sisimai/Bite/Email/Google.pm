@@ -103,7 +103,7 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub headerlist  { return ['X-Failed-Recipients'] }
+sub headerlist  { return ['x-failed-recipients'] }
 sub description { 'Google Gmail: https://mail.google.com' }
 sub scan {
     # Detect an error from Google Gmail

@@ -12,7 +12,7 @@ my $StartingOf = {
 
 # Return-Path: <apps@sendgrid.net>
 # X-Mailer: MIME-tools 5.502 (Entity 5.502)
-sub headerlist  { return ['Return-Path', 'X-Mailer'] }
+sub headerlist  { return ['return-path', 'x-mailer'] }
 sub description { 'SendGrid: http://sendgrid.com/' }
 sub scan {
     # Detect an error from SendGrid
