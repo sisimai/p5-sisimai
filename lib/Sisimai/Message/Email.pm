@@ -15,14 +15,10 @@ my $ExtHeaders = Sisimai::Order::Email->headers;
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
-my @RFC3834Set = (map { lc $_ } @{ Sisimai::RFC3834->headerlist });
-my $HeaderList = {
-    'from' => 1, 'to' => 1, 'date' => 1, 'subject' => 1, 'content-type' => 1,
-    'reply-to' => 1, 'message-id' => 1, 'received' => 1, 
-    'content-transfer-encoding' => 1, 'return-path' => 1, 'x-mailer' => 1,
-};
+my @RFC3834Set = @{ Sisimai::RFC3834->headerlist };
+my @HeaderList = (qw|from to date subject content-type reply-to message-id
+                     received content-transfer-encoding return-path x-mailer|);
 my $IsMultiple = { 'received' => 1 };
-my $IgnoreList = { 'dkim-signature' => 1 };
 
 sub make {
     # Make data structure from the email message(a body part and headers)
@@ -178,16 +174,16 @@ sub headers {
     my $structured = {};
     my @hasdivided = split("\n", $$heads);
 
-    map { $allheaders->{ $_ } = 1 } (keys %$HeaderList, @RFC3834Set, keys %$ExtHeaders);
+    map { $allheaders->{ $_ } = 1 } (@HeaderList, @RFC3834Set, keys %$ExtHeaders);
     map { $allheaders->{ lc $_ } = 1 } @$field if scalar @$field;
-    map { $structured->{ $_ } = undef } keys %$HeaderList;
+    map { $structured->{ $_ } = undef } @HeaderList;
     map { $structured->{ lc $_ } = [] } keys %$IsMultiple;
 
     SPLIT_HEADERS: while( my $e = shift @hasdivided ) {
         # Convert email headers to hash
         if( $e =~ /\A[ \t]+(.+?)\z/ ) {
             # Continued (foled) header value from the previous line
-            next if exists $IgnoreList->{ $currheader };
+            next unless exists $allheaders->{ $currheader };
 
             # Header line continued from the previous line
             if( ref $structured->{ $currheader } eq 'ARRAY' ) {
