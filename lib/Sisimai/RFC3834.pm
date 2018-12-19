@@ -39,7 +39,7 @@ my $SubjectSet = qr{\A(?>
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }
-sub headerlist  { [qw|Auto-Submitted Precedence X-Auto-Response-Suppress|] }
+sub headerlist  { [qw|auto-submitted precedence x-auto-response-suppress|] }
 sub scan {
     # Detect auto reply message as RFC3834
     # @param         [Hash] mhead       Message header of a bounce email
