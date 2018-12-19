@@ -39,7 +39,6 @@ sub is_8bit {
     my $class = shift;
     my $argv1 = shift // return undef;
 
-    return undef unless ref $argv1;
     return undef unless ref $argv1 eq 'SCALAR';
     return 1 unless $$argv1 =~ /\A[\x00-\x7f]+\z/;
     return 0;
@@ -71,8 +70,6 @@ sub to_plain {
     my $class = shift;
     my $argv1 = shift // return \'';
     my $loose = shift // 0;
-
-    return \'' unless ref $argv1;
     return \'' unless ref $argv1 eq 'SCALAR';
 
     my $plain = $$argv1;

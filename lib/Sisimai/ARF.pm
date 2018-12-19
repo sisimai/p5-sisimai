@@ -278,10 +278,8 @@ sub scan {
     }
 
     for my $e ( @$dscontents ) {
-        if( $e->{'recipient'} =~ /\A[^ ]+[@]\z/ ) {
-            # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
-            $e->{'recipient'} = Sisimai::Address->s3s4($rcptintext);
-        }
+        # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
+        $e->{'recipient'} = Sisimai::Address->s3s4($rcptintext) if $e->{'recipient'} =~ /\A[^ ]+[@]\z/;
         map { $e->{ $_ } ||= $arfheaders->{ $_ } } keys %$arfheaders;
         delete $e->{'authres'};
 

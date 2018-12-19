@@ -237,8 +237,7 @@ sub make {
             }
 
             # Subject: header of the original message
-            $p->{'subject'} =  $rfc822data->{'subject'} // '';
-            $p->{'subject'} =~ s/\r\z//g;
+            ($p->{'subject'} = $rfc822data->{'subject'} // '') =~ s/\r\z//g;
 
             if( $p->{'listid'} = $rfc822data->{'list-id'} // '' ) {
                 # Get the value of List-Id header: "List name <list-id@example.org>"

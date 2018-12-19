@@ -75,13 +75,12 @@ sub get {
         $reasontext   = __PACKAGE__->anotherone($argvs);
         $reasontext   = '' if $reasontext eq 'undefined';
         $reasontext ||= 'expired' if $argvs->action eq 'delayed';
+        return $reasontext if $reasontext;
 
-        unless( $reasontext ) {
-            # Try to match with message patterns in Sisimai::Reason::Vacation
-            require Sisimai::Reason::Vacation;
-            $reasontext = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->diagnosticcode);
-        }
-        $reasontext ||= 'onhold' if $argvs->diagnosticcode;
+        # Try to match with message patterns in Sisimai::Reason::Vacation
+        require Sisimai::Reason::Vacation;
+        $reasontext   = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->diagnosticcode);
+        $reasontext ||= 'onhold'   if $argvs->diagnosticcode;
         $reasontext ||= 'undefined';
     }
     return $reasontext;
@@ -147,7 +146,6 @@ sub anotherone {
         if( $argvs->action =~ /\A(?:delayed|expired)/ ) {
             # Action: delayed, expired
             $reasontext = 'expired';
-
         } else {
             # Check the value of SMTP command
             my $commandtxt = $argvs->smtpcommand // '';

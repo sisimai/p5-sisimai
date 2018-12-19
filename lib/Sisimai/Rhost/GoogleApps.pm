@@ -112,8 +112,7 @@ sub get {
     my $argvs = shift // return undef;
     return $argvs->reason if $argvs->reason;
 
-    my $statuscode = $argvs->deliverystatus;
-    substr($statuscode, 0, 1, 'X');
+    substr(my $statuscode = $argvs->deliverystatus, 0, 1, 'X');
     return '' unless scalar @{ $StatusList->{ $statuscode } };
 
     my $reasontext = '';

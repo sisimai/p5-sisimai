@@ -45,10 +45,7 @@ sub read {
     return undef unless -d $self->{'dir'};
 
     my $seekhandle = $self->{'handle'};
-    my $filehandle = undef;
     my $readbuffer = '';
-    my $emailindir = '';
-    my $emailinode = undef;
 
     eval {
         $seekhandle = IO::Dir->new($self->{'dir'}) unless $seekhandle;
@@ -57,20 +54,20 @@ sub read {
             # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
 
-            $emailindir =  $self->{'dir'}.'/'.$r;
-            $emailindir =~ y{/}{}s;
+            my $emailindir =  $self->{'dir'}.'/'.$r;
+               $emailindir =~ y{/}{}s;
             next unless -f $emailindir;
             next unless -s $emailindir;
             next unless -r $emailindir;
 
             # Get inode number of the file
             $self->{'path'} = $emailindir;
-            $emailinode = $^O eq 'MSWin32' ?  $emailindir : [stat $emailindir]->[1];
+            my $emailinode = $^O eq 'MSWin32' ?  $emailindir : [stat $emailindir]->[1];
             next if exists $self->{'inodes'}->{ $emailinode };
 
-            $filehandle = IO::File->new($emailindir, 'r');
-            $readbuffer = do { local $/; <$filehandle> };
-            $filehandle->close;
+            my $filehandle = IO::File->new($emailindir, 'r');
+               $readbuffer = do { local $/; <$filehandle> };
+               $filehandle->close;
 
             $self->{'inodes'}->{ $emailinode } = 1;
             $self->{'file'} = $r;

@@ -164,9 +164,7 @@ sub adapt {
                 $v->{'reason'} = 'feedback';
                 $v->{'feedbacktype'} = $o->{'complaintFeedbackType'} || '';
             }
-
-            $v->{'date'} =  $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'};
-            $v->{'date'} =~ s/[.]\d+Z\z//;
+            ($v->{'date'} = $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'}) =~ s/[.]\d+Z\z//;
         }
     } elsif( $argvs->{'notificationType'} eq 'Delivery' ) {
         # { "notificationType":"Delivery", "delivery": { ...
@@ -199,9 +197,7 @@ sub adapt {
             $v->{'replycode'} = Sisimai::SMTP::Reply->find($v->{'diagnosis'})  || '';
             $v->{'reason'}    = 'delivered';
             $v->{'action'}    = 'deliverable';
-
-            $v->{'date'} =  $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'};
-            $v->{'date'} =~ s/[.]\d+Z\z//;
+            ($v->{'date'} = $o->{'timestamp'} || $argvs->{'mail'}->{'timestamp'}) =~ s/[.]\d+Z\z//;
         }
     } else {
         # The value of "notificationType" is not any of "Bounce", "Complaint",

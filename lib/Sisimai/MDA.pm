@@ -129,8 +129,7 @@ sub scan {
         # Detect an error reason from message patterns of the MDA.
         for my $f ( @linebuffer ) {
             # Whether the error message include each message defined in $MessagesOf
-            my $g = lc $f;
-            next unless grep { index($g, $_) > -1 } @{ $MessagesOf->{ $agentname0 }->{ $e } };
+            next unless grep { index(lc($f), $_) > -1 } @{ $MessagesOf->{ $agentname0 }->{ $e } };
             $reasonname = $e;
             $bouncemesg = $f;
             last;
