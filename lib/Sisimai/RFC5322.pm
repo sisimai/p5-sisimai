@@ -207,25 +207,21 @@ sub weedout {
 
     for my $e ( @$argv1 ) {
         # After "message/rfc822"
-        if( $e =~ /\A([-0-9A-Za-z]+?)[:][ ]*.*/ ) {
-            # Get required headers
-            my $lhs = lc $1;
-            $previousfn = '';
-            next unless exists $HEADERINDEX->{ $lhs };
-
-            $previousfn  = $lhs;
-            $rfc822part .= $e."\n";
-
-        } elsif( $e =~ /\A[ \t]+/ ) {
+        if( $e =~ /\A[ \t]+/ ) {
             # Continued line from the previous line
             next if $rfc822next->{ $previousfn };
             $rfc822part .= $e."\n" if exists $LONGHEADERS->{ $previousfn };
 
         } else {
-            # Check the end of headers in rfc822 part
-            next unless exists $LONGHEADERS->{ $previousfn };
-            next if length $e;
-            $rfc822next->{ $previousfn } = 1;
+            # Get required headers only
+            my($lhs, $rhs) = split(/:[ ]*/, $e, 2);
+            next unless $lhs = lc($lhs || '');
+
+            $previousfn = '';
+            next unless exists $HEADERINDEX->{ $lhs };
+
+            $previousfn  = $lhs;
+            $rfc822part .= $e."\n";
         }
     }
     return \$rfc822part;
