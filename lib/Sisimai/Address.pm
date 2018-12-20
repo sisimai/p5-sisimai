@@ -16,6 +16,7 @@ my $ValidEmail = qr{(?>
     (?:([^@\s]+|[0-9A-Za-z:\.]+))   # domain part
     )
 }x;
+my $Delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
 my $undisclosed = 'libsisimai.org.invalid';
 my $roaccessors = [
     'address',  # [String] Email address
@@ -146,7 +147,7 @@ sub find {
 
     for my $e ( split('', $argv1) ) {
         # Check each characters
-        if( grep { $e eq $_ } ('<', '>', '(', ')', '"', ',') ) {
+        if( exists $Delimiters->{ $e } ) {
             # The character is a delimiter character
             if( $e eq ',' ) {
                 # Separator of email addresses or not

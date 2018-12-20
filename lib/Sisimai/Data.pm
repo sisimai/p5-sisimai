@@ -309,7 +309,7 @@ sub make {
         }
         next unless my $o = __PACKAGE__->new(%$p);
 
-        if( $o->reason eq '' || grep { $o->reason eq $_ } @$RetryIndex ) {
+        if( $o->reason eq '' || exists $RetryIndex->{ $o->reason } ) {
             # Decide the reason of email bounce
             my $r; $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->rhost);
                    $r ||= Sisimai::Reason->get($o);
