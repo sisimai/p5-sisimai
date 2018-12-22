@@ -180,7 +180,7 @@ sub headers {
 
     SPLIT_HEADERS: while( my $e = shift @hasdivided ) {
         # Convert email headers to hash
-        if( $e =~ /\A[ \t]+(.+?)\z/ ) {
+        if( $e =~ /\A[ \t]+(.+)\z/ ) {
             # Continued (foled) header value from the previous line
             next unless exists $allheaders->{ $currheader };
 
