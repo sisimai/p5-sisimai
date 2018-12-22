@@ -247,10 +247,11 @@ sub takeapart {
     my $heads = shift || return {};
       $$heads =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
 
-    my $borderline = '__MIME_ENCODED_BOUNDARY__';
     my $previousfn = '';
     my $asciiarmor = {};    # Header names which has MIME encoded value
     my $headerpart = {};    # Required headers in the original message part
+
+    state $borderline = '__MIME_ENCODED_BOUNDARY__';
 
     for my $e ( split("\n", $$heads) ) {
         # Header name as a key, The value of header as a value

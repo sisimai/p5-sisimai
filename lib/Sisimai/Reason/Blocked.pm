@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?>
+
+    state $regex = qr{(?>
          access[ ]denied[.][ ]ip[ ]name[ ]lookup[ ]failed
         |access[ ]from[ ]ip[ ]address[ ].+[ ]blocked
         |all[ ]mail[ ]servers[ ]must[ ]have[ ]a[ ]ptr[ ]record[ ]with[ ]a[ ]valid[ ]reverse[ ]dns[ ]entry
@@ -146,7 +147,6 @@ sub match {
             )
         )
     }x;
-
     return 1 if $argv1 =~ $regex;
     return 0;
 }

@@ -13,7 +13,8 @@ sub match {
     # @since v4.22.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         'because the recipient is not accepting mail with ',    # AOL Phoenix
         'closed mailing list',
         'denied by policy',
@@ -31,7 +32,6 @@ sub match {
         'you have exceeded the allowable number of posts without solving a captcha',
         'you have exceeded the the allowable number of posts without solving a captcha',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

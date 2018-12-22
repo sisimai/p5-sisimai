@@ -388,14 +388,14 @@ sub damn {
 
     eval {
         my $v = {};
-        my @stringdata = (qw|
+        state $stringdata = [qw|
             token lhost rhost listid alias reason subject messageid smtpagent 
             smtpcommand destination diagnosticcode senderdomain deliverystatus
             timezoneoffset feedbacktype diagnostictype action replycode catch
             softbounce
-        |);
+        |];
 
-        for my $e ( @stringdata ) {
+        for my $e ( @$stringdata ) {
             # Copy string data
             $v->{ $e } = $self->$e // '';
         }

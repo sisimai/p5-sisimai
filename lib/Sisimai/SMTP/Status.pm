@@ -743,9 +743,9 @@ sub find {
     # @since v4.14.0
     my $class = shift;
     my $argv1 = shift || return undef;
+    my $found = '';
 
-    my $foundvalue = '';
-    my $regularexp = [
+    state $regularexp = [
         qr/[ ]?[(][#]([45][.]\d[.]\d+)[)]?[ ]?/,    # #5.5.1
         qr/\b\d{3}[ -][#]?([45][.]\d[.]\d+)\b/,     # 550-5.1.1 OR 550 5.5.1
         qr/\b([45][.]\d[.]\d+)\b/,                  # 5.5.1
@@ -755,16 +755,16 @@ sub find {
     for my $e ( @$regularexp ) {
         # Get the value of DSN in the text
         next unless $argv1 =~ $e;
-        $foundvalue = $1;
+        $found = $1;
 
-        if( $argv1 =~ /\b(?:${foundvalue}[.]\d{1,3}|\d{1,3}[.]${foundvalue})\b/ ) {
+        if( $argv1 =~ /\b(?:${found}[.]\d{1,3}|\d{1,3}[.]${found})\b/ ) {
             # Clear and skip if the value is an IPv4 address
-            $foundvalue = '';
+            $found = '';
             next;
         }
         last;
     }
-    return $foundvalue;
+    return $found;
 }
 
 1;

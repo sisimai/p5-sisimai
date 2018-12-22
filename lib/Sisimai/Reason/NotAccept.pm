@@ -15,13 +15,12 @@ sub match {
     my $argv1 = shift // return undef;
 
     # Destination mail server does not accept any message
-    my $index = [
+    state $index = [
         'host/domain does not accept mail', # iCloud
         'name server: .: host not found',   # Sendmail
         'no mx record found for domain=',   # Oath(Yahoo!)
         'smtp protocol returned a permanent error',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

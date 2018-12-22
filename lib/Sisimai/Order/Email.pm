@@ -181,8 +181,9 @@ sub headers {
     # @since v4.13.1
     my $class = shift;
     my $table = {};
-    my $skips = { 'return-path' => 1, 'x-mailer' => 1 };
-    my $order = [map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->heads }];
+
+    state $order = [map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->heads }];
+    state $skips = { 'return-path' => 1, 'x-mailer' => 1 };
 
     LOAD_MODULES: for my $e ( @$order ) {
         # Load email headers from each MTA module

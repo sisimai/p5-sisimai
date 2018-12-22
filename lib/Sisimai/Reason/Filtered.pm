@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         'because the recipient is only accepting mail from specific email addresses',   # AOL Phoenix
         'bounced address',  # SendGrid|a message to an address has previously been Bounced.
         'due to extended inactivity new mail is not currently being accepted for this mailbox',

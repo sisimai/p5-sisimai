@@ -13,7 +13,8 @@ sub match {
     # @since v4.1.12
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         'could not connect and send the mail to',
         'dns records for the destination computer could not be found',
         'hop count exceeded - possible mail loop',
@@ -30,7 +31,6 @@ sub match {
         'unable to resolve route ',
         'unrouteable mail domain',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

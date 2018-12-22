@@ -86,7 +86,8 @@ sub is_mailerdaemon {
     #                           1: Mailer-daemon
     my $class = shift;
     my $email = shift // return 0;
-    my $rxmds = qr{(?>
+
+    state $rxmds = qr{(?>
          (?:mailer-daemon|postmaster)[@]
         |[<(](?:mailer-daemon|postmaster)[)>]
         |\A(?:mailer-daemon|postmaster)\z

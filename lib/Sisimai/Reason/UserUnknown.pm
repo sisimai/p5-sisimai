@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?>
+
+    state $regex = qr{(?>
          .+[ ]user[ ]unknown
         |[#]5[.]1[.]1[ ]bad[ ]address
         |[<].+[>][ ]not[ ]found
@@ -129,7 +130,6 @@ sub match {
         |your[ ]envelope[ ]recipient[ ]is[ ]in[ ]my[ ]badrcptto[ ]list
         )
     }x;
-
     return 1 if $argv1 =~ $regex;
     return 0;
 }
@@ -154,7 +154,7 @@ sub true {
         #   Status: 5.1.1
         #   Diagnostic-Code: SMTP; 550 5.1.1 <***@example.jp>:
         #     Recipient address rejected: User unknown in local recipient table
-        my $prematches = [qw|NoRelaying Blocked MailboxFull HasMoved Blocked Rejected|];
+        state $prematches = [qw|NoRelaying Blocked MailboxFull HasMoved Blocked Rejected|];
         my $matchother = 0;
 
         for my $e ( @$prematches ) {

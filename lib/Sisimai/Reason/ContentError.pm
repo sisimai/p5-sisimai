@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         'improper use of 8-bit data in message header',
         'message header size, or recipient list, exceeds policy limit',
         'message mime complexity exceeds the policy maximum',
@@ -22,7 +23,6 @@ sub match {
         'this message contain improperly-formatted binary content',
         'this message contain text that uses unnecessary base64 encoding',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

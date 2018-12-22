@@ -73,7 +73,7 @@ sub to_plain {
     return \'' unless ref $argv1 eq 'SCALAR';
 
     my $plain = $$argv1;
-    my $match = {
+    state $match = {
         'html' => qr|<html[ >].+?</html>|sim,
         'body' => qr|<head>.+</head>.*<body[ >].+</body>|sim,
     };
@@ -119,7 +119,7 @@ sub to_utf8 {
     my $hasencoded = undef;
     my $hasguessed = Encode::Guess->guess($tobeutf8ed);
     my $encodingto = ref $hasguessed ? lc($hasguessed->name) : '';
-    my $dontencode = qr/\A(?>utf[-]?8|(?:us[-])?ascii)\z/;
+    state $dontencode = qr/\A(?>utf[-]?8|(?:us[-])?ascii)\z/;
 
     if( $encodefrom ) {
         # The 2nd argument is a encoding name of the 1st argument

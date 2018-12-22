@@ -70,7 +70,7 @@ sub find {
     return '' if uc($argv1) =~ /X-UNIX;/;
 
     my $value = '';
-    my $ip4re = qr{\b
+    state $ip4re = qr{\b
         (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])[.]
         (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])[.]
         (?:\d|[01]?\d\d|2[0-4]\d|25[0-5])[.]
