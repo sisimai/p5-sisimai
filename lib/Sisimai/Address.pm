@@ -136,7 +136,6 @@ sub find {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $addrs = shift // undef;
-    $argv1 =~ s/[\r\n]//g;  # Remove new line codes
 
     my $emailtable = { 'address' => '', 'name' => '', 'comment' => '' };
     my $addrtables = [];
@@ -144,6 +143,9 @@ sub find {
     my $readcursor = 0;
     my $v = $emailtable;   # temporary buffer
     my $p = '';            # current position
+
+    $argv1 =~ y/\r//d if index($argv1, "\r") > -1;  # Remove CR
+    $argv1 =~ y/\n//d if index($argv1, "\n") > -1;  # Remove NL
 
     for my $e ( split('', $argv1) ) {
         # Check each characters
@@ -348,8 +350,8 @@ sub find {
             # Remove double-quotations, trailing spaces.
             for my $f ('name', 'comment') {
                 # Remove traliing spaces
-                $e->{ $f } =~ s/\A\s*//;
-                $e->{ $f } =~ s/\s*\z//;
+                $e->{ $f } =~ s/\A[ ]//g if index($e->{ $f }, ' ') == 0;
+                $e->{ $f } =~ s/[ ]\z//g if substr($e->{ $f }, -1, 1) eq ' ';
             }
             $e->{'comment'} = ''   unless $e->{'comment'} =~ /\A[(].+[)]\z/;
             $e->{'name'} =~ y/ //s    unless $e->{'name'} =~ /\A["].+["]\z/;

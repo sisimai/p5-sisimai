@@ -56,8 +56,8 @@ sub sweep {
     chomp $argv1;
     $argv1 =~ y/ //s;
     $argv1 =~ y/\t//d;
-    $argv1 =~ s/\A //g;
-    $argv1 =~ s/ \z//g;
+    $argv1 =~ s/\A //g if index($argv1, ' ') == 0;
+    $argv1 =~ s/ \z//g if substr($argv1, -1, 1) eq ' ';
     $argv1 =~ s/ [-]{2,}[^ \t].+\z//;
     return $argv1;
 }

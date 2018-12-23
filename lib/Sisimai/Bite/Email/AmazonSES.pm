@@ -155,7 +155,7 @@ sub scan {
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
 
         $e->{'agent'}     = __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} =~ s/\\n/ /g;
+        $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {

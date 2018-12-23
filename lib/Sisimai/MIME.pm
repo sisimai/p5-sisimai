@@ -261,7 +261,7 @@ sub breaksup {
     return \'' if $alternates && $mimeformat eq 'text/html';
 
     my ($upperchunk, $lowerchunk) = split(/^$/m, $$argv0, 2);
-    $upperchunk =~ s/\n/ /g;
+    $upperchunk =~ y/\n/ /;
     $upperchunk =~ y/ //s;
 
     # Content-Description: Undelivered Message
@@ -321,13 +321,13 @@ sub breaksup {
                 # Content-Transfer-Encoding: 8bit, binary, and so on
                 $getdecoded = $lowerchunk;
             }
-            $getdecoded =~ s|\r\n|\n|g; # Convert CRLF to LF
+            $getdecoded =~ s|\r\n|\n|g if index($getdecoded, "\r\n") > -1; # Convert CRLF to LF
 
             if( $mimeformat =~ $alsoappend ) {
                 # Append field when the value of Content-Type: begins with
                 # message/ or equals text/rfc822-headers.
                 $upperchunk =~ s/Content-Transfer-Encoding:.+\z//;
-                $upperchunk =~ s/[ ]\z//g;
+                $upperchunk =~ s/[ ]\z//g if substr($upperchunk, -1, 1) eq ' ';
                 $hasflatten .= $upperchunk;
 
             } elsif( $mimeformat eq 'text/html' ) {
