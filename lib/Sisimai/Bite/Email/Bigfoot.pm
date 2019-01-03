@@ -115,7 +115,7 @@ sub scan {
                 }
             } else {
                 # The line does not begin with a DSN field defined in RFC3464
-                if( $e =~ /\A[^ ]/ ) {
+                if( substr($e, 0, 1) ne ' ' ) {
                     #    ----- Transcript of session follows -----
                     # >>> RCPT TO:<destinaion@example.net>
                     # <<< 553 Invalid recipient destinaion@example.net (Mode: normal)

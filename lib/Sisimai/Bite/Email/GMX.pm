@@ -114,7 +114,7 @@ sub scan {
 
             } else {
                 # Get error message
-                if( $e =~ /\b[45][.]\d[.]\d\b/  || $e =~ /[<][^ ]+[@][^ ]+[>]/ || $e =~ /\b[45]\d{2}\b/ ) {
+                if( $e =~ /\b[45][.]\d[.]\d\b/ || $e =~ /[<][^ ]+[@][^ ]+[>]/ || $e =~ /\b[45]\d{2}\b/ ) {
                     $v->{'diagnosis'} ||= $e;
 
                 } else {
@@ -192,7 +192,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
