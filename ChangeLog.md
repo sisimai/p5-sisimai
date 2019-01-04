@@ -12,6 +12,7 @@ v4.24.1p3
     message/delivery-status part. #298
   - Remove unused method Sisimai::DateTime->hourname and $HourNames.
   - Remove unused method Sisimai::RFC5322->is_domainpart.
+  - Remove unused method Sisimai::Address->is_undisclosed.
   - Code refactoring: less lines of code and shallower indentation.
   - Sisimai works with JSON 4.00
 
