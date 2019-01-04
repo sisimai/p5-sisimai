@@ -404,16 +404,6 @@ sub expand_alias {
     return $1.'@'.$local[1];
 }
 
-sub is_undisclosed {
-    # Check the "address" is an undisclosed address or not
-    # @param    [None]
-    # @return   [Integer]   1: Undisclosed address
-    #                       0: Is not undisclosed address
-    my $self = shift;
-    return 1 if $self->host eq $Undisclosed;
-    return 0;
-}
-
 sub TO_JSON {
     # Instance method for JSON::encode()
     # @return   [String] The value of "address" accessor
