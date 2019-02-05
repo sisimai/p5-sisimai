@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.24.1p3
+v4.24.1p4
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
