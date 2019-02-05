@@ -24,7 +24,7 @@ my $MessagesOf = {
 # X-BounceIO-Id: 9D38DE46-21BC-4309-83E1-5F0D788EFF1F.1_0
 # X-Outbound-Mail-Relay-Queue-ID: 07391702BF4DC
 # X-Outbound-Mail-Relay-Sender: rfc822; shironeko@aol.example.jp
-sub headerlist  { return ['X-AOL-IP'] }
+sub headerlist  { return ['x-aol-ip'] }
 sub description { 'Aol Mail: http://www.aol.com' }
 sub scan {
     # Detect an error from Aol Mail
@@ -145,7 +145,7 @@ sub scan {
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
 
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} =~ s/\\n/ /g;
+        $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$MessagesOf ) {

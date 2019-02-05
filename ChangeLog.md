@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.24.1p3
+v4.24.1p4
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -11,6 +11,8 @@ v4.24.1p3
   - Experimental implementation: Sisimai::RFC1894 is a common class for parsing
     message/delivery-status part. #298
   - Remove unused method Sisimai::DateTime->hourname and $HourNames.
+  - Remove unused method Sisimai::RFC5322->is_domainpart.
+  - Remove unused method Sisimai::Address->is_undisclosed.
   - Code refactoring: less lines of code and shallower indentation.
   - Sisimai works with JSON 4.00
 

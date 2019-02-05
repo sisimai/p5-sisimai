@@ -19,7 +19,7 @@ my $ReFailures = {
 # X-StarScan-Received:
 # X-StarScan-Version: 6.12.5; banners=-,-,-
 # X-VirusChecked: Checked
-sub headerlist  { return ['X-Msg-Ref'] }
+sub headerlist  { return ['x-msg-ref'] }
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
 sub scan {
     # Detect an error from MessageLabs.com

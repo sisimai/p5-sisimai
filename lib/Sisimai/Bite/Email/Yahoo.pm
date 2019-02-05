@@ -14,7 +14,7 @@ my $StartingOf = {
 # X-YMail-JAS: Pb65aU4VM1mei...
 # X-YMail-OSG: bTIbpDEVM1lHz...
 # X-Originating-IP: [192.0.2.9]
-sub headerlist  { return ['X-YMailISG'] }
+sub headerlist  { return ['x-ymailisg'] }
 sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 sub scan {
     # Detect an error from Yahoo! MAIL
@@ -125,7 +125,7 @@ sub scan {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} =~ s/\\n/ /g;
+        $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
         $e->{'command'} ||=  'RCPT' if $e->{'diagnosis'} =~ /[<].+[@].+[>]/;

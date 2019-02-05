@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         'connection timed out',
         'could not find a gateway for',
         'delivery time expired',
@@ -31,7 +32,6 @@ sub match {
         'was not reachable within the allowed queue period',
         'your message could not be delivered for more than',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

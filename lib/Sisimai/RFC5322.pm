@@ -33,19 +33,19 @@ BUILD_REGULAR_EXPRESSIONS: {
 my $LONGHEADERS = __PACKAGE__->LONGFIELDS;
 my $HEADERINDEX = {};
 my $HEADERTABLE = {
-    'messageid' => ['Message-Id'],
-    'subject'   => ['Subject'],
-    'listid'    => ['List-Id'],
-    'date'      => [qw|Date Posted-Date Posted Resent-Date|],
-    'addresser' => [qw|From Return-Path Reply-To Errors-To Reverse-Path X-Postfix-Sender Envelope-From X-Envelope-From|],
-    'recipient' => [qw|To Delivered-To Forward-Path Envelope-To X-Envelope-To Resent-To Apparently-To|],
+    'messageid' => ['message-id'],
+    'subject'   => ['subject'],
+    'listid'    => ['list-id'],
+    'date'      => [qw|date posted-date posted resent-date|],
+    'addresser' => [qw|from return-path reply-to errors-to reverse-path x-postfix-sender envelope-from x-envelope-from|],
+    'recipient' => [qw|to delivered-to forward-path envelope-to x-envelope-to resent-to apparently-to|],
 };
 
 BUILD_FLATTEN_RFC822HEADER_LIST: {
     # Convert $HEADER: hash reference to flatten hash reference for being
     # called from Sisimai::Bite::Email::*
     for my $v ( values %$HEADERTABLE ) {
-        $HEADERINDEX->{ lc $_ } = 1 for @$v;
+        $HEADERINDEX->{ $_ } = 1 for @$v;
     }
 }
 
@@ -79,20 +79,6 @@ sub is_emailaddress {
     return 0;
 }
 
-sub is_domainpart {
-    # Check that the argument is an domain part of email address or not
-    # @param    [String] dpart  Domain part of the email address
-    # @return   [Integer]       0: Not domain part
-    #                           1: Valid domain part
-    my $class = shift;
-    my $dpart = shift // return 0;
-
-    return 0 if $dpart =~ /(?:[\x00-\x1f]|\x1f)/;
-    return 0 if rindex($dpart, '@') > -1;
-    return 1 if $dpart =~ $Re->{'domain'};
-    return 0;
-}
-
 sub is_mailerdaemon {
     # Check that the argument is mailer-daemon or not
     # @param    [String] email  Email address
@@ -100,14 +86,14 @@ sub is_mailerdaemon {
     #                           1: Mailer-daemon
     my $class = shift;
     my $email = shift // return 0;
-    my $rxmds = qr{(?>
+    state $match = qr{(?>
          (?:mailer-daemon|postmaster)[@]
         |[<(](?:mailer-daemon|postmaster)[)>]
         |\A(?:mailer-daemon|postmaster)\z
         |[ ]?mailer-daemon[ ]
         )
     }x;
-    return 1 if lc($email) =~ $rxmds;
+    return 1 if lc($email) =~ $match;
     return 0;
 }
 
@@ -207,25 +193,21 @@ sub weedout {
 
     for my $e ( @$argv1 ) {
         # After "message/rfc822"
-        if( $e =~ /\A([-0-9A-Za-z]+?)[:][ ]*.*/ ) {
-            # Get required headers
-            my $lhs = lc $1;
-            $previousfn = '';
-            next unless exists $HEADERINDEX->{ $lhs };
-
-            $previousfn  = $lhs;
-            $rfc822part .= $e."\n";
-
-        } elsif( $e =~ /\A[ \t]+/ ) {
+        if( $e =~ /\A[ \t]+/ ) {
             # Continued line from the previous line
             next if $rfc822next->{ $previousfn };
             $rfc822part .= $e."\n" if exists $LONGHEADERS->{ $previousfn };
 
         } else {
-            # Check the end of headers in rfc822 part
-            next unless exists $LONGHEADERS->{ $previousfn };
-            next if length $e;
-            $rfc822next->{ $previousfn } = 1;
+            # Get required headers only
+            my($lhs, $rhs) = split(/:[ ]*/, $e, 2);
+            next unless $lhs = lc($lhs || '');
+
+            $previousfn = '';
+            next unless exists $HEADERINDEX->{ $lhs };
+
+            $previousfn  = $lhs;
+            $rfc822part .= $e."\n";
         }
     }
     return \$rfc822part;

@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         "can't create user output file",
         'could not load drd for domain',
         'internal error reading data',  # Microsoft
@@ -32,7 +33,6 @@ sub match {
         'temporary local problem',
         'timeout waiting for input',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

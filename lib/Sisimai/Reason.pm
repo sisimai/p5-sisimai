@@ -21,7 +21,10 @@ my $ClassOrder = [
 sub retry {
     # Reason list better to retry detecting an error reason
     # @return   [Array] Reason list
-    return [qw|undefined onhold systemerror securityerror networkerror hostunknown userunknown|];
+    return {
+        'undefined' => 1, 'onhold' => 1, 'systemerror' => 1, 'securityerror' => 1,
+        'networkerror' => 1, 'hostunknown' => 1, 'userunknown'=> 1
+    };
 }
 
 sub index {
@@ -45,7 +48,7 @@ sub get {
     my $argvs = shift // return undef;
     return undef unless ref $argvs eq 'Sisimai::Data';
 
-    unless( grep { $argvs->reason eq $_ } @$GetRetried ) {
+    unless( exists $GetRetried->{ $argvs->reason } ) {
         # Return reason text already decided except reason match with the
         # regular expression of ->retry() method.
         return $argvs->reason if $argvs->reason;
@@ -105,7 +108,7 @@ sub anotherone {
     TRY_TO_MATCH: while(1) {
         my $diagnostic   = lc $argvs->diagnosticcode // '';
         my $trytomatch   = $reasontext eq '' ? 1 : 0;
-           $trytomatch ||= 1 if grep { $reasontext eq $_ } @$GetRetried;
+           $trytomatch ||= 1 if exists $GetRetried->{ $reasontext };
            $trytomatch ||= 1 if $argvs->diagnostictype ne 'SMTP';
         last unless $trytomatch;
 

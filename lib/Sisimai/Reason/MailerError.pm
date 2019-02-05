@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?>
+
+    state $regex = qr{(?>
          \Aprocmail:[ ]    # procmail
         |bin/(?:procmail|maildrop)
         |command[ ](?:
@@ -27,7 +28,6 @@ sub match {
         |x[-]unix[;][ ]\d+  # X-UNIX; 127
         )
     }x;
-
     return 1 if $argv1 =~ $regex;
     return 0;
 }

@@ -17,7 +17,7 @@ my $StartingOf = {
 # X-Yandex-Forward: 10104c00ad0726da5f37374723b1e0c8
 # X-Yandex-Queue-ID: 367D79E130D
 # X-Yandex-Sender: rfc822; shironeko@yandex.example.com
-sub headerlist  { return ['X-Yandex-Uniq'] }
+sub headerlist  { return ['x-yandex-uniq'] }
 sub description { 'Yandex.Mail: http://www.yandex.ru' }
 sub scan {
     # Detect an error from Yandex.Mail
@@ -151,7 +151,7 @@ sub scan {
         $e->{'lhost'}    ||= $permessage->{'rhost'};
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
         $e->{'command'}   =  shift @commandset || '';
-        $e->{'diagnosis'} =~ s/\\n/ /g;
+        $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
     }

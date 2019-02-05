@@ -306,7 +306,7 @@ sub scan {
         }
         last unless $match;
 
-        my $re_skip = qr{(?>
+        state $re_skip = qr{(?>
              \A[-]+=
             |\A\s+\z
             |\A\s*--
@@ -318,8 +318,7 @@ sub scan {
             |:[ ]--------
             )
         }x;
-
-        my $re_stop  = qr{(?:
+        state $re_stop  = qr{(?:
              \A[*][*][*][ ].+[ ].+[ ][*][*][*]
             |\Acontent-type:[ ]message/delivery-status
             |\Ahere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
@@ -341,8 +340,7 @@ sub scan {
             |your[ ]message[ ]reads[ ][(]in[ ]part[)]:
             )
         }x;
-
-        my $re_addr = qr{(?:
+        state $re_addr = qr{(?:
              \A\s*
             |\A["].+["]\s*
             |\A[ \t]*recipient:[ \t]*

@@ -52,7 +52,7 @@ sub scan {
         last if $e eq '--';
         last if $e eq '__END_OF_EMAIL_MESSAGE__';
 
-        $e =~ s/\A[ ]// if $foldedline; # The line starts with " ", continued from !\n.
+        substr($e, 0, 1, '') if $foldedline; # The line starts with " ", continued from !\n.
         $foldedline = 0;
 
         if( substr($e, -1, 1) eq '!' ) {

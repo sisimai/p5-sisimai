@@ -13,8 +13,8 @@ sub match {
     # @since v4.1.25
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [' has been replaced by '];
 
+    state $index = [' has been replaced by '];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

@@ -14,7 +14,7 @@ my $StartingOf = {
 # X-Mailer: Amazon WorkMail
 # X-Original-Mailer: Amazon WorkMail
 # X-Ses-Outgoing: 2016.01.14-54.240.27.159
-sub headerlist  { return ['X-SES-Outgoing', 'X-Original-Mailer'] }
+sub headerlist  { return ['x-ses-outgoing', 'x-original-mailer'] }
 sub description { 'Amazon WorkMail: https://aws.amazon.com/workmail/' }
 sub scan {
     # Detect an error from Amazon WorkMail

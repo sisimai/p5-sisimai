@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $regex = qr{(?>
+
+    state $regex = qr{(?>
          account[ ]not[ ]subscribed[ ]to[ ]ses
         |authentication[ ](?:
              credentials invalid
@@ -38,7 +39,6 @@ sub match {
         |verification[ ]failure
         )
     }x;
-
     return 1 if $argv1 =~ $regex;
     return 0;
 }

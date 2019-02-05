@@ -13,8 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = ['message too large'];
 
+    state $index = ['message too large'];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

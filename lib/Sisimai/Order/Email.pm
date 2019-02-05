@@ -181,8 +181,9 @@ sub headers {
     # @since v4.13.1
     my $class = shift;
     my $table = {};
-    my $skips = { 'return-path' => 1, 'x-mailer' => 1 };
-    my $order = [map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->heads }];
+
+    state $order = [map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->heads }];
+    state $skips = { 'return-path' => 1, 'x-mailer' => 1 };
 
     LOAD_MODULES: for my $e ( @$order ) {
         # Load email headers from each MTA module
@@ -191,9 +192,8 @@ sub headers {
 
         for my $v ( @{ $e->headerlist } ) {
             # Get header name which required each MTA module
-            my $q = lc $v;
-            next if exists $skips->{ $q };
-            $table->{ $q }->{ $e } = 1;
+            next if exists $skips->{ $v };
+            $table->{ $v }->{ $e } = 1;
         }
     }
     return $table;

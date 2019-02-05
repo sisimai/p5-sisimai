@@ -20,7 +20,7 @@ my $MessagesOf = {
 
 # X-SES-Outgoing: 2015.10.01-54.240.27.7
 # Feedback-ID: 1.us-west-2.HX6/J9OVlHTadQhEu1+wdF9DBj6n6Pa9sW5Y/0pSOi8=:AmazonSES
-sub headerlist  { return ['X-SES-Outgoing'] }
+sub headerlist  { return ['x-ses-outgoing'] }
 sub description { 'Amazon SES(Receiving): http://aws.amazon.com/ses/' };
 sub scan {
     # Detect an error from Amazon SES/Receiving
@@ -139,7 +139,7 @@ sub scan {
         # Set default values if each value is empty.
         $e->{'lhost'}    ||= $permessage->{'rhost'};
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
-        $e->{'diagnosis'} =~ s/\\n/ /g;
+        $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {

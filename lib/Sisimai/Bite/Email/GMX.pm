@@ -15,7 +15,7 @@ my $MessagesOf = { 'expired' => ['delivery retry timeout exceeded'] };
 # X-GMX-Antispam: 0 (Mail was not recognized as spam); Detail=V3;
 # X-GMX-Antivirus: 0 (no virus found)
 # X-UI-Out-Filterresults: unknown:0;
-sub headerlist  { return ['X-GMX-Antispam'] }
+sub headerlist  { return ['x-gmx-antispam'] }
 sub description { 'GMX: http://www.gmx.net' }
 sub scan {
     # Detect an error from GMX and mail.com
@@ -114,7 +114,7 @@ sub scan {
 
             } else {
                 # Get error message
-                if( $e =~ /\b[45][.]\d[.]\d\b/  || $e =~ /[<][^ ]+[@][^ ]+[>]/ || $e =~ /\b[45]\d{2}\b/ ) {
+                if( $e =~ /\b[45][.]\d[.]\d\b/ || $e =~ /[<][^ ]+[@][^ ]+[>]/ || $e =~ /\b[45]\d{2}\b/ ) {
                     $v->{'diagnosis'} ||= $e;
 
                 } else {
@@ -135,7 +135,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} =~ s/\\n/ /g;
+        $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$MessagesOf ) {
@@ -192,7 +192,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

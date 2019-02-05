@@ -16,7 +16,7 @@ my $ValidEmail = qr{(?>
     (?:([^@\s]+|[0-9A-Za-z:\.]+))   # domain part
     )
 }x;
-my $undisclosed = 'libsisimai.org.invalid';
+my $Delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
 my $roaccessors = [
     'address',  # [String] Email address
     'user',     # [String] local part of the email address
@@ -41,7 +41,7 @@ sub undisclosed {
 
     return undef unless $atype =~ /\A(?:r|s)\z/;
     my $local = $atype eq 'r' ? 'recipient' : 'sender';
-    return sprintf("undisclosed-%s-in-headers%s%s", $local, '@', $undisclosed);
+    return sprintf("undisclosed-%s-in-headers%slibsisimai.org.invalid", $local, '@');
 }
 
 sub new {
@@ -135,7 +135,6 @@ sub find {
     my $class = shift;
     my $argv1 = shift // return undef;
     my $addrs = shift // undef;
-    $argv1 =~ s/[\r\n]//g;  # Remove new line codes
 
     my $emailtable = { 'address' => '', 'name' => '', 'comment' => '' };
     my $addrtables = [];
@@ -144,9 +143,12 @@ sub find {
     my $v = $emailtable;   # temporary buffer
     my $p = '';            # current position
 
+    $argv1 =~ y/\r//d if index($argv1, "\r") > -1;  # Remove CR
+    $argv1 =~ y/\n//d if index($argv1, "\n") > -1;  # Remove NL
+
     for my $e ( split('', $argv1) ) {
         # Check each characters
-        if( grep { $e eq $_ } ('<', '>', '(', ')', '"', ',') ) {
+        if( exists $Delimiters->{ $e } ) {
             # The character is a delimiter character
             if( $e eq ',' ) {
                 # Separator of email addresses or not
@@ -347,8 +349,8 @@ sub find {
             # Remove double-quotations, trailing spaces.
             for my $f ('name', 'comment') {
                 # Remove traliing spaces
-                $e->{ $f } =~ s/\A\s*//;
-                $e->{ $f } =~ s/\s*\z//;
+                $e->{ $f } =~ s/\A[ ]//g if index($e->{ $f }, ' ') == 0;
+                $e->{ $f } =~ s/[ ]\z//g if substr($e->{ $f }, -1, 1) eq ' ';
             }
             $e->{'comment'} = ''   unless $e->{'comment'} =~ /\A[(].+[)]\z/;
             $e->{'name'} =~ y/ //s    unless $e->{'name'} =~ /\A["].+["]\z/;
@@ -399,16 +401,6 @@ sub expand_alias {
     my @local = split('@', $email);
     return undef unless $local[0] =~ /\A([-_\w]+?)[+].+\z/;
     return $1.'@'.$local[1];
-}
-
-sub is_undisclosed {
-    # Check the "address" is an undisclosed address or not
-    # @param    [None]
-    # @return   [Integer]   1: Undisclosed address
-    #                       0: Is not undisclosed address
-    my $self = shift;
-    return 1 if $self->host eq $undisclosed;
-    return 0;
 }
 
 sub TO_JSON {

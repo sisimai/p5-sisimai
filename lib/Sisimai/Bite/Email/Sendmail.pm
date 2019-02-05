@@ -133,7 +133,7 @@ sub scan {
                 # >>> DATA
                 # <<< 550 Unknown user recipient@example.jp
                 # 554 5.0.0 Service unavailable
-                if( $e =~ /\A[^ ]/ ) {
+                if( substr($e, 0, 1) ne ' ') {
                     # Other error messages
                     if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
                         # >>> DATA
@@ -267,7 +267,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

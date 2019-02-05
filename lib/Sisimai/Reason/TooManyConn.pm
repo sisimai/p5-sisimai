@@ -13,7 +13,8 @@ sub match {
     # @since v4.1.26
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         'all available ips are at maximum connection limit',    # SendGrid
         'connection rate limit exceeded',
         'exceeds per-domain connection limit for',
@@ -28,7 +29,6 @@ sub match {
         'trop de connexions, ',
         'we have already made numerous attempts to deliver this message',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

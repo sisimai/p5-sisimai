@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         ' is currently suspended',
         ' temporary locked',
         'boite du destinataire archivee',
@@ -28,7 +29,6 @@ sub match {
         'user suspended',   # http://mail.163.com/help/help_spam_16.htm
         'vdelivermail: account is locked email bounced',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

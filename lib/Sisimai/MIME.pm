@@ -1,4 +1,5 @@
 package Sisimai::MIME;
+use feature ':5.10';
 use strict;
 use warnings;
 use Encode;
@@ -242,24 +243,25 @@ sub breaksup {
     my $argv0 = shift || return undef;
     my $argv1 = shift || '';
 
-    my $hasflatten = '';    # Message body including only text/plain and message/*
-    my $alsoappend = qr{\A(?:text/rfc822-headers|message/)};
-    my $thisformat = qr/\A(?:Content-Transfer-Encoding:\s*.+\n)?Content-Type:\s*([^ ;]+)/;
-    my $leavesonly = qr{\A(?>
+    state $alsoappend = qr{\A(?:text/rfc822-headers|message/)};
+    state $thisformat = qr/\A(?:Content-Transfer-Encoding:\s*.+\n)?Content-Type:\s*([^ ;]+)/;
+    state $leavesonly = qr{\A(?>
          text/(?:plain|html|rfc822-headers)
         |message/(?:x?delivery-status|rfc822|partial|feedback-report)
         |multipart/(?:report|alternative|mixed|related|partial)
         )
     }x;
+
     my $mimeformat = $$argv0 =~ $thisformat ? lc($1) : '';
     my $alternates = index($argv1, 'multipart/alternative') == 0 ? 1 : 0;
+    my $hasflatten = '';    # Message body including only text/plain and message/*
 
     # Sisimai require only MIME types defined in $leavesonly variable
     return \'' unless $mimeformat =~ $leavesonly;
     return \'' if $alternates && $mimeformat eq 'text/html';
 
     my ($upperchunk, $lowerchunk) = split(/^$/m, $$argv0, 2);
-    $upperchunk =~ s/\n/ /g;
+    $upperchunk =~ y/\n/ /;
     $upperchunk =~ y/ //s;
 
     # Content-Description: Undelivered Message
@@ -319,13 +321,13 @@ sub breaksup {
                 # Content-Transfer-Encoding: 8bit, binary, and so on
                 $getdecoded = $lowerchunk;
             }
-            $getdecoded =~ s|\r\n|\n|g; # Convert CRLF to LF
+            $getdecoded =~ s|\r\n|\n|g if index($getdecoded, "\r\n") > -1; # Convert CRLF to LF
 
             if( $mimeformat =~ $alsoappend ) {
                 # Append field when the value of Content-Type: begins with
                 # message/ or equals text/rfc822-headers.
                 $upperchunk =~ s/Content-Transfer-Encoding:.+\z//;
-                $upperchunk =~ s/[ ]\z//g;
+                $upperchunk =~ s/[ ]\z//g if substr($upperchunk, -1, 1) eq ' ';
                 $hasflatten .= $upperchunk;
 
             } elsif( $mimeformat eq 'text/html' ) {

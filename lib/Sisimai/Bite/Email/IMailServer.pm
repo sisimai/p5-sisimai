@@ -28,7 +28,7 @@ my $ReFailures = {
 };
 
 # X-Mailer: <SMTP32 v8.22>
-sub headerlist  { return ['X-Mailer'] }
+sub headerlist  { return ['x-mailer'] }
 sub description { 'IPSWITCH IMail Server' }
 sub scan {
     # Detect an error from IMailServer

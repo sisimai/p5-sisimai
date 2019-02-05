@@ -10,7 +10,7 @@ my $StartingOf = {
     'rfc822'  => ['Content-type: message/rfc822'],
 };
 
-sub headerlist  { return ['X-AHMAILID'] }
+sub headerlist  { return ['x-ahmailid'] }
 sub description { 'TransWARE Active!hunter' };
 sub scan {
     # Detect an error from TransWARE Active!hunter

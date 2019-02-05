@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         'account disabled temporarly for exceeding receiving limits',
         'account is exceeding their quota',
         'account is over quota',
@@ -59,7 +60,6 @@ sub match {
         'was automatically rejected: quota exceeded',
         'would be over the allowed quota',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

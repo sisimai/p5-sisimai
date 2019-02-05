@@ -187,8 +187,8 @@ sub make {
             # Date information did not exist in message/delivery-status part,...
             for my $f ( @{ $RFC822Head->{'date'} } ) {
                 # Get the value of Date header or other date related header.
-                next unless $rfc822data->{ lc $f };
-                push @datevalues, $rfc822data->{ lc $f };
+                next unless $rfc822data->{ $f };
+                push @datevalues, $rfc822data->{ $f };
             }
 
             # Set "date" getting from the value of "Date" in the bounce message
@@ -229,21 +229,22 @@ sub make {
             for my $v ('rhost', 'lhost') {
                 $p->{ $v } =~ y/[]()//d;    # Remove square brackets and curly brackets from the host variable
                 $p->{ $v } =~ s/\A.+=//;    # Remove string before "="
-                $p->{ $v } =~ s/\r\z//g;    # Remove CR at the end of the value
+                chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq "\r";   # Remove CR at the end of the value
 
                 # Check space character in each value and get the first element
                 $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if rindex($p->{ $v }, ' ') > -1;
-                $p->{ $v } =~ s/[.]\z//;    # Remove "." at the end of the value
+                chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq '.';    # Remove "." at the end of the value
             }
 
             # Subject: header of the original message
-            ($p->{'subject'} = $rfc822data->{'subject'} // '') =~ s/\r\z//g;
+            $p->{'subject'} = $rfc822data->{'subject'} // '';
+            chop $p->{'subject'} if substr($p->{'subject'}, -1, 1) eq "\r";
 
             if( $p->{'listid'} = $rfc822data->{'list-id'} // '' ) {
                 # Get the value of List-Id header: "List name <list-id@example.org>"
                 $p->{'listid'} =  $1 if $p->{'listid'} =~ /\A.*([<].+[>]).*\z/;
                 $p->{'listid'} =~ y/<>//d;
-                $p->{'listid'} =~ s/\r\z//g;
+                chop $p->{'listid'}  if substr($p->{'listid'}, -1, 1) eq "\r";
                 $p->{'listid'} =  '' if rindex($p->{'listid'}, ' ') > -1;
             }
 
@@ -256,7 +257,7 @@ sub make {
             CHECK_DELIVERY_STATUS_VALUE: {
                 # Cleanup the value of "Diagnostic-Code:" header
                 $p->{'diagnosticcode'} =~ s/[ \t.]+$EndOfEmail//;
-                $p->{'diagnosticcode'} =~ s/\r\z//g;
+                chop $p->{'diagnosticcode'} if substr($p->{'diagnosticcode'}, -1, 1) eq "\r";
 
                 if( $p->{'diagnosticcode'} ) {
                     # Count the number of D.S.N. and SMTP Reply Code
@@ -309,7 +310,7 @@ sub make {
         }
         next unless my $o = __PACKAGE__->new(%$p);
 
-        if( $o->reason eq '' || grep { $o->reason eq $_ } @$RetryIndex ) {
+        if( $o->reason eq '' || exists $RetryIndex->{ $o->reason } ) {
             # Decide the reason of email bounce
             my $r; $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->rhost);
                    $r ||= Sisimai::Reason->get($o);
@@ -328,7 +329,7 @@ sub make {
             unless( length $o->softbounce ) {
                 # Set the value of softbounce
                 my $textasargv =  $p->{'deliverystatus'}.' '.$p->{'diagnosticcode'};
-                   $textasargv =~ s/\A[ ]//g;
+                substr($textasargv, 0, 1, '') if substr($textasargv, 0, 1) eq ' ';
                 my $softorhard =  Sisimai::SMTP::Error->soft_or_hard($o->reason, $textasargv);
 
                 if( $softorhard ) {
@@ -345,7 +346,7 @@ sub make {
                 # Set pseudo status code
                 my $pseudocode = undef; # Pseudo delivery status code
                 my $textasargv =  $o->replycode.' '.$p->{'diagnosticcode'};
-                   $textasargv =~ s/\A[ ]//g;
+                substr($textasargv, 0, 1, '') if substr($textasargv, 0, 1) eq ' ';
                 my $getchecked =  Sisimai::SMTP::Error->is_permanent($textasargv);
                 my $tmpfailure =  defined $getchecked ? ( $getchecked == 1 ? 0 : 1 ) : 0;
 
@@ -388,14 +389,14 @@ sub damn {
 
     eval {
         my $v = {};
-        my @stringdata = (qw|
+        state $stringdata = [qw|
             token lhost rhost listid alias reason subject messageid smtpagent 
             smtpcommand destination diagnosticcode senderdomain deliverystatus
             timezoneoffset feedbacktype diagnostictype action replycode catch
             softbounce
-        |);
+        |];
 
-        for my $e ( @stringdata ) {
+        for my $e ( @$stringdata ) {
             # Copy string data
             $v->{ $e } = $self->$e // '';
         }

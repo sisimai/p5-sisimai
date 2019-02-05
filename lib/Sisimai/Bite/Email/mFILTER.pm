@@ -13,7 +13,7 @@ my $StartingOf = {
 my $MarkingsOf = { 'message' => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/ };
 
 # X-Mailer: m-FILTER
-sub headerlist  { return ['X-Mailer'] }
+sub headerlist  { return ['x-mailer'] }
 sub description { 'Digital Arts m-FILTER' }
 sub scan {
     # Detect an error from DigitalArts m-FILTER

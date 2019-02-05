@@ -18,7 +18,7 @@ MAKE_TEST: {
     is $PackageName->get, undef;
     is $PackageName->anotherone, undef;
     isa_ok $PackageName->index, 'ARRAY';
-    isa_ok $PackageName->retry, 'ARRAY';
+    isa_ok $PackageName->retry, 'HASH';
 
     use Sisimai::Mail;
     use Sisimai::Message;

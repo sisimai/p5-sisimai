@@ -56,8 +56,8 @@ sub sweep {
     chomp $argv1;
     $argv1 =~ y/ //s;
     $argv1 =~ y/\t//d;
-    $argv1 =~ s/\A //g;
-    $argv1 =~ s/ \z//g;
+    $argv1 =~ s/\A //g if index($argv1, ' ') == 0;
+    $argv1 =~ s/ \z//g if substr($argv1, -1, 1) eq ' ';
     $argv1 =~ s/ [-]{2,}[^ \t].+\z//;
     return $argv1;
 }
@@ -73,7 +73,7 @@ sub to_plain {
     return \'' unless ref $argv1 eq 'SCALAR';
 
     my $plain = $$argv1;
-    my $match = {
+    state $match = {
         'html' => qr|<html[ >].+?</html>|sim,
         'body' => qr|<head>.+</head>.*<body[ >].+</body>|sim,
     };
@@ -119,7 +119,7 @@ sub to_utf8 {
     my $hasencoded = undef;
     my $hasguessed = Encode::Guess->guess($tobeutf8ed);
     my $encodingto = ref $hasguessed ? lc($hasguessed->name) : '';
-    my $dontencode = qr/\A(?>utf[-]?8|(?:us[-])?ascii)\z/;
+    state $dontencode = qr/\A(?>utf[-]?8|(?:us[-])?ascii)\z/;
 
     if( $encodefrom ) {
         # The 2nd argument is a encoding name of the 1st argument

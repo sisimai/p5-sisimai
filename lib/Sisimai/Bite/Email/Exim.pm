@@ -124,7 +124,7 @@ my $DelayedFor = [
 ];
 
 # X-Failed-Recipients: kijitora@example.ed.jp
-sub headerlist  { return ['X-Failed-Recipients'] }
+sub headerlist  { return ['x-failed-recipients'] }
 sub description { 'Exim' }
 sub scan {
     # Detect an error from Exim

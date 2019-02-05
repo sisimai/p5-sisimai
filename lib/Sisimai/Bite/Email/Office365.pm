@@ -60,13 +60,13 @@ sub headerlist  {
     # X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
     # X-MS-Exchange-Transport-CrossTenantHeadersStamped: ...
     return [
-        'X-MS-Exchange-Message-Is-Ndr',
-        'X-Microsoft-Antispam-PRVS',
-        'X-Exchange-Antispam-Report-Test',
-        'X-Exchange-Antispam-Report-CFA-Test',
-        'X-MS-Exchange-CrossTenant-OriginalArrivalTime',
-        'X-MS-Exchange-CrossTenant-FromEntityHeader',
-        'X-MS-Exchange-Transport-CrossTenantHeadersStamped',
+        'x-ms-exchange-message-is-ndr',
+        'x-microsoft-antispam-prvs',
+        'x-exchange-antispam-report-test',
+        'x-exchange-antispam-report-cfa-test',
+        'x-ms-exchange-crosstenant-originalarrivaltime',
+        'x-ms-exchange-crosstenant-fromentityheader',
+        'x-ms-exchange-transport-crosstenantheadersstamped',
     ]
 }
 sub description { 'Microsoft Office 365: http://office.microsoft.com/' }

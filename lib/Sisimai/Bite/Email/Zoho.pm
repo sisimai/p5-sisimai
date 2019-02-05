@@ -14,7 +14,7 @@ my $MessagesOf = { 'expired' => ['Host not reachable'] };
 # X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
 # X-Zoho-Virus-Status: 2
 # X-Mailer: Zoho Mail
-sub headerlist  { return ['X-ZohoMail'] }
+sub headerlist  { return ['x-zohomail'] }
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub scan {
     # Detect an error from Zoho Mail
@@ -131,7 +131,7 @@ sub scan {
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} =~ s/\\n/ /g;
+        $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$MessagesOf ) {

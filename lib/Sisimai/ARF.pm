@@ -154,11 +154,17 @@ sub scan {
             } elsif( $e =~ /\AFrom:[ ]*(.+)\z/ ) {
                 # Microsoft ARF: original sender.
                 $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
-            
-            } elsif( $e =~ /\A([-0-9A-Za-z]+?)[:][ ]*(.+)\z/ ) {
+
+            } elsif( $e =~ /\A[ \t]+/ ) {
+                # Continued line from the previous line
+                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
+                next if length $e;
+                $rcptintext .= $e if $previousfn eq 'to';
+
+            } else {
                 # Get required headers only
-                my $lhs = lc $1;
-                my $rhs = $2;
+                my($lhs, $rhs) = split(/:[ ]*/, $e, 2);
+                next unless $lhs = lc($lhs || '');
 
                 $previousfn = '';
                 next unless exists $RFC822Head->{ $lhs };
@@ -166,13 +172,7 @@ sub scan {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
                 $rcptintext  = $rhs if $lhs eq 'to';
-
-            } elsif( $e =~ /\A[ \t]+/ ) {
-                # Continued line from the previous line
-                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
-                next if length $e;
-                $rcptintext .= $e if $previousfn eq 'to';
-            }
+            } 
         } else {
             # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};

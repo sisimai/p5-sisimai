@@ -13,7 +13,8 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $index = [
+
+    state $index = [
         'domain does not exist',
         'domain is not reachable',
         'domain must exist',
@@ -29,7 +30,6 @@ sub match {
         'unknown host',
         'unrouteable address',
     ];
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }

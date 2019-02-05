@@ -13,12 +13,13 @@ sub match {
     # @since v4.0.0
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $isnot = [
+
+    state $isnot = [
         '5.1.0 address rejected',
         'recipient address rejected',
         'sender ip address rejected',
     ];
-    my $index = [
+    state $index = [
         '<> invalid sender',
         'address rejected',
         'administrative prohibition',
@@ -57,7 +58,6 @@ sub match {
         'unroutable sender address',
         'you are sending to/from an address that has been blacklisted',
     ];
-
     return 0 if grep { rindex($argv1, $_) > -1 } @$isnot;
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;

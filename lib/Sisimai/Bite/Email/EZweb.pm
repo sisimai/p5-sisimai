@@ -33,7 +33,7 @@ my $ReFailures = {
     'onhold' => [qr/Each of the following recipients was rejected by a remote mail server/],
 };
 
-sub headerlist  { return ['X-SPASIGN'] }
+sub headerlist  { return ['x-spasign'] }
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub scan {
     # Detect an error from EZweb
