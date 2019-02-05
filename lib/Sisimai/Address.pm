@@ -17,7 +17,6 @@ my $ValidEmail = qr{(?>
     )
 }x;
 my $Delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
-my $Undisclosed = 'libsisimai.org.invalid';
 my $roaccessors = [
     'address',  # [String] Email address
     'user',     # [String] local part of the email address
@@ -42,7 +41,7 @@ sub undisclosed {
 
     return undef unless $atype =~ /\A(?:r|s)\z/;
     my $local = $atype eq 'r' ? 'recipient' : 'sender';
-    return sprintf("undisclosed-%s-in-headers%s%s", $local, '@', $Undisclosed);
+    return sprintf("undisclosed-%s-in-headers%slibsisimai.org.invalid", $local, '@');
 }
 
 sub new {
