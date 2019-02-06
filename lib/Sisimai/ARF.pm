@@ -48,12 +48,13 @@ sub is_arf {
         # Microsoft (Hotmail, MSN, Live, Outlook) uses its own report format.
         # Amazon SES Complaints bounces
         my $title = 'complaint about message from ';
+        my $hfrom = Sisimai::Address->s3s4($heads->{'from'});
         my $mfrom = qr{(?:
              staff[@]hotmail[.]com
             |complaints[@]email-abuse[.]amazonses[.]com
             )\z
         }x;
-        if( $heads->{'from'} =~ $mfrom && index($heads->{'subject'}, $title) > -1) {
+        if( $hfrom =~ $mfrom && index($heads->{'subject'}, $title) > -1) {
             # From: staff@hotmail.com
             # From: complaints@email-abuse.amazonses.com
             # Subject: complaint about message from 192.0.2.1
@@ -354,7 +355,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
