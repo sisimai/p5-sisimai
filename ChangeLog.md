@@ -3,7 +3,7 @@ RELEASE NOTES for Perl version of Sisimai
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 
-v4.24.1p4
+v4.24.1p5
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -15,6 +15,7 @@ v4.24.1p4
   - Remove unused method Sisimai::Address->is_undisclosed.
   - Code refactoring: less lines of code and shallower indentation.
   - Sisimai works with JSON 4.00
+  - Fix Sisimai::ARF to resolve issue #304. Thanks to @lewa.
 
 v4.24.1
 --------------------------------------------------------------------------------
