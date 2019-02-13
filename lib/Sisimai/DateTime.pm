@@ -262,7 +262,7 @@ sub parse {
         'z' => undef,   # [Integer] Timezone offset
     };
 
-    while( my $p = shift @timetokens ) {
+    for my $p ( @timetokens ) {
         # Parse each piece of time
         if( $p =~ /\A[A-Z][a-z]{2}[,]?\z/ ) {
             # Day of week or Day of week; Thu, Apr, ...
@@ -523,7 +523,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

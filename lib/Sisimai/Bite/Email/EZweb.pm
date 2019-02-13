@@ -87,7 +87,7 @@ sub scan {
         my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1);
         $MarkingsOf->{'boundary'} = qr/\A\Q$b0\E\z/ if $b0; # Convert to regular expression
     }
-    my @rxmessages = (); map { push @rxmessages, @{ $ReFailures->{ $_ } } } (keys %$ReFailures);
+    my @rxmessages; map { push @rxmessages, @{ $ReFailures->{ $_ } } } (keys %$ReFailures);
 
     for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
@@ -261,7 +261,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

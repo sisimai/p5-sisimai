@@ -46,7 +46,7 @@ sub scan {
     my $jsonstring = '';
     my $foldedline = 0;
 
-    while( my $e = shift @hasdivided ) {
+    for my $e ( @hasdivided ) {
         # Find JSON string from the message body
         next unless length $e;
         last if $e eq '--';
@@ -277,7 +277,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

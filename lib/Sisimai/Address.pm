@@ -138,7 +138,7 @@ sub find {
 
     my $emailtable = { 'address' => '', 'name' => '', 'comment' => '' };
     my $addrtables = [];
-    my $readbuffer = [];
+    my @readbuffer;
     my $readcursor = 0;
     my $v = $emailtable;   # temporary buffer
     my $p = '';            # current position
@@ -167,7 +167,7 @@ sub find {
                     } else {
                         # The cursor is not in neither the quoted-string nor the comment block
                         $readcursor = 0;    # reset cursor position
-                        push @$readbuffer, $v;
+                        push @readbuffer, $v;
                         $v = { 'address' => '', 'name' => '', 'comment' => '' };
                         $p = '';
                     }
@@ -295,7 +295,7 @@ sub find {
 
     if( $v->{'address'} ) {
         # Push the latest values
-        push @$readbuffer, $v;
+        push @readbuffer, $v;
 
     } else {
         # No email address like <neko@example.org> in the argument
@@ -316,11 +316,11 @@ sub find {
                 $v->{'address'} = $1.$3;
                 $v->{'comment'} = $2;
             }
-            push @$readbuffer, $v;
+            push @readbuffer, $v;
         }
     }
 
-    while( my $e = shift @$readbuffer ) {
+    for my $e ( @readbuffer ) {
         # The element must not include any character except from 0x20 to 0x7e.
         next if $e->{'address'} =~ /[^\x20-\x7e]/;
         unless( $e->{'address'} =~ /\A.+[@].+\z/ ) {
@@ -554,7 +554,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

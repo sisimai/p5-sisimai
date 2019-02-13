@@ -129,12 +129,12 @@ sub received {
         #   by nijo.example.jp (V8/cf) with ESMTP id s1QB5ka0018055;
         #   Wed, 26 Feb 2014 06:05:47 -0500
         my @received = split(' ', $value->{'from'});
-        my @namelist = ();
-        my @addrlist = ();
+        my @namelist;
+        my @addrlist;
         my $hostname = '';
         my $hostaddr = '';
 
-        while( my $e = shift @received ) {
+        for my $e ( @received ) {
             # Received: from [10.22.22.222] (smtp-gateway.kyoto.ocn.ne.jp [192.0.2.222])
             if( $e =~ /\A[(\[]\d+[.]\d+[.]\d+[.]\d+[)\]]\z/ ) {
                 # [192.0.2.1] or (192.0.2.1)
@@ -148,7 +148,7 @@ sub received {
             }
         }
 
-        while( my $e = shift @namelist ) {
+        for my $e ( @namelist ) {
             # 1. Hostname takes priority over all other IP addresses
             next unless rindex($e, '.') > -1;
             $hostname = $e;
@@ -305,7 +305,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

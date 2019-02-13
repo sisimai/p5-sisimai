@@ -181,8 +181,7 @@ sub make {
             # Convert from a time stamp or a date string to a machine time.
             my $datestring = undef;
             my $zoneoffset = 0;
-            my @datevalues = ();
-            push @datevalues, $e->{'date'} if $e->{'date'};
+            my @datevalues; push @datevalues, $e->{'date'} if $e->{'date'};
 
             # Date information did not exist in message/delivery-status part,...
             for my $f ( @{ $RFC822Head->{'date'} } ) {
@@ -743,7 +742,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

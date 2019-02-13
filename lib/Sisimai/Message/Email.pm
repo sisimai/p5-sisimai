@@ -94,7 +94,7 @@ sub load {
     my $class = shift;
     my $argvs = { @_ };
 
-    my @modulelist = ();
+    my @modulelist;
     my $tobeloaded = [];
 
     for my $e ('load', 'order') {
@@ -580,7 +580,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
