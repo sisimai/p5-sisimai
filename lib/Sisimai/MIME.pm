@@ -29,11 +29,11 @@ sub is_mimeencoded {
     #                           1: MIME encoded string
     my $class = shift;
     my $argv1 = shift || return undef;
-    my @piece = ();
-    my $mime1 = 0;
-
     return undef unless ref $argv1 eq 'SCALAR';
+
     $$argv1 =~ y/"//d;
+    my @piece;
+    my $mime1 = 0;
 
     if( rindex($$argv1, ' ') > -1 ) {
         # Multiple MIME-Encoded strings in a line
@@ -42,7 +42,7 @@ sub is_mimeencoded {
         push @piece, $$argv1;
     }
 
-    while( my $e = shift @piece ) {
+    for my $e ( @piece ) {
         # Check all the string in the array
         next unless $e =~ /[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*/;
         $mime1 = 1;
@@ -60,7 +60,7 @@ sub mimedecode {
 
     my $characterset = '';
     my $encodingname = '';
-    my @decodedtext0 = ();
+    my @decodedtext0;
 
     for my $e ( @$argvs ) {
         # Check and decode each element
@@ -275,7 +275,7 @@ sub breaksup {
         my @innerparts = split(/\Q$mpboundary\E\n/, $lowerchunk);
 
         shift @innerparts unless length $innerparts[0];
-        while( my $e = shift @innerparts ) {
+        for my $e ( @innerparts ) {
             # Find internal multipart/* blocks and decode
             if( $e =~ $thisformat ) {
                 # Found Content-Type field at the first or second line of this
@@ -385,7 +385,7 @@ sub makeflat {
 
     my @multiparts = split(/\Q$ehboundary\E\n/, $$argv1);
     shift @multiparts unless length $multiparts[0];
-    while( my $e = shift @multiparts ) {
+    for my $e ( @multiparts ) {
         # Find internal multipart blocks and decode
         if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r\n)?Content-Type:[ ]*[^\s]+/ ) {
             # Content-Type: multipart/*
@@ -501,7 +501,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

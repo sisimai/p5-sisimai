@@ -166,7 +166,7 @@ sub scan {
             map { $_ =~ y/ //d } @rcptinhead;
             $recipients = scalar @rcptinhead;
 
-            while( my $e = shift @rcptinhead ) {
+            for my $e ( @rcptinhead ) {
                 # Insert each recipient address into @$dscontents
                 $dscontents->[-1]->{'recipient'} = $e;
                 next if scalar @$dscontents == $recipients;
@@ -290,7 +290,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

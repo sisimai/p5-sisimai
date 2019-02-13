@@ -74,19 +74,19 @@ sub make {
     } elsif( $input eq 'json' ) {
         # Decoded JSON object: 'input' => 'json'
         my $type = ref $argv0;
-        my $list = [];
+        my @list;
 
         if( $type eq 'ARRAY' ) {
             # [ {...}, {...}, ... ]
             for my $e ( @$argv0 ) {
                 next unless ref $e eq 'HASH';
-                push @$list, $e;
+                push @list, $e;
             }
         } else {
-            push @$list, $argv0;
+            push @list, $argv0;
         }
 
-        while( my $e = shift @$list ) {
+        for my $e ( @list ) {
             $methodargv = { 'data' => $e, 'hook' => $hookmethod, 'input' => 'json' };
             next unless my $mesg = Sisimai::Message->new(%$methodargv);
 
@@ -133,10 +133,9 @@ sub engine {
     # Parser engine list (MTA modules)
     # @return   [Hash]     Parser engine table
     my $class = shift;
-    my $names = [qw|Bite::Email Bite::JSON ARF RFC3464 RFC3834|];
     my $table = {};
 
-    while( my $e = shift @$names ) {
+    for my $e ('Bite::Email', 'Bite::JSON', 'ARF', 'RFC3464', 'RFC3834') {
         my $r = 'Sisimai::'.$e;
         (my $loads = $r) =~ s|::|/|g; 
         require $loads.'.pm';
@@ -166,10 +165,9 @@ sub reason {
 
     # These reasons are not included in the results of Sisimai::Reason->index
     require Sisimai::Reason;
-    my $names = Sisimai::Reason->index;
-    push @$names, (qw|Delivered Feedback Undefined Vacation|);
+    my @names = (@{ Sisimai::Reason->index }, qw|Delivered Feedback Undefined Vacation|);
 
-    while( my $e = shift @$names ) {
+    for my $e ( @names ) {
         # Call ->description() method of Sisimai::Reason::*
         my $r = 'Sisimai::Reason::'.$e;
         (my $loads = $r) =~ s|::|/|g; 
@@ -364,7 +362,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -58,9 +58,9 @@ sub scan {
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my @responding = ();    # (Array) Responses from remote server
-    my @commandset = ();    # (Array) SMTP command which is sent to remote server
     my $anotherset = {};    # (Ref->Hash) Another error information
+    my @responding;         # (Array) Responses from remote server
+    my @commandset;         # (Array) SMTP command which is sent to remote server
     my $errorindex = -1;
     my $v = undef;
 
@@ -227,7 +227,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

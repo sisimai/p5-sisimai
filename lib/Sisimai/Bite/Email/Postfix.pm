@@ -59,8 +59,8 @@ sub scan {
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my @commandset = ();    # (Array) ``in reply to * command'' list
-    my $anotherset = {};    # Another error information
+    my $anotherset = {};    # (Hash) Another error information
+    my @commandset;         # (Array) ``in reply to * command'' list
     my $v = undef;
     my $p = '';
 
@@ -289,7 +289,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

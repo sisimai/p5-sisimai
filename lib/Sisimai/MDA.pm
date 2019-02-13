@@ -101,7 +101,7 @@ sub scan {
     my $agentname0 = '';    # [String] MDA name
     my $reasonname = '';    # [String] Error reason
     my $bouncemesg = '';    # [String] Error message
-    my @linebuffer = ();
+    my @linebuffer;
 
     for my $e ( split("\n", $$mbody) ) {
         # Check each line with each MDA's symbol regular expression.
@@ -188,7 +188,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
