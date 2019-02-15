@@ -2,19 +2,22 @@ RELEASE NOTES for Perl version of Sisimai
 ================================================================================
 - releases: "https://github.com/sisimai/p5-Sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
+- document: "https://libsisimai.org/"
 
 v4.24.1p6
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
-  - Experimental implementation: Sisimai::RFC1894 is a common class for parsing
-    message/delivery-status part. #298
-  - Remove unused method Sisimai::DateTime->hourname and $HourNames.
-  - Remove unused method Sisimai::RFC5322->is_domainpart.
-  - Remove unused method Sisimai::Address->is_undisclosed.
-  - Code refactoring: less lines of code and shallower indentation.
+  - Implement new class "Sisimai::RFC1894" for parsing message/delivery-status
+    part. #298
   - Sisimai works with JSON 4.00
+  - Remove unused methods and variables
+    - Sisimai::DateTime->hourname
+    - $Sisimai::DateTime::HourNames
+    - Sisimai::RFC5322->is_domainpart
+    - Sisimai::Address->is_undisclosed
+  - Code refactoring: less lines of code and shallower indentation.
   - Fix Sisimai::ARF to resolve issue #304. Thanks to @lewa.
 
 v4.24.1
@@ -856,7 +859,7 @@ v4.1.2  - Key Name Changed To "timestamp"
 - version: "4.1.2"
 - changes:
   - Require `Time::Local` 1.19 or later for fixing issue #21, #23, and #24.
-  - **Key name of time stamp has been changed from `date` to timestamp`**.
+  - **Key name of time stamp has been changed from `date` to `timestamp`**.
   - Data sources and hash algorithm of token string in parsed data have been 
     changed.
   - Implement the following MTA modules:
