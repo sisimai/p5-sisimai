@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.24.1p6
+v4.24.1p7
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -19,6 +19,8 @@ v4.24.1p6
     - `Sisimai::Address->is_undisclosed`
   - Code refactoring: less lines of code and shallower indentation.
   - Fix bug in `Sisimai::ARF` to resolve issue #304. Thanks to @lewa.
+  - Remove set-of-emails/logo directory because we cannot change the license of
+    each file in the directory to The 2-Clause BSD License.
 
 v4.24.1
 --------------------------------------------------------------------------------
