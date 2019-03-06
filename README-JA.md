@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-Sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
-[![Perl](https://img.shields.io/badge/perl-v5.10--v5.26-blue.svg)](https://www.perl.org)
+[![Perl](https://img.shields.io/badge/perl-v5.10--v5.28-blue.svg)](https://www.perl.org)
 [![CPAN](https://img.shields.io/badge/cpan-v4.24.1-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README(English)**](README.md)
