@@ -21,6 +21,9 @@ v4.24.1p7
   - Fix bug in `Sisimai::ARF` to resolve issue #304. Thanks to @lewa.
   - Remove `set-of-emails/logo` directory because we cannot change the license
     of each file in the directory to The 2-Clause BSD License.
+  - Update error message patterns in the following modules:
+    - Sisimai::Reason::Blocked (hotmail)
+
 
 v4.24.1
 --------------------------------------------------------------------------------
