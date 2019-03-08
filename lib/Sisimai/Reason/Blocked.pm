@@ -124,7 +124,10 @@ sub match {
         |spf:[ ].+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail.+[a-z]{3}.+401
         |the[ ](?:email|domain|ip).+[ ]is[ ]blacklisted
         |this[ ]system[ ]will[ ]not[ ]accept[ ]messages[ ]from[ ]servers[/]devices[ ]with[ ]no[ ]reverse[ ]dns
-        |too[ ]many[ ]spams[ ]from[ ]your[ ]ip  # free.fr
+        |too[ ]many[ ](?:
+             spams[ ]from[ ]your[ ]ip  # free.fr
+            |unwanted[ ]messages[ ]have[ ]been[ ]sent[ ]from[ ]the[ ]following[ ]ip[ ]address[ ]above
+            )
         |unresolvable[ ]relay[ ]host[ ]name
         |veuillez[ ]essayer[ ]plus[ ]tard.+[a-z]{3}.+(?:103|510)
         |your[ ](?:
@@ -218,7 +221,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
