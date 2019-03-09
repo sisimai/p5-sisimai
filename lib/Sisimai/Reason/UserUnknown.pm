@@ -76,6 +76,7 @@ sub match {
             |email[ ]addresses
             )
         |rcpt[ ][<].+[>][ ]does[ ]not[ ]exist
+        |recipient[ ]address[ ]rejected[.][ ][(]in[ ]reply[ ]to[ ]rcpt[ ]to[ ]command[)]
         |rece?ipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in
             |address[ ]rejected:[ ](?:
@@ -233,7 +234,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
