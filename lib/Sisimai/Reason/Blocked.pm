@@ -110,6 +110,7 @@ sub match {
             |forbidden[ ]by[ ]your[ ]ip[ ]
             )
         |server[ ]ip[ ].+[ ]listed[ ]as[ ]abusive
+        |service[ ]not[ ]available,[ ]closing[ ]transmission[ ]channel
         |service[ ]permits[ ]\d+[ ]unverifyable[ ]sending[ ]ips
         |smtp[ ]error[ ]from[ ]remote[ ]mail[ ]server[ ]after[ ]initial[ ]connection:   # Exim
         |sorry,[ ](?:
