@@ -22,8 +22,12 @@ v4.24.1p7
   - Remove `set-of-emails/logo` directory because we cannot change the license
     of each file in the directory to The 2-Clause BSD License.
   - Update error message patterns in the following modules:
-    - Sisimai::Reason::Blocked (hotmail)
-
+    - `Sisimai::Reason::Blocked` (hotmail, ntt docomo)
+    - `Sisimai::Reason::SystemError` (hotmail)
+    - `Sisimai::Reason::TooManyConn` (ntt docomo)
+    - `Sisimai::Reason::UserUnknown` (hotmail)
+    - `Sisimai::Reason::PolicyViolation` (postfix)
+    - `Sisimai::Bite::Email::McAfee` (userunknown)
 
 v4.24.1
 --------------------------------------------------------------------------------
