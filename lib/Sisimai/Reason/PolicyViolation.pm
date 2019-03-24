@@ -23,6 +23,7 @@ sub match {
         'email rejected due to security policies',
         'header are not accepted',
         'header error',
+        'local policy violation',
         'message given low priority',
         'message not accepted for policy reasons',
         'messages with multiple addresses',
@@ -99,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
