@@ -7,7 +7,7 @@ use warnings;
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = { 'rfc822' => ['Original message headers:'] };
 my $MarkingsOf = {
-    'message' => qr/[ ]Microsoft[ ]Exchange[ ]Server[ ]20\d{2}/,
+    'message' => qr/\ADiagnostic[ ]information[ ]for[ ]administrators:/,
     'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
     'rhost'   => qr/\AGenerating[ ]server:[ ]?(.*)/,
 };
@@ -203,7 +203,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
