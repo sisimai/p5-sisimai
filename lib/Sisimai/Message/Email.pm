@@ -206,7 +206,10 @@ sub headers {
                 # Other headers except "Received" and so on
                 if( $ExtHeaders->{ $currheader } ) {
                     # MTA specific header
-                    push @$TryOnFirst, keys %{ $ExtHeaders->{ $currheader } };
+                    for my $p ( keys %{ $ExtHeaders->{ $currheader } } ) {
+                        next if grep { $p eq $_ } @$TryOnFirst;
+                        push @$TryOnFirst, $p;
+                    }
                 }
                 $structured->{ $currheader } = $rhs;
             }
@@ -420,7 +423,7 @@ sub parse {
             last(SCANNER) if $hasscanned;
         }
 
-        TRY_ON_FIRST: while( my $r = shift @$TryOnFirst ) {
+        TRY_ON_FIRST: for my $r ( @$TryOnFirst ) {
             # Try MTA module candidates which are detected from MTA specific
             # mail headers on first
             next if exists $haveloaded->{ $r };
