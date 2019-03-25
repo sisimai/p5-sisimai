@@ -75,18 +75,14 @@ sub mimedecode {
             $encodingname ||= uc $3;
 
             push @decodedtext0, $1;
-            if( $encodingname eq 'Q' ) {
-                # Quoted-Printable
-                push @decodedtext0, MIME::QuotedPrint::decode($4);
-
-            } elsif( $encodingname eq 'B' ) {
-                # Base64
-                push @decodedtext0, MIME::Base64::decode($4);
-            }
+            push @decodedtext0, $encodingname eq 'B'
+                ? MIME::Base64::decode($4)
+                : MIME::QuotedPrint::decode($4);
+            $decodedtext0[-1] =~ y/\r\n//d;
             push @decodedtext0, $5;
 
         } else {
-            push @decodedtext0, $e;
+            push @decodedtext0, scalar @decodedtext0 ? ' '.$e : $e;
         }
     }
     return '' unless scalar @decodedtext0;

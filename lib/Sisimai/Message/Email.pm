@@ -385,6 +385,12 @@ sub parse {
         # Delete quoted strings, quote symbols(>)
         $$bodystring =~ s/^[>]+[ ]//gm;
         $$bodystring =~ s/^[>]$//gm;
+    } else {
+        my $v = $mailheader->{'subject'};
+        if( Sisimai::MIME->is_mimeencoded(\$v) ) {
+            # Decode MIME-Encoded subject header
+            $mailheader->{'subject'} = Sisimai::MIME->mimedecode([split(/[ ]/, $v)]);
+        }
     }
     $$bodystring .= $EndOfEmail;
 

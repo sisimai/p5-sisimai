@@ -3,6 +3,7 @@ use parent 'Sisimai::Bite::Email';
 use feature ':5.10';
 use strict;
 use warnings;
+use utf8;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = {
@@ -30,10 +31,8 @@ sub scan {
     my $match = 0;
     my $tryto = [
         'Mail could not be delivered',
-        # メッセージを配信できません。
-        '=?iso-2022-jp?B?GyRCJWElQyU7ITwlOCRyR1s/LiRHJC0kXiQ7JHMhIxsoQg==?=',
-        # メール配信に失敗しました
-        '=?iso-2022-jp?B?GyRCJWEhPCVrR1s/LiRLPDpHVCQ3JF4kNyQ/GyhCDQo=?=',
+        'メッセージを配信できません。',
+        'メール配信に失敗しました',
     ];
 
     # 'received' => qr/[ ][(]InterScanMSS[)][ ]with[ ]/,
@@ -171,7 +170,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
