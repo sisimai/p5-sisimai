@@ -28,6 +28,14 @@ v4.24.1p7
     - `Sisimai::Reason::UserUnknown` (hotmail)
     - `Sisimai::Reason::PolicyViolation` (postfix)
     - `Sisimai::Bite::Email::McAfee` (userunknown)
+    - `Sisimai::Bite::Email::Exchange2007` (securityerror)
+  - Bug fix in `$Sisimai::Message::Email::TryOnFirst`: Module name to be loaded 
+    is checked before calling `push` function for avoiding duplication.
+  - The order of `Sisimai::Bite::Email` modules to be loaded has been changed:
+    Load Office365 and Outlook prior to Exchange2007 and Exchange2003.
+  - Update the followng MTA modules for improvements and bug fixes:
+    - `Sisimai::Bite::Email::Exchange2007`
+  - MIME Decoding in `Subject:` header improved.
 
 v4.24.1
 --------------------------------------------------------------------------------
