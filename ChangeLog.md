@@ -36,6 +36,9 @@ v4.24.1p7
   - Update the followng MTA modules for improvements and bug fixes:
     - `Sisimai::Bite::Email::Exchange2007`
   - MIME Decoding in `Subject:` header improved.
+  - Bug fix in `Sisimai::MIME->is_mimeencoded` method.
+  - Make stable the order of MTA modules which have MTA specific email headers
+    at `Sisimai::Order::Email->headers` method.
 
 v4.24.1
 --------------------------------------------------------------------------------
