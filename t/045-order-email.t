@@ -37,10 +37,9 @@ MAKE_TEST: {
     for my $v ( keys %$headers ) {
         # Header name table
         like $v, qr/\A[a-z][-a-z]+\z/, $v;
-        for my $w ( keys %{ $headers->{ $v } } ) {
+        for my $w ( @{ $headers->{ $v } } ) {
             # Module name test
             like $w, qr/\ASisimai::Bite::(?:Email|JSON)::/, $v.' => '.$w;
-            is $headers->{ $v }->{ $w }, 1;
         }
     }
 

@@ -193,7 +193,8 @@ sub headers {
         for my $v ( @{ $e->headerlist } ) {
             # Get header name which required each MTA module
             next if exists $skips->{ $v };
-            $table->{ $v }->{ $e } = 1;
+            $table->{ $v } ||= [];
+            push @{ $table->{ $v } }, $e;
         }
     }
     return $table;

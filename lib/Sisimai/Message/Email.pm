@@ -52,6 +52,7 @@ sub make {
     return undef unless my $aftersplit = __PACKAGE__->divideup(\$email);
 
     # 2. Convert email headers from text to hash reference
+    $TryOnFirst = [];
     $processing->{'from'}   = $aftersplit->{'from'};
     $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'}, $headerlist);
 
@@ -206,7 +207,7 @@ sub headers {
                 # Other headers except "Received" and so on
                 if( $ExtHeaders->{ $currheader } ) {
                     # MTA specific header
-                    for my $p ( keys %{ $ExtHeaders->{ $currheader } } ) {
+                    for my $p ( @{ $ExtHeaders->{ $currheader } } ) {
                         next if grep { $p eq $_ } @$TryOnFirst;
                         push @$TryOnFirst, $p;
                     }
