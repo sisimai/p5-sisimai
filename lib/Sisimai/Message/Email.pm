@@ -422,20 +422,8 @@ sub parse {
             last(SCANNER) if $hasscanned;
         }
 
-        TRY_ON_FIRST: for my $r ( @$TryOnFirst ) {
-            # Try MTA module candidates which are detected from MTA specific
-            # mail headers on first
-            next if exists $haveloaded->{ $r };
-            ($modulepath = $r) =~ s|::|/|g; 
-            require $modulepath.'.pm';
-            $hasscanned = $r->scan($mailheader, $bodystring);
-            $haveloaded->{ $r } = 1;
-            last(SCANNER) if $hasscanned;
-        }
-
-        DEFAULT_LIST: for my $r ( @$DefaultSet ) {
-            # MTA modules which does not have MTA specific header and did not
-            # match with any regular expressions of Subject header.
+        TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$DefaultSet ) {
+            # Try MTA module candidates
             next if exists $haveloaded->{ $r };
             ($modulepath = $r) =~ s|::|/|g; 
             require $modulepath.'.pm';
