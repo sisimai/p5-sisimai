@@ -60,6 +60,7 @@ sub headerlist  {
     # X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
     # X-MS-Exchange-Transport-CrossTenantHeadersStamped: ...
     return [
+        'content-language',
         'x-ms-exchange-message-is-ndr',
         'x-microsoft-antispam-prvs',
         'x-exchange-antispam-report-test',
@@ -277,7 +278,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
