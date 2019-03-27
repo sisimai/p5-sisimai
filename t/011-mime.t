@@ -7,8 +7,8 @@ use Encode;
 my $PackageName = 'Sisimai::MIME';
 my $MethodNames = {
     'class' => [
-        'is_mimeencoded', 'mimedecode', 'boundary', 'qprintd', 'base64d',
-        'makeflat', 'breaksup',
+        'patterns', 'is_mimeencoded', 'mimedecode', 'boundary', 'qprintd',
+        'base64d', 'makeflat', 'breaksup',
     ],
     'object' => [],
 };
@@ -17,6 +17,12 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
+    PATTERNS: {
+        my $p = $PackageName->patterns;
+        isa_ok $p, 'HASH';
+        ok scalar keys %$p;
+    }
+
     MIMEDECODE: {
         my $v0  = '';
         my $p1 = 'ASCII TEXT';
@@ -220,13 +226,6 @@ bD4K';
         is $PackageName->breaksup(), undef;
     }
 
-
-
-
-
-
-
-
     IRREGULAR_CASE: {
         # Irregular MIME encoded strings
         my $bE = [
@@ -245,7 +244,6 @@ bD4K';
             like $vE, qr/ニャーン/, 'Decoded text matches with /ニャーン/';
         }
     }
-
 }
 
 done_testing;

@@ -7,7 +7,7 @@ use warnings;
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = { 'rfc822' => ['Original message headers:'] };
 my $MarkingsOf = {
-    'message' => qr/[ ]Microsoft[ ]Exchange[ ]Server[ ]20\d{2}/,
+    'message' => qr/\ADiagnostic[ ]information[ ]for[ ]administrators:/,
     'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
     'rhost'   => qr/\AGenerating[ ]server:[ ]?(.*)/,
 };
@@ -20,7 +20,7 @@ my $NDRSubject = {
     'RESOLVER.ADR.RecipLimit'       => 'toomanyconn',   # 550 5.5.3 RESOLVER.ADR.RecipLimit
     'RESOLVER.ADR.InvalidInSmtp'    => 'systemerror',   # 550 5.1.0 RESOLVER.ADR.InvalidInSmtp
     'RESOLVER.ADR.Ambiguous'        => 'systemerror',   # 550 5.1.4 RESOLVER.ADR.Ambiguous, 420 4.2.0 RESOLVER.ADR.Ambiguous
-    'RESOLVER.RST.AuthRequired'     => 'filtered',      # 550 5.7.1 RESOLVER.RST.AuthRequired
+    'RESOLVER.RST.AuthRequired'     => 'securityerror', # 550 5.7.1 RESOLVER.RST.AuthRequired
     'RESOLVER.RST.NotAuthorized'    => 'rejected',      # 550 5.7.1 RESOLVER.RST.NotAuthorized
     'RESOLVER.RST.RecipSizeLimit'   => 'mesgtoobig',    # 550 5.2.3 RESOLVER.RST.RecipSizeLimit
     'QUEUE.Expired'                 => 'expired',       # 550 4.4.7 QUEUE.Expired
@@ -203,7 +203,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

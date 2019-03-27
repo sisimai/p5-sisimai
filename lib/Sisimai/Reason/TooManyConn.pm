@@ -25,6 +25,7 @@ sub match {
         'too many connections from your host.', # Microsoft
         'too many concurrent smtp connections', # Microsoft
         'too many errors from your ip',         # Free.fr
+        'too many recipients',                  # ntt docomo
         'too many smtp sessions for this host', # Sendmail(daemon.c)
         'trop de connexions, ',
         'we have already made numerous attempts to deliver this message',
@@ -100,7 +101,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

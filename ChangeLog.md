@@ -19,8 +19,26 @@ v4.24.1p7
     - `Sisimai::Address->is_undisclosed`
   - Code refactoring: less lines of code and shallower indentation.
   - Fix bug in `Sisimai::ARF` to resolve issue #304. Thanks to @lewa.
-  - Remove set-of-emails/logo directory because we cannot change the license of
-    each file in the directory to The 2-Clause BSD License.
+  - Remove `set-of-emails/logo` directory because we cannot change the license
+    of each file in the directory to The 2-Clause BSD License.
+  - Update error message patterns in the following modules:
+    - `Sisimai::Reason::Blocked` (hotmail, ntt docomo)
+    - `Sisimai::Reason::SystemError` (hotmail)
+    - `Sisimai::Reason::TooManyConn` (ntt docomo)
+    - `Sisimai::Reason::UserUnknown` (hotmail)
+    - `Sisimai::Reason::PolicyViolation` (postfix)
+    - `Sisimai::Bite::Email::McAfee` (userunknown)
+    - `Sisimai::Bite::Email::Exchange2007` (securityerror)
+  - Bug fix in `$Sisimai::Message::Email::TryOnFirst`: Module name to be loaded 
+    is checked before calling `push` function for avoiding duplication.
+  - The order of `Sisimai::Bite::Email` modules to be loaded has been changed:
+    Load Office365 and Outlook prior to Exchange2007 and Exchange2003.
+  - Update the followng MTA modules for improvements and bug fixes:
+    - `Sisimai::Bite::Email::Exchange2007`
+  - MIME Decoding in `Subject:` header improved.
+  - Bug fix in `Sisimai::MIME->is_mimeencoded` method.
+  - Make stable the order of MTA modules which have MTA specific email headers
+    at `Sisimai::Order::Email->headers` method.
 
 v4.24.1
 --------------------------------------------------------------------------------

@@ -119,9 +119,9 @@ my $PatternTable = {
         ],
         'undeliver' => [
             'Sisimai::Bite::Email::Postfix',
+            'Sisimai::Bite::Email::Office365',
             'Sisimai::Bite::Email::Exchange2007',
             'Sisimai::Bite::Email::Exchange2003',
-            'Sisimai::Bite::Email::Office365',
             'Sisimai::Bite::Email::SendGrid',
             'Sisimai::Bite::Email::Notes',
             'Sisimai::Bite::Email::Verizon',
@@ -193,7 +193,8 @@ sub headers {
         for my $v ( @{ $e->headerlist } ) {
             # Get header name which required each MTA module
             next if exists $skips->{ $v };
-            $table->{ $v }->{ $e } = 1;
+            $table->{ $v } ||= [];
+            push @{ $table->{ $v } }, $e;
         }
     }
     return $table;
@@ -238,7 +239,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

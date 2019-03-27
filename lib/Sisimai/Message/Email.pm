@@ -52,6 +52,7 @@ sub make {
     return undef unless my $aftersplit = __PACKAGE__->divideup(\$email);
 
     # 2. Convert email headers from text to hash reference
+    $TryOnFirst = [];
     $processing->{'from'}   = $aftersplit->{'from'};
     $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'}, $headerlist);
 
@@ -206,7 +207,10 @@ sub headers {
                 # Other headers except "Received" and so on
                 if( $ExtHeaders->{ $currheader } ) {
                     # MTA specific header
-                    push @$TryOnFirst, keys %{ $ExtHeaders->{ $currheader } };
+                    for my $p ( @{ $ExtHeaders->{ $currheader } } ) {
+                        next if grep { $p eq $_ } @$TryOnFirst;
+                        push @$TryOnFirst, $p;
+                    }
                 }
                 $structured->{ $currheader } = $rhs;
             }
@@ -385,6 +389,10 @@ sub parse {
         # Delete quoted strings, quote symbols(>)
         $$bodystring =~ s/^[>]+[ ]//gm;
         $$bodystring =~ s/^[>]$//gm;
+
+    } elsif( Sisimai::MIME->is_mimeencoded(\$mailheader->{'subject'}) ) {
+        # Decode MIME-Encoded "Subject:" header
+        $mailheader->{'subject'} = Sisimai::MIME->mimedecode([split(/[ ]/, $mailheader->{'subject'})]);
     }
     $$bodystring .= $EndOfEmail;
 
@@ -414,20 +422,8 @@ sub parse {
             last(SCANNER) if $hasscanned;
         }
 
-        TRY_ON_FIRST: while( my $r = shift @$TryOnFirst ) {
-            # Try MTA module candidates which are detected from MTA specific
-            # mail headers on first
-            next if exists $haveloaded->{ $r };
-            ($modulepath = $r) =~ s|::|/|g; 
-            require $modulepath.'.pm';
-            $hasscanned = $r->scan($mailheader, $bodystring);
-            $haveloaded->{ $r } = 1;
-            last(SCANNER) if $hasscanned;
-        }
-
-        DEFAULT_LIST: for my $r ( @$DefaultSet ) {
-            # MTA modules which does not have MTA specific header and did not
-            # match with any regular expressions of Subject header.
+        TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$DefaultSet ) {
+            # Try MTA module candidates
             next if exists $haveloaded->{ $r };
             ($modulepath = $r) =~ s|::|/|g; 
             require $modulepath.'.pm';

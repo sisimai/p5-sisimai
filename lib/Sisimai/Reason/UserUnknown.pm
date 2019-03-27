@@ -76,6 +76,7 @@ sub match {
             |email[ ]addresses
             )
         |rcpt[ ][<].+[>][ ]does[ ]not[ ]exist
+        |recipient[ ]address[ ]rejected[.][ ][(]in[ ]reply[ ]to[ ]rcpt[ ]to[ ]command[)]
         |rece?ipient[ ](?:
              .+[ ]was[ ]not[ ]found[ ]in
             |address[ ]rejected:[ ](?:
@@ -123,7 +124,7 @@ sub match {
             |.+[ ]does[ ]not[ ]exist
             |does[ ]not[ ]exist
             |missing[ ]home[ ]directory
-            |not[ ](?:active|found|known)
+            |not[ ](?:active|exist|found|known)
             |unknown
             )
         |vdeliver:[ ]invalid[ ]or[ ]unknown[ ]virtual[ ]user
@@ -233,7 +234,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

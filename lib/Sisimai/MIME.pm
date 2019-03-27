@@ -31,15 +31,15 @@ sub is_mimeencoded {
     my $argv1 = shift || return undef;
     return undef unless ref $argv1 eq 'SCALAR';
 
-    $$argv1 =~ y/"//d;
-    my @piece;
+    my $text1 = $$argv1; $text1 =~ y/"//d;
     my $mime1 = 0;
+    my @piece;
 
-    if( rindex($$argv1, ' ') > -1 ) {
+    if( rindex($text1, ' ') > -1 ) {
         # Multiple MIME-Encoded strings in a line
-        @piece = split(' ', $$argv1);
+        @piece = split(' ', $text1);
     } else {
-        push @piece, $$argv1;
+        push @piece, $text1;
     }
 
     for my $e ( @piece ) {
@@ -75,18 +75,14 @@ sub mimedecode {
             $encodingname ||= uc $3;
 
             push @decodedtext0, $1;
-            if( $encodingname eq 'Q' ) {
-                # Quoted-Printable
-                push @decodedtext0, MIME::QuotedPrint::decode($4);
-
-            } elsif( $encodingname eq 'B' ) {
-                # Base64
-                push @decodedtext0, MIME::Base64::decode($4);
-            }
+            push @decodedtext0, $encodingname eq 'B'
+                ? MIME::Base64::decode($4)
+                : MIME::QuotedPrint::decode($4);
+            $decodedtext0[-1] =~ y/\r\n//d;
             push @decodedtext0, $5;
 
         } else {
-            push @decodedtext0, $e;
+            push @decodedtext0, scalar @decodedtext0 ? ' '.$e : $e;
         }
     }
     return '' unless scalar @decodedtext0;

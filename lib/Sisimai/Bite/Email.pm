@@ -19,10 +19,10 @@ sub index {
     # MTA list
     # @return   [Array] MTA list with order
     return [qw|
-        Sendmail Postfix qmail Exim Courier OpenSMTPD Exchange2007 Exchange2003
-        Yahoo GSuite Aol Outlook Office365 SendGrid AmazonSES MailRu Yandex 
-        MessagingServer Domino Notes ReceivingSES AmazonWorkMail Verizon GMX
-        Bigfoot Facebook Zoho EinsUndEins MessageLabs EZweb KDDI Biglobe
+        Sendmail Postfix qmail Exim Courier OpenSMTPD Office365 Outlook
+        Exchange2007 Exchange2003 Yahoo GSuite Aol SendGrid AmazonSES MailRu
+        Yandex MessagingServer Domino Notes ReceivingSES AmazonWorkMail Verizon
+        GMX Bigfoot Facebook Zoho EinsUndEins MessageLabs EZweb KDDI Biglobe
         ApacheJames McAfee MXLogic MailFoundry IMailServer 
         mFILTER Activehunter InterScanMSS SurfControl MailMarshalSMTP
         X1 X2 X3 X4 X5 V5sendmail FML Google
@@ -33,7 +33,7 @@ sub heads {
     # MTA list which have one or more extra headers
     # @return   [Array] MTA list (have extra headers)
     return [qw|
-        Exim Exchange2007 Exchange2003 GSuite Office365 Outlook SendGrid
+        Exim Office365 Outlook Exchange2007 Exchange2003 GSuite SendGrid
         AmazonSES ReceivingSES AmazonWorkMail Aol GMX MailRu MessageLabs Yahoo
         Yandex Zoho EinsUndEins MXLogic McAfee mFILTER EZweb Activehunter IMailServer
         SurfControl FML Google
@@ -79,7 +79,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
