@@ -99,8 +99,8 @@ sub scan {
             next unless length $e;
 
             $v = $dscontents->[-1];
-            if( $e =~ /\A(?:Final|Original)-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
-                $e =~ /\A(?:Final|Original)-Recipient:[ ]*([^ ]+)\z/ ) {
+            if( $e =~ /\A(?:Final|Original)-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
+                $e =~ /\A(?:Final|Original)-[Rr]Recipient:[ ]*([^ ]+)\z/ ) {
                 # 2.3.2 Final-Recipient field
                 #   The Final-Recipient field indicates the recipient for which this set
                 #   of per-recipient fields applies.  This field MUST be present in each
@@ -497,7 +497,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
