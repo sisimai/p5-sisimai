@@ -31,15 +31,15 @@ sub is_mimeencoded {
     my $argv1 = shift || return undef;
     return undef unless ref $argv1 eq 'SCALAR';
 
-    $$argv1 =~ y/"//d;
-    my @piece;
+    my $text1 = $$argv1; $text1 =~ y/"//d;
     my $mime1 = 0;
+    my @piece;
 
-    if( rindex($$argv1, ' ') > -1 ) {
+    if( rindex($text1, ' ') > -1 ) {
         # Multiple MIME-Encoded strings in a line
-        @piece = split(' ', $$argv1);
+        @piece = split(' ', $text1);
     } else {
-        push @piece, $$argv1;
+        push @piece, $text1;
     }
 
     for my $e ( @piece ) {
