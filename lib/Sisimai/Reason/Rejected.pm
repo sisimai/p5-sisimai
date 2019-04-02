@@ -21,6 +21,7 @@ sub match {
     ];
     state $index = [
         '<> invalid sender',
+        'access denied (in reply to mail from command)',
         'address rejected',
         'administrative prohibition',
         'batv failed to verify',    # SoniWall
@@ -151,7 +152,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
