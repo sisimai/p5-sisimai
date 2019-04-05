@@ -15,6 +15,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     my $rs = {
         '01' => { 'status' => qr/\A5[.]2[.]1\z/, 'reason' => qr/suspend/ },
+        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
     };
     is $PackageName->get, undef;
 
@@ -48,7 +49,7 @@ MAKE_TEST: {
                 is $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
-                is $e->{'agent'}, 'Email::Sendmail', '->agent = '.$e->{'agent'};
+                like $e->{'agent'}, qr/Email::(?:Sendmail|Postfix)/, '->agent = '.$e->{'agent'};
             }
 
             my $v = Sisimai::Data->make('data' => $p);
