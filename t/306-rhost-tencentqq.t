@@ -16,6 +16,7 @@ MAKE_TEST: {
     my $rs = {
         '01' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/toomanyconn/ },
         '02' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/toomanyconn/ },
+        '03' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/blocked/     },
     };
     is $PackageName->get, undef;
 
