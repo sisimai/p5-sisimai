@@ -117,6 +117,7 @@ sub list {
             Rhost/GoDaddy.pm
             Rhost/FrancePTT.pm
             Rhost/KDDI.pm
+            Rhost/TencentQQ.pm
         SMTP.pm
             SMTP/Error.pm
             SMTP/Reply.pm

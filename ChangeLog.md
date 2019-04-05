@@ -11,6 +11,8 @@ v4.24.1p7
 - changes:
   - Implement new class `Sisimai::RFC1894` for parsing message/delivery-status
     part. #298
+  - Experimental implementation: `Sisimai::Rhost::TencentQQ` for a bounce mail
+    from Tencent QQ (mail.qq.com).
   - Sisimai works with JSON 4.00
   - Remove unused methods and variables
     - `Sisimai::DateTime->hourname`
@@ -23,10 +25,11 @@ v4.24.1p7
     of each file in the directory to The 2-Clause BSD License.
   - Update error message patterns in the following modules:
     - `Sisimai::Reason::Blocked` (hotmail, ntt docomo)
+    - `Sisimai::Reason::PolicyViolation` (postfix)
+    - `Sisimai::Reason::Rejected` (postfix)
     - `Sisimai::Reason::SystemError` (hotmail)
     - `Sisimai::Reason::TooManyConn` (ntt docomo)
     - `Sisimai::Reason::UserUnknown` (hotmail)
-    - `Sisimai::Reason::PolicyViolation` (postfix)
     - `Sisimai::Bite::Email::McAfee` (userunknown)
     - `Sisimai::Bite::Email::Exchange2007` (securityerror)
   - Bug fix in `$Sisimai::Message::Email::TryOnFirst`: Module name to be loaded 
