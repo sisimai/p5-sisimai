@@ -7,6 +7,7 @@ sub list {
         Bite.pm
             Bite/Email.pm
                 Bite/Email/Activehunter.pm
+                Bite/Email/Amavis.pm
                 Bite/Email/AmazonSES.pm
                 Bite/Email/AmazonWorkMail.pm
                 Bite/Email/Aol.pm
