@@ -10,7 +10,8 @@ my $StartingOf = {
     'rfc822'  => ['Content-Type: text/rfc822-headers'],
 };
 
-sub description { 'amavisd-new' }
+# https://www.amavis.org
+sub description { 'amavisd-new: https://www.amavis.org/' }
 sub scan {
     # Detect an error from amavisd-new
     # @param         [Hash] mhead       Message headers of a bounce email
