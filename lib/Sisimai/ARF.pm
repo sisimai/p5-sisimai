@@ -3,6 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::Bite::Email;
+use Sisimai::RFC5322;
 
 # http://tools.ietf.org/html/rfc5965
 # http://en.wikipedia.org/wiki/Feedback_loop_(email)
