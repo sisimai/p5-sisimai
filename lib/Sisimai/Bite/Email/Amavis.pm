@@ -29,6 +29,8 @@ sub scan {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # From: "Content-filter at neko1.example.jp" <postmaster@neko1.example.jp>
+    # Subject: Undeliverable mail, MTA-BLOCKED
     return undef unless index($mhead->{'from'}, '"Content-filter at ') == 0;
 
     require Sisimai::RFC1894;
@@ -114,6 +116,9 @@ sub scan {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
+        # Set default values if each value is empty.
+        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
+
         $e->{'diagnosis'} ||= Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}       = __PACKAGE__->smtpagent;
     }
