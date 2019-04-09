@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.24.1p7
+v4.25.0
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Tue,  9 Apr 2019 10:22:22 +0900 (JST)"
+- version: "4.25.0"
 - changes:
   - Implement new class `Sisimai::RFC1894` for parsing message/delivery-status
     part. #298
