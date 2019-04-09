@@ -4,7 +4,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.28-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.24.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README(English)**](README.md)
 - [シシマイ? | What is Sisimai](#what-is-sisimai)
@@ -53,13 +53,13 @@ Key features
   * git clone & make
 * __高い解析精度__
   * 解析精度はbounceHammerの2倍
-  * 28種類のMTAに対応
+  * 29種類のMTAに対応
   * 22種類の著名なMSPに対応
   * 2種類の著名なメール配信クラウドに対応(JSON)
   * Feedback Loopにも対応
   * 29種類のエラー理由を検出
 * __bounceHammer 2.7.13p3よりも高速に解析__
-  * 1.7倍程高速
+  * 2.0倍程高速
 
 Command line demo
 -------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.22.2.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.0.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -101,7 +101,7 @@ $ git clone https://github.com/sisimai/p5-Sisimai.git
 $ cd ./p5-Sisimai
 $ sudo make install-from-local
 --> Working on .
-Configuring Sisimai-4.22.2 ... OK
+Configuring Sisimai-4.25.0 ... OK
 1 distribution installed
 ```
 
@@ -246,13 +246,13 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
-| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.26 |
+| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.28 |
 | コマンドラインツール                           | あり          | 無し        |
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(同梱)  |
 | WebUIとAPI                                     | あり          | 無し        |
 | 解析済バウンスデータを保存するDBスキーマ       | あり          | 無し[1]     |
 | 解析精度の割合(2000通のメール)[2]              | 0.61          | 1.00        |
-| メール解析速度(1000通のメール)                 | 4.24秒        | 1.60秒[3]   |
+| メール解析速度(1000通のメール)                 | 4.24秒        | 1.50秒[3]   |
 | 検出可能なバウンス理由の数                     | 19            | 29          |
 | 2件以上のバウンスがあるメールの解析            | 1件目だけ     | 全件解析可能|
 | FeedBack Loop/ARF形式のメール解析              | 非対応        | 対応済      |
@@ -261,8 +261,8 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpan, cpanm, cpmコマンドでのインストール       | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 8600行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 236600件    |
+| LOC:ソースコードの行数                         | 18200行       | 8200行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 242000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
@@ -321,7 +321,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2018 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================

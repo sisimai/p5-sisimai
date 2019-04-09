@@ -4,7 +4,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.28-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.24.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README-JA(日本語)**](README-JA.md)
 - [What is Sisimai](#what-is-sisimai)
@@ -54,13 +54,13 @@ Key features
   * git clone & make
 * __High Precision of Analysis__
   * 2 times higher than bounceHammer
-  * Support 23 known MTAs and 5 unknown MTAs
+  * Support 24 known MTAs and 5 unknown MTAs
   * Support 22 major MSPs(Mail Service Providers)
   * Support  2 major Cloud Email Delivery Services(JSON format)
   * Support Feedback Loop Message(ARF)
   * Can detect 29 error reasons
 * __Faster than bounceHammer 2.7.13p3__
-  * About 1.7 times faster
+  * About 2.0 times faster
 
 Command line demo
 -------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.22.2.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.0.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -103,7 +103,7 @@ $ git clone https://github.com/sisimai/p5-Sisimai.git
 $ cd ./p5-Sisimai
 $ make install-from-local
 --> Working on .
-Configuring Sisimai-4.22.2 ... OK
+Configuring Sisimai-4.25.0 ... OK
 1 distribution installed
 ```
 
@@ -250,13 +250,13 @@ and Sisimai. More information about differences are available at
 
 | Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
-| System requirements(Perl)                      | 5.10 - 5.14   | 5.10 - 5.26 |
+| System requirements(Perl)                      | 5.10 - 5.14   | 5.10 - 5.28 |
 | Command line tools                             | Available     | N/A         |
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | Included      | N/A         |
 | Database schema for storing parsed bounce data | Available     | N/A[1]      |
 | Analytical precision ratio(2000 emails)[2]     | 0.61          | 1.00        |
-| The speed of parsing email(1000 emails)        | 4.24s         | 1.60s[3]    |
+| The speed of parsing email(1000 emails)        | 4.24s         | 1.50s[3]    |
 | The number of detectable bounce reasons        | 19            | 29          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | Unable        | OK          |
@@ -265,8 +265,8 @@ and Sisimai. More information about differences are available at
 | Easy to install                                | No            | Yes         |
 | Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 8600 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 236600 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8200 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 242000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
@@ -327,7 +327,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2018 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================
