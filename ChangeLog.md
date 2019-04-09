@@ -11,6 +11,9 @@ v4.25.0
 - changes:
   - Implement new class `Sisimai::RFC1894` for parsing message/delivery-status
     part. #298
+  - Experimental implementation at the following MTA, Rhost modules:
+    - `Sisimai::Bite::Email::Amavis`: amavisd-new
+    - `Sisimai::Rhost::TencentQQ`: Tencent QQ (mail.qq.com)
   - Sisimai works with JSON 4.00
   - Remove unused methods and variables
     - `Sisimai::DateTime->hourname`
