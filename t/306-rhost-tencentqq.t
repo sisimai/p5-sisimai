@@ -3,7 +3,7 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Rhost;
 
-my $PackageName = 'Sisimai::Rhost::GoogleApps';
+my $PackageName = 'Sisimai::Rhost::TencentQQ';
 my $MethodNames = {
     'class' => ['get'],
     'object' => [],
@@ -14,8 +14,9 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     my $rs = {
-        '01' => { 'status' => qr/\A5[.]2[.]1\z/, 'reason' => qr/suspend/ },
-        '02' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
+        '01' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/toomanyconn/ },
+        '02' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/toomanyconn/ },
+        '03' => { 'status' => qr/\A5[.]0[.]0\z/, 'reason' => qr/blocked/     },
     };
     is $PackageName->get, undef;
 
@@ -24,9 +25,9 @@ MAKE_TEST: {
     use Sisimai::Message;
 
     PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
-        my $emailfn = sprintf("./set-of-emails/maildir/bsd/rhost-google-apps-%02d.eml", $n);
+        my $emailfn = sprintf("./set-of-emails/maildir/bsd/rhost-tencentqq-%02d.eml", $n);
         my $mailbox = Sisimai::Mail->new($emailfn);
-        my $mtahost = 'aspmx.l.google.com';
+        my $mtahost = qr/mx[0-9]+[.]qq[.]com/;
         next unless defined $mailbox;
 
         while( my $r = $mailbox->read ) {
@@ -46,10 +47,10 @@ MAKE_TEST: {
                 ok length $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
                 ok length $e->{'action'}, '->action = '.$e->{'action'};
-                is $e->{'rhost'}, $mtahost, '->rhost = '.$mtahost;
+                like $e->{'rhost'}, $mtahost, '->rhost = '.$e->{'rhost'};
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
-                like $e->{'agent'}, qr/Email::(?:Sendmail|Postfix)/, '->agent = '.$e->{'agent'};
+                like $e->{'agent'}, qr/\AEmail::Postfix/, '->agent = '.$e->{'agent'};
             }
 
             my $v = Sisimai::Data->make('data' => $p);

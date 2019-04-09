@@ -9,6 +9,7 @@ my $RhostClass = {
     qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/ => 'GoDaddy',
     qr/\b(?:laposte[.]net|orange[.]fr)\z/            => 'FrancePTT',
     qr/[.](?:ezweb[.]ne[.]jp|au[.]com)\z/            => 'KDDI',
+    qr/mx[0-9]+[.]qq[.]com\z/                        => 'TencentQQ',
 };
 
 sub list {
@@ -102,7 +103,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
