@@ -113,6 +113,7 @@ sub get {
     return $argvs->reason if $argvs->reason;
 
     substr(my $statuscode = $argvs->deliverystatus, 0, 1, 'X');
+    return '' unless exists $StatusList->{ $statuscode };
     return '' unless scalar @{ $StatusList->{ $statuscode } };
 
     my $reasontext = '';
@@ -156,7 +157,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
