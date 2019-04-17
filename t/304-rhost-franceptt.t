@@ -16,6 +16,7 @@ MAKE_TEST: {
     my $rs = {
         '01' => { 'status' => qr/\A5[.]1[.]1\z/, 'reason' => qr/userunknown/ },
         '02' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/userunknown/ },
+        '03' => { 'status' => qr/\A5[.]2[.]0\z/, 'reason' => qr/spamdetected/ },
     };
     is $PackageName->get, undef;
 
@@ -26,7 +27,7 @@ MAKE_TEST: {
     PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
         my $emailfn = sprintf("./set-of-emails/maildir/bsd/rhost-franceptt-%02d.eml", $n);
         my $mailbox = Sisimai::Mail->new($emailfn);
-        my $mtahost = qr/(?:smtp-in[.]orange[.]fr|smtpz4[.]laposte[.]net)/;
+        my $mtahost = qr/(?:smtp-in[.]orange[.]fr|smtpz4[.]laposte[.]net|smtp[.]wanadoo[.]fr)/;
         next unless defined $mailbox;
 
         while( my $r = $mailbox->read ) {
@@ -39,15 +40,15 @@ MAKE_TEST: {
             ok length $p->from;
 
             for my $e ( @{ $p->ds } ) {
-                is $e->{'spec'}, 'SMTP', '->spec = SMTP';
+                ok defined $e->{'spec'}, '->spec = '.$e->{'spec'};
                 ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
                 like $e->{'status'}, $rs->{ $n }->{'status'}, '->status = '.$e->{'status'};
                 like $e->{'command'}, qr/[A-Z]{4}/, '->command = '.$e->{'command'};
-                ok length $e->{'date'}, '->date = '.$e->{'date'};
+                ok defined $e->{'date'}, '->date = '.$e->{'date'};
                 ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
-                ok length $e->{'action'}, '->action = '.$e->{'action'};
+                ok defined $e->{'action'}, '->action = '.$e->{'action'};
                 like $e->{'rhost'}, $mtahost, '->rhost = '.$e->{'rhost'};
-                ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
+                ok defined $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
                 like $e->{'agent'}, qr/\AEmail::/, '->agent = '.$e->{'agent'};
             }
