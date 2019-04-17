@@ -142,12 +142,15 @@ sub scan {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
-    #'message-id'=> qr/\A[<]\w+[-]\w+[-]\w+[@].+\z/,
-    # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
     return undef if $mhead->{'from'} =~/[@].+[.]mail[.]ru[>]?/;
-    return undef unless index($mhead->{'from'}, 'Mail Delivery System') == 0;
-    return undef unless $mhead->{'subject'} =~ qr{(?:
+
+    # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
+    $match++ if index($mhead->{'from'}, 'Mail Delivery System') == 0;
+    $match++ if defined $mhead->{'message-id'} &&
+                $mhead->{'message-id'} =~ /\A[<]\w{7}[-]\w{6}[-]\w{2}[@]/;
+    $match++ if $mhead->{'subject'} =~ qr{(?:
          Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
         |Warning:[ ]message[ ].+[ ]delayed[ ]+
         |Delivery[ ]Status[ ]Notification
@@ -156,6 +159,7 @@ sub scan {
         |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
         )
     }x;
+    return undef if $match < 2;
 
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
