@@ -4,6 +4,17 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.0p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #310 Bug fix in `Sisimai::Rhost::GoogleApps`. Thanks to @beeing.
+  - Check the format of the value of `Message-Id` header for detecting a bounce
+    mail from Exim or not.
+  - Call `Sisimai::Rhost::FrancePTT` module when the value of `rhost` includes
+    `.wanadoo.fr`.
+
 v4.25.0
 --------------------------------------------------------------------------------
 - release: "Tue,  9 Apr 2019 10:22:22 +0900 (JST)"
