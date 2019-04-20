@@ -14,6 +14,10 @@ v4.25.0p1
     mail from Exim or not.
   - Call `Sisimai::Rhost::FrancePTT` module when the value of `rhost` includes
     `.wanadoo.fr`.
+  - #312 Add an error message: `This mailbox is disabled` from `yahoo.com` into
+    `Sisimai::Reason::Suspend`. Thanks to @beeing.
+  - #315 Fix code at `Sisimai::Message::Email->takeapart()` to decode `Subject`
+    header of the original message.
 
 v4.25.0
 --------------------------------------------------------------------------------
