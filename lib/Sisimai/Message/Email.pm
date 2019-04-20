@@ -248,7 +248,8 @@ sub takeapart {
     # @return        [Hash]         Structured message headers
     my $class = shift;
     my $heads = shift || return {};
-      $$heads =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
+      $$heads =~ s/^[>]+[ ]//mg;    # Remove '>' indent symbol of forwarded message
+      $$heads =~ s/=[ ]+=/=\n =/mg; # Replace ' ' with "\n" at unfolded values
 
     my $previousfn = '';
     my $asciiarmor = {};    # Header names which has MIME encoded value
