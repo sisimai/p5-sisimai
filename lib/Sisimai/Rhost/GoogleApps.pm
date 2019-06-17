@@ -24,23 +24,20 @@ my $StatusList = {
     ],
     'X.5.0' => [{ 'reason' => 'syntaxerror', 'string' => ['SMTP protocol violation'] }],
     'X.5.1' => [
-        { 'reason' => 'securityerror', 'string' => ['Authentication Required.'] },
-        {
-            'reason' => 'syntaxerror',
-            'string' => [
-                'STARTTLS may not be repeated',
-                'Too many unrecognized commands, goodbye.',
-                'Unimplemented command.',
-                'Unrecognized command.',
-                'EHLO/HELO first.',
-                'MAIL first.',
-                'RCPT first.',
-            ],
-        },
+        { 'reason' => 'securityerror',  'string' => ['Authentication Required.'] },
+        { 'reason' => 'syntaxerror',    'string' => [
+            'STARTTLS may not be repeated',
+            'Too many unrecognized commands, goodbye.',
+            'Unimplemented command.',
+            'Unrecognized command.',
+            'EHLO/HELO first.',
+            'MAIL first.',
+            'RCPT first.',
+        ]},
     ],
     'X.5.2' => [
-        { 'reason' => 'securityerror', 'string' => ['Cannot Decode response.'] },   # 2FA related error, maybe.
-        { 'reason' => 'syntaxerror',   'string' => ['Syntax error.'] },
+        { 'reason' => 'securityerror',  'string' => ['Cannot Decode response.'] },   # 2FA related error, maybe.
+        { 'reason' => 'syntaxerror',    'string' => ['Syntax error.'] },
     ],
     'X.5.3' => [
         { 'reason' => 'mailboxfull',    'string' => ['Domain policy size per transaction exceeded,'] },
@@ -48,55 +45,40 @@ my $StatusList = {
     ],
     'X.5.4' => [{ 'reason' => 'syntaxerror', 'string' => ['Optional Argument not permitted for that AUTH mode.'] }],
     'X.6.0' => [
-        { 'reason' => 'contenterror', 'string' => ['Mail message is malformed.'] },
-        { 'reason' => 'networkerror', 'string' => ['Message exceeded 50 hops'] }
+        { 'reason' => 'contenterror',   'string' => ['Mail message is malformed.'] },
+        { 'reason' => 'networkerror',   'string' => ['Message exceeded 50 hops'] }
     ],
     'X.7.0' => [
-        {
-            'reason' => 'blocked',
-            'string' => [
-                'IP not in whitelist for RCPT domain, closing connection.',
-                'Our system has detected an unusual rate of unsolicited mail originating from your IP address.',
-            ],
-        },
-        {
-            'reason' => 'expired',
-            'string' => [
-                'Temporary System Problem. Try again later.',
-                'Try again later, closing connection.',
-            ],
-        },
-        {
-            'reason' => 'securityerror',
-            'string' => [
-                'TLS required for RCPT domain, closing connection.',
-                'No identity changes permitted.',
-                'Must issue a STARTTLS command first.',
-                'Too Many Unauthenticated commands.',
-            ],
-        },
-        { 'reason' => 'systemerror', 'string' => ['Cannot authenticate due to temporary system problem.'] },
-        { 'reason' => 'norelaying',  'string' => ['Mail relay denied.'] },
-        { 'reason' => 'rejected',    'string' => ['Mail Sending denied.'] },
+        { 'reason' => 'blocked',        'string' => [
+            'IP not in whitelist for RCPT domain, closing connection.',
+            'Our system has detected an unusual rate of unsolicited mail originating from your IP address.',
+        ]},
+        { 'reason' => 'expired',        'string' => [
+            'Temporary System Problem. Try again later.',
+            'Try again later, closing connection.',
+        ]},
+        { 'reason' => 'securityerror',  'string' => [
+            'TLS required for RCPT domain, closing connection.',
+            'No identity changes permitted.',
+            'Must issue a STARTTLS command first.',
+            'Too Many Unauthenticated commands.',
+        ]},
+        { 'reason' => 'systemerror',    'string' => ['Cannot authenticate due to temporary system problem.'] },
+        { 'reason' => 'norelaying',     'string' => ['Mail relay denied.'] },
+        { 'reason' => 'rejected',       'string' => ['Mail Sending denied.'] },
     ],
     'X.7.1' => [
-        { 'reason' => 'mailboxfull', 'string' => ['Email quota exceeded.'] },
-        {
-            'reason' => 'securityerror',
-            'string' => [
-                'Application-specific password required.',
-                'Please log in with your web browser and then try again.',
-                'Username and Password not accepted.',
-            ],
-        },
-        {
-            'reason' => 'blocked',
-            'string' => [
-                'Our system has detected an unusual rate of unsolicited mail originating from your IP address.',
-                'Our system has detected that this message is likely suspicious due to the very low reputation of the sending IP address',
-                "The IP you're using to send mail is not authorized to send email directly to our servers.",
-            ],
-        },
+        { 'reason' => 'mailboxfull',    'string' => ['Email quota exceeded.'] },
+        { 'reason' => 'securityerror',  'string' => [
+            'Application-specific password required.',
+            'Please log in with your web browser and then try again.',
+            'Username and Password not accepted.',
+        ]},
+        { 'reason' => 'blocked',        'string' => [
+            'Our system has detected an unusual rate of unsolicited mail originating from your IP address.',
+            'Our system has detected that this message is likely suspicious due to the very low reputation of the sending IP address',
+            "The IP you're using to send mail is not authorized to send email directly to our servers.",
+        ]},
         { 'reason' => 'spamdetected',   'string' => ['Our system has detected that this message is likely unsolicited mail.'] },
         { 'reason' => 'policyviolation','string' => ['The user or domain that you are sending to (or from) has a policy'] },
         { 'reason' => 'rejected',       'string' => ['Unauthenticated email is not accepted from this domain.'] },
