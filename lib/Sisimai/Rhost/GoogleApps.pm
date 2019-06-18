@@ -51,7 +51,7 @@ my $StatusList = {
     'X.7.0' => [
         { 'reason' => 'blocked',        'string' => [
             'IP not in whitelist for RCPT domain, closing connection.',
-            'Our system has detected an unusual rate of unsolicited mail originating from your IP address.',
+            'unusual rate of unsolicited mail originating from your IP address.',
         ]},
         { 'reason' => 'expired',        'string' => [
             'Temporary System Problem. Try again later.',
@@ -75,11 +75,11 @@ my $StatusList = {
             'Username and Password not accepted.',
         ]},
         { 'reason' => 'blocked',        'string' => [
-            'Our system has detected an unusual rate of unsolicited mail originating from your IP address.',
-            'Our system has detected that this message is likely suspicious due to the very low reputation of the sending IP address',
+            'this message is likely suspicious due to the very low reputation of the sending IP address',
             "The IP you're using to send mail is not authorized to send email directly to our servers.",
+            'unusual rate of unsolicited mail originating from your IP address.',
         ]},
-        { 'reason' => 'spamdetected',   'string' => ['Our system has detected that this message is likely unsolicited mail.'] },
+        { 'reason' => 'spamdetected',   'string' => ['this message is likely unsolicited mail.'] },
         { 'reason' => 'policyviolation','string' => ['The user or domain that you are sending to (or from) has a policy'] },
         { 'reason' => 'rejected',       'string' => ['Unauthenticated email is not accepted from this domain.'] },
     ],
