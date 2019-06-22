@@ -77,10 +77,9 @@ is camouflaged address. Sisimai will set C<securityerror> to the reason of email
 bounce if the value of Status: field in a bounce email is C<5.7.*>.
 
     Action: failed
-    Status: 5.7.0
-    Remote-MTA: DNS; gmail-smtp-in.l.google.com
-    Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
-    Last-Attempt-Date: Tue, 28 Apr 2009 11:02:45 +0900 (JST)
+    Status: 5.0.0
+    Diagnostic-Code: SMTP; 550 Unauthenticated senders not allowed
+    Last-Attempt-Date: Sat, 9 Jun 2018 14:56:09 +0900 (JST)
 
 =head1 CLASS METHODS
 

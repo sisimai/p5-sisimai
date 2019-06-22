@@ -73,9 +73,10 @@ When a header content or a format of the original message violates security poli
 or multiple addresses exist in the From: header, Sisimai will set C<policyviolation>.
 
     Action: failed
-    Status: 5.7.9
-    Remote-MTA: DNS; mx.example.co.jp
-    Diagnostic-Code: SMTP; 554 5.7.9 Header error
+    Status: 5.7.0
+    Remote-MTA: DNS; gmail-smtp-in.l.google.com
+    Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
+    Last-Attempt-Date: Tue, 28 Apr 2009 11:02:45 +0900 (JST)
 
 =head1 CLASS METHODS
 
