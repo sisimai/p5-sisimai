@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $index = [
+        'an illegal attachment on your message',
         'because the recipient is not accepting mail with ',    # AOL Phoenix
         'closed mailing list',
         'denied by policy',
@@ -30,6 +31,7 @@ sub match {
         'rejected for policy reasons',
         'protocol violation',
         'the email address used to send your message is not subscribed to this group',
+        'this message was blocked because its content presents a potential',
         'you have exceeded the allowable number of posts without solving a captcha',
         'you have exceeded the the allowable number of posts without solving a captcha',
     ];
