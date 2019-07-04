@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.0p2
+v4.25.0p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -19,6 +19,7 @@ v4.25.0p2
   - #315 Fix code at `Sisimai::Message::Email->takeapart()` to decode `Subject`
     header of the original message.
   - #316 Update error messages for Low Reputation Error from Gmail.
+  - Fix code for checking `rhost` value at `Sisimai::Rhost`.
 
 v4.25.0
 --------------------------------------------------------------------------------
