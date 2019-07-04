@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $index = [
+        'an illegal attachment on your message',
         'because the recipient is not accepting mail with ',    # AOL Phoenix
         'closed mailing list',
         'denied by policy',
@@ -30,6 +31,7 @@ sub match {
         'rejected for policy reasons',
         'protocol violation',
         'the email address used to send your message is not subscribed to this group',
+        'this message was blocked because its content presents a potential',
         'you have exceeded the allowable number of posts without solving a captcha',
         'you have exceeded the the allowable number of posts without solving a captcha',
     ];
@@ -71,9 +73,10 @@ When a header content or a format of the original message violates security poli
 or multiple addresses exist in the From: header, Sisimai will set C<policyviolation>.
 
     Action: failed
-    Status: 5.7.9
-    Remote-MTA: DNS; mx.example.co.jp
-    Diagnostic-Code: SMTP; 554 5.7.9 Header error
+    Status: 5.7.0
+    Remote-MTA: DNS; gmail-smtp-in.l.google.com
+    Diagnostic-Code: SMTP; 552-5.7.0 Our system detected an illegal attachment on your message. Please
+    Last-Attempt-Date: Tue, 28 Apr 2009 11:02:45 +0900 (JST)
 
 =head1 CLASS METHODS
 
