@@ -31,7 +31,7 @@ MAKE_TEST: {
        $v .= 'p'.$Sisimai::PATCHLV if $Sisimai::PATCHLV > 0;
     is $PackageName->sysname, 'bouncehammer', '->sysname = bouncehammer';
     is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
-    is $PackageName->version, $v, '->version = '.$v;
+    is 'v'.$PackageName->version, $v, '->version = v'.$v;
     is $PackageName->make(undef), undef;
     is $PackageName->dump(undef), undef;
 
