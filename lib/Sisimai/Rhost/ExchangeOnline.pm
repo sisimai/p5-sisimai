@@ -21,7 +21,7 @@ my $StatusList = {
     '5.3.3'  => [{ 'reason' => 'systemfull',  'string' => 'Unrecognized command' }],
     '5.3.4'  => [{ 'reason' => 'mesgtoobig',  'string' => 'Message too big for system' }],
     '5.3.5'  => [{ 'reason' => 'systemerror', 'string' => 'System incorrectly configured' }],
-    '5.4.1'  => [{ 'reason' => 'userunknown', 'string' => 'Recipient address rejected: Access denied' }],
+    '5.4.1'  => [{ 'reason' => 'rejected',    'string' => 'Recipient address rejected: Access denied' }],
     '5.4.14' => [{ 'reason' => 'networkerror','string' => 'Hop count exceeded' }],
     '5.5.2'  => [{ 'reason' => 'syntaxerror', 'string' => 'Send hello first' }],
     '5.5.3'  => [{ 'reason' => 'syntaxerror', 'string' => 'Too many recipients' }],
@@ -194,7 +194,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
