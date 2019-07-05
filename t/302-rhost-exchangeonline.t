@@ -15,7 +15,7 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     my $rs = {
         '01' => { 'status' => qr/\A5[.]7[.]606\z/, 'reason' => qr/blocked/ },
-        '02' => { 'status' => qr/\A5[.]4[.]1\z/,   'reason' => qr/userunknown/ },
+        '02' => { 'status' => qr/\A5[.]4[.]1\z/,   'reason' => qr/rejected/ },
         '03' => { 'status' => qr/\A5[.]1[.]10\z/,  'reason' => qr/userunknown/ },
     };
     is $PackageName->get, undef;
