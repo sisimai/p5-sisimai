@@ -395,6 +395,7 @@ sub parse {
         # Decode MIME-Encoded "Subject:" header
         $mailheader->{'subject'} = Sisimai::MIME->mimedecode([split(/[ ]/, $mailheader->{'subject'})]);
     }
+    $$bodystring =~ tr/\r//d;
     $$bodystring .= $EndOfEmail;
 
     my $haveloaded = {};
