@@ -20,6 +20,9 @@ v4.25.0p3
     header of the original message.
   - #316 Update error messages for Low Reputation Error from Gmail.
   - Fix code for checking `rhost` value at `Sisimai::Rhost`.
+  - Parser code to read bounce mails from m-FILTER at `Sisimai::Message::Email`
+    has been improved. Thanks to Nomura Research Institute, Ltd.
+  - Status 5.4.1 from Exchange Online is classified into "rejected" reason.
 
 v4.25.0
 --------------------------------------------------------------------------------
