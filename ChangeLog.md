@@ -23,6 +23,8 @@ v4.25.0p4
   - Parser code to read bounce mails from m-FILTER at `Sisimai::Message::Email`
     has been improved. Thanks to Nomura Research Institute, Ltd.
   - Status 5.4.1 from Exchange Online is classified into "rejected" reason.
+  - Callback method specified at `Sisimai::Message->new` with `hook` is called
+    just before calling `scan()` method of each `Sisimai::Bite::Email` module.
 
 v4.25.0
 --------------------------------------------------------------------------------
