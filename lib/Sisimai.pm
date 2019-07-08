@@ -324,6 +324,23 @@ C<reason> method provides table including all the reasons Sisimai can detect
         print $v->{ $e };   # 'Email rejected due to client IP address or a hostname'
     }
 
+=head2 C<B<match()>>
+
+C<match> method receives an error message as a string and returns a reason name
+like the following:
+
+    use Sisimai;
+    my $v = '550 5.1.1 User unknown';
+    my $r = Sisimai->match($v);
+    print $r;   # "userunknown"
+
+=head2 C<B<version()>>
+
+C<version> method returns the version number of Sisimai.
+
+    use Sisimai;
+    print Sisimai->version; # 4.25.0p5
+
 =head1 SEE ALSO
 
 =over
