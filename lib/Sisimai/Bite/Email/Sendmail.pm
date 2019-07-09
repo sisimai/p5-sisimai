@@ -56,7 +56,7 @@ sub scan {
 
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
-    my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
+    my $esmtpreply = [];    # (Array) Reply from remote server on SMTP session
     my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
     my $anotherset = {};    # (Hash) Another error information
     my $v = undef;
@@ -145,7 +145,7 @@ sub scan {
 
                     } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
                         # <<< Response
-                        $esmtpreply = $1;
+                        push @$esmtpreply, $1 unless grep { $1 eq $_ } @$esmtpreply;
 
                     } else {
                         # Detect SMTP session error or connection error
@@ -201,13 +201,18 @@ sub scan {
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
         $e->{'agent'}      = __PACKAGE__->smtpagent;
         $e->{'command'}  ||= $commandtxt || '';
-        $e->{'command'}  ||= 'EHLO' if $esmtpreply;
+        $e->{'command'}  ||= 'EHLO' if scalar @$esmtpreply;
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
             $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A[ \t]+\z/;
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
             $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A\d+\z/;
+        }
+        if( scalar @$esmtpreply ) {
+            # Replace the error message in "diagnosis" with the ESMTP Reply
+            my $r = join(' ', @$esmtpreply);
+            $e->{'diagnosis'} = $r if length($r) > length($e->{'diagnosis'});
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 

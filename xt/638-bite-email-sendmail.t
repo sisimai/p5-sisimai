@@ -192,10 +192,10 @@ my $isexpected = [
     { 'n' => '01184', 'r' => qr/filtered/       },
     { 'n' => '01185', 'r' => qr/expired/        },
     { 'n' => '01186', 'r' => qr/policyviolation/},
-    { 'n' => '01187', 'r' => qr/policyviolation/},
+    { 'n' => '01187', 'r' => qr/blocked/        },
     { 'n' => '01188', 'r' => qr/userunknown/    },
     { 'n' => '01189', 'r' => qr/expired/        },
-    { 'n' => '01190', 'r' => qr/securityerror/  },  # spamdetected
+    { 'n' => '01190', 'r' => qr/spamdetected/   },
     { 'n' => '01191', 'r' => qr/suspend/        },
     { 'n' => '01192', 'r' => qr/userunknown/    },
     { 'n' => '01193', 'r' => qr/userunknown/    },
@@ -208,7 +208,7 @@ my $isexpected = [
     { 'n' => '01200', 'r' => qr/hostunknown/    },
     { 'n' => '01201', 'r' => qr/spamdetected/   },
     { 'n' => '01202', 'r' => qr/systemfull/     },
-    { 'n' => '01203', 'r' => qr/securityerror/  }, # spamdetected
+    { 'n' => '01203', 'r' => qr/spamdetected/   },
     { 'n' => '01204', 'r' => qr/suspend/        },
     { 'n' => '01205', 'r' => qr/userunknown/    },
     { 'n' => '01206', 'r' => qr/systemerror/    },
