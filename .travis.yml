@@ -4,6 +4,7 @@ perl:
   - '5.16'
   - '5.22'
   - '5.28'
+  - '5.30'
 before_install:
   - cpanm Test::UsedModules
   - cpanm Devel::Cover::Report::Coveralls
