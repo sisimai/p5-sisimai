@@ -58,8 +58,8 @@ restore-readme:
 	$(CP) /tmp/$(NAME)-README.$(TIME).md ./README.md
 
 check-version-in-readme:
-	grep cpan-`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version'` README.md
-	grep cpan-`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version'` README-JA.md
+	grep cpan-v`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version'` README.md
+	grep cpan-v`$(PERL) -Ilib -M$(NAME) -e 'print Sisimai->version'` README-JA.md
 
 release-test:
 	$(CP) ChangeLog.md Changes
