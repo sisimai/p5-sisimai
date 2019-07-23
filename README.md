@@ -3,8 +3,8 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-Sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
-[![Perl](https://img.shields.io/badge/perl-v5.10--v5.28-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.0-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![Perl](https://img.shields.io/badge/perl-v5.10--v5.30-blue.svg)](https://www.perl.org)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.1-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README-JA(日本語)**](README-JA.md)
 - [What is Sisimai](#what-is-sisimai)
@@ -88,7 +88,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.0.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.1.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -103,7 +103,7 @@ $ git clone https://github.com/sisimai/p5-Sisimai.git
 $ cd ./p5-Sisimai
 $ make install-from-local
 --> Working on .
-Configuring Sisimai-4.25.0 ... OK
+Configuring Sisimai-4.25.1 ... OK
 1 distribution installed
 ```
 
@@ -250,7 +250,7 @@ and Sisimai. More information about differences are available at
 
 | Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
-| System requirements(Perl)                      | 5.10 - 5.14   | 5.10 - 5.28 |
+| System requirements(Perl)                      | 5.10 - 5.14   | 5.10 - 5.30 |
 | Command line tools                             | Available     | N/A         |
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | Included      | N/A         |
@@ -265,8 +265,8 @@ and Sisimai. More information about differences are available at
 | Easy to install                                | No            | Yes         |
 | Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 8200 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 242000 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8300 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 243000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
