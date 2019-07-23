@@ -6,7 +6,7 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.25.1
 --------------------------------------------------------------------------------
-- release: ""
+- release: ""Tue, 23 Jul 2019 10:00:00 +0900 (JST)
 - version: "4.25.1"
 - changes:
   - #310 Bug fix in `Sisimai::Rhost::GoogleApps`. Thanks to @beeing.

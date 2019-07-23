@@ -4,6 +4,31 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.1
+--------------------------------------------------------------------------------
+- release: ""Tue, 23 Jul 2019 10:00:00 +0900 (JST)
+- version: "4.25.1"
+- changes:
+  - #310 Bug fix in `Sisimai::Rhost::GoogleApps`. Thanks to @beeing.
+  - Check the format of the value of `Message-Id` header for detecting a bounce
+    mail from Exim or not.
+  - Call `Sisimai::Rhost::FrancePTT` module when the value of `rhost` includes
+    `.wanadoo.fr`.
+  - #312 Add an error message: `This mailbox is disabled` from `yahoo.com` into
+    `Sisimai::Reason::Suspend`. Thanks to @beeing.
+  - #315 Fix code at `Sisimai::Message::Email->takeapart()` to decode `Subject`
+    header of the original message.
+  - #316 Update error messages for Low Reputation Error from Gmail.
+  - Fix code for checking `rhost` value at `Sisimai::Rhost`.
+  - Parser code to read bounce mails from m-FILTER at `Sisimai::Message::Email`
+    has been improved. Thanks to Nomura Research Institute, Ltd.
+  - Status 5.4.1 from Exchange Online is classified into "rejected" reason.
+  - Callback method specified at `Sisimai::Message->new` with `hook` is called
+    just before calling `scan()` method of each `Sisimai::Bite::Email` module.
+  - Code improvement in `Sisimai::Bite::Email::Sendmail` for getting error mes-
+    sages returned from Google.
+  - Sisimai works on Perl 5.30.
+
 v4.25.0
 --------------------------------------------------------------------------------
 - release: "Tue,  9 Apr 2019 10:22:22 +0900 (JST)"
@@ -11,6 +36,9 @@ v4.25.0
 - changes:
   - Implement new class `Sisimai::RFC1894` for parsing message/delivery-status
     part. #298
+  - Experimental implementation at the following MTA, Rhost modules:
+    - `Sisimai::Bite::Email::Amavis`: amavisd-new
+    - `Sisimai::Rhost::TencentQQ`: Tencent QQ (mail.qq.com)
   - Sisimai works with JSON 4.00
   - Remove unused methods and variables
     - `Sisimai::DateTime->hourname`
