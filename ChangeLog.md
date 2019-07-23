@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.0p6
+v4.25.1
 --------------------------------------------------------------------------------
 - release: ""
-- version: ""
+- version: "4.25.1"
 - changes:
   - #310 Bug fix in `Sisimai::Rhost::GoogleApps`. Thanks to @beeing.
   - Check the format of the value of `Message-Id` header for detecting a bounce
@@ -27,6 +27,7 @@ v4.25.0p6
     just before calling `scan()` method of each `Sisimai::Bite::Email` module.
   - Code improvement in `Sisimai::Bite::Email::Sendmail` for getting error mes-
     sages returned from Google.
+  - Sisimai works on Perl 5.30.
 
 v4.25.0
 --------------------------------------------------------------------------------
