@@ -56,6 +56,7 @@ my $moduletest = sub {
         my $samplefile = undef;
         my $mailobject = undef;
         my $indexlabel = sprintf("%02d", $e->{'n'});
+        my $haveparsed = 0;
 
         if( $onlydebugs ) {
             # Debug mode
@@ -85,7 +86,7 @@ my $moduletest = sub {
 
         $mailobject = Sisimai::Mail->new($samplefile);
         next unless defined $mailobject;
-        isa_ok $mailobject, 'Sisimai::Mail'; 
+        isa_ok $mailobject, 'Sisimai::Mail';
 
         READ_EACH_EMAIL: while( my $r = $mailobject->read ) {
             # Read messages in each email
@@ -99,6 +100,7 @@ my $moduletest = sub {
 
             $mesgobject = Sisimai::Message->new('data' => $r, 'input' => 'email');
             next unless defined $mesgobject;
+            $haveparsed++;
 
             isa_ok $mesgobject,         'Sisimai::Message', sprintf("[%s] Sisimai::Message object", $e->{'n'});
             isa_ok $mesgobject->ds,     'ARRAY', sprintf("[%s] Sisimai::Message->ds",     $e->{'n'});
@@ -298,6 +300,7 @@ my $moduletest = sub {
             $emailindex++;
 
         } # End of READ_EACH_EMAIL
+        ok $haveparsed, sprintf("[%s] %s/email(count) = %s", $e->{'n'}, $E, $haveparsed);
 
     } # End of PARSE_EACH_EMAIL
     ok $emailindex, sprintf("%s|the number of emails = %d", $M, $emailindex);
