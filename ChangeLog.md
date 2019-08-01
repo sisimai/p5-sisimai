@@ -4,9 +4,19 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.2
+--------------------------------------------------------------------------------
+- release: "Thu,  1 Aug 2019 20:00:00 +0900 (JST)"
+- version: "4.25.2"
+- changes:
+  - #323 Fix two serious bugs:
+    - MIME decoding code in Sisimai::MIME
+    - Code to capture a recipient address in Sisimai::Bite::Email::IMailServer
+  - Strictly checks the number of parsed emails in `make test`
+
 v4.25.1
 --------------------------------------------------------------------------------
-- release: ""Tue, 23 Jul 2019 10:00:00 +0900 (JST)
+- release: "Tue, 23 Jul 2019 10:00:00 +0900 (JST)"
 - version: "4.25.1"
 - changes:
   - #310 Bug fix in `Sisimai::Rhost::GoogleApps`. Thanks to @beeing.
