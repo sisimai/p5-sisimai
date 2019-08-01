@@ -240,7 +240,7 @@ sub breaksup {
     my $argv1 = shift || '';
 
     state $alsoappend = qr{\A(?:text/rfc822-headers|message/)};
-    state $thisformat = qr/\A(?:Content-Transfer-Encoding:\s*.+\n)?Content-Type:\s*([^ ;]+)/;
+    state $thisformat = qr/\A(?:Content-Transfer-Encoding:\s*.+\n)?Content-Type:\s*([^ ;\s]+)/;
     state $leavesonly = qr{\A(?>
          text/(?:plain|html|rfc822-headers)
         |message/(?:x?delivery-status|rfc822|partial|feedback-report)
@@ -377,13 +377,28 @@ sub makeflat {
     #      - Content-Transfer-Encoding: 7BIT
     # 2. Unused fields inside of mutipart/* block should be removed
     $$argv1 =~ s/(Content-[A-Za-z-]+?):[ ]*([^\s]+)/$1.': '.lc($2)/eg;
-    $$argv1 =~ s/^Content-(?:Description|Disposition):.+\n//gm;
+    $$argv1 =~ s/^Content-(?:Description|Disposition):.+?\n//gm;
 
     my @multiparts = split(/\Q$ehboundary\E\n/, $$argv1);
     shift @multiparts unless length $multiparts[0];
+
     for my $e ( @multiparts ) {
         # Find internal multipart blocks and decode
-        if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r\n)?Content-Type:[ ]*[^\s]+/ ) {
+        XCCT: {
+            # Remove fields except Content-Type, Content-Transfer-Encoding in
+            # each part such as the following:
+            #   Date: Thu, 29 Apr 2018 22:22:22 +0900
+            #   MIME-Version: 1.0
+            #   Message-ID: ...
+            #   Content-Transfer-Encoding: quoted-printable
+            #   Content-Type: text/plain; charset=us-ascii
+            last(XCCT) if $e =~ /\AContent-T[ry]/;
+            my $p = $1 if $e =~ /\A(.+?)Content-Type:/s || last(XCCT);
+            last(XCCT) if $p =~ /\n\n/;
+            $e =~ s/\A.+?(Content-T[ry].+)\z/$1/s;
+        }
+
+        if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r?\n)?Content-Type:[ ]*[^\s]+/ ) {
             # Content-Type: multipart/*
             $bodystring .= ${ __PACKAGE__->breaksup(\$e, $mimeformat) };
 
