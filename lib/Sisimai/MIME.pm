@@ -322,7 +322,8 @@ sub breaksup {
             if( $mimeformat =~ $alsoappend ) {
                 # Append field when the value of Content-Type: begins with
                 # message/ or equals text/rfc822-headers.
-                $upperchunk =~ s/Content-Transfer-Encoding:.+\z//;
+                $upperchunk =~ s/Content-Transfer-Encoding:\s*[^\s]+//;
+                $upperchunk =~ s/\A[ ]//g if substr($upperchunk,  0, 1) eq ' ';
                 $upperchunk =~ s/[ ]\z//g if substr($upperchunk, -1, 1) eq ' ';
                 $hasflatten .= $upperchunk;
 

@@ -259,10 +259,18 @@ sub scan {
     }
 
     unless( $recipients ) {
-        # Insert pseudo recipient address when there is no valid recipient
-        # address in the message.
-        $dscontents->[-1]->{'recipient'} = Sisimai::Address->undisclosed('r');
-        $recipients = 1;
+        # The original recipient address was not found
+        if( $rfc822part =~ /^To: (.+[@].+)$/m ) {
+            # pick the address from To: header in message/rfc822 part.
+            $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
+            $recipients = 1;
+
+        } else {
+            # Insert pseudo recipient address when there is no valid recipient
+            # address in the message.
+            $dscontents->[-1]->{'recipient'} = Sisimai::Address->undisclosed('r');
+            $recipients = 1;
+        }
     }
 
     unless( $rfc822part =~ /\bFrom: [^ ]+[@][^ ]+\b/ ) {
