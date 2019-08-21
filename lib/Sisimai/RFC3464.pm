@@ -119,7 +119,7 @@ sub scan {
                 #           "Original-Recipient" ":" address-type ";" generic-address
                 #
                 #       generic-address = *text
-                my $x = $v->{'recipienet'} || '';
+                my $x = $v->{'recipient'} || '';
                 my $y = Sisimai::Address->s3s4($1);
 
                 if( $x && $x ne $y ) {
