@@ -39,6 +39,7 @@ sub match {
         'from: domain is invalid. please provide a valid from:',
         'fully qualified email address required',   # McAfee
         'invalid domain, see <url:',
+        'is not a registered gateway user',
         'mail from not owned by user',
         'message rejected: email address is not verified',
         'mx records for ',
