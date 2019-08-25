@@ -127,7 +127,7 @@ sub scan {
                 } else {
                     # Final-Recipient: ...
                     my $x = $v->{'recipient'} || '';
-                    my $y = Sisimai::Address->s3s4($2); #$r =~ s/[Rr][Ff][Cc]822;//g;
+                    my $y = Sisimai::Address->s3s4($2);
                        $y = $maybealias unless Sisimai::RFC5322->is_emailaddress($y);
 
                     if( $x && $x ne $y ) {
