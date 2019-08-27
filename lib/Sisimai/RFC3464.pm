@@ -119,7 +119,6 @@ sub scan {
                 #           "Original-Recipient" ":" address-type ";" generic-address
                 #
                 #       generic-address = *text
-                #
                 if( $1 eq 'Original' ) {
                     # Original-Recipient: ...
                     $maybealias = $2;
