@@ -32,7 +32,7 @@ my $moduletest = sub {
         |],
     };
     my $getskipped = {
-        'undisclosed' => qr/\AARF-(?:11|12|15|1010|1011)/,
+        'undisclosed' => qr/\AARF-(?:11|12|15|1010|1011)-\d+/,
     };
 
     if( grep { $E eq $_ } @$outofemail ) {
@@ -161,11 +161,11 @@ my $moduletest = sub {
 
                 $pp = 'recipient';
                 $re = qr/[0-9A-Za-z@-_.]+/;
-                like   $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
 
-                unless( sprintf("%s-%s", $E, $lb) =~ $getskipped->{'undisclosed'} ) {
+                if( sprintf("%s-%s", $E, $lb) =~ $getskipped->{'undisclosed'} ) {
                     $re = qr/[@]libsisimai[.]org[.]invalid/;
-                    unlike $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
                 }
 
                 $pp = 'command';
