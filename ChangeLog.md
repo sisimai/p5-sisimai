@@ -11,7 +11,7 @@ v4.25.2p1
 - changes:
   - Fix code for getting a recipient address from the original message part at
     `Sisimai::ARF` #325
-  - #326 Fix code for Getting a recipient address and a subject string from the
+  - #326 Fix code for getting a recipient address and a subject string from the
     original messaage part at `Sisimai::Bite::Email::MailMarshalSMTP`
   - Fix code to delete unused multipart headers at `Sisimai::MIME->breaksup()`
   - Fix spell in a key name of hash for storing a recipient adress and regular
