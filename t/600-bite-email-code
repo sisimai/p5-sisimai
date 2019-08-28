@@ -31,6 +31,9 @@ my $moduletest = sub {
             diagnosis feedbacktype softbounce
         |],
     };
+    my $getskipped = {
+        'undisclosed' => qr/\AARF-(?:11|12|15|1010|1011)-\d+/,
+    };
 
     if( grep { $E eq $_ } @$outofemail ) {
         # ARF, RFC3464, RFC3834
@@ -158,7 +161,12 @@ my $moduletest = sub {
 
                 $pp = 'recipient';
                 $re = qr/[0-9A-Za-z@-_.]+/;
-                like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+
+                if( sprintf("%s-%s", $E, $lb) =~ $getskipped->{'undisclosed'} ) {
+                    $re = qr/[@]libsisimai[.]org[.]invalid/;
+                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                }
 
                 $pp = 'command';
                 unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });

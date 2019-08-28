@@ -134,6 +134,11 @@ sub scan {
                     } elsif( $e =~ /\AReporting-MTA:[ \t]+[<](.+)[>]\z/ ) {
                         # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
                         $v->{'rhost'} = $1;
+
+                    } elsif( $e =~ /\A\s+(From|Subject):\s*(.+)\z/ ) {
+                        #    From:    originalsender@example.com
+                        #    Subject: ...
+                        push @$rfc822list, sprintf("%s: %s", $1, $2);
                     }
                 }
             }
@@ -195,7 +200,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

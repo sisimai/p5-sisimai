@@ -306,19 +306,19 @@ comparison: emails-for-comparing
 reason-coverage:
 	@ for v in `ls -1 $(MAILCLASSDIR) | grep -v UserDefined | sort | tr '[A-Z]' '[a-z]' | sed -e 's|.pm||g' -e 's|^|bite-email-|g'`; do \
 		for e in `echo $(REASON_TABLE) | tr '[A-Z]' '[a-z]'`; do \
-			printf "%d," `grep $$e t/*-$$v.t | wc -l`; \
+			printf "%d," `grep $$e xt/*-$$v.t t/*-$$v.t | wc -l`; \
 		done; \
 		echo; \
 	done
 	@ for v in `ls -1 $(JSONCLASSDIR) | sort | tr '[A-Z]' '[a-z]' | sed -e 's|.pm||g' -e 's|^|bite-json-|g'`; do \
 		for e in `echo $(REASON_TABLE) | tr '[A-Z]' '[a-z]'`; do \
-			printf "%d," `grep $$e t/*-$$v.t | wc -l`; \
+			printf "%d," `grep $$e xt/*-$$v t/*-$$v.t 2> /dev/null | wc -l`; \
 		done; \
 		echo; \
 	done
 	@ for v in rfc3464 rfc3834 arf mda; do \
 		for e in `echo $(REASON_TABLE) | tr '[A-Z]' '[a-z]'`; do \
-			printf "%d," `grep $$e t/*-$$v.t | wc -l`; \
+			printf "%d," `grep $$e xt/*-$$v t/*-$$v.t 2> /dev/null | wc -l`; \
 		done; \
 		echo; \
 	done

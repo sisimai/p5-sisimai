@@ -8,9 +8,9 @@ my $ClassOrder = [
     [qw|MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown
         Filtered Rejected HostUnknown SpamDetected TooManyConn Blocked
     |],
-    [qw|MailboxFull SpamDetected PolicyViolation VirusDetected SecurityError
-        SystemError NetworkError Suspend Expired ContentError SystemFull
-        NotAccept MailerError
+    [qw|MailboxFull SpamDetected PolicyViolation VirusDetected NoRelaying 
+        SecurityError SystemError NetworkError Suspend Expired ContentError
+        SystemFull NotAccept MailerError
     |],
     [qw|MailboxFull MesgTooBig ExceedLimit Suspend UserUnknown Filtered Rejected
         HostUnknown SpamDetected TooManyConn Blocked SpamDetected SecurityError
@@ -539,7 +539,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

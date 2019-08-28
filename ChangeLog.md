@@ -4,6 +4,25 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.2p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Fix code for getting a recipient address from the original message part at
+    `Sisimai::ARF` #325
+  - #326 Fix code for getting a recipient address and a subject string from the
+    original messaage part at `Sisimai::Bite::Email::MailMarshalSMTP`
+  - Fix code to delete unused multipart headers at `Sisimai::MIME->breaksup()`
+  - Fix spell in a key name of hash for storing a recipient adress and regular
+    expression for getting a recipient address at `Sisimai::RFC3464`
+  - #328 Fix code for getting a recipient address and an expanded address from
+    `Final-Recipient:` and `Original-Recipient:` field at `Sisimai::RFC3464`
+  - Remove the following Perl versions from .travis.yml so Travis CI no longer
+    support old Perls:
+    - 5.10
+    - 5.16
+
 v4.25.2
 --------------------------------------------------------------------------------
 - release: "Thu,  1 Aug 2019 20:00:00 +0900 (JST)"

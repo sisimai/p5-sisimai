@@ -54,6 +54,7 @@ sub scan {
     my $scannedset = Sisimai::MDA->scan($mhead, $mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $maybealias = '';    # (String) Original-Recipient field
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -99,8 +100,7 @@ sub scan {
             next unless length $e;
 
             $v = $dscontents->[-1];
-            if( $e =~ /\A(?:Final|Original)-[Rr]ecipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ||
-                $e =~ /\A(?:Final|Original)-[Rr]Recipient:[ ]*([^ ]+)\z/ ) {
+            if( $e =~ /\A(Original|Final)-[Rr]ecipient:[ ]*.+;[ ]*([^ ]+)\z/ ) {
                 # 2.3.2 Final-Recipient field
                 #   The Final-Recipient field indicates the recipient for which this set
                 #   of per-recipient fields applies.  This field MUST be present in each
@@ -119,18 +119,28 @@ sub scan {
                 #           "Original-Recipient" ":" address-type ";" generic-address
                 #
                 #       generic-address = *text
-                my $x = $v->{'recipienet'} || '';
-                my $y = Sisimai::Address->s3s4($1);
+                if( $1 eq 'Original' ) {
+                    # Original-Recipient: ...
+                    $maybealias = $2;
 
-                if( $x && $x ne $y ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
+                } else {
+                    # Final-Recipient: ...
+                    my $x = $v->{'recipient'} || '';
+                    my $y = Sisimai::Address->s3s4($2);
+                       $y = $maybealias unless Sisimai::RFC5322->is_emailaddress($y);
+
+                    if( $x && $x ne $y ) {
+                        # There are multiple recipient addresses in the message body.
+                        push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
+                        $v = $dscontents->[-1];
+                    }
+                    $v->{'recipient'} = $y;
+                    $recipients++;
+                    $itisbounce ||= 1;
+
+                    $v->{'alias'} ||= $maybealias;
+                    $maybealias = '';
                 }
-                $v->{'recipient'} = $y;
-                $recipients++;
-                $itisbounce ||= 1;
-
             } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
                 # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
                 # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
@@ -402,7 +412,7 @@ sub scan {
             }
             $b->{'diagnosis'} .= ' '.$e;
         }
-    }
+    } # END OF BODY_PARSER_FOR_FALLBACK
     return undef unless $itisbounce;
 
     unless( $recipients ) {
