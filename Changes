@@ -4,6 +4,32 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.3
+--------------------------------------------------------------------------------
+- release: "Sat,  7 Sep 2019 15:00:02 +0900 (JST)"
+- version: "4.25.3"
+- changes:
+  - Fix code for getting a recipient address from the original message part at
+    `Sisimai::ARF` #325
+  - #326 Fix code for getting a recipient address and a subject string from the
+    original messaage part at `Sisimai::Bite::Email::MailMarshalSMTP`
+  - Fix code to delete unused multipart headers at `Sisimai::MIME->breaksup()`
+  - Fix spell in a key name of hash for storing a recipient adress and regular
+    expression for getting a recipient address at `Sisimai::RFC3464`
+  - #328 Fix code for getting a recipient address and an expanded address from
+    `Final-Recipient:` and `Original-Recipient:` field at `Sisimai::RFC3464`
+  - Update code for matching error message "The user you are trying to contact
+    is receiving mail at a rate that prevents additional messages from being
+    delivered." at `Sisimai::Rhost::GoogleApps`
+  - Update error message pattern for "blocked" reason from GMX: "ESMTP Service
+    not available No SMTP service Bad DNS PTR resource record."
+  - Update error message pattern for "suspend" reason responded from i.ua MTA:
+    "550 Mailbox is frozen."
+  - Remove the following Perl versions from .travis.yml so Travis CI no longer
+    support old Perls:
+    - 5.10
+    - 5.16
+
 v4.25.2
 --------------------------------------------------------------------------------
 - release: "Thu,  1 Aug 2019 20:00:00 +0900 (JST)"
