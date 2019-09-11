@@ -18,8 +18,8 @@ sub match {
         'it has a potentially executable attachment',
         'the message was rejected because it contains prohibited virus or spam content',
         'this form of attachment has been used by recent viruses or other malware',
-        'your message was infected with a virus',
         'virus detected',
+        'your message was infected with a virus',
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
