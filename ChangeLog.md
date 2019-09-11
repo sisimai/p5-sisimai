@@ -6,6 +6,13 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.25.3
 --------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Update error message pattern for ClamSMTP at "virusdetected" reason.
+
+v4.25.3
+--------------------------------------------------------------------------------
 - release: "Sat,  7 Sep 2019 15:00:02 +0900 (JST)"
 - version: "4.25.3"
 - changes:
