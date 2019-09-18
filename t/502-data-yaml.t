@@ -61,8 +61,7 @@ MAKE_TEST: {
                 is $e->listid, $perl->{'listid'}, 'listid = '.$e->listid;
                 is $e->reason, $perl->{'reason'}, 'reason = '.$e->reason;
 
-                utf8::decode $perl->{'subject'} unless utf8::is_utf8 $perl->{'subject'};
-                is $e->subject, $perl->{'subject'};
+                is $e->subject, $perl->{'subject'}, 'subject = '.$perl->{'subject'};
                 is $e->timestamp->epoch, $perl->{'timestamp'}, 'timestamp->epoch = '.$e->timestamp->epoch;
                 is $e->replycode, $perl->{'replycode'};
 
