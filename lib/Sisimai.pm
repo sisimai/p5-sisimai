@@ -3,7 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 use version; our $VERSION = version->declare('v4.25.3'); our $PATCHLV = 0;
-use Encode;
 
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
