@@ -98,7 +98,7 @@ sub mimedecode {
             $decodedtext1 = 'FAILED TO CONVERT THE SUBJECT' if $@;
         }
     }
-    return Encode::decode_utf8 $decodedtext1;
+    return $decodedtext1;
 }
 
 sub qprintd {
