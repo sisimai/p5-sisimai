@@ -7,6 +7,7 @@ use Sisimai::ARF;
 use Sisimai::MIME;
 use Sisimai::RFC3834;
 use Sisimai::Order::Email;
+use Encode;
 
 my $EndOfEmail = Sisimai::String->EOM;
 my $DefaultSet = Sisimai::Order::Email->another;
@@ -248,14 +249,14 @@ sub takeapart {
     # @return        [Hash]         Structured message headers
     my $class = shift;
     my $heads = shift || return {};
-      $$heads =~ s/^[>]+[ ]//mg;    # Remove '>' indent symbol of forwarded message
-      $$heads =~ s/=[ ]+=/=\n =/mg; # Replace ' ' with "\n" at unfolded values
+
+    state $borderline = '__MIME_ENCODED_BOUNDARY__';
+    $$heads =~ s/^[>]+[ ]//mg;    # Remove '>' indent symbol of forwarded message
+    $$heads =~ s/=[ ]+=/=\n =/mg; # Replace ' ' with "\n" at unfolded values
 
     my $previousfn = '';
     my $asciiarmor = {};    # Header names which has MIME encoded value
     my $headerpart = {};    # Required headers in the original message part
-
-    state $borderline = '__MIME_ENCODED_BOUNDARY__';
 
     for my $e ( split("\n", $$heads) ) {
         # Header name as a key, The value of header as a value
@@ -298,7 +299,12 @@ sub takeapart {
     if( Sisimai::String->is_8bit(\$headerpart->{'subject'}) ) {
         # The value of ``Subject'' header is including multibyte character,
         # is not MIME-Encoded text.
-        $headerpart->{'subject'} = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';
+        eval {
+            # Remove invalid byte sequence
+            Encode::decode_utf8($headerpart->{'subject'});
+            Encode::encode_utf8($headerpart->{'subject'});
+        };
+        $headerpart->{'subject'} = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED' if $@;
 
     } else {
         # MIME-Encoded subject field or ASCII characters only
