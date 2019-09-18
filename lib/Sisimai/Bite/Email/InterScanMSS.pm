@@ -3,7 +3,6 @@ use parent 'Sisimai::Bite::Email';
 use feature ':5.10';
 use strict;
 use warnings;
-use utf8;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = {
