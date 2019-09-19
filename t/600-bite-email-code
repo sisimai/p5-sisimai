@@ -213,6 +213,8 @@ my $moduletest = sub {
 
                 $pp = 'replycode';      ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'subject';        ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, '...');
+                            isnt utf8::is_utf8($pr->$pp), 1, sprintf(" [%s] %s->%s = NO-UTF8-FLAGGED", $lb, $E, $pp);
+                            unlike $pr->$pp, qr/\AMULTIBYTE/,sprintf(" [%s] %s->%s = IS-NOT-REMOVED", $lb, $E, $pp);
                 $pp = 'smtpcommand';    ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'diagnosticcode'; ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 $pp = 'diagnostictype'; ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);

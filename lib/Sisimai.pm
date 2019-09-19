@@ -117,10 +117,15 @@ sub dump {
     my $argv1 = { @_ };
     my $nyaan = __PACKAGE__->make($argv0, %$argv1) // [];
 
-    # Dump as JSON
+    for my $e ( @$nyaan ) {
+        # Set UTF8 flag before converting to JSON string
+        utf8::decode $e->{'subject'};
+        utf8::decode $e->{'diagnosticcode'};
+    }
+
     require Module::Load;
     Module::Load::load('JSON', '-convert_blessed_universally');
-    my $jsonparser = JSON->new->allow_blessed->convert_blessed;
+    my $jsonparser = JSON->new->allow_blessed->convert_blessed->utf8;
     my $jsonstring = $jsonparser->encode($nyaan);
 
     utf8::encode $jsonstring if utf8::is_utf8 $jsonstring;
