@@ -10,6 +10,9 @@ v4.25.3p1
 - version: ""
 - changes:
   - Update error message pattern for ClamSMTP at "virusdetected" reason.
+  - Do not use utf8 flag
+  - Multibyte characters in the original subject header will not be removed and
+    replaced with "MULTIBYTE CHARACTERS HAS BEEN REMOVED"
 
 v4.25.3
 --------------------------------------------------------------------------------
