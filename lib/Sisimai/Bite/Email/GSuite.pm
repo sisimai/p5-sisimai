@@ -14,7 +14,7 @@ my $MarkingsOf = {
 my $MessagesOf = {
     'userunknown'  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
     'notaccept'    => ['Null MX'],
-    'networkerror' => [' responded with code NXDOMAIN'],
+    'networkerror' => [' had no relevant answers.', ' responded with code NXDOMAIN'],
 };
 
 sub headerlist  { return ['x-gm-message-state'] }
@@ -262,7 +262,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
