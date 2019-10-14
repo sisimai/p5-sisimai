@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.3p1
+v4.25.3p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -13,6 +13,8 @@ v4.25.3p1
   - Do not use utf8 flag
   - Multibyte characters in the original subject header will not be removed and
     replaced with "MULTIBYTE CHARACTERS HAS BEEN REMOVED"
+  - Error message `... had no relevant answers.` from GSuite is classified into
+    "networkerror" reason.
 
 v4.25.3
 --------------------------------------------------------------------------------
