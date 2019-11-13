@@ -60,7 +60,7 @@ my $FieldGroup = {
 };
 
 sub FIELDTABLE {
-    # Return pairs that a field name and key name defined in Sisimai::Bite class
+    # Return pairs that a field name and key name defined in Sisimai::Lhost class
     return {
         'action'            => 'action',
         'arrival-date'      => 'date',
@@ -188,7 +188,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
