@@ -138,13 +138,13 @@ sub engine {
     my $class = shift;
     my $table = {};
 
-    for my $e ('Bite::Email', 'Bite::JSON', 'ARF', 'RFC3464', 'RFC3834') {
+    for my $e ('Lhost', 'ARF', 'RFC3464', 'RFC3834') {
         my $r = 'Sisimai::'.$e;
         (my $loads = $r) =~ s|::|/|g; 
         require $loads.'.pm';
 
-        if( $e eq 'Bite::Email' || $e eq 'Bite::JSON' ) {
-            # Sisimai::Bite::Email or Sisimai::Bite::JSON
+        if( $e eq 'Lhost' ) {
+            # Sisimai::Lhost::*
             for my $ee ( @{ $r->index } ) {
                 # Load and get the value of "description" from each module
                 my $rr = 'Sisimai::'.$e.'::'.$ee;
