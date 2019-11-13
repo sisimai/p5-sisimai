@@ -665,7 +665,7 @@ as the return value from host() method of addresser accessor.
 =head2 C<smtpagent> (I<String>)
 
 C<smtpagent> is a module name to be used for detecting bounce reason. For 
-example, when the value is C<Sendmail>, Sisimai used L<Sisimai::Bite::Email::Sendmail>
+example, when the value is C<Sendmail>, Sisimai used L<Sisimai::Lhost::Sendmail>
 to get the recipient address and other delivery status information from a 
 bounce message.
 
