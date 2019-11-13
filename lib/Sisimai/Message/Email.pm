@@ -76,11 +76,11 @@ sub make {
     # 5. Rewrite headers of the original message in the body part
     my $rfc822part = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
     if( ref $rfc822part eq '' ) {
-        # Returned value from Sisimai::Bite::Email::* module
+        # Returned value from Sisimai::Lhost::* module
         $processing->{'rfc822'} = __PACKAGE__->takeapart(\$rfc822part);
 
     } else {
-        # Returned from Sisimai::Bite::JSON::* modules
+        # Returned from Sisimai::Lhost::* modules
         $processing->{'rfc822'} = $rfc822part;
     }
     return $processing;
@@ -412,7 +412,7 @@ sub parse {
         # 1. Sisimai::ARF 
         # 2. User-Defined Module
         # 3. MTA Module Candidates to be tried on first
-        # 4. Sisimai::Bite::Email::*
+        # 4. Sisimai::Lhost::*
         # 5. Sisimai::RFC3464
         # 6. Sisimai::RFC3834
         #
@@ -440,8 +440,8 @@ sub parse {
             last(SCANNER) if $hasscanned;
         }
 
-        # When the all of Sisimai::Bite::Email::* modules did not return bounce
-        # data, call Sisimai::RFC3464;
+        # When the all of Sisimai::Lhost::* modules did not return bounce data,
+        # call Sisimai::RFC3464;
         require Sisimai::RFC3464;
         $hasscanned = Sisimai::RFC3464->scan($mailheader, $bodystring);
         last(SCANNER) if $hasscanned;
