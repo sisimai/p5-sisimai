@@ -77,7 +77,7 @@ my $MessagesOf = {
     },
 };
 
-sub scan { 
+sub make { 
     # Parse message body and return reason and text
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
@@ -158,7 +158,7 @@ Sisimai::MDA - Error message parser for MDA
     use Sisimai::MDA;
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
-    my $return = Sisimai::MDA->scan($header, \$string);
+    my $return = Sisimai::MDA->make($header, \$string);
 
 =head1 DESCRIPTION
 
@@ -168,13 +168,13 @@ This class is called from Sisimai::Message only.
 
 =head1 CLASS METHODS
 
-=head2 C<B<scan(I<Header>, I<Reference to message body>)>>
+=head2 C<B<make(I<Header>, I<Reference to message body>)>>
 
-C<scan()> is a parser for detecting an error from mail delivery agent.
+C<make()> is a parser for detecting an error from mail delivery agent.
 
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
-    my $return = Sisimai::MDA->scan($header, \$string);
+    my $return = Sisimai::MDA->make($header, \$string);
     warn Dumper $return;
     $VAR1 = {
         'mda' => 'mail.local',
