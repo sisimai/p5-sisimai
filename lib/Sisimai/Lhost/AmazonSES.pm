@@ -354,7 +354,7 @@ sub json {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'agent'} = __PACKAGE__->smtpagent;
+        $e->{'agent'} = 'JSON::AmazonSES';
     }
 
     if( exists $argvs->{'mail'}->{'headers'} ) {
