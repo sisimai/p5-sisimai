@@ -35,6 +35,7 @@ sub INDICATORS {
         'message-rfc822' => (1 << 2),
     };
 }
+sub removedat   { return 'v4.25.X' }    # This method will be removed at the future release of Sisimai
 sub smtpagent   { my $v = shift; $v =~ s/\ASisimai::Lhost::Email:://; return $v }
 sub description { return '' }
 sub headerlist  { return [] }
