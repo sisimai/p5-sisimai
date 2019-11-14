@@ -216,22 +216,6 @@ sub make {
     }
 }
 
-# https://docs.aws.amazon.com/en_us/ses/latest/DeveloperGuide/notification-contents.html
-my $BounceType = {
-    'Permanent' => {
-        'General'    => '',
-        'NoEmail'    => '',
-        'Suppressed' => '',
-    },
-    'Transient' => {
-        'General'            => '',
-        'MailboxFull'        => 'mailboxfull',
-        'MessageTooLarge'    => 'mesgtoobig',
-        'ContentRejected'    => '',
-        'AttachmentRejected' => '',
-    },
-};
-
 sub json {
     # Adapt Amazon SES bounce object for Sisimai::Message format
     # @param        [Hash] argvs     bounce object(JSON) retrieved from Amazon SNS
@@ -245,8 +229,24 @@ sub json {
     return undef unless ref $argvs eq 'HASH';
     return undef unless keys %$argvs;
     return undef unless exists $argvs->{'notificationType'};
-
     use Sisimai::RFC5322;
+
+    # https://docs.aws.amazon.com/en_us/ses/latest/DeveloperGuide/notification-contents.html
+    my $bouncetype = {
+        'Permanent' => {
+            'General'    => '',
+            'NoEmail'    => '',
+            'Suppressed' => '',
+        },
+        'Transient' => {
+            'General'            => '',
+            'MailboxFull'        => 'mailboxfull',
+            'MessageTooLarge'    => 'mesgtoobig',
+            'ContentRejected'    => '',
+            'AttachmentRejected' => '',
+        },
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $rfc822head = {};    # (Hash) Check flags for headers in RFC822 part
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -297,13 +297,13 @@ sub json {
                 # 'reportingMTA' => 'dsn; a27-23.smtp-out.us-west-2.amazonses.com',
                 $v->{'lhost'} = $1 if $o->{'reportingMTA'} =~ /\Adsn;[ ](.+)\z/;
 
-                if( exists $BounceType->{ $o->{'bounceType'} } &&
-                    exists $BounceType->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} } ) {
+                if( exists $bouncetype->{ $o->{'bounceType'} } &&
+                    exists $bouncetype->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} } ) {
                     # 'bounce' => {
                     #       'bounceType' => 'Permanent',
                     #       'bounceSubType' => 'General'
                     # },
-                    $v->{'reason'} = $BounceType->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} };
+                    $v->{'reason'} = $bouncetype->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} };
                 }
             } else {
                 # 'complainedRecipients' => [ {
