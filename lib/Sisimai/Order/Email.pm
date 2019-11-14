@@ -153,9 +153,10 @@ sub by {
     # @param    [String] group  Group name for "ORDER BY"
     # @return   [Hash]          Pattern table for the group
     # @since v4.13.2
-    my $class = shift;
+    my $class = shift; $class->SUPER::warn('');
     my $group = shift || return undef;
 
+    warn sprintf(" ***warning: %s->by is marked as obsoleted\n", __PACKAGE__);
     return $PatternTable->{ $group } if exists $PatternTable->{ $group };
     return {};
 }
@@ -164,6 +165,7 @@ sub default {
     # Make default order of MTA modules to be loaded
     # @return   [Array] Default order list of MTA modules
     # @since v4.13.1
+    my $class = shift; $class->SUPER::warn('');
     return [map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->index() }];
 }
 
@@ -171,6 +173,7 @@ sub another {
     # Make MTA modules list as a spare
     # @return   [Array] Ordered module list
     # @since v4.13.1
+    my $class = shift; $class->SUPER::warn('');
     return [
         @$EngineOrder1, @$EngineOrder2, @$EngineOrder3, 
         @$EngineOrder4, @$EngineOrder5, @$EngineOrder9,
@@ -181,7 +184,7 @@ sub headers {
     # Make email header list in each MTA module
     # @return   [Hash] Header list to be parsed
     # @since v4.13.1
-    my $class = shift;
+    my $class = shift; $class->SUPER::warn('');
     my $table = {};
 
     state $order = [map { 'Sisimai::Bite::Email::'.$_ } @{ Sisimai::Bite::Email->heads }];
@@ -219,7 +222,10 @@ Sisimai::Order::Email - Make optimized order list for calling MTA modules
 
 Sisimai::Order::Email makes optimized order list which include MTA modules to
 be loaded on first from MTA specific headers in the bounce mail headers such as
-X-Failed-Recipients.  This module are called from only Sisimai::Message::Email.
+X-Failed-Recipients. This module are called from only Sisimai::Message::Email.
+
+This class was marked as obsoleted at v4.25.4 and will be removed at the future
+release of Sisimai.
 
 =head1 CLASS METHODS
 

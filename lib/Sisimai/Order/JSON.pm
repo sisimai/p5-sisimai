@@ -14,7 +14,8 @@ sub default {
     # Make default order of MTA modules to be loaded
     # @return   [Array] Default order list of MTA modules
     # @since v4.13.1
-    my $class = shift;
+    #warn sprintf(" ***warning: %s->default is marked as obsoleted. Use %s->default instead.\n", __PACKAGE__, 'Sisimai::Order');
+    my $class = shift; $class->SUPER::warn('forjson');
     my $order = [];
 
     return $DefaultOrder if ref $DefaultOrder eq 'ARRAY';
@@ -27,7 +28,7 @@ sub by {
     # @param    [String] group  Group name for "ORDER BY"
     # @return   [Hash]          Pattern table for the group
     # @since v4.13.2
-    my $class = shift;
+    my $class = shift; $class->SUPER::warn('gone');
     my $group = shift || return undef;
 
     return $PatternTable->{ $group } if exists $PatternTable->{ $group };
@@ -53,6 +54,9 @@ Sisimai::Order::JSON makes optimized order list which include MTA modules to be
 loaded on first from bounce object key names in the decoded JSON object. This
 module are called from only Sisimai::Message::JSON.
 
+This class was marked as obsoleted at v4.25.4 and will be removed at the future
+release of Sisimai.
+
 =head1 CLASS METHODS
 
 =head2 C<B<default()>>
@@ -67,12 +71,11 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
 This software is distributed under The BSD 2-Clause License.
 
 =cut
-
 
