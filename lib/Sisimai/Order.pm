@@ -244,7 +244,6 @@ sub warn {
     # This method will be removed at the future release of Sisimai
     my $class = shift;
     my $useit = shift || '';
-    my $until = 'v4.25.6';
     my $label = ' ***warning:';
 
     my $calledfrom = [caller(1)];
@@ -253,7 +252,7 @@ sub warn {
     my $messageset = sprintf("%s %s->%s is marked as obsoleted", $label, $modulename, $methodname);
 
     $useit ||= $methodname;
-    $messageset .= sprintf(" and will be removed at %s.", $until);
+    $messageset .= sprintf(" and will be removed at %s.", Sisimai::Lhost->removedat);
     $messageset .= sprintf(" Use %s->%s instead.\n", __PACKAGE__, $useit) if $useit ne 'gone';
 
     warn $messageset;
