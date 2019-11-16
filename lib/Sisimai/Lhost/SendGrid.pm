@@ -295,7 +295,7 @@ sub json {
         $v->{'status'}    ||= Sisimai::SMTP::Status->find($diagnostic) || '';
         $v->{'replycode'} ||= Sisimai::SMTP::Reply->find($diagnostic)  || '';
         $v->{'diagnosis'}   = $argvs->{'reason'} || '';
-        $v->{'agent'}       = 'JSON::SendGrid';
+        $v->{'agent'}       = __PACKAGE__->smtpagent;
 
         # Generate pseudo message/rfc822 part
         $rfc822head = {
