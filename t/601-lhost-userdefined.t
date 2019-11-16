@@ -27,7 +27,7 @@ MAKE_TEST: {
     while( my $r = $mail->read ){ 
         $mesg = Sisimai::Message->new(
                     'data' => $r,
-                    'load' => ['Sisimai::Bite::Email::UserDefined']
+                    'load' => ['Sisimai::Lhost::UserDefined']
                 ); 
         $data = Sisimai::Data->make('data' => $mesg); 
         isa_ok $data, 'ARRAY';
