@@ -621,6 +621,7 @@ sub adapt {
     } # End of while(ADAPTOR)
 
     $haveparsed->{'catch'} = $havecaught if $haveparsed;
+    map { $_->{'agent'} =~ s/\AEmail::/JSON::/g } @{ $haveparsed->ds };
     return $haveparsed;
 }
 
