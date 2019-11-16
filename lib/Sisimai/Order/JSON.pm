@@ -3,12 +3,6 @@ use parent 'Sisimai::Order';
 use feature ':5.10';
 use strict;
 use warnings;
-use Sisimai::Bite::JSON;
-
-my $DefaultOrder = __PACKAGE__->default;
-my $PatternTable = {
-    'keyname' => { 'notificationType' => ['Sisimai::Bite::JSON::AmazonSES'] }
-};
 
 sub default {
     # Make default order of MTA modules to be loaded
@@ -16,11 +10,7 @@ sub default {
     # @since v4.13.1
     #warn sprintf(" ***warning: %s->default is marked as obsoleted. Use %s->default instead.\n", __PACKAGE__, 'Sisimai::Order');
     my $class = shift; $class->SUPER::warn('forjson');
-    my $order = [];
-
-    return $DefaultOrder if ref $DefaultOrder eq 'ARRAY';
-    push @$order, map { 'Sisimai::Bite::JSON::'.$_ } @{ Sisimai::Bite::JSON->index() };
-    return $order;
+    return $class->SUPER::forjson;
 }
 
 sub by {
@@ -29,10 +19,7 @@ sub by {
     # @return   [Hash]          Pattern table for the group
     # @since v4.13.2
     my $class = shift; $class->SUPER::warn('gone');
-    my $group = shift || return undef;
-
-    return $PatternTable->{ $group } if exists $PatternTable->{ $group };
-    return {};
+    return $class->SUPER::by(shift);
 }
 
 1;

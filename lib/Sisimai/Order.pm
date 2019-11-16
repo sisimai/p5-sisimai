@@ -164,7 +164,6 @@ sub make {
     my $heads = shift || return [];
     my $input = shift || 'email';
 
-    return __PACKAGE__->forjson if $input eq 'json';
     return [] unless exists $heads->{'subject'};
     return [] unless $heads->{'subject'};
 
