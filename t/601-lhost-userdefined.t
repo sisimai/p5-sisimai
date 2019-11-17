@@ -24,12 +24,12 @@ MAKE_TEST: {
     my $data = undef;
     my $list = undef;
 
-    while( my $r = $mail->read ){ 
+    while( my $r = $mail->read ){
         $mesg = Sisimai::Message->new(
                     'data' => $r,
                     'load' => ['Sisimai::Lhost::UserDefined']
-                ); 
-        $data = Sisimai::Data->make('data' => $mesg); 
+                );
+        $data = Sisimai::Data->make('data' => $mesg);
         isa_ok $data, 'ARRAY';
 
         for my $e ( @$data ) {
