@@ -2,14 +2,13 @@ use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Message;
-use Sisimai::Message::JSON;
 
-my $PackageName = 'Sisimai::Message::JSON';
+my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
     'class' => ['new', 'make', 'load', 'parse', 'makeorder'],
     'object' => ['from', 'header', 'ds', 'rfc822'],
 };
-my $SampleEmail = './set-of-emails/jsonobj/json-sendgrid-03.json';
+my $SampleEmail = './set-of-emails/obsoleted/json-sendgrid/json-sendgrid-03.json';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -46,7 +45,7 @@ MAKE_TEST: {
             'hook' => $callbackto,
             'load' => ['Sisimai::Neko::Nyaan'],
             'input' => 'json',
-            'order' => ['Sisimai::Bite::JSON::AmazonSES', 'Sisimai::Bite::JSON::SendGrid'],
+            'order' => ['Sisimai::Lhost::AmazonSES', 'Sisimai::Lhost::SendGrid'],
          );
 
     for my $e ( @{ $p->ds } ) {
