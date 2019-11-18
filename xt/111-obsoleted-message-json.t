@@ -8,7 +8,7 @@ my $MethodNames = {
     'class' => ['new', 'make', 'load', 'parse', 'makeorder'],
     'object' => ['from', 'header', 'ds', 'rfc822'],
 };
-my $SampleJSONs = './set-of-emails/obsoleted/json-sendgrid/json-sendgrid-03.json';
+my $SampleJSONs = './set-of-emails/obsoleted/json-sendgrid-03.json';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };

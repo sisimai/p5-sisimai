@@ -2,11 +2,11 @@ use strict;
 use warnings;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-require './t/600-bite-email-code';
+require './t/600-lhost-code';
 
 my $enginename = 'ARF';
 my $samplepath = sprintf("./set-of-emails/private/%s", lc $enginename);
-my $enginetest = Sisimai::Bite::Email::Code->maketest;
+my $enginetest = Sisimai::Lhost::Code->maketest;
 my $isexpected = [
     { 'n' => '01001', 'r' => qr/feedback/ },
     { 'n' => '01002', 'r' => qr/feedback/ },
