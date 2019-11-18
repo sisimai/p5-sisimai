@@ -71,6 +71,7 @@ sub make {
         }
     } elsif( $input eq 'json' ) {
         # Decoded JSON object: 'input' => 'json'
+        warn sprintf(" ***warning: 'input' => 'json' is marked as obsoleted");
         my $type = ref $argv0;
         my @list;
 
