@@ -208,8 +208,10 @@ sub another {
 
 sub forjson {
     # Returns a list of MTA modules which are ebale to read JSON structure
+    # This method will be removed at the future release of Sisimai
     # @return   [Array] Ordered module list
     # @since v4.25.4
+    # @until v4.25.6
     return $OrderJ1;
 }
 
@@ -241,6 +243,7 @@ sub headers {
 sub warn {
     # Print warnings about an obsoleted method
     # This method will be removed at the future release of Sisimai
+    # @until v4.25.6
     my $class = shift;
     my $useit = shift || '';
     my $label = ' ***warning:';
