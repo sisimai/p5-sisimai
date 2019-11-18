@@ -5,7 +5,7 @@ use Sisimai::MDA;
 
 my $PackageName = 'Sisimai::MDA';
 my $MethodNames = {
-    'class' => ['scan'],
+    'class' => ['make'],
     'object' => [],
 };
 
@@ -35,7 +35,7 @@ MAKE_TEST: {
         $headers->{'from'} = $message->from;
 
         for my $e ( @$ErrorMesgs ) {
-            my $v = Sisimai::MDA->scan($headers, \$e);
+            my $v = Sisimai::MDA->make($headers, \$e);
 
             isa_ok $v, 'HASH';
             ok $v->{'mda'}, 'mda => '.$v->{'mda'};
