@@ -8,7 +8,7 @@ my $MethodNames = {
     'class' => ['new', 'make', 'load', 'parse', 'makeorder'],
     'object' => ['from', 'header', 'ds', 'rfc822'],
 };
-my $SampleEmail = './set-of-emails/obsoleted/json-sendgrid/json-sendgrid-03.json';
+my $SampleJSONs = './set-of-emails/obsoleted/json-sendgrid/json-sendgrid-03.json';
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
@@ -16,8 +16,9 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     use JSON;
     use IO::File;
+    last unless -f $SampleJSONs;
 
-    my $filehandle = IO::File->new($SampleEmail, 'r');
+    my $filehandle = IO::File->new($SampleJSONs, 'r');
     my $jsonparser = JSON->new;
     my $jsonstring = <$filehandle>;
     my $tobeloaded = $PackageName->load;
