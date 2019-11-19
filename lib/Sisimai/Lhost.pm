@@ -79,6 +79,27 @@ sub make {
     return undef;
 }
 
+sub warn {
+    # Print warnings about an obsoleted method
+    # This method will be removed at the future release of Sisimai
+    # @until v4.25.6
+    my $class = shift;
+    my $useit = shift || '';
+    my $label = ' ***warning:';
+
+    my $calledfrom = [caller(1)];
+    my $modulename = $calledfrom->[3]; $modulename =~ s/::[a-zA-Z]+\z//;
+    my $methodname = $calledfrom->[3]; $methodname =~ s/\A.+:://;
+    my $messageset = sprintf("%s %s->%s is marked as obsoleted", $label, $modulename, $methodname);
+
+    $useit ||= $methodname;
+    $messageset .= sprintf(" and will be removed at %s.", __PACKAGE__->removedat);
+    $messageset .= sprintf(" Use %s->%s instead.\n", __PACKAGE__, $useit) if $useit ne 'gone';
+
+    warn $messageset;
+}
+
+
 1;
 __END__
 
