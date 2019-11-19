@@ -249,7 +249,7 @@ sub warn {
     my $label = ' ***warning:';
 
     my $calledfrom = [caller(1)];
-    my $modulename = $calledfrom->[3]; $modulename =~ s/::[a-z]+\z//;
+    my $modulename = $calledfrom->[3]; $modulename =~ s/::[a-zA-Z]+\z//;
     my $methodname = $calledfrom->[3]; $methodname =~ s/\A.+:://;
     my $messageset = sprintf("%s %s->%s is marked as obsoleted", $label, $modulename, $methodname);
 
