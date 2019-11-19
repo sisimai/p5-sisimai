@@ -2,11 +2,13 @@ package Sisimai::Bite;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::Lhost;
 
 sub DELIVERYSTATUS {
     # Data structure for parsed bounce messages
     # @private
     # @return [Hash] Data structure for delivery status
+    Sisimai::Lhost->warn('');
     return {
         'spec'         => '',   # Protocl specification
         'date'         => '',   # The value of Last-Attempt-Date header
