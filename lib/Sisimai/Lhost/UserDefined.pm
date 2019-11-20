@@ -105,7 +105,7 @@ Sisimai::Lhost::UserDefined - User defined MTA module as an example
     my $mesg = undef;
     my $data = undef;
 
-    while( my $r = $mail->read ){
+    while( my $r = $mail->read ) {
         $mesg = Sisimai::Message->new(
                     'data' => $r,
                     'load' => ['Your::Custom::Lhost::Module']

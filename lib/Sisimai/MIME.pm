@@ -174,7 +174,7 @@ sub qprintd {
                 $encodename = $1;
                 $mimeinside = 1 if $ctencoding;
 
-            } elsif( $lowercased =~ $ReE->{'quoted-print'} ){
+            } elsif( $lowercased =~ $ReE->{'quoted-print'} ) {
                 # Content-Transfer-Encoding: quoted-printable
                 $ctencoding = $e;
                 $mimeinside = 1 if $encodename;
