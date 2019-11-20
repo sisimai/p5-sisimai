@@ -82,7 +82,7 @@ sub make {
 sub warn {
     # Print warnings about an obsoleted method
     # This method will be removed at the future release of Sisimai
-    # @until v4.25.6
+    # @until v4.25.5
     my $class = shift;
     my $useit = shift || '';
     my $label = ' ***warning:';
@@ -98,7 +98,6 @@ sub warn {
 
     warn $messageset;
 }
-
 
 1;
 __END__
