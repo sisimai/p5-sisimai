@@ -10,7 +10,7 @@ v4.25.3p3
 - version: ""
 - changes:
   - **FEATURE FOR READING JSON STRING AS AN INPUT SOURCE AND FOR PARSING JSON
-    FORMATTED BOUNCE MESSAGE WILL NOT BE SUPPORTED AT Sisimai 4.25.5**
+    FORMATTED BOUNCE MESSAGE WILL NOT BE SUPPORTED AT Sisimai 4.25.5** #332
   - **The following modules for reading json string as an input source, and for
     parsing json formatted bounce message will be removed at Sisimai 4.25.5**
     - `Sisimai::Message::JSON`
@@ -20,7 +20,7 @@ v4.25.3p3
     - `Sisimai::Order::JSON`
   - Implement a new MTA module class `Sisimai::Lhost`, it is a parent class of
     all the MTA modules for a bounce mail returned as an email message via SMTP
-    and **THE FOLLOWING NAME SPACES WERE MARKED AS OBSOLETED OR REMOVED**
+    and **THE FOLLOWING NAME SPACES WERE MARKED AS OBSOLETED OR REMOVED** #333
     - `Sisimai::Bite`: Use `Sisimai::Lhost` instead
     - `Sisimai::Bite::Email`: Merged into `Sisimai::Lhost`
     - `Sisimai::Bite::Email::*`: Moved under `Sisimai::Lhost` as the same named
