@@ -77,7 +77,7 @@ my $MessagesOf = {
     },
 };
 
-sub make { 
+sub make {
     # Parse message body and return reason and text
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
@@ -137,9 +137,9 @@ sub make {
         last if $bouncemesg && $reasonname;
     }
 
-    return { 
-        'mda'     => $agentname0, 
-        'reason'  => $reasonname // '', 
+    return {
+        'mda'     => $agentname0,
+        'reason'  => $reasonname // '',
         'message' => $bouncemesg // '',
     };
 }
@@ -163,7 +163,7 @@ Sisimai::MDA - Error message parser for MDA
 =head1 DESCRIPTION
 
 Sisimai::MDA parse bounced email which created by some MDA, such as C<dovecot>,
-C<mail.local>, C<procmail>, and so on. 
+C<mail.local>, C<procmail>, and so on.
 This class is called from Sisimai::Message only.
 
 =head1 CLASS METHODS

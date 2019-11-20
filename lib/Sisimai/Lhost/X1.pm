@@ -71,7 +71,7 @@ sub make {
             next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            # The original message was received at Thu, 29 Apr 2010 23:34:45 +0900 (JST) 
+            # The original message was received at Thu, 29 Apr 2010 23:34:45 +0900 (JST)
             # from shironeko@example.jp
             #
             # ---The following addresses had delivery errors---
@@ -91,7 +91,7 @@ sub make {
                 $recipients++;
 
             } elsif( $e =~ $MarkingsOf->{'message'} ) {
-                # The original message was received at Thu, 29 Apr 2010 23:34:45 +0900 (JST) 
+                # The original message was received at Thu, 29 Apr 2010 23:34:45 +0900 (JST)
                 $datestring = $1;
             }
         } # End of error message part

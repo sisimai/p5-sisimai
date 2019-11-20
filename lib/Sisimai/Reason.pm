@@ -8,7 +8,7 @@ my $ClassOrder = [
     [qw|MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown
         Filtered Rejected HostUnknown SpamDetected TooManyConn Blocked
     |],
-    [qw|MailboxFull SpamDetected PolicyViolation VirusDetected NoRelaying 
+    [qw|MailboxFull SpamDetected PolicyViolation VirusDetected NoRelaying
         SecurityError SystemError NetworkError Suspend Expired ContentError
         SystemFull NotAccept MailerError
     |],
@@ -64,7 +64,7 @@ sub get {
             # Check the value of Diagnostic-Code: and the value of Status:, it is a
             # deliverystats, with true() method in each Sisimai::Reason::* class.
             my $p = 'Sisimai::Reason::'.$e;
-            (my $modulepath = $p) =~ s|::|/|g; 
+            (my $modulepath = $p) =~ s|::|/|g;
             require $modulepath.'.pm';
 
             next unless $p->true($argvs);
@@ -116,7 +116,7 @@ sub anotherone {
         for my $e ( @{ $ClassOrder->[1] } ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
             my $p = 'Sisimai::Reason::'.$e;
-            (my $modulepath = $p) =~ s|::|/|g; 
+            (my $modulepath = $p) =~ s|::|/|g;
             require $modulepath.'.pm';
 
             next unless $p->match($diagnostic);
@@ -177,7 +177,7 @@ sub match {
         # Check the value of Diagnostic-Code: and the value of Status:, it is a
         # deliverystats, with true() method in each Sisimai::Reason::* class.
         my $p = 'Sisimai::Reason::'.$e;
-        (my $modulepath = $p) =~ s|::|/|g; 
+        (my $modulepath = $p) =~ s|::|/|g;
         require $modulepath.'.pm';
 
         next unless $p->match($diagnostic);

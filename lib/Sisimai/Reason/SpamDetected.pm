@@ -72,7 +72,7 @@ sub match {
             |[ ]by[ ].+[ ][(]spam[)]
             |[ ]due[ ]to[ ]spam[ ](?:classification|content)
             )
-        |rejecting[ ]banned[ ]content 
+        |rejecting[ ]banned[ ]content
         |related[ ]to[ ]content[ ]with[ ]spam[-]like[ ]characteristics
         |rule[ ]imposed[ ]as[ ].+is[ ]blacklisted[ ]on              # Mailmarshal RBLs
         |sender[ ]domain[ ]listed[ ]at[ ].+
@@ -166,7 +166,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::SpamDetected - Bounce reason is C<spamdetected> due to Spam 
+Sisimai::Reason::SpamDetected - Bounce reason is C<spamdetected> due to Spam
 content in the message or not.
 
 =head1 SYNOPSIS
@@ -176,8 +176,8 @@ content in the message or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SpamDetected checks the bounce reason is C<spamdetected> due to 
-Spam content in the message or not. This class is called only Sisimai::Reason 
+Sisimai::Reason::SpamDetected checks the bounce reason is C<spamdetected> due to
+Spam content in the message or not. This class is called only Sisimai::Reason
 class.
 
 This is the error that the message you sent was rejected by C<spam> filter which
@@ -205,7 +205,7 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Data>)>>
 
-C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in 
+C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in
 the message. The argument must be Sisimai::Data object and this method is called
 only from Sisimai::Reason class.
 

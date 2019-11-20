@@ -491,7 +491,7 @@ C<boundary()> returns a boundary string from the value of Content-Type header.
 =head2 C<B<breaksup(I<\String>, I<String>)>>
 
 C<breaksup> is a multipart/* message decoder: Decode quoted-printable, base64,
-and other encoded message part, leave only text/plain, message/*, text/html 
+and other encoded message part, leave only text/plain, message/*, text/html
 (only in multipart/alternative), returns string as a reference. This method is
 called from makeflat() and breaksup() itself.
 

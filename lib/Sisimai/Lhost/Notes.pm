@@ -85,7 +85,7 @@ sub make {
             next unless $readcursor & $Indicators->{'deliverystatus'};
 
             # ------- Failure Reasons  --------
-            # 
+            #
             # User not listed in public Name & Address Book
             # kijitora@notes.example.jp
             #

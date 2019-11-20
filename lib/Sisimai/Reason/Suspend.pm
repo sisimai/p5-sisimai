@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 sub text  { 'suspend' }
-sub description { 'Email rejected due to a recipient account is being suspended' } 
+sub description { 'Email rejected due to a recipient account is being suspended' }
 sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
@@ -35,7 +35,7 @@ sub match {
     return 0;
 }
 
-sub true { 
+sub true {
     # The envelope recipient's mailbox is suspended or not
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
     # @return   [Integer]               1: is mailbox suspended
@@ -67,10 +67,10 @@ Sisimai::Reason::Suspend - Bounce reason is C<suspend> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Suspend checks the bounce reason is C<suspend> or not. This 
+Sisimai::Reason::Suspend checks the bounce reason is C<suspend> or not. This
 class is called only Sisimai::Reason class.
 
-This is the error that a recipient account is being suspended due to unpaid or 
+This is the error that a recipient account is being suspended due to unpaid or
 other reasons.
 
 =head1 CLASS METHODS

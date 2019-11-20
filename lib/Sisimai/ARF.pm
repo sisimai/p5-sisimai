@@ -152,7 +152,7 @@ sub make {
                 # Microsoft's implementation.
                 $arfheaders->{'feedbacktype'} = 'abuse';
                 $arfheaders->{'agent'} = 'Microsoft Junk Mail Reporting Program';
-            
+
             } elsif( $e =~ /\AFrom:[ ]*(.+)\z/ ) {
                 # Microsoft ARF: original sender.
                 $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
@@ -174,7 +174,7 @@ sub make {
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";
                 $rcptintext  = $rhs if $lhs eq 'to';
-            } 
+            }
         } else {
             # message/delivery-status part
             next unless $readcursor & $Indicators->{'deliverystatus'};
@@ -244,9 +244,9 @@ sub make {
                 $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
 
             } elsif( $e =~ $MarkingsOf->{'message'} ) {
-                # This is an email abuse report for an email message with the 
-                #   message-id of 0000-000000000000000000000000000000000@mx 
-                #   received from IP address 192.0.2.1 on 
+                # This is an email abuse report for an email message with the
+                #   message-id of 0000-000000000000000000000000000000000@mx
+                #   received from IP address 192.0.2.1 on
                 #   Thu, 29 Apr 2010 00:00:00 +0900 (JST)
                 $commondata->{'diagnosis'} = $e;
             }

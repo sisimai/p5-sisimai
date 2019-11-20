@@ -140,7 +140,7 @@ sub make {
         }
 
         # 4. Rewrite message body for detecting the bounce reason
-        $methodargv = { 
+        $methodargv = {
             'hook' => $hookmethod,
             'mail' => $processing,
             'body' => \$aftersplit->{'body'},
@@ -484,7 +484,7 @@ sub parse {
         # Call hook method
         my $p = {
             'datasrc' => 'email',
-            'headers' => $mailheader, 
+            'headers' => $mailheader,
             'message' => $$bodystring,
             'bounces' => undef,
         };
@@ -521,7 +521,7 @@ sub parse {
         TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$DefaultSet ) {
             # Try MTA module candidates
             next if exists $haveloaded->{ $r };
-            ($modulepath = $r) =~ s|::|/|g; 
+            ($modulepath = $r) =~ s|::|/|g;
             require $modulepath.'.pm';
             $haveparsed = $r->make($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
@@ -582,7 +582,7 @@ sub adapt {
             # Call user defined MTA modules
             next if exists $haveloaded->{ $r };
             eval {
-                ($modulepath = $r) =~ s|::|/|g; 
+                ($modulepath = $r) =~ s|::|/|g;
                 require $modulepath.'.pm';
             };
             if( $@ ) {
@@ -597,7 +597,7 @@ sub adapt {
         TRY_ON_FIRST: while( my $r = shift @$TryOnFirst ) {
             # Try MTA module candidates which are detected from object key names
             next if exists $haveloaded->{ $r };
-            ($modulepath = $r) =~ s|::|/|g; 
+            ($modulepath = $r) =~ s|::|/|g;
             require $modulepath.'.pm';
 
             $haveparsed = $r->json($bouncedata);
@@ -608,7 +608,7 @@ sub adapt {
         DEFAULT_LIST: for my $r ( @$DefaultSet ) {
             # Default order of MTA modules
             next if exists $haveloaded->{ $r };
-            ($modulepath = $r) =~ s|::|/|g; 
+            ($modulepath = $r) =~ s|::|/|g;
             require $modulepath.'.pm';
 
             $haveparsed = $r->json($bouncedata);
@@ -717,7 +717,7 @@ method like the following codes:
     };
 
     my $message = Sisimai::Message->new(
-        'data' => $mailtxt, 
+        'data' => $mailtxt,
         'hook' => $cmethod,
         'field' => ['X-Mailer', 'Precedence']
     );

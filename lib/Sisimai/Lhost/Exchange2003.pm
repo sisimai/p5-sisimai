@@ -20,7 +20,7 @@ my $ErrorCodes = {
         '000C05A6', # Unknown Recipient,
     ],
     'systemerror' => [
-        '00010256', # Too many recipients. 
+        '00010256', # Too many recipients.
         '000D06B5', # No proxy for recipient (non-smtp mail?)
     ],
     'networkerror' => [
@@ -40,7 +40,7 @@ my $ErrorCodes = {
 
 # X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
 # X-Mailer: Internet Mail Service (5.5.1960.3)
-# X-MS-Embedded-Report: 
+# X-MS-Embedded-Report:
 sub headerlist  { return ['x-ms-embedded-report', 'x-mimeole'] };
 sub description { 'Microsoft Exchange Server 2003' }
 sub make {
@@ -140,7 +140,7 @@ sub make {
 
             if( $connvalues == scalar(keys %$connheader) ) {
                 # did not reach the following recipient(s):
-                # 
+                #
                 # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
                 #     The recipient name is not recognized
                 #     The MTS-ID of the original message is: c=jp;a= ;p=neko

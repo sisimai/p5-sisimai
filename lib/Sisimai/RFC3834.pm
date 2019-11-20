@@ -51,7 +51,7 @@ sub make {
     # @param         [String] mbody     Message body of a bounce email
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
     #                                   or Undef if it failed to parse or the
-    #                                   arguments are missing 
+    #                                   arguments are missing
     # @since v4.1.28
     my $class = shift;
     my $mhead = shift // return undef;

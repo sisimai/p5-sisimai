@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 sub text  { 'filtered' }
-sub description { 'Email rejected due to a header content after SMTP DATA command' } 
+sub description { 'Email rejected due to a header content after SMTP DATA command' }
 sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
@@ -83,12 +83,12 @@ Sisimai::Reason::Filtered - Bounce reason is C<filtered> or not.
 Sisimai::Reason::Filtered checks the bounce reason is C<filtered> or not. This
 class is called only Sisimai::Reason class.
 
-This is the error that an email has been rejected by a header content after 
-SMTP DATA command. 
+This is the error that an email has been rejected by a header content after
+SMTP DATA command.
 In Japanese cellular phones, the error will incur that a sender's email address
-or a domain is rejected by recipient's email configuration. Sisimai will set 
-C<filtered> to the reason of email bounce if the value of Status: field in a 
-bounce email is C<5.2.0> or C<5.2.1>. 
+or a domain is rejected by recipient's email configuration. Sisimai will set
+C<filtered> to the reason of email bounce if the value of Status: field in a
+bounce email is C<5.2.0> or C<5.2.1>.
 
 This error reason is almost the same as UserUnknown.
 

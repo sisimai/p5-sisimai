@@ -274,7 +274,7 @@ header.
     my $v = 'from mx.example.org (c1.example.net [192.0.2.1]) by mx.example.jp';
     my $r = Sisimai::RFC5322->received($v);
 
-    warn Dumper $r; 
+    warn Dumper $r;
     $VAR1 = [
         'mx.example.org',
         'mx.example.jp'

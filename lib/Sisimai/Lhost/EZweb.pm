@@ -120,7 +120,7 @@ sub make {
             # The user(s) account is disabled.
             #
             # <***@ezweb.ne.jp>: 550 user unknown (in reply to RCPT TO command)
-            # 
+            #
             #  -- OR --
             # Each of the following recipients was rejected by a remote
             # mail server.

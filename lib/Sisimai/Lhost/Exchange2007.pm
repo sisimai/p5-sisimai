@@ -175,7 +175,7 @@ Server 2007>.
 =head1 DESCRIPTION
 
 Sisimai::Lhost::Exchange2007 parses a bounce email which created by C<Microsoft
-Exchange Server 2007>. 
+Exchange Server 2007>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

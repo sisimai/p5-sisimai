@@ -86,7 +86,7 @@ sub make {
 
             $v = $dscontents->[-1];
             if( $e =~ /\A[ \t]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
-                # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
+                # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900
                 #     Could not be delivered to: <******@**.***.**>
                 #     As their mailbox is full.
                 if( $v->{'recipient'} ) {
@@ -101,7 +101,7 @@ sub make {
                 $recipients++;
 
             } elsif( $e =~ /Your mail sent on: (.+)\z/ ) {
-                # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900 
+                # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900
                 $v->{'date'} = $1;
 
             } else {

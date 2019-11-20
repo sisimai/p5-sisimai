@@ -164,7 +164,7 @@ Sisimai::Lhost::GMX - bounce mail parser class for C<GMX> and mail.com.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::GMX parses a bounce email which created by C<GMX>. 
+Sisimai::Lhost::GMX parses a bounce email which created by C<GMX>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS

@@ -43,7 +43,7 @@ sub make {
     if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
         # Convert to regular expression
         $boundary00 = '--'.$boundary00.'--';
-        $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
+        $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/;
 
     } else {
         $MarkingsOf->{'rfc822'} = qr/\A[ \t]*[+]+[ \t]*\z/;
@@ -82,12 +82,12 @@ sub make {
             #
             # 550 5.1.1 User unknown
             #
-            # The following recipients were affected: 
+            # The following recipients were affected:
             #    dummyuser@blabla.xxxxxxxxxxxx.com
             $v = $dscontents->[-1];
 
             if( $e =~ /\A[ \t]{4}([^ ]+[@][^ ]+)\z/ ) {
-                # The following recipients were affected: 
+                # The following recipients were affected:
                 #    dummyuser@blabla.xxxxxxxxxxxx.com
                 if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.

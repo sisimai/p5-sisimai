@@ -17,11 +17,11 @@ Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
 sub new {
     # Constructor of Sisimai::Mail::Memory
     # @param    [String] argv1          Entire email string
-    # @return   [Sisimai::Mail::Memory] Object or Undef if the argument is not 
+    # @return   [Sisimai::Mail::Memory] Object or Undef if the argument is not
     #                                   valid email text
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $param = { 
+    my $param = {
         'data'   => [],
         'size'   => length $$argv1 || 0,
         'offset' => 0,

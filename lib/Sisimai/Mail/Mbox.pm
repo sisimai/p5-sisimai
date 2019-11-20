@@ -22,7 +22,7 @@ Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
 sub new {
     # Constructor of Sisimai::Mail::Mbox
     # @param    [String] argv1          Path to mbox
-    # @return   [Sisimai::Mail::Mbox]   Object or Undef if the argument is not 
+    # @return   [Sisimai::Mail::Mbox]   Object or Undef if the argument is not
     #                                   a file or does not exist
     my $class = shift;
     my $argv1 = shift // return undef;

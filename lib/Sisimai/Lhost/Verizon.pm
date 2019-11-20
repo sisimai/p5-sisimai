@@ -64,7 +64,7 @@ sub make {
         if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
-            $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
+            $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/;
         }
 
         for my $e ( @hasdivided ) {
@@ -138,7 +138,7 @@ sub make {
         if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
-            $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/; 
+            $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/;
         }
 
         for my $e ( @hasdivided ) {

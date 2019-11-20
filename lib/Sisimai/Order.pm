@@ -120,7 +120,7 @@ my $Pattern = {
             'Sisimai::Lhost::Bigfoot',
             'Sisimai::Lhost::EinsUndEins',
             'Sisimai::Lhost::X1',
-            'Sisimai::Lhost::Biglobe', 
+            'Sisimai::Lhost::Biglobe',
             'Sisimai::Lhost::V5sendmail',
         ],
         'undeliver' => [
@@ -227,7 +227,7 @@ sub headers {
 
     LOAD_MODULES: for my $e ( @$order ) {
         # Load email headers from each MTA module
-        (my $p = $e) =~ s|::|/|g; 
+        (my $p = $e) =~ s|::|/|g;
         require $p.'.pm';
 
         for my $v ( @{ $e->headerlist } ) {

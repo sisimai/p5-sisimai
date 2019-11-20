@@ -120,7 +120,7 @@ sub make {
 
             } else {
                 # If you know the general guide of this list, please send mail with
-                # the mail body 
+                # the mail body
                 $v->{'diagnosis'} .= $e;
             }
         } # End of error message part

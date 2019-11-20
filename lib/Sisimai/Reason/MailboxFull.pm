@@ -106,7 +106,7 @@ Sisimai::Reason::MailboxFull - Bounce reason is C<mailboxfull> or not.
 Sisimai::Reason::MailboxFull checks the bounce reason is C<mailboxfull> or not.
 This class is called only Sisimai::Reason class.
 
-This is the error that a recipient's mailbox is full. Sisimai will set 
+This is the error that a recipient's mailbox is full. Sisimai will set
 C<mailboxfull> to the reason of email bounce if the value of Status: field in a
 bounce email is C<4.2.2> or C<5.2.2>.
 

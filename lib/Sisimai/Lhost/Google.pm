@@ -30,7 +30,7 @@ my $MessagesOf = {
     ],
 };
 my $StateTable = {
-    # Technical details of permanent failure: 
+    # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
     # cause of this error. The error that the other server returned was:
@@ -39,14 +39,14 @@ my $StateTable = {
 
     # http://www.google.td/support/forum/p/gmail/thread?tid=08a60ebf5db24f7b&hl=en
     # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain. 
+    # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
     # cause of this error. The error that the other server returned was:
     # 535 SMTP AUTH failed with the remote server. (state 8).
     '8'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
 
     # http://www.google.co.nz/support/forum/p/gmail/thread?tid=45208164dbca9d24&hl=en
-    # Technical details of temporary failure: 
+    # Technical details of temporary failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
     # cause of this error. The error that the other server returned was:
@@ -54,27 +54,27 @@ my $StateTable = {
     '9'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
 
     # http://www.google.com/support/forum/p/gmail/thread?tid=5cfab8c76ec88638&hl=en
-    # Technical details of permanent failure: 
+    # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
     # cause of this error. The error that the other server returned was:
-    # 500 Remote server does not support SMTP Authenticated Relay (state 12). 
+    # 500 Remote server does not support SMTP Authenticated Relay (state 12).
     '12' => { 'command' => 'AUTH', 'reason' => 'relayingdenied' },
 
-    # Technical details of permanent failure: 
+    # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was: 
+    # cause of this error. The error that the other server returned was:
     # 550 550 5.7.1 <****@gmail.com>... Access denied (state 13).
     '13' => { 'command' => 'EHLO', 'reason' => 'blocked' },
 
-    # Technical details of permanent failure: 
+    # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
     # cause of this error. The error that the other server returned was:
     # 550 550 5.1.1 <******@*********.**>... User Unknown (state 14).
     # 550 550 5.2.2 <*****@****.**>... Mailbox Full (state 14).
-    # 
+    #
     '14' => { 'command' => 'RCPT', 'reason' => 'userunknown' },
 
     # http://www.google.cz/support/forum/p/gmail/thread?tid=7090cbfd111a24f9&hl=en
@@ -83,7 +83,7 @@ my $StateTable = {
     # We recommend contacting the other email provider for further information about the
     # cause of this error. The error that the other server returned was:
     # 550 550 5.7.1 SPF unauthorized mail is prohibited. (state 15).
-    # 554 554 Error: no valid recipients (state 15). 
+    # 554 554 Error: no valid recipients (state 15).
     '15' => { 'command' => 'DATA', 'reason' => 'filtered' },
 
     # http://www.google.com/support/forum/p/Google%20Apps/thread?tid=0aac163bc9c65d8e&hl=en
@@ -95,7 +95,7 @@ my $StateTable = {
     # 550 550 #5.1.0 Address rejected ***@***.*** (state 17).
     '17' => { 'command' => 'DATA', 'reason' => 'filtered' },
 
-    # Technical details of permanent failure: 
+    # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
     # cause of this error. The error that the other server returned was:
@@ -132,11 +132,11 @@ sub make {
     #
     #        recipient-address-here@example.jp
     #
-    #   Technical details of permanent failure: 
+    #   Technical details of permanent failure:
     #   Google tried to deliver your message, but it was rejected by the
     #   recipient domain. We recommend contacting the other email provider
     #   for further information about the cause of this error. The error
-    #   that the other server returned was: 
+    #   that the other server returned was:
     #   550 550 <recipient-address-heare@example.jp>: User unknown (state 14).
     #
     #   -- OR --
@@ -253,7 +253,7 @@ sub make {
         unless( $e->{'rhost'} ) {
             # Get the value of remote host
             if( $e->{'diagnosis'} =~ /[ \t]+by[ \t]+([^ ]+)[.][ \t]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
-                # Google tried to deliver your message, but it was rejected by # the server 
+                # Google tried to deliver your message, but it was rejected by # the server
                 # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
                 my $hostname = $1;
                 my $ipv4addr = $2;
@@ -284,7 +284,7 @@ sub make {
         }
         next unless $e->{'reason'};
 
-        # Set pseudo status code and override bounce reason 
+        # Set pseudo status code and override bounce reason
         $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         next unless $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/;
         $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'}) || '';

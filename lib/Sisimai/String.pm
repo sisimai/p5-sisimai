@@ -18,7 +18,7 @@ sub token {
     # @param    [String] addr1  A sender's email address
     # @param    [String] addr2  A recipient's email address
     # @param    [Integer] epoch Machine time of the email bounce
-    # @return   [String]        Message token(MD5 hex digest) or empty string 
+    # @return   [String]        Message token(MD5 hex digest) or empty string
     #                           if the any argument is missing
     # @see       http://en.wikipedia.org/wiki/ASCII
     # @see       https://metacpan.org/pod/Digest::MD5
@@ -129,7 +129,7 @@ sub to_utf8 {
             last if $encodefrom =~ $dontencode;
             last if $encodingto =~ $dontencode;
 
-            eval { 
+            eval {
                 # Try to convert the string to UTF-8
                 Encode::from_to($tobeutf8ed, $encodefrom, 'utf8');
                 $hasencoded = 1;

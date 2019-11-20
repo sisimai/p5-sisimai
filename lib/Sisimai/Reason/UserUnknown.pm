@@ -161,7 +161,7 @@ sub true {
         for my $e ( @$prematches ) {
             # Check the value of "Diagnostic-Code" with other error patterns.
             my $p = 'Sisimai::Reason::'.$e;
-            (my $modulepath = $p) =~ s|::|/|g; 
+            (my $modulepath = $p) =~ s|::|/|g;
             require $modulepath.'.pm';
 
             next unless $p->match($diagnostic);

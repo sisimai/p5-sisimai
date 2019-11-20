@@ -116,7 +116,7 @@ sub field {
             # - Remote-MTA: DNS; mx.example.jp
             $match->[1] = uc $2;
             $match->[2] = $group eq 'host' ? lc $3 : $3;
-            $match->[2] = '' if $match->[2] =~ /\A\s+\z/;   # Remote-MTA: dns; 
+            $match->[2] = '' if $match->[2] =~ /\A\s+\z/;   # Remote-MTA: dns;
 
         } else {
             # - Action: failed

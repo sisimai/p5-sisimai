@@ -227,7 +227,7 @@ sub make {
         } else {
             # Try to match with each error message in the table
             if( $e->{'diagnosis'} =~ $ReIsOnHold ) {
-                # To decide the reason require pattern match with 
+                # To decide the reason require pattern match with
                 # Sisimai::Reason::* modules
                 $e->{'reason'} = 'onhold';
 

@@ -400,7 +400,7 @@ sub make {
                 $e->{'diagnosis'} = $e->{'alterrors'} if $e->{'alterrors'};
 
             } else {
-                # Check the both value and try to match 
+                # Check the both value and try to match
                 if( length($e->{'diagnosis'}) < length($e->{'alterrors'}) ) {
                     # Check the value of alterrors
                     my $rxdiagnosis = qr/\Q$e->{'diagnosis'}\E/i;
@@ -504,7 +504,7 @@ sub make {
 
             if( $v1 > 0 ) {
                 # Status or SMTP reply code exists
-                # Set pseudo DSN into the value of "status" accessor 
+                # Set pseudo DSN into the value of "status" accessor
                 $e->{'status'} = $sv if $r1 > 0;
 
             } else {

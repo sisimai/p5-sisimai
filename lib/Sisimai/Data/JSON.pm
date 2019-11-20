@@ -38,7 +38,7 @@ Sisimai::Data::JSON - Dumps parsed data object as a JSON format
 
 =head1 DESCRIPTION
 
-Sisimai::Data::JSON dumps parsed data object as a JSON format. This class and 
+Sisimai::Data::JSON dumps parsed data object as a JSON format. This class and
 method should be called from the parent object "Sisimai::Data".
 
 =head1 CLASS METHODS

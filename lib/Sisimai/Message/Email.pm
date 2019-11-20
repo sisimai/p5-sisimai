@@ -93,7 +93,7 @@ method like the following codes:
     };
 
     my $message = Sisimai::Message->new(
-        'data' => $mailtxt, 
+        'data' => $mailtxt,
         'hook' => $cmethod,
         'field' => ['X-Mailer', 'Precedence']
     );

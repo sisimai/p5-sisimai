@@ -150,7 +150,7 @@ sub make {
                     } else {
                         # Detect SMTP session error or connection error
                         next if $sessionerr;
-                        if( index($e, $StartingOf->{'error'}->[0]) == 0 ) { 
+                        if( index($e, $StartingOf->{'error'}->[0]) == 0 ) {
                             # ----- Transcript of session follows -----
                             # ... while talking to mta.example.org.:
                             $sessionerr = 1;

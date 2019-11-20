@@ -139,7 +139,7 @@ sub make {
                 #
                 # The original message was received on Sat, 11 Dec 2010 12:19:57 +0900
                 # from [127.0.0.1] (c10920.example.com [192.0.2.20])
-                # 
+                #
                 # ---------------------------------------------------------------------------
                 #
                 #                           UNDELIVERABLE MAIL

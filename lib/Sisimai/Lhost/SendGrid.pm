@@ -133,15 +133,15 @@ sub make {
                 }
             } else {
                 # This is an automatically generated message from SendGrid.
-                # 
+                #
                 # I'm sorry to have to tell you that your message was not able to be
                 # delivered to one of its intended recipients.
                 #
                 # If you require assistance with this, please contact SendGrid support.
-                # 
+                #
                 # shironekochan:000000:<kijitora@example.jp> : 192.0.2.250 : mx.example.jp:[192.0.2.153] :
                 #   550 5.1.1 <userunknown@cubicroot.jp>... User Unknown  in RCPT TO
-                # 
+                #
                 # ------------=_1351676802-30315-116783
                 # Content-Type: message/delivery-status
                 # Content-Disposition: inline

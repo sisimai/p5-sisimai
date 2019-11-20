@@ -61,8 +61,8 @@ Sisimai::Reason::ExceedLimit - Bounce reason is C<exceedlimit> or not.
 Sisimai::Reason::ExceedLimit checks the bounce reason is C<exceedlimit> or not.
 This class is called only Sisimai::Reason class.
 
-This is the error that a message was rejected due to an email exceeded the 
-limit. The value of D.S.N. is 5.2.3. This reason is almost the same as 
+This is the error that a message was rejected due to an email exceeded the
+limit. The value of D.S.N. is 5.2.3. This reason is almost the same as
 C<MesgTooBig>, we think.
 
     ... while talking to mx.example.org.:

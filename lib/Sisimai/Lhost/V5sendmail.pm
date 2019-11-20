@@ -132,7 +132,7 @@ sub make {
             } else {
                 # Detect SMTP session error or connection error
                 next if $v->{'sessionerr'};
-                if( $e =~ $MarkingsOf->{'error'} ) { 
+                if( $e =~ $MarkingsOf->{'error'} ) {
                     # ----- Transcript of session follows -----
                     # ... while talking to mta.example.org.:
                     $v->{'sessionerr'} = 1;

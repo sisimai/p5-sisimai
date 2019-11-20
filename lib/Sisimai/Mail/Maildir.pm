@@ -10,7 +10,7 @@ my $roaccessors = [
     'dir',      # [String] Path to Maildir/
 ];
 my $rwaccessors = [
-    'path',     # [String] Path to each file 
+    'path',     # [String] Path to each file
     'file',     # [String] Each file name of a mail in the Maildir/
     'inodes',   # [Array]  i-node List of files in the Maildir/
     'handle',   # [IO::Dir] Directory handle

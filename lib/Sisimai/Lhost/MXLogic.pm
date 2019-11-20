@@ -244,7 +244,7 @@ Sisimai::Lhost::MXLogic - bounce mail parser class for C<MX Logic>.
 =head1 DESCRIPTION
 
 Sisimai::Lhost::MXLogic parses a bounce email which created by
-C<McAfee SaaS (formerly MX Logic)>. Methods in the module are called from only 
+C<McAfee SaaS (formerly MX Logic)>. Methods in the module are called from only
 Sisimai::Message.
 
 =head1 CLASS METHODS

@@ -189,7 +189,7 @@ sub make {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $e->{'diagnosis'} =~ /\b([A-Z]{3})[-]([A-Z])(\d)\b/ ) {
-            # Diagnostic-Code: smtp; 550 5.1.1 RCP-P2 
+            # Diagnostic-Code: smtp; 550 5.1.1 RCP-P2
             my $lhs = $1;
             my $rhs = $2;
             my $num = $3;
@@ -209,7 +209,7 @@ sub make {
 
         # http://postmaster.facebook.com/response_codes
         #   Facebook System Resource Issues
-        #   These codes indicate a temporary issue internal to Facebook's 
+        #   These codes indicate a temporary issue internal to Facebook's
         #   system. Administrators observing these issues are not required to
         #   take any action to correct them.
         #

@@ -174,7 +174,7 @@ Sisimai::Lhost::AmazonWorkMail - bounce mail parser class for C<Amazon WorkMail>
 =head1 DESCRIPTION
 
 Sisimai::Lhost::AmazonWorkMail parses a bounce email which created by C<Amazon WorkMail>.
-Methods in the module are called from only Sisimai::Message. 
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 

@@ -51,7 +51,7 @@ my $ReCommands = {
     'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<]?.+[@].+[.][a-zA-Z]+[>]?/,
 };
 
-sub headerlist  { 
+sub headerlist  {
     # X-MS-Exchange-Message-Is-Ndr:
     # X-Microsoft-Antispam-PRVS: <....@...outlook.com>
     # X-Exchange-Antispam-Report-Test: UriScan:;

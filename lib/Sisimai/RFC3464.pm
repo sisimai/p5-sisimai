@@ -114,7 +114,7 @@ sub make {
                 #   The Original-Recipient field indicates the original recipient address
                 #   as specified by the sender of the message for which the DSN is being
                 #   issued.
-                # 
+                #
                 #       original-recipient-field =
                 #           "Original-Recipient" ":" address-type ";" generic-address
                 #
@@ -244,7 +244,7 @@ sub make {
                         #       mta-name = *text
                         #
                         #   The Reporting-MTA field is defined as follows:
-                        # 
+                        #
                         #   A DSN describes the results of attempts to deliver, relay, or gateway
                         #   a message to one or more recipients.  In all cases, the Reporting-MTA
                         #   is the MTA that attempted to perform the delivery, relay, or gateway

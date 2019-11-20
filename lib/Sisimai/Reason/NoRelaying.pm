@@ -17,7 +17,7 @@ sub match {
     state $index = [
         'as a relay',
         'insecure mail relay',
-        'mail server requires authentication when attempting to send to a non-local e-mail address',    # MailEnable 
+        'mail server requires authentication when attempting to send to a non-local e-mail address',    # MailEnable
         'not allowed to relay through this machine',
         'not an open relay, so get lost',
         'relay access denied',
@@ -36,7 +36,7 @@ sub true {
     # Whether the message is rejected by 'Relaying denied'
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
     # @return   [Integer]               1: Rejected for "relaying denied"
-    #                                   0: is not 
+    #                                   0: is not
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
@@ -71,7 +71,7 @@ Sisimai::Reason::NoRelaying - Bounce reason is C<norelaying> or not.
 Sisimai::Reason::NoRelaying checks the bounce reason is C<norelaying> or not.
 This class is called only Sisimai::Reason class.
 
-This is the error that SMTP connection rejected with error message 
+This is the error that SMTP connection rejected with error message
 C<Relaying Denied>. This reason does not exist in any version of bounceHammer.
 
     ... while talking to mailin-01.mx.example.com.:
