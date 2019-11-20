@@ -11,7 +11,7 @@ NAME  := Sisimai
 PERL  ?= perl
 CPANM := http://cpanmin.us/
 CPM   := https://git.io/cpm
-WGET  := wget -c 
+WGET  := wget -c
 CURL  := curl -L
 CHMOD := chmod
 PROVE := prove -Ilib --timer
@@ -47,6 +47,9 @@ user-test:
 
 author-test:
 	$(PROVE) xt/
+
+check:
+	find lib -type f -exec grep -E ' $$' {} /dev/null \;
 
 cover-test:
 	cover -test
