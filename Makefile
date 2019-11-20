@@ -50,6 +50,7 @@ author-test:
 
 check:
 	find lib -type f -exec grep -E ' $$' {} /dev/null \;
+	find lib -type f -exec grep --color -E '[)][{]' {} /dev/null \;
 
 cover-test:
 	cover -test
