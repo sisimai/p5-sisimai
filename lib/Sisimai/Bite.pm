@@ -27,13 +27,11 @@ sub DELIVERYSTATUS {
         'feedbacktype' => '',   # Feedback Type
     };
 }
-
-sub smtpagent   { 
+sub smtpagent {
     Sisimai::Lhost->warn;
     my $v = shift; $v =~ s/\ASisimai::Bite:://;
     return $v
 }
-
 sub description { Sisimai::Lhost->warn; return '' }
 
 1;
