@@ -28,8 +28,13 @@ sub DELIVERYSTATUS {
     };
 }
 
-sub smtpagent   { my $v = shift; $v =~ s/\ASisimai::Bite:://; return $v }
-sub description { return '' }
+sub smtpagent   { 
+    Sisimai::Lhost->warn;
+    my $v = shift; $v =~ s/\ASisimai::Bite:://;
+    return $v
+}
+
+sub description { Sisimai::Lhost->warn; return '' }
 
 1;
 __END__
