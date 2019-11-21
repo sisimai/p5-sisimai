@@ -35,7 +35,7 @@ my $MarkingsOf = {
     'alias'   => qr/\A([ ]+an undisclosed address)\z/,
     'message' => qr{\A(?>
          This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
-        |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]makening[ ]code
+        |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scannning[ ]code
         |A[ ]message[ ]that[ ]you[ ]sent[ ]contained[ ]one[ ]or[ ]more[ ]recipient[ ]addresses[ ]
         |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
         |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
