@@ -25,7 +25,7 @@ my $MessagesOf = {
 # X-Outbound-Mail-Relay-Queue-ID: 07391702BF4DC
 # X-Outbound-Mail-Relay-Sender: rfc822; shironeko@aol.example.jp
 sub headerlist  { return ['x-aol-ip'] }
-sub description { 'Aol Mail: http://www.aol.com' }
+sub description { 'Aol Mail: https://www.aol.com' }
 sub make {
     # Detect an error from Aol Mail
     # @param         [Hash] mhead       Message headers of a bounce email

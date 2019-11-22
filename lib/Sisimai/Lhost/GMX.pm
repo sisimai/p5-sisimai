@@ -16,7 +16,7 @@ my $MessagesOf = { 'expired' => ['delivery retry timeout exceeded'] };
 # X-GMX-Antivirus: 0 (no virus found)
 # X-UI-Out-Filterresults: unknown:0;
 sub headerlist  { return ['x-gmx-antispam'] }
-sub description { 'GMX: http://www.gmx.net' }
+sub description { 'GMX: https://www.gmx.net' }
 sub make {
     # Detect an error from GMX and mail.com
     # @param         [Hash] mhead       Message headers of a bounce email

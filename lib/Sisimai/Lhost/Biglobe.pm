@@ -15,7 +15,7 @@ my $MessagesOf = {
     'mailboxfull' => ["The number of messages in recipient's mailbox exceeded the local limit."],
 };
 
-sub description { 'BIGLOBE: http://www.biglobe.ne.jp' }
+sub description { 'BIGLOBE: https://www.biglobe.ne.jp' }
 sub make {
     # Detect an error from Biglobe
     # @param         [Hash] mhead       Message headers of a bounce email

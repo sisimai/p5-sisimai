@@ -6,7 +6,7 @@ use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = {
-    # http://www.courier-mta.org/courierdsn.html
+    # https://www.courier-mta.org/courierdsn.html
     # courier/module.dsn/dsn*.txt
     'message' => ['DELAYS IN DELIVERING YOUR MESSAGE', 'UNDELIVERABLE MAIL'],
     'rfc822'  => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],

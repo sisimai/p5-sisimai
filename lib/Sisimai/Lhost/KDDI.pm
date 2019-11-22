@@ -19,7 +19,7 @@ my $MessagesOf = {
     'hostunknown' => ['As the remote domain doesnt exist'],
 };
 
-sub description { 'au by KDDI: http://www.au.kddi.com' }
+sub description { 'au by KDDI: https://www.au.kddi.com' }
 sub make {
     # Detect an error from au by KDDI
     # @param         [Hash] mhead       Message headers of a bounce email

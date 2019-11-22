@@ -37,7 +37,7 @@ my $StateTable = {
     # 500 Remote server does not support TLS (state 6).
     '6'  => { 'command' => 'MAIL', 'reason' => 'systemerror' },
 
-    # http://www.google.td/support/forum/p/gmail/thread?tid=08a60ebf5db24f7b&hl=en
+    # https://www.google.td/support/forum/p/gmail/thread?tid=08a60ebf5db24f7b&hl=en
     # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
@@ -45,7 +45,7 @@ my $StateTable = {
     # 535 SMTP AUTH failed with the remote server. (state 8).
     '8'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
 
-    # http://www.google.co.nz/support/forum/p/gmail/thread?tid=45208164dbca9d24&hl=en
+    # https://www.google.co.nz/support/forum/p/gmail/thread?tid=45208164dbca9d24&hl=en
     # Technical details of temporary failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
@@ -53,7 +53,7 @@ my $StateTable = {
     # 454 454 TLS missing certificate: error:0200100D:system library:fopen:Permission denied (#4.3.0) (state 9).
     '9'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
 
-    # http://www.google.com/support/forum/p/gmail/thread?tid=5cfab8c76ec88638&hl=en
+    # https://www.google.com/support/forum/p/gmail/thread?tid=5cfab8c76ec88638&hl=en
     # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
@@ -77,7 +77,7 @@ my $StateTable = {
     #
     '14' => { 'command' => 'RCPT', 'reason' => 'userunknown' },
 
-    # http://www.google.cz/support/forum/p/gmail/thread?tid=7090cbfd111a24f9&hl=en
+    # https://www.google.cz/support/forum/p/gmail/thread?tid=7090cbfd111a24f9&hl=en
     # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the
@@ -86,7 +86,7 @@ my $StateTable = {
     # 554 554 Error: no valid recipients (state 15).
     '15' => { 'command' => 'DATA', 'reason' => 'filtered' },
 
-    # http://www.google.com/support/forum/p/Google%20Apps/thread?tid=0aac163bc9c65d8e&hl=en
+    # https://www.google.com/support/forum/p/Google%20Apps/thread?tid=0aac163bc9c65d8e&hl=en
     # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the

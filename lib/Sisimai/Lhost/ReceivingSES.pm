@@ -4,7 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-# http://aws.amazon.com/ses/
+# https://aws.amazon.com/ses/
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = {
     'message' => ['This message could not be delivered.'],
@@ -21,7 +21,7 @@ my $MessagesOf = {
 # X-SES-Outgoing: 2015.10.01-54.240.27.7
 # Feedback-ID: 1.us-west-2.HX6/J9OVlHTadQhEu1+wdF9DBj6n6Pa9sW5Y/0pSOi8=:AmazonSES
 sub headerlist  { return ['x-ses-outgoing'] }
-sub description { 'Amazon SES(Receiving): http://aws.amazon.com/ses/' };
+sub description { 'Amazon SES(Receiving): https://aws.amazon.com/ses/' };
 sub make {
     # Detect an error from Amazon SES/Receiving
     # @param         [Hash] mhead       Message header of a bounce email

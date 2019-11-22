@@ -70,7 +70,7 @@ sub headerlist  {
         'x-ms-exchange-transport-crosstenantheadersstamped',
     ]
 }
-sub description { 'Microsoft Office 365: http://office.microsoft.com/' }
+sub description { 'Microsoft Office 365: https://office.microsoft.com/' }
 sub make {
     # Detect an error from Microsoft Office 365
     # @param         [Hash] mhead       Message headers of a bounce email

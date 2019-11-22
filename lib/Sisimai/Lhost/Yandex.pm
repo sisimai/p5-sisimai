@@ -18,7 +18,7 @@ my $StartingOf = {
 # X-Yandex-Queue-ID: 367D79E130D
 # X-Yandex-Sender: rfc822; shironeko@yandex.example.com
 sub headerlist  { return ['x-yandex-uniq'] }
-sub description { 'Yandex.Mail: http://www.yandex.ru' }
+sub description { 'Yandex.Mail: https://www.yandex.ru' }
 sub make {
     # Detect an error from Yandex.Mail
     # @param         [Hash] mhead       Message headers of a bounce email

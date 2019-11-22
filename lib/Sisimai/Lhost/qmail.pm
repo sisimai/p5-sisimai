@@ -122,7 +122,7 @@ sub make {
     my $tryto = qr/\A[(]qmail[ ]+\d+[ ]+invoked[ ]+(?:for[ ]+bounce|from[ ]+network)[)]/;
 
     # Pre process email headers and the body part of the message which generated
-    # by qmail, see http://cr.yp.to/qmail.html
+    # by qmail, see https://cr.yp.to/qmail.html
     #   e.g.) Received: (qmail 12345 invoked for bounce); 29 Apr 2009 12:34:56 -0000
     #         Subject: failure notice
     $match ||= 1 if $mhead->{'subject'} eq 'failure notice';

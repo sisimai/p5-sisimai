@@ -13,7 +13,7 @@ my $StartingOf = {
 my $MessagesOf = { 'mesgtoobig' => ['Mail size limit exceeded'] };
 
 # X-UI-Out-Filterresults: unknown:0;
-sub description { '1&1: http://www.1and1.de' }
+sub description { '1&1: https://www.1und1.de/' }
 sub make {
     # Detect an error from 1&1
     # @param         [Hash] mhead       Message headers of a bounce email

@@ -13,7 +13,7 @@ my $StartingOf = {
 # Return-Path: <apps@sendgrid.net>
 # X-Mailer: MIME-tools 5.502 (Entity 5.502)
 sub headerlist  { return ['return-path', 'x-mailer'] }
-sub description { 'SendGrid: http://sendgrid.com/' }
+sub description { 'SendGrid: https://sendgrid.com/' }
 sub make {
     # Detect an error from SendGrid
     # @param         [Hash] mhead       Message headers of a bounce email

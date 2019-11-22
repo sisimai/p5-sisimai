@@ -6,7 +6,7 @@ use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
 
-sub description { 'Verizon Wireless: http://www.verizonwireless.com' }
+sub description { 'Verizon Wireless: https://www.verizonwireless.com' }
 sub make {
     # Detect an error from Verizon
     # @param         [Hash] mhead       Message headers of a bounce email

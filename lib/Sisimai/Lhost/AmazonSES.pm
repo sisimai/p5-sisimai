@@ -4,7 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-# http://aws.amazon.com/ses/
+# https://aws.amazon.com/ses/
 my $Indicators = __PACKAGE__->INDICATORS;
 my $StartingOf = {
     'message' => ['The following message to <', 'An error occurred while trying to deliver the mail '],
@@ -17,7 +17,7 @@ my $MessagesOf = { 'expired' => ['Delivery expired'] };
 # X-AWS-Outgoing: 199.255.192.156
 # X-SES-Outgoing: 2016.10.12-54.240.27.6
 sub headerlist  { ['x-aws-outgoing', 'x-ses-outgoing', 'x-amz-sns-message-id'] }
-sub description { 'Amazon SES(Sending): http://aws.amazon.com/ses/' };
+sub description { 'Amazon SES(Sending): https://aws.amazon.com/ses/' };
 sub make {
     # Detect an error from Amazon SES
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -230,7 +230,6 @@ sub json {
     return undef unless ref $argvs eq 'HASH';
     return undef unless keys %$argvs;
     return undef unless exists $argvs->{'notificationType'};
-    use Sisimai::RFC5322;
 
     # https://docs.aws.amazon.com/en_us/ses/latest/DeveloperGuide/notification-contents.html
     my $bouncetype = {
