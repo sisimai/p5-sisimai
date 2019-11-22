@@ -5,6 +5,7 @@
 /blib
 /sbin
 /set-of-emails/private
+/set-of-emails/obsoleted
 /var
 
 # Carton releated files
