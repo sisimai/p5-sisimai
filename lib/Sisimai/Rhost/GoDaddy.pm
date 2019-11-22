@@ -29,7 +29,7 @@ my $ErrorCodes = {
 
 };
 my $MessagesOf = {
-    'blocked'     => ['553 https://www.spamhaus.org/query/bl?ip=', '554 RBL Reject.'],
+    'blocked'     => ['.spamhaus.org/query/bl?ip=', '554 RBL Reject.'],
     'expired'     => ['Delivery timeout', "451 Sorry, I wasn't able to establish an SMTP connection."],
     'suspend'     => ['Account disabled'],
     'mailboxfull' => ['Account storage limit'],
@@ -52,7 +52,7 @@ sub get {
         # 192.0.2.22 has sent to too many recipients this hour. IB607 ...
         $reasontext = $ErrorCodes->{ $1 };
     } else {
-        # 553 https://www.spamhaus.org/query/bl?ip=192.0.0.222
+        # 553 http://www.spamhaus.org/query/bl?ip=192.0.0.222
         for my $e ( keys %$MessagesOf ) {
             for my $f ( @{ $MessagesOf->{ $e } } ) {
                 next if index($statusmesg, $f) == -1;
