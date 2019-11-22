@@ -203,6 +203,7 @@ sub json {
     #                                or Undef if it failed to parse or the
     #                                arguments are missing
     # @since v4.20.0
+    # @until v4.25.5
     my $class = shift;
     my $argvs = shift;
 
