@@ -148,15 +148,8 @@ sub make {
     map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
     if( $argvs->{'input'} eq 'email' ) {
         # 5. Rewrite headers of the original message in the body part
-        my $rfc822part = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
-        if( ref $rfc822part eq '' ) {
-            # Returned value from Sisimai::Lhost::* module
-            $processing->{'rfc822'} = __PACKAGE__->takeapart(\$rfc822part);
-
-        } else {
-            # Returned from Sisimai::Lhost::* modules
-            $processing->{'rfc822'} = $rfc822part;
-        }
+        my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
+        $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->takeapart(\$p);
     }
     return $processing;
 }
@@ -480,7 +473,7 @@ sub parse {
     $$bodystring .= $EndOfEmail;
 
     my $haveloaded = {};
-    my $haveparsed = undef;
+    my $parseddata = undef;
     my $modulepath = '';
 
     PARSER: while(1) {
@@ -492,16 +485,16 @@ sub parse {
         # 6. Sisimai::RFC3834
         if( Sisimai::ARF->is_arf($mailheader) ) {
             # Feedback Loop message
-            $haveparsed = Sisimai::ARF->make($mailheader, $bodystring);
-            last(PARSER) if $haveparsed;
+            $parseddata = Sisimai::ARF->make($mailheader, $bodystring);
+            last(PARSER) if $parseddata;
         }
 
         USER_DEFINED: for my $r ( @$ToBeLoaded ) {
             # Call user defined MTA modules
             next if exists $haveloaded->{ $r };
-            $haveparsed = $r->make($mailheader, $bodystring);
+            $parseddata = $r->make($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
-            last(PARSER) if $haveparsed;
+            last(PARSER) if $parseddata;
         }
 
         TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$DefaultSet ) {
@@ -509,27 +502,27 @@ sub parse {
             next if exists $haveloaded->{ $r };
             ($modulepath = $r) =~ s|::|/|g;
             require $modulepath.'.pm';
-            $haveparsed = $r->make($mailheader, $bodystring);
+            $parseddata = $r->make($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
-            last(PARSER) if $haveparsed;
+            last(PARSER) if $parseddata;
         }
 
         # When the all of Sisimai::Lhost::* modules did not return bounce data,
         # call Sisimai::RFC3464;
         require Sisimai::RFC3464;
-        $haveparsed = Sisimai::RFC3464->make($mailheader, $bodystring);
-        last(PARSER) if $haveparsed;
+        $parseddata = Sisimai::RFC3464->make($mailheader, $bodystring);
+        last(PARSER) if $parseddata;
 
         # Try to parse the message as auto reply message defined in RFC3834
-        $haveparsed = Sisimai::RFC3834->make($mailheader, $bodystring);
-        last(PARSER) if $haveparsed;
+        $parseddata = Sisimai::RFC3834->make($mailheader, $bodystring);
+        last(PARSER) if $parseddata;
 
         # as of now, we have no sample email for coding this block
         last;
     } # End of while(PARSER)
 
-    $haveparsed->{'catch'} = $havecaught if $haveparsed;
-    return $haveparsed;
+    $parseddata->{'catch'} = $havecaught if $parseddata;
+    return $parseddata;
 }
 
 sub adapt {
@@ -538,6 +531,8 @@ sub adapt {
     # @param options argvs [Hash] json     Decoded bounce object
     # @param options argvs [Code] hook     Hook method to be called
     # @return              [Hash]          Parsed and structured bounce mails
+    # @until v4.25.5
+    __PACKAGE__->warn('gone');
     my $class = shift;
     my $argvs = { @_ };
 
@@ -545,7 +540,7 @@ sub adapt {
     my $hookmethod = $argvs->{'hook'} || undef;
     my $havecaught = undef;
     my $haveloaded = {};
-    my $haveparsed = undef;
+    my $parseddata = undef;
     my $modulepath = undef;
 
     if( ref $hookmethod eq 'CODE' ) {
@@ -575,9 +570,9 @@ sub adapt {
                 warn sprintf(" ***warning: Failed to load %s: %s", $r, $@);
                 next;
             }
-            $haveparsed = $r->json($bouncedata);
+            $parseddata = $r->json($bouncedata);
             $haveloaded->{ $r } = 1;
-            last(ADAPTOR) if $haveparsed;
+            last(ADAPTOR) if $parseddata;
         }
 
         TRY_ON_FIRST: while( my $r = shift @$TryOnFirst ) {
@@ -586,9 +581,9 @@ sub adapt {
             ($modulepath = $r) =~ s|::|/|g;
             require $modulepath.'.pm';
 
-            $haveparsed = $r->json($bouncedata);
+            $parseddata = $r->json($bouncedata);
             $haveloaded->{ $r } = 1;
-            last(ADAPTOR) if $haveparsed;
+            last(ADAPTOR) if $parseddata;
         }
 
         DEFAULT_LIST: for my $r ( @$DefaultSet ) {
@@ -597,16 +592,16 @@ sub adapt {
             ($modulepath = $r) =~ s|::|/|g;
             require $modulepath.'.pm';
 
-            $haveparsed = $r->json($bouncedata);
+            $parseddata = $r->json($bouncedata);
             $haveloaded->{ $r } = 1;
-            last(ADAPTOR) if $haveparsed;
+            last(ADAPTOR) if $parseddata;
         }
         last;   # as of now, we have no sample json data for coding this block
     } # End of while(ADAPTOR)
 
-    $haveparsed->{'catch'} = $havecaught if $haveparsed;
-    map { $_->{'agent'} =~ s/\AEmail::/JSON::/g } @{ $haveparsed->{'ds'} };
-    return $haveparsed;
+    $parseddata->{'catch'} = $havecaught if $parseddata;
+    map { $_->{'agent'} =~ s/\AEmail::/JSON::/g } @{ $parseddata->{'ds'} };
+    return $parseddata;
 }
 
 sub warn {
