@@ -45,19 +45,9 @@ sub new {
     #                                   value of the arguments are missing
     my $class = shift;
     my $argvs = { @_ };
-    my $email = $argvs->{'data'}  // '';
+    my $email = $argvs->{'data'}  || return undef;
     my $field = $argvs->{'field'} || [];
     my $input = ref $email eq 'HASH' ? 'json' : 'email';
-
-    if( $input eq 'email' || $input eq 'json' ) {
-        # Plain text email message OR JSON as HASH structure
-        return undef unless $email;
-
-    } else {
-        # Unsupported value in "input"
-        warn ' ***warning: Unsupported value in "input": '.$input;
-        return undef;
-    }
 
     if( ref $field ne 'ARRAY' ) {
         # Unsupported value in "field"
