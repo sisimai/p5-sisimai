@@ -145,7 +145,6 @@ sub make {
     }
     return undef unless keys %$bouncedata;
 
-
     $processing->{'ds'}     = $bouncedata->{'ds'};
     $processing->{'catch'}  = $bouncedata->{'catch'};
     $processing->{'rfc822'} = $bouncedata->{'rfc822'};
