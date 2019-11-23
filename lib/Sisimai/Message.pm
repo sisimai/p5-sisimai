@@ -575,17 +575,6 @@ sub adapt {
             last(ADAPTOR) if $parseddata;
         }
 
-        TRY_ON_FIRST: while( my $r = shift @$TryOnFirst ) {
-            # Try MTA module candidates which are detected from object key names
-            next if exists $haveloaded->{ $r };
-            ($modulepath = $r) =~ s|::|/|g;
-            require $modulepath.'.pm';
-
-            $parseddata = $r->json($bouncedata);
-            $haveloaded->{ $r } = 1;
-            last(ADAPTOR) if $parseddata;
-        }
-
         DEFAULT_LIST: for my $r ( @$DefaultSet ) {
             # Default order of MTA modules
             next if exists $haveloaded->{ $r };
