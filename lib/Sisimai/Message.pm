@@ -145,10 +145,7 @@ sub make {
     }
     return undef unless keys %$bouncedata;
 
-    $processing->{'ds'}     = $bouncedata->{'ds'};
-    $processing->{'catch'}  = $bouncedata->{'catch'};
-    $processing->{'rfc822'} = $bouncedata->{'rfc822'};
-
+    map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
     if( $argvs->{'input'} eq 'email' ) {
         # 5. Rewrite headers of the original message in the body part
         my $rfc822part = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
