@@ -152,7 +152,7 @@ my $Pattern = {
         ],
     },
 };
-my $SubjectTab = __PACKAGE__->by('subject');
+my $Subject = __PACKAGE__->by('subject');
 
 sub make {
     # Check headers for detecting MTA module and returns the order of modules
@@ -171,10 +171,10 @@ sub make {
     # Sisimai::Order->by('subject') method
     my $order = [];
     my $title = lc $heads->{'subject'};
-    for my $e ( keys %$SubjectTab ) {
+    for my $e ( keys %$Subject ) {
         # Get MTA list from the subject header
         next if index($title, $e) == -1;
-        push @$order, @{ $SubjectTab->{ $e } }; # Matched and push MTA list
+        push @$order, @{ $Subject->{ $e } }; # Matched and push MTA list
         last;
     }
     return $order;
