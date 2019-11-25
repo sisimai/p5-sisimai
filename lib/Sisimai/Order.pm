@@ -206,15 +206,6 @@ sub another {
     return [@$OrderE1, @$OrderE2, @$OrderE3, @$OrderE4, @$OrderE5, @$OrderE9];
 };
 
-sub forjson {
-    # Returns a list of MTA modules which are ebale to read JSON structure
-    # This method will be removed at the future release of Sisimai
-    # @return   [Array] Ordered module list
-    # @since v4.25.4
-    # @until v4.25.6
-    return $OrderJ1;
-}
-
 sub headers {
     # Make email header list in each MTA module
     # @return   [Hash] Header list to be parsed
@@ -238,6 +229,15 @@ sub headers {
         }
     }
     return $table;
+}
+
+sub forjson {
+    # Returns a list of MTA modules which are ebale to read JSON structure
+    # This method will be removed at the future release of Sisimai
+    # @return   [Array] Ordered module list
+    # @since v4.25.4
+    # @until v4.25.6
+    return $OrderJ1;
 }
 
 sub warn {
