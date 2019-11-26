@@ -5,7 +5,7 @@ use Sisimai::Order;
 
 my $PackageName = 'Sisimai::Order';
 my $MethodNames = {
-    'class' => ['by', 'default', 'another', 'headers', 'forjson'],
+    'class' => ['make', 'by', 'default', 'another', 'headers', 'forjson'],
     'object' => [],
 };
 
@@ -13,25 +13,28 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
+    my $pattern = $PackageName->make({ 'subject' => 'delivery failure' });
     my $default = $PackageName->default;
     my $another = $PackageName->another;
     my $headers = $PackageName->headers;
     my $orderby = $PackageName->by('subject');
     my $forjson = $PackageName->forjson;
 
+    isa_ok $pattern, 'ARRAY';
     isa_ok $default, 'ARRAY';
     isa_ok $another, 'ARRAY';
     isa_ok $forjson, 'ARRAY';
     isa_ok $headers, 'HASH';
     isa_ok $orderby, 'HASH';
 
+    ok scalar @$pattern, scalar(@$pattern).' Modules';
     ok scalar @$default, scalar(@$default).' Modules';
     ok scalar @$another, scalar(@$another).' Modules';
     ok scalar @$forjson, scalar(@$forjson).' Modules';
     ok keys %$headers, scalar(keys %$headers).' Headers';
     ok keys %$orderby, scalar(keys %$orderby).' Patterns';
 
-    for my $v ( @$default, @$another, @$forjson ) {
+    for my $v ( @$pattern, @$default, @$another, @$forjson ) {
         # Module name test
         like $v, qr/\ASisimai::Lhost::/, $v;
         use_ok $v;
