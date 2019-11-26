@@ -157,12 +157,10 @@ my $Subject = __PACKAGE__->by('subject');
 sub make {
     # Check headers for detecting MTA module and returns the order of modules
     # @param         [Hash] heads   Email header data
-    # @param         [String] input "email" or "json"
     # @return        [Array]        Order of MTA modules
     # @since         v4.25.4
     my $class = shift;
     my $heads = shift || return [];
-    my $input = shift || 'email';
 
     return [] unless exists $heads->{'subject'};
     return [] unless $heads->{'subject'};
