@@ -14,13 +14,8 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
     my $default = $PackageName->default;
-    my $another = $PackageName->another;
-    my $headers = $PackageName->headers;
 
     isa_ok $default, 'ARRAY';
-    isa_ok $another, 'ARRAY';
-    isa_ok $headers, 'HASH';
-
     ok scalar @$default, scalar(@$default).' Modules';
 
     for my $v ( @$default ) {
