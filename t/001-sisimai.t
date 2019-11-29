@@ -16,7 +16,6 @@ my $MethodNames = {
 my $SampleEmail = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
     'maildir' => './set-of-emails/maildir/bsd',
-    'jsonobj' => './set-of-emails/jsonobj/json-amazonses-01.json',
     'memory'  => './set-of-emails/mailbox/mbox-1',
 };
 my $IsNotBounce = {
@@ -48,26 +47,13 @@ MAKE_TEST: {
     eval { $PackageName->make('/dev/null', 'field' => 22) };
     like $@, qr/error: "field" accepts an array reference only/;
 
-    for my $e ( 'mailbox', 'maildir', 'jsonobj', 'memory' ) {
+    for my $e ( 'mailbox', 'maildir', 'memory' ) {
         MAKE: {
             my $parseddata = undef;
             my $damnedhash = undef;
             my $jsonstring = undef;
 
-            if( $e eq 'jsonobj' ) {
-                my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
-                my $jsonparser = JSON->new;
-                my $jsonobject = $jsonparser->decode(<$filehandle>);
-
-                ok ref $filehandle;
-                ok ref $jsonparser;
-                ok ref $jsonobject;
-                $filehandle->close;
-
-                $parseddata = $PackageName->make($jsonobject);
-                $parseddata = $PackageName->make([$jsonobject]);
-
-            } elsif( $e eq 'memory' ) {
+            if( $e eq 'memory' ) {
                 my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
                 my $entiremail = undef;
 
@@ -115,92 +101,53 @@ MAKE_TEST: {
                 ok length $jsonstring, 'length(dump("json")) = '.length $jsonstring;
             }
 
-            my $callbackto = undef;
             my $havecaught = undef;
-            if( $e eq 'jsonobj' ) {
-                # JSON
-                $callbackto = sub {
-                    my $argvs = shift;
-                    my $catch = { 
-                        'type' => $argvs->{'datasrc'},
-                        'feedbackid' => '',
-                        'account-id' => '',
-                        'source-arn' => '',
-                    };
-
-                    if( $argvs->{'datasrc'} eq 'json' ) {
-                        $catch->{'feedbackid'} = $argvs->{'bounces'}->{'bounce'}->{'feedbackId'} || '';
-                        $catch->{'account-id'} = $argvs->{'bounces'}->{'mail'}->{'sendingAccountId'} || '';
-                        $catch->{'source-arn'} = $argvs->{'bounces'}->{'mail'}->{'sourceArn'} || '';
-                    }
-                    return $catch;
+            my $callbackto = sub {
+                my $argvs = shift;
+                my $catch = { 
+                    'type' => $argvs->{'datasrc'},
+                    'x-mailer' => '',
+                    'return-path' => '',
+                    'x-virus-scanned' => '',
                 };
 
-                my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
-                my $jsonparser = JSON->new;
-                my $jsonobject = $jsonparser->decode(<$filehandle>);
-
-                $filehandle->close;
-                $havecaught = $PackageName->make($jsonobject, 'hook' => $callbackto, 'input' => 'json');
-
-            } else {
-                $callbackto = sub {
-                    my $argvs = shift;
-                    my $catch = { 
-                        'type' => $argvs->{'datasrc'},
-                        'x-mailer' => '',
-                        'return-path' => '',
-                        'x-virus-scanned' => '',
-                    };
-
-                    if( $argvs->{'datasrc'} eq 'email' ) {
-                        $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
-                        $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '';
-                        $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
-                        $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
-                    }
-                    return $catch;
-                };
-                $havecaught = $PackageName->make($SampleEmail->{ $e },
-                    'hook'  => $callbackto,
-                    'input' => 'email',
-                    'field' => ['X-Virus-Scanned'],
-                );
-            }
+                if( $argvs->{'datasrc'} eq 'email' ) {
+                    $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
+                    $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '';
+                    $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
+                    $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
+                }
+                return $catch;
+            };
+            $havecaught = $PackageName->make($SampleEmail->{ $e },
+                'hook'  => $callbackto,
+                'input' => 'email',
+                'field' => ['X-Virus-Scanned'],
+            );
 
             for my $ee ( @$havecaught ) {
                 isa_ok $ee, 'Sisimai::Data';
                 isa_ok $ee->catch, 'HASH';
 
-                if( $e eq 'jsonobj' ) {
-                    # jsonobj
-                    is $ee->catch->{'type'}, 'json';
-                    ok length $ee->catch->{'feedbackid'};
-                    ok length $ee->catch->{'account-id'};
-                    ok length $ee->catch->{'source-arn'};
+                is $ee->catch->{'type'}, 'email';
+                ok defined $ee->catch->{'x-mailer'};
+                if( length $ee->catch->{'x-mailer'} ) {
+                    like $ee->catch->{'x-mailer'}, qr/[A-Z]/;
+                }
 
-                } else {
-                    # mailbox, maildir
-                    is $ee->catch->{'type'}, 'email';
-                    ok defined $ee->catch->{'x-mailer'};
-                    if( length $ee->catch->{'x-mailer'} ) {
-                        like $ee->catch->{'x-mailer'}, qr/[A-Z]/;
-                    }
+                ok defined $ee->catch->{'return-path'};
+                if( length $ee->catch->{'return-path'} ) {
+                    like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
+                }
 
-                    ok defined $ee->catch->{'return-path'};
-                    if( length $ee->catch->{'return-path'} ) {
-                        like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
-                    }
+                ok defined $ee->catch->{'from'};
+                if( length $ee->catch->{'from'} ) {
+                    like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|<?mailer-daemon>?)/i;
+                }
 
-                    ok defined $ee->catch->{'from'};
-                    if( length $ee->catch->{'from'} ) {
-                        like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|<?mailer-daemon>?)/i;
-                    }
-
-                    ok defined $ee->catch->{'x-virus-scanned'};
-                    if( length $ee->catch->{'x-virus-scanned'} ) {
-                        like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam)/i;
-                    }
+                ok defined $ee->catch->{'x-virus-scanned'};
+                if( length $ee->catch->{'x-virus-scanned'} ) {
+                    like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam)/i;
                 }
             }
 

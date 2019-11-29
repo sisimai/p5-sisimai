@@ -43,7 +43,7 @@ my $HEADERTABLE = {
 
 BUILD_FLATTEN_RFC822HEADER_LIST: {
     # Convert $HEADER: hash reference to flatten hash reference for being
-    # called from Sisimai::Bite::Email::*
+    # called from Sisimai::Lhost::*
     for my $v ( values %$HEADERTABLE ) {
         $HEADERINDEX->{ $_ } = 1 for @$v;
     }
@@ -274,7 +274,7 @@ header.
     my $v = 'from mx.example.org (c1.example.net [192.0.2.1]) by mx.example.jp';
     my $r = Sisimai::RFC5322->received($v);
 
-    warn Dumper $r; 
+    warn Dumper $r;
     $VAR1 = [
         'mx.example.org',
         'mx.example.jp'
@@ -283,7 +283,7 @@ header.
 =head2 C<B<weedout(I<Array>)>>
 
 C<weedout()> returns string including only necessary fields from message/rfc822
-part. This method is called from only Sisimai::Bite::Email::* modules.
+part. This method is called from only Sisimai::Lhost::* modules.
 
     my $v = <<'EOM';
     From: postmaster@nyaan.example.org

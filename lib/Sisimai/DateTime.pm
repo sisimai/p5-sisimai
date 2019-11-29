@@ -246,7 +246,7 @@ sub parse {
     my $class = shift;
     my $argv1 = shift || return undef;
 
-    my $datestring = $argv1; 
+    my $datestring = $argv1;
        $datestring =~ s{[,](\d+)}{, $1};  # Thu,13 -> Thu, 13
        $datestring =~ s{(\d{1,2}),}{$1};    # Apr 29, -> Apr 29
     my @timetokens = split(' ', $datestring);

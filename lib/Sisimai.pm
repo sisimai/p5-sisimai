@@ -2,7 +2,7 @@ package Sisimai;
 use feature ':5.10';
 use strict;
 use warnings;
-use version; our $VERSION = version->declare('v4.25.3'); our $PATCHLV = 2;
+use version; our $VERSION = version->declare('v4.25.3'); our $PATCHLV = 3;
 
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
@@ -71,6 +71,7 @@ sub make {
         }
     } elsif( $input eq 'json' ) {
         # Decoded JSON object: 'input' => 'json'
+        warn sprintf(" ***warning: 'input' => 'json' is marked as obsoleted");
         my $type = ref $argv0;
         my @list;
 
@@ -138,17 +139,17 @@ sub engine {
     my $class = shift;
     my $table = {};
 
-    for my $e ('Bite::Email', 'Bite::JSON', 'ARF', 'RFC3464', 'RFC3834') {
+    for my $e ('Lhost', 'ARF', 'RFC3464', 'RFC3834') {
         my $r = 'Sisimai::'.$e;
-        (my $loads = $r) =~ s|::|/|g; 
+        (my $loads = $r) =~ s|::|/|g;
         require $loads.'.pm';
 
-        if( $e eq 'Bite::Email' || $e eq 'Bite::JSON' ) {
-            # Sisimai::Bite::Email or Sisimai::Bite::JSON
+        if( $e eq 'Lhost' ) {
+            # Sisimai::Lhost::*
             for my $ee ( @{ $r->index } ) {
                 # Load and get the value of "description" from each module
                 my $rr = 'Sisimai::'.$e.'::'.$ee;
-                ($loads = $rr) =~ s|::|/|g; 
+                ($loads = $rr) =~ s|::|/|g;
                 require $loads.'.pm';
                 $table->{ $rr } = $rr->description;
             }
@@ -173,7 +174,7 @@ sub reason {
     for my $e ( @names ) {
         # Call ->description() method of Sisimai::Reason::*
         my $r = 'Sisimai::Reason::'.$e;
-        (my $loads = $r) =~ s|::|/|g; 
+        (my $loads = $r) =~ s|::|/|g;
         require $loads.'.pm';
         $table->{ $e } = $r->description;
     }
@@ -215,12 +216,12 @@ Japanese) and MAI (acronym of "Mail Analyzing Interface").
 
 =head2 C<B<make(I<'/path/to/mbox'>)>>
 
-C<make> method provides feature for getting parsed data from bounced email 
+C<make> method provides feature for getting parsed data from bounced email
 messages like following.
 
     use Sisimai;
     my $v = Sisimai->make('/path/to/mbox'); # or Path to Maildir/
-    #  $v = Sisimai->make(\'From Mailer-Daemon ...'); 
+    #  $v = Sisimai->make(\'From Mailer-Daemon ...');
 
     if( defined $v ) {
         for my $e ( @$v ) {
@@ -240,7 +241,7 @@ messages like following.
             my $y = $e->dump('yaml');       # Convert to YAML string
         }
 
-        # Dump entire list as a JSON 
+        # Dump entire list as a JSON
         use JSON '-convert_blessed_universally';
         my $json = JSON->new->allow_blessed->convert_blessed;
 
@@ -297,7 +298,7 @@ method like the following codes:
     };
 
     my $message = Sisimai::Message->new(
-        'data' => $mailtxt, 
+        'data' => $mailtxt,
         'hook' => $cmethod,
         'field' => ['X-Mailer', 'Precedence']
     );

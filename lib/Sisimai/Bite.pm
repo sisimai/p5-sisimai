@@ -2,11 +2,13 @@ package Sisimai::Bite;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::Lhost;
 
 sub DELIVERYSTATUS {
     # Data structure for parsed bounce messages
     # @private
     # @return [Hash] Data structure for delivery status
+    Sisimai::Lhost->warn('');
     return {
         'spec'         => '',   # Protocl specification
         'date'         => '',   # The value of Last-Attempt-Date header
@@ -25,9 +27,12 @@ sub DELIVERYSTATUS {
         'feedbacktype' => '',   # Feedback Type
     };
 }
-
-sub smtpagent   { my $v = shift; $v =~ s/\ASisimai::Bite:://; return $v }
-sub description { return '' }
+sub smtpagent {
+    Sisimai::Lhost->warn;
+    my $v = shift; $v =~ s/\ASisimai::Bite:://;
+    return $v
+}
+sub description { Sisimai::Lhost->warn; return '' }
 
 1;
 __END__

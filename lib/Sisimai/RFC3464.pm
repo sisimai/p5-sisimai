@@ -2,10 +2,10 @@ package Sisimai::RFC3464;
 use feature ':5.10';
 use strict;
 use warnings;
-use Sisimai::Bite::Email;
+use Sisimai::Lhost;
 
 # http://tools.ietf.org/html/rfc3464
-my $Indicators = Sisimai::Bite::Email->INDICATORS;
+my $Indicators = Sisimai::Lhost->INDICATORS;
 my $MarkingsOf = {
     'command' => qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
     'message' => qr{\A(?>
@@ -29,7 +29,7 @@ my $MarkingsOf = {
 
 sub description { 'Fallback Module for MTAs' };
 sub smtpagent   { 'RFC3464' };
-sub scan {
+sub make {
     # Detect an error for RFC3464
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
@@ -50,8 +50,8 @@ sub scan {
     return undef unless ref $mbody eq 'SCALAR';
 
     require Sisimai::MDA;
-    my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
-    my $scannedset = Sisimai::MDA->scan($mhead, $mbody);
+    my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
+    my $mdabounced = Sisimai::MDA->make($mhead, $mbody);
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $maybealias = '';    # (String) Original-Recipient field
@@ -114,7 +114,7 @@ sub scan {
                 #   The Original-Recipient field indicates the original recipient address
                 #   as specified by the sender of the message for which the DSN is being
                 #   issued.
-                # 
+                #
                 #       original-recipient-field =
                 #           "Original-Recipient" ":" address-type ";" generic-address
                 #
@@ -131,7 +131,7 @@ sub scan {
 
                     if( $x && $x ne $y ) {
                         # There are multiple recipient addresses in the message body.
-                        push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
+                        push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS;
                         $v = $dscontents->[-1];
                     }
                     $v->{'recipient'} = $y;
@@ -244,7 +244,7 @@ sub scan {
                         #       mta-name = *text
                         #
                         #   The Reporting-MTA field is defined as follows:
-                        # 
+                        #
                         #   A DSN describes the results of attempts to deliver, relay, or gateway
                         #   a message to one or more recipients.  In all cases, the Reporting-MTA
                         #   is the MTA that attempted to perform the delivery, relay, or gateway
@@ -398,7 +398,7 @@ sub scan {
 
                 if( $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
-                    push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS;
+                    push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS;
                     $b = $dscontents->[-1];
                 }
                 $b->{'recipient'} = $y;
@@ -422,7 +422,7 @@ sub scan {
             next unless $e =~ /\ATo:\s*(.+)\z/;
             my $r = Sisimai::Address->find($1, 1) || [];
             next unless scalar @$r;
-            push @$dscontents, Sisimai::Bite::Email->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
+            push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
 
             my $b = $dscontents->[-1];
             $b->{'recipient'} = $r->[0]->{'address'};
@@ -447,11 +447,11 @@ sub scan {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( $scannedset ) {
-            # Make bounce data by the values returned from Sisimai::MDA->scan()
-            $e->{'agent'}     = $scannedset->{'mda'} || __PACKAGE__->smtpagent;
-            $e->{'reason'}    = $scannedset->{'reason'} || 'undefined';
-            $e->{'diagnosis'} = $scannedset->{'message'} if $scannedset->{'message'};
+        if( $mdabounced ) {
+            # Make bounce data by the values returned from Sisimai::MDA->make()
+            $e->{'agent'}     = $mdabounced->{'mda'} || __PACKAGE__->smtpagent;
+            $e->{'reason'}    = $mdabounced->{'reason'} || 'undefined';
+            $e->{'diagnosis'} = $mdabounced->{'message'} if $mdabounced->{'message'};
             $e->{'command'}   = '';
         } else {
             # Set the value of smtpagent
@@ -480,7 +480,7 @@ Sisimai::RFC3464 - bounce mail parser class for Fallback.
 =head1 DESCRIPTION
 
 Sisimai::RFC3464 is a class which called from called from only Sisimai::Message
-when other Sisimai::Bite::Email::* modules did not detected a bounce reason.
+when other Sisimai::Lhost::* modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
@@ -496,9 +496,9 @@ C<smtpagent()> returns MDA name or string 'RFC3464'.
 
     print Sisimai::RFC3464->smtpagent;
 
-=head2 C<B<scan(I<header data>, I<reference to body string>)>>
+=head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<scan()> method parses a bounced email and return results as a array reference.
+C<make()> method parses a bounced email and return results as a array reference.
 See Sisimai::Message for more details.
 
 =head1 AUTHOR

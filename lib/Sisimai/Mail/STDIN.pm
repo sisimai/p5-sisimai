@@ -21,7 +21,7 @@ sub new {
     # Constructor of Sisimai::Mail::STDIN
     # @return   [Sisimai::Mail::STDIN] Object
     my $class = shift;
-    my $param = { 
+    my $param = {
         'path'   => '<STDIN>',
         'name'   => '<STDIN>',
         'size'   => undef,

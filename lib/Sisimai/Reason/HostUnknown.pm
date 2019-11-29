@@ -37,7 +37,7 @@ sub match {
 sub true {
     # Whether the host is unknown or not
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is unknown host 
+    # @return   [Integer]               1: is unknown host
     #           [Integer]               0: is not unknown host.
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
@@ -79,8 +79,8 @@ Sisimai::Reason::HostUnknown - Bounce reason is C<hostunknown> or not.
 Sisimai::Reason::HostUnknown checks the bounce reason is C<hostunknown> or not.
 This class is called only Sisimai::Reason class.
 
-This is the error that a domain part (Right hand side of @ sign) of a 
-recipient's email address does not exist. In many case, the domain part is 
+This is the error that a domain part (Right hand side of @ sign) of a
+recipient's email address does not exist. In many case, the domain part is
 misspelled, or the domain name has been expired. Sisimai will set C<hostunknown>
 to the reason of email bounce if the value of Status: field in a bounce mail is
 C<5.1.2>.

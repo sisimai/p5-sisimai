@@ -40,7 +40,7 @@ my $SubjectSet = qr{\A(?>
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }
 sub headerlist  { [qw|auto-submitted precedence x-auto-response-suppress|] }
-sub scan {
+sub make {
     # Detect auto reply message as RFC3834
     # @param         [Hash] mhead       Message header of a bounce email
     # @options mhead [String] from      From header
@@ -51,7 +51,7 @@ sub scan {
     # @param         [String] mbody     Message body of a bounce email
     # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
     #                                   or Undef if it failed to parse or the
-    #                                   arguments are missing 
+    #                                   arguments are missing
     # @since v4.1.28
     my $class = shift;
     my $mhead = shift // return undef;
@@ -82,8 +82,8 @@ sub scan {
     }
     return undef unless $match;
 
-    require Sisimai::Bite::Email;
-    my $dscontents = [Sisimai::Bite::Email->DELIVERYSTATUS];
+    require Sisimai::Lhost;
+    my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
     my $rfc822part = '';    # (String) message/rfc822-headers part
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
@@ -167,7 +167,7 @@ Sisimai::RFC3834 - RFC3834 auto reply message detector
 =head1 DESCRIPTION
 
 Sisimai::RFC3834 is a class which called from called from only Sisimai::Message
-when other Sisimai::Bite::Email::* modules did not detected a bounce reason.
+when other Sisimai::Lhost::* modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
@@ -183,9 +183,9 @@ C<smtpagent()> returns MDA name or string 'RFC3834'.
 
     print Sisimai::RFC3834->smtpagent;
 
-=head2 C<B<scan(I<header data>, I<reference to body string>)>>
+=head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<scan()> method parses an auto replied message and return results as an array
+C<make()> method parses an auto replied message and return results as an array
 reference. See Sisimai::Message for more details.
 
 =head1 AUTHOR
@@ -194,7 +194,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

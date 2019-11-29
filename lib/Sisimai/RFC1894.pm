@@ -60,7 +60,7 @@ my $FieldGroup = {
 };
 
 sub FIELDTABLE {
-    # Return pairs that a field name and key name defined in Sisimai::Bite class
+    # Return pairs that a field name and key name defined in Sisimai::Lhost class
     return {
         'action'            => 'action',
         'arrival-date'      => 'date',
@@ -116,7 +116,7 @@ sub field {
             # - Remote-MTA: DNS; mx.example.jp
             $match->[1] = uc $2;
             $match->[2] = $group eq 'host' ? lc $3 : $3;
-            $match->[2] = '' if $match->[2] =~ /\A\s+\z/;   # Remote-MTA: dns; 
+            $match->[2] = '' if $match->[2] =~ /\A\s+\z/;   # Remote-MTA: dns;
 
         } else {
             # - Action: failed
@@ -188,7 +188,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

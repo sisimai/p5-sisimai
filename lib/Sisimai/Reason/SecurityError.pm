@@ -68,10 +68,10 @@ Sisimai::Reason::SecurityError - Bounce reason is C<securityerror> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SecurityError checks the bounce reason is C<securityerror> or 
+Sisimai::Reason::SecurityError checks the bounce reason is C<securityerror> or
 not. This class is called only Sisimai::Reason class.
 
-This is the error that a security violation was detected on a destination mail 
+This is the error that a security violation was detected on a destination mail
 server. Depends on the security policy on the server, a sender's email address
 is camouflaged address. Sisimai will set C<securityerror> to the reason of email
 bounce if the value of Status: field in a bounce email is C<5.7.*>.

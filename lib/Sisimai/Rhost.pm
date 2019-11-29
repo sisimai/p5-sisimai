@@ -34,7 +34,7 @@ sub match {
         $match = 1;
         last;
     }
-    return $match; 
+    return $match;
 }
 
 sub get {
@@ -56,7 +56,7 @@ sub get {
     }
     return undef unless $rhostclass;
 
-    (my $modulepath = $rhostclass) =~ s|::|/|g; 
+    (my $modulepath = $rhostclass) =~ s|::|/|g;
     require $modulepath.'.pm';
     return $rhostclass->get($argvs);
 }

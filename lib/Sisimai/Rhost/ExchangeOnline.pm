@@ -89,7 +89,7 @@ my $ReStatuses = {
     ],
 };
 my $MessagesOf = {
-    # Copied and converted from Sisimai::Bite::Email::Exchange2007
+    # Copied and converted from Sisimai::Lhost::Exchange2007
     'expired'       => ['QUEUE.Expired'],
     'hostunknown'   => ['SMTPSEND.DNS.NonExistentDomain'],
     'mesgtoobig'    => ['RESOLVER.RST.RecipSizeLimit', 'RESOLVER.RST.RecipientSizeLimit'],

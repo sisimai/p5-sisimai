@@ -4,67 +4,63 @@ sub list {
     my $f = [ qw|
         Address.pm
         ARF.pm
-        Bite.pm
-            Bite/Email.pm
-                Bite/Email/Activehunter.pm
-                Bite/Email/Amavis.pm
-                Bite/Email/AmazonSES.pm
-                Bite/Email/AmazonWorkMail.pm
-                Bite/Email/Aol.pm
-                Bite/Email/ApacheJames.pm
-                Bite/Email/Bigfoot.pm
-                Bite/Email/Biglobe.pm
-                Bite/Email/Courier.pm
-                Bite/Email/Domino.pm
-                Bite/Email/EinsUndEins.pm
-                Bite/Email/Exchange2003.pm
-                Bite/Email/Exchange2007.pm
-                Bite/Email/Exim.pm
-                Bite/Email/EZweb.pm
-                Bite/Email/Facebook.pm
-                Bite/Email/FML.pm
-                Bite/Email/GMX.pm
-                Bite/Email/Google.pm
-                Bite/Email/GSuite.pm
-                Bite/Email/IMailServer.pm
-                Bite/Email/InterScanMSS.pm
-                Bite/Email/KDDI.pm
-                Bite/Email/MailFoundry.pm
-                Bite/Email/MailMarshalSMTP.pm
-                Bite/Email/MailRu.pm
-                Bite/Email/McAfee.pm
-                Bite/Email/MessageLabs.pm
-                Bite/Email/MessagingServer.pm
-                Bite/Email/mFILTER.pm
-                Bite/Email/MXLogic.pm
-                Bite/Email/Notes.pm
-                Bite/Email/Office365.pm
-                Bite/Email/OpenSMTPD.pm
-                Bite/Email/Outlook.pm
-                Bite/Email/Postfix.pm
-                Bite/Email/qmail.pm
-                Bite/Email/ReceivingSES.pm
-                Bite/Email/SendGrid.pm
-                Bite/Email/Sendmail.pm
-                Bite/Email/SurfControl.pm
-                Bite/Email/UserDefined.pm
-                Bite/Email/V5sendmail.pm
-                Bite/Email/Verizon.pm
-                Bite/Email/X1.pm
-                Bite/Email/X2.pm
-                Bite/Email/X3.pm
-                Bite/Email/X4.pm
-                Bite/Email/X5.pm
-                Bite/Email/Yahoo.pm
-                Bite/Email/Yandex.pm
-                Bite/Email/Zoho.pm
-            Bite/JSON.pm
-                Bite/JSON/AmazonSES.pm
-                Bite/JSON/SendGrid.pm
         Data.pm
             Data/JSON.pm
             Data/YAML.pm
         DateTime.pm
+        Lhost.pm
+            Lhost/Activehunter.pm
+            Lhost/Amavis.pm
+            Lhost/AmazonSES.pm
+            Lhost/AmazonWorkMail.pm
+            Lhost/Aol.pm
+            Lhost/ApacheJames.pm
+            Lhost/Bigfoot.pm
+            Lhost/Biglobe.pm
+            Lhost/Courier.pm
+            Lhost/Domino.pm
+            Lhost/EinsUndEins.pm
+            Lhost/Exchange2003.pm
+            Lhost/Exchange2007.pm
+            Lhost/Exim.pm
+            Lhost/EZweb.pm
+            Lhost/Facebook.pm
+            Lhost/FML.pm
+            Lhost/GMX.pm
+            Lhost/Google.pm
+            Lhost/GSuite.pm
+            Lhost/IMailServer.pm
+            Lhost/InterScanMSS.pm
+            Lhost/KDDI.pm
+            Lhost/MailFoundry.pm
+            Lhost/MailMarshalSMTP.pm
+            Lhost/MailRu.pm
+            Lhost/McAfee.pm
+            Lhost/MessageLabs.pm
+            Lhost/MessagingServer.pm
+            Lhost/mFILTER.pm
+            Lhost/MXLogic.pm
+            Lhost/Notes.pm
+            Lhost/Office365.pm
+            Lhost/OpenSMTPD.pm
+            Lhost/Outlook.pm
+            Lhost/Postfix.pm
+            Lhost/qmail.pm
+            Lhost/ReceivingSES.pm
+            Lhost/SendGrid.pm
+            Lhost/Sendmail.pm
+            Lhost/SurfControl.pm
+            Lhost/UserDefined.pm
+            Lhost/V5sendmail.pm
+            Lhost/Verizon.pm
+            Lhost/X1.pm
+            Lhost/X2.pm
+            Lhost/X3.pm
+            Lhost/X4.pm
+            Lhost/X5.pm
+            Lhost/Yahoo.pm
+            Lhost/Yandex.pm
+            Lhost/Zoho.pm
         MIME.pm
         Mail.pm
             Mail/Mbox.pm
@@ -72,12 +68,8 @@ sub list {
             Mail/Memory.pm
             Mail/STDIN.pm
         Message.pm
-            Message/Email.pm
-            Message/JSON.pm
         MDA.pm
         Order.pm
-            Order/Email.pm
-            Order/JSON.pm
         Reason.pm
             Reason/Blocked.pm
             Reason/ContentError.pm

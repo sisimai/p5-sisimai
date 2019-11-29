@@ -31,7 +31,7 @@ my $rwaccessors = [
 Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
 Class::Accessor::Lite->mk_accessors(@$rwaccessors);
 
-sub undisclosed { 
+sub undisclosed {
     # Return pseudo recipient or sender address
     # @param    [String] atype  Address type: 'r' or 's'
     # @return   [String, Undef] Pseudo recipient address or sender address or
@@ -47,7 +47,7 @@ sub undisclosed {
 sub new {
     # Old constructor of Sisimai::Address, wrapper method of make()
     # @param        [String] email            Email address
-    # @return       [Sisimai::Address, Undef] Object or Undef when the email 
+    # @return       [Sisimai::Address, Undef] Object or Undef when the email
     #                                         address was not valid.
     my $class = shift;
     my $email = shift // return undef;
@@ -129,7 +129,7 @@ sub find {
     # @param    [String] argv1  String including email address
     # @param    [Boolean] addrs 0 = Returns list including all the elements
     #                           1 = Returns list including email addresses only
-    # @return   [Array, Undef]  Email address list or Undef when there is no 
+    # @return   [Array, Undef]  Email address list or Undef when there is no
     #                           email address in the argument
     # @since    v4.22.0
     my $class = shift;

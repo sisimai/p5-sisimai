@@ -2,10 +2,10 @@ use strict;
 use warnings;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-require './t/600-bite-email-code';
+require './t/600-lhost-code';
 
 my $enginename = 'RFC3464';
-my $enginetest = Sisimai::Bite::Email::Code->maketest;
+my $enginetest = Sisimai::Lhost::Code->maketest;
 my $isexpected = [
     { 'n' => '01', 's' => qr/\A5[.]1[.]1\z/,      'r' => qr/mailboxfull/,   'a' => qr/dovecot/, 'b' => qr/\A1\z/ },
     { 'n' => '03', 's' => qr/\A5[.]0[.]0\z/,      'r' => qr/policyviolation/, 'a' => qr/RFC3464/, 'b' => qr/\A1\z/ },

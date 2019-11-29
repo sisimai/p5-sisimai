@@ -120,7 +120,7 @@ Sisimai::Reason::Rejected - Bounce reason is C<rejected> or not.
 Sisimai::Reason::Rejected checks the bounce reason is C<rejected> or not. This
 class is called only Sisimai::Reason class.
 
-This is the error that a connection to destination server was rejected by a 
+This is the error that a connection to destination server was rejected by a
 sender's email address (envelope from). Sisimai set C<rejected> to the reason
 of email bounce if the value of Status: field in a bounce email is C<5.1.8> or
 the connection has been rejected due to the argument of SMTP MAIL command.

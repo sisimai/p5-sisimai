@@ -29,7 +29,7 @@ my $ErrorCodes = {
 
 };
 my $MessagesOf = {
-    'blocked'     => ['553 http://www.spamhaus.org/query/bl?ip=', '554 RBL Reject.'],
+    'blocked'     => ['www.spamhaus.org/query/bl?ip=', '554 RBL Reject.'],
     'expired'     => ['Delivery timeout', "451 Sorry, I wasn't able to establish an SMTP connection."],
     'suspend'     => ['Account disabled'],
     'mailboxfull' => ['Account storage limit'],

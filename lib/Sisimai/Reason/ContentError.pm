@@ -27,7 +27,7 @@ sub match {
     return 0;
 }
 
-sub true { 
+sub true {
     # Rejected email due to header format of the email
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
     # @return   [Integer]               1: rejected due to content error
@@ -55,12 +55,12 @@ Sisimai::Reason::ContentError - Bounce reason is C<contenterror> or not.
 Sisimai::Reason::ContentError checks the bounce reason is C<contenterror> or not.
 This class is called only Sisimai::Reason class.
 
-This is the error that a destination mail server has rejected email due to 
+This is the error that a destination mail server has rejected email due to
 header format of the email like the following. Sisimai will set C<contenterror>
-to the reason of email bounce if the value of Status: field in a bounce email 
+to the reason of email bounce if the value of Status: field in a bounce email
 is "5.6.*".
 
-=over 
+=over
 
 =item - 8 bit data in message header
 

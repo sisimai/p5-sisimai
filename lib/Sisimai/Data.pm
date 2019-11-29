@@ -91,7 +91,7 @@ sub make {
     # Another constructor of Sisimai::Data
     # @param        [Hash] argvs       Data and orders
     # @option argvs [Sisimai::Message] Data Object
-    # @return       [Array, Undef]     List of Sisimai::Data or Undef if the 
+    # @return       [Array, Undef]     List of Sisimai::Data or Undef if the
     #                                  argument is not Sisimai::Message object
     my $class = shift;
     my $argvs = { @_ };
@@ -211,7 +211,7 @@ sub make {
                 # Convert from the date string to an object then calculate time
                 # zone offset.
                 my $t = Sisimai::Time->strptime($datestring, '%a, %d %b %Y %T');
-                $p->{'timestamp'} = ($t->epoch - $zoneoffset) // undef; 
+                $p->{'timestamp'} = ($t->epoch - $zoneoffset) // undef;
             };
         }
         next unless $p->{'timestamp'};
@@ -389,7 +389,7 @@ sub damn {
     eval {
         my $v = {};
         state $stringdata = [qw|
-            token lhost rhost listid alias reason subject messageid smtpagent 
+            token lhost rhost listid alias reason subject messageid smtpagent
             smtpcommand destination diagnosticcode senderdomain deliverystatus
             timezoneoffset feedbacktype diagnostictype action replycode catch
             softbounce
@@ -450,7 +450,7 @@ Sisimai::Data generate parsed data from Sisimai::Message object.
 
 =head2 C<B<make(I<Hash>)>>
 
-C<make> generate parsed data and returns an array reference which are 
+C<make> generate parsed data and returns an array reference which are
 including Sisimai::Data objects.
 
     my $mail = Sisimai::Mail->new('/var/mail/root');
@@ -504,7 +504,7 @@ Sisimai::Data have the following properties:
 
 =head2 C<action> (I<String>)
 
-C<action> is the value of Action: field in a bounce email message such as 
+C<action> is the value of Action: field in a bounce email message such as
 C<failed> or C<delayed>.
 
     Action: failed
@@ -545,7 +545,7 @@ this value is empty.
 =head2 C<deliverystatus> (I<String>)
 
 C<deliverystatus> is the value of Status: field in a bounce message. When the
-message has no Status: field, Sisimai set pseudo value like 5.0.9XX to this 
+message has no Status: field, Sisimai set pseudo value like 5.0.9XX to this
 value. The range of values only C<4.x.x> or C<5.x.x>.
 
     Status: 5.0.0 (permanent failure)
@@ -557,10 +557,10 @@ same as the return value from host() method of C<recipient> accessor.
 
 =head2 C<diagnosticcode> (I<String>)
 
-C<diagnosticcode> is an error message picked from Diagnostic-Code: field or 
+C<diagnosticcode> is an error message picked from Diagnostic-Code: field or
 message body in a bounce message. This value and the value of C<diagnostictype>,
 C<action>, C<deliverystatus>, C<replycode>, and C<smtpcommand> will be referred
-by L<Sisimai::Reason> to decide the bounce reason. 
+by L<Sisimai::Reason> to decide the bounce reason.
 
     Diagnostic-Code: SMTP; 554 5.4.6 Too many hops
 
@@ -587,7 +587,7 @@ of C<reason> is not C<feedback>, this value will be empty.
 
 C<lhost> is a local MTA name to be used as a gateway for sending email message
 or the value of Reporting-MTA field in a bounce message. When there is no
-Reporting-MTA field in the bounce message, Sisimai try to get the value from 
+Reporting-MTA field in the bounce message, Sisimai try to get the value from
 Received header.
 
     Reporting-MTA: dns; mx4.smtp.example.co.jp
@@ -595,19 +595,19 @@ Received header.
 =head2 C<listid> (I<String>)
 
 C<listid> is the value of List-Id header of the original message. When there
-is no List-Id field in the original message or the bounce message did not 
+is no List-Id field in the original message or the bounce message did not
 include the original message, this value will be empty.
 
-    List-Id: Mailman mailing list management users 
+    List-Id: Mailman mailing list management users
 
 =head2 C<messageid> (I<String>)
 
-C<messageid> is the value of Message-Id header of the original message. When 
+C<messageid> is the value of Message-Id header of the original message. When
 the original message did not include Message-Id: header or the bounce message
 did not include the original message, this value will be empty.
 
     Message-Id: <201310160515.r9G5FZh9018575@smtpgw.example.jp>
- 
+
 
 =head2 C<recipient> (I<Sisimai::Address)>
 
@@ -634,8 +634,8 @@ address. Sisimai::Address object have the following accessors:
 
 =head2 C<reason> (I<String>)
 
-C<reason> is the value of bounce reason Sisimai detected. When this value is 
-C<undefined> or C<onhold>, it means that Sisimai could not decide the reason. 
+C<reason> is the value of bounce reason Sisimai detected. When this value is
+C<undefined> or C<onhold>, it means that Sisimai could not decide the reason.
 All the reasons Sisismai can detect are available at L<Sisimai::Reason> or web
 site L<https://libsisimai.org/en/reason/>.
 
@@ -652,7 +652,7 @@ only 4xx or 5xx.
 =head2 C<rhost> (I<String>)
 
 C<rhost> is a remote MTA name which has rejected the message you sent or the
-value of Remote-MTA: field in a bounce message. When there is no Remote-MTA 
+value of Remote-MTA: field in a bounce message. When there is no Remote-MTA
 field in the bounce message, Sisimai try to get the value from Received header.
 
     Remote-MTA: DNS; g5.example.net
@@ -664,9 +664,9 @@ as the return value from host() method of addresser accessor.
 
 =head2 C<smtpagent> (I<String>)
 
-C<smtpagent> is a module name to be used for detecting bounce reason. For 
-example, when the value is C<Sendmail>, Sisimai used L<Sisimai::Bite::Email::Sendmail>
-to get the recipient address and other delivery status information from a 
+C<smtpagent> is a module name to be used for detecting bounce reason. For
+example, when the value is C<Sendmail>, Sisimai used L<Sisimai::Lhost::Sendmail>
+to get the recipient address and other delivery status information from a
 bounce message.
 
 =head2 C<smtpcommand> (I<String>)
@@ -697,10 +697,10 @@ the values are the followings:
 
 =head2 C<subject> (I<String>)
 
-C<subject> is the value of Subject header of the original message. When the 
-original message which is included in a bounce email contains no Subject header 
-(removed by remote MTA), this value will be empty. 
-If the value of Subject header of the original message contain any multibyte 
+C<subject> is the value of Subject header of the original message. When the
+original message which is included in a bounce email contains no Subject header
+(removed by remote MTA), this value will be empty.
+If the value of Subject header of the original message contain any multibyte
 character (non-ASCII character), such as MIME encoded Japanese or German and so
 on, the value of subject in parsed data is encoded with UTF-8 again.
 
@@ -719,7 +719,7 @@ following command:
 
 =head2 C<timestamp> (I<Sisimai::Time>)
 
-C<timestamp> is the date which email has bounced as a L<Sisima::Time> (Child 
+C<timestamp> is the date which email has bounced as a L<Sisima::Time> (Child
 class of Time::Piece) object. When Sisimai::Data object is dumped as JSON, this
 value will be converted to an UNIX machine time (32 bits integer).
 
@@ -729,7 +729,7 @@ value will be converted to an UNIX machine time (32 bits integer).
 
 C<timezoneoffset> is a time zone offset of a bounce email which its email has
 bounced. The format of this value is String like C<+0900>, C<-0200>.
-If Sisimai has failed to get a value of time zone offset, this value will be 
+If Sisimai has failed to get a value of time zone offset, this value will be
 set as C<+0000>.
 
 =head1 SEE ALSO

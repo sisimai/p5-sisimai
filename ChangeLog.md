@@ -4,11 +4,36 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.3p2
+v4.25.3p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
+  - **FEATURE FOR READING JSON STRING AS AN INPUT SOURCE AND FOR PARSING JSON
+    FORMATTED BOUNCE MESSAGE WILL NOT BE SUPPORTED AT Sisimai 4.25.5** #332
+  - **The following modules for reading json string as an input source, and for
+    parsing json formatted bounce message will be removed at Sisimai 4.25.5**
+    - `Sisimai::Message::JSON`
+    - `Sisimai::Bite::JSON`
+    - `Sisimai::Bite::JSON::AmazonSES`
+    - `Sisimai::Bite::JSON::SendGrid`
+    - `Sisimai::Order::JSON`
+  - Implement a new MTA module class `Sisimai::Lhost`, it is a parent class of
+    all the MTA modules for a bounce mail returned as an email message via SMTP
+    and **THE FOLLOWING NAME SPACES WERE MARKED AS OBSOLETED OR REMOVED** #333
+    - `Sisimai::Bite`: Use `Sisimai::Lhost` instead
+    - `Sisimai::Bite::Email`: Merged into `Sisimai::Lhost`
+    - `Sisimai::Bite::Email::*`: Moved under `Sisimai::Lhost` as the same named
+      MTA module
+  - The following modules were marked as obsoleted, will be removed and merged
+    into each parent class
+    - `Sisimai::Message::Email`
+    - `Sisimai::Order::Email`
+  - USAGE AND PARAMETERS FOR THE FOLLOWING METHODS HAVE NOT BEEN CHANGED AT ALL
+    AND WILL NOT BE CHANGED AFTER Sisimai 4.25.5
+    - `Sisimai->make`
+    - `Sisimai->dump`
+    - `Sisimai::Message->new`
   - Update error message pattern for ClamSMTP at "virusdetected" reason.
   - Do not use utf8 flag
   - Multibyte characters in the original subject header will not be removed and
@@ -105,7 +130,7 @@ v4.25.0
     - `Sisimai::Reason::PolicyViolation` (postfix)
     - `Sisimai::Bite::Email::McAfee` (userunknown)
     - `Sisimai::Bite::Email::Exchange2007` (securityerror)
-  - Bug fix in `$Sisimai::Message::Email::TryOnFirst`: Module name to be loaded 
+  - Bug fix in `$Sisimai::Message::Email::TryOnFirst`: Module name to be loaded
     is checked before calling `push` function for avoiding duplication.
   - The order of `Sisimai::Bite::Email` modules to be loaded has been changed:
     Load Office365 and Outlook prior to Exchange2007 and Exchange2003.
@@ -537,7 +562,7 @@ v4.14.0
   - Issue #110, #122 Code for reading email files in a directory is improved
     and got faster than before: merged Pull-Request #123.
   - Fixed bug reported at issue #124: warning message: `use of uninitialized
-    value in substr at` is displayed when `Sisimai::Message->resolve()` method 
+    value in substr at` is displayed when `Sisimai::Message->resolve()` method
     parses an UNIX mbox which begins from blank line.
   - Merged Pull-Request #125, filehandle will not be closed until EOF of each
     UNIX mbox in `Sisimai::Mail::Mbox->read()` method.
@@ -548,7 +573,7 @@ v4.14.0
     which message body is MIME encoded. Thanks to @mrwushu.
   - Issue #134, `Sisimai::RFC3463` and `Sisimai::RFC5321` have been obsoleted
     but are not removed. Use `Sisimai::SMTP::Status`, `Sisimai::SMTP::Reply`
-    instead. 
+    instead.
   - Merged Pull-Request #138, some code blocks in `Sisimai::Message->resolve()`
     have been divided into some methods.
   - Fixed bug at issue #142, Sisimai can not parse an email that TAB or Space
@@ -613,7 +638,7 @@ v4.1.29
   - Improved document in `Sisimai::Data` and `Sisimai::Reason`, imported from
     web site: https://libsisimai.org/ .
   - Added new sample email rfc3834-03.eml to test code for `Sisimai::RFC3834`.
-  - Added new sample emails: sendmail-26,27,28,29,30,31,32.eml. 
+  - Added new sample emails: sendmail-26,27,28,29,30,31,32.eml.
 
 v4.1.28 - HAPPY 1ST BIRTHDAY
 --------------------------------------------------------------------------------
@@ -658,15 +683,15 @@ v4.1.26 - New Error Reason "toomanyconn"`
 - version: "4.1.26"
 - changes:
   - Module name changed from `Sisimai::Reason::RelayingDenied` to "NoRelaying".
-  - Registered new error reason "TooManyConn". This reason is bounced due to 
+  - Registered new error reason "TooManyConn". This reason is bounced due to
     that too many connections or exceeded connection rate limit.
   - Included many error messages listed in SendGrid "Deliverability Center":
-    "https://sendgrid.com/deliverabilitycenter/" as a regular expression at 
+    "https://sendgrid.com/deliverabilitycenter/" as a regular expression at
     Sisimai::Reason::*. Thanks to Bogdan B. and SendGrid.
   - Experimental implementation: `Sisimai::Reason->match()` is for detecting a
     bounce reason from given text as an error message.
   - Experimental impelmentation about issue #61: New MTA module implemented
-    as `Sisimai::MTA::ApacheJames`. The module is for parsing bounce emails 
+    as `Sisimai::MTA::ApacheJames`. The module is for parsing bounce emails
     which are generated by Apache James/Java Apache Mail Enterprise Server.
     Thanks to John Aldrich Quan.
   - Issue #72, Support SMTP reply code in `Sisimai::Data` object.
@@ -693,7 +718,7 @@ v4.1.25 - Reason Name "nospam" Changed To "spamdetected"
   - Update `Sisimai::MDA`, add an error message pattern defined in dovecot 1.2,
     dovecot/src/plugins/quota/quota.c.
   - Update message patterns at SpamDetected, SystemError, Blocked, Filtered,
-    RelayingDenied, NetworkError, MesgTooBig, MailboxFull, SecurityError, 
+    RelayingDenied, NetworkError, MesgTooBig, MailboxFull, SecurityError,
     UserUnknown and Suspend.
   - Fix code for detecting MIME encoded string in `Sisimai::MIME`.
   - Implement `TO_JSON` method in `Sisimai::Address` for JSON module.
@@ -727,7 +752,7 @@ v4.1.23
     field in `Sisimai::RFC3464`.
   - Emails in https://github.com/sendgrid/go-gmime/tree/master/gmime/fixtures
     and some emails have been added as a sample in eg/ directory.
-  - Add message patterns at NoSpam, MailboxFull, RelayingDenied, UserUnknown, 
+  - Add message patterns at NoSpam, MailboxFull, RelayingDenied, UserUnknown,
     Blocked, Filtered, SecurityError, Expired, HostUnknown, and NetworkError
     in Sisimai/Reason/ directory.
   - Fix bug in `Sisimai::Data` for calling `Sisimai::Time->parse()` method.
@@ -741,7 +766,7 @@ v4.1.22
 - release: "Thu, 28 May 2015 14:20:59 +0900 (JST)"
 - version: "4.1.22"
 - changes:
-  - Merged pull request #59 (Support for Microsoft custom ARF format) at 
+  - Merged pull request #59 (Support for Microsoft custom ARF format) at
     https://github.com/azumakuniyuki/p5-Sisimai/pull/59 . Thanks to @jleroy.
   - Issue #60: Add `Time::Piece` and `Module::Load` to ./cpanfile.
     Thanks to @kkdYodoKazahaya
@@ -764,7 +789,7 @@ v4.1.20
 - release: "Thu,  9 Apr 2015 14:20:59 +0900 (JST)"
 - version: "4.1.20"
 - changes:
-  - Update regular expressions of each error message pattern at SystemError.pm, 
+  - Update regular expressions of each error message pattern at SystemError.pm,
     MesgTooBig.pm and NoSpam.pm in Sisimai/Reason.
   - Add two sample emails for `make test` in eg/ directory.
 
@@ -867,7 +892,7 @@ v4.1.11 - Performance Improvements
 - changes:
   - Improved code in Sisimai/Mail/Mbox.pm: using `substr()` function instead of
     a regular expression is 1.46 times faster than before.
-  - Code improvement in Sisimai/Reason.pm: using `grep {}` block instead of a 
+  - Code improvement in Sisimai/Reason.pm: using `grep {}` block instead of a
     regular expression is 133% faster than before.
   - Revert commit 0c7782cecafdc923d3c82b81a201a787611654ea for `Sisimai::Time`.
   - Improvement of pattern match in Sisimai/Message.pm is 2.27 times faster.
@@ -974,7 +999,7 @@ v4.1.2  - Key Name Changed To "timestamp"
 - changes:
   - Require `Time::Local` 1.19 or later for fixing issue #21, #23, and #24.
   - **Key name of time stamp has been changed from `date` to `timestamp`**.
-  - Data sources and hash algorithm of token string in parsed data have been 
+  - Data sources and hash algorithm of token string in parsed data have been
     changed.
   - Implement the following MTA modules:
     - `Sisimai::MTA::InterScanMSS`
