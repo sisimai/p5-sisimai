@@ -4,10 +4,10 @@ use strict;
 use warnings;
 
 my $RhostClass = {
-    qr/(?:aspmx|gmail-smtp-in)[.]l[.]google[.]com\z/  => 'GoogleApps',
     qr/[.](?:prod|protection)[.]outlook[.]com\z/      => 'ExchangeOnline',
-    qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/  => 'GoDaddy',
     qr/\b(?>laposte[.]net|(?:orange|wanadoo)[.]fr)\z/ => 'FrancePTT',
+    qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/  => 'GoDaddy',
+    qr/(?:aspmx|gmail-smtp-in)[.]l[.]google[.]com\z/  => 'GoogleApps',
     qr/[.](?:ezweb[.]ne[.]jp|au[.]com)\z/             => 'KDDI',
     qr/mx[0-9]+[.]qq[.]com\z/                         => 'TencentQQ',
 };
