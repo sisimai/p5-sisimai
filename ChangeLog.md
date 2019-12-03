@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.3p3
+v4.25.4
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Tue,  3 Dec 2019 12:22:22 +0900 (JST)"
+- version: "4.25.4"
 - changes:
   - #332 **THE ABILITY TO READ JSON STRING AS AN INPUT SOURCE AND TO PARSE JSON
     FORMATTED BOUNCE MESSAGE WILL NOT BE SUPPORTED AT Sisimai 4.25.5**
@@ -34,6 +34,7 @@ v4.25.3p3
     - `Sisimai->make`
     - `Sisimai->dump`
     - `Sisimai::Message->new`
+  - Implement `Sisimai::Rhost::IUA` for SMTP error codes at https://www.i.ua/.
   - Update error message pattern for ClamSMTP at "virusdetected" reason.
   - Do not use utf8 flag
   - Multibyte characters in the original subject header will not be removed and
