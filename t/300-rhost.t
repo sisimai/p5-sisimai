@@ -29,6 +29,7 @@ MAKE_TEST: {
         'smtpz4.laposte.net',
         'smtp-in.orange.fr',
         'mx2.qq.com',
+        'mx3.email.ua',
     ];
 
     for my $e ( @$host ) {

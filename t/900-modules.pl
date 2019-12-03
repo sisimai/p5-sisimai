@@ -109,6 +109,7 @@ sub list {
             Rhost/FrancePTT.pm
             Rhost/GoDaddy.pm
             Rhost/GoogleApps.pm
+            Rhost/IUA.pm
             Rhost/KDDI.pm
             Rhost/TencentQQ.pm
         SMTP.pm
