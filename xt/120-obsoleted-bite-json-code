@@ -45,7 +45,6 @@ my $moduletest = sub {
         # Open each json file in set-of-emails/ directory
         my $indexlabel = sprintf("%02d", $e->{'n'});
         my $samplefile = undef;
-        my $filehandle = undef;
         my $jsonobject = undef;
         my $bouncedata = [];
 
@@ -64,10 +63,12 @@ my $moduletest = sub {
             # Public sample
             $samplefile = sprintf("./%s/json-%s-%02d.json", $samplepath, lc $E, $e->{'n'});
         }
+        next unless -e $samplefile;
 
         ok -f $samplefile, sprintf("[%s] %s/json(path) = %s", $indexlabel, $E, $samplefile);
         ok -s $samplefile, sprintf("[%s] %s/json(size) = %s", $indexlabel, $E, -s $samplefile);
 
+        my $filehandle = undef;
         eval {
             $filehandle = IO::File->new($samplefile, 'r');
             $jsonobject = $jsonparser->decode(<$filehandle>);
@@ -228,7 +229,7 @@ my $moduletest = sub {
         } # End of READ_EACH_EMAIL
 
     } # End of PARSE_EACH_EMAIL
-    ok $emailindex, sprintf("%s|the number of json objects = %d", $M, $emailindex);
+    ok defined $emailindex, sprintf("%s|the number of json objects = %d", $M, $emailindex);
 };
 
 sub maketest { return $moduletest }
