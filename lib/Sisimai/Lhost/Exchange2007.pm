@@ -113,9 +113,11 @@ sub make {
                     $v->{'recipient'} = $1;
                     $recipients++;
 
-                } elsif( $e =~ /\A[#]([45]\d{2})[ ]([45][.]\d[.]\d+)[ ].+\z/ ) {
+                } elsif( $e =~ /([45]\d{2})[ ]([45][.]\d[.]\d+)[ ].+\z/ ) {
                     # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
                     # #550 5.2.3 RESOLVER.RST.RecipSizeLimit; message too large for this recipien=
+                    # Remote Server returned '550 5.1.1 RESOLVER.ADR.RecipNotFound; not found'
+                    # 3/09/2016 8:05:56 PM - Remote Server at mydomain.com (10.1.1.3) returned '550 4.4.7 QUEUE.Expired; message expired'
                     # t ##
                     $v->{'replycode'} = int $1;
                     $v->{'status'}    = $2;
