@@ -282,7 +282,7 @@ X-Failed-Recipients, which MTA modules for JSON structure.
 
 =head2 C<B<by(I<STRING>)>>
 
-C<by()> recieves a pattern name string as the 1st argument and returns a table
+C<by()> receives a pattern name string as the 1st argument and returns a table
 of MTA module. As of present, only C<subject> is supported at the 1st argument.
 
     my $tab = Sisimai::Order->by('subject');
