@@ -6,6 +6,13 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.25.4
 --------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - # 343 Fix little spelling error at `Sisimai::Order`. Thanks to @guimard.
+
+v4.25.4
+--------------------------------------------------------------------------------
 - release: "Tue,  3 Dec 2019 12:22:22 +0900 (JST)"
 - version: "4.25.4"
 - changes:
