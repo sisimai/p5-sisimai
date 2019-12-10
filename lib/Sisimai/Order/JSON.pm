@@ -8,7 +8,6 @@ sub default {
     # Make default order of MTA modules to be loaded
     # @return   [Array] Default order list of MTA modules
     # @since v4.13.1
-    #warn sprintf(" ***warning: %s->default is marked as obsoleted. Use %s->default instead.\n", __PACKAGE__, 'Sisimai::Order');
     my $class = shift; $class->SUPER::warn('forjson');
     return $class->SUPER::forjson;
 }
