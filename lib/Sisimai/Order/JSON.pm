@@ -29,7 +29,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Order::JSON - Make optimized order list for calling MTA modules
+Sisimai::Order::JSON - B<OBSOLETED>: Make optimized order list for calling MTA modules
 
 =head1 SYNOPSIS
 
@@ -37,6 +37,7 @@ Sisimai::Order::JSON - Make optimized order list for calling MTA modules
 
 =head1 DESCRIPTION
 
+B<This class will be removed at v4.25.5.>
 Sisimai::Order::JSON makes optimized order list which include MTA modules to be
 loaded on first from bounce object key names in the decoded JSON object. This
 module are called from only Sisimai::Message::JSON.

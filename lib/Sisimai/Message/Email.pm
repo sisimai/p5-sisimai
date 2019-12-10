@@ -24,7 +24,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Message::Email - Convert bounce email text to data structure.
+Sisimai::Message::Email - B<OBSOLETED>: Convert bounce email text to data structure.
 
 =head1 SYNOPSIS
 
@@ -45,6 +45,7 @@ Sisimai::Message::Email - Convert bounce email text to data structure.
 
 =head1 DESCRIPTION
 
+B<This class has been merged into Sisimai::Message at v4.25.4 and will be removed at v4.25.5.>
 Sisimai::Message::Email convert bounce email text to data structure. It resolve
 email text into an UNIX From line, the header part of the mail, delivery status,
 and RFC822 header part. When the email given as a argument of "new()" method is

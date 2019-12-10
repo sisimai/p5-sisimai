@@ -44,7 +44,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Order::Email - Make optimized order list for calling MTA modules
+Sisimai::Order::Email - B<OBSOLETED>: Make optimized order list for calling MTA modules
 
 =head1 SYNOPSIS
 
@@ -52,6 +52,7 @@ Sisimai::Order::Email - Make optimized order list for calling MTA modules
 
 =head1 DESCRIPTION
 
+B<This class has been merged into Sisimai::Order at v4.25.4 and will be removed at v4.25.5.>
 Sisimai::Order::Email makes optimized order list which include MTA modules to
 be loaded on first from MTA specific headers in the bounce mail headers such as
 X-Failed-Recipients. This module are called from only Sisimai::Message::Email.

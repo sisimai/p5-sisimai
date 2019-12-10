@@ -23,7 +23,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Message::JSON - Convert bounce object (decoded JSON) to data structure.
+Sisimai::Message::JSON - B<OBSOLETED>: Convert bounce object (decoded JSON) to data structure.
 
 =head1 SYNOPSIS
 
@@ -36,6 +36,7 @@ Sisimai::Message::JSON - Convert bounce object (decoded JSON) to data structure.
 
 =head1 DESCRIPTION
 
+B<This class has been merged into Sisimai::Message at v4.25.4 and will be removed at v4.25.5.>
 Sisimai::Message::JSON convert bounce object (decode JSON) to data structure.
 When the email given as a argument of "new()" method is not a decoded JSON, the
 method returns "undef".
