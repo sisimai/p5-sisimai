@@ -4,12 +4,14 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.4
+v4.25.4p1
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
   - # 343 Fix little spelling error at `Sisimai::Order`. Thanks to @guimard.
+  - # 342 Fix parser code to get an error message which is not beginning with #
+    character at `Sisimai::Lhost::Exchange2007`. Thanks to @aderumier
 
 v4.25.4
 --------------------------------------------------------------------------------
