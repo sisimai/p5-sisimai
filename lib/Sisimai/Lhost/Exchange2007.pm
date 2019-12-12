@@ -5,11 +5,24 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = { 'rfc822' => ['Original message headers:'] };
 my $MarkingsOf = {
-    'message' => qr/\ADiagnostic[ ]information[ ]for[ ]administrators:/,
+    'message' => qr{\A(?:
+         Diagnostic[ ]information[ ]for[ ]administrators:               # en-US
+        |Informations[ ]de[ ]diagnostic[ ]pour[ ]les[ ]administrateurs  # fr-FR
+        )
+    }x,
+    'rfc822'  => qr{(?:
+         Original[ ]message[ ]headers:     # en-US
+        |[ ]de[ ]message[ ]d'origine[ ]:   # fr-FR/En-têtes de message d'origine
+        )
+    }x,
     'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
-    'rhost'   => qr/\AGenerating[ ]server:[ ]?(.*)/,
+    'rhost'   => qr{\A(?:
+         Generating[ ]server            # en-US
+        |Serveur[ ]de[ ]g.+ration[ ]    # fr-FR/Serveur de génération
+         ):[ ]?(.*)
+    }x,
+    'subject' => qr/\A(?:Undeliverable|Non_remis_):/,
 };
 my $NDRSubject = {
     'SMTPSEND.DNS.NonExistentDomain'=> 'hostunknown',   # 554 5.4.4 SMTPSEND.DNS.NonExistentDomain
@@ -26,7 +39,7 @@ my $NDRSubject = {
     'QUEUE.Expired'                 => 'expired',       # 550 4.4.7 QUEUE.Expired
 };
 
-# Content-Language: en-US
+# Content-Language: en-US, fr-FR
 sub headerlist  { return ['content-language'] };
 sub description { 'Microsoft Exchange Server 2007' }
 sub make {
@@ -46,7 +59,7 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless index($mhead->{'subject'},'Undeliverable:') == 0;
+    return undef unless $mhead->{'subject'} =~ $MarkingsOf->{'subject'};
     return undef unless defined $mhead->{'content-language'};
     return undef unless $mhead->{'content-language'} =~ /\A[a-z]{2}(?:[-][A-Z]{2})?\z/;
 
@@ -74,7 +87,7 @@ sub make {
 
         unless( $readcursor & $Indicators->{'message-rfc822'} ) {
             # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
+            if( $e =~ $MarkingsOf->{'rfc822'} ) {
                 $readcursor |= $Indicators->{'message-rfc822'};
                 next;
             }
