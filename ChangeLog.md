@@ -9,6 +9,8 @@ v4.25.4p1
 - release: ""
 - version: ""
 - changes:
+  - # 344 Add POD section into 2 obsoleted modules: `Sisimai::Bite::Email` and
+    `Sisimai::Bite::JSON`. Thanks to @guimard
   - # 343 Fix little spelling error at `Sisimai::Order`. Thanks to @guimard.
   - # 342 Fix parser code to get an error message which is not beginning with #
     character at `Sisimai::Lhost::Exchange2007`. Thanks to @aderumier
