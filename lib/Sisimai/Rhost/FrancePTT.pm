@@ -39,8 +39,8 @@ sub get {
     my $statusmesg = $argvs->diagnosticcode;
     my $reasontext = '';
 
-    if( $statusmesg =~ /\b(LPN|OFR|OUK)(_[0-9]{3}|[0-9]{3}[-_][0-9]{3})\b/ ) {
-        # OUK_513, LPN105-104, OFR102-104
+    if( $statusmesg =~ /\b(LPN|OFR|OUK)(_[0-9]{3}|[0-9]{3}[-_][0-9]{3})\b/i ) {
+        # OUK_513, LPN105-104, OFR102-104, ofr_506
         my $v = sprintf("%03d", substr($1.$2, -3, 3));
         $reasontext = $ErrorCodes->{ $v } || 'undefined';
     }
