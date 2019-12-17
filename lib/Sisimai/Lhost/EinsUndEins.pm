@@ -121,10 +121,9 @@ sub make {
             # SMTP error from remote server for TEXT command,
             #   host: smtp-in.orange.fr (193.252.22.65)
             #   reason: 550 5.2.0 Mail rejete. Mail rejected. ofr_506 [506]
-            $e->{'rhost'}     = $1;
-            $e->{'command'}   = 'DATA' if $e->{'diagnosis'} =~ /for TEXT command/;
-            $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'});
-
+            $e->{'rhost'}   = $1;
+            $e->{'command'} = 'DATA' if $e->{'diagnosis'} =~ /for TEXT command/;
+            $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
         } else {
             # For the following reason:
             $e->{'diagnosis'} =~ s/\A$StartingOf->{'error'}->[0]//g;
