@@ -22,6 +22,7 @@ my $ErrorCodes = {
     '421' => 'rejected',      # 5.5.3 Mail from not owned by user. LPN105_421.
     '423' => undef,           # Service refused, please try later. LPN105_423
     '424' => undef,           # Veuillez essayer plus tard. LPN105_424
+    '426' => 'suspend',       # 550 5.5.0 Le compte du destinataire est bloque. The recipient account isblocked. LPN007_426
     '506' => 'spamdetected',  # Mail rejete. Mail rejected. OFR_506 [506]
     '510' => 'blocked',       # Veuillez essayer plus tard. service refused, please try later. LPN004_510
     '513' => undef,           # Mail rejete. Mail rejected. OUK_513
