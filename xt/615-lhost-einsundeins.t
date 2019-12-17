@@ -8,8 +8,8 @@ my $enginename = 'EinsUndEins';
 my $samplepath = sprintf("./set-of-emails/private/email-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
 my $isexpected = [
-    { 'n' => '01001', 'r' => qr/undefined/ },
-    { 'n' => '01002', 'r' => qr/undefined/ },
+    { 'n' => '01001', 'r' => qr/mailboxfull/ },
+    { 'n' => '01002', 'r' => qr/mailboxfull/ },
     { 'n' => '01003', 'r' => qr/mesgtoobig/ },
 ];
 

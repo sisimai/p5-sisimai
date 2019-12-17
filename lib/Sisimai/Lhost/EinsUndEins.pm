@@ -98,17 +98,38 @@ sub make {
                 $v->{'diagnosis'} = $e;
 
             } else {
-                # Get error message and append the error message strings
-                $v->{'diagnosis'} .= ' '.$e if $v->{'diagnosis'};
+                if( length $v->{'diagnosis'} ) {
+                    # Get error message and append the error message strings
+                    $v->{'diagnosis'} .= ' '.$e;
+
+                } else {
+                    # OR the following format:
+                    #   neko@example.fr:
+                    #   SMTP error from remote server for TEXT command, host: ...
+                    $v->{'alterrors'} .= ' '.$e;
+                }
             }
         } # End of error message part
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'agent'}     =  __PACKAGE__->smtpagent;
-        $e->{'diagnosis'} =~ s/\A$StartingOf->{'error'}->[0]//g;
-        $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'agent'}       =  __PACKAGE__->smtpagent;
+        $e->{'diagnosis'} ||= $e->{'alterrors'} || '';
+
+        if( $e->{'diagnosis'} =~ /host:[ ]+(.+?)[ ]+.+[ ]+reason:.+/ ) {
+            # SMTP error from remote server for TEXT command,
+            #   host: smtp-in.orange.fr (193.252.22.65)
+            #   reason: 550 5.2.0 Mail rejete. Mail rejected. ofr_506 [506]
+            $e->{'rhost'}   = $1;
+            $e->{'command'} = 'DATA' if $e->{'diagnosis'} =~ /for TEXT command/;
+            $e->{'spec'}    = 'SMTP' if $e->{'diagnosis'} =~ /SMTP error/;
+            $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
+        } else {
+            # For the following reason:
+            $e->{'diagnosis'} =~ s/\A$StartingOf->{'error'}->[0]//g;
+        }
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
