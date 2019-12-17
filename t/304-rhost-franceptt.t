@@ -18,6 +18,8 @@ MAKE_TEST: {
         '02' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/userunknown/ },
         '03' => { 'status' => qr/\A5[.]2[.]0\z/, 'reason' => qr/spamdetected/ },
         '04' => { 'status' => qr/\A5[.]2[.]0\z/, 'reason' => qr/spamdetected/ },
+        '05' => { 'status' => qr/\A5[.]5[.]0\z/, 'reason' => qr/suspend/ },
+        '06' => { 'status' => qr/\A4[.]0[.]0\z/, 'reason' => qr/blocked/ },
     };
     is $PackageName->get, undef;
 

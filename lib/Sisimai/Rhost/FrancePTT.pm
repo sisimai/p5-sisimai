@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 my $ErrorCodes = {
-    '102' => 'spamdetected',  # 550 mwinf5c04 ME Adresse IP source bloquee pour incident de spam. Client host blocked for spamming issues. OFR006_102 Ref
+    '102' => 'blocked',       # 550 mwinf5c04 ME Adresse IP source bloquee pour incident de spam. Client host blocked for spamming issues. OFR006_102 Ref
     '103' => 'blocked',       # Service refuse. Veuillez essayer plus tard.
     '104' => 'toomanyconn',   # Too many connections, slow down. LPN105_104
     '105' => undef,           # Veuillez essayer plus tard.
