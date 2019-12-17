@@ -123,6 +123,7 @@ sub make {
             #   reason: 550 5.2.0 Mail rejete. Mail rejected. ofr_506 [506]
             $e->{'rhost'}   = $1;
             $e->{'command'} = 'DATA' if $e->{'diagnosis'} =~ /for TEXT command/;
+            $e->{'spec'}    = 'SMTP' if $e->{'diagnosis'} =~ /SMTP error/;
             $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
         } else {
             # For the following reason:
