@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.4p1
+v4.25.4p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -14,6 +14,15 @@ v4.25.4p1
   - #343 Fix little spelling error at `Sisimai::Order`. Thanks to @guimard.
   - #342 Fix parser code to get an error message which is not beginning with #
     character at `Sisimai::Lhost::Exchange2007`. Thanks to @aderumier
+  - #347 Support case insensitive error code at `Sisimai::Rhost::FrancePTT`.
+    Thanks to @aderumier
+  - #348 Code improvement at `Sisimai::Lhost::EinsUndEins` for detecting error
+    messages and setting the value of `rhost`.
+  - #349 Add 2 error code values: `102` is `blocked` and `426` is `suspend` at
+    `Sisimai::Rhost::FrancePTT` Thanks to @aderumier
+  - Add 3 sample emails: rhost-franceptt-04, 05, and 06 provided by @aderumier
+  - #350 Code improvement at `Sisimai::Lhost::Postfix` for setting `HELO` into
+    the value of `smtpcommand` in the parsed results.
 
 v4.25.4
 --------------------------------------------------------------------------------
