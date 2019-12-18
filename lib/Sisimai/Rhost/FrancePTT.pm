@@ -27,6 +27,7 @@ my $ErrorCodes = {
     '424' => undef,           # Veuillez essayer plus tard. LPN105_424
     '426' => 'suspend',       # 550 5.5.0 Le compte du destinataire est bloque. The recipient account isblocked. LPN007_426
     '505' => 'systemerror',   # 421 4.2.0 Service refuse. Veuillez essayer plus tard. Service refused, please try later. OFR005_505 [505]
+    '505' => 'systemerror',   # 421 4.2.1 Service refuse. Veuillez essayer plus tard. Service refused, please try later. LPN007_505
     '506' => 'spamdetected',  # Mail rejete. Mail rejected. OFR_506 [506]
     '510' => 'blocked',       # Veuillez essayer plus tard. service refused, please try later. LPN004_510
     '513' => undef,           # Mail rejete. Mail rejected. OUK_513
