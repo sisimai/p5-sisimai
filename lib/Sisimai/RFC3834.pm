@@ -10,6 +10,7 @@ my $AutoReply1 = {
     'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/,
     # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
     'x-auto-response-suppress' => qr/(?:oof|autoreply)/,
+    'x-apple-action' => qr/\Avacation\z/,
     'precedence' => qr/\Aauto_reply\z/,
     'subject' => qr/\A(?>
          auto:
@@ -39,7 +40,7 @@ my $SubjectSet = qr{\A(?>
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }
-sub headerlist  { [qw|auto-submitted precedence x-auto-response-suppress|] }
+sub headerlist  { [qw|auto-submitted precedence x-auto-response-suppress x-apple-action|] }
 sub make {
     # Detect auto reply message as RFC3834
     # @param         [Hash] mhead       Message header of a bounce email
