@@ -8,6 +8,7 @@ my $ErrorCodes = {
     '103' => 'blocked',       # Service refuse. Veuillez essayer plus tard.
     '104' => 'toomanyconn',   # Too many connections, slow down. LPN105_104
     '105' => undef,           # Veuillez essayer plus tard.
+    '107' => undef,           # 421 4.2.1 Service refuse. Veuillez essayer plus tard. Service refused, please try later. LPN006_107
     '108' => undef,           # 550 5.5.0 Service refuse. Veuillez essayer plus tard. service refused, please try later. LPN001_108
     '109' => undef,           # Veuillez essayer plus tard. LPN003_109
     '201' => undef,           # Veuillez essayer plus tard. OFR004_201
