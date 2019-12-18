@@ -26,6 +26,7 @@ my $MarkingsOf = {
             )
         )
     }x,
+    # 'from'=> qr/ [(]Mail Delivery System[)]\z/,
 };
 
 sub description { 'Postfix' }
@@ -45,11 +46,10 @@ sub make {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
-    # 'from'    => qr/ [(]Mail Delivery System[)]\z/,
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
 
     require Sisimai::RFC1894;
+    require Sisimai::Address;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
@@ -60,6 +60,7 @@ sub make {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $anotherset = {};    # (Hash) Another error information
+    my $nomessages = 0;     # (Integer) Delivery report unavailable
     my @commandset;         # (Array) ``in reply to * command'' list
     my $v = undef;
     my $p = '';
@@ -151,7 +152,6 @@ sub make {
 
                 } else {
                     # Alternative error message and recipient
-
                     if( $e =~ /[ \t][(]in reply to ([A-Z]{4}).*/ ) {
                         # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                         push @commandset, $1;
@@ -173,6 +173,18 @@ sub make {
                         $anotherset->{'recipient'} = $1;
                         $anotherset->{'diagnosis'} = $2;
 
+                    } elsif( index($e, '--- Delivery report unavailable ---') > -1 ) {
+                        # postfix-3.1.4/src/bounce/bounce_notify_util.c
+                        # bounce_notify_util.c:602|if (bounce_info->log_handle == 0
+                        # bounce_notify_util.c:602||| bounce_log_rewind(bounce_info->log_handle)) {
+                        # bounce_notify_util.c:602|if (IS_FAILURE_TEMPLATE(bounce_info->template)) {
+                        # bounce_notify_util.c:602|    post_mail_fputs(bounce, "");
+                        # bounce_notify_util.c:602|    post_mail_fputs(bounce, "\t--- delivery report unavailable ---");
+                        # bounce_notify_util.c:602|    count = 1;              /* xxx don't abort */
+                        # bounce_notify_util.c:602|}
+                        # bounce_notify_util.c:602|} else {
+                        $nomessages = 1;
+
                     } else {
                         # Get error message continued from the previous line
                         next unless $anotherset->{'diagnosis'};
@@ -187,11 +199,22 @@ sub make {
     }
 
     unless( $recipients ) {
-        # Fallback: set recipient address from error message
+        # Fallback: get a recipient address from error messages
         if( defined $anotherset->{'recipient'} && $anotherset->{'recipient'} ) {
-            # Set recipient address
+            # Set a recipient address
             $dscontents->[-1]->{'recipient'} = $anotherset->{'recipient'};
             $recipients++;
+
+        } else {
+            # Get a recipient address from message/rfc822 part if the delivery
+            # report was unavailable: '--- Delivery report unavailable ---'
+            if( $nomessages ) {
+                # Try to get a recipient address from To: field in the original
+                # message at message/rfc822 part
+                my $e = shift @{ [grep { /\ATo:[ ]*.+/ } @$rfc822list] };
+                $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($e);
+                $recipients++;
+            }
         }
     }
     return undef unless $recipients;
