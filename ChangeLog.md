@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.4p2
+v4.25.4p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -23,6 +23,10 @@ v4.25.4p2
   - Add 3 sample emails: rhost-franceptt-04, 05, and 06 provided by @aderumier
   - #350 Code improvement at `Sisimai::Lhost::Postfix` for setting `HELO` into
     the value of `smtpcommand` in the parsed results.
+  - Code improvements at `Sisimai::Lhost::Postfix` to parse an email which have
+    neither delivery reports nor error messages. Thanks to @aderumier
+  - Code improvements at `Sisimai::RFC3834` to parse a vacation message replied
+    automatically from iCloud. Thanks to @aderumier at #346
 
 v4.25.4
 --------------------------------------------------------------------------------
