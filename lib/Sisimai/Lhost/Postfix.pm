@@ -199,15 +199,15 @@ sub make {
     }
 
     unless( $recipients ) {
-        # Fallback: get a recipient address from error message
+        # Fallback: get a recipient address from error messages
         if( defined $anotherset->{'recipient'} && $anotherset->{'recipient'} ) {
-            # Set recipient address
+            # Set a recipient address
             $dscontents->[-1]->{'recipient'} = $anotherset->{'recipient'};
             $recipients++;
 
         } else {
-            # Get a recipient address from message/rfc822 part when
-            # the delivery report was unavailable
+            # Get a recipient address from message/rfc822 part if the delivery
+            # report was unavailable: '--- Delivery report unavailable ---'
             if( $nomessages ) {
                 # Try to get a recipient address from To: field in the original
                 # message at message/rfc822 part
