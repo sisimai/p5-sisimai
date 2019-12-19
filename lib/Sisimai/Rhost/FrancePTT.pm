@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 my $ErrorCodes = {
+    '101' => 'spamdetected',  #550 5.7.1 Service unavailable; client [X.X.X.X] blocked using Spamhaus  Les emails envoyes vers la messagerie Laposte.net ont ete bloques par nos services. Afin de regulariser votre situation, nous vous invitons a cliquer sur le lien ci-dessous et a suivre la procedure. The emails sent to the mail host Laposte.net were blocked by our services. To regularize your situation please click on the link below and follow the procedure https://www.spamhaus.org/lookup/ LPNAAA_101 (in reply to RCPT TO command))
     '102' => 'blocked',       # 550 mwinf5c04 ME Adresse IP source bloquee pour incident de spam. Client host blocked for spamming issues. OFR006_102 Ref
     '103' => 'blocked',       # Service refuse. Veuillez essayer plus tard.
     '104' => 'toomanyconn',   # Too many connections, slow down. LPN105_104
@@ -47,7 +48,7 @@ sub get {
     my $statusmesg = $argvs->diagnosticcode;
     my $reasontext = '';
 
-    if( $statusmesg =~ /\b(LPN|OFR|OUK)(_[0-9]{3}|[0-9]{3}[-_][0-9]{3})\b/i ) {
+    if( $statusmesg =~ /\b(LPN|LPNAAA|OFR|OUK)(_[0-9]{3}|[0-9]{3}[-_][0-9]{3})\b/i ) {
         # OUK_513, LPN105-104, OFR102-104, ofr_506
         my $v = sprintf("%03d", substr($1.$2, -3, 3));
         $reasontext = $ErrorCodes->{ $v } || 'undefined';
