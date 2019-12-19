@@ -14,8 +14,7 @@ my $ErrorCodes = {
 
     # 550 mwinf5c04 ME Adresse IP source bloquee pour incident de spam.
     # Client host blocked for spamming issues. OFR006_102 Ref
-    '102' => 'blocked',
-
+    #
     # refused to talk to me: 550 5.5.0 Les emails envoyes vers la messagerie Laposte.net ont ete bloques par nos services.
     # Afin de regulariser votre situation, nous vous invitons a cliquer sur le lien ci-dessous et a suivre la procedure.
     # The emails sent to the mail host Laposte.net were blocked by our services.
@@ -27,11 +26,9 @@ my $ErrorCodes = {
     # Service refused, please try later. OFR006_103 X.X.X.X [103]
     '103' => 'blocked',
 
-    # Too many connections, slow down. LPN105_104
-    '104' => 'toomanyconn',
-
     # refused to talk to me: 421 mwinf5c79 ME Trop de connexions, veuillez verifier votre configuration.
     # Too many connections, slow down. OFR005_104 [104]
+    # Too many connections, slow down. LPN105_104
     '104' => 'toomanyconn',
 
     # Veuillez essayer plus tard.
@@ -64,8 +61,6 @@ my $ErrorCodes = {
     '403' => 'rejected',
 
     # 5.0.1 Emetteur invalide. Invalid Sender. LPN105_405
-    '405' => 'rejected',
-
     # 501 5.1.0 Emetteur invalide. Invalid Sender. OFR004_405 [405] (in reply to MAIL FROM command))
     '405' => 'rejected',
 
@@ -74,9 +69,6 @@ my $ErrorCodes = {
 
     # 550 5.1.1 Adresse d au moins un destinataire invalide.
     # Invalid recipient. LPN416 (in reply to RCPT TO command)
-    '416' => 'userunknown',
-
-    # 550 5.1.1 Adresse d au moins un destinataire invalide.
     # Invalid recipient. OFR_416 [416] (in reply to RCPT TO command)
     '416' => 'userunknown',
 
@@ -105,8 +97,7 @@ my $ErrorCodes = {
 
     # 421 4.2.0 Service refuse. Veuillez essayer plus tard.
     # Service refused, please try later. OFR005_505 [505] (in reply to end of DATA command)
-    '505' => 'systemerror',
-
+    #
     # 421 4.2.1 Service refuse. Veuillez essayer plus tard.
     # Service refused, please try later. LPN007_505 (in reply to end of DATA command)
     '505' => 'systemerror',
@@ -114,7 +105,8 @@ my $ErrorCodes = {
     # Mail rejete. Mail rejected. OFR_506 [506]
     '506' => 'spamdetected',
 
-    # 550 5.5.0 Service refuse. Veuillez essayer plus tard. service refused, please try later. LPN005_510 (in reply to end of DATA command)
+    # 550 5.5.0 Service refuse. Veuillez essayer plus tard.
+    # service refused, please try later. LPN005_510 (in reply to end of DATA command)
     '510' => 'blocked',
 
     # Mail rejete. Mail rejected. OUK_513
