@@ -30,6 +30,9 @@ v4.25.4p4
   - #353 Pull-Request from @aderumier to `Sisimai::Lhost::FrancePTT`.
     - Add 2 error codes from Orange: `505` is `systemerror`, `999` is `blocked`
     - Add 2 sample emails: rhost-franceptt-07.eml, 08.eml at set-of-emails/
+  - #357 Pull-Request from @aderumier to `Sisimai::Lhost::FrancePTT`.
+    - Add 2 sample emails: rhost-franceptt-10.eml, 11.eml at set-of-emails/
+    - Add many error codes and error messages from Orange and La Poste
 
 v4.25.4
 --------------------------------------------------------------------------------
