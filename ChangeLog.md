@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.4p3
+v4.25.4p4
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -27,6 +27,9 @@ v4.25.4p3
     neither delivery reports nor error messages. Thanks to @aderumier
   - Code improvements at `Sisimai::RFC3834` to parse a vacation message replied
     automatically from iCloud. Thanks to @aderumier at #346
+  - #353 Pull-Request from @aderumier to `Sisimai::Lhost::FrancePTT`.
+    - Add 2 error codes from Orange: `505` is `systemerror`, `999` is `blocked`
+    - Add 2 sample emails: rhost-franceptt-07.eml, 08.eml at set-of-emails/
 
 v4.25.4
 --------------------------------------------------------------------------------
