@@ -10,7 +10,7 @@ my $ErrorCodes = {
     # The emails sent to the mail host Laposte.net were blocked by our services.
     # To regularize your situation please click on the link below and follow the procedure
     # https://www.spamhaus.org/lookup/ LPNAAA_101 (in reply to RCPT TO command))
-    '101' => 'spamdetected',
+    '101' => 'blocked',
 
     # 550 mwinf5c04 ME Adresse IP source bloquee pour incident de spam.
     # Client host blocked for spamming issues. OFR006_102 Ref
