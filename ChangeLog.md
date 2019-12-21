@@ -33,6 +33,11 @@ v4.25.4p5
   - #357 Pull-Request from @aderumier to `Sisimai::Rhost::FrancePTT`.
     - Add 2 sample emails: rhost-franceptt-10.eml, 11.eml at set-of-emails/
     - Add many error codes and error messages from Orange and La Poste
+  - The following obsoleted classes and modules have been removed #356
+    - `Sisimai::Message::Email`
+    - `Sisimai::Message::JSON`
+    - `Sisimai::Order::Email`
+    - `Sisimai::Order::JSON`
 
 v4.25.4
 --------------------------------------------------------------------------------
