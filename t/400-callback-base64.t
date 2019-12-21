@@ -33,7 +33,7 @@ MAKE_TEST: {
         $filehandle->close;
         ok length $mailastext;
 
-        my $p = Sisimai::Message->new('data' => $mailastext, 'input' => 'email', 'hook' => $callbackto);
+        my $p = Sisimai::Message->new('data' => $mailastext, 'hook' => $callbackto);
         isa_ok $p, 'Sisimai::Message';
         isa_ok $p->header, 'HASH', '->header';
         isa_ok $p->ds, 'ARRAY', '->ds';
