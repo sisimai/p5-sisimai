@@ -47,7 +47,6 @@ sub new {
     my $argvs = { @_ };
     my $email = $argvs->{'data'}  || return undef;
     my $field = $argvs->{'field'} || [];
-    my $input = ref $email eq 'HASH' ? 'json' : 'email';
 
     if( ref $field ne 'ARRAY' ) {
         # Unsupported value in "field"
@@ -57,9 +56,8 @@ sub new {
 
     my $methodargv = {
         'data'  => $email,
-        'hook'  => $argvs->{'hook'}  // undef,
+        'hook'  => $argvs->{'hook'} // undef,
         'field' => $field,
-        'input' => $input,
     };
 
     for my $e ('load', 'order') {
@@ -110,47 +108,36 @@ sub make {
     my $methodargv = {
         'load'  => $argvs->{'load'}  || [],
         'order' => $argvs->{'order'} || [],
-        'input' => $argvs->{'input'},
     };
     $ToBeLoaded = __PACKAGE__->load(%$methodargv);
 
-    if( $argvs->{'input'} eq 'email' ) {
-        # Email message
-        # 1. Split email data to headers and a body part.
-        return undef unless $aftersplit = __PACKAGE__->divideup(\$email);
+    # 1. Split email data to headers and a body part.
+    return undef unless $aftersplit = __PACKAGE__->divideup(\$email);
 
-        # 2. Convert email headers from text to hash reference
-        $TryOnFirst = [];
-        $processing->{'from'}   = $aftersplit->{'from'};
-        $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'}, $headerlist);
+    # 2. Convert email headers from text to hash reference
+    $TryOnFirst = [];
+    $processing->{'from'}   = $aftersplit->{'from'};
+    $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'}, $headerlist);
 
-        # 3. Check headers for detecting MTA module
-        unless( scalar @$TryOnFirst ) {
-            push @$TryOnFirst, @{ Sisimai::Order->make($processing->{'header'}, 'email') };
-        }
-
-        # 4. Rewrite message body for detecting the bounce reason
-        $methodargv = {
-            'hook' => $hookmethod,
-            'mail' => $processing,
-            'body' => \$aftersplit->{'body'},
-        };
-        return undef unless $bouncedata = __PACKAGE__->parse(%$methodargv);
-
-    } else {
-        # JSON structure
-        $DefaultSet = Sisimai::Order->forjson;
-        $methodargv = { 'hook' => $hookmethod, 'json' => $email };
-        return undef unless $bouncedata = __PACKAGE__->adapt(%$methodargv);
+    # 3. Check headers for detecting MTA module
+    unless( scalar @$TryOnFirst ) {
+        push @$TryOnFirst, @{ Sisimai::Order->make($processing->{'header'}, 'email') };
     }
+
+    # 4. Rewrite message body for detecting the bounce reason
+    $methodargv = {
+        'hook' => $hookmethod,
+        'mail' => $processing,
+        'body' => \$aftersplit->{'body'},
+    };
+    return undef unless $bouncedata = __PACKAGE__->parse(%$methodargv);
     return undef unless keys %$bouncedata;
 
     map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
-    if( $argvs->{'input'} eq 'email' ) {
-        # 5. Rewrite headers of the original message in the body part
-        my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
-        $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->takeapart(\$p);
-    }
+
+    # 5. Rewrite headers of the original message in the body part
+    my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
+    $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->takeapart(\$p);
     return $processing;
 }
 
@@ -184,7 +171,6 @@ sub load {
                 require $modulepath.'.pm';
             };
             next if $@;
-            next unless $argvs->{'input'} eq 'email';
 
             for my $w ( @{ $v->headerlist } ) {
                 # Get header name which required user defined MTA module
@@ -522,74 +508,6 @@ sub parse {
     } # End of while(PARSER)
 
     $parseddata->{'catch'} = $havecaught if $parseddata;
-    return $parseddata;
-}
-
-sub adapt {
-    # Adapt bounce object as JSON with each MTA module
-    # @param               [Hash] argvs    Processing message entity.
-    # @param options argvs [Hash] json     Decoded bounce object
-    # @param options argvs [Code] hook     Hook method to be called
-    # @return              [Hash]          Parsed and structured bounce mails
-    # @until v4.25.5
-    __PACKAGE__->warn('gone');
-    my $class = shift;
-    my $argvs = { @_ };
-
-    my $bouncedata = $argvs->{'json'} || {};
-    my $hookmethod = $argvs->{'hook'} || undef;
-    my $havecaught = undef;
-    my $haveloaded = {};
-    my $parseddata = undef;
-    my $modulepath = undef;
-
-    if( ref $hookmethod eq 'CODE' ) {
-        # Call hook method
-        my $p = {
-            'datasrc' => 'json',
-            'headers' => undef,
-            'message' => undef,
-            'bounces' => $argvs->{'json'},
-        };
-        eval { $havecaught = $hookmethod->($p) };
-        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
-    }
-
-    ADAPTOR: while(1) {
-        # 1. User-Defined Module
-        # 2. MTA Module Candidates to be tried on first
-        # 3. Sisimai::Lhost::*
-        USER_DEFINED: for my $r ( @$ToBeLoaded ) {
-            # Call user defined MTA modules
-            next if exists $haveloaded->{ $r };
-            eval {
-                ($modulepath = $r) =~ s|::|/|g;
-                require $modulepath.'.pm';
-            };
-            if( $@ ) {
-                warn sprintf(" ***warning: Failed to load %s: %s", $r, $@);
-                next;
-            }
-            $parseddata = $r->json($bouncedata);
-            $haveloaded->{ $r } = 1;
-            last(ADAPTOR) if $parseddata;
-        }
-
-        DEFAULT_LIST: for my $r ( @$DefaultSet ) {
-            # Default order of MTA modules
-            next if exists $haveloaded->{ $r };
-            ($modulepath = $r) =~ s|::|/|g;
-            require $modulepath.'.pm';
-
-            $parseddata = $r->json($bouncedata);
-            $haveloaded->{ $r } = 1;
-            last(ADAPTOR) if $parseddata;
-        }
-        last;   # as of now, we have no sample json data for coding this block
-    } # End of while(ADAPTOR)
-
-    $parseddata->{'catch'} = $havecaught if $parseddata;
-    map { $_->{'agent'} =~ s/\AEmail::/JSON::/g } @{ $parseddata->{'ds'} };
     return $parseddata;
 }
 
