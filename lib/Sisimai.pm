@@ -16,7 +16,6 @@ sub make {
     # @param         [Hash]    argv1      Parser options
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
-    # @options argv1 [String]  input      Input data format: 'email', 'json'
     # @options argv1 [Array]   field      Email header names to be captured
     # @return        [Array]              Parsed objects
     # @return        [Undef]              Undef if the argument was wrong or an empty array
@@ -25,23 +24,8 @@ sub make {
     die ' ***error: wrong number of arguments' if scalar @_ % 2;
 
     my $argv1 = { @_ };
-    my $input = $argv1->{'input'} || undef;
     my $field = $argv1->{'field'} || [];
-
     die ' ***error: "field" accepts an array reference only' if ref $field ne 'ARRAY';
-    unless( $input ) {
-        # "input" did not specified, try to detect automatically.
-        my $rtype = ref $argv0;
-        if( ! $rtype || $rtype eq 'SCALAR' ) {
-            # The argument may be a path to email OR a scalar reference to an
-            # email text
-            $input = 'email';
-
-        } elsif( $rtype eq 'ARRAY' || $rtype eq 'HASH' ) {
-            # The argument may be a decoded JSON object
-            $input = 'json';
-        }
-    }
 
     my $methodargv = {};
     my $delivered1 = { 'delivered' => $argv1->{'delivered'} // 0 };
@@ -50,53 +34,17 @@ sub make {
 
     require Sisimai::Data;
     require Sisimai::Message;
+    require Sisimai::Mail;
 
-    if( $input eq 'email' ) {
-        # Path to mailbox or Maildir/, or STDIN: 'input' => 'email'
-        require Sisimai::Mail;
-        my $mail = Sisimai::Mail->new($argv0) || return undef;
+    my $mail = Sisimai::Mail->new($argv0) || return undef;
+    while( my $r = $mail->read ) {
+        # Read and parse each mail file
+        $methodargv = { 'data'  => $r, 'hook'  => $hookmethod, 'field' => $field };
+        next unless my $mesg = Sisimai::Message->new(%$methodargv);
 
-        while( my $r = $mail->read ) {
-            # Read and parse each mail file
-            $methodargv = {
-                'data'  => $r,
-                'hook'  => $hookmethod,
-                'input' => 'email',
-                'field' => $field,
-            };
-            next unless my $mesg = Sisimai::Message->new(%$methodargv);
-
-            my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
-            push @$bouncedata, @$data if scalar @$data;
-        }
-    } elsif( $input eq 'json' ) {
-        # Decoded JSON object: 'input' => 'json'
-        warn sprintf(" ***warning: 'input' => 'json' is marked as obsoleted");
-        my $type = ref $argv0;
-        my @list;
-
-        if( $type eq 'ARRAY' ) {
-            # [ {...}, {...}, ... ]
-            for my $e ( @$argv0 ) {
-                next unless ref $e eq 'HASH';
-                push @list, $e;
-            }
-        } else {
-            push @list, $argv0;
-        }
-
-        for my $e ( @list ) {
-            $methodargv = { 'data' => $e, 'hook' => $hookmethod, 'input' => 'json' };
-            next unless my $mesg = Sisimai::Message->new(%$methodargv);
-
-            my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
-            push @$bouncedata, @$data if scalar @$data;
-        }
-    } else {
-        # The value of "input" neither "email" nor "json"
-        die ' ***error: invalid value of "input"';
+        my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
+        push @$bouncedata, @$data if scalar @$data;
     }
-
     return undef unless scalar @$bouncedata;
     return $bouncedata;
 }
@@ -109,7 +57,6 @@ sub dump {
     # @param         [Hash]    argv1      Parser options
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
-    # @options argv1 [String]  input      Input data format: 'email', 'json'
     # @return        [String]             Parsed data as JSON text
     my $class = shift;
     my $argv0 = shift // return undef;
