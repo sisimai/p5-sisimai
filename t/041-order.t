@@ -5,7 +5,7 @@ use Sisimai::Order;
 
 my $PackageName = 'Sisimai::Order';
 my $MethodNames = {
-    'class' => ['make', 'by', 'default', 'another', 'headers', 'forjson'],
+    'class' => ['make', 'by', 'default', 'another', 'headers'],
     'object' => [],
 };
 
@@ -18,23 +18,20 @@ MAKE_TEST: {
     my $another = $PackageName->another;
     my $headers = $PackageName->headers;
     my $orderby = $PackageName->by('subject');
-    my $forjson = $PackageName->forjson;
 
     isa_ok $pattern, 'ARRAY';
     isa_ok $default, 'ARRAY';
     isa_ok $another, 'ARRAY';
-    isa_ok $forjson, 'ARRAY';
     isa_ok $headers, 'HASH';
     isa_ok $orderby, 'HASH';
 
     ok scalar @$pattern, scalar(@$pattern).' Modules';
     ok scalar @$default, scalar(@$default).' Modules';
     ok scalar @$another, scalar(@$another).' Modules';
-    ok scalar @$forjson, scalar(@$forjson).' Modules';
     ok keys %$headers, scalar(keys %$headers).' Headers';
     ok keys %$orderby, scalar(keys %$orderby).' Patterns';
 
-    for my $v ( @$pattern, @$default, @$another, @$forjson ) {
+    for my $v ( @$pattern, @$default, @$another ) {
         # Module name test
         like $v, qr/\ASisimai::Lhost::/, $v;
         use_ok $v;

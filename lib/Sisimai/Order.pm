@@ -77,12 +77,6 @@ my $OrderE9 = [
     'Sisimai::Lhost::SurfControl',
 ];
 
-my $OrderJ1 = [
-    # These modules support JSON structure
-    'Sisimai::Lhost::AmazonSES',
-    'Sisimai::Lhost::SendGrid',
-];
-
 # This variable don't hold MTA module name which have one or more MTA specific
 # header such as X-AWS-Outgoing, X-Yandex-Uniq.
 my $Pattern = {
@@ -229,15 +223,6 @@ sub headers {
     return $table;
 }
 
-sub forjson {
-    # Returns a list of MTA modules which are ebale to read JSON structure
-    # This method will be removed at the future release of Sisimai
-    # @return   [Array] Ordered module list
-    # @since v4.25.4
-    # @until v4.25.6
-    return $OrderJ1;
-}
-
 sub warn {
     # Print warnings about an obsoleted method
     # This method will be removed at the future release of Sisimai
@@ -300,13 +285,6 @@ C<another()> returns another list of MTA modules as an array reference. Another
 list is defined at this class.
 
     print for @{ Sisimai::Order->another };
-
-=head2 C<B<forjson()>>
-
-C<forjson()> returns a list of MTA modules which are able to read bounce data
-in JSON structure as an array or a hash reference.
-
-    print for @{ Sisimai::Order->forjson };
 
 =head2 C<B<headers()>>
 
