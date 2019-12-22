@@ -173,7 +173,6 @@ sub make {
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -289,9 +288,7 @@ sub make {
         next unless $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/;
         $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'}) || '';
     }
-
-    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
-    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
+    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
 }
 
 1;

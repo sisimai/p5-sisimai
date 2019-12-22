@@ -2,17 +2,16 @@ package Sisimai::Mail::Memory;
 use feature ':5.10';
 use strict;
 use warnings;
-use Class::Accessor::Lite;
-
-my $roaccessors = [
-    'size',     # [Integer] data size
-];
-my $rwaccessors = [
-    'data',     # [Array] entire bounce mail message
-    'offset',   # [Integer] Index of "data"
-];
-Class::Accessor::Lite->mk_accessors(@$rwaccessors);
-Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
+use Class::Accessor::Lite (
+    'new' => 0,
+    'ro'  => [
+        'size',     # [Integer] data size
+    ],
+    'rw'  => [
+        'data',     # [Array] entire bounce mail message
+        'offset',   # [Integer] Index of "data"
+    ]
+);
 
 sub new {
     # Constructor of Sisimai::Mail::Memory
@@ -118,7 +117,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2018,2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

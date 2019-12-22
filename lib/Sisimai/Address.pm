@@ -2,8 +2,21 @@ package Sisimai::Address;
 use feature ':5.10';
 use strict;
 use warnings;
-use Class::Accessor::Lite;
 use Sisimai::RFC5322;
+use Class::Accessor::Lite (
+    'new' => 0,
+    'ro'  => [
+        'address',  # [String] Email address
+        'user',     # [String] local part of the email address
+        'host',     # [String] domain part of the email address
+        'verp',     # [String] VERP
+        'alias',    # [String] alias of the email address
+    ],
+    'rw'  => [
+        'name',     # [String] Display name
+        'comment',  # [String] (Comment)
+    ]
+);
 
 my $Indicators = {
     'email-address' => (1 << 0),    # <neko@example.org>
@@ -17,19 +30,6 @@ my $ValidEmail = qr{(?>
     )
 }x;
 my $Delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
-my $roaccessors = [
-    'address',  # [String] Email address
-    'user',     # [String] local part of the email address
-    'host',     # [String] domain part of the email address
-    'verp',     # [String] VERP
-    'alias',    # [String] alias of the email address
-];
-my $rwaccessors = [
-    'name',     # [String] Display name
-    'comment',  # [String] (Comment)
-];
-Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
-Class::Accessor::Lite->mk_accessors(@$rwaccessors);
 
 sub undisclosed {
     # Return pseudo recipient or sender address

@@ -2,20 +2,19 @@ package Sisimai::Mail::STDIN;
 use feature ':5.10';
 use strict;
 use warnings;
-use Class::Accessor::Lite;
 use IO::Handle;
-
-my $roaccessors = [
-    'path',     # [String]  Path to mbox
-    'name',     # [String]  File name of the mbox
-    'size',     # [Integer] File size of the mbox
-];
-my $rwaccessors = [
-    'offset',   # [Integer]  Offset position for seeking
-    'handle',   # [IO::File] File handle
-];
-Class::Accessor::Lite->mk_accessors(@$rwaccessors);
-Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
+use Class::Accessor::Lite (
+    'new' => 0,
+    'ro'  => [
+        'path',     # [String]  Path to mbox
+        'name',     # [String]  File name of the mbox
+        'size',     # [Integer] File size of the mbox
+    ],
+    'rw'  => [
+        'offset',   # [Integer]  Offset position for seeking
+        'handle',   # [IO::File] File handle
+    ]
+);
 
 sub new {
     # Constructor of Sisimai::Mail::STDIN
@@ -128,7 +127,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

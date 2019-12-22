@@ -18,7 +18,6 @@
 - [使い方 | Usage](#usage)
     - [基本的な使い方 | Basic usage](#basic-usage)
     - [解析結果をJSONで得る | Convert to JSON](#convert-to-json)
-    - [バウンスオブジェクトを読む | Read bounce object](#read-bounce-object)
     - [コールバック機能 | Callback feature](#callback-feature)
     - [ワンライナー | One-Liner](#one-liner)
     - [出力例 | Output example](#output-example)
@@ -55,8 +54,6 @@ Key features
   * 解析精度はbounceHammerの2倍
   * 29種類のMTAに対応
   * 22種類の著名なMSPに対応
-  * 2種類の著名なメール配信クラウドに対応(JSON)
-    * **Sisimai 4.25.5で削除予定**
   * Feedback Loopにも対応
   * 29種類のエラー理由を検出
 * __bounceHammer 2.7.13p3よりも高速に解析__
@@ -166,29 +163,6 @@ print $j;                               # parsed data as JSON
 my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 ```
 
-Read bounce object
--------------------------------------------------------------------------------
-**この機能はSisimai 4.25.5で削除されます**
-
-メール配信クラウドからAPIで取得したバウンスオブジェクト(JSON)を読んで解析する
-場合は、次のようなコードを書いてください。この機能はSisimai v4.20.0で実装され
-ました。
-
-```perl
-#! /usr/bin/env perl
-use JSON;
-use Sisimai;
-
-my $j = JSON->new;
-my $q = '{"json":"string",...}'
-my $v = Sisimai->make($j->decode($q), 'input' => 'json');
-
-if( defined $v ) {
-    for my $e ( @$v ) { ... }
-}
-```
-現時点ではAmazon SESとSendGridのみをサポートしています。
-
 Callback feature
 -------------------------------------------------------------------------------
 Sisimai 4.19.0から`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを
@@ -264,8 +238,8 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpan, cpanm, cpmコマンドでのインストール       | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 8300行      |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 250000件    |
+| LOC:ソースコードの行数                         | 18200行       | 8100行      |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 255000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 

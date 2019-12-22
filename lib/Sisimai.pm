@@ -2,7 +2,7 @@ package Sisimai;
 use feature ':5.10';
 use strict;
 use warnings;
-use version; our $VERSION = version->declare('v4.25.5'); our $PATCHLV = 4;
+use version; our $VERSION = version->declare('v4.25.5'); our $PATCHLV = 6;
 
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
@@ -27,26 +27,23 @@ sub make {
     my $field = $argv1->{'field'} || [];
     die ' ***error: "field" accepts an array reference only' if ref $field ne 'ARRAY';
 
-    my $methodargv = {};
-    my $delivered1 = { 'delivered' => $argv1->{'delivered'} // 0 };
-    my $hookmethod = $argv1->{'hook'} || undef;
-    my $bouncedata = [];
-
     require Sisimai::Data;
     require Sisimai::Message;
     require Sisimai::Mail;
 
+    my $list = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
+
     while( my $r = $mail->read ) {
         # Read and parse each mail file
-        $methodargv = { 'data'  => $r, 'hook'  => $hookmethod, 'field' => $field };
-        next unless my $mesg = Sisimai::Message->new(%$methodargv);
+        my $p = { 'data'  => $r, 'hook' => $argv1->{'hook'}, 'field' => $field };
+        next unless my $mesg = Sisimai::Message->new(%$p);
 
-        my $data = Sisimai::Data->make('data' => $mesg, %$delivered1);
-        push @$bouncedata, @$data if scalar @$data;
+        my $data = Sisimai::Data->make('data' => $mesg, 'delivered' => $argv1->{'delivered'});
+        push @$list, @$data if scalar @$data;
     }
-    return undef unless scalar @$bouncedata;
-    return $bouncedata;
+    return undef unless scalar @$list;
+    return $list;
 }
 
 sub dump {

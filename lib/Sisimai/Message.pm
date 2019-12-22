@@ -2,7 +2,6 @@ package Sisimai::Message;
 use feature ':5.10';
 use strict;
 use warnings;
-use Class::Accessor::Lite;
 use Sisimai::RFC5322;
 use Sisimai::RFC3834;
 use Sisimai::Address;
@@ -11,15 +10,16 @@ use Sisimai::Order;
 use Sisimai::MIME;
 use Sisimai::ARF;
 use Sisimai::SMTP::Error;
-
-my $rwaccessors = [
-    'from',     # [String] UNIX From line
-    'header',   # [Hash]   Header part of an email
-    'ds',       # [Array]  Parsed data by Sisimai::Lhost
-    'rfc822',   # [Hash]   Header part of the original message
-    'catch'     # [Any]    The results returned by hook method
-];
-Class::Accessor::Lite->mk_accessors(@$rwaccessors);
+use Class::Accessor::Lite (
+    'new' => 0,
+    'rw'  => [
+        'from',     # [String] UNIX From line
+        'header',   # [Hash]   Header part of an email
+        'ds',       # [Array]  Parsed data by Sisimai::Lhost
+        'rfc822',   # [Hash]   Header part of the original message
+        'catch'     # [Any]    The results returned by hook method
+    ]
+);
 
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
@@ -125,17 +125,12 @@ sub make {
     }
 
     # 4. Rewrite message body for detecting the bounce reason
-    $methodargv = {
-        'hook' => $hookmethod,
-        'mail' => $processing,
-        'body' => \$aftersplit->{'body'},
-    };
+    $methodargv = { 'hook' => $hookmethod, 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
     return undef unless $bouncedata = __PACKAGE__->parse(%$methodargv);
     return undef unless keys %$bouncedata;
 
-    map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
-
     # 5. Rewrite headers of the original message in the body part
+    map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
     my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
     $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->takeapart(\$p);
     return $processing;
@@ -509,25 +504,6 @@ sub parse {
 
     $parseddata->{'catch'} = $havecaught if $parseddata;
     return $parseddata;
-}
-
-sub warn {
-    # Print warnings about an obsoleted method
-    # This method will be removed at the future release of Sisimai
-    my $class = shift;
-    my $useit = shift || '';
-    my $label = ' ***warning:';
-
-    my $calledfrom = [caller(1)];
-    my $modulename = $calledfrom->[3]; $modulename =~ s/::[a-z]+\z//;
-    my $methodname = $calledfrom->[3]; $methodname =~ s/\A.+:://;
-    my $messageset = sprintf("%s %s->%s is marked as obsoleted", $label, $modulename, $methodname);
-
-    $useit ||= $methodname;
-    $messageset .= sprintf(" and will be removed at %s.", Sisimai::Lhost->removedat);
-    $messageset .= sprintf(" Use %s->%s instead.\n", __PACKAGE__, $useit) if $useit ne 'gone';
-
-    warn $messageset;
 }
 
 1;

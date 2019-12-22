@@ -18,7 +18,6 @@
 - [Usage](#usage)
     - [Basic usage](#basic-usage)
     - [Convert to JSON](#convert-to-json)
-    - [Read bounce object](#read-bounce-object)
     - [Callback feature](#callback-feature)
     - [One-Liner](#one-liner)
     - [Output example](#output-example)
@@ -56,8 +55,6 @@ Key features
   * 2 times higher than bounceHammer
   * Support 24 known MTAs and 5 unknown MTAs
   * Support 22 major MSPs(Mail Service Providers)
-  * Support  2 major Cloud Email Delivery Services(JSON format)
-    * **WILL BE REMOVED AT Sisimai 4.25.5**
   * Support Feedback Loop Message(ARF)
   * Can detect 29 error reasons
 * __Faster than bounceHammer 2.7.13p3__
@@ -171,29 +168,6 @@ print $j;                               # parsed data as JSON
 my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 ```
 
-Read bounce object
--------------------------------------------------------------------------------
-**THIS FEATURE WILL BE REMOVED AT SISIMAI 4.25.5**
-
-The way to read a bounce object retrived from Cloud Email Services as JSON using
-their API is the following code. This feature is available at between v4.20.0
-and **v4.25.5**.
-
-```perl
-#! /usr/bin/env perl
-use JSON;
-use Sisimai;
-
-my $j = JSON->new;
-my $q = '{"json":"string",...}'
-my $v = Sisimai->make($j->decode($q), 'input' => 'json');
-
-if( defined $v ) {
-    for my $e ( @$v ) { ... }
-}
-```
-As of present, Only Amazon SES and SendGrid are supported.
-
 Callback feature
 -------------------------------------------------------------------------------
 Beginning with Sisimai 4.19.0, `make()` and `dump()` methods of Sisimai accept
@@ -268,8 +242,8 @@ and Sisimai. More information about differences are available at
 | Easy to install                                | No            | Yes         |
 | Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
-| LOC:Source lines of code                       | 18200 lines   | 8300 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 250000 tests|
+| LOC:Source lines of code                       | 18200 lines   | 8100 lines  |
+| The number of tests in t/, xt/ directory       | 27365 tests   | 255000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
