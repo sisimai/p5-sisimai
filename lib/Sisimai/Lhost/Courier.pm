@@ -54,7 +54,6 @@ sub make {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -184,9 +183,7 @@ sub make {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
     }
-
-    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
-    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
+    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
 }
 
 1;

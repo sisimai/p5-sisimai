@@ -52,7 +52,6 @@ sub make {
     require Sisimai::MDA;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
     my $mdabounced = Sisimai::MDA->make($mhead, $mbody);
-    my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $maybealias = '';    # (String) Original-Recipient field
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -461,8 +460,7 @@ sub make {
         $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $MarkingsOf->{'command'};
     }
-    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
-    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
+    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
 }
 
 1;

@@ -37,7 +37,6 @@ sub make {
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my @hasdivided = split("\n", $$mbody);
-    my $rfc822part = '';    # (String) message/rfc822-headers part
     my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -227,9 +226,7 @@ sub make {
             last;
         }
     }
-
-    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
-    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
+    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
 }
 
 1;
