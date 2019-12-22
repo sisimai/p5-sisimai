@@ -36,7 +36,7 @@ sub make {
     my $mbody = shift // return undef;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
+    my $recipients = 0; # (Integer) The number of 'Final-Recipient' header
 
     if( index($$mbody, '{') == 0 ) {
         # The message body is JSON string
@@ -100,13 +100,13 @@ sub make {
         }
         return undef unless exists $sespayload->{'notificationType'};
 
-        my $v = undef;
-        my $p = $sespayload;
         my $rfc822head = {};    # (Hash) Check flags for headers in RFC822 part
         my $labeltable = {
             'Bounce'    => 'bouncedRecipients',
             'Complaint' => 'complainedRecipients',
         };
+        my $p = $sespayload;
+        my $v = undef;
 
         if( $p->{'notificationType'} eq 'Bounce' || $p->{'notificationType'} eq 'Complaint' ) {
             # { "notificationType":"Bounce", "bounce": { "bounceType":"Permanent",...
@@ -230,10 +230,10 @@ sub make {
         # The message body is an email
         # 'from'    => qr/\AMAILER-DAEMON[@]email[-]bounces[.]amazonses[.]com\z/,
         # 'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
-        my $match = 0;
         my $xmail = $mhead->{'x-mailer'} || '';
-
         return undef if index($xmail, 'Amazon WorkMail') > -1;
+
+        my $match = 0;
         $match ||= 1 if $mhead->{'x-aws-outgoing'};
         $match ||= 1 if $mhead->{'x-ses-outgoing'};
         return undef unless $match;
