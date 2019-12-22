@@ -125,17 +125,12 @@ sub make {
     }
 
     # 4. Rewrite message body for detecting the bounce reason
-    $methodargv = {
-        'hook' => $hookmethod,
-        'mail' => $processing,
-        'body' => \$aftersplit->{'body'},
-    };
+    $methodargv = { 'hook' => $hookmethod, 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
     return undef unless $bouncedata = __PACKAGE__->parse(%$methodargv);
     return undef unless keys %$bouncedata;
 
-    map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
-
     # 5. Rewrite headers of the original message in the body part
+    map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
     my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
     $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->takeapart(\$p);
     return $processing;

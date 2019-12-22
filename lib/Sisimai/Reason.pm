@@ -55,9 +55,7 @@ sub get {
     }
     return 'delivered' if substr($argvs->deliverystatus, 0, 2) eq '2.';
 
-    my $statuscode = $argvs->deliverystatus || '';
     my $reasontext = '';
-
     if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
         for my $e ( @{ $ClassOrder->[0] } ) {

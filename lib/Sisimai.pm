@@ -36,10 +36,10 @@ sub make {
 
     while( my $r = $mail->read ) {
         # Read and parse each mail file
-        my $p = { 'data'  => $r, 'hook'  => $argv1->{'hook'} // undef, 'field' => $field };
+        my $p = { 'data'  => $r, 'hook' => $argv1->{'hook'}, 'field' => $field };
         next unless my $mesg = Sisimai::Message->new(%$p);
 
-        my $data = Sisimai::Data->make('data' => $mesg, 'delivered' => $argv1->{'delivered'} // 0);
+        my $data = Sisimai::Data->make('data' => $mesg, 'delivered' => $argv1->{'delivered'});
         push @$list, @$data if scalar @$data;
     }
     return undef unless scalar @$list;

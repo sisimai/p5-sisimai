@@ -52,16 +52,14 @@ sub new {
     # @return   [Sisimai::Data] Structured email data
     my $class = shift;
     my $argvs = { @_ };
-    my $thing = {};
 
     # Create email address object
     my $as = Sisimai::Address->make($argvs->{'addresser'});
     my $ar = Sisimai::Address->make({ 'address' => $argvs->{'recipient'} });
-
     return undef unless ref $as eq 'Sisimai::Address';
     return undef unless ref $ar eq 'Sisimai::Address';
 
-    $thing = {
+    my $thing = {
         'addresser' => $as,
         'recipient' => $ar,
         'senderdomain' => $as->host,
@@ -105,8 +103,8 @@ sub make {
     my $messageobj = $argvs->{'data'};
     my $rfc822data = $messageobj->rfc822;
     my $fieldorder = { 'recipient' => [], 'addresser' => [] };
-    my $objectlist = [];
     my $givenorder = $argvs->{'order'} ? $argvs->{'order'} : {};
+    my $objectlist = [];
 
     # Decide the order of email headers: user specified or system default.
     if( ref $givenorder eq 'HASH' && scalar keys %$givenorder ) {
@@ -327,9 +325,9 @@ sub make {
             # not have the value of "deliverystatus".
             unless( length $o->softbounce ) {
                 # Set the value of softbounce
-                my $textasargv =  $p->{'deliverystatus'}.' '.$p->{'diagnosticcode'};
+                my $textasargv = $p->{'deliverystatus'}.' '.$p->{'diagnosticcode'};
                 substr($textasargv, 0, 1, '') if substr($textasargv, 0, 1) eq ' ';
-                my $softorhard =  Sisimai::SMTP::Error->soft_or_hard($o->reason, $textasargv);
+                my $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->reason, $textasargv);
 
                 if( $softorhard ) {
                     # Returned value is "soft" or "hard"
@@ -343,13 +341,13 @@ sub make {
 
             unless( $o->deliverystatus ) {
                 # Set pseudo status code
-                my $pseudocode = undef; # Pseudo delivery status code
-                my $textasargv =  $o->replycode.' '.$p->{'diagnosticcode'};
+                my $textasargv = $o->replycode.' '.$p->{'diagnosticcode'};
                 substr($textasargv, 0, 1, '') if substr($textasargv, 0, 1) eq ' ';
-                my $getchecked =  Sisimai::SMTP::Error->is_permanent($textasargv);
-                my $tmpfailure =  defined $getchecked ? ( $getchecked == 1 ? 0 : 1 ) : 0;
 
-                if( $pseudocode = Sisimai::SMTP::Status->code($o->reason, $tmpfailure) ) {
+                my $getchecked = Sisimai::SMTP::Error->is_permanent($textasargv);
+                my $tmpfailure = defined $getchecked ? ( $getchecked == 1 ? 0 : 1 ) : 0;
+
+                if( my $pseudocode = Sisimai::SMTP::Status->code($o->reason, $tmpfailure) ) {
                     # Set the value of "deliverystatus" and "softbounce".
                     $o->deliverystatus($pseudocode);
                     if( $o->softbounce == -1 ) {
