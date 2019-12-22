@@ -2,22 +2,21 @@ package Sisimai::Mail::Mbox;
 use feature ':5.10';
 use strict;
 use warnings;
-use Class::Accessor::Lite;
 use File::Basename qw(basename dirname);
 use IO::File;
-
-my $roaccessors = [
-    'dir',      # [String]  Directory name of the mbox
-    'file',     # [String]  File name of the mbox
-    'path',     # [String]  Path to mbox
-    'size',     # [Integer] File size of the mbox
-];
-my $rwaccessors = [
-    'offset',   # [Integer]  Offset position for seeking
-    'handle',   # [IO::File] File handle
-];
-Class::Accessor::Lite->mk_accessors(@$rwaccessors);
-Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
+use Class::Accessor::Lite (
+    'new' => 0,
+    'ro'  => [
+        'dir',      # [String]  Directory name of the mbox
+        'file',     # [String]  File name of the mbox
+        'path',     # [String]  Path to mbox
+        'size',     # [Integer] File size of the mbox
+    ],
+    'rw'  => [
+        'offset',   # [Integer]  Offset position for seeking
+        'handle',   # [IO::File] File handle
+    ]
+);
 
 sub new {
     # Constructor of Sisimai::Mail::Mbox
@@ -154,7 +153,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

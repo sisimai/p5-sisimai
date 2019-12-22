@@ -2,17 +2,16 @@ package Sisimai::Mail;
 use feature ':5.10';
 use strict;
 use warnings;
-use Class::Accessor::Lite;
-
-my $roaccessors = [
-    'path',     # [String] path to mbox or Maildir/
-    'type',     # [String] Data type: mailbox, maildir, or stdin
-];
-my $rwaccessors = [
-    'mail',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
-];
-Class::Accessor::Lite->mk_accessors(@$rwaccessors);
-Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
+use Class::Accessor::Lite (
+    'new' => 0,
+    'ro'  => [
+        'path',     # [String] path to mbox or Maildir/
+        'type',     # [String] Data type: mailbox, maildir, or stdin
+    ],
+    'rw'  => [
+        'mail',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
+    ]
+);
 
 sub new {
     # Constructor of Sisimai::Mail
@@ -180,7 +179,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

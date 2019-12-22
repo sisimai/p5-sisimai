@@ -2,21 +2,20 @@ package Sisimai::Mail::Maildir;
 use feature ':5.10';
 use strict;
 use warnings;
-use Class::Accessor::Lite;
 use IO::Dir;
 use IO::File;
-
-my $roaccessors = [
-    'dir',      # [String] Path to Maildir/
-];
-my $rwaccessors = [
-    'path',     # [String] Path to each file
-    'file',     # [String] Each file name of a mail in the Maildir/
-    'inodes',   # [Array]  i-node List of files in the Maildir/
-    'handle',   # [IO::Dir] Directory handle
-];
-Class::Accessor::Lite->mk_accessors(@$rwaccessors);
-Class::Accessor::Lite->mk_ro_accessors(@$roaccessors);
+use Class::Accessor::Lite (
+    'new' => 0,
+    'ro'  => [
+        'dir',      # [String] Path to Maildir/
+    ],
+    'rw'  => [
+        'path',     # [String] Path to each file
+        'file',     # [String] Each file name of a mail in the Maildir/
+        'inodes',   # [Array]  i-node List of files in the Maildir/
+        'handle',   # [IO::Dir] Directory handle
+    ]
+);
 
 sub new {
     # Constructor of Sisimai::Mail::Maildir
@@ -154,7 +153,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

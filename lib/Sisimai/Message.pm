@@ -2,7 +2,6 @@ package Sisimai::Message;
 use feature ':5.10';
 use strict;
 use warnings;
-use Class::Accessor::Lite;
 use Sisimai::RFC5322;
 use Sisimai::RFC3834;
 use Sisimai::Address;
@@ -11,15 +10,16 @@ use Sisimai::Order;
 use Sisimai::MIME;
 use Sisimai::ARF;
 use Sisimai::SMTP::Error;
-
-my $rwaccessors = [
-    'from',     # [String] UNIX From line
-    'header',   # [Hash]   Header part of an email
-    'ds',       # [Array]  Parsed data by Sisimai::Lhost
-    'rfc822',   # [Hash]   Header part of the original message
-    'catch'     # [Any]    The results returned by hook method
-];
-Class::Accessor::Lite->mk_accessors(@$rwaccessors);
+use Class::Accessor::Lite (
+    'new' => 0,
+    'rw'  => [
+        'from',     # [String] UNIX From line
+        'header',   # [Hash]   Header part of an email
+        'ds',       # [Array]  Parsed data by Sisimai::Lhost
+        'rfc822',   # [Hash]   Header part of the original message
+        'catch'     # [Any]    The results returned by hook method
+    ]
+);
 
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
