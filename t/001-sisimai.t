@@ -41,9 +41,6 @@ MAKE_TEST: {
     eval { $PackageName->dump('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    eval { $PackageName->make({}, 'input' => 'neko') };
-    like $@, qr/error: invalid value of "input"/;
-
     eval { $PackageName->make('/dev/null', 'field' => 22) };
     like $@, qr/error: "field" accepts an array reference only/;
 
@@ -121,7 +118,6 @@ MAKE_TEST: {
             };
             $havecaught = $PackageName->make($SampleEmail->{ $e },
                 'hook'  => $callbackto,
-                'input' => 'email',
                 'field' => ['X-Virus-Scanned'],
             );
 

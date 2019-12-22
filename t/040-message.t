@@ -6,7 +6,7 @@ use Sisimai::Message;
 my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
     'class' => [
-        'new', 'make', 'load', 'parse', 'adapt', 'divideup', 'headers',
+        'new', 'make', 'load', 'parse', 'divideup', 'headers',
         'takeapart', 'makeorder'
     ],
     'object' => ['from', 'header', 'ds', 'rfc822'],
@@ -42,7 +42,7 @@ MAKE_TEST: {
     isa_ok $tobeloaded, 'ARRAY';
     ok length $mailastext;
 
-    my $p = Sisimai::Message->new('data' => $mailastext, 'input' => 'email');
+    my $p = Sisimai::Message->new('data' => $mailastext);
 
     isa_ok $p, 'Sisimai::Message';
     isa_ok $p->header, 'HASH', '->header';
@@ -50,13 +50,12 @@ MAKE_TEST: {
     isa_ok $p->rfc822, 'HASH', '->rfc822';
     ok length $p->from, $p->from;
 
-    $p = Sisimai::Message->new('data' => $mailastext, 'input' => 'email', 'field' => {});
+    $p = Sisimai::Message->new('data' => $mailastext, 'field' => {});
     is $p, undef;
 
     $p = Sisimai::Message->new(
             'data' => $mailastext, 
             'hook' => $callbackto,
-            'input' => 'email',
             'order' => [
                 'Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Postfix', 
                 'Sisimai::Lhost::qmail', 'Sisimai::Lhost::Exchange2003', 

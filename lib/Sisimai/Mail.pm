@@ -115,9 +115,10 @@ Sisimai::Mail - Handler of Mbox/Maildir for reading each mail.
 
 =head1 DESCRIPTION
 
-Sisimai::Mail is a handler for reading a UNIX mbox, a Maildir, a bounce object
-as a JSON string, or any email message input from STDIN, variable.
-It is a wrapper class of the following child classes:
+Sisimai::Mail is a handler for reading a UNIX mbox, a Maildir, or any email
+message input from STDIN, variable. It is a wrapper class of the following 
+child classes:
+
     * Sisimai::Mail::Mbox
     * Sisimai::Mail::Maildir
     * Sisimai::Mail::STDIN
