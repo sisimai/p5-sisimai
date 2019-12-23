@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.4p5
+v4.25.4p6
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -40,6 +40,9 @@ v4.25.4p5
     - `Sisimai::Order::JSON`
     - `Sisimai::Bite::Email`
     - `Sisimai::Bite::JSON`
+  - Tiny improvement around accessors and variables
+  - **JSON READING AS A INPUT SOURCE AND JSON PARSING AS A BOUNCE OBJECT ARE NO
+    LONGER PROVIDED AS OF v4.25.5**
 
 v4.25.4
 --------------------------------------------------------------------------------
