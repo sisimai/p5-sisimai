@@ -9,9 +9,18 @@ v4.25.4p6
 - release: ""
 - version: ""
 - changes:
+  - **JSON READING AS AN INPUT SOURCE AND JSON PARSING AS A BOUNCE OBJECT ARE
+    NO LONGER PROVIDED AS OF v4.25.5**
+  - The following obsoleted classes and modules have been removed #356 #359
+    - `Sisimai::Message::Email`
+    - `Sisimai::Message::JSON`
+    - `Sisimai::Order::Email`
+    - `Sisimai::Order::JSON`
+    - `Sisimai::Bite::Email`
+    - `Sisimai::Bite::JSON`
   - #344 Add POD section into 2 obsoleted modules: `Sisimai::Bite::Email` and
     `Sisimai::Bite::JSON`. Thanks to @guimard
-  - #343 Fix little spelling error at `Sisimai::Order`. Thanks to @guimard.
+  - #343 Fix little spelling error at `Sisimai::Order`. Thanks to @guimard
   - #342 Fix parser code to get an error message which is not beginning with #
     character at `Sisimai::Lhost::Exchange2007`. Thanks to @aderumier
   - #347 Support case insensitive error code at `Sisimai::Rhost::FrancePTT`.
@@ -33,16 +42,7 @@ v4.25.4p6
   - #357 Pull-Request from @aderumier to `Sisimai::Rhost::FrancePTT`.
     - Add 2 sample emails: rhost-franceptt-10.eml, 11.eml at set-of-emails/
     - Add many error codes and error messages from Orange and La Poste
-  - The following obsoleted classes and modules have been removed #356 #359
-    - `Sisimai::Message::Email`
-    - `Sisimai::Message::JSON`
-    - `Sisimai::Order::Email`
-    - `Sisimai::Order::JSON`
-    - `Sisimai::Bite::Email`
-    - `Sisimai::Bite::JSON`
   - Tiny improvement around accessors and variables
-  - **JSON READING AS A INPUT SOURCE AND JSON PARSING AS A BOUNCE OBJECT ARE NO
-    LONGER PROVIDED AS OF v4.25.5**
 
 v4.25.4
 --------------------------------------------------------------------------------
