@@ -4,10 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $MarkingsOf = {
-    # Content-Type: message/rfc822 OR text/rfc822-headers
-    'rfc822' => qr{^Content-Type:\s*(?:message|text)/rfc822(?:-headers)?}ms,
-};
+my $RFC822Mark = qr{^Content-Type:\s*(?:message|text)/rfc822(?:-headers)?}ms;
 my $StartingOf = {
     # Error text regular expressions which defined in sendmail/savemail.c
     #   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
@@ -17,7 +14,6 @@ my $StartingOf = {
     #   savemail.c:1361|    sendbody
     #   savemail.c:1362|    ? "   ----- Original message follows -----\n"
     #   savemail.c:1363|    : "   ----- Message header follows -----\n",
-    'rfc822'  => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],
     'message' => ['   ----- Transcript of session follows -----'],
     'error'   => ['... while talking to '],
 };
@@ -52,8 +48,6 @@ sub make {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $dsmessages = '';    # (String) Inside of $StartingOf, $MarkingsOf
-    my $rfc822text = '';    # (String) message/rfc822 part string
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = [];    # (Array) Reply from remote server on SMTP session
@@ -62,7 +56,7 @@ sub make {
     my $v = undef;
     my $p = '';
 
-    ($dsmessages, $rfc822text) = split($MarkingsOf->{'rfc822'}, $$mbody, 2);
+    my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
     $dsmessages =~ s/\A.+$StartingOf->{'message'}->[0]//ms;
 
     for my $e ( split("\n", $dsmessages) ) {
@@ -249,7 +243,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
