@@ -4,10 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
+my $RFC822Mark = qr|^Content-Type:\s*message/rfc822|ms;
 my $StartingOf = {
     'message' => ['   ----- The following addresses had delivery problems -----'],
-    'rfc822'  => ['Content-Type: message/rfc822'],
     'error'   => ['   ----- Non-delivered information -----'],
 };
 my $MessagesOf = {
@@ -37,77 +36,49 @@ sub make {
     return undef unless index($mhead->{'subject'}, 'Returned mail:') == 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
-        unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
-        }
+    my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
+    $dsmessages =~ s/\A.+$StartingOf->{'message'}->[0]//ms;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+    for my $e ( split("\n", $dsmessages) ) {
+        # Read each line of message/delivery-status part and error messages
+        next unless length $e;
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
+        # This is a MIME-encapsulated message.
+        #
+        # ----_Biglobe000000/00000.biglobe.ne.jp
+        # Content-Type: text/plain; charset="iso-2022-jp"
+        #
+        #    ----- The following addresses had delivery problems -----
+        # ********@***.biglobe.ne.jp
+        #
+        #    ----- Non-delivered information -----
+        # The number of messages in recipient's mailbox exceeded the local limit.
+        #
+        # ----_Biglobe000000/00000.biglobe.ne.jp
+        # Content-Type: message/rfc822
+        #
+        $v = $dscontents->[-1];
 
-        } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # This is a MIME-encapsulated message.
-            #
-            # ----_Biglobe000000/00000.biglobe.ne.jp
-            # Content-Type: text/plain; charset="iso-2022-jp"
-            #
+        if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
             #    ----- The following addresses had delivery problems -----
             # ********@***.biglobe.ne.jp
-            #
-            #    ----- Non-delivered information -----
-            # The number of messages in recipient's mailbox exceeded the local limit.
-            #
-            # ----_Biglobe000000/00000.biglobe.ne.jp
-            # Content-Type: message/rfc822
-            #
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
-                #    ----- The following addresses had delivery problems -----
-                # ********@***.biglobe.ne.jp
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-
-                my $r = Sisimai::Address->s3s4($1);
-                next unless Sisimai::RFC5322->is_emailaddress($r);
-                $v->{'recipient'} = $r;
-                $recipients++;
-
-            } else {
-                next if $e =~ /\A[^\w]/;
-                $v->{'diagnosis'} .= $e.' ';
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
+
+            my $r = Sisimai::Address->s3s4($1);
+            next unless Sisimai::RFC5322->is_emailaddress($r);
+            $v->{'recipient'} = $r;
+            $recipients++;
+
+        } else {
+            next if $e =~ /\A[^\w]/;
+            $v->{'diagnosis'} .= $e.' ';
         } # End of error message part
     }
     return undef unless $recipients;
@@ -123,7 +94,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
@@ -169,7 +140,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
