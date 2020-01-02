@@ -5,11 +5,8 @@ use strict;
 use warnings;
 
 # https://aws.amazon.com/workmail/
-my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['Technical report:'],
-    'rfc822'  => ['content-type: message/rfc822'],
-};
+my $RFC822Mark = qr|^content-type:\s*message/rfc822|ms;
+my $StartingOf = { 'message' => ['Technical report:'] };
 
 # X-Mailer: Amazon WorkMail
 # X-Original-Mailer: Amazon WorkMail
@@ -50,87 +47,59 @@ sub make {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
-        unless( $readcursor ) {
-            # Beginning of the bounce message or message/delivery-status part
-            if( $e eq $StartingOf->{'message'}->[0] ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
-        }
+    my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
+    $dsmessages =~ s/\A.+$StartingOf->{'message'}->[0]//ms;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part(message/rfc822)
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+    for my $e ( split("\n", $dsmessages) ) {
+        # Read each line of message/delivery-status part and error messages
+        next unless length $e;
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # message/rfc822 or text/rfc822-headers part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
+        if( my $f = Sisimai::RFC1894->match($e) ) {
+            # $e matched with any field defined in RFC3464
+            next unless my $o = Sisimai::RFC1894->field($e);
+            $v = $dscontents->[-1];
 
-        } else {
-            # message/delivery-status part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            if( my $f = Sisimai::RFC1894->match($e) ) {
-                # $e matched with any field defined in RFC3464
-                next unless my $o = Sisimai::RFC1894->field($e);
-                $v = $dscontents->[-1];
-
-                if( $o->[-1] eq 'addr' ) {
+            if( $o->[-1] eq 'addr' ) {
+                # Final-Recipient: rfc822; kijitora@example.jp
+                # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                if( $o->[0] eq 'final-recipient' ) {
                     # Final-Recipient: rfc822; kijitora@example.jp
-                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
-                    if( $o->[0] eq 'final-recipient' ) {
-                        # Final-Recipient: rfc822; kijitora@example.jp
-                        if( $v->{'recipient'} ) {
-                            # There are multiple recipient addresses in the message body.
-                            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                            $v = $dscontents->[-1];
-                        }
-                        $v->{'recipient'} = $o->[2];
-                        $recipients++;
-
-                    } else {
-                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
-                        $v->{'alias'} = $o->[2];
+                    if( $v->{'recipient'} ) {
+                        # There are multiple recipient addresses in the message body.
+                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                        $v = $dscontents->[-1];
                     }
-                } elsif( $o->[-1] eq 'code' ) {
-                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                    $v->{'spec'} = $o->[1];
-                    $v->{'diagnosis'} = $o->[2];
+                    $v->{'recipient'} = $o->[2];
+                    $recipients++;
 
                 } else {
-                    # Other DSN fields defined in RFC3464
-                    next unless exists $fieldtable->{ $o->[0] };
-                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
-
-                    next unless $f == 1;
-                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    $v->{'alias'} = $o->[2];
                 }
-            }
+            } elsif( $o->[-1] eq 'code' ) {
+                # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                $v->{'spec'} = $o->[1];
+                $v->{'diagnosis'} = $o->[2];
 
-            # <!DOCTYPE HTML><html>
-            # <head>
-            # <meta name="Generator" content="Amazon WorkMail v3.0-2023.77">
-            # <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-            last if index($e, '<!DOCTYPE HTML><html>') == 0;
-        } # End of message/delivery-status
-    }
+            } else {
+                # Other DSN fields defined in RFC3464
+                next unless exists $fieldtable->{ $o->[0] };
+                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                next unless $f == 1;
+                $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+            }
+        }
+
+        # <!DOCTYPE HTML><html>
+        # <head>
+        # <meta name="Generator" content="Amazon WorkMail v3.0-2023.77">
+        # <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        last if index($e, '<!DOCTYPE HTML><html>') == 0;
+    } # End of message/delivery-status
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
@@ -153,7 +122,7 @@ sub make {
         $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'}) || '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
@@ -199,7 +168,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

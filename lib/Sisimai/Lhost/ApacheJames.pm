@@ -4,13 +4,12 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
+my $RFC822Mark = qr|^Content-Type:\s*message/rfc822|ms;
 my $StartingOf = {
     # apache-james-2.3.2/src/java/org/apache/james/transport/mailets/
     #   AbstractNotify.java|124:  out.println("Error message below:");
     #   AbstractNotify.java|128:  out.println("Message details:");
     'message' => [''],
-    'rfc822'  => ['Content-Type: message/rfc822'],
     'error'   => ['Error message below:'],
 };
 
@@ -42,114 +41,84 @@ sub make {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $diagnostic = '';    # (String) Alternative diagnostic message
     my $subjecttxt = undef; # (String) Alternative Subject text
     my $gotmessage = 0;     # (Integer) Flag for error message
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
-        unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
-        }
+    my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
+    $rfc822text ||= '';
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+    for my $e ( split("\n", $dsmessages) ) {
+        # Read each line of message/delivery-status part and error messages
+        next unless length $e;
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        # Message details:
+        #   Subject: Nyaaan
+        #   Sent date: Thu Apr 29 01:20:50 JST 2015
+        #   MAIL FROM: shironeko@example.jp
+        #   RCPT TO: kijitora@example.org
+        #   From: Neko <shironeko@example.jp>
+        #   To: kijitora@example.org
+        #   Size (in bytes): 1024
+        #   Number of lines: 64
+        $v = $dscontents->[-1];
+
+        if( $e =~ /\A[ ][ ]RCPT[ ]TO:[ ]([^ ]+[@][^ ]+)\z/ ) {
+            #   RCPT TO: kijitora@example.org
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $recipients++;
+
+        } elsif( $e =~ /\A[ ][ ]Sent[ ]date:[ ](.+)\z/ ) {
+            #   Sent date: Thu Apr 29 01:20:50 JST 2015
+            $v->{'date'} = $1;
+
+        } elsif( $e =~ /\A[ ][ ]Subject:[ ](.+)\z/ ) {
+            #   Subject: Nyaaan
+            $subjecttxt = $1;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
+            next if $gotmessage == 1;
 
-            # Message details:
-            #   Subject: Nyaaan
-            #   Sent date: Thu Apr 29 01:20:50 JST 2015
-            #   MAIL FROM: shironeko@example.jp
-            #   RCPT TO: kijitora@example.org
-            #   From: Neko <shironeko@example.jp>
-            #   To: kijitora@example.org
-            #   Size (in bytes): 1024
-            #   Number of lines: 64
-            $v = $dscontents->[-1];
+            if( $v->{'diagnosis'} ) {
+                # Get an error message text
+                if( $e eq 'Message details:' ) {
+                    # Message details:
+                    #   Subject: nyaan
+                    #   ...
+                    $gotmessage = 1;
 
-            if( $e =~ /\A[ ][ ]RCPT[ ]TO:[ ]([^ ]+[@][^ ]+)\z/ ) {
-                #   RCPT TO: kijitora@example.org
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
-            } elsif( $e =~ /\A[ ][ ]Sent[ ]date:[ ](.+)\z/ ) {
-                #   Sent date: Thu Apr 29 01:20:50 JST 2015
-                $v->{'date'} = $1;
-
-            } elsif( $e =~ /\A[ ][ ]Subject:[ ](.+)\z/ ) {
-                #   Subject: Nyaaan
-                $subjecttxt = $1;
-
-            } else {
-                next if $gotmessage == 1;
-
-                if( $v->{'diagnosis'} ) {
-                    # Get an error message text
-                    if( $e eq 'Message details:' ) {
-                        # Message details:
-                        #   Subject: nyaan
-                        #   ...
-                        $gotmessage = 1;
-
-                    } else {
-                        # Append error message text like the followng:
-                        #   Error message below:
-                        #   550 - Requested action not taken: no such user here
-                        $v->{'diagnosis'} .= ' '.$e;
-                    }
                 } else {
-                    # Error message below:
-                    # 550 - Requested action not taken: no such user here
-                    $v->{'diagnosis'} = $e if $e eq $StartingOf->{'error'}->[0];
-                    $v->{'diagnosis'} .= ' '.$e unless $gotmessage;
+                    # Append error message text like the followng:
+                    #   Error message below:
+                    #   550 - Requested action not taken: no such user here
+                    $v->{'diagnosis'} .= ' '.$e;
                 }
+            } else {
+                # Error message below:
+                # 550 - Requested action not taken: no such user here
+                $v->{'diagnosis'} = $e if $e eq $StartingOf->{'error'}->[0];
+                $v->{'diagnosis'} .= ' '.$e unless $gotmessage;
             }
-        } # End of error message part
-    }
+        }
+    } # End of error message part
     return undef unless $recipients;
 
-    unless( grep { index($_, 'Subject:') == 0 } @$rfc822list ) {
-        # Set the value of $subjecttxt as a Subject if there is no original
-        # message in the bounce mail.
-        push @$rfc822list, 'Subject: '.$subjecttxt;
-    }
+    # Set the value of $subjecttxt as a Subject if there is no original message
+    # in the bounce mail.
+    $rfc822text .= sprintf("\nSubject: %s\n", $subjecttxt) unless $rfc822text =~ /^Subject:/;
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
@@ -195,7 +164,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
