@@ -5,10 +5,10 @@ use strict;
 use warnings;
 
 my $RFC822Mark = qr{^Content-Type:\s*(?:message|text)/rfc822(?:-headers)?}ms;
-my $StartingOf = {
+my $MarkingsOf = {
     # https://www.courier-mta.org/courierdsn.html
     # courier/module.dsn/dsn*.txt
-    'message' => ['DELAYS IN DELIVERING YOUR MESSAGE', 'UNDELIVERABLE MAIL'],
+    'message' => qr/(?:DELAYS IN DELIVERING YOUR MESSAGE|UNDELIVERABLE MAIL)/,
 };
 
 my $MessagesOf = {
@@ -59,7 +59,7 @@ sub make {
     my $p = '';
 
     my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
-    $dsmessages =~ s/\A.+$StartingOf->{'message'}->[0]//ms;
+    $dsmessages =~ s/\A.+$MarkingsOf->{'message'}//ms;
 
     for my $e ( split("\n", $dsmessages) ) {
         # Read each line of message/delivery-status part and error messages
