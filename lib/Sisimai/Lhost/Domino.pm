@@ -4,11 +4,8 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['Your message'],
-    'rfc822'  => ['Content-Type: message/delivery-status'],
-};
+my $RFC822Mark = qr|^Content-Type:\s*message/delivery-status|ms;
+my $StartingOf = { 'message' => ['Your message'] };
 my $MessagesOf = {
     'userunknown' => [
         'not listed in Domino Directory',
@@ -39,90 +36,61 @@ sub make {
     return undef unless index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $subjecttxt = '';    # (String) The value of Subject:
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
+    $rfc822text ||= '';
+
+    for my $e ( split("\n", $dsmessages) ) {
+        # Read each line of message/delivery-status part and error messages
         next unless length $e;
 
-        unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
+        # Your message
+        #
+        #   Subject: Test Bounce
+        #
+        # was not delivered to:
+        #
+        #   kijitora@example.net
+        #
+        # because:
+        #
+        #   User some.name (kijitora@example.net) not listed in Domino Directory
+        #
+        $v = $dscontents->[-1];
+        if( $e eq 'was not delivered to:' ) {
+            # was not delivered to:
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-        }
+            $v->{'recipient'} ||= $e;
+            $recipients++;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        } elsif( $e =~ /\A[ ][ ]([^ ]+[@][^ ]+)\z/ ) {
+            # Continued from the line "was not delivered to:"
+            #   kijitora@example.net
+            $v->{'recipient'} = Sisimai::Address->s3s4($1);
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
+        } elsif( $e eq 'because:' ) {
+            # because:
+            $v->{'diagnosis'} = $e;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-
-            # Your message
-            #
-            #   Subject: Test Bounce
-            #
-            # was not delivered to:
-            #
-            #   kijitora@example.net
-            #
-            # because:
-            #
-            #   User some.name (kijitora@example.net) not listed in Domino Directory
-            #
-            $v = $dscontents->[-1];
-            if( $e eq 'was not delivered to:' ) {
-                # was not delivered to:
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} ||= $e;
-                $recipients++;
-
-            } elsif( $e =~ /\A[ ][ ]([^ ]+[@][^ ]+)\z/ ) {
-                # Continued from the line "was not delivered to:"
-                #   kijitora@example.net
-                $v->{'recipient'} = Sisimai::Address->s3s4($1);
-
-            } elsif( $e eq 'because:' ) {
-                # because:
+            if( exists $v->{'diagnosis'} && $v->{'diagnosis'} eq 'because:' ) {
+                # Error message, continued from the line "because:"
                 $v->{'diagnosis'} = $e;
 
-            } else {
-                if( exists $v->{'diagnosis'} && $v->{'diagnosis'} eq 'because:' ) {
-                    # Error message, continued from the line "because:"
-                    $v->{'diagnosis'} = $e;
-
-                } elsif( $e =~ /\A[ ][ ]Subject: (.+)\z/ ) {
-                    #   Subject: Nyaa
-                    $subjecttxt = $1;
-                }
+            } elsif( $e =~ /\A[ ][ ]Subject: (.+)\z/ ) {
+                #   Subject: Nyaa
+                $subjecttxt = $1;
             }
-        } # End of if: rfc822
-    }
+        }
+    } # End of if: rfc822
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
@@ -139,12 +107,11 @@ sub make {
         }
     }
 
-    unless( grep { index($_, 'Subject:') == 0 } @$rfc822list ) {
-        # Set the value of $subjecttxt as a Subject if there is no original
-        # message in the bounce mail.
-        push @$rfc822list, 'Subject: '.$subjecttxt;
-    }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    # Set the value of $subjecttxt as a Subject if there is no original message
+    # in the bounce mail.
+    $rfc822text .= sprintf("\nSubject: %s\n", $subjecttxt) unless $rfc822text =~ /^Subject:/;
+
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
@@ -190,10 +157,11 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+
