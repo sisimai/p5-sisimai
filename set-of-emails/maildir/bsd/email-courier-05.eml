@@ -1,0 +1,91 @@
+Received: from neko1.example.jp (c220202.example.net [192.0.2.128])
+	by mx.example.jp (8.14.4/8.14.4) with ESMTP id nQfPHNDF025843
+	for <shironeko@example.jp>; Thu, 29 Apr 2011 23:34:45 +0900 (JST)
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.96 at nyaan.example.jp
+X-SenderID: Sendmail Sender-ID Filter v1.0.0 mx.example.jp nQfPHNDF025843
+Authentication-Results: mx.example.jp; sender-id=pass header.from=postmaster@example.org
+Received: from localhost (localhost [127.0.0.1])
+  (ftp://ftp.isi.edu/in-notes/rfc1894.txt)
+  by gojo.example.org with dsn; Thu, 29 Apr 2011 23:34:45 +0900
+  id B0C4BDCB.FEA457B3.6DB10FBB
+From: postmaster@example.org
+To: shironeko@example.jp
+Subject: WARNING: delayed mail.
+Mime-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+    boundary="=_courier_0"
+Content-Transfer-Encoding: 7bit
+Message-ID: <courier.4D02EDDF.0000C65A@gojo.example.org>
+Date: Thu, 29 Apr 2011 23:34:45 +0900
+
+This is a delivery status notification from server.e-onlinedata.com,
+running the Courier mail server, version 0.40.0.
+
+The original message was received on Thu, 29 Apr 2008 23:34:45 +0900
+from [127.0.0.1] (c2.example.com [192.0.2.20])
+
+---------------------------------------------------------------------------
+
+                     DELAYS IN DELIVERING YOUR MESSAGE
+
+The delivery of the following E-mail message has been delayed.  This is an
+advisory notice only; it is sent only to notify you about a temporary delay
+in delivering your message.  You DO NOT need to do anything at this time.
+Additional attempts to deliver your message will be made.  Some possible
+reasons for this delay:
+
+   * Network congestion or failure.
+
+   * The destination mail server is temporarily off-line.
+
+Diagnostic information is provided below for each recipient.  If copies of
+this message were sent to additional recipients, deliveries to those
+addresses are not included in this notice.  This is an advisory notice for
+the following addresses only:
+
+<kijitora@neko.nyaan.jp>:
+    sotoneko.nyaan.jp [203.0.113.222]:
+>>> RCPT TO:<kijitora@neko.nyaan.jp>
+<<< 450 4.1.7 <sironeko@exaple.jp>: Sender address rejected: unverified address: Cannot start TLS: handshake failure
+
+---------------------------------------------------------------------------
+
+If your message was also sent to additional recipients, their delivery
+status is not included in this report.  You may or may not receive
+other delivery status notifications for additional recipients.
+
+The original message follows as a separate attachment.
+
+
+--=_courier_0
+Content-Type: message/delivery-status
+Content-Transfer-Encoding: 7bit
+
+Reporting-MTA: dns; nyan.example.jp
+Arrival-Date: Thu, 29 Apr 2011 23:34:45 +0900
+Received-From-MTA: dns; [127.0.0.1] (n2.example.com [192.0.2.22])
+
+Final-Recipient: rfc822; kijitora@neko.nyaan.jp
+Action: delayed
+Status: 4.0.0
+Will-Retry-Until: Thu, 29 Apr 2011 23:34:45 +0900
+
+--=_courier_0
+Content-Type: text/rfc822-headers; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+Received: from [127.0.0.1] (n2.example.com [192.0.2.22])
+  by nyan.example.jp with esmtp; Thu, 29 Apr 2011 23:34:45 +0900
+  id B0C4BDCB.FEA457B3.6DB10FBB
+Message-ID: <courier.B0C4BDCB.FEA457B3.6DB10FBB@example.org>
+From: "Neko, Nyaan" <sironeko@example.jp>
+To: "Kijitora" <kijitora@neko.nyaan.jp>
+Date: Thu, 29 Apr 2011 23:34:45 +0900
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary="=_n2.example.org-2222-0000000022-0002-2"
+X-Priority: 3
+Subject: Nyaan
+
+--=_courier_0--
+

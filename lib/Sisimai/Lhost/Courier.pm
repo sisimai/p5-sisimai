@@ -4,13 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RFC822Mark = qr{^Content-Type:\s*(?:message|text)/rfc822(?:-headers)?}ms;
-my $MarkingsOf = {
-    # https://www.courier-mta.org/courierdsn.html
-    # courier/module.dsn/dsn*.txt
-    'message' => qr/(?:DELAYS IN DELIVERING YOUR MESSAGE|UNDELIVERABLE MAIL)/,
-};
-
+my $RFC822Mark = qr{^Content-Type:\s*(?:message|text)/rfc822(?:-headers)?[^\r\n]*}ms;
 my $MessagesOf = {
     # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
     'hostunknown' => ['No such domain.'],
@@ -55,11 +49,14 @@ sub make {
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $anotherset = {};    # (Hash) Another error information
     my $v = undef;
     my $p = '';
 
+    # https://www.courier-mta.org/courierdsn.html
+    # courier/module.dsn/dsn*.txt
     my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
-    $dsmessages =~ s/\A.+$MarkingsOf->{'message'}//ms;
+    $dsmessages =~ s/\A.+(?:DELAYS IN DELIVERING YOUR MESSAGE|UNDELIVERABLE MAIL)//ms;
 
     for my $e ( split("\n", $dsmessages) ) {
         # Read each line of message/delivery-status part and error messages
@@ -125,6 +122,14 @@ sub make {
                 # >>> DATA
                 $commandtxt ||= $1;
 
+            } elsif( index($e, '<<< ') == 0 ) {
+                # <<< 450 4.1.7 <sironeko@exaple.jp>: Sender address rejected: ...
+                $e =~ s/\A<<<\s*//;
+                $anotherset->{'diagnosis'} = $e;
+                $anotherset->{'recipient'} = Sisimai::Address->find($e, 1);
+                $anotherset->{'status'} = Sisimai::SMTP::Status->find($e);
+                $anotherset->{'code'} = Sisimai::SMTP::Reply->find($e);
+
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
@@ -136,11 +141,20 @@ sub make {
         # Save the current line for the next loop
         $p = $e;
     }
+
+    unless( $recipients ) {
+        # Fallback: Get the address from $anotherset->{'recipient'}
+        $dscontents->[0]->{'recipient'} = $anotherset->{'recipient'}->[0]->{'address'} || '';
+        $recipients += 1 if $dscontents->[0]->{'recipient'};
+    }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
+        $e->{'status'}    ||= $anotherset->{'status'}    || '';
+        $e->{'code'}      ||= $anotherset->{'code'}      || '';
+        $e->{'diagnosis'} ||= $anotherset->{'diagnosis'} || '';
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         for my $r ( keys %$MessagesOf ) {
