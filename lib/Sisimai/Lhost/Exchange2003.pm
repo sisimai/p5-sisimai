@@ -4,10 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
+my $RFC822Mark = qr|^Content-Type:\s*message/rfc822|ms;
 my $StartingOf = {
     'message' => ['Your message'],
-    'rfc822'  => ['Content-Type: message/rfc822'],
     'error'   => ['did not reach the following recipient(s):'],
 };
 my $ErrorCodes = {
@@ -93,9 +92,6 @@ sub make {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $statuspart = 0;     # (Integer) Flag, 1 = have got delivery status part.
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
@@ -105,110 +101,84 @@ sub make {
         'subject' => '',    # The value of "Subject"
     };
     my $v = undef;
+    my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
+    $rfc822text ||= '';
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
-        unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
-        }
+    for my $e ( split("\n", $dsmessages) ) {
+        # Read each line of message/delivery-status part and error messages
+        next if $statuspart;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        if( $connvalues == scalar(keys %$connheader) ) {
+            # did not reach the following recipient(s):
+            #
+            # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
+            #     The recipient name is not recognized
+            #     The MTS-ID of the original message is: c=jp;a= ;p=neko
+            # ;l=EXCHANGE000000000000000000
+            #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
+            # mikeneko@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
+            #     The recipient name is not recognized
+            #     The MTS-ID of the original message is: c=jp;a= ;p=neko
+            # ;l=EXCHANGE000000000000000000
+            #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
+            $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
-
-        } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next if $statuspart;
-
-            if( $connvalues == scalar(keys %$connheader) ) {
-                # did not reach the following recipient(s):
-                #
+            if( $e =~ /\A[ \t]*([^ ]+[@][^ ]+) on[ \t]*.*\z/ ||
+                $e =~ /\A[ \t]*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on[ \t]*.*\z/ ) {
                 # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
-                #     The recipient name is not recognized
-                #     The MTS-ID of the original message is: c=jp;a= ;p=neko
-                # ;l=EXCHANGE000000000000000000
-                #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
-                # mikeneko@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
-                #     The recipient name is not recognized
-                #     The MTS-ID of the original message is: c=jp;a= ;p=neko
-                # ;l=EXCHANGE000000000000000000
-                #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
-                $v = $dscontents->[-1];
+                #   kijitora@example.com on 4/29/99 9:19:59 AM
+                if( $v->{'recipient'} ) {
+                    # There are multiple recipient addresses in the message body.
+                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                    $v = $dscontents->[-1];
+                }
+                $v->{'recipient'} = $1;
+                $v->{'msexch'} = 0;
+                $recipients++;
 
-                if( $e =~ /\A[ \t]*([^ ]+[@][^ ]+) on[ \t]*.*\z/ ||
-                    $e =~ /\A[ \t]*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on[ \t]*.*\z/ ) {
-                    # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
-                    #   kijitora@example.com on 4/29/99 9:19:59 AM
-                    if( $v->{'recipient'} ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[-1];
-                    }
-                    $v->{'recipient'} = $1;
-                    $v->{'msexch'} = 0;
-                    $recipients++;
+            } elsif( $e =~ /\A[ \t]+(MSEXCH:.+)\z/ ) {
+                #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
+                $v->{'diagnosis'} .= $1;
 
-                } elsif( $e =~ /\A[ \t]+(MSEXCH:.+)\z/ ) {
-                    #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
-                    $v->{'diagnosis'} .= $1;
+            } else {
+                next if $v->{'msexch'};
+                if( index($v->{'diagnosis'}, 'MSEXCH:') == 0 ) {
+                    # Continued from MEEXCH in the previous line
+                    $v->{'msexch'} = 1;
+                    $v->{'diagnosis'} .= ' '.$e;
+                    $statuspart = 1;
 
                 } else {
-                    next if $v->{'msexch'};
-                    if( index($v->{'diagnosis'}, 'MSEXCH:') == 0 ) {
-                        # Continued from MEEXCH in the previous line
-                        $v->{'msexch'} = 1;
-                        $v->{'diagnosis'} .= ' '.$e;
-                        $statuspart = 1;
-
-                    } else {
-                        # Error message in the body part
-                        $v->{'alterrors'} .= ' '.$e;
-                    }
+                    # Error message in the body part
+                    $v->{'alterrors'} .= ' '.$e;
                 }
-            } else {
-                # Your message
-                #
+            }
+        } else {
+            # Your message
+            #
+            #  To:      shironeko@example.jp
+            #  Subject: ...
+            #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
+            #
+            if( $e =~ /\A[ \t]+To:[ \t]+(.+)\z/ ) {
                 #  To:      shironeko@example.jp
+                next if $connheader->{'to'};
+                $connheader->{'to'} = $1;
+                $connvalues++;
+
+            } elsif( $e =~ /\A[ \t]+Subject:[ \t]+(.+)\z/ ) {
                 #  Subject: ...
+                next if length $connheader->{'subject'};
+                $connheader->{'subject'} = $1;
+                $connvalues++;
+
+            } elsif( $e =~ m|\A[ \t]+Sent:[ \t]+([A-Z][a-z]{2},.+[-+]\d{4})\z| ||
+                     $e =~ m|\A[ \t]+Sent:[ \t]+(\d+[/]\d+[/]\d+[ \t]+\d+:\d+:\d+[ \t].+)|) {
                 #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
-                #
-                if( $e =~ /\A[ \t]+To:[ \t]+(.+)\z/ ) {
-                    #  To:      shironeko@example.jp
-                    next if $connheader->{'to'};
-                    $connheader->{'to'} = $1;
-                    $connvalues++;
-
-                } elsif( $e =~ /\A[ \t]+Subject:[ \t]+(.+)\z/ ) {
-                    #  Subject: ...
-                    next if length $connheader->{'subject'};
-                    $connheader->{'subject'} = $1;
-                    $connvalues++;
-
-                } elsif( $e =~ m|\A[ \t]+Sent:[ \t]+([A-Z][a-z]{2},.+[-+]\d{4})\z| ||
-                         $e =~ m|\A[ \t]+Sent:[ \t]+(\d+[/]\d+[/]\d+[ \t]+\d+:\d+:\d+[ \t].+)|) {
-                    #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
-                    #  Sent:    4/29/99 9:19:59 AM
-                    next if $connheader->{'date'};
-                    $connheader->{'date'} = $1;
-                    $connvalues++;
-                }
+                #  Sent:    4/29/99 9:19:59 AM
+                next if $connheader->{'date'};
+                $connheader->{'date'} = $1;
+                $connvalues++;
             }
         } # End of error message part
     }
@@ -243,13 +213,13 @@ sub make {
         delete $e->{'alterrors'};
     }
 
-    unless( @$rfc822list ) {
+    unless( length $rfc822text ) {
         # When original message does not included in the bounce message
-        push @$rfc822list, 'From: '.$connheader->{'to'};
-        push @$rfc822list, 'Date: '.$connheader->{'date'};
-        push @$rfc822list, 'Subject: '.$connheader->{'subject'};
+        $rfc822text .= sprintf("From: %s\n", $connheader->{'to'});
+        $rfc822text .= sprintf("Date: %s\n", $connheader->{'date'});
+        $rfc822text .= sprintf("Subject: %s\n", $connheader->{'subject'});
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
@@ -298,7 +268,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

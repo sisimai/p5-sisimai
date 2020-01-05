@@ -4,10 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
+my $RFC822Mark = qr|^--- The header of the original message is following[.] ---$|ms;
 my $StartingOf = {
     'message' => ['This message was created automatically by mail delivery software'],
-    'rfc822'  => ['--- The header of the original message is following'],
     'error'   => ['For the following reason:'],
 };
 my $MessagesOf = { 'mesgtoobig' => ['Mail size limit exceeded'] };
@@ -35,78 +34,48 @@ sub make {
     return undef unless $mhead->{'subject'} eq 'Mail delivery failed: returning message to sender';
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
+    my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
-        unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
-        }
+    for my $e ( split("\n", $dsmessages) ) {
+        # Read each line of message/delivery-status part and error messages
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # The following address failed:
+        #
+        # general@example.eu
+        #
+        # For the following reason:
+        #
+        # Mail size limit exceeded. For explanation visit
+        # http://postmaster.1and1.com/en/error-messages?ip=%1s
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
+            # general@example.eu
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $recipients++;
+
+        } elsif( index($e, $StartingOf->{'error'}->[0]) == 0 ) {
+            # For the following reason:
+            $v->{'diagnosis'} = $e;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # The following address failed:
-            #
-            # general@example.eu
-            #
-            # For the following reason:
-            #
-            # Mail size limit exceeded. For explanation visit
-            # http://postmaster.1and1.com/en/error-messages?ip=%1s
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
-                # general@example.eu
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
-            } elsif( index($e, $StartingOf->{'error'}->[0]) == 0 ) {
-                # For the following reason:
-                $v->{'diagnosis'} = $e;
+            if( length $v->{'diagnosis'} ) {
+                # Get error message and append the error message strings
+                $v->{'diagnosis'} .= ' '.$e;
 
             } else {
-                if( length $v->{'diagnosis'} ) {
-                    # Get error message and append the error message strings
-                    $v->{'diagnosis'} .= ' '.$e;
-
-                } else {
-                    # OR the following format:
-                    #   neko@example.fr:
-                    #   SMTP error from remote server for TEXT command, host: ...
-                    $v->{'alterrors'} .= ' '.$e;
-                }
+                # OR the following format:
+                #   neko@example.fr:
+                #   SMTP error from remote server for TEXT command, host: ...
+                $v->{'alterrors'} .= ' '.$e;
             }
         } # End of error message part
     }
@@ -137,7 +106,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
@@ -183,7 +152,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

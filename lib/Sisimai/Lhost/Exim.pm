@@ -4,49 +4,22 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
+# deliver.c:6423|          if (bounce_return_body) fprintf(f,
+# deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
+# deliver.c:6425|          else fprintf(f,
+# deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
+my $RFC822Mark = qr{^(?:
+     [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+headers[.][ ][-]+
+    |Content-Type:[ ]*message/rfc822
+    )$
+}mx;
 my $StartingOf = {
     'deliverystatus' => ['Content-type: message/delivery-status'],
     'endof'          => ['__END_OF_EMAIL_MESSAGE__'],
 };
 my $MarkingsOf = {
-    # Error text regular expressions which defined in exim/src/deliver.c
-    #
-    # deliver.c:6292| fprintf(f,
-    # deliver.c:6293|"This message was created automatically by mail delivery software.\n");
-    # deliver.c:6294|        if (to_sender)
-    # deliver.c:6295|          {
-    # deliver.c:6296|          fprintf(f,
-    # deliver.c:6297|"\nA message that you sent could not be delivered to one or more of its\n"
-    # deliver.c:6298|"recipients. This is a permanent error. The following address(es) failed:\n");
-    # deliver.c:6299|          }
-    # deliver.c:6300|        else
-    # deliver.c:6301|          {
-    # deliver.c:6302|          fprintf(f,
-    # deliver.c:6303|"\nA message sent by\n\n  <%s>\n\n"
-    # deliver.c:6304|"could not be delivered to one or more of its recipients. The following\n"
-    # deliver.c:6305|"address(es) failed:\n", sender_address);
-    # deliver.c:6306|          }
-    #
-    # deliver.c:6423|          if (bounce_return_body) fprintf(f,
-    # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
-    # deliver.c:6425|          else fprintf(f,
-    # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
     'alias'   => qr/\A([ ]+an undisclosed address)\z/,
-    'message' => qr{\A(?>
-         This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
-        |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scannning[ ]code
-        |A[ ]message[ ]that[ ]you[ ]sent[ ]contained[ ]one[ ]or[ ]more[ ]recipient[ ]addresses[ ]
-        |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
-        |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
-        )
-    }x,
     'frozen'  => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
-    'rfc822'  => qr{\A(?:
-         [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+headers[.][ ][-]+
-        |Content-Type:[ ]*message/rfc822
-        )\z
-    }x,
 };
 
 my $ReCommands = [
@@ -164,9 +137,6 @@ sub make {
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
     my $boundary00 = '';    # (String) Boundary string
@@ -174,6 +144,7 @@ sub make {
         'deliverystatus' => 0
     };
     my $v = undef;
+    my ($dsmessages, $rfc822text) = split($RFC822Mark, $$mbody, 2);
 
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
@@ -181,146 +152,117 @@ sub make {
         $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
     }
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $dsmessages) ) {
+        # Read each line of message/delivery-status part and error messages
         last if $e eq $StartingOf->{'endof'}->[0];
+        next unless length $e;
 
-        unless( $readcursor ) {
-            # Beginning of the bounce message or message/delivery-status part
-            if( $e =~ $MarkingsOf->{'message'} ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next unless $e =~ $MarkingsOf->{'frozen'};
-            }
-        }
+        # This message was created automatically by mail delivery software.
+        #
+        # A message that you sent could not be delivered to one or more of its
+        # recipients. This is a permanent error. The following address(es) failed:
+        #
+        #  kijitora@example.jp
+        #    SMTP error from remote mail server after RCPT TO:<kijitora@example.jp>:
+        #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
+        $v = $dscontents->[-1];
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part(message/rfc822)
-            if( $e =~ $MarkingsOf->{'rfc822'} ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        if( $e =~ /\A[ \t]{2}([^ \t]+[@][^ \t]+[.]?[a-zA-Z]+)(:.+)?\z/ ||
+            $e =~ /\A[ \t]{2}[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ||
+            $e =~ $MarkingsOf->{'alias'} ) {
+            #   kijitora@example.jp
+            #   sabineko@example.jp: forced freeze
+            #   mikeneko@example.jp <nekochan@example.org>: ...
+            #
+            # deliver.c:4549|  printed = US"an undisclosed address";
+            #   an undisclosed address
+            #     (generated from kijitora@example.jp)
+            my $r = $1;
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # message/rfc822 OR text/rfc822-headers part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+
+            if( $e =~ /\A[ \t]+[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ) {
+                # parser.c:743| while (bracket_count-- > 0) if (*s++ != '>')
+                # parser.c:744|   {
+                # parser.c:745|   *errorptr = s[-1] == 0
+                # parser.c:746|     ? US"'>' missing at end of address"
+                # parser.c:747|     : string_sprintf("malformed address: %.32s may not follow %.*s",
+                # parser.c:748|     s-1, (int)(s - US mailbox - 1), mailbox);
+                # parser.c:749|   goto PARSE_FAILED;
+                # parser.c:750|   }
+                $r = $1;
+                $v->{'diagnosis'} = $e;
+            }
+            $v->{'recipient'} = $r;
+            $recipients++;
+
+        } elsif( $e =~ /\A[ ]+[(]generated[ ]from[ ](.+)[)]\z/ ||
+                 $e =~ /\A[ ]+generated[ ]by[ ]([^ \t]+[@][^ \t]+)/ ) {
+            #     (generated from kijitora@example.jp)
+            #  pipe to |/bin/echo "Some pipe output"
+            #    generated by userx@myhost.test.ex
+            $v->{'alias'} = $1;
 
         } else {
-            # message/delivery-status part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
             next unless length $e;
 
-            # This message was created automatically by mail delivery software.
-            #
-            # A message that you sent could not be delivered to one or more of its
-            # recipients. This is a permanent error. The following address(es) failed:
-            #
-            #  kijitora@example.jp
-            #    SMTP error from remote mail server after RCPT TO:<kijitora@example.jp>:
-            #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A[ \t]{2}([^ \t]+[@][^ \t]+[.]?[a-zA-Z]+)(:.+)?\z/ ||
-                $e =~ /\A[ \t]{2}[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ||
-                $e =~ $MarkingsOf->{'alias'} ) {
-                #   kijitora@example.jp
-                #   sabineko@example.jp: forced freeze
-                #   mikeneko@example.jp <nekochan@example.org>: ...
-                #
-                # deliver.c:4549|  printed = US"an undisclosed address";
-                #   an undisclosed address
-                #     (generated from kijitora@example.jp)
-                my $r = $1;
-
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-
-                if( $e =~ /\A[ \t]+[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ) {
-                    # parser.c:743| while (bracket_count-- > 0) if (*s++ != '>')
-                    # parser.c:744|   {
-                    # parser.c:745|   *errorptr = s[-1] == 0
-                    # parser.c:746|     ? US"'>' missing at end of address"
-                    # parser.c:747|     : string_sprintf("malformed address: %.32s may not follow %.*s",
-                    # parser.c:748|     s-1, (int)(s - US mailbox - 1), mailbox);
-                    # parser.c:749|   goto PARSE_FAILED;
-                    # parser.c:750|   }
-                    $r = $1;
-                    $v->{'diagnosis'} = $e;
-                }
-                $v->{'recipient'} = $r;
-                $recipients++;
-
-            } elsif( $e =~ /\A[ ]+[(]generated[ ]from[ ](.+)[)]\z/ ||
-                     $e =~ /\A[ ]+generated[ ]by[ ]([^ \t]+[@][^ \t]+)/ ) {
-                #     (generated from kijitora@example.jp)
-                #  pipe to |/bin/echo "Some pipe output"
-                #    generated by userx@myhost.test.ex
-                $v->{'alias'} = $1;
+            if( $e =~ $MarkingsOf->{'frozen'} ) {
+                # Message *** has been frozen by the system filter.
+                # Message *** was frozen on arrival by ACL.
+                $v->{'alterrors'} .= $e.' ';
 
             } else {
-                next unless length $e;
+                if( $boundary00 ) {
+                    # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
+                    # Content-type: message/delivery-status
+                    # ...
+                    if( Sisimai::RFC1894->match($e) ) {
+                        # $e matched with any field defined in RFC3464
+                        next unless my $o = Sisimai::RFC1894->field($e);
 
-                if( $e =~ $MarkingsOf->{'frozen'} ) {
-                    # Message *** has been frozen by the system filter.
-                    # Message *** was frozen on arrival by ACL.
-                    $v->{'alterrors'} .= $e.' ';
+                        if( $o->[-1] eq 'addr' ) {
+                            # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
+                            next unless $o->[0] eq 'final-recipient';
+                            $v->{'spec'} ||= rindex($o->[2], '@') > -1 ? 'SMTP' : 'X-UNIX';
 
-                } else {
-                    if( $boundary00 ) {
-                        # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
-                        # Content-type: message/delivery-status
-                        # ...
-                        if( Sisimai::RFC1894->match($e) ) {
-                            # $e matched with any field defined in RFC3464
-                            next unless my $o = Sisimai::RFC1894->field($e);
+                        } elsif( $o->[-1] eq 'code' ) {
+                            # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                            $v->{'spec'} = uc $o->[1];
+                            $v->{'diagnosis'} = $o->[2];
 
-                            if( $o->[-1] eq 'addr' ) {
-                                # Final-Recipient: rfc822;|/bin/echo "Some pipe output"
-                                next unless $o->[0] eq 'final-recipient';
-                                $v->{'spec'} ||= rindex($o->[2], '@') > -1 ? 'SMTP' : 'X-UNIX';
-
-                            } elsif( $o->[-1] eq 'code' ) {
-                                # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                                $v->{'spec'} = uc $o->[1];
-                                $v->{'diagnosis'} = $o->[2];
-
-                            } else {
-                                # Other DSN fields defined in RFC3464
-                                next unless exists $fieldtable->{ $o->[0] };
-                                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
-                            }
                         } else {
-                            # Error message ?
-                            next if $havepassed->{'deliverystatus'};
-                            # Content-type: message/delivery-status
-                            $havepassed->{'deliverystatus'} = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
-                            $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
+                            # Other DSN fields defined in RFC3464
+                            next unless exists $fieldtable->{ $o->[0] };
+                            $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
                         }
                     } else {
-                        if( scalar @$dscontents == $recipients ) {
-                            # Error message
-                            next unless length $e;
-                            $v->{'diagnosis'} .= $e.' ';
+                        # Error message ?
+                        next if $havepassed->{'deliverystatus'};
+                        # Content-type: message/delivery-status
+                        $havepassed->{'deliverystatus'} = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
+                        $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
+                    }
+                } else {
+                    if( scalar @$dscontents == $recipients ) {
+                        # Error message
+                        next unless length $e;
+                        $v->{'diagnosis'} .= $e.' ';
+
+                    } else {
+                        # Error message when email address above does not include '@'
+                        # and domain part.
+                        if( $e =~ m<\A[ ]+pipe[ ]to[ ][|]/.+> ) {
+                            # pipe to |/path/to/prog ...
+                            #   generated by kijitora@example.com
+                            $v->{'diagnosis'} = $e;
 
                         } else {
-                            # Error message when email address above does not include '@'
-                            # and domain part.
-                            if( $e =~ m<\A[ ]+pipe[ ]to[ ][|]/.+> ) {
-                                # pipe to |/path/to/prog ...
-                                #   generated by kijitora@example.com
-                                $v->{'diagnosis'} = $e;
-
-                            } else {
-                                next unless index($e, '    ') == 0;
-                                $v->{'alterrors'} .= $e.' ';
-                            }
+                            next unless index($e, '    ') == 0;
+                            $v->{'alterrors'} .= $e.' ';
                         }
                     }
                 }
@@ -521,7 +463,7 @@ sub make {
         }
         $e->{'command'} ||= '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
@@ -567,7 +509,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
