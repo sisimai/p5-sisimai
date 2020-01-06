@@ -16,7 +16,10 @@ my $MarkingsOf = {
              )
         |the[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
         |this[ ]report[ ]relates[ ]to[ ]your[ ]message
-        |your[ ]message[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
+        |your[ ]message[ ](?:
+            could[ ]not[ ]be[ ]delivered
+           |was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
+           )
         )
     }x,
     'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/,
@@ -505,7 +508,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
