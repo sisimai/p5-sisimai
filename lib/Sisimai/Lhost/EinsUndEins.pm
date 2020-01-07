@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.]---|m;
+my $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
 my $StartingOf = {
     'message' => ['This message was created automatically by mail delivery software'],
     'error'   => ['For the following reason:'],
