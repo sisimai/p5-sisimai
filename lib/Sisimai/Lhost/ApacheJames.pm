@@ -113,7 +113,7 @@ sub make {
                 $v->{'diagnosis'} = $e if $e eq $StartingOf->{'error'}->[0];
                 $v->{'diagnosis'} .= ' '.$e unless $gotmessage;
             }
-        } # End of error message part
+        }
     }
     return undef unless $recipients;
 

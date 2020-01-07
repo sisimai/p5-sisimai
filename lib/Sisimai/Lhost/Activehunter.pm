@@ -72,7 +72,7 @@ sub make {
             next unless $e =~ /\A[0-9A-Za-z]+/;
             next if length $v->{'diagnosis'};
             $v->{'diagnosis'} ||= $e;
-        } # End of error message part
+        }
     }
     return undef unless $recipients;
 

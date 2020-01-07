@@ -99,7 +99,7 @@ sub make {
                 next unless $f == 1;
                 $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
             }
-        } # End of message/delivery-status
+        }
 
         # <!DOCTYPE HTML><html>
         # <head>
