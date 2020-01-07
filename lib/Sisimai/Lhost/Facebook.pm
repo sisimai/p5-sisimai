@@ -165,10 +165,7 @@ sub make {
 
         if( $e->{'diagnosis'} =~ /\b([A-Z]{3})[-]([A-Z])(\d)\b/ ) {
             # Diagnostic-Code: smtp; 550 5.1.1 RCP-P2
-            my $lhs = $1;
-            my $rhs = $2;
-            my $num = $3;
-            $fbresponse = sprintf("%s-%s%d", $lhs, $rhs, $num);
+            $fbresponse = sprintf("%s-%s%d", $1, $2, $3);
         }
 
         SESSION: for my $r ( keys %$ErrorCodes ) {
