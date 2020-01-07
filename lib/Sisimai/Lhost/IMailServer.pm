@@ -4,12 +4,8 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => [''],  # Blank line
-    'rfc822'  => ['Original message follows.'],
-    'error'   => ['Body of message generated response:'],
-};
+my $ReBackbone = qr|^Original[ ]message[ ]follows[.]|m;
+my $StartingOf = { 'error' => ['Body of message generated response:'] };
 
 my $ReSMTP = {
     'conn' => qr/(?:SMTP connection failed,|Unexpected connection response from server:)/,
@@ -53,75 +49,46 @@ sub make {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
-        unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( $e eq $StartingOf->{'message'}->[0] ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
-        }
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # Unknown user: kijitora@example.com
+        #
+        # Original message follows.
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A([^ ]+)[ ](.+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
+            # Unknown user: kijitora@example.com
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'diagnosis'} = $1.' '.$2;
+            $v->{'recipient'} = $3;
+            $recipients++;
+
+        } elsif( $e =~ /\Aundeliverable[ ]+to[ ]+(.+)\z/ ) {
+            # undeliverable to kijitora@example.com
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
+            }
+            $v->{'recipient'} = $1;
+            $recipients++;
 
         } else {
-            # Error message part
-            last if $readcursor & $Indicators->{'message-rfc822'};
-
-            # Unknown user: kijitora@example.com
-            #
-            # Original message follows.
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A([^ ]+)[ ](.+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
-                # Unknown user: kijitora@example.com
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'diagnosis'} = $1.' '.$2;
-                $v->{'recipient'} = $3;
-                $recipients++;
-
-            } elsif( $e =~ /\Aundeliverable[ ]+to[ ]+(.+)\z/ ) {
-                # undeliverable to kijitora@example.com
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
-            } else {
-                # Other error message text
-                $v->{'alterrors'} //= '';
-                $v->{'alterrors'}  .= ' '.$e if $v->{'alterrors'};
-                $v->{'alterrors'}   = $e if index($e, $StartingOf->{'error'}->[0]) > -1;
-            }
-        } # End of error message part
+            # Other error message text
+            $v->{'alterrors'} //= '';
+            $v->{'alterrors'}  .= ' '.$e if $v->{'alterrors'};
+            $v->{'alterrors'}   = $e if index($e, $StartingOf->{'error'}->[0]) > -1;
+        }
     }
     return undef unless $recipients;
 
@@ -150,7 +117,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -197,7 +164,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
