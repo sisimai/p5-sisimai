@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr<^(?:[-]{50}|Content-Type:[ ]*message/rfc822)>m;
 my $MarkingsOf = {
     'message' => qr{\A(?:
          The[ ]user[(]s[)][ ]
@@ -13,7 +14,6 @@ my $MarkingsOf = {
         |[<][^ ]+[@][^ ]+[>]\z
         )
     }x,
-    'rfc822'   => qr#\A(?:[-]{50}|Content-Type:[ ]*message/rfc822)#,
     'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
 };
 my $ReFailures = {
@@ -74,8 +74,7 @@ sub make {
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -88,83 +87,64 @@ sub make {
     }
     my @rxmessages; map { push @rxmessages, @{ $ReFailures->{ $_ } } } (keys %$ReFailures);
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
+            # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e =~ $MarkingsOf->{'rfc822'} || $e =~ $MarkingsOf->{'boundary'} ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # The user(s) account is disabled.
+        #
+        # <***@ezweb.ne.jp>: 550 user unknown (in reply to RCPT TO command)
+        #
+        #  -- OR --
+        # Each of the following recipients was rejected by a remote
+        # mail server.
+        #
+        #    Recipient: <******@ezweb.ne.jp>
+        #    >>> RCPT TO:<******@ezweb.ne.jp>
+        #    <<< 550 <******@ezweb.ne.jp>: User unknown
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
+            $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
+            $e =~ /\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
+
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+
+            my $r = Sisimai::Address->s3s4($1);
+            $v->{'recipient'} = $r;
+            $recipients++;
+
+        } elsif( my $f = Sisimai::RFC1894->match($e) ) {
+            # $e matched with any field defined in RFC3464
+            next unless my $o = Sisimai::RFC1894->field($e);
+            next unless exists $fieldtable->{ $o->[0] };
+            $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # The user(s) account is disabled.
-            #
-            # <***@ezweb.ne.jp>: 550 user unknown (in reply to RCPT TO command)
-            #
-            #  -- OR --
-            # Each of the following recipients was rejected by a remote
-            # mail server.
-            #
-            #    Recipient: <******@ezweb.ne.jp>
-            #    >>> RCPT TO:<******@ezweb.ne.jp>
-            #    <<< 550 <******@ezweb.ne.jp>: User unknown
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
-                $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
-                $e =~ /\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
-
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-
-                my $r = Sisimai::Address->s3s4($1);
-                $v->{'recipient'} = $r;
-                $recipients++;
-
-            } elsif( my $f = Sisimai::RFC1894->match($e) ) {
-                # $e matched with any field defined in RFC3464
-                next unless my $o = Sisimai::RFC1894->field($e);
-                next unless exists $fieldtable->{ $o->[0] };
-                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+            # The line does not begin with a DSN field defined in RFC3464
+            next if Sisimai::String->is_8bit(\$e);
+            if( $e =~ /\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
+                #    >>> RCPT TO:<******@ezweb.ne.jp>
+                $v->{'command'} = $1;
 
             } else {
-                # The line does not begin with a DSN field defined in RFC3464
-                next if Sisimai::String->is_8bit(\$e);
-                if( $e =~ /\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
-                    #    >>> RCPT TO:<******@ezweb.ne.jp>
-                    $v->{'command'} = $1;
-
+                # Check error message
+                if( grep { $e =~ $_ } @rxmessages ) {
+                    # Check with regular expressions of each error
+                    $v->{'diagnosis'} .= ' '.$e;
                 } else {
-                    # Check error message
-                    if( grep { $e =~ $_ } @rxmessages ) {
-                        # Check with regular expressions of each error
-                        $v->{'diagnosis'} .= ' '.$e;
-                    } else {
-                        # >>> 550
-                        $v->{'alterrors'} .= ' '.$e;
-                    }
+                    # >>> 550
+                    $v->{'alterrors'} .= ' '.$e;
                 }
             }
         } # End of error message part
@@ -213,7 +193,7 @@ sub make {
         next if $e->{'recipient'} =~ /[@](?:ezweb[.]ne[.]jp|au[.]com)\z/;
         $e->{'reason'} = 'userunknown';
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -258,7 +238,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
