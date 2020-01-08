@@ -11,7 +11,7 @@ use warnings;
 #   rfc822:  The first line of the original message.
 #   endof:   Fixed string ``__END_OF_EMAIL_MESSAGE__''
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = { 'rfc822' => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'] };
+my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
 my $MarkingsOf = {
     'message' => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
@@ -54,11 +54,8 @@ sub make {
     #    lib/Sisimai/Lhost directory to implement codes.
     #
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
-    my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my @hasdivided = split("\n", $emailsteak->[0]);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     # The following code is dummy to be passed "make test".
@@ -70,17 +67,16 @@ sub make {
     $dscontents->[0]->{'date'}      = 'Thu 29 Apr 2010 23:34:45 +0900';
     $dscontents->[0]->{'agent'}     = __PACKAGE__->smtpagent();
 
-    $rfc822part .= 'From: shironeko@example.org'."\n";
-    $rfc822part .= 'Subject: Nyaaan'."\n";
-    $rfc822part .= 'Message-Id: 000000000000@example.jp'."\n";
+    $emailsteak->[1] .= 'From: shironeko@example.org'."\n";
+    $emailsteak->[1] .= 'Subject: Nyaaan'."\n";
+    $emailsteak->[1] .= 'Message-Id: 000000000000@example.jp'."\n";
 
     # 3. Return undef when there is no recipient address which is failed to
     #    delivery in the bounce message
     return undef unless $recipients;
 
     # 4. Return the following variable.
-    $rfc822part = Sisimai::RFC5322->weedout($rfc822list);
-    return { 'ds' => $dscontents, 'rfc822' => $$rfc822part };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -144,7 +140,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
