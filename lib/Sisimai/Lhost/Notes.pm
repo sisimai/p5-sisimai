@@ -56,6 +56,7 @@ sub make {
             next;
         }
         next unless $readcursor & $Indicators->{'deliverystatus'};
+
         # ------- Failure Reasons  --------
         #
         # User not listed in public Name & Address Book
