@@ -6,11 +6,8 @@ use warnings;
 
 # Based on Sisimai::Lhost::Exim
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['This message was created automatically by mail delivery software.'],
-    'rfc822'  => ['Included is a copy of the message header:'],
-};
-
+my $ReBackbone = qr|^Included is a copy of the message header:|m;
+my $StartingOf = { 'message' => ['This message was created automatically by mail delivery software.'] };
 my $ReCommands = [
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
@@ -91,74 +88,52 @@ sub make {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( $e eq $StartingOf->{'message'}->[0] ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
+        # This message was created automatically by mail delivery software.
+        #
+        # A message that you sent could not be delivered to one or more of its
+        # recipients. This is a permanent error. The following address(es) failed:
+        #
+        #  kijitora@example.jp
+        #    SMTP error from remote mail server after RCPT TO:<kijitora@example.jp>:
+        #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
+        $v = $dscontents->[-1];
+
+        if( $e =~ /\A[ \t]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
+            # A message that you have sent could not be delivered to one or more
+            # recipients.  This is a permanent error.  The following address failed:
+            #
+            #  <kijitora@example.co.jp>: 550 5.1.1 ...
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-        }
+            $v->{'recipient'} = $1;
+            $v->{'diagnosis'} = $2;
+            $recipients++;
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
-
-        } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
+        } elsif( scalar @$dscontents == $recipients ) {
+            # Error message
             next unless length $e;
-
-            # This message was created automatically by mail delivery software.
-            #
-            # A message that you sent could not be delivered to one or more of its
-            # recipients. This is a permanent error. The following address(es) failed:
-            #
-            #  kijitora@example.jp
-            #    SMTP error from remote mail server after RCPT TO:<kijitora@example.jp>:
-            #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A[ \t]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
-                # A message that you have sent could not be delivered to one or more
-                # recipients.  This is a permanent error.  The following address failed:
-                #
-                #  <kijitora@example.co.jp>: 550 5.1.1 ...
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $v->{'diagnosis'} = $2;
-                $recipients++;
-
-            } elsif( scalar @$dscontents == $recipients ) {
-                # Error message
-                next unless length $e;
-                $v->{'diagnosis'} .= $e.' ';
-            }
-        } # End of error message part
+            $v->{'diagnosis'} .= $e.' ';
+        }
     }
     return undef unless $recipients;
 
@@ -223,7 +198,7 @@ sub make {
         $e->{'command'} ||= '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -270,7 +245,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

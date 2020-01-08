@@ -5,10 +5,8 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['--- The following addresses had delivery problems ---'],
-    'rfc822'  => ['Content-Type: message/rfc822'],
-};
+my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+my $StartingOf = { 'message' => ['--- The following addresses had delivery problems ---'] };
 my $ReFailures = {
     'userunknown' => qr{(?:
          [ ]User[ ][(].+[@].+[)][ ]unknown[.][ ]
@@ -46,85 +44,63 @@ sub make {
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $diagnostic = '';    # (String) Alternative diagnostic message
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) > -1 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) > -1;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
+        # Content-Type: text/plain; name="deliveryproblems.txt"
+        #
+        #    --- The following addresses had delivery problems ---
+        #
+        # <user@example.com>   (User unknown user@example.com)
+        #
+        # --------------Boundary-00=_00000000000000000000
+        # Content-Type: message/delivery-status; name="deliverystatus.txt"
+        #
+        $v = $dscontents->[-1];
+
+        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ \t]+[(](.+)[)]\z/ ) {
+            # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
+            }
+            $v->{'recipient'} = $1;
+            $diagnostic = $2;
+            $recipients++;
+
+        } elsif( my $f = Sisimai::RFC1894->match($e) ) {
+            # $e matched with any field defined in RFC3464
+            my $o = Sisimai::RFC1894->field($e);
+            unless( $o ) {
+                # Fallback code for empty value or invalid formatted value
+                # - Original-Recipient: <kijitora@example.co.jp>
+                $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]*([^ ]+)\z/;
                 next;
             }
-        }
-
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
+            next unless exists $fieldtable->{ $o->[0] };
+            $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # Content-Type: text/plain; name="deliveryproblems.txt"
-            #
-            #    --- The following addresses had delivery problems ---
-            #
-            # <user@example.com>   (User unknown user@example.com)
-            #
-            # --------------Boundary-00=_00000000000000000000
-            # Content-Type: message/delivery-status; name="deliverystatus.txt"
-            #
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ \t]+[(](.+)[)]\z/ ) {
-                # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $diagnostic = $2;
-                $recipients++;
-
-            } elsif( my $f = Sisimai::RFC1894->match($e) ) {
-                # $e matched with any field defined in RFC3464
-                my $o = Sisimai::RFC1894->field($e);
-                unless( $o ) {
-                    # Fallback code for empty value or invalid formatted value
-                    # - Original-Recipient: <kijitora@example.co.jp>
-                    $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]*([^ ]+)\z/;
-                    next;
-                }
-                next unless exists $fieldtable->{ $o->[0] };
-                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
-
-            } else {
-                # Continued line of the value of Diagnostic-Code field
-                next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
-                $v->{'diagnosis'} .= ' '.$1;
-            }
+            # Continued line of the value of Diagnostic-Code field
+            next unless index($p, 'Diagnostic-Code:') == 0;
+            next unless $e =~ /\A[ \t]+(.+)\z/;
+            $v->{'diagnosis'} .= ' '.$1;
         } # End of error message part
     } continue {
         # Save the current line for the next loop
@@ -143,7 +119,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -190,7 +166,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
