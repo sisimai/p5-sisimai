@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr|^--- Below this line is a copy of the message[.]|m;
 my $StartingOf = {
     #  qmail-remote.c:248|    if (code >= 500) {
     #  qmail-remote.c:249|      out("h"); outhost(); out(" does not like recipient.\n");
@@ -14,7 +15,6 @@ my $StartingOf = {
     # Characters: K,Z,D in qmail-qmqpc.c, qmail-send.c, qmail-rspawn.c
     #  K = success, Z = temporary error, D = permanent error
     'message' => ['Hi. This is the qmail'],
-    'rfc822'  => ['--- Below this line is a copy of the message.'],
     'error'   => ['Remote host said:'],
 };
 
@@ -130,69 +130,47 @@ sub make {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # <kijitora@example.jp>:
+        # 192.0.2.153 does not like recipient.
+        # Remote host said: 550 5.1.1 <kijitora@example.jp>... User Unknown
+        # Giving up on 192.0.2.153.
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
-
-        } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
+        if( $e =~ /\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ \t]*\z/ ) {
             # <kijitora@example.jp>:
-            # 192.0.2.153 does not like recipient.
-            # Remote host said: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            # Giving up on 192.0.2.153.
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ \t]*\z/ ) {
-                # <kijitora@example.jp>:
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
-            } elsif( scalar @$dscontents == $recipients ) {
-                # Append error message
-                next unless length $e;
-                $v->{'diagnosis'} .= $e.' ';
-                $v->{'alterrors'}  = $e if index($e, $StartingOf->{'error'}->[0]) == 0;
-
-                next if $v->{'rhost'};
-                $v->{'rhost'} = $1 if $e =~ $ReHost;
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-        } # End of error message part
+            $v->{'recipient'} = $1;
+            $recipients++;
+
+        } elsif( scalar @$dscontents == $recipients ) {
+            # Append error message
+            next unless length $e;
+            $v->{'diagnosis'} .= $e.' ';
+            $v->{'alterrors'}  = $e if index($e, $StartingOf->{'error'}->[0]) == 0;
+
+            next if $v->{'rhost'};
+            $v->{'rhost'} = $1 if $e =~ $ReHost;
+        }
     }
     return undef unless $recipients;
 
@@ -263,7 +241,7 @@ sub make {
         $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -309,7 +287,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
