@@ -6,10 +6,8 @@ use warnings;
 use Encode;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['------- Failure Reasons '],
-    'rfc822'  => ['------- Returned Message '],
-};
+my $ReBackbone = qr|^-------[ ]Returned[ ]Message[ ]--------|m;
+my $StartingOf = { 'message' => ['------- Failure Reasons '] };
 my $MessagesOf = {
     'userunknown' => [
         'User not listed in public Name & Address Book',
@@ -38,8 +36,7 @@ sub make {
     return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $characters = '';    # (String) Character set name of the bounce mail
@@ -47,92 +44,65 @@ sub make {
     my $encodedmsg = '';
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    # Get character set name, Content-Type: text/plain; charset=ISO-2022-JP
+    $characters = lc $1 if $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/;
+
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
-
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        # ------- Failure Reasons  --------
+        #
+        # User not listed in public Name & Address Book
+        # kijitora@notes.example.jp
+        #
+        # ------- Returned Message --------
+        $v = $dscontents->[-1];
+        if( $e =~ /\A[^ ]+[@][^ ]+/ ) {
+            # kijitora@notes.example.jp
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-        }
-
-        unless( $characters ) {
-            # Get character set name
-            # Content-Type: text/plain; charset=ISO-2022-JP
-            $characters = lc $1 if $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/;
-        }
-
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
+            $v->{'recipient'} ||= $e;
+            $recipients++;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
+            next if $e eq '';
+            next if index($e, '-') == 0;
 
-            # ------- Failure Reasons  --------
-            #
-            # User not listed in public Name & Address Book
-            # kijitora@notes.example.jp
-            #
-            # ------- Returned Message --------
-            $v = $dscontents->[-1];
-            if( $e =~ /\A[^ ]+[@][^ ]+/ ) {
-                # kijitora@notes.example.jp
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} ||= $e;
-                $recipients++;
-
-            } else {
-                next if $e eq '';
-                next if index($e, '-') == 0;
-
-                if( $e =~ /[^\x20-\x7e]/ ) {
-                    # Error message is not ISO-8859-1
-                    $encodedmsg = $e;
-                    if( $characters ) {
-                        # Try to convert string
-                        eval { Encode::from_to($encodedmsg, $characters, 'utf8'); };
-                        $encodedmsg = $removedmsg if $@;    # Failed to convert
-
-                    } else {
-                        # No character set in Content-Type header
-                        $encodedmsg = $removedmsg;
-                    }
-                    $v->{'diagnosis'} .= $encodedmsg;
+            if( $e =~ /[^\x20-\x7e]/ ) {
+                # Error message is not ISO-8859-1
+                $encodedmsg = $e;
+                if( $characters ) {
+                    # Try to convert string
+                    eval { Encode::from_to($encodedmsg, $characters, 'utf8'); };
+                    $encodedmsg = $removedmsg if $@;    # Failed to convert
 
                 } else {
-                    # Error message does not include multi-byte character
-                    $v->{'diagnosis'} .= $e;
+                    # No character set in Content-Type header
+                    $encodedmsg = $removedmsg;
                 }
+                $v->{'diagnosis'} .= $encodedmsg;
+
+            } else {
+                # Error message does not include multi-byte character
+                $v->{'diagnosis'} .= $e;
             }
-        } # End of error message part
+        }
     }
 
     unless( $recipients ) {
         # Fallback: Get the recpient address from RFC822 part
-        for my $e ( @$rfc822list ) {
-            next unless $e =~ /^To:[ ]*(.+)$/;
+        if( $emailsteak->[1] =~ /^To:[ ]*(.+)$/m ) {
             $v->{'recipient'} = Sisimai::Address->s3s4($1);
             $recipients++ if $v->{'recipient'};
-            last;
         }
     }
     return undef unless $recipients;
@@ -150,7 +120,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -197,7 +167,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
