@@ -55,7 +55,7 @@ sub make {
     require Sisimai::MDA;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
     my $mdabounced = Sisimai::MDA->make($mhead, $mbody);
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $rfc822text = '';    # (String) message/rfc822 part text
     my $maybealias = '';    # (String) Original-Recipient field
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -94,7 +94,7 @@ sub make {
                 last if ++$blanklines > 1;
                 next;
             }
-            push @$rfc822list, $e;
+            $rfc822text .= sprintf("%s\n", $e);
 
         } else {
             # message/delivery-status part
@@ -419,17 +419,17 @@ sub make {
 
     unless( $recipients ) {
         # Try to get a recipient address from email headers
-        for my $e ( @$rfc822list ) {
+        if( $rfc822text =~ /^To:[ ]*(.+)/m ) {
             # Check To: header in the original message
-            next unless $e =~ /\ATo:\s*(.+)\z/;
-            my $r = Sisimai::Address->find($1, 1) || [];
-            next unless scalar @$r;
-            push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
+            if( my $r = Sisimai::Address->find($1, 1) ) {
+                next unless scalar @$r;
+                push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
 
-            my $b = $dscontents->[-1];
-            $b->{'recipient'} = $r->[0]->{'address'};
-            $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
-            $recipients++;
+                my $b = $dscontents->[-1];
+                $b->{'recipient'} = $r->[0]->{'address'};
+                $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
+                $recipients++;
+            }
         }
     }
     return undef unless $recipients;
@@ -463,7 +463,7 @@ sub make {
         $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $MarkingsOf->{'command'};
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
