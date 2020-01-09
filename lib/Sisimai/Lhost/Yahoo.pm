@@ -5,10 +5,8 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['Sorry, we were unable to deliver your message'],
-    'rfc822'  => ['--- Below this line is a copy of the message.'],
-};
+my $ReBackbone = qr|^--- Below this line is a copy of the message[.]|m;
+my $StartingOf = { 'message' => ['Sorry, we were unable to deliver your message'] };
 
 # X-YMailISG: YtyUVyYWLDsbDh...
 # X-YMail-JAS: Pb65aU4VM1mei...
@@ -37,89 +35,67 @@ sub make {
     return undef unless $mhead->{'x-ymailisg'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # Sorry, we were unable to deliver your message to the following address.
+        #
+        # <kijitora@example.org>:
+        # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A[<](.+[@].+)[>]:[ \t]*\z/ ) {
+            # <kijitora@example.org>:
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $recipients++;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
+            if( index($e, 'Remote host said:') == 0 ) {
+                # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
+                $v->{'diagnosis'} = $e;
 
-            # Sorry, we were unable to deliver your message to the following address.
-            #
-            # <kijitora@example.org>:
-            # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A[<](.+[@].+)[>]:[ \t]*\z/ ) {
-                # <kijitora@example.org>:
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
+                # Get SMTP command from the value of "Remote host said:"
+                $v->{'command'} = $1 if $e =~ /\[([A-Z]{4}).*\]\z/;
             } else {
-                if( index($e, 'Remote host said:') == 0 ) {
-                    # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
-                    $v->{'diagnosis'} = $e;
-
-                    # Get SMTP command from the value of "Remote host said:"
-                    $v->{'command'} = $1 if $e =~ /\[([A-Z]{4}).*\]\z/;
-                } else {
-                    # <mailboxfull@example.jp>:
+                # <mailboxfull@example.jp>:
+                # Remote host said:
+                # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
+                # [RCPT_TO]
+                if( $v->{'diagnosis'} eq 'Remote host said:' ) {
                     # Remote host said:
                     # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
-                    # [RCPT_TO]
-                    if( $v->{'diagnosis'} eq 'Remote host said:' ) {
-                        # Remote host said:
-                        # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
-                        if( $e =~ /\[([A-Z]{4}).*\]\z/ ) {
-                            # [RCPT_TO]
-                            $v->{'command'} = $1;
+                    if( $e =~ /\[([A-Z]{4}).*\]\z/ ) {
+                        # [RCPT_TO]
+                        $v->{'command'} = $1;
 
-                        } else {
-                            # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
-                            $v->{'diagnosis'} = $e;
-                        }
                     } else {
-                        # Error message which does not start with 'Remote host said:'
-                        $v->{'diagnosis'} .= ' '.$e;
+                        # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
+                        $v->{'diagnosis'} = $e;
                     }
+                } else {
+                    # Error message which does not start with 'Remote host said:'
+                    $v->{'diagnosis'} .= ' '.$e;
                 }
             }
-        } # End of error message part
+        }
     }
     return undef unless $recipients;
 
@@ -129,7 +105,7 @@ sub make {
         $e->{'agent'}     =  __PACKAGE__->smtpagent;
         $e->{'command'} ||=  'RCPT' if $e->{'diagnosis'} =~ /[<].+[@].+[>]/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -175,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
