@@ -269,13 +269,29 @@ header.
         'mx.example.jp'
     ];
 
+=head2 C<B<fillet(I<String>, I<RegExp>)>>
+
+C<fillet()> returns array reference which include error message lines of given
+message body and the original message part splitted by the 2nd argument.
+
+    my $v = 'Error message here
+    Content-Type: message/rfc822
+    Return-Path: <neko@libsisimai.org>';
+    my $r = Sisimai::RFC5322->fillet(\$v, qr|^Content-Type:[ ]message/rfc822|m);
+
+    warn Dumper $r;
+    $VAR1 = [
+        'Error message here',
+        'Return-Path: <neko@libsisimai.org>';
+    ];
+
 =head1 AUTHOR
 
 azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
