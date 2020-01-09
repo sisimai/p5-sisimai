@@ -25,7 +25,7 @@ my $MarkingsOf = {
     'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/,
     'rfc822' => qr{\A(?>
          content-type:[ ]*(?:message/rfc822|text/rfc822-headers)
-        |return-path:[ ]*[<].+[>]\z
+        |return-path:[ ]*[<].+[>]
         )\z
     }x,
 };
