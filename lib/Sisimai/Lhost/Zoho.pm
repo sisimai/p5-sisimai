@@ -5,10 +5,8 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['This message was created automatically by mail delivery'],
-    'rfc822'  => ['from mail.zoho.com by mx.zohomail.com'],
-};
+my $ReBackbone = qr|^Received:[ ]*from[ ]mail[.]zoho[.]com[ ]by[ ]mx[.]zohomail[.]com|m;
+my $StartingOf = { 'message' => ['This message was created automatically by mail delivery'] };
 my $MessagesOf = { 'expired' => ['Host not reachable'] };
 
 # X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
@@ -39,92 +37,70 @@ sub make {
     return undef unless $mhead->{'x-zohomail'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $qprintable = 0;
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( rindex($e, $StartingOf->{'rfc822'}->[0]) > -1 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # This message was created automatically by mail delivery software.
+        # A message that you sent could not be delivered to one or more of its recip=
+        # ients. This is a permanent error.=20
+        #
+        # kijitora@example.co.jp Invalid Address, ERROR_CODE :550, ERROR_CODE :5.1.=
+        # 1 <kijitora@example.co.jp>... User Unknown
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        # This message was created automatically by mail delivery software.
+        # A message that you sent could not be delivered to one or more of its recipients. This is a permanent error.
+        #
+        # shironeko@example.org Invalid Address, ERROR_CODE :550, ERROR_CODE :Requested action not taken: mailbox unavailable
+        $v = $dscontents->[-1];
+
+        if( $e =~ /\A([^ ]+[@][^ ]+)[ \t]+(.+)\z/ ) {
+            # kijitora@example.co.jp Invalid Address, ERROR_CODE :550, ERROR_CODE :5.1.=
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $v->{'diagnosis'} = $2;
+
+            if( substr($v->{'diagnosis'}, -1, 1) eq '=' ) {
+                # Quoted printable
+                substr($v->{'diagnosis'}, -1, 1, '');
+                $qprintable = 1;
+            }
+            $recipients++;
+
+        } elsif( $e =~ /\A\[Status: .+[<]([^ ]+[@][^ ]+)[>],/ ) {
+            # Expired
+            # [Status: Error, Address: <kijitora@6kaku.example.co.jp>, ResponseCode 421, , Host not reachable.]
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
+            }
+            $v->{'recipient'} = $1;
+            $v->{'diagnosis'} = $e;
+            $recipients++;
 
         } else {
-            # Error meesage part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # This message was created automatically by mail delivery software.
-            # A message that you sent could not be delivered to one or more of its recip=
-            # ients. This is a permanent error.=20
-            #
-            # kijitora@example.co.jp Invalid Address, ERROR_CODE :550, ERROR_CODE :5.1.=
-            # 1 <kijitora@example.co.jp>... User Unknown
-
-            # This message was created automatically by mail delivery software.
-            # A message that you sent could not be delivered to one or more of its recipients. This is a permanent error.
-            #
-            # shironeko@example.org Invalid Address, ERROR_CODE :550, ERROR_CODE :Requested action not taken: mailbox unavailable
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A([^ ]+[@][^ ]+)[ \t]+(.+)\z/ ) {
-                # kijitora@example.co.jp Invalid Address, ERROR_CODE :550, ERROR_CODE :5.1.=
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $v->{'diagnosis'} = $2;
-
-                if( substr($v->{'diagnosis'}, -1, 1) eq '=' ) {
-                    # Quoted printable
-                    substr($v->{'diagnosis'}, -1, 1, '');
-                    $qprintable = 1;
-                }
-                $recipients++;
-
-            } elsif( $e =~ /\A\[Status: .+[<]([^ ]+[@][^ ]+)[>],/ ) {
-                # Expired
-                # [Status: Error, Address: <kijitora@6kaku.example.co.jp>, ResponseCode 421, , Host not reachable.]
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $v->{'diagnosis'} = $e;
-                $recipients++;
-
-            } else {
-                # Continued line
-                next unless $qprintable;
-                $v->{'diagnosis'} .= $e;
-            }
-        } # End of error message part
+            # Continued line
+            next unless $qprintable;
+            $v->{'diagnosis'} .= $e;
+        }
     }
     return undef unless $recipients;
 
@@ -140,7 +116,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -186,7 +162,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
