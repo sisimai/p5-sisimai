@@ -179,6 +179,29 @@ sub received {
     return $hosts;
 }
 
+sub fillet {
+    # Split given entire message body into error message lines and the original
+    # message part only include email headers
+    # @param    [String] mbody  Entire message body
+    # @param    [Regexp] regex  Regular expression of the message/rfc822 or the
+    #                           beginning of the original message part
+    # @return   [Array]         [Error message lines, The original message]
+    # @since    v4.25.5
+    my $class = shift;
+    my $mbody = shift || return undef;
+    my $regex = shift || return undef;
+
+    my ($a, $b) = split($regex, $$mbody, 2); $b ||= '';
+    if( length $b ) {
+        # Remove blank lines, the message body of the original message,
+        # and append "\n" at the end of the original message headers
+        $b  =~ s/\A[\r\n\s]+//m;   # Remove leading blank lines
+        $b  =~ s/\n\n.+\z//ms;     # Remove text after the first blank line
+        $b  .= "\n" unless $b =~ /\n\z/;
+    }
+    return [$a, $b];
+}
+
 sub weedout {
     # Weed out rfc822/message header fields excepct necessary fields
     # @param    [Array] argv1  each line divided message/rc822 part
