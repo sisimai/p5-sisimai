@@ -202,40 +202,6 @@ sub fillet {
     return [$a, $b];
 }
 
-sub weedout {
-    # Weed out rfc822/message header fields excepct necessary fields
-    # @param    [Array] argv1  each line divided message/rc822 part
-    # @return   [String]       Selected fields
-    my $class = shift;
-    my $argv1 = shift // return undef;
-    return undef unless ref $argv1 eq 'ARRAY';
-
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
-    my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $previousfn = '';    # (String) Previous field name
-
-    for my $e ( @$argv1 ) {
-        # After "message/rfc822"
-        if( $e =~ /\A[ \t]+/ ) {
-            # Continued line from the previous line
-            next if $rfc822next->{ $previousfn };
-            $rfc822part .= $e."\n" if exists $LONGHEADERS->{ $previousfn };
-
-        } else {
-            # Get required headers only
-            my($lhs, $rhs) = split(/:[ ]*/, $e, 2);
-            next unless $lhs = lc($lhs || '');
-
-            $previousfn = '';
-            next unless exists $HEADERINDEX->{ $lhs };
-
-            $previousfn  = $lhs;
-            $rfc822part .= $e."\n";
-        }
-    }
-    return \$rfc822part;
-}
-
 1;
 __END__
 
@@ -302,25 +268,6 @@ header.
         'mx.example.org',
         'mx.example.jp'
     ];
-
-=head2 C<B<weedout(I<Array>)>>
-
-C<weedout()> returns string including only necessary fields from message/rfc822
-part. This method is called from only Sisimai::Lhost::* modules.
-
-    my $v = <<'EOM';
-    From: postmaster@nyaan.example.org
-    To: kijitora@example.jp
-    Subject: Delivery failure
-    X-Mailer: Neko mailer v2.22
-    EOM
-
-    my $r = Sisimai::RFC5322->weedout([split("\n", $v)]);
-    print $$r;
-
-    From: postmaster@nyaan.example.org
-    To: kijitora@example.jp
-    Subject: Delivery failure
 
 =head1 AUTHOR
 
