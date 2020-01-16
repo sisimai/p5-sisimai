@@ -45,11 +45,7 @@ sub make {
 
         # https://docs.aws.amazon.com/en_us/ses/latest/DeveloperGuide/notification-contents.html
         my $bouncetype = {
-            'Permanent' => {
-                'General'    => '',
-                'NoEmail'    => '',
-                'Suppressed' => '',
-            },
+            'Permanent' => { 'General' => '', 'NoEmail' => '', 'Suppressed' => '' },
             'Transient' => {
                 'General'            => '',
                 'MailboxFull'        => 'mailboxfull',
