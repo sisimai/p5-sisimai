@@ -55,7 +55,7 @@ sub make {
     #
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
-    my @hasdivided = split("\n", $emailsteak->[0]);
+    my @bodyslices = split("\n", $emailsteak->[0]);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     # The following code is dummy to be passed "make test".
