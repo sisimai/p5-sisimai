@@ -165,12 +165,10 @@ sub make {
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $nextcursor = 0;
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
     my $boundary00 = '';    # (String) Boundary string
-    my $havepassed = {
-        'deliverystatus' => 0
-    };
     my $v = undef;
 
     if( $mhead->{'content-type'} ) {
@@ -278,9 +276,9 @@ sub make {
                         }
                     } else {
                         # Error message ?
-                        next if $havepassed->{'deliverystatus'};
+                        next if $nextcursor;
                         # Content-type: message/delivery-status
-                        $havepassed->{'deliverystatus'} = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
+                        $nextcursor = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
                         $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
                     }
                 } else {
