@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr<\A(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)>m;
+my $ReBackbone = qr<^(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)>m;
 my $StartingOf = { 'message' => ['This report relates to a message you sent with the following header fields:'] };
 my $MessagesOf = { 'hostunknown' => ['Illegal host/domain name found'] };
 
