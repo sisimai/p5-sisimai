@@ -417,19 +417,15 @@ sub make {
     } # END OF BODY_PARSER_FOR_FALLBACK
     return undef unless $itisbounce;
 
-    unless( $recipients ) {
-        # Try to get a recipient address from email headers
-        if( $rfc822text =~ /^To:[ ]*(.+)/m ) {
-            # Check To: header in the original message
-            if( my $r = Sisimai::Address->find($1, 1) ) {
-                next unless scalar @$r;
-                push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
-
-                my $b = $dscontents->[-1];
-                $b->{'recipient'} = $r->[0]->{'address'};
-                $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
-                $recipients++;
-            }
+    if( $recipients == 0 && $rfc822text =~ /^To:[ ]*(.+)/m ) {
+        # Try to get a recipient address from "To:" header of the original message
+        if( my $r = Sisimai::Address->find($1, 1) ) {
+            # Found a recipient address
+            push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
+            my $b = $dscontents->[-1];
+            $b->{'recipient'} = $r->[0]->{'address'};
+            $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
+            $recipients++;
         }
     }
     return undef unless $recipients;
