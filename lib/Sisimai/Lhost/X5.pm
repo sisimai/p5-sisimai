@@ -73,7 +73,6 @@ sub make {
         next unless length $e;
 
         $v = $dscontents->[-1];
-
         if( Sisimai::RFC1894->match($e) ) {
             # $e matched with any field defined in RFC3464
             next unless my $o = Sisimai::RFC1894->field($e);
