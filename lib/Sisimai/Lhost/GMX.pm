@@ -5,10 +5,8 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['This message was created automatically by mail delivery software'],
-    'rfc822'  => ['--- The header of the original message is following'],
-};
+my $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
+my $StartingOf = { 'message' => ['This message was created automatically by mail delivery software'] };
 my $MessagesOf = { 'expired' => ['delivery retry timeout exceeded'] };
 
 # Envelope-To: <kijitora@mail.example.com>
@@ -39,96 +37,74 @@ sub make {
     return undef unless defined $mhead->{'x-gmx-antispam'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # This message was created automatically by mail delivery software.
+        #
+        # A message that you sent could not be delivered to one or more of
+        # its recipients. This is a permanent error. The following address
+        # failed:
+        #
+        # "shironeko@example.jp":
+        # SMTP error from remote server after RCPT command:
+        # host: mx.example.jp
+        # 5.1.1 <shironeko@example.jp>... User Unknown
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A["]([^ ]+[@][^ ]+)["]:\z/ || $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
+            # "shironeko@example.jp":
+            # ---- OR ----
+            # <kijitora@6jo.example.co.jp>
+            #
+            # Reason:
+            # delivery retry timeout exceeded
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $recipients++;
+
+        } elsif( $e =~ /\ASMTP error .+ ([A-Z]{4}) command:\z/ ) {
+            # SMTP error from remote server after RCPT command:
+            $v->{'command'} = $1;
+
+        } elsif( $e =~ /\Ahost:[ \t]*(.+)\z/ ) {
+            # host: mx.example.jp
+            $v->{'rhost'} = $1;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # This message was created automatically by mail delivery software.
-            #
-            # A message that you sent could not be delivered to one or more of
-            # its recipients. This is a permanent error. The following address
-            # failed:
-            #
-            # "shironeko@example.jp":
-            # SMTP error from remote server after RCPT command:
-            # host: mx.example.jp
-            # 5.1.1 <shironeko@example.jp>... User Unknown
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A["]([^ ]+[@][^ ]+)["]:\z/ || $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
-                # "shironeko@example.jp":
-                # ---- OR ----
-                # <kijitora@6jo.example.co.jp>
-                #
-                # Reason:
-                # delivery retry timeout exceeded
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
-            } elsif( $e =~ /\ASMTP error .+ ([A-Z]{4}) command:\z/ ) {
-                # SMTP error from remote server after RCPT command:
-                $v->{'command'} = $1;
-
-            } elsif( $e =~ /\Ahost:[ \t]*(.+)\z/ ) {
-                # host: mx.example.jp
-                $v->{'rhost'} = $1;
+            # Get error message
+            if( $e =~ /\b[45][.]\d[.]\d\b/ || $e =~ /[<][^ ]+[@][^ ]+[>]/ || $e =~ /\b[45]\d{2}\b/ ) {
+                $v->{'diagnosis'} ||= $e;
 
             } else {
-                # Get error message
-                if( $e =~ /\b[45][.]\d[.]\d\b/ || $e =~ /[<][^ ]+[@][^ ]+[>]/ || $e =~ /\b[45]\d{2}\b/ ) {
-                    $v->{'diagnosis'} ||= $e;
+                next if $e eq '';
+                if( $e eq 'Reason:' ) {
+                    # Reason:
+                    # delivery retry timeout exceeded
+                    $v->{'diagnosis'} = $e;
 
-                } else {
-                    next if $e eq '';
-                    if( $e eq 'Reason:' ) {
-                        # Reason:
-                        # delivery retry timeout exceeded
-                        $v->{'diagnosis'} = $e;
-
-                    } elsif( $v->{'diagnosis'} eq 'Reason:' ) {
-                        $v->{'diagnosis'} = $e;
-                    }
+                } elsif( $v->{'diagnosis'} eq 'Reason:' ) {
+                    $v->{'diagnosis'} = $e;
                 }
             }
-        } # End of error message part
+        }
     }
     return undef unless $recipients;
 
@@ -144,7 +120,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -190,7 +166,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

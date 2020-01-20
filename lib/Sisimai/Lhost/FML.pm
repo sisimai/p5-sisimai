@@ -4,8 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = { 'rfc822' => ['Original mail as follows:'] };
+my $ReBackbone = qr|^Original[ ]mail[ ]as[ ]follows:|m;
 my $ErrorTitle = {
     'rejected' => qr{(?>
          (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
@@ -67,62 +66,36 @@ sub make {
     return undef unless $mhead->{'message-id'} =~ /\A[<]\d+[.]FML.+[@].+[>]\z/;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    $readcursor |= $Indicators->{'deliverystatus'};
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
+        next unless length $e;
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # After "Original mail as follows:" line
-            #
-            #    From owner-2ndml@example.com  Mon Nov 20 18:10:11 2017
-            #    Return-Path: <owner-2ndml@example.com>
-            #    ...
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        # Duplicated Message-ID in <2ndml@example.com>.
+        # Original mail as follows:
+        $v = $dscontents->[-1];
+
+        if( $e =~ /[<]([^ ]+?[@][^ ]+?)[>][.]\z/ ) {
+            # Duplicated Message-ID in <2ndml@example.com>.
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            substr($e, 0, 3, '') if substr($e, 0, 3) eq '   ';
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $v->{'diagnosis'} = $e;
+            $recipients++;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # Duplicated Message-ID in <2ndml@example.com>.
-            # Original mail as follows:
-            $v = $dscontents->[-1];
-
-            if( $e =~ /[<]([^ ]+?[@][^ ]+?)[>][.]\z/ ) {
-                # Duplicated Message-ID in <2ndml@example.com>.
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $v->{'diagnosis'} = $e;
-                $recipients++;
-
-            } else {
-                # If you know the general guide of this list, please send mail with
-                # the mail body
-                $v->{'diagnosis'} .= $e;
-            }
-        } # End of error message part
+            # If you know the general guide of this list, please send mail with
+            # the mail body
+            $v->{'diagnosis'} .= $e;
+        }
     }
     return undef unless $recipients;
 
@@ -146,7 +119,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -192,7 +165,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

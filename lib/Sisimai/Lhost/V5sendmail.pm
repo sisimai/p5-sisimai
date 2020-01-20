@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;
 my $StartingOf = { 'message' => ['----- Transcript of session follows -----'] };
 my $MarkingsOf = {
     # Error text regular expressions which defined in src/savemail.c
@@ -23,12 +24,7 @@ my $MarkingsOf = {
     #   savemail.c:497|   while (fgets(buf, sizeof buf, xfile) != NULL)
     #   savemail.c:498|       putline(buf, fp, m);
     #   savemail.c:499|   (void) fclose(xfile);
-    'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'rfc822'  => qr{\A[ \t]+-----[ \t](?:
-         Unsent[ ]message[ ]follows
-        |No[ ]message[ ]was[ ]collected
-        )[ \t]-----
-    }x,
+    'error' => qr/\A[.]+ while talking to .+[:]\z/,
 };
 
 sub description { 'Sendmail version 5' }
@@ -52,9 +48,10 @@ sub make {
     # 'from'    => qr/\AMail Delivery Subsystem/,
     return undef unless $mhead->{'subject'} =~ /\AReturned mail: [A-Z]/;
 
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    return undef unless length $emailsteak->[1];
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $anotherset = {};    # (Ref->Hash) Another error information
@@ -63,97 +60,70 @@ sub make {
     my $errorindex = -1;
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( rindex($e, $StartingOf->{'message'}->[0]) > -1 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) > -1;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e =~ $MarkingsOf->{'rfc822'} ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        #    ----- Transcript of session follows -----
+        # While talking to smtp.example.com:
+        # >>> RCPT To:<kijitora@example.org>
+        # <<< 550 <kijitora@example.org>, User Unknown
+        # 550 <kijitora@example.org>... User unknown
+        # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A\d{3}[ \t]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ \t]*(.+)\z/ ) {
+            # 550 <kijitora@example.org>... User unknown
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $v->{'diagnosis'} = $2;
+
+            if( $responding[ $recipients ] ) {
+                # Concatenate the response of the server and error message
+                $v->{'diagnosis'} .= ': '.$responding[$recipients];
+            }
+            $recipients++;
+
+        } elsif( $e =~ /\A[>]{3}[ \t]*([A-Z]{4})[ \t]*/ ) {
+            # >>> RCPT To:<kijitora@example.org>
+            $commandset[ $recipients ] = $1;
+
+        } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
+            # <<< Response
+            # <<< 501 <shironeko@example.co.jp>... no access from mail server [192.0.2.55] which is an open relay.
+            # <<< 550 Requested User Mailbox not found. No such user here.
+            $responding[ $recipients ] = $1;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            #    ----- Transcript of session follows -----
-            # While talking to smtp.example.com:
-            # >>> RCPT To:<kijitora@example.org>
-            # <<< 550 <kijitora@example.org>, User Unknown
-            # 550 <kijitora@example.org>... User unknown
-            # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A\d{3}[ \t]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ \t]*(.+)\z/ ) {
-                # 550 <kijitora@example.org>... User unknown
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $v->{'diagnosis'} = $2;
-
-                if( $responding[ $recipients ] ) {
-                    # Concatenate the response of the server and error message
-                    $v->{'diagnosis'} .= ': '.$responding[$recipients];
-                }
-                $recipients++;
-
-            } elsif( $e =~ /\A[>]{3}[ \t]*([A-Z]{4})[ \t]*/ ) {
-                # >>> RCPT To:<kijitora@example.org>
-                $commandset[ $recipients ] = $1;
-
-            } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
-                # <<< Response
-                # <<< 501 <shironeko@example.co.jp>... no access from mail server [192.0.2.55] which is an open relay.
-                # <<< 550 Requested User Mailbox not found. No such user here.
-                $responding[ $recipients ] = $1;
-
-            } else {
-                # Detect SMTP session error or connection error
-                next if $v->{'sessionerr'};
-                if( $e =~ $MarkingsOf->{'error'} ) {
-                    # ----- Transcript of session follows -----
-                    # ... while talking to mta.example.org.:
-                    $v->{'sessionerr'} = 1;
-                    next;
-                }
-
-                # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
-                $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/;
+            # Detect SMTP session error or connection error
+            next if $v->{'sessionerr'};
+            if( $e =~ $MarkingsOf->{'error'} ) {
+                # ----- Transcript of session follows -----
+                # ... while talking to mta.example.org.:
+                $v->{'sessionerr'} = 1;
+                next;
             }
-        } # End of error message part
-    }
-    return undef unless $readcursor & $Indicators->{'message-rfc822'};
 
-    unless( $recipients ) {
-        # Get the recipient address from the original message
-        for my $e ( @$rfc822list ) {
-            # The value of To: header in the original message
-            next unless $e =~ /^To: (.+)$/;
-            $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
-            $recipients = 1;
-            last;
+            # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
+            $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/;
         }
+    }
+
+    if( $recipients == 0 && $emailsteak->[1] =~ /^To:[ ]*(.+)/m ) {
+        # Get the recipient address from "To:" header at the original message
+        $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
+        $recipients = 1;
     }
     return undef unless $recipients;
 
@@ -178,7 +148,7 @@ sub make {
         next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
         $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -225,7 +195,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

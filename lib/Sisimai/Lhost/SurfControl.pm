@@ -5,10 +5,8 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['Your message could not be sent.'],
-    'rfc822'  => ['Content-Type: message/rfc822'],
-};
+my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+my $StartingOf = { 'message' => ['Your message could not be sent.'] };
 
 # X-SEF-ZeroHour-RefID: fgs=000000000
 # X-SEF-Processed: 0_0_0_000__2010_04_29_23_34_45
@@ -40,91 +38,69 @@ sub make {
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( $e eq $StartingOf->{'message'}->[0] ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # Your message could not be sent.
+        # A transcript of the attempts to send the message follows.
+        # The number of attempts made: 1
+        # Addressed To: kijitora@example.com
+        #
+        # Thu 29 Apr 2010 23:34:45 +0900
+        # Failed to send to identified host,
+        # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
+        # --- Message non-deliverable.
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\AAddressed To:[ \t]*([^ ]+?[@][^ ]+?)\z/ ) {
+            # Addressed To: kijitora@example.com
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $recipients++;
+
+        } elsif( $e =~ /\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ \t,]/ ) {
+            # Thu 29 Apr 2010 23:34:45 +0900
+            $v->{'date'} = $e;
+
+        } elsif( $e =~ /\A[^ ]+[@][^ ]+:[ \t]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ \t]*(.+)\z/ ) {
+            # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
+            $v->{'rhost'} = $1;
+            $v->{'diagnosis'} = $2;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # Your message could not be sent.
-            # A transcript of the attempts to send the message follows.
-            # The number of attempts made: 1
-            # Addressed To: kijitora@example.com
-            #
-            # Thu 29 Apr 2010 23:34:45 +0900
-            # Failed to send to identified host,
-            # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
-            # --- Message non-deliverable.
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\AAddressed To:[ \t]*([^ ]+?[@][^ ]+?)\z/ ) {
-                # Addressed To: kijitora@example.com
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
-            } elsif( $e =~ /\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ \t,]/ ) {
-                # Thu 29 Apr 2010 23:34:45 +0900
-                $v->{'date'} = $e;
-
-            } elsif( $e =~ /\A[^ ]+[@][^ ]+:[ \t]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ \t]*(.+)\z/ ) {
-                # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
-                $v->{'rhost'} = $1;
-                $v->{'diagnosis'} = $2;
+            # Fallback, parse RFC3464 headers.
+            if( my $f = Sisimai::RFC1894->match($e) ) {
+                # $e matched with any field defined in RFC3464
+                next unless my $o = Sisimai::RFC1894->field($e);
+                next if $o->[0] eq 'final-recipient';
+                next unless exists $fieldtable->{ $o->[0] };
+                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
             } else {
-                # Fallback, parse RFC3464 headers.
-                if( my $f = Sisimai::RFC1894->match($e) ) {
-                    # $e matched with any field defined in RFC3464
-                    next unless my $o = Sisimai::RFC1894->field($e);
-                    next if $o->[0] eq 'final-recipient';
-                    next unless exists $fieldtable->{ $o->[0] };
-                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
-
-                } else {
-                    # Continued line of the value of Diagnostic-Code field
-                    next unless index($p, 'Diagnostic-Code:') == 0;
-                    next unless $e =~ /\A[ \t]+(.+)\z/;
-                    $v->{'diagnosis'} .= ' '.$1;
-                }
+                # Continued line of the value of Diagnostic-Code field
+                next unless index($p, 'Diagnostic-Code:') == 0;
+                next unless $e =~ /\A[ \t]+(.+)\z/;
+                $v->{'diagnosis'} .= ' '.$1;
             }
-        } # End of error message part
+        }
     } continue {
         # Save the current line for the next loop
         $p = $e;
@@ -135,7 +111,7 @@ sub make {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -181,7 +157,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

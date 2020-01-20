@@ -5,8 +5,8 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
 my $StartingOf = {
-    # Error text regular expressions which defined in sendmail/savemail.c
     #   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
     #   savemail.c:1041|          mci))
     #   savemail.c:1042|  goto writeerr;
@@ -14,7 +14,6 @@ my $StartingOf = {
     #   savemail.c:1361|    sendbody
     #   savemail.c:1362|    ? "   ----- Original message follows -----\n"
     #   savemail.c:1363|    : "   ----- Message header follows -----\n",
-    'rfc822'  => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],
     'message' => ['   ----- Transcript of session follows -----'],
     'error'   => ['... while talking to '],
 };
@@ -49,10 +48,8 @@ sub make {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
-
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = [];    # (Array) Reply from remote server on SMTP session
@@ -61,133 +58,111 @@ sub make {
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part(message/rfc822)
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ||
-                index($e, $StartingOf->{'rfc822'}->[1]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        if( my $f = Sisimai::RFC1894->match($e) ) {
+            # $e matched with any field defined in RFC3464
+            next unless my $o = Sisimai::RFC1894->field($e);
+            $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # message/rfc822 OR text/rfc822-headers part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
-
-        } else {
-            # message/delivery-status part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            if( my $f = Sisimai::RFC1894->match($e) ) {
-                # $e matched with any field defined in RFC3464
-                next unless my $o = Sisimai::RFC1894->field($e);
-                $v = $dscontents->[-1];
-
-                if( $o->[-1] eq 'addr' ) {
+            if( $o->[-1] eq 'addr' ) {
+                # Final-Recipient: rfc822; kijitora@example.jp
+                # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                if( $o->[0] eq 'final-recipient' ) {
                     # Final-Recipient: rfc822; kijitora@example.jp
-                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
-                    if( $o->[0] eq 'final-recipient' ) {
-                        # Final-Recipient: rfc822; kijitora@example.jp
-                        if( $v->{'recipient'} ) {
-                            # There are multiple recipient addresses in the message body.
-                            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                            $v = $dscontents->[-1];
-                        }
-                        $v->{'recipient'} = $o->[2];
-                        $recipients++;
-
-                    } else {
-                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
-                        $v->{'alias'} = $o->[2];
+                    if( $v->{'recipient'} ) {
+                        # There are multiple recipient addresses in the message body.
+                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                        $v = $dscontents->[-1];
                     }
-                } elsif( $o->[-1] eq 'code' ) {
-                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                    $v->{'spec'} = $o->[1];
-                    $v->{'diagnosis'} = $o->[2];
+                    $v->{'recipient'} = $o->[2];
+                    $recipients++;
 
                 } else {
-                    # Other DSN fields defined in RFC3464
-                    next unless exists $fieldtable->{ $o->[0] };
-                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    $v->{'alias'} = $o->[2];
+                }
+            } elsif( $o->[-1] eq 'code' ) {
+                # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                $v->{'spec'} = $o->[1];
+                $v->{'diagnosis'} = $o->[2];
 
-                    next unless $f == 1;
-                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+            } else {
+                # Other DSN fields defined in RFC3464
+                next unless exists $fieldtable->{ $o->[0] };
+                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                next unless $f == 1;
+                $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+            }
+        } else {
+            # The line does not begin with a DSN field defined in RFC3464
+            #
+            # ----- Transcript of session follows -----
+            # ... while talking to mta.example.org.:
+            # >>> DATA
+            # <<< 550 Unknown user recipient@example.jp
+            # 554 5.0.0 Service unavailable
+            if( substr($e, 0, 1) ne ' ') {
+                # Other error messages
+                if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
+                    # >>> DATA
+                    $commandtxt = $1;
+
+                } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
+                    # <<< Response
+                    push @$esmtpreply, $1 unless grep { $1 eq $_ } @$esmtpreply;
+
+                } else {
+                    # Detect SMTP session error or connection error
+                    next if $sessionerr;
+                    if( index($e, $StartingOf->{'error'}->[0]) == 0 ) {
+                        # ----- Transcript of session follows -----
+                        # ... while talking to mta.example.org.:
+                        $sessionerr = 1;
+                        next;
+                    }
+
+                    if( $e =~ /\A[<](.+)[>][.]+ (.+)\z/ ) {
+                        # <kijitora@example.co.jp>... Deferred: Name server: example.co.jp.: host name lookup failure
+                        $anotherset->{'recipient'} = $1;
+                        $anotherset->{'diagnosis'} = $2;
+
+                    } else {
+                        # ----- Transcript of session follows -----
+                        # Message could not be delivered for too long
+                        # Message will be deleted from queue
+                        if( $e =~ /\A[45]\d\d[ \t]([45][.]\d[.]\d)[ \t].+/ ) {
+                            # 550 5.1.2 <kijitora@example.org>... Message
+                            #
+                            # DBI connect('dbname=...')
+                            # 554 5.3.0 unknown mailer error 255
+                            $anotherset->{'status'} = $1;
+                            $anotherset->{'diagnosis'} .= ' '.$e;
+
+                        } elsif( index($e, 'Message: ') == 0 || index($e, 'Warning: ') == 0 ) {
+                            # Message could not be delivered for too long
+                            # Warning: message still undelivered after 4 hours
+                            $anotherset->{'diagnosis'} .= ' '.$e;
+                        }
+                    }
                 }
             } else {
-                # The line does not begin with a DSN field defined in RFC3464
-                #
-                # ----- Transcript of session follows -----
-                # ... while talking to mta.example.org.:
-                # >>> DATA
-                # <<< 550 Unknown user recipient@example.jp
-                # 554 5.0.0 Service unavailable
-                if( substr($e, 0, 1) ne ' ') {
-                    # Other error messages
-                    if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
-                        # >>> DATA
-                        $commandtxt = $1;
-
-                    } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
-                        # <<< Response
-                        push @$esmtpreply, $1 unless grep { $1 eq $_ } @$esmtpreply;
-
-                    } else {
-                        # Detect SMTP session error or connection error
-                        next if $sessionerr;
-                        if( index($e, $StartingOf->{'error'}->[0]) == 0 ) {
-                            # ----- Transcript of session follows -----
-                            # ... while talking to mta.example.org.:
-                            $sessionerr = 1;
-                            next;
-                        }
-
-                        if( $e =~ /\A[<](.+)[>][.]+ (.+)\z/ ) {
-                            # <kijitora@example.co.jp>... Deferred: Name server: example.co.jp.: host name lookup failure
-                            $anotherset->{'recipient'} = $1;
-                            $anotherset->{'diagnosis'} = $2;
-
-                        } else {
-                            # ----- Transcript of session follows -----
-                            # Message could not be delivered for too long
-                            # Message will be deleted from queue
-                            if( $e =~ /\A[45]\d\d[ \t]([45][.]\d[.]\d)[ \t].+/ ) {
-                                # 550 5.1.2 <kijitora@example.org>... Message
-                                #
-                                # DBI connect('dbname=...')
-                                # 554 5.3.0 unknown mailer error 255
-                                $anotherset->{'status'} = $1;
-                                $anotherset->{'diagnosis'} .= ' '.$e;
-
-                            } elsif( index($e, 'Message: ') == 0 || index($e, 'Warning: ') == 0 ) {
-                                # Message could not be delivered for too long
-                                # Warning: message still undelivered after 4 hours
-                                $anotherset->{'diagnosis'} .= ' '.$e;
-                            }
-                        }
-                    }
-                } else {
-                    # Continued line of the value of Diagnostic-Code field
-                    next unless index($p, 'Diagnostic-Code:') == 0;
-                    next unless $e =~ /\A[ \t]+(.+)\z/;
-                    $v->{'diagnosis'} .= ' '.$1;
-                }
+                # Continued line of the value of Diagnostic-Code field
+                next unless index($p, 'Diagnostic-Code:') == 0;
+                next unless $e =~ /\A[ \t]+(.+)\z/;
+                $v->{'diagnosis'} .= ' '.$1;
             }
-        } # End of message/delivery-status
+        }
     } continue {
         # Save the current line for the next loop
         $p = $e;
@@ -228,7 +203,7 @@ sub make {
         next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
         $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -274,7 +249,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

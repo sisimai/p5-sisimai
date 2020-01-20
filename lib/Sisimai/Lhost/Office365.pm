@@ -5,10 +5,10 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
 my $StartingOf = {
-    'rfc822' => ['Content-Type: message/rfc822'],
-    'error'  => ['Diagnostic information for administrators:'],
-    'eoerr'  => ['Original message headers:'],
+    'error' => ['Diagnostic information for administrators:'],
+    'eoerr' => ['Original message headers:'],
 };
 my $MarkingsOf = {
     'message' => qr{\A(?:
@@ -110,96 +110,74 @@ sub make {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for the end of error messages
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( $e =~ $MarkingsOf->{'message'} ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # kijitora@example.com<mailto:kijitora@example.com>
+        # The email address wasn't found at the destination domain. It might
+        # be misspelled or it might not exist any longer. Try retyping the
+        # address and resending the message.
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ) {
+            # kijitora@example.com<mailto:kijitora@example.com>
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $recipients++;
+
+        } elsif( $e =~ /\AGenerating server: (.+)\z/ ) {
+            # Generating server: FFFFFFFFFFFF.e0.prod.outlook.com
+            $permessage->{'lhost'} = lc $1;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
+            if( $endoferror ) {
+                # After "Original message headers:"
+                next unless my $f = Sisimai::RFC1894->match($e);
+                next unless my $o = Sisimai::RFC1894->field($e);
+                next unless exists $fieldtable->{ $o->[0] };
+                next if $o->[0] =~ /\A(?:diagnostic-code|final-recipient)\z/;
+                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-            # kijitora@example.com<mailto:kijitora@example.com>
-            # The email address wasn't found at the destination domain. It might
-            # be misspelled or it might not exist any longer. Try retyping the
-            # address and resending the message.
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ) {
-                # kijitora@example.com<mailto:kijitora@example.com>
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
-            } elsif( $e =~ /\AGenerating server: (.+)\z/ ) {
-                # Generating server: FFFFFFFFFFFF.e0.prod.outlook.com
-                $permessage->{'lhost'} = lc $1;
+                next unless $f == 1;
+                $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
             } else {
-                if( $endoferror ) {
-                    # After "Original message headers:"
-                    next unless my $f = Sisimai::RFC1894->match($e);
-                    next unless my $o = Sisimai::RFC1894->field($e);
-                    next unless exists $fieldtable->{ $o->[0] };
-                    next if $o->[0] =~ /\A(?:diagnostic-code|final-recipient)\z/;
-                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
-
-                    next unless $f == 1;
-                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                if( $e eq $StartingOf->{'error'}->[0] ) {
+                    # Diagnostic information for administrators:
+                    $v->{'diagnosis'} = $e;
 
                 } else {
-                    if( $e eq $StartingOf->{'error'}->[0] ) {
-                        # Diagnostic information for administrators:
-                        $v->{'diagnosis'} = $e;
-
-                    } else {
-                        # kijitora@example.com
-                        # Remote Server returned '550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipien=
-                        # t not found by SMTP address lookup'
-                        next unless $v->{'diagnosis'};
-                        if( $e eq $StartingOf->{'eoerr'}->[0] ) {
-                            # Original message headers:
-                            $endoferror = 1;
-                            next;
-                        }
-                        $v->{'diagnosis'} .= ' '.$e;
+                    # kijitora@example.com
+                    # Remote Server returned '550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipien=
+                    # t not found by SMTP address lookup'
+                    next unless $v->{'diagnosis'};
+                    if( $e eq $StartingOf->{'eoerr'}->[0] ) {
+                        # Original message headers:
+                        $endoferror = 1;
+                        next;
                     }
+                    $v->{'diagnosis'} .= ' '.$e;
                 }
             }
-        } # End of error message part
+        }
     }
     return undef unless $recipients;
 
@@ -230,7 +208,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -276,7 +254,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

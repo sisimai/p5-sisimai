@@ -4,12 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => [''],
-    'rfc822'  => ['Content-type: message/rfc822'],
-};
-
+my $ReBackbone = qr|^Content-type:[ ]message/rfc822|m;
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
 sub make {
     # Detect an error from InterScanMSS
@@ -40,76 +35,47 @@ sub make {
     return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
-    my $readcursor = 0;     # (Integer) Points the current cursor position
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
-        unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
-        }
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # Sent <<< RCPT TO:<kijitora@example.co.jp>
+        # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
-
-        } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
+        if( $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
+            $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/ ) {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
-                $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/ ) {
-                # Sent <<< RCPT TO:<kijitora@example.co.jp>
-                # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
-                my $cr = $1;
-                if( $v->{'recipient'} && $cr ne $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $cr;
-                $recipients = scalar @$dscontents;
+            my $cr = $1;
+            if( $v->{'recipient'} && $cr ne $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
+            $v->{'recipient'} = $cr;
+            $recipients = scalar @$dscontents;
+        }
 
-            if( $e =~ /\ASent[ \t]+[<]{3}[ \t]+([A-Z]{4})[ \t]/ ) {
-                # Sent <<< RCPT TO:<kijitora@example.co.jp>
-                $v->{'command'} = $1
+        if( $e =~ /\ASent[ \t]+[<]{3}[ \t]+([A-Z]{4})[ \t]/ ) {
+            # Sent <<< RCPT TO:<kijitora@example.co.jp>
+            $v->{'command'} = $1
 
-            } elsif( $e =~ /\AReceived[ \t]+[>]{3}[ \t]+(\d{3}[ \t]+.+)\z/ ) {
-                # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
-                $v->{'diagnosis'} = $1;
+        } elsif( $e =~ /\AReceived[ \t]+[>]{3}[ \t]+(\d{3}[ \t]+.+)\z/ ) {
+            # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
+            $v->{'diagnosis'} = $1;
 
-            } else {
-                # Error message in non-English
-                next unless $e =~ /[ ][<>]{3}[ ]/;
-                $v->{'command'}   = $1 if $e =~ /[ ][>]{3}[ ]([A-Z]{4})/; # >>> RCPT TO ...
-                $v->{'diagnosis'} = $1 if $e =~ /[ ][<]{3}[ ](.+)/;       # <<< 550 5.1.1 User unknown
-            }
-        } # End of error message part
+        } else {
+            # Error message in non-English
+            next unless $e =~ /[ ][<>]{3}[ ]/;
+            $v->{'command'}   = $1 if $e =~ /[ ][>]{3}[ ]([A-Z]{4})/; # >>> RCPT TO ...
+            $v->{'diagnosis'} = $1 if $e =~ /[ ][<]{3}[ ](.+)/;       # <<< 550 5.1.1 User unknown
+        }
     }
     return undef unless $recipients;
 
@@ -118,7 +84,7 @@ sub make {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'}  = __PACKAGE__->smtpagent;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -166,7 +132,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

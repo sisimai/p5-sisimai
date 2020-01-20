@@ -16,13 +16,16 @@ my $MarkingsOf = {
              )
         |the[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
         |this[ ]report[ ]relates[ ]to[ ]your[ ]message
-        |your[ ]message[ ]was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
+        |your[ ]message[ ](?:
+            could[ ]not[ ]be[ ]delivered
+           |was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
+           )
         )
     }x,
     'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/,
     'rfc822' => qr{\A(?>
          content-type:[ ]*(?:message/rfc822|text/rfc822-headers)
-        |return-path:[ ]*[<].+[>]\z
+        |return-path:[ ]*[<].+[>]
         )\z
     }x,
 };
@@ -52,7 +55,7 @@ sub make {
     require Sisimai::MDA;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
     my $mdabounced = Sisimai::MDA->make($mhead, $mbody);
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
+    my $rfc822text = '';    # (String) message/rfc822 part text
     my $maybealias = '';    # (String) Original-Recipient field
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -91,7 +94,7 @@ sub make {
                 last if ++$blanklines > 1;
                 next;
             }
-            push @$rfc822list, $e;
+            $rfc822text .= sprintf("%s\n", $e);
 
         } else {
             # message/delivery-status part
@@ -414,15 +417,11 @@ sub make {
     } # END OF BODY_PARSER_FOR_FALLBACK
     return undef unless $itisbounce;
 
-    unless( $recipients ) {
-        # Try to get a recipient address from email headers
-        for my $e ( @$rfc822list ) {
-            # Check To: header in the original message
-            next unless $e =~ /\ATo:\s*(.+)\z/;
-            my $r = Sisimai::Address->find($1, 1) || [];
-            next unless scalar @$r;
+    if( $recipients == 0 && $rfc822text =~ /^To:[ ]*(.+)/m ) {
+        # Try to get a recipient address from "To:" header of the original message
+        if( my $r = Sisimai::Address->find($1, 1) ) {
+            # Found a recipient address
             push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
-
             my $b = $dscontents->[-1];
             $b->{'recipient'} = $r->[0]->{'address'};
             $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
@@ -460,7 +459,7 @@ sub make {
         $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $MarkingsOf->{'command'};
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
 
 1;
@@ -505,7 +504,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

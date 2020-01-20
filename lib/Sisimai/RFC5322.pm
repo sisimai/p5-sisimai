@@ -179,38 +179,27 @@ sub received {
     return $hosts;
 }
 
-sub weedout {
-    # Weed out rfc822/message header fields excepct necessary fields
-    # @param    [Array] argv1  each line divided message/rc822 part
-    # @return   [String]       Selected fields
+sub fillet {
+    # Split given entire message body into error message lines and the original
+    # message part only include email headers
+    # @param    [String] mbody  Entire message body
+    # @param    [Regexp] regex  Regular expression of the message/rfc822 or the
+    #                           beginning of the original message part
+    # @return   [Array]         [Error message lines, The original message]
+    # @since    v4.25.5
     my $class = shift;
-    my $argv1 = shift // return undef;
-    return undef unless ref $argv1 eq 'ARRAY';
+    my $mbody = shift || return undef;
+    my $regex = shift || return undef;
 
-    my $rfc822next = { 'from' => 0, 'to' => 0, 'subject' => 0 };
-    my $rfc822part = '';    # (String) message/rfc822-headers part
-    my $previousfn = '';    # (String) Previous field name
-
-    for my $e ( @$argv1 ) {
-        # After "message/rfc822"
-        if( $e =~ /\A[ \t]+/ ) {
-            # Continued line from the previous line
-            next if $rfc822next->{ $previousfn };
-            $rfc822part .= $e."\n" if exists $LONGHEADERS->{ $previousfn };
-
-        } else {
-            # Get required headers only
-            my($lhs, $rhs) = split(/:[ ]*/, $e, 2);
-            next unless $lhs = lc($lhs || '');
-
-            $previousfn = '';
-            next unless exists $HEADERINDEX->{ $lhs };
-
-            $previousfn  = $lhs;
-            $rfc822part .= $e."\n";
-        }
+    my ($a, $b) = split($regex, $$mbody, 2); $b ||= '';
+    if( length $b ) {
+        # Remove blank lines, the message body of the original message,
+        # and append "\n" at the end of the original message headers
+        $b  =~ s/\A[\r\n\s]+//m;   # Remove leading blank lines
+        $b  =~ s/\n\n.+\z//ms;     # Remove text after the first blank line
+        $b  .= "\n" unless $b =~ /\n\z/;
     }
-    return \$rfc822part;
+    return [$a, $b];
 }
 
 1;
@@ -280,24 +269,21 @@ header.
         'mx.example.jp'
     ];
 
-=head2 C<B<weedout(I<Array>)>>
+=head2 C<B<fillet(I<String>, I<RegExp>)>>
 
-C<weedout()> returns string including only necessary fields from message/rfc822
-part. This method is called from only Sisimai::Lhost::* modules.
+C<fillet()> returns array reference which include error message lines of given
+message body and the original message part splitted by the 2nd argument.
 
-    my $v = <<'EOM';
-    From: postmaster@nyaan.example.org
-    To: kijitora@example.jp
-    Subject: Delivery failure
-    X-Mailer: Neko mailer v2.22
-    EOM
+    my $v = 'Error message here
+    Content-Type: message/rfc822
+    Return-Path: <neko@libsisimai.org>';
+    my $r = Sisimai::RFC5322->fillet(\$v, qr|^Content-Type:[ ]message/rfc822|m);
 
-    my $r = Sisimai::RFC5322->weedout([split("\n", $v)]);
-    print $$r;
-
-    From: postmaster@nyaan.example.org
-    To: kijitora@example.jp
-    Subject: Delivery failure
+    warn Dumper $r;
+    $VAR1 = [
+        'Error message here',
+        'Return-Path: <neko@libsisimai.org>';
+    ];
 
 =head1 AUTHOR
 
@@ -305,7 +291,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -5,11 +5,11 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
 my $StartingOf = {
     # https://www.courier-mta.org/courierdsn.html
     # courier/module.dsn/dsn*.txt
     'message' => ['DELAYS IN DELIVERING YOUR MESSAGE', 'UNDELIVERABLE MAIL'],
-    'rfc822'  => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'],
 };
 
 my $MessagesOf = {
@@ -54,16 +54,16 @@ sub make {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             if( rindex($e, $StartingOf->{'message'}->[0]) > -1 ||
@@ -72,97 +72,76 @@ sub make {
                 next;
             }
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part(message/rfc822)
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ||
-                index($e, $StartingOf->{'rfc822'}->[1]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
+        if( my $f = Sisimai::RFC1894->match($e) ) {
+            # $e matched with any field defined in RFC3464
+            next unless my $o = Sisimai::RFC1894->field($e);
+            $v = $dscontents->[-1];
+
+            if( $o->[-1] eq 'addr' ) {
+                # Final-Recipient: rfc822; kijitora@example.jp
+                # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                if( $o->[0] eq 'final-recipient' ) {
+                    # Final-Recipient: rfc822; kijitora@example.jp
+                    if( $v->{'recipient'} ) {
+                        # There are multiple recipient addresses in the message body.
+                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                        $v = $dscontents->[-1];
+                    }
+                    $v->{'recipient'} = $o->[2];
+                    $recipients++;
+
+                } else {
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    $v->{'alias'} = $o->[2];
+                }
+            } elsif( $o->[-1] eq 'code' ) {
+                # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                $v->{'spec'} = $o->[1];
+                $v->{'diagnosis'} = $o->[2];
+
+            } else {
+                # Other DSN fields defined in RFC3464
+                next unless exists $fieldtable->{ $o->[0] };
+                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                next unless $f == 1;
+                $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+            }
+        } else {
+            # The line does not begin with a DSN field defined in RFC3464
+            #
+            # This is a delivery status notification from marutamachi.example.org,
+            # running the Courier mail server, version 0.65.2.
+            #
+            # The original message was received on Sat, 11 Dec 2010 12:19:57 +0900
+            # from [127.0.0.1] (c10920.example.com [192.0.2.20])
+            #
+            # ---------------------------------------------------------------------------
+            #
+            #                           UNDELIVERABLE MAIL
+            #
+            # Your message to the following recipients cannot be delivered:
+            #
+            # <kijitora@example.co.jp>:
+            #    mx.example.co.jp [74.207.247.95]:
+            # >>> RCPT TO:<kijitora@example.co.jp>
+            # <<< 550 5.1.1 <kijitora@example.co.jp>... User Unknown
+            #
+            # ---------------------------------------------------------------------------
+            if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
+                # >>> DATA
+                $commandtxt ||= $1;
+
+            } else {
+                # Continued line of the value of Diagnostic-Code field
+                next unless index($p, 'Diagnostic-Code:') == 0;
+                next unless $e =~ /\A[ \t]+(.+)\z/;
+                $v->{'diagnosis'} .= ' '.$1;
             }
         }
-
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # message/rfc822 or text/rfc822-headers part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
-
-        } else {
-            # message/delivery-status part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            if( my $f = Sisimai::RFC1894->match($e) ) {
-                # $e matched with any field defined in RFC3464
-                next unless my $o = Sisimai::RFC1894->field($e);
-                $v = $dscontents->[-1];
-
-                if( $o->[-1] eq 'addr' ) {
-                    # Final-Recipient: rfc822; kijitora@example.jp
-                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
-                    if( $o->[0] eq 'final-recipient' ) {
-                        # Final-Recipient: rfc822; kijitora@example.jp
-                        if( $v->{'recipient'} ) {
-                            # There are multiple recipient addresses in the message body.
-                            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                            $v = $dscontents->[-1];
-                        }
-                        $v->{'recipient'} = $o->[2];
-                        $recipients++;
-
-                    } else {
-                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
-                        $v->{'alias'} = $o->[2];
-                    }
-                } elsif( $o->[-1] eq 'code' ) {
-                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                    $v->{'spec'} = $o->[1];
-                    $v->{'diagnosis'} = $o->[2];
-
-                } else {
-                    # Other DSN fields defined in RFC3464
-                    next unless exists $fieldtable->{ $o->[0] };
-                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
-
-                    next unless $f == 1;
-                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
-                }
-            } else {
-                # The line does not begin with a DSN field defined in RFC3464
-                #
-                # This is a delivery status notification from marutamachi.example.org,
-                # running the Courier mail server, version 0.65.2.
-                #
-                # The original message was received on Sat, 11 Dec 2010 12:19:57 +0900
-                # from [127.0.0.1] (c10920.example.com [192.0.2.20])
-                #
-                # ---------------------------------------------------------------------------
-                #
-                #                           UNDELIVERABLE MAIL
-                #
-                # Your message to the following recipients cannot be delivered:
-                #
-                # <kijitora@example.co.jp>:
-                #    mx.example.co.jp [74.207.247.95]:
-                # >>> RCPT TO:<kijitora@example.co.jp>
-                # <<< 550 5.1.1 <kijitora@example.co.jp>... User Unknown
-                #
-                # ---------------------------------------------------------------------------
-                if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
-                    # >>> DATA
-                    $commandtxt ||= $1;
-
-                } else {
-                    # Continued line of the value of Diagnostic-Code field
-                    next unless index($p, 'Diagnostic-Code:') == 0;
-                    next unless $e =~ /\A[ \t]+(.+)\z/;
-                    $v->{'diagnosis'} .= ' '.$1;
-                }
-            }
-        } # End of message/delivery-status
     } continue {
         # Save the current line for the next loop
         $p = $e;
@@ -183,7 +162,7 @@ sub make {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'command'} ||= $commandtxt || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -229,7 +208,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

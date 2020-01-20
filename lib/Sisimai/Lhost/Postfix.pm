@@ -5,10 +5,10 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = { 'rfc822' => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'] };
+my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
 my $MarkingsOf = {
     # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
-    'begin' => qr{\A(?>
+    'message' => qr{\A(?>
          [ ]+The[ ](?:
              Postfix[ ](?:
                  program\z              # The Postfix program
@@ -54,8 +54,7 @@ sub make {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $anotherset = {};    # (Hash) Another error information
@@ -64,131 +63,110 @@ sub make {
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( $e =~ $MarkingsOf->{'begin'} ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part(message/rfc822)
-            if( $e eq $StartingOf->{'rfc822'}->[0] || $e eq $StartingOf->{'rfc822'}->[0] ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        if( my $f = Sisimai::RFC1894->match($e) ) {
+            # $e matched with any field defined in RFC3464
+            next unless my $o = Sisimai::RFC1894->field($e);
+            $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # message/rfc822 OR text/rfc822-headers part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
-
-        } else {
-            # message/delivery-status part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            if( my $f = Sisimai::RFC1894->match($e) ) {
-                # $e matched with any field defined in RFC3464
-                next unless my $o = Sisimai::RFC1894->field($e);
-                $v = $dscontents->[-1];
-
-                if( $o->[-1] eq 'addr' ) {
+            if( $o->[-1] eq 'addr' ) {
+                # Final-Recipient: rfc822; kijitora@example.jp
+                # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                if( $o->[0] eq 'final-recipient' ) {
                     # Final-Recipient: rfc822; kijitora@example.jp
+                    if( $v->{'recipient'} ) {
+                        # There are multiple recipient addresses in the message body.
+                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                        $v = $dscontents->[-1];
+                    }
+                    $v->{'recipient'} = $o->[2];
+                    $recipients++;
+
+                } else {
                     # X-Actual-Recipient: rfc822; kijitora@example.co.jp
-                    if( $o->[0] eq 'final-recipient' ) {
-                        # Final-Recipient: rfc822; kijitora@example.jp
-                        if( $v->{'recipient'} ) {
-                            # There are multiple recipient addresses in the message body.
-                            push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                            $v = $dscontents->[-1];
-                        }
-                        $v->{'recipient'} = $o->[2];
-                        $recipients++;
-
-                    } else {
-                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
-                        $v->{'alias'} = $o->[2];
-                    }
-                } elsif( $o->[-1] eq 'code' ) {
-                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                    $v->{'spec'} = $o->[1];
-                    $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
-                    $v->{'diagnosis'} = $o->[2];
-
-                } else {
-                    # Other DSN fields defined in RFC3464
-                    next unless exists $fieldtable->{ $o->[0] };
-                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
-
-                    next unless $f == 1;
-                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                    $v->{'alias'} = $o->[2];
                 }
-            } else {
-                # If you do so, please include this problem report. You can
-                # delete your own text from the attached returned message.
-                #
-                #           The mail system
-                #
-                # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
-                # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                # command)
-                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
-                    # Continued line of the value of Diagnostic-Code header
-                    $v->{'diagnosis'} .= ' '.$1;
-                    $e = 'Diagnostic-Code: '.$e;
+            } elsif( $o->[-1] eq 'code' ) {
+                # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                $v->{'spec'} = $o->[1];
+                $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
+                $v->{'diagnosis'} = $o->[2];
 
-                } elsif( $e =~ /\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
-                    # X-Postfix-Sender: rfc822; shironeko@example.org
-                    push @$rfc822list, $1.': '.$2;
+            } else {
+                # Other DSN fields defined in RFC3464
+                next unless exists $fieldtable->{ $o->[0] };
+                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                next unless $f == 1;
+                $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+            }
+        } else {
+            # If you do so, please include this problem report. You can
+            # delete your own text from the attached returned message.
+            #
+            #           The mail system
+            #
+            # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
+            # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
+            # command)
+            if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
+                # Continued line of the value of Diagnostic-Code header
+                $v->{'diagnosis'} .= ' '.$1;
+                $e = 'Diagnostic-Code: '.$e;
+
+            } elsif( $e =~ /\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
+                # X-Postfix-Sender: rfc822; shironeko@example.org
+                $emailsteak->[1] .= sprintf("%s: %s\n", $1, $2);
+
+            } else {
+                # Alternative error message and recipient
+                if( $e =~ /[ \t][(]in reply to ([A-Z]{4}).*/ ) {
+                    # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
+                    push @commandset, $1;
+                    $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
+
+                } elsif( $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
+                    # to MAIL command)
+                    push @commandset, $1;
+                    $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
+
+                } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ \t]*(.+)\z/ ) {
+                    # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
+                    $anotherset->{'recipient'} = $1;
+                    $anotherset->{'alias'}     = $2;
+                    $anotherset->{'diagnosis'} = $3;
+
+                } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:(.*)\z/ ) {
+                    # <kijitora@exmaple.jp>: ...
+                    $anotherset->{'recipient'} = $1;
+                    $anotherset->{'diagnosis'} = $2;
+
+                } elsif( index($e, '--- Delivery report unavailable ---') > -1 ) {
+                    # postfix-3.1.4/src/bounce/bounce_notify_util.c
+                    # bounce_notify_util.c:602|if (bounce_info->log_handle == 0
+                    # bounce_notify_util.c:602||| bounce_log_rewind(bounce_info->log_handle)) {
+                    # bounce_notify_util.c:602|if (IS_FAILURE_TEMPLATE(bounce_info->template)) {
+                    # bounce_notify_util.c:602|    post_mail_fputs(bounce, "");
+                    # bounce_notify_util.c:602|    post_mail_fputs(bounce, "\t--- delivery report unavailable ---");
+                    # bounce_notify_util.c:602|    count = 1;              /* xxx don't abort */
+                    # bounce_notify_util.c:602|}
+                    # bounce_notify_util.c:602|} else {
+                    $nomessages = 1;
 
                 } else {
-                    # Alternative error message and recipient
-                    if( $e =~ /[ \t][(]in reply to ([A-Z]{4}).*/ ) {
-                        # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                        push @commandset, $1;
-                        $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
-
-                    } elsif( $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
-                        # to MAIL command)
-                        push @commandset, $1;
-                        $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
-
-                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ \t]*(.+)\z/ ) {
-                        # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
-                        $anotherset->{'recipient'} = $1;
-                        $anotherset->{'alias'}     = $2;
-                        $anotherset->{'diagnosis'} = $3;
-
-                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:(.*)\z/ ) {
-                        # <kijitora@exmaple.jp>: ...
-                        $anotherset->{'recipient'} = $1;
-                        $anotherset->{'diagnosis'} = $2;
-
-                    } elsif( index($e, '--- Delivery report unavailable ---') > -1 ) {
-                        # postfix-3.1.4/src/bounce/bounce_notify_util.c
-                        # bounce_notify_util.c:602|if (bounce_info->log_handle == 0
-                        # bounce_notify_util.c:602||| bounce_log_rewind(bounce_info->log_handle)) {
-                        # bounce_notify_util.c:602|if (IS_FAILURE_TEMPLATE(bounce_info->template)) {
-                        # bounce_notify_util.c:602|    post_mail_fputs(bounce, "");
-                        # bounce_notify_util.c:602|    post_mail_fputs(bounce, "\t--- delivery report unavailable ---");
-                        # bounce_notify_util.c:602|    count = 1;              /* xxx don't abort */
-                        # bounce_notify_util.c:602|}
-                        # bounce_notify_util.c:602|} else {
-                        $nomessages = 1;
-
-                    } else {
-                        # Get error message continued from the previous line
-                        next unless $anotherset->{'diagnosis'};
-                        $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ \t]{4}(.+)\z/;
-                    }
+                    # Get error message continued from the previous line
+                    next unless $anotherset->{'diagnosis'};
+                    $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ \t]{4}(.+)\z/;
                 }
             }
         } # End of message/delivery-status
@@ -207,11 +185,10 @@ sub make {
         } else {
             # Get a recipient address from message/rfc822 part if the delivery
             # report was unavailable: '--- Delivery report unavailable ---'
-            if( $nomessages ) {
+            if( $nomessages && $emailsteak->[1] =~ /^To:[ ]*(.+)/m ) {
                 # Try to get a recipient address from To: field in the original
                 # message at message/rfc822 part
-                my $e = shift @{ [grep { /\ATo:[ ]*.+/ } @$rfc822list] };
-                $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($e);
+                $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients++;
             }
         }
@@ -265,7 +242,7 @@ sub make {
         $e->{'spec'}    ||= 'SMTP' if $e->{'diagnosis'} =~ /host .+ said:/;
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -311,7 +288,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

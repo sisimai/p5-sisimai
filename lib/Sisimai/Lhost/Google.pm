@@ -5,19 +5,12 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr/^[ ]*-----[ ](?:Original[ ]message|Message[ ]header[ ]follows)[ ]-----/m;
 my $StartingOf = {
     'message' => ['Delivery to the following recipient'],
     'error'   => ['The error that the other server returned was:'],
 };
-my $MarkingsOf = {
-    'start'   => qr/Technical details of (?:permanent|temporary) failure:/,
-    'rfc822'  => qr{\A(?:
-         -----[ ]Original[ ]message[ ]-----
-        |[ \t]*-----[ ]Message[ ]header[ ]follows[ ]-----
-        )\z
-    }x,
-};
-
+my $MarkingsOf = { 'start' => qr/Technical details of (?:permanent|temporary) failure:/ };
 my $MessagesOf = {
     'expired' => [
         'DNS Error: Could not contact DNS servers',
@@ -173,75 +166,55 @@ sub make {
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $statecode0 = 0;     # (Integer) The value of (state *) in the error message
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) > -1;
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e =~ $MarkingsOf->{'rfc822'} ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # Technical details of permanent failure:=20
+        # Google tried to deliver your message, but it was rejected by the recipient =
+        # domain. We recommend contacting the other email provider for further inform=
+        # ation about the cause of this error. The error that the other server return=
+        # ed was: 554 554 5.7.0 Header error (state 18).
+        #
+        # -- OR --
+        #
+        # Technical details of permanent failure:=20
+        # Google tried to deliver your message, but it was rejected by the server for=
+        # the recipient domain example.jp by mx.example.jp. [192.0.2.49].
+        #
+        # The error that the other server returned was:
+        # 550 5.1.1 <userunknown@example.jp>... User Unknown
+        #
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A[ \t]+([^ ]+[@][^ ]+)\z/ ) {
+            # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+
+            my $r = Sisimai::Address->s3s4($1);
+            next unless Sisimai::RFC5322->is_emailaddress($r);
+            $v->{'recipient'} = $r;
+            $recipients++;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
-
-            # Technical details of permanent failure:=20
-            # Google tried to deliver your message, but it was rejected by the recipient =
-            # domain. We recommend contacting the other email provider for further inform=
-            # ation about the cause of this error. The error that the other server return=
-            # ed was: 554 554 5.7.0 Header error (state 18).
-            #
-            # -- OR --
-            #
-            # Technical details of permanent failure:=20
-            # Google tried to deliver your message, but it was rejected by the server for=
-            # the recipient domain example.jp by mx.example.jp. [192.0.2.49].
-            #
-            # The error that the other server returned was:
-            # 550 5.1.1 <userunknown@example.jp>... User Unknown
-            #
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A[ \t]+([^ ]+[@][^ ]+)\z/ ) {
-                # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-
-                my $r = Sisimai::Address->s3s4($1);
-                next unless Sisimai::RFC5322->is_emailaddress($r);
-                $v->{'recipient'} = $r;
-                $recipients++;
-
-            } else {
-                $v->{'diagnosis'} .= $e.' ';
-            }
-        } # End of error message part
+            $v->{'diagnosis'} .= $e.' ';
+        }
     }
     return undef unless $recipients;
 
@@ -288,7 +261,7 @@ sub make {
         next unless $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/;
         $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'}) || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -334,7 +307,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

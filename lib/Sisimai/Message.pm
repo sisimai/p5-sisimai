@@ -217,14 +217,14 @@ sub headers {
     my $currheader = '';
     my $allheaders = {};
     my $structured = {};
-    my @hasdivided = split("\n", $$heads);
+    my @headslices = split("\n", $$heads);
 
     map { $allheaders->{ $_ } = 1 } (@HeaderList, @RFC3834Set, keys %$ExtHeaders);
     map { $allheaders->{ lc $_ } = 1 } @$field if scalar @$field;
     map { $structured->{ $_ } = undef } @HeaderList;
     map { $structured->{ $_ } = [] } keys %$IsMultiple;
 
-    SPLIT_HEADERS: while( my $e = shift @hasdivided ) {
+    SPLIT_HEADERS: while( my $e = shift @headslices ) {
         # Convert email headers to hash
         if( $e =~ /\A[ \t]+(.+)\z/ ) {
             # Continued (foled) header value from the previous line
@@ -631,7 +631,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -5,15 +5,15 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr{^(?:
+     Original[ ]message[ ]headers:              # en-US
+    |En-t.tes[ ]de[ ]message[ ]d'origine[ ]:    # fr-FR/En-têtes de message d'origine
+    )
+}mx;
 my $MarkingsOf = {
     'message' => qr{\A(?:
          Diagnostic[ ]information[ ]for[ ]administrators:               # en-US
         |Informations[ ]de[ ]diagnostic[ ]pour[ ]les[ ]administrateurs  # fr-FR
-        )
-    }x,
-    'rfc822'  => qr{(?:
-         Original[ ]message[ ]headers:     # en-US
-        |[ ]de[ ]message[ ]d'origine[ ]:   # fr-FR/En-têtes de message d'origine
         )
     }x,
     'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
@@ -64,8 +64,7 @@ sub make {
     return undef unless $mhead->{'content-language'} =~ /\A[a-z]{2}(?:[-][A-Z]{2})?\z/;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
@@ -74,82 +73,61 @@ sub make {
     };
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( $e =~ $MarkingsOf->{'message'} ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( $e =~ $MarkingsOf->{'rfc822'} ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        if( $connvalues == scalar(keys %$connheader) ) {
+            # Diagnostic information for administrators:
+            #
+            # Generating server: mta2.neko.example.jp
+            #
+            # kijitora@example.jp
+            # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
+            #
+            # Original message headers:
+            $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
-            }
-            push @$rfc822list, $e;
-
-        } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-
-            if( $connvalues == scalar(keys %$connheader) ) {
-                # Diagnostic information for administrators:
-                #
-                # Generating server: mta2.neko.example.jp
-                #
+            if( $e =~ /\A([^ @]+[@][^ @]+)\z/ ) {
                 # kijitora@example.jp
-                # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
-                #
-                # Original message headers:
-                $v = $dscontents->[-1];
-
-                if( $e =~ /\A([^ @]+[@][^ @]+)\z/ ) {
-                    # kijitora@example.jp
-                    if( $v->{'recipient'} ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[-1];
-                    }
-                    $v->{'recipient'} = $1;
-                    $recipients++;
-
-                } elsif( $e =~ /([45]\d{2})[ ]([45][.]\d[.]\d+)[ ].+\z/ ) {
-                    # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
-                    # #550 5.2.3 RESOLVER.RST.RecipSizeLimit; message too large for this recipient ##
-                    # Remote Server returned '550 5.1.1 RESOLVER.ADR.RecipNotFound; not found'
-                    # 3/09/2016 8:05:56 PM - Remote Server at mydomain.com (10.1.1.3) returned '550 4.4.7 QUEUE.Expired; message expired'
-                    $v->{'replycode'} = int $1;
-                    $v->{'status'}    = $2;
-                    $v->{'diagnosis'} = $e;
-
-                } else {
-                    # Continued line of error messages
-                    next unless $v->{'diagnosis'};
-                    next unless substr($v->{'diagnosis'}, -1, 1) eq '=';
-                    substr($v->{'diagnosis'}, -1, 1, $e);
+                if( $v->{'recipient'} ) {
+                    # There are multiple recipient addresses in the message body.
+                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                    $v = $dscontents->[-1];
                 }
+                $v->{'recipient'} = $1;
+                $recipients++;
+
+            } elsif( $e =~ /([45]\d{2})[ ]([45][.]\d[.]\d+)[ ].+\z/ ) {
+                # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
+                # #550 5.2.3 RESOLVER.RST.RecipSizeLimit; message too large for this recipient ##
+                # Remote Server returned '550 5.1.1 RESOLVER.ADR.RecipNotFound; not found'
+                # 3/09/2016 8:05:56 PM - Remote Server at mydomain.com (10.1.1.3) returned '550 4.4.7 QUEUE.Expired; message expired'
+                $v->{'replycode'} = int $1;
+                $v->{'status'}    = $2;
+                $v->{'diagnosis'} = $e;
+
             } else {
-                # Diagnostic information for administrators:
-                #
-                # Generating server: mta22.neko.example.org
-                next unless $e =~ $MarkingsOf->{'rhost'};
-                next if $connheader->{'rhost'};
-                $connheader->{'rhost'} = $1;
-                $connvalues++;
+                # Continued line of error messages
+                next unless $v->{'diagnosis'};
+                next unless substr($v->{'diagnosis'}, -1, 1) eq '=';
+                substr($v->{'diagnosis'}, -1, 1, $e);
             }
-        } # End of error message part
+        } else {
+            # Diagnostic information for administrators:
+            #
+            # Generating server: mta22.neko.example.org
+            next unless $e =~ $MarkingsOf->{'rhost'};
+            next if $connheader->{'rhost'};
+            $connheader->{'rhost'} = $1;
+            $connvalues++;
+        }
     }
     return undef unless $recipients;
 
@@ -167,7 +145,7 @@ sub make {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'agent'} = __PACKAGE__->smtpagent;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -215,7 +193,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

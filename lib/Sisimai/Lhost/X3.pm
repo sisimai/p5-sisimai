@@ -5,10 +5,8 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
-my $StartingOf = {
-    'message' => ['      This is an automatically generated Delivery Status Notification.'],
-    'rfc822'  => ['Content-Type: message/rfc822'],
-};
+my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+my $StartingOf = { 'message' => ['      This is an automatically generated Delivery Status Notification.'] };
 
 sub description { 'Unknown MTA #3' }
 sub make {
@@ -32,83 +30,61 @@ sub make {
     return undef unless index($mhead->{'subject'}, 'Delivery status notification') == 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Read each line between the start of the message and the start of rfc822 part.
+    for my $e ( split("\n", $emailsteak->[0]) ) {
+        # Read error messages and delivery status lines from the head of the email
+        # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or delivery status part
-            if( index($e, $StartingOf->{'message'}->[0]) > -1 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next;
-            }
+            # Beginning of the bounce message or message/delivery-status part
+            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            next;
         }
+        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless length $e;
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Beginning of the original message part
-            if( index($e, $StartingOf->{'rfc822'}->[0]) == 0 ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
-                next;
-            }
-        }
+        # ============================================================================
+        #      This is an automatically generated Delivery Status Notification.
+        #
+        # Delivery to the following recipients failed permanently:
+        #
+        #   * kijitora@example.com
+        #
+        #
+        # ============================================================================
+        #                             Technical details:
+        #
+        # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
+        #
+        #
+        # ============================================================================
+        $v = $dscontents->[-1];
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
-            # Inside of the original message part
-            unless( length $e ) {
-                last if ++$blanklines > 1;
-                next;
+        if( $e =~ /\A[ \t]+[*][ \t]([^ ]+[@][^ ]+)\z/ ) {
+            #   * kijitora@example.com
+            if( $v->{'recipient'} ) {
+                # There are multiple recipient addresses in the message body.
+                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                $v = $dscontents->[-1];
             }
-            push @$rfc822list, $e;
+            $v->{'recipient'} = $1;
+            $recipients++;
 
         } else {
-            # Error message part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
-            next unless length $e;
+            # Detect error message
+            if( $e =~ /\ASMTP:([^ ]+)[ \t](.+)\z/ ) {
+                # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
+                $v->{'command'} = uc $1;
+                $v->{'diagnosis'} = $2;
 
-            # ============================================================================
-            #      This is an automatically generated Delivery Status Notification.
-            #
-            # Delivery to the following recipients failed permanently:
-            #
-            #   * kijitora@example.com
-            #
-            #
-            # ============================================================================
-            #                             Technical details:
-            #
-            # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
-            #
-            #
-            # ============================================================================
-            $v = $dscontents->[-1];
-
-            if( $e =~ /\A[ \t]+[*][ \t]([^ ]+[@][^ ]+)\z/ ) {
-                #   * kijitora@example.com
-                if( $v->{'recipient'} ) {
-                    # There are multiple recipient addresses in the message body.
-                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                    $v = $dscontents->[-1];
-                }
-                $v->{'recipient'} = $1;
-                $recipients++;
-
-            } else {
-                # Detect error message
-                if( $e =~ /\ASMTP:([^ ]+)[ \t](.+)\z/ ) {
-                    # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
-                    $v->{'command'} = uc $1;
-                    $v->{'diagnosis'} = $2;
-
-                } elsif( $e =~ /\ARouting: (.+)/ ) {
-                    # Routing: Could not find a gateway for kijitora@example.co.jp
-                    $v->{'diagnosis'} = $1;
-                }
+            } elsif( $e =~ /\ARouting: (.+)/ ) {
+                # Routing: Could not find a gateway for kijitora@example.co.jp
+                $v->{'diagnosis'} = $1;
             }
-        } # End of error message part
+        }
     }
     return undef unless $recipients;
 
@@ -117,7 +93,7 @@ sub make {
         $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
         $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -163,7 +139,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

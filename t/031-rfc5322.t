@@ -7,8 +7,7 @@ my $PackageName = 'Sisimai::RFC5322';
 my $MethodNames = {
     'class' => [
         'HEADERFIELDS', 'LONGFIELDS',
-        'is_emailaddress', 'is_mailerdaemon', 'received',
-        'weedout',
+        'is_emailaddress', 'is_mailerdaemon', 'received', 'fillet',
     ],
     'object' => [],
 };
@@ -130,7 +129,38 @@ MAKE_TEST: {
         }
     }
 
-    my $rfc822text = <<'EOR';
+    my $rfc822body = <<'EOB';
+This is a MIME-encapsulated message
+
+The original message was received at Thu, 9 Apr 2014 23:34:45 +0900
+from localhost [127.0.0.1]
+
+   ----- The following addresses had permanent fatal errors -----
+<kijitora@example.net>
+    (reason: 551 not our customer)
+
+   ----- Transcript of session follows -----
+... while talking to mx-0.neko.example.jp.:
+<<< 450 busy - please try later
+... while talking to mx-1.neko.example.jp.:
+>>> DATA
+<<< 551 not our customer
+550 5.1.1 <kijitora@example.net>... User unknown
+<<< 503 need RCPT command [data]
+
+Content-Type: message/delivery-status
+Reporting-MTA: dns; mx.example.co.jp
+Received-From-MTA: DNS; localhost
+Arrival-Date: Thu, 9 Apr 2014 23:34:45 +0900
+
+Final-Recipient: RFC822; kijitora@example.net
+Action: failed
+Status: 5.1.6
+Remote-MTA: DNS; mx-s.neko.example.jp
+Diagnostic-Code: SMTP; 551 not our customer
+Last-Attempt-Date: Thu, 9 Apr 2014 23:34:45 +0900
+
+Content-Type: message/rfc822
 Return-Path: <shironeko@mx.example.co.jp>
 Received: from mx.example.co.jp (localhost [127.0.0.1])
 	by mx.example.co.jp (8.13.9/8.13.1) with ESMTP id fffff000000001
@@ -147,14 +177,20 @@ To: Kijitora <shironeko@example.co.jp>
 Subject: Nyaaaan
 
 Nyaaan
-EOR
-    my $rfc822part = Sisimai::RFC5322->weedout([split("\n", $rfc822text)]);
-    isa_ok $rfc822part, 'SCALAR';
-    ok length $$rfc822part;
-    like $$rfc822part, qr/^From:/m;
-    like $$rfc822part, qr/^Date:/m;
-    unlike $$rfc822part, qr/^MIME-Version:/m;
-    unlike $$rfc822part, qr/^Received:/m;
+
+__END_OF_EMAIL_MESSAGE__
+EOB
+    my $emailsteak = $PackageName->fillet(\$rfc822body, qr|^Content-Type:[ ]message/rfc822|m);
+    isa_ok $emailsteak, 'ARRAY';
+    is scalar(@$emailsteak), 2;
+    ok length $emailsteak->[0];
+    ok length $emailsteak->[1];
+    like $emailsteak->[0], qr/^Final-Recipient: /m;
+    like $emailsteak->[1], qr/^Subject: /m;
+    unlike $emailsteak->[0], qr/^Return-Path: /m;
+    unlike $emailsteak->[0], qr/binary$/m;
+    unlike $emailsteak->[1], qr/^Remote-MTA: /m;
+    unlike $emailsteak->[1], qr/^Neko-Nyaan/m;
 }
 
 done_testing;

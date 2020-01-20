@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 my $Indicators = __PACKAGE__->INDICATORS;
+my $ReBackbone = qr/__BOUNDARY_STRING_HERE__/m;
 
 sub description { 'Verizon Wireless: https://www.verizonwireless.com' }
 sub make {
@@ -36,9 +37,7 @@ sub make {
     return undef if $match < 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my @hasdivided = split("\n", $$mbody);
-    my $rfc822list = [];    # (Array) Each line in message/rfc822 part string
-    my $blanklines = 0;     # (Integer) The number of blank lines
+    my $emailsteak = [];
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $senderaddr = '';    # (String) Sender address in the message body
@@ -51,10 +50,7 @@ sub make {
 
     if( $match == 1 ) {
         # vtext.com
-        $MarkingsOf = {
-            'message' => qr/\AError:[ \t]/,
-            'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/,
-        };
+        $MarkingsOf = { 'message' => qr/\AError:[ \t]/ };
         $MessagesOf = {
             # The attempted recipient address does not exist.
             'userunknown' => ['550 - Requested action not taken: no such user here'],
@@ -63,157 +59,111 @@ sub make {
         if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
-            $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/;
+            $ReBackbone = qr/^\Q$boundary00\E/m;
         }
 
-        for my $e ( @hasdivided ) {
-            # Read each line between the start of the message and the start of rfc822 part.
+        $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+        for my $e ( split("\n", $emailsteak->[0]) ) {
+            # Read error messages and delivery status lines from the head of the email
+            # to the previous line of the beginning of the original message.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                if( $e =~ $MarkingsOf->{'message'} ) {
-                    $readcursor |= $Indicators->{'deliverystatus'};
-                    next;
-                }
+                $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+                next;
             }
+            next unless $readcursor & $Indicators->{'deliverystatus'};
+            next unless length $e;
 
-            unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-                # Beginning of the original message part
-                if( $e =~ $MarkingsOf->{'rfc822'} ) {
-                    $readcursor |= $Indicators->{'message-rfc822'};
-                    next;
-                }
-            }
+            # Message details:
+            #   Subject: Test message
+            #   Sent date: Wed Jun 12 02:21:53 GMT 2013
+            #   MAIL FROM: *******@hg.example.com
+            #   RCPT TO: *****@vtext.com
+            $v = $dscontents->[-1];
 
-            if( $readcursor & $Indicators->{'message-rfc822'} ) {
-                # Inside of the original message part
-                unless( length $e ) {
-                    last if ++$blanklines > 1;
-                    next;
+            if( $e =~ /\A[ \t]+RCPT TO: (.*)\z/ ) {
+                if( $v->{'recipient'} ) {
+                    # There are multiple recipient addresses in the message body.
+                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                    $v = $dscontents->[-1];
                 }
-                push @$rfc822list, $e;
+                $v->{'recipient'} = $1;
+                $recipients++;
+                next;
+
+            } elsif( $e =~ /\A[ \t]+MAIL FROM:[ \t](.+)\z/ ) {
+                #   MAIL FROM: *******@hg.example.com
+                $senderaddr ||= $1;
+
+            } elsif( $e =~ /\A[ \t]+Subject:[ \t](.+)\z/ ) {
+                #   Subject:
+                $subjecttxt ||= $1;
 
             } else {
-                # Error message part
-                next unless $readcursor & $Indicators->{'deliverystatus'};
-                next unless length $e;
-
-                # Message details:
-                #   Subject: Test message
-                #   Sent date: Wed Jun 12 02:21:53 GMT 2013
-                #   MAIL FROM: *******@hg.example.com
-                #   RCPT TO: *****@vtext.com
-                $v = $dscontents->[-1];
-
-                if( $e =~ /\A[ \t]+RCPT TO: (.*)\z/ ) {
-                    if( $v->{'recipient'} ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[-1];
-                    }
-                    $v->{'recipient'} = $1;
-                    $recipients++;
-                    next;
-
-                } elsif( $e =~ /\A[ \t]+MAIL FROM:[ \t](.+)\z/ ) {
-                    #   MAIL FROM: *******@hg.example.com
-                    $senderaddr ||= $1;
-
-                } elsif( $e =~ /\A[ \t]+Subject:[ \t](.+)\z/ ) {
-                    #   Subject:
-                    $subjecttxt ||= $1;
-
-                } else {
-                    # 550 - Requested action not taken: no such user here
-                    $v->{'diagnosis'} = $e if $e =~ /\A(\d{3})[ \t][-][ \t](.*)\z/;
-                }
-            } # End of error message part
+                # 550 - Requested action not taken: no such user here
+                $v->{'diagnosis'} = $e if $e =~ /\A(\d{3})[ \t][-][ \t](.*)\z/;
+            }
         }
     } else {
         # vzwpix.com
         $StartingOf = { 'message' => ['Message could not be delivered to mobile'] };
-        $MarkingsOf = { 'rfc822'  => qr/\A__BOUNDARY_STRING_HERE__\z/ };
         $MessagesOf = { 'userunknown' => ['No valid recipients for this MM'] };
 
         if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
-            $MarkingsOf->{'rfc822'} = qr/\A\Q$boundary00\E\z/;
+            $ReBackbone = qr/^\Q$boundary00\E/m;
         }
 
-        for my $e ( @hasdivided ) {
-            # Read each line between the start of the message and the start of rfc822 part.
+        $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+        for my $e ( split("\n", $emailsteak->[0]) ) {
+            # Read error messages and delivery status lines from the head of the email
+            # to the previous line of the beginning of the original message.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                if( index($e, $StartingOf->{'message'}->[0]) == 0 ) {
-                    $readcursor |= $Indicators->{'deliverystatus'};
-                    next;
-                }
+                $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+                next;
             }
+            next unless $readcursor & $Indicators->{'deliverystatus'};
+            next unless length $e;
 
-            unless( $readcursor & $Indicators->{'message-rfc822'} ) {
-                # Beginning of the original message part
-                if( $e =~ $MarkingsOf->{'rfc822'} ) {
-                    $readcursor |= $Indicators->{'message-rfc822'};
-                    next;
-                }
-            }
+            # Original Message:
+            # From: kijitora <kijitora@example.jp>
+            # To: 0000000000@vzwpix.com
+            # Subject: test for bounce
+            # Date:  Wed, 20 Jun 2013 10:29:52 +0000
+            $v = $dscontents->[-1];
 
-            if( $readcursor & $Indicators->{'message-rfc822'} ) {
-                # Inside of the original message part
-                unless( length $e ) {
-                    last if ++$blanklines > 1;
-                    next;
+            if( $e =~ /\ATo:[ \t]+(.*)\z/ ) {
+                if( $v->{'recipient'} ) {
+                    # There are multiple recipient addresses in the message body.
+                    push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
+                    $v = $dscontents->[-1];
                 }
-                push @$rfc822list, $e;
+                $v->{'recipient'} = Sisimai::Address->s3s4($1);
+                $recipients++;
+                next;
+
+            } elsif( $e =~ /\AFrom:[ \t](.+)\z/ ) {
+                # From: kijitora <kijitora@example.jp>
+                $senderaddr ||= Sisimai::Address->s3s4($1);
+
+            } elsif( $e =~ /\ASubject:[ \t](.+)\z/ ) {
+                #   Subject:
+                $subjecttxt ||= $1;
 
             } else {
-                # Error message part
-                next unless $readcursor & $Indicators->{'deliverystatus'};
-                next unless length $e;
-
-                # Original Message:
-                # From: kijitora <kijitora@example.jp>
-                # To: 0000000000@vzwpix.com
-                # Subject: test for bounce
-                # Date:  Wed, 20 Jun 2013 10:29:52 +0000
-                $v = $dscontents->[-1];
-
-                if( $e =~ /\ATo:[ \t]+(.*)\z/ ) {
-                    if( $v->{'recipient'} ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                        $v = $dscontents->[-1];
-                    }
-                    $v->{'recipient'} = Sisimai::Address->s3s4($1);
-                    $recipients++;
-                    next;
-
-                } elsif( $e =~ /\AFrom:[ \t](.+)\z/ ) {
-                    # From: kijitora <kijitora@example.jp>
-                    $senderaddr ||= Sisimai::Address->s3s4($1);
-
-                } elsif( $e =~ /\ASubject:[ \t](.+)\z/ ) {
-                    #   Subject:
-                    $subjecttxt ||= $1;
-
-                } else {
-                    # Message could not be delivered to mobile.
-                    # Error: No valid recipients for this MM
-                    $v->{'diagnosis'} = $e if $e =~ /\AError:[ \t]+(.+)\z/;
-                }
-            } # End of error message part
+                # Message could not be delivered to mobile.
+                # Error: No valid recipients for this MM
+                $v->{'diagnosis'} = $e if $e =~ /\AError:[ \t]+(.+)\z/;
+            }
         }
     }
     return undef unless $recipients;
 
-    if( ! grep { index($_, 'From: ') == 0 } @$rfc822list ) {
-        # Set the value of "MAIL FROM:" or "From:"
-        push @$rfc822list, 'From: '.$senderaddr;
-
-    } elsif( ! grep { index($_, 'Subject: ') == 0 } @$rfc822list ) {
-        # Set the value of "Subject"
-        push @$rfc822list, 'Subject: '.$subjecttxt;
-    }
+    # Set the value of "MAIL FROM:" and "From:"
+    $emailsteak->[1] .= sprintf("From: %s\n", $senderaddr) unless $emailsteak->[1] =~ /^From: /m;
+    $emailsteak->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailsteak->[1] =~ /^Subject: /m;
 
     for my $e ( @$dscontents ) {
         $e->{'agent'}     = __PACKAGE__->smtpagent;
@@ -226,7 +176,7 @@ sub make {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => ${ Sisimai::RFC5322->weedout($rfc822list) } };
+    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
 1;
@@ -272,10 +222,11 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+
