@@ -120,13 +120,10 @@ sub make {
         }
     }
 
-    unless( $recipients ) {
-        # Get the recipient address from the original message
-        if( $emailsteak->[1] =~ /^To:[ ]*(.+)/m ) {
-            # The value of To: header in the original message
-            $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
-            $recipients = 1;
-        }
+    if( $recipients == 0 && $emailsteak->[1] =~ /^To:[ ]*(.+)/m ) {
+        # Get the recipient address from "To:" header at the original message
+        $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
+        $recipients = 1;
     }
     return undef unless $recipients;
 
