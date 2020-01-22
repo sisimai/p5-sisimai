@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.4p6
+v4.25.5
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Wed, 22 Jan 2020 14:44:44 +0900 (JST)"
+- version: "4.25.5"
 - changes:
   - **JSON READING AS AN INPUT SOURCE AND JSON PARSING AS A BOUNCE OBJECT ARE
     NO LONGER PROVIDED AS OF v4.25.5**
@@ -27,22 +27,24 @@ v4.25.4p6
     Thanks to @aderumier
   - #348 Code improvement at `Sisimai::Lhost::EinsUndEins` for detecting error
     messages and setting the value of `rhost`.
-  - #349 Add 2 error code values: `102` is `blocked` and `426` is `suspend` at
-    `Sisimai::Rhost::FrancePTT` Thanks to @aderumier
-  - Add 3 sample emails: rhost-franceptt-04, 05, and 06 provided by @aderumier
-  - #350 Code improvement at `Sisimai::Lhost::Postfix` for setting `HELO` into
-    the value of `smtpcommand` in the parsed results.
   - Code improvements at `Sisimai::Lhost::Postfix` to parse an email which have
     neither delivery reports nor error messages. Thanks to @aderumier
   - Code improvements at `Sisimai::RFC3834` to parse a vacation message replied
     automatically from iCloud. Thanks to @aderumier at #346
-  - #353 Pull-Request from @aderumier to `Sisimai::Rhost::FrancePTT`.
-    - Add 2 error codes from Orange: `505` is `systemerror`, `999` is `blocked`
-    - Add 2 sample emails: rhost-franceptt-07.eml, 08.eml at set-of-emails/
-  - #357 Pull-Request from @aderumier to `Sisimai::Rhost::FrancePTT`.
-    - Add 2 sample emails: rhost-franceptt-10.eml, 11.eml at set-of-emails/
+  - Many Pull-Requests and sample emails for French ESPs. Thanks to @aderumier
+    - Add 4 error code values at `Sisimai::Rhost::FrancePTT` #349 #353 #357
+      - `102` = `blocked`
+      - `426` = `suspend`
+      - `505` = `systemerror`
+      - `999` = `blocked`
+    - Add 7 sample emails at set-of-emails/ directory: rhost-franceptt-04, 05,
+      06, 07, 08, 10, and 11 for `Sisimai::Rhost::FrancePTT` #353 #357
     - Add many error codes and error messages from Orange and La Poste
+  - #350 Code improvement at `Sisimai::Lhost::Postfix` for setting `HELO` into
+    the value of `smtpcommand` in the parsed results.
   - Tiny improvement around accessors and variables
+  - Large scale code improvement at each modules in `Sisimai::Lhost`
+  - reduce the number of lines in code about 12%
 
 v4.25.4
 --------------------------------------------------------------------------------
