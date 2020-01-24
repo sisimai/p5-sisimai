@@ -10,10 +10,10 @@ my $ReBackbone = qr{^(?:
     # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
     # deliver.c:6425|          else fprintf(f,
     # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
-     [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+headers[.][ ][-]+
-    |Content-Type:[ ]*message/rfc822
+     [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+?headers[.][ ][-]+
+    |Content-Type:[ ]*message/rfc822\n(?:[\s\t]+.*?\n\n)?
     )
-}mx;
+}msx;
 my $StartingOf = {
     'deliverystatus' => ['Content-type: message/delivery-status'],
     'endof'          => ['__END_OF_EMAIL_MESSAGE__'],
