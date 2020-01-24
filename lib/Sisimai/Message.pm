@@ -239,41 +239,41 @@ sub divideup {
 sub makemap {
     # Convert a text including email headers to a hash reference
     # @param         [String] heads  Email header data
-    # @param         [Array]  field  Convert specified headers only
-    # @param         [Bool]   field  Decode "Subject:" header
+    # @param         [Array]  argv0  Convert specified headers only
+    # @param         [Bool]   argv1  Decode "Subject:" header
     # @return        [Hash]          Structured email header data
     my $class = shift;
-    my $argv1 = shift || return {};
-    my $argv2 = shift || { 'fields' => [], 'decode' => 0 };
+    my $argv0 = shift || return {};
+    my $argv1 = shift || { 'fields' => [], 'decode' => 0 };
 
-    return undef unless ref $argv1 eq 'SCALAR';
-    return undef unless length $$argv1;
+    return undef unless ref $argv0 eq 'SCALAR';
+    return undef unless length $$argv0;
 
     my $firstpairs = {};
     my $headermaps = {};
     my $recvheader = [];
 
-    $$argv1 =~ s/^[>]+[ ]//mg;      # Remove '>' indent symbol of forwarded message
-    $$argv1 =~ s/=[ ]+=/=\n =/mg;   # Replace ' ' with "\n" at unfolded values
+    $$argv0 =~ s/^[>]+[ ]//mg;      # Remove '>' indent symbol of forwarded message
+    $$argv0 =~ s/=[ ]+=/=\n =/mg;   # Replace ' ' with "\n" at unfolded values
 
-    if( scalar @{ $argv2->{'fields'} || [] } ) {
+    if( scalar @{ $argv1->{'fields'} || [] } ) {
         # Select and convert specified headers only
-        my $q1 = sprintf("(%s)", join('|', @{ $argv2->{'fields'} }));
+        my $q1 = sprintf("(%s)", join('|', @{ $argv1->{'fields'} }));
         my $q2 = qr/$q1/im;
-        $firstpairs = { $$argv1 =~ /^$q2:[ ]*(.*?)\n(?![\s\t])/gms };
+        $firstpairs = { $$argv0 =~ /^$q2:[ ]*(.*?)\n(?![\s\t])/gms };
 
     } else {
         # Select and convert all the headers in $argv1
-        $firstpairs = { $$argv1 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms };
+        $firstpairs = { $$argv0 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms };
     }
     map { $headermaps->{ lc $_ } = $firstpairs->{ $_ } } keys %$firstpairs;
     map { $_ =~ s/\n\s+/ /; $_ =~ y/\t / /s } values %$headermaps;
 
-    $recvheader = [$$argv1 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms] if $$argv1 =~ /^Received:/m;
+    $recvheader = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms] if $$argv0 =~ /^Received:/m;
     map { $_ =~ s/\n\s+/ /; $_ =~ y/\n\t / /s } @$recvheader;
     $headermaps->{'received'} = $recvheader;
 
-    return $headermaps unless $argv2->{'decode'};
+    return $headermaps unless $argv1->{'decode'};
     return $headermaps unless length $headermaps->{'subject'};
 
     # Convert MIME-Encoded subject
