@@ -63,6 +63,10 @@ sub make {
     return undef unless defined $mhead->{'content-language'};
     return undef unless $mhead->{'content-language'} =~ /\A[a-z]{2}(?:[-][A-Z]{2})?\z/;
 
+    # These headers exist only a bounce mail from Office365
+    return undef if $mhead->{'x-ms-exchange-crosstenant-originalarrivaltime'};
+    return undef if $mhead->{'x-ms-exchange-crosstenant-fromentityheader'};
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
