@@ -200,31 +200,6 @@ sub another {
     return [@$OrderE1, @$OrderE2, @$OrderE3, @$OrderE4, @$OrderE5, @$OrderE9];
 };
 
-sub headers {
-    # Make email header list in each MTA module
-    # @return   [Hash] Header list to be parsed
-    # @since v4.13.1
-    my $class = shift;
-    my $table = {};
-
-    state $order = [map { 'Sisimai::Lhost::'.$_ } @{ Sisimai::Lhost->heads }];
-    state $skips = { 'return-path' => 1, 'x-mailer' => 1 };
-
-    LOAD_MODULES: for my $e ( @$order ) {
-        # Load email headers from each MTA module
-        (my $p = $e) =~ s|::|/|g;
-        require $p.'.pm';
-
-        for my $v ( @{ $e->headerlist } ) {
-            # Get header name which required each MTA module
-            next if exists $skips->{ $v };
-            $table->{ $v } ||= [];
-            push @{ $table->{ $v } }, $e;
-        }
-    }
-    return $table;
-}
-
 1;
 __END__
 
@@ -267,12 +242,6 @@ C<another()> returns another list of MTA modules as an array reference. Another
 list is defined at this class.
 
     print for @{ Sisimai::Order->another };
-
-=head2 C<B<headers()>>
-
-C<headers()> returns MTA specific header table.
-
-    print keys %{ Sisimai::Order->headers };
 
 =head1 AUTHOR
 
