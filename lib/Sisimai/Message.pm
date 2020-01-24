@@ -117,7 +117,7 @@ sub make {
     # 2. Convert email headers from text to hash reference
     $TryOnFirst = [];
     $processing->{'from'}   = $aftersplit->{'from'};
-    $processing->{'header'} = __PACKAGE__->headers(\$aftersplit->{'header'}, $headerlist);
+    $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
 
     # 3. Check headers for detecting MTA module
     unless( scalar @$TryOnFirst ) {
@@ -132,7 +132,7 @@ sub make {
     # 5. Rewrite headers of the original message in the body part
     map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
     my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
-    $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->takeapart(\$p);
+    $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->makemap(\$p, { 'decode' => 1 });
     return $processing;
 }
 
@@ -206,6 +206,105 @@ sub makeorder {
     return $order;
 }
 
+sub divideup {
+    # Divide email data up headers and a body part.
+    # @param         [String] email  Email data
+    # @return        [Hash]          Email data after split
+    # @since v4.14.0
+    my $class = shift;
+    my $email = shift // return undef;
+    my $block = { 'from' => '', 'header' => '', 'body' => '' };
+
+    $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
+    $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
+
+    ($block->{'header'}, $block->{'body'}) = split(/\n\n/, $$email, 2);
+    return undef unless $block->{'header'};
+    return undef unless $block->{'body'};
+
+    if( substr($block->{'header'}, 0, 5) eq 'From ' ) {
+        # From MAILER-DAEMON Tue Feb 11 00:00:00 2014
+        $block->{'from'} =  [split(/\n/, $block->{'header'}, 2)]->[0];
+        $block->{'from'} =~ y/\r\n//d;
+    } else {
+        # Set pseudo UNIX From line
+        $block->{'from'} =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
+    }
+
+    $block->{'header'} .= "\n" unless $block->{'header'} =~ /\n\z/m;
+    $block->{'body'}   .= "\n";
+    return $block;
+}
+
+sub makemap {
+    # Convert a text including email headers to a hash reference
+    # @param         [String] heads  Email header data
+    # @param         [Array]  field  Convert specified headers only
+    # @param         [Bool]   field  Decode "Subject:" header
+    # @return        [Hash]          Structured email header data
+    my $class = shift;
+    my $argv1 = shift || return {};
+    my $argv2 = shift || { 'fields' => [], 'decode' => 0 };
+
+    return undef unless ref $argv1 eq 'SCALAR';
+    return undef unless length $$argv1;
+
+    my $firstpairs = {};
+    my $headermaps = {};
+    my $recvheader = [];
+
+    $$argv1 =~ s/^[>]+[ ]//mg;      # Remove '>' indent symbol of forwarded message
+    $$argv1 =~ s/=[ ]+=/=\n =/mg;   # Replace ' ' with "\n" at unfolded values
+
+    if( scalar @{ $argv2->{'fields'} || [] } ) {
+        # Select and convert specified headers only
+        my $q1 = sprintf("(%s)", join('|', @{ $argv2->{'fields'} }));
+        my $q2 = qr/$q1/im;
+        $firstpairs = { $$argv1 =~ /^$q2:[ ]*(.*?)\n(?![\s\t])/gms };
+
+    } else {
+        # Select and convert all the headers in $argv1
+        $firstpairs = { $$argv1 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms };
+    }
+    map { $headermaps->{ lc $_ } = $firstpairs->{ $_ } } keys %$firstpairs;
+    map { $_ =~ s/\n\s+/ /; $_ =~ y/\t / /s } values %$headermaps;
+
+    $recvheader = [$$argv1 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms] if $$argv1 =~ /^Received:/m;
+    map { $_ =~ s/\n\s+/ /; $_ =~ y/\n\t / /s } @$recvheader;
+    $headermaps->{'received'} = $recvheader;
+#use Data::Dumper; warn Data::Dumper::Dumper $headermaps;
+    return $headermaps unless $argv2->{'decode'};
+    return $headermaps unless length $headermaps->{'subject'};
+
+    # Convert MIME-Encoded subject
+    if( Sisimai::String->is_8bit(\$headermaps->{'subject'}) ) {
+        # The value of ``Subject'' header is including multibyte character,
+        # is not MIME-Encoded text.
+        eval {
+            # Remove invalid byte sequence
+            Encode::decode_utf8($headermaps->{'subject'});
+            Encode::encode_utf8($headermaps->{'subject'});
+        };
+        $headermaps->{'subject'} = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED' if $@;
+
+    } else {
+        # MIME-Encoded subject field or ASCII characters only
+        my $r = [];
+        if( Sisimai::MIME->is_mimeencoded(\$headermaps->{'subject'}) ) {
+            # split the value of Subject by $borderline
+            for my $v ( split(/ /, $headermaps->{'subject'}) ) {
+                # Insert value to the array if the string is MIME encoded text
+                push @$r, $v if Sisimai::MIME->is_mimeencoded(\$v);
+            }
+        } else {
+            # Subject line is not MIME encoded
+            $r = [$headermaps->{'subject'}];
+        }
+        $headermaps->{'subject'} = Sisimai::MIME->mimedecode($r);
+    }
+    return $headermaps;
+}
+
 sub headers {
     # Convert email headers from text to hash reference
     # @param         [String] heads  Email header data
@@ -262,35 +361,6 @@ sub headers {
         }
     }
     return $structured;
-}
-
-sub divideup {
-    # Divide email data up headers and a body part.
-    # @param         [String] email  Email data
-    # @return        [Hash]          Email data after split
-    # @since v4.14.0
-    my $class = shift;
-    my $email = shift // return undef;
-    my $block = { 'from' => '', 'header' => '', 'body' => '' };
-
-    $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
-    $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
-
-    ($block->{'header'}, $block->{'body'}) = split(/\n\n/, $$email, 2);
-    return undef unless $block->{'header'};
-    return undef unless $block->{'body'};
-
-    if( substr($block->{'header'}, 0, 5) eq 'From ' ) {
-        # From MAILER-DAEMON Tue Feb 11 00:00:00 2014
-        $block->{'from'} =  [split(/\n/, $block->{'header'}, 2)]->[0];
-        $block->{'from'} =~ y/\r\n//d;
-    } else {
-        # Set pseudo UNIX From line
-        $block->{'from'} =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
-    }
-
-    $block->{'body'} .= "\n";
-    return $block;
 }
 
 sub takeapart {
