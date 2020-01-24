@@ -24,13 +24,7 @@ use Class::Accessor::Lite (
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 my $DefaultSet = Sisimai::Order->another;
-my $ExtHeaders = Sisimai::Order->headers;
 my $SubjectTab = Sisimai::Order->by('subject');
-my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
-my @RFC3834Set = @{ Sisimai::RFC3834->headerlist };
-my @HeaderList = (qw|from to date subject content-type reply-to message-id
-                     received content-transfer-encoding return-path x-mailer|);
-my $IsMultiple = { 'received' => 1 };
 my $EndOfEmail = Sisimai::String->EOM;
 
 sub new {
@@ -166,11 +160,6 @@ sub load {
                 require $modulepath.'.pm';
             };
             next if $@;
-
-            for my $w ( @{ $v->headerlist } ) {
-                # Get header name which required user defined MTA module
-                $ExtHeaders->{ $w }->{ $v } = 1;
-            }
             push @$tobeloaded, $v;
         }
     }
