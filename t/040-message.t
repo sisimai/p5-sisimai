@@ -5,10 +5,7 @@ use Sisimai::Message;
 
 my $PackageName = 'Sisimai::Message';
 my $MethodNames = {
-    'class' => [
-        'new', 'make', 'load', 'parse', 'divideup', 'headers',
-        'takeapart', 'makeorder'
-    ],
+    'class'  => ['new', 'make', 'load', 'parse', 'divideup', 'makemap', 'makeorder'],
     'object' => ['from', 'header', 'ds', 'rfc822'],
 };
 my $SampleEmail = './set-of-emails/mailbox/mbox-0';
