@@ -39,8 +39,6 @@ my $NDRSubject = {
     'QUEUE.Expired'                 => 'expired',       # 550 4.4.7 QUEUE.Expired
 };
 
-# Content-Language: en-US, fr-FR
-sub headerlist  { return ['content-language'] };
 sub description { 'Microsoft Exchange Server 2007' }
 sub make {
     # Detect an error from Microsoft Exchange Server 2007
@@ -59,6 +57,7 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # Content-Language: en-US, fr-FR
     return undef unless $mhead->{'subject'} =~ $MarkingsOf->{'subject'};
     return undef unless defined $mhead->{'content-language'};
     return undef unless $mhead->{'content-language'} =~ /\A[a-z]{2}(?:[-][A-Z]{2})?\z/;

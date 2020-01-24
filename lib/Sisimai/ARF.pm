@@ -30,7 +30,6 @@ my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { return 'Abuse Feedback Reporting Format' }
 sub smtpagent   { 'Feeback-Loop' }
-sub headerlist  { return [] }
 sub is_arf {
     # Email is a Feedback-Loop message or not
     # @param    [Hash] heads    Email header including "Content-Type", "From",

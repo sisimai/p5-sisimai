@@ -12,11 +12,6 @@ my $StartingOf = {
 };
 my $MessagesOf = { 'expired' => ['Delivery expired'] };
 
-# X-SenderID: Sendmail Sender-ID Filter v1.0.0 nijo.example.jp p7V3i843003008
-# X-Original-To: 000001321defbd2a-788e31c8-2be1-422f-a8d4-cf7765cc9ed7-000000@email-bounces.amazonses.com
-# X-AWS-Outgoing: 199.255.192.156
-# X-SES-Outgoing: 2016.10.12-54.240.27.6
-sub headerlist  { ['x-aws-outgoing', 'x-ses-outgoing', 'x-amz-sns-message-id'] }
 sub description { 'Amazon SES(Sending): https://aws.amazon.com/ses/' };
 sub make {
     # Detect an error from Amazon SES
@@ -226,6 +221,10 @@ sub make {
         my $xmail = $mhead->{'x-mailer'} || '';
         return undef if index($xmail, 'Amazon WorkMail') > -1;
 
+        # X-SenderID: Sendmail Sender-ID Filter v1.0.0 nijo.example.jp p7V3i843003008
+        # X-Original-To: 000001321defbd2a-788e31c8-2be1-422f-a8d4-cf7765cc9ed7-000000@email-bounces.amazonses.com
+        # X-AWS-Outgoing: 199.255.192.156
+        # X-SES-Outgoing: 2016.10.12-54.240.27.6
         my $match = 0;
         $match ||= 1 if $mhead->{'x-aws-outgoing'};
         $match ||= 1 if $mhead->{'x-ses-outgoing'};

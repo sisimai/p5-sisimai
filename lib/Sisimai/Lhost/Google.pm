@@ -96,7 +96,6 @@ my $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub headerlist  { return ['x-failed-recipients'] }
 sub description { 'Google Gmail: https://mail.google.com' }
 sub make {
     # Detect an error from Google Gmail

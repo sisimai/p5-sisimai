@@ -9,10 +9,6 @@ my $Indicators = __PACKAGE__->INDICATORS;
 my $ReBackbone = qr|^content-type:[ ]message/rfc822|m;
 my $StartingOf = { 'message' => ['Technical report:'] };
 
-# X-Mailer: Amazon WorkMail
-# X-Original-Mailer: Amazon WorkMail
-# X-Ses-Outgoing: 2016.01.14-54.240.27.159
-sub headerlist  { return ['x-ses-outgoing', 'x-original-mailer'] }
 sub description { 'Amazon WorkMail: https://aws.amazon.com/workmail/' }
 sub make {
     # Detect an error from Amazon WorkMail
@@ -33,8 +29,9 @@ sub make {
     my $match = 0;
     my $xmail = $mhead->{'x-original-mailer'} || $mhead->{'x-mailer'} || '';
 
-    # 'subject' => qr/Delivery[_ ]Status[_ ]Notification[_ ].+Failure/,
-    # 'received'=> qr/.+[.]smtp-out[.].+[.]amazonses[.]com\b/,
+    # X-Mailer: Amazon WorkMail
+    # X-Original-Mailer: Amazon WorkMail
+    # X-Ses-Outgoing: 2016.01.14-54.240.27.159
     $match++ if $mhead->{'x-ses-outgoing'};
     if( $xmail ) {
         # X-Mailer: Amazon WorkMail

@@ -122,8 +122,6 @@ my $DelayedFor = [
     'was frozen on arrival by ',
 ];
 
-# X-Failed-Recipients: kijitora@example.ed.jp
-sub headerlist  { return ['x-failed-recipients'] }
 sub description { 'Exim' }
 sub make {
     # Detect an error from Exim
@@ -146,6 +144,7 @@ sub make {
     return undef if $mhead->{'from'} =~/[@].+[.]mail[.]ru[>]?/;
 
     # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
+    # X-Failed-Recipients: kijitora@example.ed.jp
     $match++ if index($mhead->{'from'}, 'Mail Delivery System') == 0;
     $match++ if defined $mhead->{'message-id'} &&
                 $mhead->{'message-id'} =~ /\A[<]\w{7}[-]\w{6}[-]\w{2}[@]/;

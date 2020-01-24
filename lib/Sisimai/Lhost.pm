@@ -39,7 +39,6 @@ sub INDICATORS {
 sub removedat   { return 'v4.25.5' }    # This method will be removed at the future release of Sisimai
 sub smtpagent   { my $v = shift; $v =~ s/\ASisimai::Lhost::/Email::/; return $v }
 sub description { return '' }
-sub headerlist  { return [] }
 sub index {
     # MTA list
     # @return   [Array] MTA list with order

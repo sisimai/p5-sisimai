@@ -8,14 +8,6 @@ my $Indicators = __PACKAGE__->INDICATORS;
 my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
 my $StartingOf = { 'message' => ['This is the mail system at host yandex.ru.'] };
 
-# X-Yandex-Front: mxback1h.mail.yandex.net
-# X-Yandex-TimeMark: 1417885948
-# X-Yandex-Uniq: 92309766-f1c8-4bd4-92bc-657c75766587
-# X-Yandex-Spam: 1
-# X-Yandex-Forward: 10104c00ad0726da5f37374723b1e0c8
-# X-Yandex-Queue-ID: 367D79E130D
-# X-Yandex-Sender: rfc822; shironeko@yandex.example.com
-sub headerlist  { return ['x-yandex-uniq'] }
 sub description { 'Yandex.Mail: https://www.yandex.ru' }
 sub make {
     # Detect an error from Yandex.Mail
@@ -34,6 +26,13 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # X-Yandex-Front: mxback1h.mail.yandex.net
+    # X-Yandex-TimeMark: 1417885948
+    # X-Yandex-Uniq: 92309766-f1c8-4bd4-92bc-657c75766587
+    # X-Yandex-Spam: 1
+    # X-Yandex-Forward: 10104c00ad0726da5f37374723b1e0c8
+    # X-Yandex-Queue-ID: 367D79E130D
+    # X-Yandex-Sender: rfc822; shironeko@yandex.example.com
     return undef unless $mhead->{'x-yandex-uniq'};
     return undef unless $mhead->{'from'} eq 'mailer-daemon@yandex.ru';
 

@@ -8,11 +8,6 @@ my $Indicators = __PACKAGE__->INDICATORS;
 my $ReBackbone = qr|^--- Below this line is a copy of the message[.]|m;
 my $StartingOf = { 'message' => ['Sorry, we were unable to deliver your message'] };
 
-# X-YMailISG: YtyUVyYWLDsbDh...
-# X-YMail-JAS: Pb65aU4VM1mei...
-# X-YMail-OSG: bTIbpDEVM1lHz...
-# X-Originating-IP: [192.0.2.9]
-sub headerlist  { return ['x-ymailisg'] }
 sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 sub make {
     # Detect an error from Yahoo! MAIL
@@ -31,7 +26,10 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    # 'subject' => qr/\AFailure Notice\z/,
+    # X-YMailISG: YtyUVyYWLDsbDh...
+    # X-YMail-JAS: Pb65aU4VM1mei...
+    # X-YMail-OSG: bTIbpDEVM1lHz...
+    # X-Originating-IP: [192.0.2.9]
     return undef unless $mhead->{'x-ymailisg'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

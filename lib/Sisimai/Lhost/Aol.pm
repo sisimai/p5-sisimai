@@ -12,17 +12,6 @@ my $MessagesOf = {
     'notaccept'   => ['type=MX: Malformed or unexpected name server reply'],
 };
 
-# X-AOL-IP: 192.0.2.135
-# X-AOL-VSS-INFO: 5600.1067/98281
-# X-AOL-VSS-CODE: clean
-# x-aol-sid: 3039ac1afc14546fb98a0945
-# X-AOL-SCOLL-EIL: 1
-# x-aol-global-disposition: G
-# x-aol-sid: 3039ac1afd4d546fb97d75c6
-# X-BounceIO-Id: 9D38DE46-21BC-4309-83E1-5F0D788EFF1F.1_0
-# X-Outbound-Mail-Relay-Queue-ID: 07391702BF4DC
-# X-Outbound-Mail-Relay-Sender: rfc822; shironeko@aol.example.jp
-sub headerlist  { return ['x-aol-ip'] }
 sub description { 'Aol Mail: https://www.aol.com' }
 sub make {
     # Detect an error from Aol Mail
@@ -41,8 +30,16 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    # 'from'    => qr/\APostmaster [<]Postmaster[@]AOL[.]com[>]\z/,
-    # 'subject' => qr/\AUndeliverable: /,
+    # X-AOL-IP: 192.0.2.135
+    # X-AOL-VSS-INFO: 5600.1067/98281
+    # X-AOL-VSS-CODE: clean
+    # x-aol-sid: 3039ac1afc14546fb98a0945
+    # X-AOL-SCOLL-EIL: 1
+    # x-aol-global-disposition: G
+    # x-aol-sid: 3039ac1afd4d546fb97d75c6
+    # X-BounceIO-Id: 9D38DE46-21BC-4309-83E1-5F0D788EFF1F.1_0
+    # X-Outbound-Mail-Relay-Queue-ID: 07391702BF4DC
+    # X-Outbound-Mail-Relay-Sender: rfc822; shironeko@aol.example.jp
     return undef unless $mhead->{'x-aol-ip'};
 
     require Sisimai::RFC1894;

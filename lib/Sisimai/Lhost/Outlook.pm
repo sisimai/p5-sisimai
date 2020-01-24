@@ -12,9 +12,6 @@ my $MessagesOf = {
     'userunknown' => ['Requested action not taken: mailbox unavailable'],
 };
 
-# X-Message-Delivery: Vj0xLjE7RD0wO0dEPTA7U0NMPTk7bD0xO3VzPTE=
-# X-Message-Info: AuEzbeVr9u5fkDpn2vR5iCu5wb6HBeY4iruBjnutBzpStnUabbM...
-sub headerlist  { return ['x-message-delivery', 'x-message-info'] }
 sub description { 'Microsoft Outlook.com: https://www.outlook.com/' }
 sub make {
     # Detect an error from Microsoft Outlook.com
@@ -34,7 +31,8 @@ sub make {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    # 'from'     => qr/postmaster[@]/,
+    # X-Message-Delivery: Vj0xLjE7RD0wO0dEPTA7U0NMPTk7bD0xO3VzPTE=
+    # X-Message-Info: AuEzbeVr9u5fkDpn2vR5iCu5wb6HBeY4iruBjnutBzpStnUabbM...
     $match++ if index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     $match++ if $mhead->{'x-message-delivery'};
     $match++ if $mhead->{'x-message-info'};

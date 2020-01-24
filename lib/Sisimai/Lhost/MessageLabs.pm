@@ -12,12 +12,6 @@ my $ReFailures = {
     'securityerror' => qr/Please turn on SMTP Authentication in your mail client/,
 };
 
-# X-Msg-Ref: server-11.tower-143.messagelabs.com!1419367175!36473369!1
-# X-Originating-IP: [10.245.230.38]
-# X-StarScan-Received:
-# X-StarScan-Version: 6.12.5; banners=-,-,-
-# X-VirusChecked: Checked
-sub headerlist  { return ['x-msg-ref'] }
 sub description { 'Symantec.cloud http://www.messagelabs.com' }
 sub make {
     # Detect an error from MessageLabs.com
@@ -36,6 +30,11 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # X-Msg-Ref: server-11.tower-143.messagelabs.com!1419367175!36473369!1
+    # X-Originating-IP: [10.245.230.38]
+    # X-StarScan-Received:
+    # X-StarScan-Version: 6.12.5; banners=-,-,-
+    # X-VirusChecked: Checked
     return undef unless defined $mhead->{'x-msg-ref'};
     return undef unless rindex($mhead->{'from'}, 'MAILER-DAEMON@messagelabs.com') > -1;
     return undef unless index($mhead->{'subject'}, 'Mail Delivery Failure') == 0;

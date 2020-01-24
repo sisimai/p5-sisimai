@@ -51,25 +51,6 @@ my $ReCommands = {
     'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<]?.+[@].+[.][a-zA-Z]+[>]?/,
 };
 
-sub headerlist  {
-    # X-MS-Exchange-Message-Is-Ndr:
-    # X-Microsoft-Antispam-PRVS: <....@...outlook.com>
-    # X-Exchange-Antispam-Report-Test: UriScan:;
-    # X-Exchange-Antispam-Report-CFA-Test:
-    # X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2015 23:34:45.6789 (JST)
-    # X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-    # X-MS-Exchange-Transport-CrossTenantHeadersStamped: ...
-    return [
-        'content-language',
-        'x-ms-exchange-message-is-ndr',
-        'x-microsoft-antispam-prvs',
-        'x-exchange-antispam-report-test',
-        'x-exchange-antispam-report-cfa-test',
-        'x-ms-exchange-crosstenant-originalarrivaltime',
-        'x-ms-exchange-crosstenant-fromentityheader',
-        'x-ms-exchange-transport-crosstenantheadersstamped',
-    ]
-}
 sub description { 'Microsoft Office 365: https://office.microsoft.com/' }
 sub make {
     # Detect an error from Microsoft Office 365
@@ -90,6 +71,13 @@ sub make {
     my $match = 0;
     my $tryto = qr/.+[.](?:outbound[.]protection|prod)[.]outlook[.]com\b/;
 
+    # X-MS-Exchange-Message-Is-Ndr:
+    # X-Microsoft-Antispam-PRVS: <....@...outlook.com>
+    # X-Exchange-Antispam-Report-Test: UriScan:;
+    # X-Exchange-Antispam-Report-CFA-Test:
+    # X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2015 23:34:45.6789 (JST)
+    # X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+    # X-MS-Exchange-Transport-CrossTenantHeadersStamped: ...
     $match++ if index($mhead->{'subject'}, 'Undeliverable:') > -1;
     $match++ if $mhead->{'x-ms-exchange-message-is-ndr'};
     $match++ if $mhead->{'x-microsoft-antispam-prvs'};

@@ -9,10 +9,6 @@ my $ReBackbone = qr|^Received:[ ]*from[ ]mail[.]zoho[.]com[ ]by[ ]mx[.]zohomail[
 my $StartingOf = { 'message' => ['This message was created automatically by mail delivery'] };
 my $MessagesOf = { 'expired' => ['Host not reachable'] };
 
-# X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
-# X-Zoho-Virus-Status: 2
-# X-Mailer: Zoho Mail
-sub headerlist  { return ['x-zohomail'] }
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub make {
     # Detect an error from Zoho Mail
@@ -31,9 +27,9 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    # 'from'     => qr/mailer-daemon[@]mail[.]zoho[.]com\z/,
-    # 'subject'  => qr/\A(?:Undelivered Mail Returned to Sender|Mail Delivery Status Notification)/x,
-    # 'x-mailer' => qr/\AZoho Mail\z/,
+    # X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
+    # X-Zoho-Virus-Status: 2
+    # X-Mailer: Zoho Mail
     return undef unless $mhead->{'x-zohomail'};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

@@ -23,8 +23,6 @@ my $ReFailures = {
     'expired'     => qr/\ADelivery failed \d+ attempts/,
 };
 
-# X-Mailer: <SMTP32 v8.22>
-sub headerlist  { return ['x-mailer'] }
 sub description { 'IPSWITCH IMail Server' }
 sub make {
     # Detect an error from IMailServer
@@ -44,6 +42,7 @@ sub make {
     my $mbody = shift // return undef;
     my $match = 0;
 
+    # X-Mailer: <SMTP32 v8.22>
     $match ||= 1 if $mhead->{'subject'} =~ /\AUndeliverable Mail[ ]*\z/;
     $match ||= 1 if defined $mhead->{'x-mailer'} && index($mhead->{'x-mailer'}, '<SMTP32 v') == 0;
     return undef unless $match;

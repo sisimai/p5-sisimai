@@ -18,7 +18,6 @@ my $MarkingsOf = {
     'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
-sub headerlist  { return ['x-some-userdefined-header'] }
 sub description { 'Module decription' }
 sub make {
     # Template for User-Defined MTA module
