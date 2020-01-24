@@ -63,18 +63,20 @@ my $OrderE5 = [
 ];
 my $OrderE9 = [
     # These modules have one or more MTA specific headers
+    'Sisimai::Lhost::GSuite',
     'Sisimai::Lhost::Aol',
+    'Sisimai::Lhost::Office365',
     'Sisimai::Lhost::Yahoo',
-    'Sisimai::Lhost::AmazonSES',
     'Sisimai::Lhost::GMX',
     'Sisimai::Lhost::Yandex',
-    'Sisimai::Lhost::Office365',
+    'Sisimai::Lhost::AmazonSES',
     'Sisimai::Lhost::ReceivingSES',
     'Sisimai::Lhost::AmazonWorkMail',
     'Sisimai::Lhost::Zoho',
     'Sisimai::Lhost::McAfee',
     'Sisimai::Lhost::Activehunter',
     'Sisimai::Lhost::SurfControl',
+    'Sisimai::Lhost::FML',
 ];
 
 # This variable don't hold MTA module name which have one or more MTA specific
@@ -278,7 +280,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017,2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017,2019,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
