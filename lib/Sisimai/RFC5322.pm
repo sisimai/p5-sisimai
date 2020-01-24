@@ -272,7 +272,7 @@ header.
 =head2 C<B<fillet(I<String>, I<RegExp>)>>
 
 C<fillet()> returns array reference which include error message lines of given
-message body and the original message part splitted by the 2nd argument.
+message body and the original message part split by the 2nd argument.
 
     my $v = 'Error message here
     Content-Type: message/rfc822

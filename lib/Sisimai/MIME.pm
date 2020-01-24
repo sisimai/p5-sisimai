@@ -275,7 +275,7 @@ sub breaksup {
             # Find internal multipart/* blocks and decode
             if( $e =~ $thisformat ) {
                 # Found Content-Type field at the first or second line of this
-                # splitted part
+                # split part
                 my $nextformat = lc $1;
 
                 next unless $nextformat =~ $leavesonly;
