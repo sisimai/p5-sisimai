@@ -272,7 +272,7 @@ sub makemap {
     $recvheader = [$$argv1 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms] if $$argv1 =~ /^Received:/m;
     map { $_ =~ s/\n\s+/ /; $_ =~ y/\n\t / /s } @$recvheader;
     $headermaps->{'received'} = $recvheader;
-#use Data::Dumper; warn Data::Dumper::Dumper $headermaps;
+
     return $headermaps unless $argv2->{'decode'};
     return $headermaps unless length $headermaps->{'subject'};
 
