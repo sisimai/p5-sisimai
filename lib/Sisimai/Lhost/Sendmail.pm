@@ -42,6 +42,7 @@ sub make {
         # Do not execute this code if the bounce mail is a forwarded message.
         return undef unless index($mhead->{'from'}, 'Mail Delivery Subsystem') > -1;
     }
+    return undef if $mhead->{'x-aol-ip'};   # X-AOL-IP is a header defined in AOL
 
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
