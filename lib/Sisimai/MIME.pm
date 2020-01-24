@@ -277,10 +277,8 @@ sub breaksup {
                 # Found Content-Type field at the first or second line of this
                 # split part
                 my $nextformat = lc $1;
-
                 next unless $nextformat =~ $leavesonly;
                 next if $nextformat eq 'text/html';
-
                 $hasflatten .= ${ __PACKAGE__->breaksup(\$e, $mimeformat) };
 
             } else {
@@ -369,8 +367,8 @@ sub makeflat {
     # Some bounce messages include lower-cased "content-type:" field such as
     #   content-type: message/delivery-status
     #   content-transfer-encoding: quoted-printable
-    $$argv1 =~ s/[Cc]ontent-[Tt]ype:/Content-Type:/gm;
-    $$argv1 =~ s/[Cc]ontent-[Tt]ransfer-[Ee]ncodeing:/Content-Transfer-Encoding:/gm;
+    $$argv1 =~ s/[Cc]ontent-[Tt]ype:/Content-Type:/g;
+    $$argv1 =~ s/[Cc]ontent-[Tt]ransfer-[Ee]ncodeing:/Content-Transfer-Encoding:/g;
 
     # 1. Some bounce messages include upper-cased "Content-Transfer-Encoding",
     #    and "Content-Type" value such as
@@ -380,9 +378,8 @@ sub makeflat {
     $$argv1 =~ s/(Content-[A-Za-z-]+?):[ ]*([^\s]+)/$1.': '.lc($2)/eg;
     $$argv1 =~ s/^Content-(?:Description|Disposition):.+?\n//gm;
 
-    my @multiparts = split(/\Q$ehboundary\E\n/, $$argv1);
+    my @multiparts = split(/\Q$ehboundary\E\n?/, $$argv1);
     shift @multiparts unless length $multiparts[0];
-
     for my $e ( @multiparts ) {
         # Find internal multipart blocks and decode
         XCCT: {
@@ -393,10 +390,15 @@ sub makeflat {
             #   Message-ID: ...
             #   Content-Transfer-Encoding: quoted-printable
             #   Content-Type: text/plain; charset=us-ascii
-            last(XCCT) if $e =~ /\AContent-T[ry]/;
+            #
+            # Fields before "Content-Type:" in each part should have been removed
+            # and "Content-Type:" should be exist at the first line of each part.
+            # The field works as a delimiter to decode contents of each part.
+            #
+            last(XCCT) if $e =~ /\AContent-T[ry]/;  # The first field is "Content-Type:"
             my $p = $1 if $e =~ /\A(.+?)Content-Type:/s || last(XCCT);
-            last(XCCT) if $p =~ /\n\n/;
-            $e =~ s/\A.+?(Content-T[ry].+)\z/$1/s;
+            last(XCCT) if $p =~ /\n\n/m;            # There is no field before "Content-Type:"
+            $e =~ s/\A.+?(Content-T[ry].+)\z/$1/s;  # Remove fields before "Content-Type:"
         }
 
         if( $e =~ /\A(?:Content-[A-Za-z-]+:.+?\r?\n)?Content-Type:[ ]*[^\s]+/ ) {
@@ -513,7 +515,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
