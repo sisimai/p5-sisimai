@@ -14,10 +14,7 @@ my $ReBackbone = qr{^(?:
     |Content-Type:[ ]*message/rfc822\n(?:[\s\t]+.*?\n\n)?
     )
 }msx;
-my $StartingOf = {
-    'deliverystatus' => ['Content-type: message/delivery-status'],
-    'endof'          => ['__END_OF_EMAIL_MESSAGE__'],
-};
+my $StartingOf = { 'deliverystatus' => ['Content-type: message/delivery-status'] };
 my $MarkingsOf = {
     # Error text regular expressions which defined in exim/src/deliver.c
     #
@@ -179,8 +176,6 @@ sub make {
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email
         # to the previous line of the beginning of the original message.
-        last if $e eq $StartingOf->{'endof'}->[0];
-
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             if( $e =~ $MarkingsOf->{'message'} ) {

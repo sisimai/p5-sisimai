@@ -9,13 +9,11 @@ use warnings;
 #   error:   The first line of an error message to get an error reason, recipient
 #            addresses, or other bounce information.
 #   rfc822:  The first line of the original message.
-#   endof:   Fixed string ``__END_OF_EMAIL_MESSAGE__''
 my $Indicators = __PACKAGE__->INDICATORS;
 my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
 my $MarkingsOf = {
     'message' => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
-    'endof'   => qr/\A__END_OF_EMAIL_MESSAGE__\z/,
 };
 
 sub description { 'Module decription' }

@@ -383,7 +383,6 @@ sub make {
         my $b = $dscontents->[-1];
         for my $e ( split("\n", $$mbody) ) {
             # Get the recipient's email address and error messages.
-            last if $e eq '__END_OF_EMAIL_MESSAGE__';
             my $d = lc $e;
             last if $d =~ $MarkingsOf->{'rfc822'};
             last if $d =~ $re_stop;

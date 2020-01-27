@@ -57,7 +57,6 @@ sub make {
             # Find JSON string from the message body
             next unless length $e;
             last if $e eq '--';
-            last if $e eq '__END_OF_EMAIL_MESSAGE__';
 
             substr($e, 0, 1, '') if $foldedline; # The line starts with " ", continued from !\n.
             $foldedline = 0;

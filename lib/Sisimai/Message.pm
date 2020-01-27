@@ -25,7 +25,6 @@ my $ToBeLoaded = [];
 my $TryOnFirst = [];
 my $DefaultSet = Sisimai::Order->another;
 my $SubjectTab = Sisimai::Order->by('subject');
-my $EndOfEmail = Sisimai::String->EOM;
 
 sub new {
     # Constructor of Sisimai::Message
@@ -336,7 +335,6 @@ sub parse {
         eval { $havecaught = $hookmethod->($p) };
         warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
     }
-    $$bodystring .= $EndOfEmail;
 
     my $haveloaded = {};
     my $parseddata = undef;
