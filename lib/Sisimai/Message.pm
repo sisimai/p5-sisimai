@@ -112,7 +112,7 @@ sub make {
     $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
 
     # 3. Check headers for detecting MTA module
-    $TryOnFirst = Sisimai::Order->make($processing->{'header'}, 'email');
+    $TryOnFirst = Sisimai::Order->make($processing->{'header'});
 
     # 4. Rewrite message body for detecting the bounce reason
     $methodargv = { 'hook' => $hookmethod, 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
@@ -341,18 +341,12 @@ sub parse {
     my $modulepath = '';
 
     PARSER: while(1) {
-        # 1. Sisimai::ARF
-        # 2. User-Defined Module
-        # 3. MTA Module Candidates to be tried on first
-        # 4. Sisimai::Lhost::*
-        # 5. Sisimai::RFC3464
+        # 1. User-Defined Module
+        # 2. MTA Module Candidates to be tried on first
+        # 3. Sisimai::Lhost::*
+        # 4. Sisimai::RFC3464
+        # 5. Sisimai::ARF
         # 6. Sisimai::RFC3834
-        if( Sisimai::ARF->is_arf($mailheader) ) {
-            # Feedback Loop message
-            $parseddata = Sisimai::ARF->make($mailheader, $bodystring);
-            last(PARSER) if $parseddata;
-        }
-
         USER_DEFINED: for my $r ( @$ToBeLoaded ) {
             # Call user defined MTA modules
             next if exists $haveloaded->{ $r };
@@ -376,6 +370,12 @@ sub parse {
         require Sisimai::RFC3464;
         $parseddata = Sisimai::RFC3464->make($mailheader, $bodystring);
         last(PARSER) if $parseddata;
+
+        if( Sisimai::ARF->is_arf($mailheader) ) {
+            # Feedback Loop message
+            $parseddata = Sisimai::ARF->make($mailheader, $bodystring);
+            last(PARSER) if $parseddata;
+        }
 
         # Try to parse the message as auto reply message defined in RFC3834
         $parseddata = Sisimai::RFC3834->make($mailheader, $bodystring);
