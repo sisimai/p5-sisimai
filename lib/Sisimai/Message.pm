@@ -111,7 +111,7 @@ sub make {
     $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
 
     # 3. Check headers for detecting MTA module
-    $TryOnFirst = Sisimai::Order->make($processing->{'header'});
+    $TryOnFirst = Sisimai::Order->make($processing->{'header'}->{'subject'});
 
     # 4. Rewrite message body for detecting the bounce reason
     $methodargv = { 'hook' => $hookmethod, 'mail' => $processing, 'body' => \$aftersplit->{'body'} };

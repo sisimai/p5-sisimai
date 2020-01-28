@@ -13,7 +13,7 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-    my $pattern = $PackageName->make({ 'subject' => 'delivery failure' });
+    my $pattern = $PackageName->make('delivery failure');
     my $default = $PackageName->default;
     my $another = $PackageName->another;
 

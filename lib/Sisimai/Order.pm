@@ -81,71 +81,94 @@ my $OrderE9 = [
 
 # The following order is decided by the first word of Subject: header
 my $Subject = {
-    'delivery' => [
+    'complaint-about'  => ['Sisimai::ARF'],
+    'delivery-failure' => ['Sisimai::Lhost::Domino', 'Sisimai::Lhost::X2'],
+    'delivery-notification' => ['Sisimai::Lhost::MessagingServer'],
+    'delivery-status'  => [
         'Sisimai::Lhost::GSuite',
-        'Sisimai::Lhost::Outlook',
-        'Sisimai::Lhost::MessagingServer',
-        'Sisimai::Lhost::OpenSMTPD',
-        'Sisimai::Lhost::ReceivingSES',
-        'Sisimai::Lhost::Domino',
-        'Sisimai::Lhost::McAfee',
         'Sisimai::Lhost::Google',
+        'Sisimai::Lhost::Outlook',
+        'Sisimai::Lhost::McAfee',
+        'Sisimai::Lhost::OpenSMTPD',
         'Sisimai::Lhost::AmazonSES',
-        'Sisimai::Lhost::X2',
+        'Sisimai::Lhost::ReceivingSES',
         'Sisimai::Lhost::X3',
     ],
-    'failure' => [
+    'email-feedback'   => ['Sisimai::ARF'],
+    'failure-delivery' => ['Sisimai::Lhost::X2'],
+    'failure-notice'   => [
         'Sisimai::Lhost::Yahoo',
         'Sisimai::Lhost::qmail',
         'Sisimai::Lhost::mFILTER',
         'Sisimai::Lhost::Activehunter',
         'Sisimai::Lhost::X4',
     ],
-    'mail' => [
+    'loop-alert' => ['Sisimai::Lhost::FML'],
+    'notice'     => ['Sisimai::Lhost::Courier'],
+    'mail-delivery' => [
         'Sisimai::Lhost::Exim',
+        'Sisimai::Lhost::MailRu',
         'Sisimai::Lhost::GMX',
         'Sisimai::Lhost::EinsUndEins',
+        'Sisimai::Lhost::Zoho',
         'Sisimai::Lhost::MessageLabs',
         'Sisimai::Lhost::MXLogic',
-        'Sisimai::Lhost::EZweb',
     ],
-    'message'    => ['Sisimai::Lhost::MailFoundry'],
-    'notice'     => ['Sisimai::Lhost::Courier'],
-    'postmaster' => ['Sisimai::Lhost::Sendmail'],
-    'returned'   => [
+    'mail-not'    => ['Sisimai::Lhost::X4'],
+    'mail-system' => ['Sisimai::Lhost::EZweb'],
+    'message-delivery'   => ['Sisimai::Lhost::MailFoundry'],
+    'message-frozen'     => ['Sisimai::Lhost::Exim'],
+    'permanent-delivery' => ['Sisimai::Lhost::X4'],
+    'postmaster-notify'  => ['Sisimai::Lhost::Sendmail'],
+    'returned-mail' => [
         'Sisimai::Lhost::Sendmail',
+        'Sisimai::Lhost::Aol',
         'Sisimai::Lhost::V5sendmail',
         'Sisimai::Lhost::Bigfoot',
         'Sisimai::Lhost::Biglobe',
         'Sisimai::Lhost::X1',
     ],
-    'sorry' => ['Sisimai::Lhost::Facebook'],
+    'sorry-your' => ['Sisimai::Lhost::Facebook'],
+    'undeliverable-mail' => [
+        'Sisimai::Lhost::Amavis',
+        'Sisimai::Lhost::MailMarshalSMTP',
+        'Sisimai::Lhost::IMailServer',
+    ],
     'undeliverable' => [
         'Sisimai::Lhost::Office365',
         'Sisimai::Lhost::Exchange2007',
-        'Sisimai::Lhost::Exchange2003',
         'Sisimai::Lhost::Aol',
-        'Sisimai::Lhost::Notes',
-        'Sisimai::Lhost::Zoho',
-        'Sisimai::Lhost::Amavis',
-        'Sisimai::Lhost::IMailServer',
-        'Sisimai::Lhost::MailMarshalSMTP',
+        'Sisimai::Lhost::Exchange2003',
     ],
-    'undelivered' => ['Sisimai::Lhost::Postfix', 'Sisimai::Lhost::SendGrid'],
-    'warning'     => ['Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Exim'],
+    'undeliverable-message' => ['Sisimai::Lhost::Notes', 'Sisimai::Lhost::Verizon'],
+    'undelivered-mail' => [
+        'Sisimai::Lhost::Postfix',
+        'Sisimai::Lhost::Aol',
+        'Sisimai::Lhost::SendGrid',
+        'Sisimai::Lhost::Zoho',
+    ],
+    'warning' => ['Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Exim'],
 };
 
 sub make {
-    # Check headers for detecting MTA module and returns the order of modules
-    # @param         [Hash] heads   Email header data
+    # Returns an MTA Order decided by the first word of the "Subject": header
+    # @param         [String] argv0 Subject header string
     # @return        [Array]        Order of MTA modules
     # @since         v4.25.4
     my $class = shift;
-    my $heads = shift || return [];
-    return [] unless $heads->{'subject'};
+    my $argv0 = shift || return [];
+    my @words = split(/[ ]/, lc($argv0), 3);
+    my $first = '';
 
-    my $title = lc $heads->{'subject'};
-    my $first = [split(/[ ]/, $title, 2)]->[0]; $first =~ y/ :[]"//d;
+    if( rindex($words[0], ':') > 0 ) {
+        # Undeliverable: ..., notify: ...
+        $first = shift @words;
+
+    } else {
+        # Postmaster notify, returned mail, ...
+        $first = join('-', splice(@words, 0, 2));
+    }
+    $first =~ y/:[]",*//d;
     return $Subject->{ $first } || [];
 }
 
