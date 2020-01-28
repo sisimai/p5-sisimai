@@ -36,7 +36,6 @@ sub INDICATORS {
         'message-rfc822' => (1 << 2),
     };
 }
-sub removedat   { return 'v4.25.5' }    # This method will be removed at the future release of Sisimai
 sub smtpagent   { my $v = shift; $v =~ s/\ASisimai::Lhost::/Email::/; return $v }
 sub description { return '' }
 sub index {
@@ -92,7 +91,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
