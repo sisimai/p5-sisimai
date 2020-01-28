@@ -131,17 +131,8 @@ my $Subject = {
         'Sisimai::Lhost::IMailServer',
         'Sisimai::Lhost::MailMarshalSMTP',
     ],
-    'undelivered' => [
-        'Sisimai::Lhost::Postfix',
-        'Sisimai::Lhost::SendGrid',
-    ],
-    '=' => [
-        'Sisimai::Lhost::MailRu',
-        'Sisimai::Lhost::Yandex',
-        'Sisimai::Lhost::AmazonWorkMail',
-        'Sisimai::Lhost::InterScanMSS',
-        'Sisimai::Lhost::X5',
-    ],
+    'undelivered' => ['Sisimai::Lhost::Postfix', 'Sisimai::Lhost::SendGrid'],
+    'warning'     => ['Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Exim'],
 };
 
 sub make {
