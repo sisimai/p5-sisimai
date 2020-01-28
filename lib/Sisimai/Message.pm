@@ -24,7 +24,6 @@ use Class::Accessor::Lite (
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 my $DefaultSet = Sisimai::Order->another;
-my $SubjectTab = Sisimai::Order->by('subject');
 
 sub new {
     # Constructor of Sisimai::Message
