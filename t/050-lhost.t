@@ -6,7 +6,7 @@ use Sisimai::Lhost;
 my $PackageName = 'Sisimai::Lhost';
 my $MethodNames = {
     'class' => [
-        'description', 'make', 'smtpagent', 'index', 'heads',
+        'description', 'make', 'smtpagent', 'index',
         'DELIVERYSTATUS', 'INDICATORS',
     ],
     'object' => [],
@@ -21,7 +21,6 @@ MAKE_TEST: {
     is $PackageName->make, undef, '->make';
 
     isa_ok $PackageName->index, 'ARRAY';
-    isa_ok $PackageName->heads, 'ARRAY';
     isa_ok $PackageName->DELIVERYSTATUS, 'HASH';
     isa_ok $PackageName->INDICATORS, 'HASH';
 }
