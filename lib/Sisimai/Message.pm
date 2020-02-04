@@ -90,6 +90,7 @@ sub make {
     my $hookmethod = $argvs->{'hook'}  || undef;
     my $headerlist = $argvs->{'field'} || [];
     my $aftersplit = {};
+    my $emailtitle = '';
     my $processing = {
         'from'   => '',     # From_ line
         'header' => {},     # Email header
@@ -109,16 +110,29 @@ sub make {
     # 2. Convert email headers from text to hash reference
     $processing->{'from'}   = $aftersplit->{'from'};
     $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
+    $emailtitle = $processing->{'header'}->{'subject'} || '';
 
-    # 3. Check headers for detecting MTA module
+    # 3. Decode Subject header
+    if( lc($emailtitle) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
+        # Delete quoted strings, quote symbols(>)
+        $processing->{'header'}->{'subject'} = $1;
+        $aftersplit->{'body'} =~ s/^[>]+[ ]//gm;
+        $aftersplit->{'body'} =~ s/^[>]$//gm;
+
+    } elsif( Sisimai::MIME->is_mimeencoded(\$emailtitle) ) {
+        # Decode MIME-Encoded "Subject:" header
+        $processing->{'header'}->{'subject'} = Sisimai::MIME->mimedecode([split(/[ ]/, $emailtitle)]);
+    }
+
+    # 4. Check headers for detecting MTA module
     $TryOnFirst = Sisimai::Order->make($processing->{'header'}->{'subject'});
 
-    # 4. Rewrite message body for detecting the bounce reason
+    # 5. Rewrite message body for detecting the bounce reason
     $methodargv = { 'hook' => $hookmethod, 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
     return undef unless $bouncedata = __PACKAGE__->parse(%$methodargv);
     return undef unless keys %$bouncedata;
 
-    # 5. Rewrite headers of the original message in the body part
+    # 6. Rewrite headers of the original message in the body part
     map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
     my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
     $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->makemap(\$p, 1);
@@ -213,7 +227,8 @@ sub makemap {
     $$argv0 =~ s/^[>]+[ ]//mg;      # Remove '>' indent symbol of forwarded message
     $$argv0 =~ s/=[ ]+=/=\n =/mg;   # Replace ' ' with "\n" at unfolded values
 
-    # Select and convert all the headers in $argv0
+    # Select and convert all the headers in $argv0. The following regular expression
+    # is based on https://gist.github.com/xtetsuji/b080e1f5551d17242f6415aba8a00239
     my $firstpairs = { $$argv0 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms };
     my $headermaps = {};
     my $recvheader = [];
@@ -306,20 +321,6 @@ sub parse {
             my $p = Sisimai::MIME->makeflat($mailheader->{'content-type'}, $bodystring);
             $bodystring = $p if length $$p;
         }
-    }
-
-    # EXPAND_FORWARDED_MESSAGE:
-    # Check whether or not the message is a bounce mail.
-    # Pre-Process email body if it is a forwarded bounce message.
-    # Get the original text when the subject begins from 'fwd:' or 'fw:'
-    if( lc($mailheader->{'subject'}) =~ /\A[ \t]*fwd?:/ ) {
-        # Delete quoted strings, quote symbols(>)
-        $$bodystring =~ s/^[>]+[ ]//gm;
-        $$bodystring =~ s/^[>]$//gm;
-
-    } elsif( Sisimai::MIME->is_mimeencoded(\$mailheader->{'subject'}) ) {
-        # Decode MIME-Encoded "Subject:" header
-        $mailheader->{'subject'} = Sisimai::MIME->mimedecode([split(/[ ]/, $mailheader->{'subject'})]);
     }
     $$bodystring =~ tr/\r//d;
 
