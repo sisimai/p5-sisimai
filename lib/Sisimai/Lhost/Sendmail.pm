@@ -37,11 +37,6 @@ sub make {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'subject'} =~ /(?:see transcript for details\z|\AWarning: )/;
-    unless( lc($mhead->{'subject'}) =~ /\A[ \t]*fwd?:/ ) {
-        # Fwd: Returned mail: see transcript for details
-        # Do not execute this code if the bounce mail is a forwarded message.
-        return undef unless index($mhead->{'from'}, 'Mail Delivery Subsystem') > -1;
-    }
     return undef if $mhead->{'x-aol-ip'};   # X-AOL-IP is a header defined in AOL
 
     require Sisimai::RFC1894;
