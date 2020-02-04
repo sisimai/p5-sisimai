@@ -206,7 +206,7 @@ sub divideup {
         $block->{'from'} =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     }
 
-    $block->{'header'} .= "\n" unless $block->{'header'} =~ /\n\z/m;
+    $block->{'header'} .= "\n" unless $block->{'header'} =~ /\n\z/;
     $block->{'body'}   .= "\n";
     return $block;
 }
