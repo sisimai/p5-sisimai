@@ -380,6 +380,7 @@ sub parse {
             $parseddata = Sisimai::RFC3834->make($mailheader, $bodystring);
             last(PARSER) if $parseddata;
         }
+
         last; # as of now, we have no sample email for coding this block
     } # End of while(PARSER)
 
