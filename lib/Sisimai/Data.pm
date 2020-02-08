@@ -8,6 +8,7 @@ use Sisimai::Reason;
 use Sisimai::Rhost;
 use Sisimai::Time;
 use Sisimai::DateTime;
+use Sisimai::SMTP::Error;
 use Class::Accessor::Lite (
     'new' => 0,
     'rw'  => [

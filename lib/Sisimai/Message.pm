@@ -3,13 +3,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::RFC5322;
-use Sisimai::RFC3834;
 use Sisimai::Address;
 use Sisimai::String;
 use Sisimai::Order;
 use Sisimai::MIME;
-use Sisimai::ARF;
-use Sisimai::SMTP::Error;
 use Class::Accessor::Lite (
     'new' => 0,
     'rw'  => [
@@ -372,12 +369,14 @@ sub parse {
 
         unless( $haveloaded->{'Sisimai::ARF'} ) {
             # Feedback Loop message
+            require Sisimai::ARF;
             $parseddata = Sisimai::ARF->make($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
             last(PARSER) if $parseddata;
         }
 
         unless( $haveloaded->{'Sisimai::RFC3834'} ) {
             # Try to parse the message as auto reply message defined in RFC3834
+            require Sisimai::RFC3834;
             $parseddata = Sisimai::RFC3834->make($mailheader, $bodystring);
             last(PARSER) if $parseddata;
         }
