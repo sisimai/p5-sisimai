@@ -88,7 +88,6 @@ sub make {
 
     my $bouncedata = undef;
     my $hookmethod = $argvs->{'hook'}  || undef;
-    my $headerlist = $argvs->{'field'} || [];
     my $aftersplit = {};
     my $emailtitle = '';
     my $processing = {
@@ -213,19 +212,14 @@ sub divideup {
 
 sub makemap {
     # Convert a text including email headers to a hash reference
-    # @param         [String] heads  Email header data
-    # @param         [Array]  argv0  Convert specified headers only
-    # @param         [Bool]   argv1  Decode "Subject:" header
-    # @return        [Hash]          Structured email header data
+    # @param    [String] argv0  Email header data
+    # @param    [Bool]   argv1  Decode "Subject:" header
+    # @return   [Hash]          Structured email header data
+    # @since    v4.25.6
     my $class = shift;
     my $argv0 = shift || return {};
     my $argv1 = shift || 0;
-
-    return undef unless ref $argv0 eq 'SCALAR';
-    return undef unless length $$argv0;
-
-    $$argv0 =~ s/^[>]+[ ]//mg;      # Remove '>' indent symbol of forwarded message
-    $$argv0 =~ s/=[ ]+=/=\n =/mg;   # Replace ' ' with "\n" at unfolded values
+    $$argv0 =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
 
     # Select and convert all the headers in $argv0. The following regular expression
     # is based on https://gist.github.com/xtetsuji/b080e1f5551d17242f6415aba8a00239
@@ -236,8 +230,11 @@ sub makemap {
     map { $headermaps->{ lc $_ } = $firstpairs->{ $_ } } keys %$firstpairs;
     map { $_ =~ s/\n\s+/ /; $_ =~ y/\t / /s } values %$headermaps;
 
-    $recvheader = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms] if $$argv0 =~ /^Received:/m;
-    map { $_ =~ s/\n\s+/ /; $_ =~ y/\n\t / /s } @$recvheader;
+    if( $$argv0 =~ /^Received:/m ) {
+        # Capture values of each Received: header
+        $recvheader = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms];
+        map { $_ =~ s/\n\s+/ /; $_ =~ y/\n\t / /s } @$recvheader;
+    }
     $headermaps->{'received'} = $recvheader;
 
     return $headermaps unless $argv1;
@@ -365,24 +362,26 @@ sub parse {
             last(PARSER) if $parseddata;
         }
 
-        # When the all of Sisimai::Lhost::* modules did not return bounce data,
-        # call Sisimai::RFC3464;
-        require Sisimai::RFC3464;
-        $parseddata = Sisimai::RFC3464->make($mailheader, $bodystring);
-        last(PARSER) if $parseddata;
-
-        if( Sisimai::ARF->is_arf($mailheader) ) {
-            # Feedback Loop message
-            $parseddata = Sisimai::ARF->make($mailheader, $bodystring);
+        unless( $haveloaded->{'Sisimai::RFC3464'} ) {
+            # When the all of Sisimai::Lhost::* modules did not return bounce
+            # data, call Sisimai::RFC3464;
+            require Sisimai::RFC3464;
+            $parseddata = Sisimai::RFC3464->make($mailheader, $bodystring);
             last(PARSER) if $parseddata;
         }
 
-        # Try to parse the message as auto reply message defined in RFC3834
-        $parseddata = Sisimai::RFC3834->make($mailheader, $bodystring);
-        last(PARSER) if $parseddata;
+        unless( $haveloaded->{'Sisimai::ARF'} ) {
+            # Feedback Loop message
+            $parseddata = Sisimai::ARF->make($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
+            last(PARSER) if $parseddata;
+        }
 
-        # as of now, we have no sample email for coding this block
-        last;
+        unless( $haveloaded->{'Sisimai::RFC3834'} ) {
+            # Try to parse the message as auto reply message defined in RFC3834
+            $parseddata = Sisimai::RFC3834->make($mailheader, $bodystring);
+            last(PARSER) if $parseddata;
+        }
+        last; # as of now, we have no sample email for coding this block
     } # End of while(PARSER)
 
     $parseddata->{'catch'} = $havecaught if $parseddata;
