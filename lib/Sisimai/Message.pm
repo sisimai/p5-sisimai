@@ -106,18 +106,13 @@ sub make {
     # 2. Convert email headers from text to hash reference
     $processing->{'from'}   = $aftersplit->{'from'};
     $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
-    $emailtitle = $processing->{'header'}->{'subject'} || '';
 
-    # 3. Decode Subject header
-    if( lc($emailtitle) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
+    # 3. Remove "Fwd:" string from the "Subject:" header
+    if( lc($processing->{'header'}->{'subject'} || '') =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
         # Delete quoted strings, quote symbols(>)
         $processing->{'header'}->{'subject'} = $1;
         $aftersplit->{'body'} =~ s/^[>]+[ ]//gm;
         $aftersplit->{'body'} =~ s/^[>]$//gm;
-
-    } elsif( Sisimai::MIME->is_mimeencoded(\$emailtitle) ) {
-        # Decode MIME-Encoded "Subject:" header
-        $processing->{'header'}->{'subject'} = Sisimai::MIME->mimedecode([split(/[ ]/, $emailtitle)]);
     }
 
     # 4. Check headers for detecting MTA module
@@ -290,6 +285,11 @@ sub parse {
     $mailheader->{'from'}         //= '';
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
+
+    if( Sisimai::MIME->is_mimeencoded(\$mailheader->{'subject'}) ) {
+        # Decode MIME-Encoded "Subject:" header
+        $mailheader->{'subject'} = Sisimai::MIME->mimedecode([split(/[ ]/, $mailheader->{'subject'})]);
+    }
 
     # Decode BASE64 Encoded message body
     my $mesgformat = lc($mailheader->{'content-type'} || '');
