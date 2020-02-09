@@ -112,15 +112,13 @@ sub make {
         $aftersplit->{'body'} =~ s/^[>]$//gm;
     }
 
-    # 4. Check headers for detecting MTA module
+    # 4. Rewrite message body for detecting the bounce reason
     $TryOnFirst = Sisimai::Order->make($processing->{'header'}->{'subject'});
-
-    # 5. Rewrite message body for detecting the bounce reason
     $methodargv = { 'hook' => $hookmethod, 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
     return undef unless my $bouncedata = __PACKAGE__->parse(%$methodargv);
     return undef unless keys %$bouncedata;
 
-    # 6. Rewrite headers of the original message in the body part
+    # 5. Rewrite headers of the original message in the body part
     map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
     my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
     $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->makemap(\$p, 1);
