@@ -269,8 +269,9 @@ sub breaksup {
         # Content-Type: multipart/*
         my $mpboundary = __PACKAGE__->boundary($upperchunk, 0);
         my @innerparts = split(/\Q$mpboundary\E\n/, $lowerchunk);
-
         shift @innerparts unless length $innerparts[0];
+        shift @innerparts if $innerparts[0] eq "\n";
+
         for my $e ( @innerparts ) {
             # Find internal multipart/* blocks and decode
             if( $e =~ $thisformat ) {
