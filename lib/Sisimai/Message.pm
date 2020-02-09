@@ -83,10 +83,7 @@ sub make {
     my $argvs = { @_ };
     my $email = $argvs->{'data'};
 
-    my $bouncedata = undef;
-    my $hookmethod = $argvs->{'hook'}  || undef;
-    my $aftersplit = {};
-    my $emailtitle = '';
+    my $hookmethod = $argvs->{'hook'} || undef;
     my $processing = {
         'from'   => '',     # From_ line
         'header' => {},     # Email header
@@ -101,7 +98,7 @@ sub make {
     $ToBeLoaded = __PACKAGE__->load(%$methodargv);
 
     # 1. Split email data to headers and a body part.
-    return undef unless $aftersplit = __PACKAGE__->divideup(\$email);
+    return undef unless my $aftersplit = __PACKAGE__->divideup(\$email);
 
     # 2. Convert email headers from text to hash reference
     $processing->{'from'}   = $aftersplit->{'from'};
@@ -120,7 +117,7 @@ sub make {
 
     # 5. Rewrite message body for detecting the bounce reason
     $methodargv = { 'hook' => $hookmethod, 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
-    return undef unless $bouncedata = __PACKAGE__->parse(%$methodargv);
+    return undef unless my $bouncedata = __PACKAGE__->parse(%$methodargv);
     return undef unless keys %$bouncedata;
 
     # 6. Rewrite headers of the original message in the body part
@@ -211,6 +208,7 @@ sub makemap {
     my $class = shift;
     my $argv0 = shift || return {};
     my $argv1 = shift || 0;
+
     $$argv0 =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
 
     # Select and convert all the headers in $argv0. The following regular expression
