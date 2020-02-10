@@ -102,7 +102,7 @@ Sisimai::SMTP::Reply - SMTP reply code related class
 =head1 SYNOPSIS
 
     use Sisimai::SMTP::Reply;
-    print Sisimai::SMTP::Rely->find('550 5.1.1 Unknown user');  # 550
+    print Sisimai::SMTP::Reply->find('550 5.1.1 Unknown user');  # 550
 
 =head1 DESCRIPTION
 
@@ -125,7 +125,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
