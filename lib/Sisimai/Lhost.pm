@@ -52,6 +52,21 @@ sub index {
     |];
 }
 
+sub path {
+    # Returns Sisimai::Lhost::* module path table
+    # @return   [Hash] Module path table
+    # @since    v4.25.6
+    my $class = shift;
+    my $index = __PACKAGE__->index;
+    my $table = {
+        'Sisimai::ARF'     => 'Sisimai/ARF.pm',
+        'Sisimai::RFC3464' => 'Sisimai/RFC3464.pm',
+        'Sisimai::RFC3834' => 'Sisimai/RFC3834.pm',
+    };
+    map { $table->{ __PACKAGE__.'::'.$_ } = 'Sisimai/Lhost/'.$_.'.pm' } @$index;
+    return $table;
+}
+
 sub make {
     # Method of a parent class to parse a bounce message of each MTA
     # @param         [Hash] mhead       Message headers of a bounce email
