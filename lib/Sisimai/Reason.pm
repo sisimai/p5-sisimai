@@ -3,6 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+state $ModulePath = __PACKAGE__->path;
 my $GetRetried = __PACKAGE__->retry;
 my $ClassOrder = [
     [qw|MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown
@@ -18,6 +19,7 @@ my $ClassOrder = [
         NotAccept MailerError NoRelaying SyntaxError OnHold
     |],
 ];
+
 sub retry {
     # Reason list better to retry detecting an error reason
     # @return   [Array] Reason list
@@ -36,6 +38,17 @@ sub index {
         Rejected NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError
         Suspend SystemError SystemFull TooManyConn UserUnknown SyntaxError
     |];
+}
+
+sub path {
+    # Returns Sisimai::Reason::* module path table
+    # @return   [Hash] Module path table
+    # @since    v4.25.6
+    my $class = shift;
+    my $index = __PACKAGE__->index;
+    my $table = {};
+    map { $table->{ __PACKAGE__.'::'.$_ } = 'Sisimai/Reason/'.$_.'.pm' } @$index;
+    return $table;
 }
 
 sub get {
@@ -62,8 +75,7 @@ sub get {
             # Check the value of Diagnostic-Code: and the value of Status:, it is a
             # deliverystats, with true() method in each Sisimai::Reason::* class.
             my $p = 'Sisimai::Reason::'.$e;
-            (my $modulepath = $p) =~ s|::|/|g;
-            require $modulepath.'.pm';
+            require $ModulePath->{ $p };
 
             next unless $p->true($argvs);
             $reasontext = $p->text;
@@ -114,8 +126,7 @@ sub anotherone {
         for my $e ( @{ $ClassOrder->[1] } ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
             my $p = 'Sisimai::Reason::'.$e;
-            (my $modulepath = $p) =~ s|::|/|g;
-            require $modulepath.'.pm';
+            require $ModulePath->{ $p };
 
             next unless $p->match($diagnostic);
             $reasontext = lc $e;
@@ -175,8 +186,7 @@ sub match {
         # Check the value of Diagnostic-Code: and the value of Status:, it is a
         # deliverystats, with true() method in each Sisimai::Reason::* class.
         my $p = 'Sisimai::Reason::'.$e;
-        (my $modulepath = $p) =~ s|::|/|g;
-        require $modulepath.'.pm';
+        require $ModulePath->{ $p };
 
         next unless $p->match($diagnostic);
         $reasontext = $p->text;

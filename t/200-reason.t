@@ -7,7 +7,7 @@ require './t/999-values.pl';
 
 my $PackageName = 'Sisimai::Reason';
 my $MethodNames = {
-    'class' => ['get', 'retry', 'index', 'match'],
+    'class' => ['get', 'path', 'retry', 'index', 'match'],
     'object' => [],
 };
 
@@ -19,6 +19,7 @@ MAKE_TEST: {
     is $PackageName->anotherone, undef;
     isa_ok $PackageName->index, 'ARRAY';
     isa_ok $PackageName->retry, 'HASH';
+    isa_ok $PackageName->path,  'HASH';
 
     use Sisimai::Mail;
     use Sisimai::Message;
