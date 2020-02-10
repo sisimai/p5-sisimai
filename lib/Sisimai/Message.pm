@@ -6,6 +6,7 @@ use Sisimai::RFC5322;
 use Sisimai::Address;
 use Sisimai::String;
 use Sisimai::Order;
+use Sisimai::Lhost;
 use Sisimai::MIME;
 use Class::Accessor::Lite (
     'new' => 0,
@@ -21,6 +22,7 @@ use Class::Accessor::Lite (
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 my $DefaultSet = Sisimai::Order->another;
+state $LhostTable = Sisimai::Lhost->path;
 
 sub new {
     # Constructor of Sisimai::Message
@@ -328,7 +330,6 @@ sub parse {
 
     my $haveloaded = {};
     my $parseddata = undef;
-    my $modulepath = '';
 
     PARSER: while(1) {
         # 1. User-Defined Module
@@ -348,8 +349,7 @@ sub parse {
         TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$DefaultSet ) {
             # Try MTA module candidates
             next if exists $haveloaded->{ $r };
-            ($modulepath = $r) =~ s|::|/|g;
-            require $modulepath.'.pm';
+            require $LhostTable->{ $r };
             $parseddata = $r->make($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             last(PARSER) if $parseddata;
