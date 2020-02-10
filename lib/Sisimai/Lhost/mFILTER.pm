@@ -12,8 +12,6 @@ my $StartingOf = {
 };
 my $MarkingsOf = { 'message' => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/ };
 
-# X-Mailer: m-FILTER
-sub headerlist  { return ['x-mailer'] }
 sub description { 'Digital Arts m-FILTER' }
 sub make {
     # Detect an error from DigitalArts m-FILTER
@@ -32,7 +30,7 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    # 'from'     => qr/\AMailer Daemon [<]MAILER-DAEMON[@]/,
+    # X-Mailer: m-FILTER
     return undef unless defined $mhead->{'x-mailer'};
     return undef unless $mhead->{'x-mailer'} eq 'm-FILTER';
     return undef unless $mhead->{'subject'}  eq 'failure notice';

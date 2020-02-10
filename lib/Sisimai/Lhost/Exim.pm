@@ -10,14 +10,11 @@ my $ReBackbone = qr{^(?:
     # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
     # deliver.c:6425|          else fprintf(f,
     # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
-     [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+headers[.][ ][-]+
-    |Content-Type:[ ]*message/rfc822
+     [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+?headers[.][ ][-]+
+    |Content-Type:[ ]*message/rfc822\n(?:[\s\t]+.*?\n\n)?
     )
-}mx;
-my $StartingOf = {
-    'deliverystatus' => ['Content-type: message/delivery-status'],
-    'endof'          => ['__END_OF_EMAIL_MESSAGE__'],
-};
+}msx;
+my $StartingOf = { 'deliverystatus' => ['Content-type: message/delivery-status'] };
 my $MarkingsOf = {
     # Error text regular expressions which defined in exim/src/deliver.c
     #
@@ -122,8 +119,6 @@ my $DelayedFor = [
     'was frozen on arrival by ',
 ];
 
-# X-Failed-Recipients: kijitora@example.ed.jp
-sub headerlist  { return ['x-failed-recipients'] }
 sub description { 'Exim' }
 sub make {
     # Detect an error from Exim
@@ -146,6 +141,7 @@ sub make {
     return undef if $mhead->{'from'} =~/[@].+[.]mail[.]ru[>]?/;
 
     # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
+    # X-Failed-Recipients: kijitora@example.ed.jp
     $match++ if index($mhead->{'from'}, 'Mail Delivery System') == 0;
     $match++ if defined $mhead->{'message-id'} &&
                 $mhead->{'message-id'} =~ /\A[<]\w{7}[-]\w{6}[-]\w{2}[@]/;
@@ -180,8 +176,6 @@ sub make {
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email
         # to the previous line of the beginning of the original message.
-        last if $e eq $StartingOf->{'endof'}->[0];
-
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             if( $e =~ $MarkingsOf->{'message'} ) {

@@ -6,13 +6,6 @@ use Encode;
 use Encode::Guess;
 use Digest::SHA;
 
-sub EOM {
-    # End of email message as a sentinel for parsing bounce messages
-    # @private
-    # @return   [String] Fixed length string like a constant
-    return '__END_OF_EMAIL_MESSAGE__';
-}
-
 sub token {
     # Create the message token from an addresser and a recipient
     # @param    [String] addr1  A sender's email address
@@ -220,7 +213,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

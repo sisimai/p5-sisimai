@@ -51,10 +51,6 @@ my $DelayedFor = [
     'was frozen on arrival by ',
 ];
 
-# X-MX-Bounce: mta/src/queue/bounce
-# X-MXL-NoteHash: ffffffffffffffff-0000000000000000000000000000000000000000
-# X-MXL-Hash: 4c9d4d411993da17-bbd4212b6c887f6c23bab7db4bd87ef5edc00758
-sub headerlist  { return ['x-mxl-notehash', 'x-mxl-hash', 'x-mx-bounce'] }
 sub description { 'McAfee SaaS' }
 sub make {
     # Detect an error from MXLogic
@@ -74,7 +70,9 @@ sub make {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    # 'message-id' => qr/\A[<]mxl[~][0-9a-f]+/,
+    # X-MX-Bounce: mta/src/queue/bounce
+    # X-MXL-NoteHash: ffffffffffffffff-0000000000000000000000000000000000000000
+    # X-MXL-Hash: 4c9d4d411993da17-bbd4212b6c887f6c23bab7db4bd87ef5edc00758
     $match ||= 1 if defined $mhead->{'x-mx-bounce'};
     $match ||= 1 if defined $mhead->{'x-mxl-hash'};
     $match ||= 1 if defined $mhead->{'x-mxl-notehash'};

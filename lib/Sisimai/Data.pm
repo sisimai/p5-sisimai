@@ -8,6 +8,7 @@ use Sisimai::Reason;
 use Sisimai::Rhost;
 use Sisimai::Time;
 use Sisimai::DateTime;
+use Sisimai::SMTP::Error;
 use Class::Accessor::Lite (
     'new' => 0,
     'rw'  => [
@@ -38,7 +39,6 @@ use Class::Accessor::Lite (
     ]
 );
 
-my $EndOfEmail = Sisimai::String->EOM;
 my $RetryIndex = Sisimai::Reason->retry;
 my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS('all');
 my $AddrHeader = {
@@ -253,7 +253,6 @@ sub make {
 
             CHECK_DELIVERY_STATUS_VALUE: {
                 # Cleanup the value of "Diagnostic-Code:" header
-                $p->{'diagnosticcode'} =~ s/[ \t.]+$EndOfEmail//;
                 chop $p->{'diagnosticcode'} if substr($p->{'diagnosticcode'}, -1, 1) eq "\r";
 
                 if( $p->{'diagnosticcode'} ) {
@@ -740,7 +739,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -8,10 +8,6 @@ my $Indicators = __PACKAGE__->INDICATORS;
 my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
 my $StartingOf = { 'message' => ['Your message could not be sent.'] };
 
-# X-SEF-ZeroHour-RefID: fgs=000000000
-# X-SEF-Processed: 0_0_0_000__2010_04_29_23_34_45
-# X-Mailer: SurfControl E-mail Filter
-sub headerlist  { return ['x-sef-processed', 'x-mailer'] }
 sub description { 'WebSense SurfControl' }
 sub make {
     # Detect an error from SurfControl
@@ -30,7 +26,9 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    # 'from'     => qr/ [(]Mail Delivery System[)]\z/,
+    # X-SEF-ZeroHour-RefID: fgs=000000000
+    # X-SEF-Processed: 0_0_0_000__2010_04_29_23_34_45
+    # X-Mailer: SurfControl E-mail Filter
     return undef unless $mhead->{'x-sef-processed'};
     return undef unless $mhead->{'x-mailer'};
     return undef unless $mhead->{'x-mailer'} eq 'SurfControl E-mail Filter';

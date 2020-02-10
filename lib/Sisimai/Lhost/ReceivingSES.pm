@@ -16,9 +16,6 @@ my $MessagesOf = {
     'contenterror' => ['Message content rejected'],
 };
 
-# X-SES-Outgoing: 2015.10.01-54.240.27.7
-# Feedback-ID: 1.us-west-2.HX6/J9OVlHTadQhEu1+wdF9DBj6n6Pa9sW5Y/0pSOi8=:AmazonSES
-sub headerlist  { return ['x-ses-outgoing'] }
 sub description { 'Amazon SES(Receiving): https://aws.amazon.com/ses/' };
 sub make {
     # Detect an error from Amazon SES/Receiving
@@ -37,8 +34,8 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    # 'subject' => qr/\ADelivery Status Notification [(]Failure[)]\z/,
-    # 'received'=> qr/.+[.]smtp-out[.].+[.]amazonses[.]com\b/,
+    # X-SES-Outgoing: 2015.10.01-54.240.27.7
+    # Feedback-ID: 1.us-west-2.HX6/J9OVlHTadQhEu1+wdF9DBj6n6Pa9sW5Y/0pSOi8=:AmazonSES
     return undef unless $mhead->{'x-ses-outgoing'};
 
     require Sisimai::RFC1894;

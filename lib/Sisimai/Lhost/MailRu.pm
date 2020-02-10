@@ -39,7 +39,6 @@ my $MessagesOf = {
     'contenterror'=> ['Too many "Received" headers '],
 };
 
-sub headerlist  { return ['x-failed-recipients'] }
 sub description { '@mail.ru: https://mail.ru' }
 sub make {
     # Detect an error from @mail.ru

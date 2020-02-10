@@ -8,9 +8,6 @@ my $Indicators = __PACKAGE__->INDICATORS;
 my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
 my $StartingOf = { 'message' => ['This is an automatically generated message from SendGrid.'] };
 
-# Return-Path: <apps@sendgrid.net>
-# X-Mailer: MIME-tools 5.502 (Entity 5.502)
-sub headerlist  { return ['return-path', 'x-mailer'] }
 sub description { 'SendGrid: https://sendgrid.com/' }
 sub make {
     # Detect an error from SendGrid
@@ -29,7 +26,8 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    # 'from'        => qr/\AMAILER-DAEMON\z/,
+    # Return-Path: <apps@sendgrid.net>
+    # X-Mailer: MIME-tools 5.502 (Entity 5.502)
     return undef unless $mhead->{'return-path'};
     return undef unless $mhead->{'return-path'} eq '<apps@sendgrid.net>';
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';

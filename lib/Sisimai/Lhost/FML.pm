@@ -42,7 +42,6 @@ my $ErrorTable = {
     'securityerror' => qr/Security alert:/,
 };
 
-sub headerlist  { return ['x-mlserver'] }
 sub description { 'fml mailing list server/manager' };
 sub make {
     # Detect an error from fml mailing list server/manager

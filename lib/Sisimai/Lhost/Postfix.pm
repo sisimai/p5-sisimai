@@ -47,6 +47,7 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
+    return undef if $mhead->{'x-aol-ip'};
 
     require Sisimai::RFC1894;
     require Sisimai::Address;

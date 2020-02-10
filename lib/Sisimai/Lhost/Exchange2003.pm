@@ -38,10 +38,6 @@ my $ErrorCodes = {
     ],
 };
 
-# X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
-# X-Mailer: Internet Mail Service (5.5.1960.3)
-# X-MS-Embedded-Report:
-sub headerlist  { return ['x-ms-embedded-report', 'x-mimeole'] };
 sub description { 'Microsoft Exchange Server 2003' }
 sub make {
     # Detect an error from Microsoft Exchange Server 2003
@@ -61,6 +57,9 @@ sub make {
     my $mbody = shift // return undef;
     my $match = 0;
 
+    # X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
+    # X-Mailer: Internet Mail Service (5.5.1960.3)
+    # X-MS-Embedded-Report:
     $match ||= 1 if defined $mhead->{'x-ms-embedded-report'};
     EXCHANGE_OR_NOT: while(1) {
         # Check the value of X-Mailer header

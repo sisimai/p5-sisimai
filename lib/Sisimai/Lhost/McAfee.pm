@@ -17,8 +17,6 @@ my $ReFailures = {
     }x,
 };
 
-# X-NAI-Header: Modified by McAfee Email and Web Security Virtual Appliance
-sub headerlist  { return ['x-nai-header'] }
 sub description { 'McAfee Email Appliance' }
 sub make {
     # Detect an error from McAfee
@@ -37,6 +35,7 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
+    # X-NAI-Header: Modified by McAfee Email and Web Security Virtual Appliance
     return undef unless defined $mhead->{'x-nai-header'};
     return undef unless index($mhead->{'x-nai-header'}, 'Modified by McAfee') > -1;
     return undef unless $mhead->{'subject'} eq 'Delivery Status';

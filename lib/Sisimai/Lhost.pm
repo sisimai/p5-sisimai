@@ -36,10 +36,8 @@ sub INDICATORS {
         'message-rfc822' => (1 << 2),
     };
 }
-sub removedat   { return 'v4.25.5' }    # This method will be removed at the future release of Sisimai
 sub smtpagent   { my $v = shift; $v =~ s/\ASisimai::Lhost::/Email::/; return $v }
 sub description { return '' }
-sub headerlist  { return [] }
 sub index {
     # MTA list
     # @return   [Array] MTA list with order
@@ -51,17 +49,6 @@ sub index {
         Amavis ApacheJames McAfee MXLogic MailFoundry IMailServer
         mFILTER Activehunter InterScanMSS SurfControl MailMarshalSMTP
         X1 X2 X3 X4 X5 V5sendmail FML Google
-    |];
-}
-
-sub heads {
-    # MTA list which have one or more extra headers
-    # @return   [Array] MTA list (have extra headers)
-    return [qw|
-        Exim Office365 Outlook Exchange2007 Exchange2003 GSuite SendGrid
-        AmazonSES ReceivingSES AmazonWorkMail Aol GMX MailRu MessageLabs Yahoo
-        Yandex Zoho EinsUndEins MXLogic McAfee mFILTER EZweb Activehunter IMailServer
-        SurfControl FML Google
     |];
 }
 
@@ -104,7 +91,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

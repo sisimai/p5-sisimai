@@ -5,9 +5,7 @@ use Sisimai::String;
 
 my $PackageName = 'Sisimai::String';
 my $MethodNames = {
-    'class' => [
-        'EOM', 'token', 'is_8bit', 'sweep', 'to_plain', 'to_utf8'
-    ],
+    'class'  => ['token', 'is_8bit', 'sweep', 'to_plain', 'to_utf8'],
     'object' => [],
 };
 
@@ -19,7 +17,6 @@ MAKE_TEST: {
     my $r = 'envelope-recipient@example.org';
     my $t = '239aa35547613b2fa94f40c7f35f4394e99fdd88';
 
-    is(Sisimai::String->EOM, '__END_OF_EMAIL_MESSAGE__', '->token = __END_OF_EMAIL_MESSAGE__');
     ok(Sisimai::String->token($s, $r, 1), '->token');
     is(Sisimai::String->token($s, $r, 1), $t, '->token = '.$t);
     is(Sisimai::String->token(undef), '', '->token = ""');

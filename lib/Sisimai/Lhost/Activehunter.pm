@@ -8,7 +8,6 @@ my $Indicators = __PACKAGE__->INDICATORS;
 my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
 my $StartingOf = { 'message' => ['  ----- The following addresses had permanent fatal errors -----'] };
 
-sub headerlist  { return ['x-ahmailid'] }
 sub description { 'TransWARE Active!hunter' };
 sub make {
     # Detect an error from TransWARE Active!hunter
