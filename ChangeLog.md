@@ -10,6 +10,23 @@ v4.25.5p1
 - version: ""
 - changes:
   - #367 Fix a little spelling errors. Thanks to @guimard
+  - #368 Make `Sisimai::Message` faster
+    - Use the negative look-ahead regular expression code to convert all of the
+      email header strings into key-value pairs as a HASH at newly implemented
+      method `Sisiai::Message->makemap` #366. Thanks to @xtetsuji
+    - Remove `Sisimai::Message->takeapart` (replaced with `makemap`)
+    - Remove `Sisimai::Message->headers` (replaced with `makemap`)
+    - TO BE CONTINUEED
+  - Make `Sisimai::Order` faster
+    - Rewrite `Sisimai::Order->make`
+    - Remove `Sisimai::Order->by`
+    - Remove `Sisimai::Order->headers`
+    - Remove `Sisimai::Lhost->headerlist`
+    - And all `headerlist` method have been removed from `Sisimai::Lhost::*`,
+      `Sisimai::RFC3834` and `Sisimai::ARF`
+    - The MTA module to be loaded at first is decided by the first 2 words of
+      each bounce mail subject, is defined at `$Subject` in `Sisimai::Order`
+    - TO BE CONTINUEED
 
 v4.25.5
 --------------------------------------------------------------------------------
