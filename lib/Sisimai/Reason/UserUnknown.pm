@@ -3,6 +3,15 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+state $PreMatches = [qw|NoRelaying Blocked MailboxFull HasMoved Rejected|];
+state $ModulePath = {
+    'Sisimai::Reason::NoRelaying'  => 'Sisimai/Reason/NoRelaying.pm',
+    'Sisimai::Reason::Blocked'     => 'Sisimai/Reason/Blocked.pm',
+    'Sisimai::Reason::MailboxFull' => 'Sisimai/Reason/MailboxFull.pm',
+    'Sisimai::Reason::HasMoved'    => 'Sisimai/Reason/HasMoved.pm',
+    'Sisimai::Reason::Rejected'    => 'Sisimai/Reason/Rejected.pm',
+};
+
 sub text  { 'userunknown' }
 sub description { "Email rejected due to a local part of a recipient's email address does not exist" }
 sub match {
@@ -155,14 +164,11 @@ sub true {
         #   Status: 5.1.1
         #   Diagnostic-Code: SMTP; 550 5.1.1 <***@example.jp>:
         #     Recipient address rejected: User unknown in local recipient table
-        state $prematches = [qw|NoRelaying Blocked MailboxFull HasMoved Blocked Rejected|];
         my $matchother = 0;
-
-        for my $e ( @$prematches ) {
+        for my $e ( @$PreMatches ) {
             # Check the value of "Diagnostic-Code" with other error patterns.
             my $p = 'Sisimai::Reason::'.$e;
-            (my $modulepath = $p) =~ s|::|/|g;
-            require $modulepath.'.pm';
+            require $ModulePath->{ $p };
 
             next unless $p->match($diagnostic);
             # Match with reason defined in Sisimai::Reason::* except UserUnknown.
@@ -234,7 +240,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $FieldNames = [
+state $FieldNames = [
     # https://tools.ietf.org/html/rfc3464#section-2.2
     #   Some fields of a DSN apply to all of the delivery attempts described by
     #   that DSN. At most, these fields may appear once in any DSN. These fields
@@ -33,7 +33,7 @@ my $FieldNames = [
     [qw|Original-Recipient Final-Recipient Action Status Remote-MTA
         Diagnostic-Code Last-Attempt-Date X-Actual-Recipient|],
 ];
-my $CapturesOn = {
+state $CapturesOn = {
     'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*(.+)/,
     'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
     'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
@@ -43,8 +43,8 @@ my $CapturesOn = {
     'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
    #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
 };
-my $Correction = { 'action' => { 'failure' => 'failed', 'expired' => 'delayed' } };
-my $FieldGroup = {
+state $Correction = { 'action' => { 'failure' => 'failed', 'expired' => 'delayed' } };
+state $FieldGroup = {
     'original-recipient'    => 'addr',
     'final-recipient'       => 'addr',
     'x-actual-recipient'    => 'addr',
@@ -188,7 +188,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

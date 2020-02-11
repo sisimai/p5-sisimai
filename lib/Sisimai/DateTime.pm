@@ -11,7 +11,7 @@ sub CONST_P()   { 4 * atan2(1,1) }  # PI, 3.1415926535
 sub CONST_E()   { exp(1) }          # e, Napier's constant
 sub TZ_OFFSET() { 54000 }           # Max time zone offset, 54000 seconds
 
-my $TimeUnit = {
+state $TimeUnit = {
     'o' => ( BASE_D * BASE_Y * 4 ), # Olympiad, 4 years
     'y' => ( BASE_D * BASE_Y ),     # Year, Gregorian Calendar
     'q' => ( BASE_D * BASE_Y / 4 ), # Quarter, year/4
@@ -24,23 +24,20 @@ my $TimeUnit = {
     'm' => 60,                      # Minute,
     's' => 1,                       # Second
 };
-my $MathematicalConstant = {
+state $MathematicalConstant = {
     'e' => CONST_E,
     'p' => CONST_P,
     'g' => CONST_E ** CONST_P,
 };
-
-my $MonthName = {
+state $MonthName = {
     'full' => [qw|January February March April May June July August September October November December|],
     'abbr' => [qw|Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec|],
 };
-
-my $DayOfWeek = {
+state $DayOfWeek = {
     'full' => [qw|Sunday Monday Tuesday Wednesday Thursday Friday Saturday|],
     'abbr' => [qw|Sun Mon Tue Wed Thu Fri Sat|],
 };
-
-my $TimeZoneAbbr = {
+state $TimeZoneAbbr = {
     # http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations
     #'ACDT' => '+1030', # Australian Central Daylight Time  UTC+10:30
     #'ACST' => '+0930', # Australian Central Standard Time  UTC+09:30
@@ -523,7 +520,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
