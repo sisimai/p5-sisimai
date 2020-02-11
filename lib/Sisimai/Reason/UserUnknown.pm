@@ -159,13 +159,12 @@ sub true {
     return 0 if $tempreason eq 'suspend';
 
     my $diagnostic = lc $argvs->diagnosticcode;
-    my $matchother = 0;
-
     if( $tempreason eq 'userunknown' ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
         #   Diagnostic-Code: SMTP; 550 5.1.1 <***@example.jp>:
         #     Recipient address rejected: User unknown in local recipient table
+        my $matchother = 0;
         for my $e ( @$PreMatches ) {
             # Check the value of "Diagnostic-Code" with other error patterns.
             my $p = 'Sisimai::Reason::'.$e;
@@ -241,7 +240,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
