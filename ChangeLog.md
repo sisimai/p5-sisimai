@@ -16,7 +16,7 @@ v4.25.5p1
       method `Sisiai::Message->makemap` #366. Thanks to @xtetsuji
     - Remove `Sisimai::Message->takeapart` (replaced with `makemap`)
     - Remove `Sisimai::Message->headers` (replaced with `makemap`)
-    - TO BE CONTINUEED
+    - Code improvement for `require` statement before method calls #371
   - Make `Sisimai::Order` faster
     - Rewrite `Sisimai::Order->make`
     - Remove `Sisimai::Order->by`
@@ -26,7 +26,9 @@ v4.25.5p1
       `Sisimai::RFC3834` and `Sisimai::ARF`
     - The MTA module to be loaded at first is decided by the first 2 words of
       each bounce mail subject, is defined at `$Subject` in `Sisimai::Order`
-    - TO BE CONTINUEED
+    - Some variables are replaced with `state`
+  - Code improvement for `require` statement before calling `match()` method of
+    some modules defined in `$PreMatches` at `Sisimai::Reason::UserUnknown`
 
 v4.25.5
 --------------------------------------------------------------------------------
