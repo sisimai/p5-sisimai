@@ -5,7 +5,7 @@ use warnings;
 use Sisimai::SMTP::Reply;
 use Sisimai::SMTP::Status;
 
-my $SoftOrHard = {
+state $SoftOrHard = {
     'soft' => [qw|
         blocked contenterror exceedlimit expired filtered mailboxfull mailererror
         mesgtoobig networkerror norelaying policyviolation rejected securityerror
@@ -155,7 +155,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -7,7 +7,7 @@ use MIME::Base64 ();
 use MIME::QuotedPrint ();
 use Sisimai::String;
 
-my $ReE = {
+state $ReE = {
     '7bit-encoded' => qr/^content-transfer-encoding:[ ]*7bit/m,
     'quoted-print' => qr/^content-transfer-encoding:[ ]*quoted-printable/m,
     'some-iso2022' => qr/^content-type:[ ]*.+;[ ]*charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/m,

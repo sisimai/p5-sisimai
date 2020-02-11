@@ -39,9 +39,9 @@ use Class::Accessor::Lite (
     ]
 );
 
-my $RetryIndex = Sisimai::Reason->retry;
-my $RFC822Head = Sisimai::RFC5322->HEADERFIELDS('all');
-my $AddrHeader = {
+state $RetryIndex = Sisimai::Reason->retry;
+state $RFC822Head = Sisimai::RFC5322->HEADERFIELDS('all');
+state $AddrHeader = {
     'addresser' => $RFC822Head->{'addresser'},
     'recipient' => $RFC822Head->{'recipient'},
 };

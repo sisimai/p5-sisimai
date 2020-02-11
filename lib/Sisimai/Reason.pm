@@ -4,8 +4,8 @@ use strict;
 use warnings;
 
 state $ModulePath = __PACKAGE__->path;
-my $GetRetried = __PACKAGE__->retry;
-my $ClassOrder = [
+state $GetRetried = __PACKAGE__->retry;
+state $ClassOrder = [
     [qw|MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown
         Filtered Rejected HostUnknown SpamDetected TooManyConn Blocked
     |],
@@ -547,7 +547,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -19,10 +19,10 @@ use Class::Accessor::Lite (
     ]
 );
 
+state $DefaultSet = Sisimai::Order->another;
+state $LhostTable = Sisimai::Lhost->path;
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
-my $DefaultSet = Sisimai::Order->another;
-state $LhostTable = Sisimai::Lhost->path;
 
 sub new {
     # Constructor of Sisimai::Message

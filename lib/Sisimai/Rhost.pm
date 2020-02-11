@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $RhostClass = {
+state $RhostClass = {
     qr/[.](?:prod|protection)[.]outlook[.]com\z/      => 'ExchangeOnline',
     qr/\b(?>laposte[.]net|(?:orange|wanadoo)[.]fr)\z/ => 'FrancePTT',
     qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/  => 'GoDaddy',
@@ -104,7 +104,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

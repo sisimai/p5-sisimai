@@ -18,18 +18,18 @@ use Class::Accessor::Lite (
     ]
 );
 
-my $Indicators = {
+state $Indicators = {
     'email-address' => (1 << 0),    # <neko@example.org>
     'quoted-string' => (1 << 1),    # "Neko, Nyaan"
     'comment-block' => (1 << 2),    # (neko)
 };
-my $ValidEmail = qr{(?>
+state $ValidEmail = qr{(?>
     (?:([^\s]+|["].+?["]))          # local part
     [@]
     (?:([^@\s]+|[0-9A-Za-z:\.]+))   # domain part
     )
 }x;
-my $Delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
+state $Delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
 
 sub undisclosed {
     # Return pseudo recipient or sender address
@@ -554,7 +554,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

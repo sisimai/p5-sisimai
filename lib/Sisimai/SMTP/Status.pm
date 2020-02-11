@@ -538,7 +538,7 @@ use warnings;
 #       5.7.11  Encryption required for requested authentication mechanism
 # ------------------------------------------------------------------------------
 #
-my $StandardCode = {
+state $StandardCode = {
     '2.1.5'  => 'delivered',    # Successfully delivered
     # ------------------------------------------------------------------------------
     '4.1.6'  => 'hasmoved',     # Destination mailbox has moved, No forwarding address
@@ -646,7 +646,7 @@ my $StandardCode = {
     '5.7.27' => 'rejected',     # Sender address has null MX
 };
 
-my $InternalCode = {
+state $InternalCode = {
     'temporary' => {
         'blocked'      => '4.0.971',
         'contenterror' => '4.0.960',
