@@ -16,12 +16,6 @@ state $ReE = {
     'html-message' => qr|^content-type:[ ]*text/html;|m,
 };
 
-sub patterns {
-  # Make MIME-Encoding and Content-Type related headers regurlar expression
-  # @return   [Array] Regular expressions related to MIME encoding
-  return $ReE;
-}
-
 sub is_mimeencoded {
     # Check that the argument is MIME-Encoded string or not
     # @param    [String] argv1  String to be checked
