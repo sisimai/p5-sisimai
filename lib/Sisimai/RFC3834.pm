@@ -4,8 +4,7 @@ use strict;
 use warnings;
 
 # http://tools.ietf.org/html/rfc3834
-my $MarkingsOf = { 'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/ };
-my $AutoReply1 = {
+state $AutoReply1 = {
     # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
     'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/,
     # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
@@ -20,7 +19,7 @@ my $AutoReply1 = {
         )
     /x,
 };
-my $Excludings = {
+state $Excludings = {
     'subject' => qr{(?:
           security[ ]information[ ]for  # sudo
          |mail[ ]failure[ ][-]          # Exim
@@ -29,7 +28,7 @@ my $Excludings = {
     'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/,
     'to'      => qr/root[@]/,
 };
-my $SubjectSet = qr{\A(?>
+state $SubjectSet = qr{\A(?>
      (?:.+?)?re:
     |auto(?:[ ]response):
     |automatic[ ]reply:
@@ -37,6 +36,7 @@ my $SubjectSet = qr{\A(?>
     )
     [ ]*(.+)\z
 }x;
+my $MarkingsOf = { 'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/ };
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }

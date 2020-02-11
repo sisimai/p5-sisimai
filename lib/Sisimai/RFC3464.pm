@@ -5,8 +5,8 @@ use warnings;
 use Sisimai::Lhost;
 
 # http://tools.ietf.org/html/rfc3464
-my $Indicators = Sisimai::Lhost->INDICATORS;
-my $MarkingsOf = {
+state $Indicators = Sisimai::Lhost->INDICATORS;
+state $MarkingsOf = {
     'command' => qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
     'message' => qr{\A(?>
          content-type:[ ]*(?:
