@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = { 'message' => ['      This is an automatically generated Delivery Status Notification.'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = { 'message' => ['      This is an automatically generated Delivery Status Notification.'] };
 
 sub description { 'Unknown MTA #3' }
 sub make {

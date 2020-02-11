@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr/^Received: from \d+[.]\d+[.]\d+[.]\d/m;
-my $MarkingsOf = { 'message' => qr/\AThe original message was received at (.+)\z/ };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr/^Received: from \d+[.]\d+[.]\d+[.]\d/m;
+state $MarkingsOf = { 'message' => qr/\AThe original message was received at (.+)\z/ };
 
 sub description { 'Unknown MTA #1' }
 sub make {

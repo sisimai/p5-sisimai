@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]text/rfc822-headers|m;
-my $StartingOf = { 'message' => ['Content-Type: message/delivery-status'] };
-my $ReFailures = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]text/rfc822-headers|m;
+state $StartingOf = { 'message' => ['Content-Type: message/delivery-status'] };
+state $ReFailures = {
     'userunknown'   => qr/(?:542 .+ Rejected|No such user)/,
     'securityerror' => qr/Please turn on SMTP Authentication in your mail client/,
 };

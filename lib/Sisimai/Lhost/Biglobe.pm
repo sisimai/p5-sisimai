@@ -4,13 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = {
     'message' => ['   ----- The following addresses had delivery problems -----'],
     'error'   => ['   ----- Non-delivered information -----'],
 };
-my $MessagesOf = {
+state $MessagesOf = {
     'filtered'    => ['Mail Delivery Failed... User unknown'],
     'mailboxfull' => ["The number of messages in recipient's mailbox exceeded the local limit."],
 };

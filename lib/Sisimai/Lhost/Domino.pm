@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/delivery-status|m;
-my $StartingOf = { 'message' => ['Your message'] };
-my $MessagesOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/delivery-status|m;
+state $StartingOf = { 'message' => ['Your message'] };
+state $MessagesOf = {
     'userunknown' => [
         'not listed in Domino Directory',
         'not listed in public Name & Address Book',

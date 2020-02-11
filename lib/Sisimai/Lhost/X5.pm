@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = { 'message' => ['Content-Type: message/delivery-status'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = { 'message' => ['Content-Type: message/delivery-status'] };
 
 sub description { 'Unknown MTA #5' }
 sub make {

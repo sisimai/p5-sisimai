@@ -4,13 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = {
     'message' => ['Your message'],
     'error'   => ['did not reach the following recipient(s):'],
 };
-my $ErrorCodes = {
+state $ErrorCodes = {
     'onhold' => [
         '000B099C', # Host Unknown, Message exceeds size limit, ...
         '000B09AA', # Unable to relay for, Message exceeds size limit,...

@@ -4,14 +4,14 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr/^[ ]*-----[ ](?:Original[ ]message|Message[ ]header[ ]follows)[ ]-----/m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr/^[ ]*-----[ ](?:Original[ ]message|Message[ ]header[ ]follows)[ ]-----/m;
+state $StartingOf = {
     'message' => ['Delivery to the following recipient'],
     'error'   => ['The error that the other server returned was:'],
 };
-my $MarkingsOf = { 'start' => qr/Technical details of (?:permanent|temporary) failure:/ };
-my $MessagesOf = {
+state $MarkingsOf = { 'start' => qr/Technical details of (?:permanent|temporary) failure:/ };
+state $MessagesOf = {
     'expired' => [
         'DNS Error: Could not contact DNS servers',
         'Delivery to the following recipient has been delayed',
@@ -22,7 +22,7 @@ my $MessagesOf = {
         'DNS Error: DNS server returned answer with no data',
     ],
 };
-my $StateTable = {
+state $StateTable = {
     # Technical details of permanent failure:
     # Google tried to deliver your message, but it was rejected by the recipient domain.
     # We recommend contacting the other email provider for further information about the

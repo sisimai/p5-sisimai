@@ -4,8 +4,8 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $ReBackbone = qr|^Original[ ]mail[ ]as[ ]follows:|m;
-my $ErrorTitle = {
+state $ReBackbone = qr|^Original[ ]mail[ ]as[ ]follows:|m;
+state $ErrorTitle = {
     'rejected' => qr{(?>
          (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
         |reject[ ]mail[ ](?:.+:|from)[ ],
@@ -22,7 +22,7 @@ my $ErrorTitle = {
     }x,
     'securityerror' => qr/Security Alert/,
 };
-my $ErrorTable = {
+state $ErrorTable = {
     'rejected' => qr{(?>
         (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
         |reject[ ](?:

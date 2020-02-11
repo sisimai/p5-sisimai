@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^--- Original message follows[.]|m;
-my $StartingOf = { 'message' => ['Unable to deliver message to the following address'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^--- Original message follows[.]|m;
+state $StartingOf = { 'message' => ['Unable to deliver message to the following address'] };
 
 sub description { 'Unknown MTA #2' }
 sub make {

@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr<^(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)>m;
-my $StartingOf = { 'message' => ['This report relates to a message you sent with the following header fields:'] };
-my $MessagesOf = { 'hostunknown' => ['Illegal host/domain name found'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr<^(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)>m;
+state $StartingOf = { 'message' => ['This report relates to a message you sent with the following header fields:'] };
+state $MessagesOf = { 'hostunknown' => ['Illegal host/domain name found'] };
 
 sub description { 'Oracle Communications Messaging Server' }
 sub make {

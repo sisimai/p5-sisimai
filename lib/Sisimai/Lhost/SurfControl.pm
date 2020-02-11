@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = { 'message' => ['Your message could not be sent.'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = { 'message' => ['Your message could not be sent.'] };
 
 sub description { 'WebSense SurfControl' }
 sub make {

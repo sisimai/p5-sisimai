@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+state $StartingOf = {
     #   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
     #   savemail.c:1041|          mci))
     #   savemail.c:1042|  goto writeerr;

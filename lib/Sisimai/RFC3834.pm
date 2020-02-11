@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 # http://tools.ietf.org/html/rfc3834
+my    $MarkingsOf = { 'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/ };
 state $AutoReply1 = {
     # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
     'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/,
@@ -36,7 +37,6 @@ state $SubjectSet = qr{\A(?>
     )
     [ ]*(.+)\z
 }x;
-my $MarkingsOf = { 'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/ };
 
 sub description { 'Detector for auto replied message' }
 sub smtpagent   { 'RFC3834' }

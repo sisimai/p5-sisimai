@@ -5,12 +5,12 @@ use strict;
 use warnings;
 
 # https://aws.amazon.com/ses/
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^content-type:[ ]message/rfc822|m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^content-type:[ ]message/rfc822|m;
+state $StartingOf = {
     'message' => ['The following message to <', 'An error occurred while trying to deliver the mail '],
 };
-my $MessagesOf = { 'expired' => ['Delivery expired'] };
+state $MessagesOf = { 'expired' => ['Delivery expired'] };
 
 sub description { 'Amazon SES(Sending): https://aws.amazon.com/ses/' };
 sub make {

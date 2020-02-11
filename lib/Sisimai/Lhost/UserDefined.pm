@@ -9,9 +9,9 @@ use warnings;
 #   error:   The first line of an error message to get an error reason, recipient
 #            addresses, or other bounce information.
 #   rfc822:  The first line of the original message.
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-my $MarkingsOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+state $MarkingsOf = {
     'message' => qr/\A[ \t]+[-]+ Transcript of session follows [-]+\z/,
     'error'   => qr/\A[.]+ while talking to .+[:]\z/,
 };

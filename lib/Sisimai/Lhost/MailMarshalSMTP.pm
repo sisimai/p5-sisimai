@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr/^[ \t]*[+]+[ \t]*/m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr/^[ \t]*[+]+[ \t]*/m;
+state $StartingOf = {
     'message'  => ['Your message:'],
     'error'    => ['Could not be delivered because of'],
     'rcpts'    => ['The following recipients were affected:'],

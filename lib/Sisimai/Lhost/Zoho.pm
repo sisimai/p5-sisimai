@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Received:[ ]*from[ ]mail[.]zoho[.]com[ ]by[ ]mx[.]zohomail[.]com|m;
-my $StartingOf = { 'message' => ['This message was created automatically by mail delivery'] };
-my $MessagesOf = { 'expired' => ['Host not reachable'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Received:[ ]*from[ ]mail[.]zoho[.]com[ ]by[ ]mx[.]zohomail[.]com|m;
+state $StartingOf = { 'message' => ['This message was created automatically by mail delivery'] };
+state $MessagesOf = { 'expired' => ['Host not reachable'] };
 
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub make {

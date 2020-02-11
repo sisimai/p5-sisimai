@@ -4,7 +4,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $ReBackbone = qr|^Content-type:[ ]message/rfc822|m;
+state $ReBackbone = qr|^Content-type:[ ]message/rfc822|m;
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
 sub make {
     # Detect an error from InterScanMSS

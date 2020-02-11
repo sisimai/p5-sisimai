@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = { 'message' => ['Content-Type: message/delivery-status'] };
-my $MessagesOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = { 'message' => ['Content-Type: message/delivery-status'] };
+state $MessagesOf = {
     'hostunknown' => ['Host or domain name not found'],
     'notaccept'   => ['type=MX: Malformed or unexpected name server reply'],
 };

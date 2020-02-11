@@ -4,16 +4,16 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $MarkingsOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $MarkingsOf = {
     'message' => qr/\AYour[ ]mail[ ](?:
          sent[ ]on:?[ ][A-Z][a-z]{2}[,]
         |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
         )
     /x,
 };
-my $MessagesOf = {
+state $MessagesOf = {
     'mailboxfull' => ['As their mailbox is full'],
     'norelaying'  => ['Due to the following SMTP relay error'],
     'hostunknown' => ['As the remote domain doesnt exist'],

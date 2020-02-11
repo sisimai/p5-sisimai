@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/partial|m;
-my $MarkingsOf = { 'message' => qr/\A[ \t]+[-]+[ \t]*Transcript of session follows/ };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/partial|m;
+state $MarkingsOf = { 'message' => qr/\A[ \t]+[-]+[ \t]*Transcript of session follows/ };
 
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub make {

@@ -4,13 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
+state  $StartingOf = {
     'message' => ['This message was created automatically by mail delivery software'],
     'error'   => ['For the following reason:'],
 };
-my $MessagesOf = { 'mesgtoobig' => ['Mail size limit exceeded'] };
+state $MessagesOf = { 'mesgtoobig' => ['Mail size limit exceeded'] };
 
 # X-UI-Out-Filterresults: unknown:0;
 sub description { '1&1: https://www.1und1.de/' }

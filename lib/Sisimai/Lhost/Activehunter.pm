@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = { 'message' => ['  ----- The following addresses had permanent fatal errors -----'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = { 'message' => ['  ----- The following addresses had permanent fatal errors -----'] };
 
 sub description { 'TransWARE Active!hunter' };
 sub make {

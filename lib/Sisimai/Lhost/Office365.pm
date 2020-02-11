@@ -4,20 +4,20 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = {
     'error' => ['Diagnostic information for administrators:'],
     'eoerr' => ['Original message headers:'],
 };
-my $MarkingsOf = {
+state $MarkingsOf = {
     'message' => qr{\A(?:
          Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
         |.+[ ]rejected[ ]your[ ]message[ ]to[ ]the[ ]following[ ]e[-]?mail[ ]addresses:
         )
     }x,
 };
-my $StatusList = {
+state $StatusList = {
     # https://support.office.com/en-us/article/Email-non-delivery-reports-in-Office-365-51daa6b9-2e35-49c4-a0c9-df85bf8533c3
     qr/\A4[.]4[.]7\z/        => 'expired',
     qr/\A4[.]4[.]312\z/      => 'networkerror',
@@ -47,7 +47,7 @@ my $StatusList = {
     qr/\A5[.]7[.]6[1-4]\d\z/ => 'blocked',
     qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
 };
-my $ReCommands = {
+state $ReCommands = {
     'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<]?.+[@].+[.][a-zA-Z]+[>]?/,
 };
 

@@ -4,15 +4,15 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+state  $StartingOf = {
     # https://www.courier-mta.org/courierdsn.html
     # courier/module.dsn/dsn*.txt
     'message' => ['DELAYS IN DELIVERING YOUR MESSAGE', 'UNDELIVERABLE MAIL'],
 };
 
-my $MessagesOf = {
+state $MessagesOf = {
     # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
     'hostunknown' => ['No such domain.'],
     # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
