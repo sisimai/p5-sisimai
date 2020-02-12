@@ -4,17 +4,17 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $ReBackbone = qr|^Original[ ]message[ ]follows[.]|m;
-my $StartingOf = { 'error' => ['Body of message generated response:'] };
+state $ReBackbone = qr|^Original[ ]message[ ]follows[.]|m;
+state $StartingOf = { 'error' => ['Body of message generated response:'] };
 
-my $ReSMTP = {
+state $ReSMTP = {
     'conn' => qr/(?:SMTP connection failed,|Unexpected connection response from server:)/,
     'ehlo' => qr|Unexpected response to EHLO/HELO:|,
     'mail' => qr|Server response to MAIL FROM:|,
     'rcpt' => qr|Additional RCPT TO generated following response:|,
     'data' => qr|DATA command generated response:|,
 };
-my $ReFailures = {
+state $ReFailures = {
     'hostunknown' => qr/Unknown host/,
     'userunknown' => qr/\A(?:Unknown user|Invalid final delivery userid)/,
     'mailboxfull' => qr/\AUser mailbox exceeds allowed size/,

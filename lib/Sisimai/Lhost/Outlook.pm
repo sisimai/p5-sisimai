@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = { 'message' => ['This is an automatically generated Delivery Status Notification'] };
-my $MessagesOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = { 'message' => ['This is an automatically generated Delivery Status Notification'] };
+state $MessagesOf = {
     'hostunknown' => ['The mail could not be delivered to the recipient because the domain is not reachable'],
     'userunknown' => ['Requested action not taken: mailbox unavailable'],
 };

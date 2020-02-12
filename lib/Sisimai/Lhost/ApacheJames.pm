@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = {
     # apache-james-2.3.2/src/java/org/apache/james/transport/mailets/
     #   AbstractNotify.java|124:  out.println("Error message below:");
     #   AbstractNotify.java|128:  out.println("Message details:");

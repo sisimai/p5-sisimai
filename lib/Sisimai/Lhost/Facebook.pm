@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Disposition:[ ]inline|m;
-my $StartingOf = { 'message' => ['This message was created automatically by Facebook.'] };
-my $ErrorCodes = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Disposition:[ ]inline|m;
+state $StartingOf = { 'message' => ['This message was created automatically by Facebook.'] };
+state $ErrorCodes = {
     # http://postmaster.facebook.com/response_codes
     # NOT TESTD EXCEPT RCP-P2
     'userunknown' => [

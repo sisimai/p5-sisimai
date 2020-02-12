@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $MessagesOf = {
+state $MessagesOf = {
     # https://service.mail.qq.com/cgi-bin/help?id=20022
     'dmarc check failed'                    => 'blocked',
     'spf check failed'                      => 'blocked',
@@ -74,7 +74,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2019,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

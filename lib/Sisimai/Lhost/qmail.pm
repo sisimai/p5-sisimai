@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^--- Below this line is a copy of the message[.]|m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^--- Below this line is a copy of the message[.]|m;
+state $StartingOf = {
     #  qmail-remote.c:248|    if (code >= 500) {
     #  qmail-remote.c:249|      out("h"); outhost(); out(" does not like recipient.\n");
     #  qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
@@ -18,7 +18,7 @@ my $StartingOf = {
     'error'   => ['Remote host said:'],
 };
 
-my $ReSMTP = {
+state $ReSMTP = {
     # Error text regular expressions which defined in qmail-remote.c
     # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
     'conn' => qr/(?:Error:)?Connected to .+ but greeting failed[.]/,
@@ -41,7 +41,7 @@ my $ReSMTP = {
         )
     }x,
 };
-my $ReHost = qr{(?:
+state $ReHost = qr{(?:
     # qmail-remote.c:261|  if (!flagbother) quit("DGiving up on ","");
      Giving[ ]up[ ]on[ ](.+[0-9a-zA-Z])[.]?\z
     |Connected[ ]to[ ]([-0-9a-zA-Z.]+[0-9a-zA-Z])[ ]
@@ -50,11 +50,11 @@ my $ReHost = qr{(?:
 }x;
 
 # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
-my $HasExpired = 'this message has been in the queue too long.';
+state $HasExpired = 'this message has been in the queue too long.';
 # qmail-remote-fallback.patch
-my $ReCommands = qr/Sorry, no SMTP connection got far enough; most progress was ([A-Z]{4}) /;
-my $ReIsOnHold = qr/\A[^ ]+ does not like recipient[.][ \t]+.+this message has been in the queue too long[.]\z/;
-my $FailOnLDAP = {
+state $ReCommands = qr/Sorry, no SMTP connection got far enough; most progress was ([A-Z]{4}) /;
+state $ReIsOnHold = qr/\A[^ ]+ does not like recipient[.][ \t]+.+this message has been in the queue too long[.]\z/;
+state $FailOnLDAP = {
     # qmail-ldap-1.03-20040101.patch:19817 - 19866
     'suspend'     => ['Mailaddress is administrative?le?y disabled'],   # 5.2.1
     'userunknown' => ['Sorry, no mailbox here by that name'],           # 5.1.1
@@ -73,7 +73,7 @@ my $FailOnLDAP = {
         'Unable to login into LDAP server, bad credentials',# 4.4.3
     ],
 };
-my $MessagesOf = {
+state $MessagesOf = {
     # qmail-local.c:589|  strerr_die1x(100,"Sorry, no mailbox here by that name. (#5.1.1)");
     # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
     'userunknown' => [

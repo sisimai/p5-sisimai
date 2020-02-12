@@ -4,13 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr{^(?:
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr{^(?:
      Original[ ]message[ ]headers:              # en-US
     |En-t.tes[ ]de[ ]message[ ]d'origine[ ]:    # fr-FR/En-têtes de message d'origine
     )
 }mx;
-my $MarkingsOf = {
+state $MarkingsOf = {
     'message' => qr{\A(?:
          Diagnostic[ ]information[ ]for[ ]administrators:               # en-US
         |Informations[ ]de[ ]diagnostic[ ]pour[ ]les[ ]administrateurs  # fr-FR
@@ -24,7 +24,7 @@ my $MarkingsOf = {
     }x,
     'subject' => qr/\A(?:Undeliverable|Non_remis_):/,
 };
-my $NDRSubject = {
+state $NDRSubject = {
     'SMTPSEND.DNS.NonExistentDomain'=> 'hostunknown',   # 554 5.4.4 SMTPSEND.DNS.NonExistentDomain
     'SMTPSEND.DNS.MxLoopback'       => 'networkerror',  # 554 5.4.4 SMTPSEND.DNS.MxLoopback
     'RESOLVER.ADR.BadPrimary'       => 'systemerror',   # 550 5.2.0 RESOLVER.ADR.BadPrimary

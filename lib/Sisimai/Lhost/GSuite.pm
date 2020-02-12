@@ -4,14 +4,14 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-my $MarkingsOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+state $MarkingsOf = {
     'message' => qr/\A[*][*][ ].+[ ][*][*]\z/,
     'error'   => qr/\AThe[ ]response([ ]from[ ]the[ ]remote[ ]server)?[ ]was:\z/,
     'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
 };
-my $MessagesOf = {
+state $MessagesOf = {
     'userunknown'  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
     'notaccept'    => ['Null MX'],
     'networkerror' => [' had no relevant answers.', ' responded with code NXDOMAIN'],

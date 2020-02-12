@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^[ ]+Below is a copy of the original message:|m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^[ ]+Below is a copy of the original message:|m;
+state $StartingOf = {
     # http://www.openbsd.org/cgi-bin/man.cgi?query=smtpd&sektion=8
     # opensmtpd-5.4.2p1/smtpd/
     #   bounce.c/317:#define NOTICE_INTRO \
@@ -34,7 +34,7 @@ my $StartingOf = {
     #   bounce.c/339:
     'message' => ['    This is the MAILER-DAEMON, please DO NOT REPLY to this'],
 };
-my $MessagesOf = {
+state $MessagesOf = {
     # smtpd/queue.c:221|  envelope_set_errormsg(&evp, "Envelope expired");
     'expired'     => ['Envelope expired'],
     'hostunknown' => [

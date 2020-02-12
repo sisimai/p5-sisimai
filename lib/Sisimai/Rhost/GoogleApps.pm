@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $StatusList = {
+state $StatusList = {
     # https://support.google.com/a/answer/3726730
     'X.1.1' => [{ 'reason' => 'userunknown', 'string' => ['The email account that you tried to reach does not exist.'] }],
     'X.1.2' => [{ 'reason' => 'hostunknown', 'string' => ["We weren't able to find the recipient domain."] }],
@@ -148,7 +148,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

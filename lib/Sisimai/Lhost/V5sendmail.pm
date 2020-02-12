@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;
-my $StartingOf = { 'message' => ['----- Transcript of session follows -----'] };
-my $MarkingsOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;
+state $StartingOf = { 'message' => ['----- Transcript of session follows -----'] };
+state $MarkingsOf = {
     # Error text regular expressions which defined in src/savemail.c
     #   savemail.c:485| (void) fflush(stdout);
     #   savemail.c:486| p = queuename(e->e_parent, 'x');

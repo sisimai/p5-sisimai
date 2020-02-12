@@ -4,8 +4,8 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr{^(?:
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr{^(?:
     # deliver.c:6423|          if (bounce_return_body) fprintf(f,
     # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
     # deliver.c:6425|          else fprintf(f,
@@ -14,8 +14,8 @@ my $ReBackbone = qr{^(?:
     |Content-Type:[ ]*message/rfc822\n(?:[\s\t]+.*?\n\n)?
     )
 }msx;
-my $StartingOf = { 'deliverystatus' => ['Content-type: message/delivery-status'] };
-my $MarkingsOf = {
+state $StartingOf = { 'deliverystatus' => ['Content-type: message/delivery-status'] };
+state $MarkingsOf = {
     # Error text regular expressions which defined in exim/src/deliver.c
     #
     # deliver.c:6292| fprintf(f,
@@ -45,7 +45,7 @@ my $MarkingsOf = {
     'frozen'  => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
 };
 
-my $ReCommands = [
+state $ReCommands = [
     # transports/smtp.c:564|  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
     # transports/smtp.c:837|  string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
@@ -53,7 +53,7 @@ my $ReCommands = [
     qr/LMTP error after ([A-Za-z]{4})/,
     qr/LMTP error after end of ([A-Za-z]{4})/,
 ];
-my $MessagesOf = {
+state $MessagesOf = {
     # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
     # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
     'userunknown' => ['user not found'],
@@ -100,7 +100,7 @@ my $MessagesOf = {
     # deliver.c:5425|  new->message = US"Too many \"Received\" headers - suspected mail loop";
     'contenterror' => ['Too many "Received" headers'],
 };
-my $DelayedFor = [
+state $DelayedFor = [
     # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
     # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
     # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :

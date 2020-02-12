@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $ErrorCodes = {
+state $ErrorCodes = {
     # http://mail.i.ua/err/$(CODE)
     '1'  => 'norelaying',  # The use of SMTP as mail gate is forbidden.
     '2'  => 'userunknown', # User is not found.
@@ -61,7 +61,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2019,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

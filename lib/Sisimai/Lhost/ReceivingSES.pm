@@ -5,10 +5,10 @@ use strict;
 use warnings;
 
 # https://aws.amazon.com/ses/
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^content-type:[ ]text/rfc822-headers|m;
-my $StartingOf = { 'message' => ['This message could not be delivered.'] };
-my $MessagesOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^content-type:[ ]text/rfc822-headers|m;
+state $StartingOf = { 'message' => ['This message could not be delivered.'] };
+state $MessagesOf = {
     # The followings are error messages in Rule sets/*/Actions/Template
     'filtered'     => ['Mailbox does not exist'],
     'mesgtoobig'   => ['Message too large'],

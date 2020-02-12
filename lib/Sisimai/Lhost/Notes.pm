@@ -5,10 +5,10 @@ use strict;
 use warnings;
 use Encode;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^-------[ ]Returned[ ]Message[ ]--------|m;
-my $StartingOf = { 'message' => ['------- Failure Reasons '] };
-my $MessagesOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^-------[ ]Returned[ ]Message[ ]--------|m;
+state $StartingOf = { 'message' => ['------- Failure Reasons '] };
+state $MessagesOf = {
     'userunknown' => [
         'User not listed in public Name & Address Book',
         'ディレクトリのリストにありません',

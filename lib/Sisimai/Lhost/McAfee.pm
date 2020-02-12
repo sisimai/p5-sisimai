@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-my $StartingOf = { 'message' => ['--- The following addresses had delivery problems ---'] };
-my $ReFailures = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
+state $StartingOf = { 'message' => ['--- The following addresses had delivery problems ---'] };
+state $ReFailures = {
     'userunknown' => qr{(?:
          [ ]User[ ][(].+[@].+[)][ ]unknown[.][ ]
         |550[ ]Unknown[ ]user[ ][^ ]+[@][^ ]+

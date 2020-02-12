@@ -5,14 +5,14 @@ use strict;
 use warnings;
 
 # Based on Sisimai::Lhost::Exim
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^------ This is a copy of the message, including all the headers[.] ------|m;
-my $StartingOf = { 'message' => ['This message was created automatically by mail delivery software.'] };
-my $ReCommands = [
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^------ This is a copy of the message, including all the headers[.] ------|m;
+state $StartingOf = { 'message' => ['This message was created automatically by mail delivery software.'] };
+state $ReCommands = [
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
 ];
-my $MessagesOf = {
+state $MessagesOf = {
     'expired'     => [
         'retry timeout exceeded',
         'No action is required on your part',

@@ -5,14 +5,14 @@ use strict;
 use warnings;
 
 # Based on Sisimai::Lhost::Exim
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Included is a copy of the message header:|m;
-my $StartingOf = { 'message' => ['This message was created automatically by mail delivery software.'] };
-my $ReCommands = [
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Included is a copy of the message header:|m;
+state $StartingOf = { 'message' => ['This message was created automatically by mail delivery software.'] };
+state $ReCommands = [
     qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
     qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
 ];
-my $MessagesOf = {
+state $MessagesOf = {
     'userunknown' => ['user not found'],
     'hostunknown' => [
         'all host address lookups failed permanently',
@@ -41,7 +41,7 @@ my $MessagesOf = {
     ],
     'contenterror' => ['Too many "Received" headers'],
 };
-my $DelayedFor = [
+state $DelayedFor = [
     'retry timeout exceeded',
     'No action is required on your part',
     'retry time not reached for any host after a long failure period',

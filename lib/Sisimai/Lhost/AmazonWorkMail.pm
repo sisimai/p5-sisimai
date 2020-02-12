@@ -5,9 +5,9 @@ use strict;
 use warnings;
 
 # https://aws.amazon.com/workmail/
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^content-type:[ ]message/rfc822|m;
-my $StartingOf = { 'message' => ['Technical report:'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^content-type:[ ]message/rfc822|m;
+state $StartingOf = { 'message' => ['Technical report:'] };
 
 sub description { 'Amazon WorkMail: https://aws.amazon.com/workmail/' }
 sub make {

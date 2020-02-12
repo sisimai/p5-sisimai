@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $MessagesOf = {
+state $MessagesOf = {
     'filtered'    => '550 : User unknown',  # The response was: 550 : User unknown
     'userunknown' => '>: User unknown',     # The response was: 550 <...>: User unknown
 };
@@ -59,7 +59,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

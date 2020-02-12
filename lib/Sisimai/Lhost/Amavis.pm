@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^Content-Type:[ ]text/rfc822-headers|m;
-my $StartingOf = { 'message' => ['The message '] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^Content-Type:[ ]text/rfc822-headers|m;
+state $StartingOf = { 'message' => ['The message '] };
 
 # https://www.amavis.org
 sub description { 'amavisd-new: https://www.amavis.org/' }

@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr<^(?:[-]{50}|Content-Type:[ ]*message/rfc822)>m;
-my $MarkingsOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr<^(?:[-]{50}|Content-Type:[ ]*message/rfc822)>m;
+my    $MarkingsOf = {
     'message' => qr{\A(?:
          The[ ]user[(]s[)][ ]
         |Your[ ]message[ ]
@@ -16,7 +16,7 @@ my $MarkingsOf = {
     }x,
     'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
 };
-my $ReFailures = {
+state $ReFailures = {
     #'notaccept'  => [qr/The following recipients did not receive this message:/],
     'mailboxfull' => [qr/The user[(]s[)] account is temporarily over quota/],
     'suspend'     => [

@@ -4,13 +4,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr/^-------original[ ](?:message|mail[ ]info)/m;
-my $StartingOf = {
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr/^-------original[ ](?:message|mail[ ]info)/m;
+state $StartingOf = {
     'command'  => ['-------SMTP command'],
     'error'    => ['-------server message'],
 };
-my $MarkingsOf = { 'message' => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/ };
+state $MarkingsOf = { 'message' => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/ };
 
 sub description { 'Digital Arts m-FILTER' }
 sub make {

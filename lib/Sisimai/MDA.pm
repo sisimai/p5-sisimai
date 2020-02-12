@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $AgentNames = {
+state $AgentNames = {
     # dovecot/src/deliver/deliver.c
     # 11: #define DEFAULT_MAIL_REJECTION_HUMAN_REASON \
     # 12: "Your message to <%t> was automatically rejected:%n%r"
@@ -14,7 +14,7 @@ my $AgentNames = {
     'vpopmail'   => qr/\Avdelivermail: /,
     'vmailmgr'   => qr/\Avdeliver: /,
 };
-my $MarkingsOf = {
+state $MarkingsOf = {
     'message' => qr{\A(?>
                      Your[ ]message[ ]to[ ].+[ ]was[ ]automatically[ ]rejected:\z
                     |(?:mail[.]local|procmail|maildrop|vdelivermail|vdeliver):[ ]
@@ -23,7 +23,7 @@ my $MarkingsOf = {
 };
 
 # dovecot/src/deliver/mail-send.c:94
-my $MessagesOf = {
+state $MessagesOf = {
     'dovecot' => {
         'userunknown' => ["mailbox doesn't exist: "],
         'mailboxfull' => [
@@ -188,7 +188,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 # https://technet.microsoft.com/en-us/library/bb232118
-my $StatusList = {
+state $StatusList = {
     '4.3.1'  => [{ 'reason' => 'systemfull', 'string' => 'Insufficient system resources' }],
     '4.3.2'  => [{ 'reason' => 'notaccept',  'string' => 'System not accepting network messages' }],
     '4.4.2'  => [{ 'reason' => 'blocked',    'string' => 'Connection dropped' }],
@@ -40,7 +40,7 @@ my $StatusList = {
     '5.7.511' => [{ 'reason' => 'blocked',      'string' => 'banned sender' }],
     '5.7.512' => [{ 'reason' => 'contenterror', 'string' => 'message must be RFC 5322' }],
 };
-my $ReStatuses = {
+state $ReStatuses = {
     qr/\A4[.]4[.][17]\z/ => [
         { 'reason' => 'expired', 'string' => ['Connection timed out', 'Message expired'] }
     ],
@@ -88,7 +88,7 @@ my $ReStatuses = {
         { 'reason' => 'toomanyconn', 'string' => ['Access denied, tenant has exceeded threshold'] }
     ],
 };
-my $MessagesOf = {
+state $MessagesOf = {
     # Copied and converted from Sisimai::Lhost::Exchange2007
     'expired'       => ['QUEUE.Expired'],
     'hostunknown'   => ['SMTPSEND.DNS.NonExistentDomain'],
@@ -194,7 +194,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

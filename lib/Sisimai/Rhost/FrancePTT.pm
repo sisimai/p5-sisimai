@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $ErrorCodes = {
+state $ErrorCodes = {
     # 550 5.7.1 Service unavailable; client [X.X.X.X] blocked using Spamhaus
     # Les emails envoyes vers la messagerie Laposte.net ont ete bloques par nos services.
     # Afin de regulariser votre situation, nous vous invitons a cliquer sur le lien ci-dessous et a suivre la procedure.
@@ -176,7 +176,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

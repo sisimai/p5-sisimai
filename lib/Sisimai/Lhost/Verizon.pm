@@ -4,8 +4,8 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr/__BOUNDARY_STRING_HERE__/m;
+state $Indicators = __PACKAGE__->INDICATORS;
+my    $ReBackbone = qr/__BOUNDARY_STRING_HERE__/m;
 
 sub description { 'Verizon Wireless: https://www.verizonwireless.com' }
 sub make {

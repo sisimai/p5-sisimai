@@ -4,9 +4,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^--- Below this line is a copy of the message[.]|m;
-my $StartingOf = { 'message' => ['Sorry, we were unable to deliver your message'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^--- Below this line is a copy of the message[.]|m;
+state $StartingOf = { 'message' => ['Sorry, we were unable to deliver your message'] };
 
 sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 sub make {

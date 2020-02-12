@@ -4,10 +4,10 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-my $Indicators = __PACKAGE__->INDICATORS;
-my $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
-my $StartingOf = { 'message' => ['This message was created automatically by mail delivery software'] };
-my $MessagesOf = { 'expired' => ['delivery retry timeout exceeded'] };
+state $Indicators = __PACKAGE__->INDICATORS;
+state $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
+state $StartingOf = { 'message' => ['This message was created automatically by mail delivery software'] };
+state $MessagesOf = { 'expired' => ['delivery retry timeout exceeded'] };
 
 sub description { 'GMX: https://www.gmx.net' }
 sub make {
