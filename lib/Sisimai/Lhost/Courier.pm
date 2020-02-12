@@ -6,7 +6,7 @@ use warnings;
 
 state $Indicators = __PACKAGE__->INDICATORS;
 state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-state  $StartingOf = {
+state $StartingOf = {
     # https://www.courier-mta.org/courierdsn.html
     # courier/module.dsn/dsn*.txt
     'message' => ['DELAYS IN DELIVERING YOUR MESSAGE', 'UNDELIVERABLE MAIL'],

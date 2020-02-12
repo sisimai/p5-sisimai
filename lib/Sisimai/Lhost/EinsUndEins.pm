@@ -6,7 +6,7 @@ use warnings;
 
 state $Indicators = __PACKAGE__->INDICATORS;
 state $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
-state  $StartingOf = {
+state $StartingOf = {
     'message' => ['This message was created automatically by mail delivery software'],
     'error'   => ['For the following reason:'],
 };
