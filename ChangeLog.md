@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.5p2
+v4.25.5p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -32,6 +32,7 @@ v4.25.5p2
   - #369 Remove the following unused methods:
     - `Sisimai::MIME->patterns`
     - `Sisimai::SMTP->command`
+  - Some file global variables have been replaced with `state` #371
 
 v4.25.5
 --------------------------------------------------------------------------------
