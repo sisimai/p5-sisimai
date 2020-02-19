@@ -46,7 +46,7 @@ sub index {
         Exchange2007 Exchange2003 Yahoo GSuite Aol SendGrid AmazonSES MailRu
         Yandex MessagingServer Domino Notes ReceivingSES AmazonWorkMail Verizon
         GMX Bigfoot Facebook Zoho EinsUndEins MessageLabs EZweb KDDI Biglobe
-        Amavis ApacheJames McAfee MXLogic MailFoundry IMailServer
+        Amavis ApacheJames McAfee MXLogic MailFoundry PowerMTA IMailServer
         mFILTER Activehunter InterScanMSS SurfControl MailMarshalSMTP
         X1 X2 X3 X4 X5 V5sendmail FML Google
     |];

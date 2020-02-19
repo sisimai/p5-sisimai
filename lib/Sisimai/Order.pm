@@ -51,6 +51,7 @@ state $OrderE1 = [
     'Sisimai::Lhost::SendGrid',
     'Sisimai::Lhost::ReceivingSES',
     'Sisimai::Lhost::Amavis',
+    'Sisimai::Lhost::PowerMTA',
     'Sisimai::Lhost::Google',
     'Sisimai::Lhost::EZweb',
     'Sisimai::Lhost::IMailServer',
@@ -73,6 +74,7 @@ state $Subject = {
     'aws-notification' => ['Sisimai::Lhost::AmazonSES'],
     'complaint-about'  => ['Sisimai::ARF'],
     'delivery-failure' => ['Sisimai::Lhost::Domino', 'Sisimai::Lhost::X2'],
+    'delivery-report'  => ['Sisimai::Lhost::PowerMTA'],
     'delivery-notification' => ['Sisimai::Lhost::MessagingServer'],
     'delivery-status'  => [
         'Sisimai::Lhost::GSuite',
