@@ -45,6 +45,7 @@ sub list {
             Lhost/OpenSMTPD.pm
             Lhost/Outlook.pm
             Lhost/Postfix.pm
+            Lhost/PowerMTA.pm
             Lhost/qmail.pm
             Lhost/ReceivingSES.pm
             Lhost/SendGrid.pm
