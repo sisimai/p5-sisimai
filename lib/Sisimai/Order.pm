@@ -17,6 +17,7 @@ state $OrderE0 = [
     'Sisimai::Lhost::Exchange2003',
     'Sisimai::Lhost::AmazonWorkMail',
     'Sisimai::Lhost::AmazonSES',
+    'Sisimai::Lhost::Barracuda',
     'Sisimai::Lhost::InterScanMSS',
     'Sisimai::Lhost::KDDI',
     'Sisimai::Lhost::SurfControl',
@@ -115,6 +116,7 @@ state $Subject = {
     'mail-system'  => ['Sisimai::Lhost::EZweb'],
     'message-delivery'   => ['Sisimai::Lhost::MailFoundry'],
     'message-frozen'     => ['Sisimai::Lhost::Exim'],
+    'message-you'        => ['Sisimai::Lhost::Barracuda'],
     'permanent-delivery' => ['Sisimai::Lhost::X4'],
     'postmaster-notify'  => ['Sisimai::Lhost::Sendmail'],
     'returned-mail' => [
