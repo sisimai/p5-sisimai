@@ -42,7 +42,7 @@ sub index {
     # Alphabetical sorted MTA module list
     # @return   [Array] MTA list with order
     return [qw|
-        Activehunter Amavis AmazonSES AmazonWorkMail Aol ApacheJames 
+        Activehunter Amavis AmazonSES AmazonWorkMail Aol ApacheJames Barracuda
         Bigfoot Biglobe Courier Domino EZweb EinsUndEins Exchange2003 Exchange2007
         Exim FML Facebook GMX GSuite Google IMailServer InterScanMSS KDDI MXLogic
         MailFoundry MailMarshalSMTP MailRu McAfee MessageLabs MessagingServer Notes
