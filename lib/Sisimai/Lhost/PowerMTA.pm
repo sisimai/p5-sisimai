@@ -19,7 +19,7 @@ state $Categories = {
     'spam-related'        => 'spamdetected',
 };
 
-sub description { 'PowerMTA' }
+sub description { 'PowerMTA: https://www.sparkpost.com/powermta/' }
 sub make {
     # Detect an error from PowerMTA
     # @param         [Hash] mhead       Message headers of a bounce email
@@ -138,15 +138,15 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::Courier - bounce mail parser class for C<Courier MTA>.
+Sisimai::Lhost::PowerMTA - bounce mail parser class for C<PowerMTA>.
 
 =head1 SYNOPSIS
 
-    use Sisimai::Lhost::Courier;
+    use Sisimai::Lhost::PowerMTA;
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::Courier parses a bounce email which created by C<Courier MTA>.
+Sisimai::Lhost::PowerMTA parses a bounce email which created by C<PowerMTA>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
@@ -155,13 +155,13 @@ Methods in the module are called from only Sisimai::Message.
 
 C<description()> returns description string of this module.
 
-    print Sisimai::Lhost::Courier->description;
+    print Sisimai::Lhost::PowerMTA->description;
 
 =head2 C<B<smtpagent()>>
 
 C<smtpagent()> returns MTA name.
 
-    print Sisimai::Lhost::Courier->smtpagent;
+    print Sisimai::Lhost::PowerMTA->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
@@ -174,7 +174,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
