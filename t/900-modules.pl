@@ -15,6 +15,7 @@ sub list {
             Lhost/AmazonWorkMail.pm
             Lhost/Aol.pm
             Lhost/ApacheJames.pm
+            Lhost/Barracuda.pm
             Lhost/Bigfoot.pm
             Lhost/Biglobe.pm
             Lhost/Courier.pm
