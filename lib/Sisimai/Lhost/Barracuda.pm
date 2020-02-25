@@ -84,11 +84,6 @@ sub make {
                 next unless $f == 1;
                 $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
             }
-        } else {
-            # Your message to: kijitora@example.org
-            # was blocked by our Spam Firewall. The email you sent with the following subject has NOT BEEN DELIVERED:
-            #
-            # Subject: Nyaan
         }
     }
     return undef unless $recipients;
