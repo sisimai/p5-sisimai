@@ -128,6 +128,7 @@ state $Subject = {
         'Sisimai::Lhost::X1',
     ],
     'sorry-your' => ['Sisimai::Lhost::Facebook'],
+    'there-was'  => ['Sisimai::Lhost::X6'],
     'undeliverable-mail' => [
         'Sisimai::Lhost::Amavis',
         'Sisimai::Lhost::MailMarshalSMTP',
