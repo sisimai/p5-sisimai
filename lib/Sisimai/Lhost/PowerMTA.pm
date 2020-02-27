@@ -36,7 +36,6 @@ sub make {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
     return undef unless index($mhead->{'subject'}, 'Delivery report') > -1;
 
     require Sisimai::RFC1894;
