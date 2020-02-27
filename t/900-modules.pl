@@ -15,6 +15,7 @@ sub list {
             Lhost/AmazonWorkMail.pm
             Lhost/Aol.pm
             Lhost/ApacheJames.pm
+            Lhost/Barracuda.pm
             Lhost/Bigfoot.pm
             Lhost/Biglobe.pm
             Lhost/Courier.pm
@@ -45,6 +46,7 @@ sub list {
             Lhost/OpenSMTPD.pm
             Lhost/Outlook.pm
             Lhost/Postfix.pm
+            Lhost/PowerMTA.pm
             Lhost/qmail.pm
             Lhost/ReceivingSES.pm
             Lhost/SendGrid.pm
@@ -58,6 +60,7 @@ sub list {
             Lhost/X3.pm
             Lhost/X4.pm
             Lhost/X5.pm
+            Lhost/X6.pm
             Lhost/Yahoo.pm
             Lhost/Yandex.pm
             Lhost/Zoho.pm
