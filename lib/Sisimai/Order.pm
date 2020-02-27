@@ -64,6 +64,7 @@ state $OrderE1 = [
     'Sisimai::Lhost::X4',
     'Sisimai::Lhost::X1',
     'Sisimai::Lhost::X3',
+    'Sisimai::Lhost::X6',
 ];
 
 # The following order is decided by the first 2 words of Subject: header
