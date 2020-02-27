@@ -47,7 +47,6 @@ sub make {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
-    my $p = '';
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email
@@ -113,9 +112,6 @@ sub make {
                 $v->{'category'} = $1;
             }
         }
-    } continue {
-        # Save the current line for the next loop
-        $p = $e;
     }
     return undef unless $recipients;
 
