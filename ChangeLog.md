@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.5p3
+v4.25.5p4
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -34,6 +34,10 @@ v4.25.5p3
     - `Sisimai::SMTP->command`
   - Some file global variables have been replaced with `state` #371
   - Performance improvement: 12% faster, reduced 6% of method calls
+  - Implement 3 MTA modules: #373
+    - `Sisimai::Lhost::Barracuda`
+    - `Sisimai::Lhost::PowerMTA`
+    - `Sisimai::Lhost::X6`
 
 v4.25.5
 --------------------------------------------------------------------------------
