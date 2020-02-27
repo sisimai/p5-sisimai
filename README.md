@@ -53,7 +53,7 @@ Key features
   * git clone & make
 * __High Precision of Analysis__
   * 2 times higher than bounceHammer
-  * Support 24 known MTAs and 5 unknown MTAs
+  * Support 26 known MTAs and 6 unknown MTAs
   * Support 22 major MSPs(Mail Service Providers)
   * Support Feedback Loop Message(ARF)
   * Can detect 29 error reasons
@@ -235,6 +235,7 @@ and Sisimai. More information about differences are available at
 | Analytical precision ratio(2000 emails)[2]     | 0.61          | 1.00        |
 | The speed of parsing email(1000 emails)        | 4.24s         | 1.35s[3]    |
 | The number of detectable bounce reasons        | 19            | 29          |
+| The number of MTA modules(parser engine)       | 15            | 65          |
 | Parse 2 or more bounces in a single email      | Only 1st rcpt | ALL         |
 | Parse FeedBack Loop Message/ARF format mail    | Unable        | OK          |
 | Classification based on recipient domain       | Available     | N/A         |
@@ -243,7 +244,7 @@ and Sisimai. More information about differences are available at
 | Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 7100 lines  |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 255000 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 256000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
