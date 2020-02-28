@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.5p4
+v4.25.5p5
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -38,6 +38,8 @@ v4.25.5p4
     - `Sisimai::Lhost::Barracuda`
     - `Sisimai::Lhost::PowerMTA`
     - `Sisimai::Lhost::X6`
+  - "email-" prefix of each sample email in set-of-emails/maildir directory has
+    been replaced with "lhost-" sisimai/set-of-emails#14
 
 v4.25.5
 --------------------------------------------------------------------------------
