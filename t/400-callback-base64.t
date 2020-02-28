@@ -5,8 +5,8 @@ use Sisimai::Message;
 use IO::File;
 
 my $SampleEmails = [
-    'email-domino-03.eml',
-    'email-mfilter-04.eml',
+    'lhost-domino-03.eml',
+    'lhost-mfilter-04.eml',
 ];
 
 MAKE_TEST: {

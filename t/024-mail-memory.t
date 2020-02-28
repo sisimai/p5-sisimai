@@ -11,7 +11,7 @@ my $MethodNames = {
 };
 my $SampleEmail = [
     './set-of-emails/mailbox/mbox-0',
-    './set-of-emails/maildir/bsd/email-sendmail-01.eml',
+    './set-of-emails/maildir/bsd/lhost-sendmail-01.eml',
 ];
 
 use_ok $PackageName;

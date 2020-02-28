@@ -43,7 +43,7 @@ my $moduletest = sub {
     } else {
         # Other MTA modules
         $M = sprintf("Sisimai::Lhost::%s", $E);
-        $samplepath = sprintf("set-of-emails/private/email-%s", lc $E) if $privateset;
+        $samplepath = sprintf("set-of-emails/private/lhost-%s", lc $E) if $privateset;
     }
 
     Module::Load::load($M);
@@ -80,7 +80,7 @@ my $moduletest = sub {
 
             } else {
                 # Other MTA modules
-                $samplefile = sprintf("./%s/email-%s-%02d.eml", $samplepath, lc $E, $e->{'n'});
+                $samplefile = sprintf("./%s/lhost-%s-%02d.eml", $samplepath, lc $E, $e->{'n'});
             }
         }
 
