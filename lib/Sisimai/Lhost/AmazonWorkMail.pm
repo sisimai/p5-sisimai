@@ -124,7 +124,6 @@ sub make {
         # <421 4.4.2 Connection timed out>
         $e->{'replycode'} = $1 if $e->{'diagnosis'} =~ /[<]([245]\d\d)[ ].+[>]/;
         $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'}) || '';
-        $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
@@ -154,12 +153,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::AmazonWorkMail->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::AmazonWorkMail->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

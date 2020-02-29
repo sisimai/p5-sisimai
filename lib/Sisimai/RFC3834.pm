@@ -39,7 +39,6 @@ state $SubjectSet = qr{\A(?>
 }x;
 
 sub description { 'Detector for auto replied message' }
-sub smtpagent   { 'RFC3834' }
 sub make {
     # Detect auto reply message as RFC3834
     # @param         [Hash] mhead       Message header of a bounce email
@@ -142,7 +141,6 @@ sub make {
 
     $v->{'diagnosis'} = Sisimai::String->sweep($v->{'diagnosis'});
     $v->{'reason'}    = 'vacation';
-    $v->{'agent'}     = __PACKAGE__->smtpagent;
     $v->{'date'}      = $mhead->{'date'};
     $v->{'status'}    = '';
 
@@ -176,12 +174,6 @@ when other Sisimai::Lhost::* modules did not detected a bounce reason.
 C<description()> returns description string of this module.
 
     print Sisimai::RFC3834->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MDA name or string 'RFC3834'.
-
-    print Sisimai::RFC3834->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

@@ -107,7 +107,6 @@ sub make {
 
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
@@ -137,12 +136,6 @@ C<WebSense SurfControl>. Methods in the module are called from only Sisimai::Mes
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::SurfControl->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::SurfControl->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

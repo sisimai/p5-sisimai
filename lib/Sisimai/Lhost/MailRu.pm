@@ -213,7 +213,6 @@ sub make {
             }
         }
         $e->{'command'} ||= '';
-        $e->{'agent'}     = __PACKAGE__->smtpagent;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
@@ -243,12 +242,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::MailRu->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::MailRu->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

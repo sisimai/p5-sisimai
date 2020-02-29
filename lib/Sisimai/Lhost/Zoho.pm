@@ -101,7 +101,6 @@ sub make {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'agent'}     =  __PACKAGE__->smtpagent;
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -140,12 +139,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::Zoho->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::Zoho->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

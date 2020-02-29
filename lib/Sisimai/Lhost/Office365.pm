@@ -172,7 +172,6 @@ sub make {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
-        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( ! $e->{'status'} || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
@@ -224,12 +223,6 @@ Office 365. Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::Office365->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::Office365->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

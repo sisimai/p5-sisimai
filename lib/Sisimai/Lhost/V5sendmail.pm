@@ -130,7 +130,6 @@ sub make {
     for my $e ( @$dscontents ) {
         $errorindex++;
         delete $e->{'sessionerr'};
-        $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'command'} = $commandset[$errorindex] || '';
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
@@ -177,12 +176,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::V5sendmail->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::V5sendmail->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

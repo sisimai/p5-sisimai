@@ -161,7 +161,6 @@ sub make {
                 $e->{'status'} = Sisimai::SMTP::Status->code('expired') || $e->{'status'};
             }
         }
-        $e->{'agent'}     = __PACKAGE__->smtpagent;
         $e->{'lhost'}   ||= $permessage->{'rhost'};
         $e->{'command'} ||= $commandtxt;
     }
@@ -193,12 +192,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::SendGrid->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::SendGrid->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

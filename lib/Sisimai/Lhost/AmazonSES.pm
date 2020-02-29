@@ -195,7 +195,6 @@ sub make {
         }
         return undef unless $recipients;
 
-        map { $_->{'agent'} = __PACKAGE__->smtpagent } @$dscontents;
         if( exists $p->{'mail'}->{'headers'} ) {
             # "headersTruncated":false,
             # "headers":[ { ...
@@ -302,7 +301,6 @@ sub make {
             $e->{'lhost'} ||= $permessage->{'rhost'};
             map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
 
-            $e->{'agent'}     = __PACKAGE__->smtpagent;
             $e->{'diagnosis'} =~ y/\n/ /;
             $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -351,12 +349,6 @@ Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::AmazonSES->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::AmazonSES->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

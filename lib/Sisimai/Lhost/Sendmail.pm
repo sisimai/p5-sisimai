@@ -169,7 +169,6 @@ sub make {
         # Set default values if each value is empty.
         $e->{'lhost'}    ||= $permessage->{'rhost'};
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
-        $e->{'agent'}      = __PACKAGE__->smtpagent;
         $e->{'command'}  ||= $commandtxt || '';
         $e->{'command'}  ||= 'EHLO' if scalar @$esmtpreply;
 
@@ -227,12 +226,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::Sendmail->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::Sendmail->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
