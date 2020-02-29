@@ -120,10 +120,7 @@ sub make {
     # Set the value of $subjecttxt as a Subject if there is no original message
     # in the bounce mail.
     $emailsteak->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailsteak->[1] =~ /^Subject:/m;
-
-    for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);
-    }
+    $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'} || $diagnostic) for @$dscontents;
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 

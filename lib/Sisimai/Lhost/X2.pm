@@ -70,9 +70,7 @@ sub make {
     }
     return undef unless $recipients;
 
-    for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-    }
+    $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'}) for @$dscontents;
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
 
