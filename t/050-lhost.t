@@ -6,7 +6,7 @@ use Sisimai::Lhost;
 my $PackageName = 'Sisimai::Lhost';
 my $MethodNames = {
     'class' => [
-        'description', 'make', 'smtpagent', 'index', 'path',
+        'description', 'make', 'index', 'path',
         'DELIVERYSTATUS', 'INDICATORS',
     ],
     'object' => [],
@@ -16,7 +16,6 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-    ok $PackageName->smtpagent;
     is $PackageName->description, '', '->description';
     is $PackageName->make, undef, '->make';
 
