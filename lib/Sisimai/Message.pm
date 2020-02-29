@@ -330,7 +330,7 @@ sub parse {
 
     my $haveloaded = {};
     my $parseddata = undef;
-
+    my $modulename = '';
     PARSER: while(1) {
         # 1. User-Defined Module
         # 2. MTA Module Candidates to be tried on first
@@ -343,6 +343,7 @@ sub parse {
             next if exists $haveloaded->{ $r };
             $parseddata = $r->make($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
+            $modulename = $r;
             last(PARSER) if $parseddata;
         }
 
@@ -352,6 +353,7 @@ sub parse {
             require $LhostTable->{ $r };
             $parseddata = $r->make($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
+            $modulename = $r;
             last(PARSER) if $parseddata;
         }
 
@@ -360,6 +362,7 @@ sub parse {
             # data, call Sisimai::RFC3464;
             require Sisimai::RFC3464;
             $parseddata = Sisimai::RFC3464->make($mailheader, $bodystring);
+            $modulename = 'RFC3464';
             last(PARSER) if $parseddata;
         }
 
@@ -367,6 +370,7 @@ sub parse {
             # Feedback Loop message
             require Sisimai::ARF;
             $parseddata = Sisimai::ARF->make($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
+            $modulename = 'ARF';
             last(PARSER) if $parseddata;
         }
 
@@ -374,6 +378,7 @@ sub parse {
             # Try to parse the message as auto reply message defined in RFC3834
             require Sisimai::RFC3834;
             $parseddata = Sisimai::RFC3834->make($mailheader, $bodystring);
+            $modulename = 'RFC3834';
             last(PARSER) if $parseddata;
         }
 
@@ -381,6 +386,8 @@ sub parse {
     } # End of while(PARSER)
 
     $parseddata->{'catch'} = $havecaught if $parseddata;
+    $modulename =~ s/\A.+:://;
+    map { $_->{'agent'} ||= $modulename } @{ $parseddata->{'ds'} } if $parseddata;
     return $parseddata;
 }
 
