@@ -12,7 +12,6 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-
     use Sisimai::Data;
     use Sisimai::Mail;
     use Sisimai::Message;

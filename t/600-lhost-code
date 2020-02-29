@@ -51,7 +51,6 @@ my $moduletest = sub {
     can_ok $M, @$methodlist unless grep { $E eq $_ } @$outofemail;
 
     $v = $M->description; ok $v, $E.'->description = '.$v;
-    $v = $M->smtpagent;   ok $v, $E.'->smtpagent = '.$v;
     $v = $M->make;        is $v, undef, $E.'->make = undef';
 
     PARSE_EACH_EMAIL: for my $e ( @$isexpected ) {
@@ -155,7 +154,7 @@ my $moduletest = sub {
 
                 } else {
                     # Other MTA modules
-                    $re = 'Email::'.$E;
+                    $re = $E;
                     is $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
                 }
 
