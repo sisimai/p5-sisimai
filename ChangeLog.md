@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.5p5
+v4.25.5p6
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -40,6 +40,9 @@ v4.25.5p5
     - `Sisimai::Lhost::X6`
   - "email-" prefix of each sample email in set-of-emails/maildir directory has
     been replaced with "lhost-" sisimai/set-of-emails#14
+  - SMTP Agent improvement #362
+    - Remove `Email::` prefix from the value of `smtpagent` at parsed results
+    - Remove `Sisimai::Lhost->smtpagent` method
 
 v4.25.5
 --------------------------------------------------------------------------------
