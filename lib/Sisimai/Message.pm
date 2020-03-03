@@ -384,10 +384,11 @@ sub parse {
 
         last; # as of now, we have no sample email for coding this block
     } # End of while(PARSER)
+    return undef unless $parseddata;
 
-    $parseddata->{'catch'} = $havecaught if $parseddata;
+    $parseddata->{'catch'} = $havecaught;
     $modulename =~ s/\A.+:://;
-    map { $_->{'agent'} ||= $modulename } @{ $parseddata->{'ds'} } if $parseddata;
+    map { $_->{'agent'} ||= $modulename } @{ $parseddata->{'ds'} };
     return $parseddata;
 }
 
