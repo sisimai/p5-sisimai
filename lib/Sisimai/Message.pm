@@ -370,7 +370,6 @@ sub parse {
             # Feedback Loop message
             require Sisimai::ARF;
             $parseddata = Sisimai::ARF->make($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
-            $modulename = 'ARF';
             last(PARSER) if $parseddata;
         }
 

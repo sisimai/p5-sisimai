@@ -293,10 +293,10 @@ sub make {
         $e->{'softbounce'}  = -1;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
         $e->{'date'}      ||= $mhead->{'date'};
-        $e->{'reason'}      = 'feedback';
-        $e->{'command'}     = '';
-        $e->{'action'}      = '';
-        $e->{'agent'}     ||= 'Feedback-Loop';
+        $e->{'reason'}  = 'feedback';
+        $e->{'command'} = '';
+        $e->{'action'}  = '';
+        $e->{'agent'}   = 'Feedback-Loop';
 
         # Get the remote IP address from the message body
         next if $e->{'rhost'};
