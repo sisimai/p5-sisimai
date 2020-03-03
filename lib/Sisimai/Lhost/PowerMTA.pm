@@ -119,9 +119,7 @@ sub make {
         # Set default values if each value is empty.
         map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
-        $e->{'reason'} = $Categories->{ $e->{'category'} } || '';
-        $e->{'agent'}     = __PACKAGE__->smtpagent;
+        $e->{'reason'}    = $Categories->{ $e->{'category'} } || '';
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
@@ -151,12 +149,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::PowerMTA->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::PowerMTA->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

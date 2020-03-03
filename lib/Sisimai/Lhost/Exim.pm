@@ -335,7 +335,6 @@ sub make {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'agent'}   = __PACKAGE__->smtpagent;
         $e->{'lhost'} ||= $localhost0;
 
         if( ! $e->{'diagnosis'} && length($boundary00) > 0 ) {
@@ -520,12 +519,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::Exim->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::Exim->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

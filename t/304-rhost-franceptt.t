@@ -57,7 +57,7 @@ MAKE_TEST: {
                 like $e->{'rhost'}, $mtahost, '->rhost = '.$e->{'rhost'};
                 ok defined $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
-                like $e->{'agent'}, qr/\AEmail::/, '->agent = '.$e->{'agent'};
+                like $e->{'agent'}, qr/\A(?:EinsUndEins|Exim|Postfix|Sendmail)/, '->agent = '.$e->{'agent'};
             }
 
             my $v = Sisimai::Data->make('data' => $p);

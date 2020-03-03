@@ -31,7 +31,6 @@ state $MarkingsOf = {
 };
 
 sub description { 'Fallback Module for MTAs' };
-sub smtpagent   { 'RFC3464' };
 sub make {
     # Detect an error for RFC3464
     # @param         [Hash] mhead       Message header of a bounce email
@@ -403,7 +402,6 @@ sub make {
                     $b = $dscontents->[-1];
                 }
                 $b->{'recipient'} = $y;
-                $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
                 $recipients++;
                 $itisbounce ||= 1;
 
@@ -423,7 +421,6 @@ sub make {
             push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
             my $b = $dscontents->[-1];
             $b->{'recipient'} = $r->[0]->{'address'};
-            $b->{'agent'} = __PACKAGE__->smtpagent.'::Fallback';
             $recipients++;
         }
     }
@@ -446,13 +443,10 @@ sub make {
 
         if( $mdabounced ) {
             # Make bounce data by the values returned from Sisimai::MDA->make()
-            $e->{'agent'}     = $mdabounced->{'mda'} || __PACKAGE__->smtpagent;
+            $e->{'agent'}     = $mdabounced->{'mda'} || 'RFC3464';
             $e->{'reason'}    = $mdabounced->{'reason'} || 'undefined';
             $e->{'diagnosis'} = $mdabounced->{'message'} if $mdabounced->{'message'};
             $e->{'command'}   = '';
-        } else {
-            # Set the value of smtpagent
-            $e->{'agent'} = __PACKAGE__->smtpagent;
         }
         $e->{'date'}   ||= $mhead->{'date'};
         $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
@@ -485,12 +479,6 @@ when other Sisimai::Lhost::* modules did not detected a bounce reason.
 C<description()> returns description string of this module.
 
     print Sisimai::RFC3464->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MDA name or string 'RFC3464'.
-
-    print Sisimai::RFC3464->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

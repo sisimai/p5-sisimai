@@ -62,7 +62,6 @@ sub make {
     $dscontents->[0]->{'status'}    = '5.1.1';
     $dscontents->[0]->{'spec'}      = 'SMTP';
     $dscontents->[0]->{'date'}      = 'Thu 29 Apr 2010 23:34:45 +0900';
-    $dscontents->[0]->{'agent'}     = __PACKAGE__->smtpagent();
 
     $emailsteak->[1] .= 'From: shironeko@example.org'."\n";
     $emailsteak->[1] .= 'Subject: Nyaaan'."\n";
@@ -119,12 +118,6 @@ your custom MTA module.
 C<description()> returns description string of this module.
 
     print Your::Custom::Lhost::Module->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Your::Custom::Lhost::Module->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

@@ -185,7 +185,6 @@ sub make {
             }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'agent'}     = __PACKAGE__->smtpagent;
 
         for my $q ( keys %$MessagesOf ) {
             # Guess an reason of the bounce
@@ -222,12 +221,6 @@ Methods in the module are called from only Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::GSuite->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::GSuite->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

@@ -75,7 +75,7 @@ MAKE_TEST: {
             next unless $e->{ $q };
             like $e->{ $q }, qr/\A.+[.].+\z/, '->'.$q.' = '.$e->{ $q };
         }
-        is $e->{'agent'}, 'Email::Sendmail', '->agent = '.$e->{'agent'};
+        is $e->{'agent'}, 'Sendmail', '->agent = '.$e->{'agent'};
     }
 
     for my $e ( 'content-type', 'to', 'subject', 'date', 'from', 'message-id' ) {

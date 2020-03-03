@@ -51,10 +51,7 @@ profile:
 
 loc:
 	@ for v in `find lib -type f -name '*.pm'`; do \
-		x=`wc -l $$v | awk '{ print $$1 }'`; \
-		y=`cat -n $$v | grep '\t1;' | tail -n 1 | awk '{ print $$1 }'`; \
-		z=`grep -E '^\s*#|^$$' $$v | wc -l | awk '{ print $$1 }'`; \
-		echo "$$x - ( $$x - $$y ) - $$z" | bc ;\
+		perl -nle 'last if $$_ =~ /\A1;\z/; next if $$_ =~ /\A[\s\t]*(?:#+.+)?\z/; print 1' $$v; \
 	done | awk '{ s += $$1 } END { print s }'
 
 clean:

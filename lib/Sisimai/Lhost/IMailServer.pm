@@ -92,8 +92,6 @@ sub make {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'agent'} = __PACKAGE__->smtpagent;
-
         if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
@@ -145,12 +143,6 @@ Sisimai::Message.
 C<description()> returns description string of this module.
 
     print Sisimai::Lhost::IMailServer->description;
-
-=head2 C<B<smtpagent()>>
-
-C<smtpagent()> returns MTA name.
-
-    print Sisimai::Lhost::IMailServer->smtpagent;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 

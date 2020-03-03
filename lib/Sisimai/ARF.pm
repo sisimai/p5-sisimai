@@ -29,7 +29,6 @@ state $LongFields = Sisimai::RFC5322->LONGFIELDS;
 state $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
 
 sub description { return 'Abuse Feedback Reporting Format' }
-sub smtpagent   { 'Feeback-Loop' }
 sub is_arf {
     # Email is a Feedback-Loop message or not
     # @param    [Hash] heads    Email header including "Content-Type", "From",
@@ -297,7 +296,7 @@ sub make {
         $e->{'reason'}      = 'feedback';
         $e->{'command'}     = '';
         $e->{'action'}      = '';
-        $e->{'agent'}     ||= __PACKAGE__->smtpagent;
+        $e->{'agent'}     ||= 'Feedback-Loop';
 
         # Get the remote IP address from the message body
         next if $e->{'rhost'};

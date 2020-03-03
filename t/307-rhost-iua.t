@@ -48,7 +48,7 @@ MAKE_TEST: {
                 like $e->{'rhost'}, $mtahost, '->rhost = '.$e->{'rhost'};
                 ok length $e->{'lhost'}, '->lhost = '.$e->{'lhost'};
                 ok exists $e->{'alias'}, '->alias = '.$e->{'alias'};
-                like $e->{'agent'}, qr/\AEmail::Postfix/, '->agent = '.$e->{'agent'};
+                is $e->{'agent'}, 'Postfix', '->agent = '.$e->{'agent'};
             }
 
             my $v = Sisimai::Data->make('data' => $p);
