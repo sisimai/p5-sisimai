@@ -53,7 +53,7 @@ state $OrderE1 = [
     'Sisimai::Lhost::ReceivingSES',
     'Sisimai::Lhost::Amavis',
     'Sisimai::Lhost::PowerMTA',
-    'Sisimai::Lhost::Google',
+    'Sisimai::Lhost::Gmail',
     'Sisimai::Lhost::GoogleGroups',
     'Sisimai::Lhost::EZweb',
     'Sisimai::Lhost::IMailServer',
@@ -81,7 +81,7 @@ state $Subject = {
     'delivery-report'  => ['Sisimai::Lhost::PowerMTA'],
     'delivery-status'  => [
         'Sisimai::Lhost::GSuite',
-        'Sisimai::Lhost::Google',
+        'Sisimai::Lhost::Gmail',
         'Sisimai::Lhost::Outlook',
         'Sisimai::Lhost::GoogleGroups',
         'Sisimai::Lhost::McAfee',
