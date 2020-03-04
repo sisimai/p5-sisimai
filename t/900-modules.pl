@@ -28,7 +28,7 @@ sub list {
             Lhost/Facebook.pm
             Lhost/FML.pm
             Lhost/GMX.pm
-            Lhost/Google.pm
+            Lhost/Gmail.pm
             Lhost/GoogleGroups.pm
             Lhost/GSuite.pm
             Lhost/IMailServer.pm
