@@ -29,6 +29,7 @@ sub list {
             Lhost/FML.pm
             Lhost/GMX.pm
             Lhost/Google.pm
+            Lhost/GoogleGroups.pm
             Lhost/GSuite.pm
             Lhost/IMailServer.pm
             Lhost/InterScanMSS.pm
