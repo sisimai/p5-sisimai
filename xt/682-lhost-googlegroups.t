@@ -8,23 +8,23 @@ my $enginename = 'GoogleGroups';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
 my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '02', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '04', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '05', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '06', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '07', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '08', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '09', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '10', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '11', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '11', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '12', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '13', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
-    { 'n' => '14', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/rejected/,   'b' => qr/\A1\z/ },
+    { 'n' => '01001', 'r' => qr/rejected/ },
+    { 'n' => '01002', 'r' => qr/rejected/ },
+    { 'n' => '01003', 'r' => qr/rejected/ },
+    { 'n' => '01004', 'r' => qr/rejected/ },
+    { 'n' => '01005', 'r' => qr/rejected/ },
+    { 'n' => '01006', 'r' => qr/rejected/ },
+    { 'n' => '01007', 'r' => qr/rejected/ },
+    { 'n' => '01008', 'r' => qr/rejected/ },
+    { 'n' => '01009', 'r' => qr/rejected/ },
+    { 'n' => '01010', 'r' => qr/rejected/ },
+    { 'n' => '01011', 'r' => qr/rejected/ },
+    { 'n' => '01012', 'r' => qr/rejected/ },
+    { 'n' => '01013', 'r' => qr/rejected/ },
+    { 'n' => '01014', 'r' => qr/rejected/ },
 ];
 
-$enginetest->($enginename, $isexpected);
+plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
+$enginetest->($enginename, $isexpected, 1, 0);
 done_testing;
 
