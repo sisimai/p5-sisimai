@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.5p6
+v4.25.5p7
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -34,10 +34,12 @@ v4.25.5p6
     - `Sisimai::SMTP->command`
   - Some file global variables have been replaced with `state` #371
   - Performance improvement: 12% faster, reduced 6% of method calls
-  - Implement 3 MTA modules: #373
+  - `Sisimai::Lhost::Google` has been renamed to `Sisimai::Lhost::Gmail` #377
+  - Implement 3 MTA modules: #373 #376
     - `Sisimai::Lhost::Barracuda`
     - `Sisimai::Lhost::PowerMTA`
     - `Sisimai::Lhost::X6`
+    - `Sisimai::Lhost::GoogleGroups`
   - "email-" prefix of each sample email in set-of-emails/maildir directory has
     been replaced with "lhost-" sisimai/set-of-emails#14
   - SMTP Agent improvement #362
