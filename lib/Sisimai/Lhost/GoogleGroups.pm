@@ -27,6 +27,7 @@ sub make {
 
     return undef unless rindex($mhead->{'from'}, '<mailer-daemon@googlemail.com>') > -1;
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
+    return undef unless exists $mhead->{'x-failed-recipients'};
     return undef unless index($mhead->{'x-failed-recipients'}, '@googlegroups.com') > -1;
 
     # Hello kijitora@libsisimai.org,
