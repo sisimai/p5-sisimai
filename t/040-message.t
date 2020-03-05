@@ -56,7 +56,7 @@ MAKE_TEST: {
             'order' => [
                 'Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Postfix', 
                 'Sisimai::Lhost::qmail', 'Sisimai::Lhost::Exchange2003', 
-                'Sisimai::Lhost::Google', 'Sisimai::Lhost::Verizon',
+                'Sisimai::Lhost::Gmail', 'Sisimai::Lhost::Verizon',
             ]
          );
 

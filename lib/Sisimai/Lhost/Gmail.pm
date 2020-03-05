@@ -1,4 +1,4 @@
-package Sisimai::Lhost::Google;
+package Sisimai::Lhost::Gmail;
 use parent 'Sisimai::Lhost';
 use feature ':5.10';
 use strict;
@@ -96,9 +96,9 @@ state $StateTable = {
     '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
 };
 
-sub description { 'Google Gmail: https://mail.google.com' }
+sub description { 'Gmail: https://mail.google.com' }
 sub make {
-    # Detect an error from Google Gmail
+    # Detect an error from Gmail
     # @param         [Hash] mhead       Message headers of a bounce email
     # @options mhead [String] from      From header
     # @options mhead [String] date      Date header
@@ -269,15 +269,15 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::Google - bounce mail parser class for C<Gmail>.
+Sisimai::Lhost::Gmail - bounce mail parser class for C<Gmail>.
 
 =head1 SYNOPSIS
 
-    use Sisimai::Lhost::Google;
+    use Sisimai::Lhost::Gmail;
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::Google parses a bounce email which created by C<Gmail>.
+Sisimai::Lhost::Gmail parses a bounce email which created by C<Gmail>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
@@ -286,7 +286,7 @@ Methods in the module are called from only Sisimai::Message.
 
 C<description()> returns description string of this module.
 
-    print Sisimai::Lhost::Google->description;
+    print Sisimai::Lhost::Gmail->description;
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
