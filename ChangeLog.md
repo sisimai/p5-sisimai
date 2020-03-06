@@ -45,6 +45,7 @@ v4.25.5p7
   - SMTP Agent improvement #362
     - Remove `Email::` prefix from the value of `smtpagent` at parsed results
     - Remove `Sisimai::Lhost->smtpagent` method
+  - `Sisimai::Lhost::Amavis` improved #380
 
 v4.25.5
 --------------------------------------------------------------------------------
