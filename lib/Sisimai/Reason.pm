@@ -195,12 +195,10 @@ sub match {
     return $reasontext if $reasontext;
 
     # Check the value of $typestring
-    my $typestring = '';
-       $typestring = uc($1) if uc($argv1) =~ /\A(SMTP|X-.+);/;
+    my $typestring = uc($argv1) =~ /\A(SMTP|X-.+);/ ? uc($1) : '';
     if( $typestring eq 'X-UNIX' ) {
         # X-Unix; ...
         $reasontext = 'mailererror';
-
     } else {
         # Detect the bounce reason from "Status:" code
         require Sisimai::SMTP::Status;

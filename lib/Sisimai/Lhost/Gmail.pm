@@ -168,7 +168,6 @@ sub make {
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $statecode0 = 0;     # (Integer) The value of (state *) in the error message
     my $v = undef;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
@@ -237,12 +236,11 @@ sub make {
             }
         }
 
-        $statecode0 = $1 if $e->{'diagnosis'} =~ /[(]state[ ](\d+)[)][.]/;
+        my $statecode0 = $e->{'diagnosis'} =~ /[(]state[ ](\d+)[)][.]/ ? $1 : 0;
         if( exists $StateTable->{ $statecode0 } ) {
             # (state *)
             $e->{'reason'}  = $StateTable->{ $statecode0 }->{'reason'};
             $e->{'command'} = $StateTable->{ $statecode0 }->{'command'};
-
         } else {
             # No state code
             SESSION: for my $r ( keys %$MessagesOf ) {

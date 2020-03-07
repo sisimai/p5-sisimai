@@ -83,7 +83,6 @@ sub make {
 
     require Sisimai::Lhost;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
-    my $rfc822part = '';    # (String) message/rfc822-headers part
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $maxmsgline = 5;     # (Integer) Max message length(lines)
     my $haveloaded = 0;     # (Integer) The number of lines loaded from message body
@@ -145,8 +144,7 @@ sub make {
     $v->{'status'}    = '';
 
     # Get the Subject header from the original message
-    $rfc822part = 'Subject: '.$1."\n" if lc($mhead->{'subject'}) =~ $SubjectSet;
-
+    my $rfc822part = lc($mhead->{'subject'}) =~ $SubjectSet ? 'Subject: '.$1."\n" : '';
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 

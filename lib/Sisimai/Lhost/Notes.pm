@@ -39,13 +39,12 @@ sub make {
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $characters = '';    # (String) Character set name of the bounce mail
     my $removedmsg = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';
     my $encodedmsg = '';
     my $v = undef;
 
     # Get character set name, Content-Type: text/plain; charset=ISO-2022-JP
-    $characters = lc $1 if $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/;
+    my $characters = $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/ ? lc $1 : '';
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email

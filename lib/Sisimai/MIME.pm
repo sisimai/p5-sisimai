@@ -192,11 +192,10 @@ sub base64d {
     # @return   [String]         MIME-Decoded text
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $plain = undef;
     return \'' unless ref $argv1 eq 'SCALAR';
 
     # Decode BASE64
-    $plain = MIME::Base64::decode($1) if $$argv1 =~ m|([+/=0-9A-Za-z\r\n]+)|;
+    my $plain = $$argv1 =~ m|([+/=0-9A-Za-z\r\n]+)| ? MIME::Base64::decode($1) : '';
     return \$plain;
 }
 

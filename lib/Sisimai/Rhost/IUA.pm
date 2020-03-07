@@ -26,7 +26,7 @@ sub get {
     my $argvs = shift // return undef;
 
     my $statusmesg = lc $argvs->diagnosticcode;
-    my $codenumber = 0; $codenumber = $1 if $statusmesg =~ m|[.]i[.]ua/err/(\d+)|;
+    my $codenumber = $statusmesg =~ m|[.]i[.]ua/err/(\d+)| ? $1 : 0;
     return $ErrorCodes->{ $codenumber } || '';
 }
 
