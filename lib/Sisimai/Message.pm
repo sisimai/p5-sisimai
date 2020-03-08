@@ -107,9 +107,9 @@ sub make {
     $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
 
     # 3. Decode and rewrite the "Subject:" header
-    REWRITE: {
+    if( $processing->{'header'}->{'subject'} ) {
         # Decode MIME-Encoded "Subject:" header
-        my $s = $processing->{'header'}->{'subject'} || last;
+        my $s = $processing->{'header'}->{'subject'};
         my $q = Sisimai::MIME->is_mimeencoded(\$s) ? Sisimai::MIME->mimedecode([split(/[ ]/, $s)]) : $s;
 
         # Remove "Fwd:" string from the "Subject:" header
