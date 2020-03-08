@@ -46,6 +46,7 @@ v4.25.5p7
     - Remove `Email::` prefix from the value of `smtpagent` at parsed results
     - Remove `Sisimai::Lhost->smtpagent` method
   - `Sisimai::Lhost::Amavis` improved #380
+  - Tiny bug fix for `Subject` header decoding
 
 v4.25.5
 --------------------------------------------------------------------------------
