@@ -47,6 +47,7 @@ v4.25.5p7
     - Remove `Sisimai::Lhost->smtpagent` method
   - `Sisimai::Lhost::Amavis` improved #380
   - Tiny bug fix for `Subject` header decoding
+  - `Sisimai::Lhost::Office365` improvement for reading MIME-encoded subject
 
 v4.25.5
 --------------------------------------------------------------------------------
