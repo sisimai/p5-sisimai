@@ -6,23 +6,26 @@ use warnings;
 
 state $Indicators = __PACKAGE__->INDICATORS;
 state $ReBackbone = qr{^(?:
-     Original[ ]message[ ]headers:              # en-US
-    |En-t.tes[ ]de[ ]message[ ]d'origine[ ]:    # fr-FR/En-têtes de message d'origine
+     Original[ ]message[ ]headers:                  # en-US
+    |En-t.tes[ ]de[ ]message[ ]d'origine[ ]:        # fr-FR/En-têtes de message d'origine
+    |Intestazioni[ ]originali[ ]del[ ]messaggio:    # it-CH
     )
 }mx;
 state $MarkingsOf = {
     'message' => qr{\A(?:
          Diagnostic[ ]information[ ]for[ ]administrators:               # en-US
         |Informations[ ]de[ ]diagnostic[ ]pour[ ]les[ ]administrateurs  # fr-FR
+        |Informazioni[ ]di[ ]diagnostica[ ]per[ ]gli[ ]amministratori   # it-CH
         )
     }x,
     'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
     'rhost'   => qr{\A(?:
          Generating[ ]server            # en-US
         |Serveur[ ]de[ ]g.+ration[ ]    # fr-FR/Serveur de génération
-         ):[ ]?(.*)
+        |Server[ ]di[ ]generazione      # it-CH
+        ):[ ]?(.*)
     }x,
-    'subject' => qr/\A(?:Undeliverable|Non_remis_):/,
+    'subject' => qr/\A(?:Undeliverable|Non_remis_|Non[ ]recapitabile):/,
 };
 state $NDRSubject = {
     'SMTPSEND.DNS.NonExistentDomain'=> 'hostunknown',   # 554 5.4.4 SMTPSEND.DNS.NonExistentDomain

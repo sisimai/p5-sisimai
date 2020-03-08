@@ -119,6 +119,7 @@ state $Subject = {
     'message-delivery' => ['Sisimai::Lhost::MailFoundry'],
     'message-frozen'   => ['Sisimai::Lhost::Exim'],
     'message-you'      => ['Sisimai::Lhost::Barracuda'],
+    'non-recapitabile' => ['Sisimai::Lhost::Exchange2007'],
     'non-remis' => ['Sisimai::Lhost::Exchange2007'],
     'notice'    => ['Sisimai::Lhost::Courier'],
     'permanent-delivery' => ['Sisimai::Lhost::X4'],
