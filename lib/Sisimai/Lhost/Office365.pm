@@ -7,8 +7,8 @@ use warnings;
 state $Indicators = __PACKAGE__->INDICATORS;
 state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
 state $MarkingsOf = {
-    'eoe'     => qr/\A(?:Original[ ][Mm]essage[ ][Hh]eaders:?|Message[ ]Hops)/x,
-    'error'   => qr/\A(?:Diagnostic[ ]information[ ]for[ ]administrators:|Error[ ]Details)/x,
+    'eoe'     => qr/\A(?:Original[ ][Mm]essage[ ][Hh]eaders:?|Message[ ]Hops)/,
+    'error'   => qr/\A(?:Diagnostic[ ]information[ ]for[ ]administrators:|Error[ ]Details)/,
     'message' => qr{\A(?:
          Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
         |Original[ ]Message[ ]Details
@@ -37,7 +37,6 @@ state $StatusList = {
     qr/\A5[.]7[.]13[3-6]\z/  => 'rejected',
     qr/\A5[.]7[.]23\z/       => 'blocked',
     qr/\A5[.]7[.]25\z/       => 'networkerror',
-    qr/\A5[.]7[.]57\z/       => 'securityerror',
     qr/\A5[.]7[.]50[1-3]\z/  => 'spamdetected',
     qr/\A5[.]7[.]50[4-5]\z/  => 'filtered',
     qr/\A5[.]7[.]50[6-7]\z/  => 'blocked',
@@ -46,6 +45,7 @@ state $StatusList = {
     qr/\A5[.]7[.]510\z/      => 'notaccept',
     qr/\A5[.]7[.]511\z/      => 'rejected',
     qr/\A5[.]7[.]512\z/      => 'securityerror',
+    qr/\A5[.]7[.]57\z/       => 'securityerror',
     qr/\A5[.]7[.]60[6-9]\z/  => 'blocked',
     qr/\A5[.]7[.]6[1-4]\d\z/ => 'blocked',
     qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
