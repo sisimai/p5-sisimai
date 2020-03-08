@@ -106,8 +106,8 @@ sub make {
     $processing->{'from'}   = $aftersplit->{'from'};
     $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
 
-    # 3. Decode and rewrite the subject header
-    REWRITE_SUBJECT: {
+    # 3. Decode and rewrite the "Subject:" header
+    REWRITE: {
         # Decode MIME-Encoded "Subject:" header
         my $s = $processing->{'header'}->{'subject'} || last;
         my $q = Sisimai::MIME->is_mimeencoded(\$s) ? Sisimai::MIME->mimedecode([split(/[ ]/, $s)]) : $s;
@@ -286,8 +286,6 @@ sub parse {
     my $hookmethod = $argvs->{'hook'} || undef;
     my $havecaught = undef;
 
-    # PRECHECK_EACH_HEADER:
-    # Set empty string if the value is undefined
     $mailheader->{'from'}         //= '';
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
@@ -295,7 +293,6 @@ sub parse {
     # Decode BASE64 Encoded message body
     my $mesgformat = lc($mailheader->{'content-type'} || '');
     my $ctencoding = lc($mailheader->{'content-transfer-encoding'} || '');
-
     if( index($mesgformat, 'text/plain') == 0 || index($mesgformat, 'text/html') == 0 ) {
         # Content-Type: text/plain; charset=UTF-8
         if( $ctencoding eq 'base64' ) {
