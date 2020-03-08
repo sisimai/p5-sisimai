@@ -48,6 +48,7 @@ v4.25.5p7
   - `Sisimai::Lhost::Amavis` improved #380
   - Tiny bug fix for `Subject` header decoding
   - `Sisimai::Lhost::Office365` improvement for reading MIME-encoded subject
+  - `Sisimai::Lhost::InterScanMSS` improvement
 
 v4.25.5
 --------------------------------------------------------------------------------
