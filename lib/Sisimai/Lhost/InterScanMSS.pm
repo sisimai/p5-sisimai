@@ -31,6 +31,7 @@ sub make {
 
     # 'received' => qr/[ ][(]InterScanMSS[)][ ]with[ ]/,
     $match ||= 1 if index($mhead->{'from'}, '"InterScan MSS"') == 0;
+    $match ||= 1 if index($mhead->{'from'}, '"InterScan Notification"') == 0;
     $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
     return undef unless $match;
 
@@ -44,14 +45,13 @@ sub make {
         # to the previous line of the beginning of the original message.
         next unless length $e;
 
-        # Sent <<< RCPT TO:<kijitora@example.co.jp>
-        # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
         $v = $dscontents->[-1];
-
         if( $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
-            $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/ ) {
+            $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/   ||
+            $e =~ /\A(?:Reason:[ ]+)?Unable[ ]to[ ]deliver[ ]message[ ]to[ ][<](.+)[>]/ ) {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
+            # Unable to deliver message to <kijitora@neko.example.jp>
             my $cr = $1;
             if( $v->{'recipient'} && $cr ne $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -59,6 +59,7 @@ sub make {
                 $v = $dscontents->[-1];
             }
             $v->{'recipient'} = $cr;
+            $v->{'diagnosis'} = $e if $e =~ /Unable[ ]to[ ]deliver[ ]/;
             $recipients = scalar @$dscontents;
         }
 
@@ -82,6 +83,7 @@ sub make {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'reason'} = 'userunknown' if $e->{'diagnosis'} =~ /Unable[ ]to[ ]deliver/;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }

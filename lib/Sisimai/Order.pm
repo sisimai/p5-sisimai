@@ -103,6 +103,7 @@ state $Subject = {
         'Sisimai::Lhost::X4',
     ],
     'loop-alert'    => ['Sisimai::Lhost::FML'],
+    'mail-could'    => ['Sisimai::Lhost::InterScanMSS'],
     'mail-delivery' => [
         'Sisimai::Lhost::Exim',
         'Sisimai::Lhost::MailRu',
