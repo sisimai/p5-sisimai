@@ -6,13 +6,12 @@ use warnings;
 
 state $Indicators = __PACKAGE__->INDICATORS;
 state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $StartingOf = {
-    'error' => ['Diagnostic information for administrators:'],
-    'eoerr' => ['Original message headers:'],
-};
 state $MarkingsOf = {
+    'eoe'     => qr/\A(?:Original[ ][Mm]essage[ ][Hh]eaders:?|Message[ ]Hops)/x,
+    'error'   => qr/\A(?:Diagnostic[ ]information[ ]for[ ]administrators:|Error[ ]Details)/x,
     'message' => qr{\A(?:
          Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
+        |Original[ ]Message[ ]Details
         |.+[ ]rejected[ ]your[ ]message[ ]to[ ]the[ ]following[ ]e[-]?mail[ ]addresses:
         )
     }x,
@@ -25,6 +24,8 @@ state $StatusList = {
     qr/\A4[.]7[.]26\z/       => 'securityerror',
     qr/\A4[.]7[.][56]\d\d\z/ => 'blocked',
     qr/\A4[.]7[.]8[5-9]\d\z/ => 'blocked',
+    qr/\A5[.]0[.]350\z/      => 'contenterror',
+    qr/\A5[.]1[.]10\z/       => 'userunknown',
     qr/\A5[.]4[.]1\z/        => 'norelaying',
     qr/\A5[.]4[.]6\z/        => 'networkerror',
     qr/\A5[.]4[.]312\z/      => 'networkerror',
@@ -34,7 +35,9 @@ state $StatusList = {
     qr/\A5[.]7[.]1[23]\z/    => 'rejected',
     qr/\A5[.]7[.]124\z/      => 'rejected',
     qr/\A5[.]7[.]13[3-6]\z/  => 'rejected',
+    qr/\A5[.]7[.]23\z/       => 'blocked',
     qr/\A5[.]7[.]25\z/       => 'networkerror',
+    qr/\A5[.]7[.]57\z/       => 'securityerror',
     qr/\A5[.]7[.]50[1-3]\z/  => 'spamdetected',
     qr/\A5[.]7[.]50[4-5]\z/  => 'filtered',
     qr/\A5[.]7[.]50[6-7]\z/  => 'blocked',
@@ -96,7 +99,6 @@ sub make {
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -119,9 +121,15 @@ sub make {
         # The email address wasn't found at the destination domain. It might
         # be misspelled or it might not exist any longer. Try retyping the
         # address and resending the message.
+        #
+        # Original Message Details
+        # Created Date:   4/29/2017 6:40:30 AM
+        # Sender Address: neko@example.jp
+        # Recipient Address:      kijitora@example.org
+        # Subject:        Nyaan
         $v = $dscontents->[-1];
-
-        if( $e =~ /\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ) {
+        if( $e =~ /\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ||
+            $e =~ /\ARecipient[ ]Address:[ ]+(.+)\z/ ) {
             # kijitora@example.com<mailto:kijitora@example.com>
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -148,16 +156,15 @@ sub make {
                 $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
             } else {
-                if( $e eq $StartingOf->{'error'}->[0] ) {
+                if( $e =~ $MarkingsOf->{'error'} ) {
                     # Diagnostic information for administrators:
                     $v->{'diagnosis'} = $e;
-
                 } else {
                     # kijitora@example.com
                     # Remote Server returned '550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipien=
                     # t not found by SMTP address lookup'
                     next unless $v->{'diagnosis'};
-                    if( $e eq $StartingOf->{'eoerr'}->[0] ) {
+                    if( $e =~ $MarkingsOf->{'eoe'} ) {
                         # Original message headers:
                         $endoferror = 1;
                         next;
