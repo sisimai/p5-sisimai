@@ -106,12 +106,20 @@ sub make {
     $processing->{'from'}   = $aftersplit->{'from'};
     $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
 
-    # 3. Remove "Fwd:" string from the "Subject:" header
-    if( lc($processing->{'header'}->{'subject'} || '') =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
-        # Delete quoted strings, quote symbols(>)
-        $processing->{'header'}->{'subject'} = $1;
-        $aftersplit->{'body'} =~ s/^[>]+[ ]//gm;
-        $aftersplit->{'body'} =~ s/^[>]$//gm;
+    # 3. Decode and rewrite the subject header
+    REWRITE_SUBJECT: {
+        # Decode MIME-Encoded "Subject:" header
+        my $s = $processing->{'header'}->{'subject'} || last;
+        my $q = Sisimai::MIME->is_mimeencoded(\$s) ? Sisimai::MIME->mimedecode([split(/[ ]/, $s)]) : $s;
+
+        # Remove "Fwd:" string from the "Subject:" header
+        if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
+            # Delete quoted strings, quote symbols(>)
+            $q = $1;
+            $aftersplit->{'body'} =~ s/^[>]+[ ]//gm;
+            $aftersplit->{'body'} =~ s/^[>]$//gm;
+        }
+        $processing->{'header'}->{'subject'} = $q;
     }
 
     # 4. Rewrite message body for detecting the bounce reason
@@ -283,11 +291,6 @@ sub parse {
     $mailheader->{'from'}         //= '';
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
-
-    if( Sisimai::MIME->is_mimeencoded(\$mailheader->{'subject'}) ) {
-        # Decode MIME-Encoded "Subject:" header
-        $mailheader->{'subject'} = Sisimai::MIME->mimedecode([split(/[ ]/, $mailheader->{'subject'})]);
-    }
 
     # Decode BASE64 Encoded message body
     my $mesgformat = lc($mailheader->{'content-type'} || '');
