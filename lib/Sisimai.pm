@@ -16,7 +16,6 @@ sub make {
     # @param         [Hash]    argv1      Parser options
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
-    # @options argv1 [Array]   field      Email header names to be captured
     # @return        [Array]              Parsed objects
     # @return        [Undef]              Undef if the argument was wrong or an empty array
     my $class = shift;
@@ -24,8 +23,6 @@ sub make {
     die ' ***error: wrong number of arguments' if scalar @_ % 2;
 
     my $argv1 = { @_ };
-    my $field = $argv1->{'field'} || [];
-    die ' ***error: "field" accepts an array reference only' if ref $field ne 'ARRAY';
 
     require Sisimai::Data;
     require Sisimai::Message;
@@ -36,7 +33,7 @@ sub make {
 
     while( my $r = $mail->read ) {
         # Read and parse each mail file
-        my $p = { 'data'  => $r, 'hook' => $argv1->{'hook'}, 'field' => $field };
+        my $p = { 'data'  => $r, 'hook' => $argv1->{'hook'} };
         next unless my $mesg = Sisimai::Message->new(%$p);
 
         my $data = Sisimai::Data->make('data' => $mesg, 'delivered' => $argv1->{'delivered'});
@@ -244,7 +241,6 @@ method like the following codes:
     my $message = Sisimai::Message->new(
         'data' => $mailtxt,
         'hook' => $cmethod,
-        'field' => ['X-Mailer', 'Precedence']
     );
     print $message->catch->{'x-mailer'};    # Apple Mail (2.1283)
     print $message->catch->{'queue-id'};    # 2DAEB222022E

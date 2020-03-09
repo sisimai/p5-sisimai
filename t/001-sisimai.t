@@ -41,9 +41,6 @@ MAKE_TEST: {
     eval { $PackageName->dump('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    eval { $PackageName->make('/dev/null', 'field' => 22) };
-    like $@, qr/error: "field" accepts an array reference only/;
-
     for my $e ( 'mailbox', 'maildir', 'memory' ) {
         MAKE: {
             my $parseddata = undef;
@@ -116,10 +113,7 @@ MAKE_TEST: {
                 }
                 return $catch;
             };
-            $havecaught = $PackageName->make($SampleEmail->{ $e },
-                'hook'  => $callbackto,
-                'field' => ['X-Virus-Scanned'],
-            );
+            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto);
 
             for my $ee ( @$havecaught ) {
                 isa_ok $ee, 'Sisimai::Data';
