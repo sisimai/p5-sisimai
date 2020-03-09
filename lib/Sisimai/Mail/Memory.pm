@@ -31,8 +31,7 @@ sub new {
         # UNIX mbox
         $param->{'data'} = [split(/^From /m, $$argv1)];
         shift @{ $param->{'data'} };
-        map { $_ = 'From '.$_ } @{ $param->{'data'} };
-
+        $_ = 'From '.$_ for @{ $param->{'data'} };
     } else {
         $param->{'data'} = [$$argv1];
     }
@@ -117,7 +116,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018,2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

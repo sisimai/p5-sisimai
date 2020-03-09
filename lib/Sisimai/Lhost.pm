@@ -62,7 +62,7 @@ sub path {
         'Sisimai::RFC3464' => 'Sisimai/RFC3464.pm',
         'Sisimai::RFC3834' => 'Sisimai/RFC3834.pm',
     };
-    map { $table->{ __PACKAGE__.'::'.$_ } = 'Sisimai/Lhost/'.$_.'.pm' } @$index;
+    $table->{ __PACKAGE__.'::'.$_ } = 'Sisimai/Lhost/'.$_.'.pm' for @$index;
     return $table;
 }
 

@@ -110,9 +110,9 @@ sub make {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'}    ||= $permessage->{'rhost'};
-        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
-        $e->{'diagnosis'}  = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'lhost'} ||= $permessage->{'rhost'};
+        $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         unless( $e->{'diagnosis'} ) {
             # No message in 'diagnosis'

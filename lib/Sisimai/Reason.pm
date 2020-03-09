@@ -47,7 +47,7 @@ sub path {
     my $class = shift;
     my $index = __PACKAGE__->index;
     my $table = {};
-    map { $table->{ __PACKAGE__.'::'.$_ } = 'Sisimai/Reason/'.$_.'.pm' } @$index;
+    $table->{ __PACKAGE__.'::'.$_ } = 'Sisimai/Reason/'.$_.'.pm' for @$index;
     return $table;
 }
 

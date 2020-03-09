@@ -84,7 +84,7 @@ sub make {
         my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1);
         $MarkingsOf->{'boundary'} = qr/\A\Q$b0\E\z/ if $b0; # Convert to regular expression
     }
-    my @rxmessages; map { push @rxmessages, @{ $ReFailures->{ $_ } } } (keys %$ReFailures);
+    my @rxmessages; push @rxmessages, @{ $ReFailures->{ $_ } } for keys %$ReFailures;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email

@@ -178,7 +178,7 @@ sub make {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
+        $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( ! $e->{'status'} || substr($e->{'status'}, -4, 4) eq '.0.0' ) {

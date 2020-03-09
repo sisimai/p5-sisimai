@@ -314,7 +314,7 @@ sub make {
         if( defined $mhead->{'x-failed-recipients'} ) {
             # X-Failed-Recipients: kijitora@example.jp
             my @rcptinhead = split(',', $mhead->{'x-failed-recipients'});
-            map { $_ =~ s/\A[ ]+//; $_ =~ s/[ ]+\z// } @rcptinhead;
+            for my $e ( @rcptinhead ) { $e =~ s/\A[ ]+//; $e =~ s/[ ]+\z// }
             $recipients = scalar @rcptinhead;
 
             for my $e ( @rcptinhead ) {

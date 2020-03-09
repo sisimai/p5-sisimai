@@ -115,7 +115,7 @@ sub make {
     return undef unless keys %$bouncedata;
 
     # 5. Rewrite headers of the original message in the body part
-    map { $processing->{ $_ } = $bouncedata->{ $_ } } ('ds', 'catch', 'rfc822');
+    $processing->{ $_ } = $bouncedata->{ $_ } for ('ds', 'catch', 'rfc822');
     my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
     $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->makemap(\$p, 1);
     return $processing;
@@ -211,13 +211,14 @@ sub makemap {
     my $headermaps = {};
     my $recvheader = [];
 
-    map { $headermaps->{ lc $_ } = $firstpairs->{ $_ } } keys %$firstpairs;
-    map { $_ =~ s/\n\s+/ /; $_ =~ y/\t / /s } values %$headermaps;
+
+    $headermaps->{ lc $_ } = $firstpairs->{ $_ } for keys %$firstpairs;
+    for my $e ( values %$headermaps ) { $e =~ s/\n\s+/ /; $e =~ y/\t / /s }
 
     if( $$argv0 =~ /^Received:/m ) {
         # Capture values of each Received: header
         $recvheader = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms];
-        map { $_ =~ s/\n\s+/ /; $_ =~ y/\n\t / /s } @$recvheader;
+        for my $e ( @$recvheader ) { $e =~ s/\n\s+/ /; $e =~ y/\n\t / /s }
     }
     $headermaps->{'received'} = $recvheader;
 
@@ -373,7 +374,7 @@ sub parse {
 
     $parseddata->{'catch'} = $havecaught;
     $modulename =~ s/\A.+:://;
-    map { $_->{'agent'} ||= $modulename } @{ $parseddata->{'ds'} };
+    $_->{'agent'} ||= $modulename for @{ $parseddata->{'ds'} };
     return $parseddata;
 }
 

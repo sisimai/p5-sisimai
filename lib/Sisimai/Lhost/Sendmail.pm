@@ -167,10 +167,10 @@ sub make {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'}    ||= $permessage->{'rhost'};
-        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
-        $e->{'command'}  ||= $commandtxt || '';
-        $e->{'command'}  ||= 'EHLO' if scalar @$esmtpreply;
+        $e->{'lhost'}   ||= $permessage->{'rhost'};
+        $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
+        $e->{'command'} ||= $commandtxt || '';
+        $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
