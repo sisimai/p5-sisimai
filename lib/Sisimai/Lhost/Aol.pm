@@ -114,11 +114,10 @@ sub make {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'lhost'} ||= $permessage->{'rhost'};
-        map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
+        $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
 
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-
         SESSION: for my $r ( keys %$MessagesOf ) {
             # Verify each regular expression of session errors
             next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };

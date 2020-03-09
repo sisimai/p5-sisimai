@@ -299,11 +299,10 @@ sub make {
         for my $e ( @$dscontents ) {
             # Set default values if each value is empty.
             $e->{'lhost'} ||= $permessage->{'rhost'};
-            map { $e->{ $_ } ||= $permessage->{ $_ } || '' } keys %$permessage;
+            $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
 
             $e->{'diagnosis'} =~ y/\n/ /;
             $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-
             if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
                 # Get other D.S.N. value from the error message
                 # 5.1.0 - Unknown address error 550-'5.7.1 ...

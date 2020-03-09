@@ -287,7 +287,7 @@ sub make {
     for my $e ( @$dscontents ) {
         # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
         $e->{'recipient'} = Sisimai::Address->s3s4($rcptintext) if $e->{'recipient'} =~ /\A[^ ]+[@]\z/;
-        map { $e->{ $_ } ||= $arfheaders->{ $_ } } keys %$arfheaders;
+        $e->{ $_ } ||= $arfheaders->{ $_ } for keys %$arfheaders;
         delete $e->{'authres'};
 
         $e->{'softbounce'}  = -1;

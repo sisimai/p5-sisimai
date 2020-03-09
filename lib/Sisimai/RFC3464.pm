@@ -428,7 +428,7 @@ sub make {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        map { $e->{ $_ } ||= $connheader->{ $_ } || '' } keys %$connheader;
+        $e->{ $_ } ||= $connheader->{ $_ } || '' for keys %$connheader;
 
         if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
