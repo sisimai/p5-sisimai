@@ -2,7 +2,7 @@ package Sisimai;
 use feature ':5.10';
 use strict;
 use warnings;
-use version; our $VERSION = version->declare('v4.25.5'); our $PATCHLV = 9;
+use version; our $VERSION = version->declare('v4.25.5'); our $PATCHLV = 10;
 
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
@@ -30,7 +30,7 @@ sub make {
     my $mail = Sisimai::Mail->new($argv0) || return undef;
     while( my $r = $mail->read ) {
         # Read and parse each mail file
-        my $p = { 'data'  => $r, 'hook' => $argv1->{'hook'} };
+        my $p = { 'data' => $r, 'hook' => $argv1->{'hook'} };
         next unless my $mesg = Sisimai::Message->new(%$p);
 
         my $data = Sisimai::Data->make('data' => $mesg, 'delivered' => $argv1->{'delivered'});
