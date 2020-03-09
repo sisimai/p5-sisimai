@@ -47,9 +47,6 @@ MAKE_TEST: {
     isa_ok $p->rfc822, 'HASH', '->rfc822';
     ok length $p->from, $p->from;
 
-    $p = Sisimai::Message->new('data' => $mailastext, 'field' => {});
-    is $p, undef;
-
     $p = Sisimai::Message->new(
             'data' => $mailastext, 
             'hook' => $callbackto,

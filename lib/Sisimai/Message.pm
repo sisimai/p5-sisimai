@@ -30,27 +30,14 @@ sub new {
     # @options argvs [String] data      Entire email message
     # @options argvs [Array]  load      User defined MTA module list
     # @options argvs [Array]  order     The order of MTA modules
-    # @options argvs [Array]  field     Email header names to be captured
     # @options argvs [Code]   hook      Reference to callback method
     # @return        [Sisimai::Message] Structured email data or Undef if each
     #                                   value of the arguments are missing
     my $class = shift;
     my $argvs = { @_ };
     my $email = $argvs->{'data'}  || return undef;
-    my $field = $argvs->{'field'} || [];
 
-    if( ref $field ne 'ARRAY' ) {
-        # Unsupported value in "field"
-        warn ' ***warning: "field" accepts an array reference only';
-        return undef;
-    }
-
-    my $methodargv = {
-        'data'  => $email,
-        'hook'  => $argvs->{'hook'} // undef,
-        'field' => $field,
-    };
-
+    my $methodargv = { 'data' => $email, 'hook' => $argvs->{'hook'} // undef };
     for my $e ('load', 'order') {
         # Order of MTA modules
         next unless exists $argvs->{ $e };
@@ -78,7 +65,6 @@ sub make {
     # @options argvs [String] data  Entire email message
     # @options argvs [Array]  load  User defined MTA module list
     # @options argvs [Array]  order The order of MTA modules
-    # @options argvs [Array]  field Email header names to be captured
     # @options argvs [Code]   hook  Reference to callback method
     # @return        [Hash]         Resolved data structure
     my $class = shift;
@@ -468,7 +454,6 @@ method like the following codes:
     my $message = Sisimai::Message->new(
         'data' => $mailtxt,
         'hook' => $cmethod,
-        'field' => ['X-Mailer', 'Precedence']
     );
     print $message->catch->{'x-mailer'};    # Apple Mail (2.1283)
     print $message->catch->{'queue-id'};    # 2DAEB222022E
