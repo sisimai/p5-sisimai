@@ -187,9 +187,8 @@ my $callbackto = sub {
     $caught->{'x-mailer'} = $emdata->{'headers'}->{'x-mailer'} || '';
     return $caught;
 };
-my $list = ['X-Mailer'];
-my $data = Sisimai->make('/path/to/mbox', 'hook' => $callbackto, 'field' => $list);
-my $json = Sisimai->dump('/path/to/mbox', 'hook' => $callbackto, 'field' => $list);
+my $data = Sisimai->make('/path/to/mbox', 'hook' => $callbackto);
+my $json = Sisimai->dump('/path/to/mbox', 'hook' => $callbackto);
 
 print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
 ```
