@@ -19,9 +19,7 @@ sub make {
     # @return        [Array]              Parsed objects
     # @return        [Undef]              Undef if the argument was wrong or an empty array
     my $class = shift;
-    my $argv0 = shift // return undef;
-    die ' ***error: wrong number of arguments' if scalar @_ % 2;
-
+    my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
 
     require Sisimai::Data;
@@ -30,7 +28,6 @@ sub make {
 
     my $list = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
-
     while( my $r = $mail->read ) {
         # Read and parse each mail file
         my $p = { 'data'  => $r, 'hook' => $argv1->{'hook'} };
@@ -53,9 +50,7 @@ sub dump {
     # @options argv1 [Code]    hook       Code reference to a callback method
     # @return        [String]             Parsed data as JSON text
     my $class = shift;
-    my $argv0 = shift // return undef;
-
-    die ' ***error: wrong number of arguments' if scalar @_ % 2;
+    my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
     my $nyaan = __PACKAGE__->make($argv0, %$argv1) // [];
 
