@@ -5,6 +5,7 @@ use warnings;
 use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
+        'path',     # [String] Fixed string "<MEMORY>"
         'size',     # [Integer] data size
     ],
     'rw'  => [
@@ -22,6 +23,7 @@ sub new {
     my $argv1 = shift // return undef;
     my $param = {
         'data'   => [],
+        'path'   => '<MEMORY>',
         'size'   => length $$argv1 || 0,
         'offset' => 0,
     };
@@ -80,6 +82,12 @@ C<new()> is a constructor of Sisimai::Mail::Memory
     my $mailobj = Sisimai::Mail::Memory->new(\$mailtxt);
 
 =head1 INSTANCE METHODS
+
+=head2 C<B<path()>>
+
+C<path()> returns "<MEMORY>"
+
+    print $mailbox->path;   # "<MEMORY>"
 
 =head2 C<B<size()>>
 
