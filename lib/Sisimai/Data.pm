@@ -20,6 +20,7 @@ use Class::Accessor::Lite (
         'listid',   # [String] List-Id header of each ML
         'reason',   # [String] Bounce reason
         'action',   # [String] The value of Action: header
+        'origin',   # [String] Email path as a data source
         'subject',  # [String] UTF-8 Subject text
         'timestamp',    # [Sisimai::Time] Date: header in the original message
         'addresser',    # [Sisimai::Address] From address
@@ -77,7 +78,7 @@ sub new {
 
     my @v1 = (qw|
         listid subject messageid smtpagent diagnosticcode diagnostictype deliverystatus
-        reason lhost rhost smtpcommand feedbacktype action softbounce replycode
+        reason lhost rhost smtpcommand feedbacktype action softbounce replycode origin
     |);
     $thing->{ $_ } = $argvs->{ $_ } // '' for @v1;
     $thing->{'replycode'} ||= Sisimai::SMTP::Reply->find($argvs->{'diagnosticcode'}) || '';
@@ -292,6 +293,7 @@ sub make {
 
             # Check the value of SMTP command
             $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ /\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
+            $p->{'origin'} = $argvs->{'origin'};    # Set the path to the original email
 
             # Check "Action:" field
             next if length $p->{'action'};
@@ -389,7 +391,7 @@ sub damn {
             token lhost rhost listid alias reason subject messageid smtpagent
             smtpcommand destination diagnosticcode senderdomain deliverystatus
             timezoneoffset feedbacktype diagnostictype action replycode catch
-            softbounce
+            softbounce origin
         |];
 
         for my $e ( @$stringdata ) {
@@ -605,6 +607,12 @@ did not include the original message, this value will be empty.
 
     Message-Id: <201310160515.r9G5FZh9018575@smtpgw.example.jp>
 
+=head2 C<origin> (I<Path to the original email file>)
+
+C<origin> is the path to the original email file of the parsed results. When
+the original email data were input from STDIN, the value is C<<STDIN>>, were
+input from a variable, the value is C<<MEMORY>>. This accessor method has been
+implemented at v4.25.6.
 
 =head2 C<recipient> (I<Sisimai::Address)>
 
