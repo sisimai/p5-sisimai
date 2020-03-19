@@ -198,7 +198,7 @@ my $moduletest = sub {
             } # End of the loop for checking Sisimai::Message
 
 
-            $dataobject = Sisimai::Data->make('data' => $mesgobject, 'delivered' => 1);
+            $dataobject = Sisimai::Data->make('data' => $mesgobject, 'delivered' => 1, 'origin' => $mailobject->mail->path);
             isa_ok $dataobject, 'ARRAY',              sprintf("[%s] Data object", $e->{'n'});
             isa_ok $dataobject->[0], 'Sisimai::Data', sprintf("[%s] Sisimai::Data", $e->{'n'});
             ok scalar @$dataobject, sprintf("%s|Sisimai::Data = %s", $E, scalar @$dataobject);
@@ -274,7 +274,7 @@ my $moduletest = sub {
                 $pp = 'alias';        unlike $pr->$pp, qr/[\r]/,               sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp) if $pr->$pp;
 
                 $re = qr/[ \r]/;
-                for my $rr ( qw|deliverystatus smtpcommand lhost rhost alias listid action messageid| ) {
+                for my $rr ( qw|deliverystatus smtpcommand lhost rhost alias listid action messageid origin| ) {
                     # Each value does not include ' '
                     $pp = $rr; 
                     if( $rr ne 'alias' ) {
