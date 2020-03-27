@@ -15,12 +15,12 @@ state $ReSMTP = {
     'data' => qr|DATA command generated response:|,
 };
 state $ReFailures = {
-    'hostunknown' => qr/Unknown host/,
-    'userunknown' => qr/\A(?:Unknown user|Invalid final delivery userid)/,
-    'mailboxfull' => qr/\AUser mailbox exceeds allowed size/,
-    'securityerr' => qr/\ARequested action not taken: virus detected/,
-    'undefined'   => qr/\Aundeliverable to/,
-    'expired'     => qr/\ADelivery failed \d+ attempts/,
+    'hostunknown'   => qr/Unknown host/,
+    'userunknown'   => qr/\A(?:Unknown user|Invalid final delivery userid)/,
+    'mailboxfull'   => qr/\AUser mailbox exceeds allowed size/,
+    'securityerror' => qr/\ARequested action not taken: virus detected/,
+    'undefined'     => qr/\Aundeliverable to/,
+    'expired'       => qr/\ADelivery failed \d+ attempts/,
 };
 
 sub description { 'IPSWITCH IMail Server' }

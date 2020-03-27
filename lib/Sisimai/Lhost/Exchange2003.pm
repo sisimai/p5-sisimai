@@ -26,11 +26,11 @@ state $ErrorCodes = {
     'networkerror' => [
         '00120270', # Too Many Hops
     ],
-    'contenterr' => [
+    'contenterror' => [
         '00050311', # Conversion to Internet format failed
         '000502CC', # Conversion to Internet format failed
     ],
-    'securityerr' => [
+    'securityerror' => [
         '000B0981', # 502 Server does not support AUTH
     ],
     'filtered' => [
