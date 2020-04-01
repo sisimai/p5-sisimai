@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.5p10
+v4.25.5p11
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -57,6 +57,9 @@ v4.25.5p10
     - `Sisimai::Lhost::Office365` improvement for reading MIME-encoded subject
     - `Sisimai::Lhost::Exchange2007` supports error messages in `it-CH`
   - Tiny bug fix for `Subject` header decoding
+  - Fix bug in code for getting an `"addresser"` address from `From:` field in
+    the original message part which are multiple lines at `Sisimai::ARF`. #385
+    Thanks to @jcbf
 
 v4.25.5
 --------------------------------------------------------------------------------
