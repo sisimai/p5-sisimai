@@ -154,11 +154,19 @@ sub make {
             } elsif( $e =~ /\AFrom:[ ]*(.+)\z/ ) {
                 # Microsoft ARF: original sender.
                 $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
+                $previousfn = 'from';
 
             } elsif( $e =~ /\A[ \t]+/ ) {
                 # Continued line from the previous line
-                $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
-                next if length $e;
+                if( $previousfn eq 'from' ) {
+                    # Multiple lines at From: field
+                    $commondata->{'from'} .= $e;
+                    next;
+
+                } else {
+                    $rfc822part .= $e."\n" if exists $LongFields->{ $previousfn };
+                    next if length $e;
+                }
                 $rcptintext .= $e if $previousfn eq 'to';
 
             } else {
