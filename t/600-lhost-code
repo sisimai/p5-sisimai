@@ -295,7 +295,7 @@ my $moduletest = sub {
                 }
 
                 for my $rr ( qw|addresser recipient| ) {
-                    $re = qr/\A.+[@][0-9A-Za-z-.]+[.][A-Za-z]+?\z/;
+                    $re = qr/\A.+[@][0-9A-Za-z.-]+[.][A-Za-z]+?\z/;
                     if( length $pr->$rr->alias ) {
                         $pp = 'alias'; like $pr->$rr->$pp, $re, sprintf(" [%s] %s->%s->%s = %s", $lb, $E, $rr, $pp, $pr->$rr->$pp);
                     }
