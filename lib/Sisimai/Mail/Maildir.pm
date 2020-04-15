@@ -12,7 +12,6 @@ use Class::Accessor::Lite (
     'rw'  => [
         'path',     # [String] Path to each file
         'file',     # [String] Each file name of a mail in the Maildir/
-        'inodes',   # [Array]  i-node List of files in the Maildir/
         'handle',   # [IO::Dir] Directory handle
     ]
 );
@@ -30,7 +29,6 @@ sub new {
         'dir'    => $argv1,
         'file'   => undef,
         'path'   => undef,
-        'inodes' => {},
         'handle' => IO::Dir->new($argv1),
     };
     return bless($param, __PACKAGE__);
@@ -62,13 +60,10 @@ sub read {
             # Get inode number of the file
             $self->{'path'} = $emailindir;
             my $emailinode = $^O eq 'MSWin32' ?  $emailindir : [stat $emailindir]->[1];
-            next if exists $self->{'inodes'}->{ $emailinode };
-
             my $filehandle = IO::File->new($emailindir, 'r');
                $readbuffer = do { local $/; <$filehandle> };
                $filehandle->close;
 
-            $self->{'inodes'}->{ $emailinode } = 1;
             $self->{'file'} = $r;
 
             last;
@@ -126,12 +121,6 @@ C<file()> returns current file name of the Maildir.
 
     print $maildir->file;
 
-=head2 C<B<inodes()>>
-
-C<inodes()> returns i-node list of each email in Maildir.
-
-    print for @{ $maildir->inodes };
-
 =head2 C<B<handle()>>
 
 C<handle()> returns file handle object (IO::Dir) of the Maildir.
@@ -153,7 +142,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
