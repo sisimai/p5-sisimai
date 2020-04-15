@@ -39,7 +39,7 @@ MAKE_TEST: {
 
     while( my $r = $mail->read ){ 
         $mesg = Sisimai::Message->new('data' => $r, 'hook' => $call); 
-        $data = Sisimai::Data->make('data' => $mesg); 
+        $data = Sisimai::Data->make('data' => $mesg, 'origin' => $mail->mail->path); 
         isa_ok $data, 'ARRAY';
 
         for my $e ( @$data ) {
@@ -89,6 +89,7 @@ MAKE_TEST: {
 
             ok defined $e->feedbacktype, 'feedbacktype = '.$e->feedbacktype;
             ok defined $e->action, 'action = '.$e->action;
+            is $e->origin, $file, 'origin = '.$e->origin;
 
             isa_ok $e->catch, 'HASH';
             is $e->catch->{'type'}, 'email';

@@ -33,7 +33,8 @@ sub make {
         my $p = { 'data' => $r, 'hook' => $argv1->{'hook'} };
         next unless my $mesg = Sisimai::Message->new(%$p);
 
-        my $data = Sisimai::Data->make('data' => $mesg, 'delivered' => $argv1->{'delivered'});
+        $p = { 'data' => $mesg, 'delivered' => $argv1->{'delivered'}, 'origin' => $mail->mail->path };
+        my $data = Sisimai::Data->make(%$p);
         push @$list, @$data if scalar @$data;
     }
     return undef unless scalar @$list;

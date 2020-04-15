@@ -6,7 +6,7 @@ use IO::Handle;
 use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
-        'path',     # [String]  Path to mbox
+        'path',     # [String]  Fixed string "<STDIN>"
         'name',     # [String]  File name of the mbox
         'size',     # [Integer] File size of the mbox
     ],
@@ -127,7 +127,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -41,7 +41,7 @@ MAKE_TEST: {
 
         while( my $r = $mail->read ){ 
             $mesg = Sisimai::Message->new('data' => $r); 
-            $data = Sisimai::Data->make('data' => $mesg); 
+            $data = Sisimai::Data->make('data' => $mesg, 'origin' => $mail->mail->path);
             isa_ok $data, 'ARRAY';
 
             for my $e ( @$data ) {
@@ -82,6 +82,7 @@ MAKE_TEST: {
 
                 is $e->feedbacktype, $perl->{'feedbacktype'}, 'feedbacktype = '.$e->feedbacktype;
                 is $e->action, $perl->{'action'}, 'action = '.$e->action;
+                is $e->origin, $perl->{'origin'}, 'origin = '.$e->origin;
             }
         }
 

@@ -153,7 +153,7 @@ MAKE_TEST: {
             my $perlobject = undef;
             my $tobetested = [ qw|
                 addresser recipient senderdomain destination reason timestamp 
-                token smtpagent|
+                token smtpagent origin|
             ];
             ok length $jsonstring;
             utf8::encode $jsonstring if utf8::is_utf8 $jsonstring;
