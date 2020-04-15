@@ -60,6 +60,8 @@ v4.25.5p11
   - Fix bug in code for getting an `"addresser"` address from `From:` field in
     the original message part which are multiple lines at `Sisimai::ARF`. #385
     Thanks to @jcbf
+  - New accessor `origin` at `Sisimai::Data` and the parsed results for keeping
+    a path to the source email #383
 
 v4.25.5
 --------------------------------------------------------------------------------
