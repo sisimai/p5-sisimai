@@ -76,6 +76,7 @@ sub close {
     # @return   [Integer] 0: Mail handle is not defined
     #                     1: Successfully closed the handle
     my $self = shift;
+    warn ' ***warning: Sisimai::Mail->close will be removed at v4.25.7';
     return 0 unless $self->{'mail'}->{'handle'};
 
     $self->{'mail'}->{'handle'} = undef;
