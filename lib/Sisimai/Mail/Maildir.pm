@@ -12,8 +12,9 @@ use Class::Accessor::Lite (
     'rw'  => [
         'path',     # [String] Path to each file
         'file',     # [String] Each file name of a mail in the Maildir/
-        'handle',   # [IO::Dir] Directory handle
+        'size',     # [Integer] File size of the mbox
         'offset',   # [Integer] The number of email files in Maildir/
+        'handle',   # [IO::Dir] Directory handle
     ]
 );
 
@@ -30,8 +31,9 @@ sub new {
         'dir'    => $argv1,
         'file'   => undef,
         'path'   => undef,
-        'handle' => IO::Dir->new($argv1),
+        'size'   => 0,
         'offset' => 0,
+        'handle' => IO::Dir->new($argv1),
     };
     return bless($param, __PACKAGE__);
 }
@@ -66,8 +68,9 @@ sub read {
                $readbuffer = do { local $/; <$filehandle> };
                $filehandle->close;
 
-            $self->{'file'} = $r;
-            $self->{'offset'}++;
+            $self->{'file'}    = $r;
+            $self->{'size'}   += -s $emailindir;
+            $self->{'offset'} += 1;
 
             last;
         }
@@ -123,6 +126,12 @@ C<path()> returns the path to each email in Maildir/
 C<file()> returns current file name of the Maildir.
 
     print $maildir->file;
+
+=head2 C<B<size()>>
+
+C<size()> returns the amount of email size which has been read
+
+    print $maildir->size;
 
 =head2 C<B<offset()>>
 
