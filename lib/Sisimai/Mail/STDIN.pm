@@ -63,7 +63,6 @@ Sisimai::Mail::STDIN - Mailbox reader
     while( my $r = $mailbox->read ) {
         print $r;   # print data read from STDIN
     }
-    $mailbox->close;
 
 =head1 DESCRIPTION
 
@@ -102,7 +101,7 @@ is bytes which have already read.
 
 C<handle()> returns file handle object (IO::Handle) of the mbox.
 
-    $mailbox->handle->close;
+    $mailbox->handle;
 
 =head2 C<B<read()>>
 
