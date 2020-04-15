@@ -7,7 +7,6 @@ use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
         'path',     # [String]  Fixed string "<STDIN>"
-        'name',     # [String]  File name of the mbox
         'size',     # [Integer] File size of the mbox
     ],
     'rw'  => [
@@ -22,7 +21,6 @@ sub new {
     my $class = shift;
     my $param = {
         'path'   => '<STDIN>',
-        'name'   => '<STDIN>',
         'size'   => undef,
         'offset' => 0,
         'handle' => IO::Handle->new->fdopen(fileno(STDIN), 'r'),
@@ -86,12 +84,6 @@ C<new()> is a constructor of Sisimai::Mail::STDIN
 C<path()> returns "<STDIN>"
 
     print $mailbox->path;   # "<STDIN>"
-
-=head2 C<B<name()>>
-
-C<name()> returns "<STDIN>"
-
-    print $mailbox->name;   # "<STDIN>"
 
 =head2 C<B<size()>>
 

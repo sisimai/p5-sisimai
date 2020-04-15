@@ -6,7 +6,7 @@ use Sisimai::Mail::STDIN;
 my $PackageName = 'Sisimai::Mail::STDIN';
 my $MethodNames = {
     'class' => ['new'],
-    'object' => ['path', 'name', 'size', 'handle', 'offset', 'read'],
+    'object' => ['path', 'size', 'handle', 'offset', 'read'],
 };
 my $SampleEmail = './set-of-emails/mailbox/mbox-0';
 my $NewInstance = $PackageName->new();
@@ -28,7 +28,6 @@ MAKE_TEST: {
         isa_ok $mailbox, $PackageName;
         can_ok $mailbox, @{ $MethodNames->{'object'} };
         is $mailbox->path, '<STDIN>', '->path = <STDIN>';
-        is $mailbox->name, '<STDIN>', '->name = <STDIN>';
         is $mailbox->size, undef, '->size = undef';
         isa_ok $mailbox->handle, 'IO::Handle';
         is $mailbox->offset, 0, '->offset = 0';
