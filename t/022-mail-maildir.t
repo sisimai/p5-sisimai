@@ -6,7 +6,7 @@ use Sisimai::Mail::Maildir;
 my $PackageName = 'Sisimai::Mail::Maildir';
 my $MethodNames = {
     'class' => ['new'],
-    'object' => ['path', 'dir', 'file', 'handle', 'read'],
+    'object' => ['path', 'dir', 'file', 'offset', 'handle', 'read'],
 };
 my $SampleEmail = './set-of-emails/maildir/bsd';
 my $NewInstance = $PackageName->new($SampleEmail);
@@ -25,12 +25,14 @@ MAKE_TEST: {
         can_ok $maildir, @{ $MethodNames->{'object'} };
         is $maildir->dir, $SampleEmail, '->dir = '.$maildir->dir;
         is $maildir->file, undef, '->file = ""';
+        is $maildir->offset, 0, '->offset = 0';
         isa_ok $maildir->handle, 'IO::Dir';
 
         while( my $r = $maildir->read ) {
             ok length $r, 'maildir->read('.($emindex + 1).')';
             ok length $maildir->file, '->file = '.$maildir->file;
             ok $maildir->path, '->path = '.$maildir->path;
+            ok $maildir->offset, '->offset = '.$maildir->offset;
             $emindex++;
         }
         ok $emindex > 1;

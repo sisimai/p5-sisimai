@@ -13,6 +13,7 @@ use Class::Accessor::Lite (
         'path',     # [String] Path to each file
         'file',     # [String] Each file name of a mail in the Maildir/
         'handle',   # [IO::Dir] Directory handle
+        'offset',   # [Integer] The number of email files in Maildir/
     ]
 );
 
@@ -30,6 +31,7 @@ sub new {
         'file'   => undef,
         'path'   => undef,
         'handle' => IO::Dir->new($argv1),
+        'offset' => 0,
     };
     return bless($param, __PACKAGE__);
 }
@@ -65,6 +67,7 @@ sub read {
                $filehandle->close;
 
             $self->{'file'} = $r;
+            $self->{'offset'}++;
 
             last;
         }
@@ -120,6 +123,12 @@ C<path()> returns the path to each email in Maildir/
 C<file()> returns current file name of the Maildir.
 
     print $maildir->file;
+
+=head2 C<B<offset()>>
+
+C<offset()> returns the number of emails which have been read in Maildir/
+
+    $maildir->offset;   # 2
 
 =head2 C<B<handle()>>
 
