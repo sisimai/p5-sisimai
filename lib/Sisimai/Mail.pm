@@ -6,7 +6,7 @@ use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
         'path',     # [String] path to mbox or Maildir/
-        'type',     # [String] Data type: mailbox, maildir, or stdin
+        'kind',     # [String] Data type: mailbox, maildir, stdin, or memory
     ],
     'rw'  => [
         'mail',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
@@ -21,21 +21,21 @@ sub new {
     my $argv1 = shift;
     my $klass = undef;
     my $loads = 'Sisimai/Mail/';
-    my $param = { 'type' => '', 'mail' => undef, 'path' => $argv1 };
+    my $param = { 'kind' => '', 'mail' => undef, 'path' => $argv1 };
 
     # The argumenet is a mailbox or a Maildir/.
     if( -f $argv1 ) {
         # The argument is a file, it is an mbox or email file in Maildir/
         $klass  = __PACKAGE__.'::Mbox';
         $loads .= 'Mbox.pm';
-        $param->{'type'} = 'mailbox';
+        $param->{'kind'} = 'mailbox';
         $param->{'path'} = $argv1;
 
     } elsif( -d $argv1 ) {
         # The agument is not a file, it is a Maildir/
         $klass  = __PACKAGE__.'::Maildir';
         $loads .= 'Maildir.pm';
-        $param->{'type'} = 'maildir';
+        $param->{'kind'} = 'maildir';
 
     } else {
         # The argumen1 neither a mailbox nor a Maildir/.
@@ -43,13 +43,13 @@ sub new {
             # Read from STDIN
             $klass  = __PACKAGE__.'::STDIN';
             $loads .= 'STDIN.pm';
-            $param->{'type'} = 'stdin';
+            $param->{'kind'} = 'stdin';
 
         } elsif( ref($argv1) eq 'SCALAR' ) {
             # Read from a variable as a scalar reference
             $klass  = __PACKAGE__.'::Memory';
             $loads .= 'Memory.pm';
-            $param->{'type'} = 'memory';
+            $param->{'kind'} = 'memory';
             $param->{'path'} = 'MEMORY';
         }
     }
@@ -59,6 +59,12 @@ sub new {
     $param->{'mail'} = $klass->new($argv1);
 
     return bless($param, __PACKAGE__);
+}
+
+sub type {
+    my $self = shift;
+    warn sprintf(" ***warning: Sisimai::Mail->type will be removed at v4.25.7. Use Sisimai::Mail->kind instead.");
+    return $self->kind;
 }
 
 sub read {
@@ -76,7 +82,7 @@ sub close {
     # @return   [Integer] 0: Mail handle is not defined
     #                     1: Successfully closed the handle
     my $self = shift;
-    warn ' ***warning: Sisimai::Mail->close will be removed at v4.25.7';
+    warn sprintf(" ***warning: Sisimai::Mail->close will be removed at v4.25.7. The handle automatically closes at the EOF.");
     return 0 unless $self->{'mail'}->{'handle'};
 
     $self->{'mail'}->{'handle'} = undef;
@@ -145,9 +151,9 @@ C<path()> returns the path to mbox or Maildir.
 
 =head2 C<B<mbox()>>
 
-C<type()> Returns the name of data type
+C<kind()> Returns the name of data type
 
-    print $mailbox->type;   # mailbox or maildir, or stdin.
+    print $mailbox->kind;   # mailbox or maildir, stdin, or memory.
 
 =head2 C<B<mail()>>
 
@@ -180,7 +186,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
