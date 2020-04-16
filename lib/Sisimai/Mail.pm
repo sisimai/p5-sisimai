@@ -16,8 +16,9 @@ state $removedat = 'v4.25.10';
 
 sub new {
     # Constructor of Sisimai::Mail
-    # @param    [String] argv1         Path to mbox or Maildir/
-    # @return   [Sisimai::Mail, Undef] Object or Undef if the argument was wrong
+    # @param    [String] argv1  Path to mbox or Maildir/
+    # @return   [Sisimai::Mail] Object
+    #           [Undef]         The argument is wrong
     my $class = shift;
     my $argv1 = shift;
     my $klass = undef;

@@ -21,8 +21,8 @@ use Class::Accessor::Lite (
 sub new {
     # Constructor of Sisimai::Mail::Mbox
     # @param    [String] argv1          Path to mbox
-    # @return   [Sisimai::Mail::Mbox]   Object or Undef if the argument is not
-    #                                   a file or does not exist
+    # @return   [Sisimai::Mail::Mbox]   Object
+    #           [Undef]                 is not a file or does not exist
     my $class = shift;
     my $argv1 = shift // return undef;
     my $param = { 'offset' => 0 };

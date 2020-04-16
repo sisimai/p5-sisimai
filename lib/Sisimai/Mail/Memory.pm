@@ -17,8 +17,8 @@ use Class::Accessor::Lite (
 sub new {
     # Constructor of Sisimai::Mail::Memory
     # @param    [String] argv1          Entire email string
-    # @return   [Sisimai::Mail::Memory] Object or Undef if the argument is not
-    #                                   valid email text
+    # @return   [Sisimai::Mail::Memory] Object
+    #           [Undef]                 is not a valid email text
     my $class = shift;
     my $argv1 = shift // return undef;
     my $param = {

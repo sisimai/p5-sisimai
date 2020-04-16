@@ -12,17 +12,17 @@ use Class::Accessor::Lite (
     'rw'  => [
         'path',     # [String] Path to each file
         'file',     # [String] Each file name of a mail in the Maildir/
-        'size',     # [Integer] File size of the mbox
-        'offset',   # [Integer] The number of email files in Maildir/
+        'size',     # [Integer] The amount of email file size in the Maildir/
+        'offset',   # [Integer] The number of email files in the Maildir/
         'handle',   # [IO::Dir] Directory handle
     ]
 );
 
 sub new {
     # Constructor of Sisimai::Mail::Maildir
-    # @param    [String] argv1                 Path to Maildir/
-    # @return   [Sisimai::Mail::Maildir,Undef] Object or Undef if the argument is
-    #                                          not a directory or does not exist
+    # @param    [String] argv1              Path to Maildir/
+    # @return   [Sisimai::Mail::Maildir]    Object
+    #           [Undef]                     is not a directory or does not exist
     my $class = shift;
     my $argv1 = shift // return undef;
     return undef unless -d $argv1;
