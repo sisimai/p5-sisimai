@@ -8,6 +8,7 @@ my $MethodNames = {
     'class' => ['new'],
     'object' => ['path', 'dir', 'file', 'size', 'offset', 'handle', 'read'],
 };
+my $MaildirSize = 486;
 my $SampleEmail = './set-of-emails/maildir/bsd';
 my $NewInstance = $PackageName->new($SampleEmail);
 
@@ -25,7 +26,7 @@ MAKE_TEST: {
         can_ok $maildir, @{ $MethodNames->{'object'} };
         is $maildir->dir, $SampleEmail, '->dir = '.$maildir->dir;
         is $maildir->file, undef, '->file = ""';
-        is $maildir->size, 0, '->size = 0';
+        is $maildir->size, $MaildirSize, '->size = '.$MaildirSize;
         is $maildir->offset, 0, '->offset = 0';
         isa_ok $maildir->handle, 'IO::Dir';
 
@@ -33,7 +34,6 @@ MAKE_TEST: {
             ok length $r, 'maildir->read('.($emindex + 1).')';
             ok length $maildir->file, '->file = '.$maildir->file;
             ok $maildir->path, '->path = '.$maildir->path;
-            ok $maildir->size, '->size = '.$maildir->size;
             ok $maildir->offset, '->offset = '.$maildir->offset;
             $emindex++;
         }

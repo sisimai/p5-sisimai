@@ -12,8 +12,8 @@ use Class::Accessor::Lite (
     'rw'  => [
         'path',     # [String] Path to each file
         'file',     # [String] Each file name of a mail in the Maildir/
-        'size',     # [Integer] The amount of email file size in the Maildir/
-        'offset',   # [Integer] The number of email files in the Maildir/
+        'size',     # [Integer] The number of email files in the Maildir/
+        'offset',   # [Integer] The number of email files which have been read
         'handle',   # [IO::Dir] Directory handle
     ]
 );
@@ -25,13 +25,24 @@ sub new {
     #           [Undef]                     is not a directory or does not exist
     my $class = shift;
     my $argv1 = shift // return undef;
+    my $files = 0;
     return undef unless -d $argv1;
+
+    eval {
+        # Count the number of files in the Maildir/
+        opendir MAILDIR, $argv1;
+        while( my $e = readdir MAILDIR ) {
+            next unless -f sprintf("%s/%s", $argv1, $e);
+            $files += 1;
+        }
+        closedir MAILDIR;
+    };
 
     my $param = {
         'dir'    => $argv1,
         'file'   => undef,
         'path'   => undef,
-        'size'   => 0,
+        'size'   => $files,
         'offset' => 0,
         'handle' => IO::Dir->new($argv1),
     };
@@ -44,35 +55,32 @@ sub read {
     my $self = shift;
     return undef unless defined $self->{'dir'};
     return undef unless -d $self->{'dir'};
+    return undef unless $self->{'offset'} < $self->{'size'};
 
     my $seekhandle = $self->{'handle'};
     my $readbuffer = '';
 
     eval {
         $seekhandle = IO::Dir->new($self->{'dir'}) unless $seekhandle;
-
         while( my $r = $seekhandle->read ) {
             # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
 
             my $emailindir =  $self->{'dir'}.'/'.$r;
                $emailindir =~ y{/}{}s;
+            $self->{'offset'} += 1;
             next unless -f $emailindir;
             next unless -s $emailindir;
             next unless -r $emailindir;
 
-            # Get inode number of the file
+            $self->{'path'} = $emailindir;
+            $self->{'file'} = $r;
             my $filehandle = IO::File->new($emailindir, 'r');
                $readbuffer = do { local $/; <$filehandle> };
                $filehandle->close;
-
-            $self->{'path'} = $emailindir;
-            $self->{'file'} = $r;
-            $self->{'size'}   += -s $emailindir;
-            $self->{'offset'} += 1;
-
             last;
         }
+        $seekhandle->close unless $self->{'offset'} < $self->{'size'};
     };
     return $readbuffer;
 }
