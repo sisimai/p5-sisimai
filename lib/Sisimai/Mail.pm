@@ -65,13 +65,12 @@ sub new {
 sub mail {
     my $self = shift;
     warn sprintf(" ***warning: %s->mail will be removed at %s. Use %s->data instead", __PACKAGE__, $removedat, __PACKAGE__);
-    #warn sprintf(" ***warning: Sisimai::Mail->mail will be removed at %s. Use Sisimai::Mail->data instead.", $removedat);
     return $self->data;
 }
 
 sub type {
     my $self = shift;
-    warn sprintf(" ***warning: Sisimai::Mail->type will be removed at %s. Use Sisimai::Mail->kind instead.", $removedat);
+    warn sprintf(" ***warning: %s->type will be removed at %s. Use %s->kind instead", __PACKAGE__, $removedat, __PACKAGE__);
     return $self->kind;
 }
 
@@ -90,7 +89,7 @@ sub close {
     # @return   [Integer] 0: Mail handle is not defined
     #                     1: Successfully closed the handle
     my $self = shift;
-    warn sprintf(" ***warning: Sisimai::Mail->close will be removed at v4.25.7. The handle automatically closes at the EOF.");
+    warn sprintf(" ***warning: %s->close will be removed at %s. The handle automatically closes at the EOF", __PACKAGE__, $removedat, __PACKAGE__);
     return 0 unless $self->{'data'}->{'handle'};
 
     $self->{'data'}->{'handle'} = undef;
