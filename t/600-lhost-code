@@ -90,7 +90,7 @@ my $moduletest = sub {
         next unless defined $mailobject;
         isa_ok $mailobject, 'Sisimai::Mail';
 
-        READ_EACH_EMAIL: while( my $r = $mailobject->read ) {
+        READ_EACH_EMAIL: while( my $r = $mailobject->data->read ) {
             # Read messages in each email
             my $mesgobject = undef;
             my $dataobject = undef;

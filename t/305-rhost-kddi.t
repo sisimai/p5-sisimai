@@ -29,7 +29,7 @@ MAKE_TEST: {
         my $mtahost = qr/(?:msmx[.]au[.]com|lsean[.]ezweb[.]ne[.]jp)/;
         next unless defined $mailbox;
 
-        while( my $r = $mailbox->read ) {
+        while( my $r = $mailbox->data->read ) {
 
             my $p = Sisimai::Message->new('data' => $r);
             isa_ok $p, 'Sisimai::Message';

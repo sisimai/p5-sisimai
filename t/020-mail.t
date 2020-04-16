@@ -30,8 +30,8 @@ MAKE_TEST: {
         is $mailbox->kind, 'mailbox', '->kind = mailbox';
         isa_ok $mailbox->data, $PackageName.'::Mbox';
 
-        while( my $r = $mailbox->read ) {
-            ok length $r, 'mailbox->read('.($emindex + 1).')';
+        while( my $r = $mailbox->data->read ) {
+            ok length $r, 'mailbox->data->read('.($emindex + 1).')';
             $emindex++;
         }
         is $emindex, 37;
@@ -47,8 +47,8 @@ MAKE_TEST: {
         is $maildir->kind, 'maildir', '->kind = maildir';
         isa_ok $maildir->data, $PackageName.'::Maildir';
 
-        while( my $r = $maildir->read ) {
-            ok length $r, 'maildir->read('.($emindex + 1).')';
+        while( my $r = $maildir->data->read ) {
+            ok length $r, 'maildir->data->read('.($emindex + 1).')';
             $emindex++;
         }
         is $emindex, 37;
@@ -64,8 +64,8 @@ MAKE_TEST: {
         is $maildir->kind, 'maildir', '->kind = maildir';
         isa_ok $maildir->data, $PackageName.'::Maildir';
 
-        while( my $r = $maildir->read ) {
-            ok length $r, 'maildir->read('.($emindex + 1).')';
+        while( my $r = $maildir->data->read ) {
+            ok length $r, 'maildir->data->read('.($emindex + 1).')';
             $emindex++;
         }
         is $emindex, 2;

@@ -39,7 +39,7 @@ MAKE_TEST: {
         my $yaml = undef;
         my $perl = undef;
 
-        while( my $r = $mail->read ){ 
+        while( my $r = $mail->data->read ){ 
             $mesg = Sisimai::Message->new('data' => $r); 
             $data = Sisimai::Data->make('data' => $mesg, 'origin' => $mail->data->path);
             isa_ok $data, 'ARRAY';

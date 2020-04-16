@@ -29,7 +29,7 @@ sub make {
     my $list = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
     while( my $r = $mail->data->read ) {
-        # Read and parse each mail file
+        # Read and parse each email file
         my $p = { 'data' => $r, 'hook' => $argv1->{'hook'} };
         next unless my $mesg = Sisimai::Message->new(%$p);
 
