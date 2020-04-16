@@ -6,7 +6,7 @@ use Sisimai::Mail;
 my $PackageName = 'Sisimai::Mail';
 my $MethodNames = {
     'class' => ['new'],
-    'object' => ['path', 'kind', 'mail', 'data'],
+    'object' => ['path', 'kind', 'data', 'type', 'mail', 'close'],
 };
 my $SampleEmail = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
@@ -35,6 +35,11 @@ MAKE_TEST: {
             $emindex++;
         }
         is $emindex, 37;
+
+        # old methods
+        isa_ok $mailbox->mail, $PackageName.'::Mbox';
+        is $mailbox->type, 'mailbox', '->type = mailbox';
+        ok $mailbox->close;
     }
 
     MAILDIR: {
