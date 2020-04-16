@@ -76,13 +76,11 @@ sub type {
 }
 
 sub read {
-    # Mbox/Maildir reader, works as an iterator.
+    # Alias method of Sisimai::Mail::*->read()
     # @return   [String] Contents of mbox/Maildir
     my $self = shift;
-    my $data = $self->{'data'};
-
-    return undef unless ref $data;
-    return $data->read;
+    return undef unless ref $self->{'data'};
+    return $self->{'data'}->read;
 }
 
 sub close {
