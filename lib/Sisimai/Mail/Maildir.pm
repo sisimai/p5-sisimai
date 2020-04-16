@@ -62,13 +62,12 @@ sub read {
             next unless -r $emailindir;
 
             # Get inode number of the file
-            $self->{'path'} = $emailindir;
-            my $emailinode = $^O eq 'MSWin32' ?  $emailindir : [stat $emailindir]->[1];
             my $filehandle = IO::File->new($emailindir, 'r');
                $readbuffer = do { local $/; <$filehandle> };
                $filehandle->close;
 
-            $self->{'file'}    = $r;
+            $self->{'path'} = $emailindir;
+            $self->{'file'} = $r;
             $self->{'size'}   += -s $emailindir;
             $self->{'offset'} += 1;
 
