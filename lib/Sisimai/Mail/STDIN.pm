@@ -7,10 +7,10 @@ use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
         'path',     # [String]  Fixed string "<STDIN>"
-        'size',     # [Integer] File size of the mbox
+        'size',     # [Integer] Data size which has been read
     ],
     'rw'  => [
-        'offset',   # [Integer]  Offset position for seeking
+        'offset',   # [Integer]  The number of emails which have been read
         'handle',   # [IO::File] File handle
     ]
 );
@@ -21,7 +21,7 @@ sub new {
     my $class = shift;
     my $param = {
         'path'   => '<STDIN>',
-        'size'   => undef,
+        'size'   => 0,
         'offset' => 0,
         'handle' => IO::Handle->new->fdopen(fileno(STDIN), 'r'),
     };
@@ -45,6 +45,8 @@ sub read {
             $readbuffer .= $r;
         }
     };
+    $self->{'size'}   += length $readbuffer;
+    $self->{'offset'} += 1;
     return $readbuffer;
 }
 
@@ -86,9 +88,9 @@ C<path()> returns "<STDIN>"
 
 =head2 C<B<size()>>
 
-C<size()> returns "undef"
+C<size()> returns the data size which has been read
 
-    print $mailbox->size;   # undef
+    print $mailbox->size;   # 2202
 
 =head2 C<B<offset()>>
 

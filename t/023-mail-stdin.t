@@ -28,7 +28,7 @@ MAKE_TEST: {
         isa_ok $mailbox, $PackageName;
         can_ok $mailbox, @{ $MethodNames->{'object'} };
         is $mailbox->path, '<STDIN>', '->path = <STDIN>';
-        is $mailbox->size, undef, '->size = undef';
+        is $mailbox->size, 0, '->size = 0';
         isa_ok $mailbox->handle, 'IO::Handle';
         is $mailbox->offset, 0, '->offset = 0';
 
