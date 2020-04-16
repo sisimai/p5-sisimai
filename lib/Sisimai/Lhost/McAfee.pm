@@ -20,16 +20,10 @@ state $ReFailures = {
 sub description { 'McAfee Email Appliance' }
 sub make {
     # Detect an error from McAfee
-    # @param         [Hash] mhead       Message headers of a bounce email
-    # @options mhead [String] from      From header
-    # @options mhead [String] date      Date header
-    # @options mhead [String] subject   Subject header
-    # @options mhead [Array]  received  Received headers
-    # @options mhead [String] others    Other required headers
-    # @param         [String] mbody     Message body of a bounce email
-    # @return        [Hash, Undef]      Bounce data list and message/rfc822 part
-    #                                   or Undef if it failed to parse or the
-    #                                   arguments are missing
+    # @param    [Hash] mhead    Message headers of a bounce email
+    # @param    [String] mbody  Message body of a bounce email
+    # @return   [Hash]          Bounce data list and message/rfc822 part
+    # @return   [Undef]         failed to parse or the arguments are missing
     # @since v4.1.1
     my $class = shift;
     my $mhead = shift // return undef;
