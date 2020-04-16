@@ -9,9 +9,10 @@ use Class::Accessor::Lite (
         'kind',     # [String] Data type: mailbox, maildir, stdin, or memory
     ],
     'rw'  => [
-        'mail',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
+        'data',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
     ]
 );
+state $removedat = 'v4.25.10';
 
 sub new {
     # Constructor of Sisimai::Mail
@@ -21,7 +22,7 @@ sub new {
     my $argv1 = shift;
     my $klass = undef;
     my $loads = 'Sisimai/Mail/';
-    my $param = { 'kind' => '', 'mail' => undef, 'path' => $argv1 };
+    my $param = { 'kind' => '', 'data' => undef, 'path' => $argv1 };
 
     # The argumenet is a mailbox or a Maildir/.
     if( -f $argv1 ) {
@@ -56,14 +57,21 @@ sub new {
     return undef unless $klass;
 
     require $loads;
-    $param->{'mail'} = $klass->new($argv1);
+    $param->{'data'} = $klass->new($argv1);
 
     return bless($param, __PACKAGE__);
 }
 
+sub mail {
+    my $self = shift;
+    warn sprintf(" ***warning: %s->mail will be removed at %s. Use %s->data instead", __PACKAGE__, $removedat, __PACKAGE__);
+    #warn sprintf(" ***warning: Sisimai::Mail->mail will be removed at %s. Use Sisimai::Mail->data instead.", $removedat);
+    return $self->data;
+}
+
 sub type {
     my $self = shift;
-    warn sprintf(" ***warning: Sisimai::Mail->type will be removed at v4.25.7. Use Sisimai::Mail->kind instead.");
+    warn sprintf(" ***warning: Sisimai::Mail->type will be removed at %s. Use Sisimai::Mail->kind instead.", $removedat);
     return $self->kind;
 }
 
@@ -71,10 +79,10 @@ sub read {
     # Mbox/Maildir reader, works as an iterator.
     # @return   [String] Contents of mbox/Maildir
     my $self = shift;
-    my $mail = $self->{'mail'};
+    my $data = $self->{'data'};
 
-    return undef unless ref $mail;
-    return $mail->read;
+    return undef unless ref $data;
+    return $data->read;
 }
 
 sub close {
@@ -83,9 +91,9 @@ sub close {
     #                     1: Successfully closed the handle
     my $self = shift;
     warn sprintf(" ***warning: Sisimai::Mail->close will be removed at v4.25.7. The handle automatically closes at the EOF.");
-    return 0 unless $self->{'mail'}->{'handle'};
+    return 0 unless $self->{'data'}->{'handle'};
 
-    $self->{'mail'}->{'handle'} = undef;
+    $self->{'data'}->{'handle'} = undef;
     return 1;
 }
 

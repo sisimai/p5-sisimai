@@ -28,12 +28,12 @@ sub make {
 
     my $list = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
-    while( my $r = $mail->read ) {
+    while( my $r = $mail->data->read ) {
         # Read and parse each mail file
         my $p = { 'data' => $r, 'hook' => $argv1->{'hook'} };
         next unless my $mesg = Sisimai::Message->new(%$p);
 
-        $p = { 'data' => $mesg, 'delivered' => $argv1->{'delivered'}, 'origin' => $mail->mail->path };
+        $p = { 'data' => $mesg, 'delivered' => $argv1->{'delivered'}, 'origin' => $mail->data->path };
         my $data = Sisimai::Data->make(%$p);
         push @$list, @$data if scalar @$data;
     }

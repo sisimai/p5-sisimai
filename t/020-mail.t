@@ -6,7 +6,7 @@ use Sisimai::Mail;
 my $PackageName = 'Sisimai::Mail';
 my $MethodNames = {
     'class' => ['new'],
-    'object' => ['path', 'kind', 'type', 'mail', 'read', 'close'],
+    'object' => ['path', 'kind', 'mail', 'data'],
 };
 my $SampleEmail = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
@@ -27,16 +27,13 @@ MAKE_TEST: {
         isa_ok $mailbox, $PackageName;
         can_ok $mailbox, @{ $MethodNames->{'object'} };
         is $mailbox->path, $SampleEmail->{'mailbox'}, '->path = '.$mailbox->path;
-        is $mailbox->type, 'mailbox', '->type = mailbox';
         is $mailbox->kind, 'mailbox', '->kind = mailbox';
-        isa_ok $mailbox->mail, $PackageName.'::Mbox';
+        isa_ok $mailbox->data, $PackageName.'::Mbox';
 
         while( my $r = $mailbox->read ) {
             ok length $r, 'mailbox->read('.($emindex + 1).')';
             $emindex++;
         }
-        ok $mailbox->close, 'mailbox->close';
-        is $mailbox->close, 0, 'mailbox->close';
         is $emindex, 37;
     }
 
@@ -47,16 +44,13 @@ MAKE_TEST: {
         isa_ok $maildir, $PackageName;
         can_ok $maildir, @{ $MethodNames->{'object'} };
         is $maildir->path, $SampleEmail->{'maildir'}, '->path = '.$maildir->path;
-        is $maildir->type, 'maildir', '->type = maildir';
         is $maildir->kind, 'maildir', '->kind = maildir';
-        isa_ok $maildir->mail, $PackageName.'::Maildir';
+        isa_ok $maildir->data, $PackageName.'::Maildir';
 
         while( my $r = $maildir->read ) {
             ok length $r, 'maildir->read('.($emindex + 1).')';
             $emindex++;
         }
-        ok $maildir->close, 'maildir->close';
-        is $maildir->close, 0, 'maildir->close';
         is $emindex, 37;
     }
 
@@ -68,14 +62,12 @@ MAKE_TEST: {
         can_ok $maildir, @{ $MethodNames->{'object'} };
         is $maildir->path, $IsNotBounce->{'maildir'}, '->path = '.$maildir->path;
         is $maildir->kind, 'maildir', '->kind = maildir';
-        isa_ok $maildir->mail, $PackageName.'::Maildir';
+        isa_ok $maildir->data, $PackageName.'::Maildir';
 
         while( my $r = $maildir->read ) {
             ok length $r, 'maildir->read('.($emindex + 1).')';
             $emindex++;
         }
-        ok $maildir->close, 'maildir->close';
-        is $maildir->close, 0, 'maildir->close';
         is $emindex, 2;
     }
 
@@ -86,12 +78,8 @@ MAKE_TEST: {
         isa_ok $mailobj, $PackageName;
         can_ok $mailobj, @{ $MethodNames->{'object'} };
         is $mailobj->path, 'STDIN', '->path = '.$mailobj->path;
-        is $mailobj->type, 'stdin', '->type = stdin';
         is $mailobj->kind, 'stdin', '->kind = stdin';
-        isa_ok $mailobj->mail, $PackageName.'::STDIN';
-
-        ok $mailobj->close, 'mailobj->close';
-        is $mailobj->close, 0, 'mailobj->close';
+        isa_ok $mailobj->data, $PackageName.'::STDIN';
         is $emindex, 0;
     }
 
@@ -112,9 +100,7 @@ MAKE_TEST: {
             can_ok $mailobj, @{ $MethodNames->{'object'} };
             is $mailobj->path, 'MEMORY', '->path = '.$mailobj->path;
             is $mailobj->kind, 'memory', '->kind = memory';
-            isa_ok $mailobj->mail, $PackageName.'::Memory';
-
-            is $mailobj->close, 0, 'mailobj->close';
+            isa_ok $mailobj->data, $PackageName.'::Memory';
             is $emindex, 0;
         }
 
@@ -127,11 +113,9 @@ MAKE_TEST: {
             isa_ok $mailobj, $PackageName;
             can_ok $mailobj, @{ $MethodNames->{'object'} };
             is $mailobj->path, 'MEMORY', '->path = '.$mailobj->path;
-            is $mailobj->type, 'memory', '->type = memory';
             is $mailobj->kind, 'memory', '->kind = memory';
-            isa_ok $mailobj->mail, $PackageName.'::Memory';
+            isa_ok $mailobj->data, $PackageName.'::Memory';
 
-            is $mailobj->close, 0, 'mailobj->close';
             is $emindex, 0;
         }
     }
