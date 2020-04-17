@@ -53,7 +53,6 @@ sub list {
             Lhost/SendGrid.pm
             Lhost/Sendmail.pm
             Lhost/SurfControl.pm
-            Lhost/UserDefined.pm
             Lhost/V5sendmail.pm
             Lhost/Verizon.pm
             Lhost/X1.pm
