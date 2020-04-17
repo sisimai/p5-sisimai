@@ -53,6 +53,7 @@ sub match {
         |mailbox[ ](?:
              .+[ ]does[ ]not[ ]exist
             |.+[@].+[ ]unavailable
+            |does[ ]not[ ]exist
             |invalid
             |is[ ](?:inactive|unavailable)
             |not[ ](?:present|found)
@@ -80,7 +81,7 @@ sub match {
             )
         |non[- ]?existent[ ]user
         |not[ ](?:
-             a[ ]valid[ ]user[ ]here
+             a[ ]valid[ ](?:recipient|user[ ]here)
             |a[ ]local[ ]address
             |email[ ]addresses
             )
