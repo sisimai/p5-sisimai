@@ -12,25 +12,38 @@ use Class::Accessor::Lite (
     'rw'  => [
         'path',     # [String] Path to each file
         'file',     # [String] Each file name of a mail in the Maildir/
-        'inodes',   # [Array]  i-node List of files in the Maildir/
+        'size',     # [Integer] The number of email files in the Maildir/
+        'offset',   # [Integer] The number of email files which have been read
         'handle',   # [IO::Dir] Directory handle
     ]
 );
 
 sub new {
     # Constructor of Sisimai::Mail::Maildir
-    # @param    [String] argv1                 Path to Maildir/
-    # @return   [Sisimai::Mail::Maildir,Undef] Object or Undef if the argument is
-    #                                          not a directory or does not exist
+    # @param    [String] argv1              Path to Maildir/
+    # @return   [Sisimai::Mail::Maildir]    Object
+    #           [Undef]                     is not a directory or does not exist
     my $class = shift;
     my $argv1 = shift // return undef;
+    my $files = 0;
     return undef unless -d $argv1;
+
+    eval {
+        # Count the number of files in the Maildir/
+        opendir MAILDIR, $argv1;
+        while( my $e = readdir MAILDIR ) {
+            next unless -f sprintf("%s/%s", $argv1, $e);
+            $files += 1;
+        }
+        closedir MAILDIR;
+    };
 
     my $param = {
         'dir'    => $argv1,
         'file'   => undef,
         'path'   => undef,
-        'inodes' => {},
+        'size'   => $files,
+        'offset' => 0,
         'handle' => IO::Dir->new($argv1),
     };
     return bless($param, __PACKAGE__);
@@ -42,37 +55,32 @@ sub read {
     my $self = shift;
     return undef unless defined $self->{'dir'};
     return undef unless -d $self->{'dir'};
+    return undef unless $self->{'offset'} < $self->{'size'};
 
     my $seekhandle = $self->{'handle'};
     my $readbuffer = '';
 
     eval {
         $seekhandle = IO::Dir->new($self->{'dir'}) unless $seekhandle;
-
         while( my $r = $seekhandle->read ) {
             # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
 
             my $emailindir =  $self->{'dir'}.'/'.$r;
                $emailindir =~ y{/}{}s;
+            $self->{'offset'} += 1;
             next unless -f $emailindir;
             next unless -s $emailindir;
             next unless -r $emailindir;
 
-            # Get inode number of the file
             $self->{'path'} = $emailindir;
-            my $emailinode = $^O eq 'MSWin32' ?  $emailindir : [stat $emailindir]->[1];
-            next if exists $self->{'inodes'}->{ $emailinode };
-
+            $self->{'file'} = $r;
             my $filehandle = IO::File->new($emailindir, 'r');
                $readbuffer = do { local $/; <$filehandle> };
                $filehandle->close;
-
-            $self->{'inodes'}->{ $emailinode } = 1;
-            $self->{'file'} = $r;
-
             last;
         }
+        $seekhandle->close unless $self->{'offset'} < $self->{'size'};
     };
     return $readbuffer;
 }
@@ -126,11 +134,17 @@ C<file()> returns current file name of the Maildir.
 
     print $maildir->file;
 
-=head2 C<B<inodes()>>
+=head2 C<B<size()>>
 
-C<inodes()> returns i-node list of each email in Maildir.
+C<size()> returns the amount of email size which has been read
 
-    print for @{ $maildir->inodes };
+    print $maildir->size;
+
+=head2 C<B<offset()>>
+
+C<offset()> returns the number of emails which have been read in Maildir/
+
+    $maildir->offset;   # 2
 
 =head2 C<B<handle()>>
 
@@ -153,7 +167,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

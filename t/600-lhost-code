@@ -90,7 +90,7 @@ my $moduletest = sub {
         next unless defined $mailobject;
         isa_ok $mailobject, 'Sisimai::Mail';
 
-        READ_EACH_EMAIL: while( my $r = $mailobject->read ) {
+        READ_EACH_EMAIL: while( my $r = $mailobject->data->read ) {
             # Read messages in each email
             my $mesgobject = undef;
             my $dataobject = undef;
@@ -198,7 +198,7 @@ my $moduletest = sub {
             } # End of the loop for checking Sisimai::Message
 
 
-            $dataobject = Sisimai::Data->make('data' => $mesgobject, 'delivered' => 1, 'origin' => $mailobject->mail->path);
+            $dataobject = Sisimai::Data->make('data' => $mesgobject, 'delivered' => 1, 'origin' => $mailobject->data->path);
             isa_ok $dataobject, 'ARRAY',              sprintf("[%s] Data object", $e->{'n'});
             isa_ok $dataobject->[0], 'Sisimai::Data', sprintf("[%s] Sisimai::Data", $e->{'n'});
             ok scalar @$dataobject, sprintf("%s|Sisimai::Data = %s", $E, scalar @$dataobject);

@@ -9,7 +9,7 @@ use Class::Accessor::Lite (
         'size',     # [Integer] data size
     ],
     'rw'  => [
-        'data',     # [Array] entire bounce mail message
+        'payload',  # [Array] entire bounce mail message
         'offset',   # [Integer] Index of "data"
     ]
 );
@@ -17,25 +17,25 @@ use Class::Accessor::Lite (
 sub new {
     # Constructor of Sisimai::Mail::Memory
     # @param    [String] argv1          Entire email string
-    # @return   [Sisimai::Mail::Memory] Object or Undef if the argument is not
-    #                                   valid email text
+    # @return   [Sisimai::Mail::Memory] Object
+    #           [Undef]                 is not a valid email text
     my $class = shift;
     my $argv1 = shift // return undef;
     my $param = {
-        'data'   => [],
-        'path'   => '<MEMORY>',
-        'size'   => length $$argv1 || 0,
-        'offset' => 0,
+        'payload' => [],
+        'path'    => '<MEMORY>',
+        'size'    => length $$argv1 || 0,
+        'offset'  => 0,
     };
     return undef unless $param->{'size'};
 
     if( (substr($$argv1, 0, 5) || '') eq 'From ') {
         # UNIX mbox
-        $param->{'data'} = [split(/^From /m, $$argv1)];
-        shift @{ $param->{'data'} };
-        $_ = 'From '.$_ for @{ $param->{'data'} };
+        $param->{'payload'} = [split(/^From /m, $$argv1)];
+        shift @{ $param->{'payload'} };
+        $_ = 'From '.$_ for @{ $param->{'payload'} };
     } else {
-        $param->{'data'} = [$$argv1];
+        $param->{'payload'} = [$$argv1];
     }
     return bless($param, __PACKAGE__);
 }
@@ -44,10 +44,10 @@ sub read {
     # Memory reader, works as a iterator.
     # @return   [String] Contents of a bounce mail
     my $self = shift;
-    return undef unless scalar @{ $self->{'data'} };
+    return undef unless scalar @{ $self->{'payload'} };
 
     $self->{'offset'} += 1;
-    return shift @{ $self->{'data'} };
+    return shift @{ $self->{'payload'} };
 }
 
 1;
@@ -95,16 +95,16 @@ C<size()> returns a memory size of the mailbox or JSON string.
 
     print $mailobj->size;   # 94515
 
-=head2 C<B<data()>>
+=head2 C<B<payload()>>
 
-C<data()> returns an array reference to each email message or JSON string
+C<payload()> returns an array reference to each email message or JSON string
 
-    print scalar @{ $mailobj->data };   # 17
+    print scalar @{ $mailobj->payload };   # 17
 
 =head2 C<B<offset()>>
 
-C<offset()> returns an offset position for seeking "data". The value of "offset"
-is an index number which have already read.
+C<offset()> returns an offset position for seeking "payload" list. The value of
+"offset" is an index number which have already read.
 
     print $mailobj->offset;   # 0
 

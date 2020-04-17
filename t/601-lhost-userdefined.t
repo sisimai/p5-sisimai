@@ -24,7 +24,7 @@ MAKE_TEST: {
     my $data = undef;
     my $list = undef;
 
-    while( my $r = $mail->read ){
+    while( my $r = $mail->data->read ){
         $mesg = Sisimai::Message->new(
                     'data' => $r,
                     'load' => ['Sisimai::Lhost::UserDefined']

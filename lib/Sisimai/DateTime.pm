@@ -386,7 +386,7 @@ sub parse {
     # Check each piece
     if( grep { ! defined $_ } values %$v ) {
         # Strange date format
-        warn sprintf(" ***warning: Strange date format [%s]", $datestring);
+        printf(STDERR " ***warning: Strange date format [%s]\n", $datestring);
         return undef;
     }
 

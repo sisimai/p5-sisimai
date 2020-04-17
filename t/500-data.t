@@ -37,9 +37,9 @@ MAKE_TEST: {
         return $catch;
     };
 
-    while( my $r = $mail->read ){ 
+    while( my $r = $mail->data->read ){ 
         $mesg = Sisimai::Message->new('data' => $r, 'hook' => $call); 
-        $data = Sisimai::Data->make('data' => $mesg, 'origin' => $mail->mail->path); 
+        $data = Sisimai::Data->make('data' => $mesg, 'origin' => $mail->data->path); 
         isa_ok $data, 'ARRAY';
 
         for my $e ( @$data ) {
@@ -109,7 +109,7 @@ MAKE_TEST: {
         'addresser' => ['Return-Path', 'From', 'X-Envelope-From'],
     };
 
-    WITH_ORDER: while( my $r = $mail->read ){ 
+    WITH_ORDER: while( my $r = $mail->data->read ){ 
         $mesg = Sisimai::Message->new('data' => $r); 
         $data = Sisimai::Data->make('data' => $mesg, 'order' => $list); 
         isa_ok $data, 'ARRAY';
@@ -170,7 +170,7 @@ MAKE_TEST: {
     IS_NOT_A_BOUNCE: for my $e ( @$file ) {
         $mail = Sisimai::Mail->new($e);
 
-        NOT_BOUNCE: while( my $r = $mail->read ){ 
+        NOT_BOUNCE: while( my $r = $mail->data->read ){ 
             $mesg = Sisimai::Message->new('data' => $r); 
             is $mesg, undef;
         }

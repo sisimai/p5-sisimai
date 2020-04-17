@@ -26,7 +26,7 @@ MAKE_TEST: {
     use Sisimai::Data;
     my $mailbox = Sisimai::Mail->new('set-of-emails/maildir/bsd/lhost-sendmail-01.eml');
 
-    while( my $r = $mailbox->read ) {
+    while( my $r = $mailbox->data->read ) {
         my $o = Sisimai::Message->new('data' => $r);
         my $v = Sisimai::Data->make('data' => $o);
         isa_ok $v, 'ARRAY';

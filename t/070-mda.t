@@ -30,7 +30,7 @@ MAKE_TEST: {
     my $message = undef;
     my $headers = {};
 
-    while( my $r = $mailbox->read ) {
+    while( my $r = $mailbox->data->read ) {
         $message = Sisimai::Message->new('data' => $r);
         $headers->{'from'} = $message->from;
 

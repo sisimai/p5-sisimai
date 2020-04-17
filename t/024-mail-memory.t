@@ -7,7 +7,7 @@ use IO::File;
 my $PackageName = 'Sisimai::Mail::Memory';
 my $MethodNames = {
     'class' => ['new'],
-    'object' => ['path', 'size', 'offset', 'data', 'read'],
+    'object' => ['path', 'size', 'offset', 'payload', 'read'],
 };
 my $SampleEmail = [
     './set-of-emails/mailbox/mbox-0',
@@ -32,8 +32,8 @@ MAKE_TEST: {
 
         isa_ok $mailobj, $PackageName;
         can_ok $mailobj, @{ $MethodNames->{'object'} };
-        isa_ok $mailobj->data, 'ARRAY';
-        is scalar @{ $mailobj->data }, 37;
+        isa_ok $mailobj->payload, 'ARRAY';
+        is scalar @{ $mailobj->payload }, 37;
         is $mailobj->path, '<MEMORY>', '->path = <MEMORY>';
         is $mailobj->size, length $mailset, '->size = '.length($mailset);
         is $mailobj->offset, 0, '->offset = 0';
@@ -59,8 +59,8 @@ MAKE_TEST: {
 
         isa_ok $mailobj, $PackageName;
         can_ok $mailobj, @{ $MethodNames->{'object'} };
-        isa_ok $mailobj->data, 'ARRAY';
-        is scalar @{ $mailobj->data }, 1;
+        isa_ok $mailobj->payload, 'ARRAY';
+        is scalar @{ $mailobj->payload }, 1;
         is $mailobj->size, length $mailset, '->size = '.length($mailset);
         is $mailobj->offset, 0, '->offset = 0';
 
