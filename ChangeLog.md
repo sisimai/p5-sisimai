@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.5p12
+v4.25.5p13
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -62,6 +62,20 @@ v4.25.5p12
     Thanks to @jcbf
   - New accessor `origin` at `Sisimai::Data` and the parsed results for keeping
     a path to the source email #383
+  - #384 `Sisimai::Mail` improvement for compatibilities with the Go language
+    version of Sisimai which will be released this summer #389
+    - Removed `Sisimai::Mail::STDIN->name` (not used)
+    - Removed `Sisimai::Mail::Maildir->inodes` (not needed to check the inode)
+    - Warning message is displayed when the following methods are called:
+      - `Sisimai::Mail->close` (automatically closes at the EOF)
+      - `Sisimai::Mail->type` (use `Sisimai::Mail->kind` instead)
+      - `Sisimai::Mail->mail->*` (use `Sisimai::Mail->data->*` instead)
+      - Methods above will be removed at v4.25.10
+    - `Sisimai::Mail::Memory->data` renamed to `Sisimai::Mail::Memory->payload`
+    - `Sisimai::Mail::Maildir->size` keeps the number of files in the Maildir/
+    - `Sisimai::Mail::Maildir->offset` keeps the number of email files in the
+      Maildir/ which have been read
+    - Call `Sisimai::Mail::*->read` directly instead of `Sisimai::Mail->read`
 
 v4.25.5
 --------------------------------------------------------------------------------
