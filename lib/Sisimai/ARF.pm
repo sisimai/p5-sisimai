@@ -24,6 +24,7 @@ state $MarkingsOf = {
         )
     }x,
 };
+state $ReportFrom = qr/(?:staff[@]hotmail[.]com|complaints[@]email-abuse[.]amazonses[.]com)\z/;
 state $Indicators = Sisimai::Lhost->INDICATORS;
 state $LongFields = Sisimai::RFC5322->LONGFIELDS;
 state $RFC822Head = Sisimai::RFC5322->HEADERFIELDS;
@@ -46,14 +47,8 @@ sub is_arf {
     } elsif( index($heads->{'content-type'}, 'multipart/mixed') > -1 ) {
         # Microsoft (Hotmail, MSN, Live, Outlook) uses its own report format.
         # Amazon SES Complaints bounces
-        my $title = 'complaint about message from ';
-        my $hfrom = Sisimai::Address->s3s4($heads->{'from'});
-        my $mfrom = qr{(?:
-             staff[@]hotmail[.]com
-            |complaints[@]email-abuse[.]amazonses[.]com
-            )\z
-        }x;
-        if( $hfrom =~ $mfrom && index($heads->{'subject'}, $title) > -1) {
+        my $p = Sisimai::Address->s3s4($heads->{'from'});
+        if( $p =~ $ReportFrom && index($heads->{'subject'}, 'complaint about message from ') > -1 ) {
             # From: staff@hotmail.com
             # From: complaints@email-abuse.amazonses.com
             # Subject: complaint about message from 192.0.2.1
