@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.5p13
+v4.25.6
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Wed, 22 Apr 2020 16:22:22 +0900 (JST)"
+- version: "4.25.6"
 - changes:
   - #367 Fix a little spelling errors. Thanks to @guimard
   - #368 Make `Sisimai::Message` 33% faster
@@ -78,6 +78,7 @@ v4.25.5p13
     - Call `Sisimai::Mail::*->read` directly instead of `Sisimai::Mail->read`
   - Remove `Sisimai::Lhost::UserDefined` (not used)
   - #387 Add the following D.S.N. codes and error messages (not tested)
+    - Thanks to @jcbf
     - `Mailbox does not exist!` at `Sisimai::Reason::UserUnknown` (Amazon SES)
     - `Not a valid recipienet` at `Sisimai::Reason::UserUnknown` (Yahoo!)
     - `Envelope blocked` at `Sisimai::Reason::Rejected` (Minecast.com)

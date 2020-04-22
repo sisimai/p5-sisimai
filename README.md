@@ -4,7 +4,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.30-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.5-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.6-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README-JA(日本語)**](README-JA.md)
 - [What is Sisimai](#what-is-sisimai)
@@ -110,7 +110,9 @@ Usage
 Basic usage
 -------------------------------------------------------------------------------
 `Sisimai->make()` method provides feature for getting parsed data as Perl Hash
-reference from bounced email messages like following.
+reference from bounced email messages like following. Beginning with v4.25.6,
+new accessor `origin` which keeps the path to email file as a data source is
+available.
 
 ```perl
 #! /usr/bin/env perl
@@ -141,6 +143,7 @@ if( defined $v ) {
         print $e->deliverystatus;       # 5.1.1
         print $e->replycode;            # 550
         print $e->reason;               # userunknown
+        print $e->origin;               # /var/spool/bounce/new/1740074341.eml
 
         my $h = $e->damn();             # Convert to HASH reference
         my $j = $e->dump('json');       # Convert to JSON string
@@ -211,7 +214,7 @@ Output example
 ![](https://libsisimai.org/static/images/demo/sisimai-dump-02.gif)
 
 ```json
-[{"action": "failed", "subject": "Nyaan", "catch": null, "token": "08acf78323edc7923a783c04749dd547ab45c433", "alias": "", "messageid": "201806090556.w595u8GZ093276@neko.example.jp", "listid": "", "smtpcommand": "MAIL", "smtpagent": "Email::Sendmail", "lhost": "localhost", "timezoneoffset": "+0900", "feedbacktype": "", "senderdomain": "neko.example.jp", "diagnostictype": "SMTP", "softbounce": 1, "deliverystatus": "5.0.0", "addresser": "kijitora@neko.example.jp", "diagnosticcode": "550 Unauthenticated senders not allowed", "timestamp": 1528523769, "destination": "example.com", "recipient": "sironeko@example.com", "reason": "securityerror", "replycode": "550", "rhost": "neko.example.jp"}]
+[{"smtpagent": "Sendmail","reason": "hasmoved","recipient": "kijitora@example.net","replycode": "","senderdomain": "example.co.jp","alias": "","timezoneoffset": "+0900","deliverystatus": "5.1.6","timestamp": 1397086485,"origin": "set-of-emails/maildir/bsd/lhost-sendmail-22.eml","catch": {"x-mailer": "","queue-id": "","sender": ""},"destination": "example.net","subject": "Nyaaaan","lhost": "localhost","rhost": "mx-s.neko.example.jp","listid": "","messageid": "0000000011111.fff0000000003@mx.example.co.jp","addresser": "shironeko@example.co.jp","action": "failed","diagnostictype": "SMTP","smtpcommand": "DATA","feedbacktype": "","token": "61b5ea94209460ac018c1a2060bdab0acce9ffed","softbounce": 0,"diagnosticcode": "450 busy - please try later 551 not our customer 503 need RCPT command [data]"}]
 ```
 
 Sisimai Specification
@@ -242,7 +245,7 @@ and Sisimai. More information about differences are available at
 | Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 10400 lines |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 259000 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 266000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 

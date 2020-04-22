@@ -4,6 +4,87 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.6
+--------------------------------------------------------------------------------
+- release: "Wed, 22 Apr 2020 16:22:22 +0900 (JST)"
+- version: "4.25.6"
+- changes:
+  - #367 Fix a little spelling errors. Thanks to @guimard
+  - #368 Make `Sisimai::Message` 33% faster
+    - Use the negative look-ahead regular expression code to convert all of the
+      email header strings into key-value pairs as a HASH at newly implemented
+      method `Sisiai::Message->makemap` #366. Thanks to @xtetsuji
+    - Remove `Sisimai::Message->takeapart` (replaced with `makemap`)
+    - Remove `Sisimai::Message->headers` (replaced with `makemap`)
+    - Code improvement for `require` statement before method calls #371
+  - Make `Sisimai::Order` 12% faster
+    - Rewrite `Sisimai::Order->make`
+    - Remove `Sisimai::Order->by`
+    - Remove `Sisimai::Order->headers`
+    - Remove `Sisimai::Lhost->headerlist`
+    - And all `headerlist` method have been removed from `Sisimai::Lhost::*`,
+      `Sisimai::RFC3834` and `Sisimai::ARF`
+    - The MTA module to be loaded at first is decided by the first 2 words of
+      each bounce mail subject, is defined at `$Subject` in `Sisimai::Order`
+    - Some variables are replaced with `state`
+  - Each `field` parameter has been removed from the following methods because 
+    Sisimai detect all the email header fields by `Sisimai::Message->makemap()`
+    without having to specify field names at `field` parameter
+    - `Sisimai->make`
+    - `Sisimai::Message->new`
+    - `Sisimai::Message->make`
+  - Code improvement for `require` statement before calling `match()` method of
+    some modules defined in `$PreMatches` at `Sisimai::Reason::UserUnknown`
+  - #369 Remove the following unused methods:
+    - `Sisimai::MIME->patterns`
+    - `Sisimai::SMTP->command`
+  - Some file global variables have been replaced with `state` #371
+  - Performance improvement: 12% faster, reduced 6% of method calls
+  - `Sisimai::Lhost::Google` has been renamed to `Sisimai::Lhost::Gmail` #377
+  - Implement 3 MTA modules: #373 #376
+    - `Sisimai::Lhost::Barracuda`
+    - `Sisimai::Lhost::PowerMTA`
+    - `Sisimai::Lhost::X6`
+    - `Sisimai::Lhost::GoogleGroups`
+  - "email-" prefix of each sample email in set-of-emails/maildir directory has
+    been replaced with "lhost-" sisimai/set-of-emails#14
+  - SMTP Agent improvement #362
+    - Remove `Email::` prefix from the value of `smtpagent` at parsed results
+    - Remove `Sisimai::Lhost->smtpagent` method
+  - Improved the following MTA modules:
+    - `Sisimai::Lhost::Amavis` #380
+    - `Sisimai::Lhost::InterScanMSS`
+    - `Sisimai::Lhost::Office365` improvement for reading MIME-encoded subject
+    - `Sisimai::Lhost::Exchange2007` supports error messages in `it-CH`
+  - Tiny bug fix for `Subject` header decoding
+  - Fix bug in code for getting an `"addresser"` address from `From:` field in
+    the original message part which are multiple lines at `Sisimai::ARF`. #385
+    Thanks to @jcbf
+  - New accessor `origin` at `Sisimai::Data` and the parsed results for keeping
+    a path to the source email #383
+  - #384 `Sisimai::Mail` improvement for compatibilities with the Go language
+    version of Sisimai which will be released this summer #389
+    - Removed `Sisimai::Mail::STDIN->name` (not used)
+    - Removed `Sisimai::Mail::Maildir->inodes` (not needed to check the inode)
+    - Warning message is displayed when the following methods are called:
+      - `Sisimai::Mail->close` (automatically closes at the EOF)
+      - `Sisimai::Mail->type` (use `Sisimai::Mail->kind` instead)
+      - `Sisimai::Mail->mail->*` (use `Sisimai::Mail->data->*` instead)
+      - Methods above will be removed at v4.25.10
+    - `Sisimai::Mail::Memory->data` renamed to `Sisimai::Mail::Memory->payload`
+    - `Sisimai::Mail::Maildir->size` keeps the number of files in the Maildir/
+    - `Sisimai::Mail::Maildir->offset` keeps the number of email files in the
+      Maildir/ which have been read
+    - Call `Sisimai::Mail::*->read` directly instead of `Sisimai::Mail->read`
+  - Remove `Sisimai::Lhost::UserDefined` (not used)
+  - #387 Add the following D.S.N. codes and error messages (not tested)
+    - Thanks to @jcbf
+    - `Mailbox does not exist!` at `Sisimai::Reason::UserUnknown` (Amazon SES)
+    - `Not a valid recipienet` at `Sisimai::Reason::UserUnknown` (Yahoo!)
+    - `Envelope blocked` at `Sisimai::Reason::Rejected` (Minecast.com)
+    - `5.2.122` is toomanyconn, `5.4.11` is contenterror, `5.7.51` is blocked
+      at `Sisimai::Rhost::ExchangeOnline`
+
 v4.25.5
 --------------------------------------------------------------------------------
 - release: "Wed, 22 Jan 2020 14:44:44 +0900 (JST)"
