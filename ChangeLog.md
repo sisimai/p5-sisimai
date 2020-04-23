@@ -41,7 +41,7 @@ v4.25.6
   - Some file global variables have been replaced with `state` #371
   - Performance improvement: 12% faster, reduced 6% of method calls
   - `Sisimai::Lhost::Google` has been renamed to `Sisimai::Lhost::Gmail` #377
-  - Implement 3 MTA modules: #373 #376
+  - Implement 4 MTA modules: #373 #376
     - `Sisimai::Lhost::Barracuda`
     - `Sisimai::Lhost::PowerMTA`
     - `Sisimai::Lhost::X6`
