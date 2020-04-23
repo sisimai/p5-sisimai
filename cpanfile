@@ -1,4 +1,4 @@
-requires 'perl', '5.010';
+requires 'perl', '5.10.1';
 requires 'Class::Accessor::Lite', '0.05';
 requires 'JSON', '2.90';
 requires 'Module::Load', '0.32';
