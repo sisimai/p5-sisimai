@@ -6,8 +6,7 @@ use Encode;
 use MIME::Base64 ();
 use MIME::QuotedPrint ();
 use Sisimai::String;
-
-state $ReE = {
+use constant ReE => {
     '7bit-encoded' => qr/^content-transfer-encoding:[ ]*7bit/m,
     'quoted-print' => qr/^content-transfer-encoding:[ ]*quoted-printable/m,
     'some-iso2022' => qr/^content-type:[ ]*.+;[ ]*charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/m,
@@ -114,7 +113,7 @@ sub qprintd {
 
     # Quoted-printable encoded part is the part of the text
     my $boundary00 = __PACKAGE__->boundary($heads->{'content-type'}, 0);
-    if( ! $boundary00 || lc($$argv1) !~ $ReE->{'quoted-print'} ) {
+    if( ! $boundary00 || lc($$argv1) !~ ReE->{'quoted-print'} ) {
         # There is no boundary string or no
         # Content-Transfer-Encoding: quoted-printable field.
         $plain = MIME::QuotedPrint::decode($$argv1);
@@ -163,12 +162,12 @@ sub qprintd {
                     $boundary00 = $e;
                     $boundary01 = $e . '--';
                 }
-            } elsif( $lowercased =~ $ReE->{'with-charset'} || $lowercased =~ $ReE->{'only-charset'} ) {
+            } elsif( $lowercased =~ ReE->{'with-charset'} || $lowercased =~ ReE->{'only-charset'} ) {
                 # Content-Type: text/plain; charset=ISO-2022-JP
                 $encodename = $1;
                 $mimeinside = 1 if $ctencoding;
 
-            } elsif( $lowercased =~ $ReE->{'quoted-print'} ) {
+            } elsif( $lowercased =~ ReE->{'quoted-print'} ) {
                 # Content-Transfer-Encoding: quoted-printable
                 $ctencoding = $e;
                 $mimeinside = 1 if $encodename;
@@ -297,7 +296,7 @@ sub breaksup {
 
             } elsif( $ctencoding eq '7bit' ) {
                 # Content-Transfer-Encoding: 7bit
-                if( lc($upperchunk) =~ $ReE->{'some-iso2022'} ) {
+                if( lc($upperchunk) =~ ReE->{'some-iso2022'} ) {
                     # Content-Type: text/plain; charset=ISO-2022-JP
                     $getdecoded = ${ Sisimai::String->to_utf8(\$lowerchunk, $1) };
 

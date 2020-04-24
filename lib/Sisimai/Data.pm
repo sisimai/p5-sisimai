@@ -40,13 +40,6 @@ use Class::Accessor::Lite (
     ]
 );
 
-state $RetryIndex = Sisimai::Reason->retry;
-state $RFC822Head = Sisimai::RFC5322->HEADERFIELDS('all');
-state $AddrHeader = {
-    'addresser' => $RFC822Head->{'addresser'},
-    'recipient' => $RFC822Head->{'recipient'},
-};
-
 sub new {
     # Constructor of Sisimai::Data
     # @param    [Hash] argvs    Data
@@ -100,6 +93,14 @@ sub make {
     return undef unless $argvs->{'data'}->ds;
     return undef unless $argvs->{'data'}->rfc822;
 
+    state $retryindex = Sisimai::Reason->retry;
+    state $rfc822head = Sisimai::RFC5322->HEADERFIELDS('all');
+    state $addrheader = {
+        'addresser' => $rfc822head->{'addresser'},
+        'recipient' => $rfc822head->{'recipient'},
+    };
+
+
     my $delivered1 = $argvs->{'delivered'} // 0;
     my $messageobj = $argvs->{'data'};
     my $rfc822data = $messageobj->rfc822;
@@ -125,7 +126,7 @@ sub make {
         next if scalar @{ $fieldorder->{ $e } };
 
         # Load default order of each accessor.
-        $fieldorder->{ $e } = $AddrHeader->{ $e };
+        $fieldorder->{ $e } = $addrheader->{ $e };
     }
 
     LOOP_DELIVERY_STATUS: for my $e ( @{ $messageobj->ds } ) {
@@ -183,7 +184,7 @@ sub make {
             my @datevalues; push @datevalues, $e->{'date'} if $e->{'date'};
 
             # Date information did not exist in message/delivery-status part,...
-            for my $f ( @{ $RFC822Head->{'date'} } ) {
+            for my $f ( @{ $rfc822head->{'date'} } ) {
                 # Get the value of Date header or other date related header.
                 next unless $rfc822data->{ $f };
                 push @datevalues, $rfc822data->{ $f };
@@ -308,7 +309,7 @@ sub make {
         }
         next unless my $o = __PACKAGE__->new(%$p);
 
-        if( $o->reason eq '' || exists $RetryIndex->{ $o->reason } ) {
+        if( $o->reason eq '' || exists $retryindex->{ $o->reason } ) {
             # Decide the reason of email bounce
             my $r; $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->rhost);
                    $r ||= Sisimai::Reason->get($o);

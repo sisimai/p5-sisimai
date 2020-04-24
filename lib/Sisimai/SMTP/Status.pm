@@ -538,7 +538,7 @@ use warnings;
 #       5.7.11  Encryption required for requested authentication mechanism
 # ------------------------------------------------------------------------------
 #
-state $StandardCode = {
+use constant StandardCode => {
     '2.1.5'  => 'delivered',    # Successfully delivered
     # ------------------------------------------------------------------------------
     '4.1.6'  => 'hasmoved',     # Destination mailbox has moved, No forwarding address
@@ -646,7 +646,7 @@ state $StandardCode = {
     '5.7.27' => 'rejected',     # Sender address has null MX
 };
 
-state $InternalCode = {
+use constant InternalCode => {
     'temporary' => {
         'blocked'      => '4.0.971',
         'contenterror' => '4.0.960',
@@ -716,8 +716,8 @@ sub code {
     my $table = undef;
     my $code0 = undef;
 
-    $table = $argv2 ? $InternalCode->{'temporary'} : $InternalCode->{'permanent'};
-    $code0 = $table->{ $argv1 } // $InternalCode->{'permanent'}->{ $argv1 } // '';
+    $table = $argv2 ? InternalCode->{'temporary'} : InternalCode->{'permanent'};
+    $code0 = $table->{ $argv1 } // InternalCode->{'permanent'}->{ $argv1 } // '';
     return $code0;
 }
 
@@ -732,7 +732,7 @@ sub name {
     my $argv1 = shift || return undef;
 
     return '' unless $argv1 =~ /\A[245][.]\d[.]\d+\z/;
-    return $StandardCode->{ $argv1 } // '';
+    return StandardCode->{ $argv1 } // '';
 }
 
 sub find {
@@ -819,7 +819,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

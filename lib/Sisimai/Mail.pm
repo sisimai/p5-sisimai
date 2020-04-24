@@ -12,7 +12,7 @@ use Class::Accessor::Lite (
         'data',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
     ]
 );
-state $Until = 'v4.25.10';
+use constant Until => 'v4.25.10';
 
 sub new {
     # Constructor of Sisimai::Mail
@@ -65,13 +65,13 @@ sub new {
 
 sub mail {
     my $self = shift;
-    printf(STDERR " ***warning: %s->mail will be removed at %s. Use %s->data instead\n", __PACKAGE__, $Until, __PACKAGE__);
+    printf(STDERR " ***warning: %s->mail will be removed at %s. Use %s->data instead\n", __PACKAGE__, Until, __PACKAGE__);
     return $self->data;
 }
 
 sub type {
     my $self = shift;
-    printf(STDERR " ***warning: %s->type will be removed at %s. Use %s->kind instead\n", __PACKAGE__, $Until, __PACKAGE__);
+    printf(STDERR " ***warning: %s->type will be removed at %s. Use %s->kind instead\n", __PACKAGE__, Until, __PACKAGE__);
     return $self->kind;
 }
 
@@ -88,7 +88,7 @@ sub close {
     # @return   [Integer] 0: Mail handle is not defined
     #                     1: Successfully closed the handle
     my $self = shift;
-    printf(STDERR " ***warning: %s->close will be removed at %s. The handle automatically closes at the EOF\n", __PACKAGE__, $Until);
+    printf(STDERR " ***warning: %s->close will be removed at %s. The handle automatically closes at the EOF\n", __PACKAGE__, Until);
     return 0 unless $self->{'data'}->{'handle'};
 
     $self->{'data'}->{'handle'} = undef;

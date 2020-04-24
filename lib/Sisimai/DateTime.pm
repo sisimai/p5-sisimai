@@ -11,33 +11,15 @@ sub CONST_P()   { 4 * atan2(1,1) }  # PI, 3.1415926535
 sub CONST_E()   { exp(1) }          # e, Napier's constant
 sub TZ_OFFSET() { 54000 }           # Max time zone offset, 54000 seconds
 
-state $TimeUnit = {
-    'o' => ( BASE_D * BASE_Y * 4 ), # Olympiad, 4 years
-    'y' => ( BASE_D * BASE_Y ),     # Year, Gregorian Calendar
-    'q' => ( BASE_D * BASE_Y / 4 ), # Quarter, year/4
-    'l' => ( BASE_D * BASE_L ),     # Lunar month
-    'f' => ( BASE_D * 14 ),         # Fortnight, 2 weeks
-    'w' => ( BASE_D * 7 ),          # Week, 604800 seconds
-    'd' => BASE_D,                  # Day
-    'h' => 3600,                    # Hour
-    'b' => 86.4,                    # Beat, Swatch internet time: 1000b = 1d
-    'm' => 60,                      # Minute,
-    's' => 1,                       # Second
-};
-state $MathematicalConstant = {
-    'e' => CONST_E,
-    'p' => CONST_P,
-    'g' => CONST_E ** CONST_P,
-};
-state $MonthName = {
+use constant MonthName => {
     'full' => [qw|January February March April May June July August September October November December|],
     'abbr' => [qw|Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec|],
 };
-state $DayOfWeek = {
+use constant DayOfWeek => {
     'full' => [qw|Sunday Monday Tuesday Wednesday Thursday Friday Saturday|],
     'abbr' => [qw|Sun Mon Tue Wed Thu Fri Sat|],
 };
-state $TimeZoneAbbr = {
+use constant TimeZones => {
     # http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations
     #'ACDT' => '+1030', # Australian Central Daylight Time  UTC+10:30
     #'ACST' => '+0930', # Australian Central Standard Time  UTC+09:30
@@ -177,27 +159,45 @@ sub to_second {
     my $class = shift;
     my $value = shift || return 0;
 
+    state $timeunit = {
+        'o' => ( BASE_D * BASE_Y * 4 ), # Olympiad, 4 years
+        'y' => ( BASE_D * BASE_Y ),     # Year, Gregorian Calendar
+        'q' => ( BASE_D * BASE_Y / 4 ), # Quarter, year/4
+        'l' => ( BASE_D * BASE_L ),     # Lunar month
+        'f' => ( BASE_D * 14 ),         # Fortnight, 2 weeks
+        'w' => ( BASE_D * 7 ),          # Week, 604800 seconds
+        'd' => BASE_D,                  # Day
+        'h' => 3600,                    # Hour
+        'b' => 86.4,                    # Beat, Swatch internet time: 1000b = 1d
+        'm' => 60,                      # Minute,
+        's' => 1,                       # Second
+    };
+    state $mathematicalconstant = {
+        'e' => CONST_E,
+        'p' => CONST_P,
+        'g' => CONST_E ** CONST_P,
+    };
+
     my $getseconds = 0;
-    my $unitoftime = [keys %$TimeUnit];
-    my $mathconsts = [keys %$MathematicalConstant];
+    my $unitoftime = [keys %$timeunit];
+    my $mathconsts = [keys %$mathematicalconstant];
 
     if( $value =~ /\A(\d+|\d+[.]\d+)([@$unitoftime])?\z/o ) {
         # 1d, 1.5w
         my $n = $1;
         my $u = $2 // 'd';
-        $getseconds = $n * $TimeUnit->{ $u };
+        $getseconds = $n * $timeunit->{ $u };
 
     } elsif( $value =~ /\A(\d+|\d+[.]\d+)?([@$mathconsts])([@$unitoftime])?\z/o ) {
         # 1pd, 1.5pw
         my $n = $1 // 1;
-        my $m = $MathematicalConstant->{ $2 } // 0;
+        my $m = $mathematicalconstant->{ $2 } // 0;
         my $u = $3 // 'd';
-        $getseconds = $n * $m * $TimeUnit->{ $u };
+        $getseconds = $n * $m * $timeunit->{ $u };
 
     } else {
         $getseconds = 0;
     }
-
     return $getseconds;
 }
 
@@ -212,8 +212,8 @@ sub monthname {
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
 
-    return @{ $MonthName->{ $value } } if wantarray;
-    return $MonthName->{ $value };
+    return @{ MonthName->{ $value } } if wantarray;
+    return MonthName->{ $value };
 }
 
 sub dayofweek {
@@ -227,8 +227,8 @@ sub dayofweek {
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
 
-    return @{ $DayOfWeek->{ $value } } if wantarray;
-    return $DayOfWeek->{ $value };
+    return @{ DayOfWeek->{ $value } } if wantarray;
+    return DayOfWeek->{ $value };
 }
 
 sub parse {
@@ -265,11 +265,11 @@ sub parse {
             # Day of week or Day of week; Thu, Apr, ...
             chop $p if length($p) == 4; # Thu, -> Thu
 
-            if( grep { $p eq $_ } @{ $DayOfWeek->{'abbr'} } ) {
+            if( grep { $p eq $_ } @{ DayOfWeek->{'abbr'} } ) {
                 # Day of week; Mon, Thu, Sun,...
                 $v->{'a'} = $p;
 
-            } elsif( grep { $p eq $_ } @{ $MonthName->{'abbr'} } ) {
+            } elsif( grep { $p eq $_ } @{ MonthName->{'abbr'} } ) {
                 # Month name abbr.; Apr, May, ...
                 $v->{'M'} = $p;
             }
@@ -326,13 +326,13 @@ sub parse {
                 if( $p =~ m|\A(\d{4})[-/](\d{1,2})[-/](\d{1,2})\z| ) {
                     # Mail.app(MacOS X)'s faked Bounce, Arrival-Date: 2010-06-18 17:17:52 +0900
                     $v->{'Y'} = int $1;
-                    $v->{'M'} = $MonthName->{'abbr'}->[int($2) - 1];
+                    $v->{'M'} = MonthName->{'abbr'}->[int($2) - 1];
                     $v->{'d'} = int $3;
 
                 } elsif( $p =~ m|\A(\d{4})[-/](\d{1,2})[-/](\d{1,2})T([0-2]\d):([0-5]\d):([0-5]\d)\z| ) {
                     # ISO 8601; 2000-04-29T01:23:45
                     $v->{'Y'} = int $1;
-                    $v->{'M'} = $MonthName->{'abbr'}->[int($2) - 1];
+                    $v->{'M'} = MonthName->{'abbr'}->[int($2) - 1];
                     $v->{'d'} = int $3 if $3 < 32;
 
                     if( $4 < 24 && $5 < 60 && $6 < 60 ) {
@@ -340,7 +340,7 @@ sub parse {
                     }
                 } elsif( $p =~ m|\A(\d{1,2})/(\d{1,2})/(\d{1,2})\z| ) {
                     # 4/29/01 11:34:45 PM
-                    $v->{'M'} = $MonthName->{'abbr'}->[int($1) - 1];
+                    $v->{'M'} = MonthName->{'abbr'}->[int($1) - 1];
                     $v->{'d'}  = int $2;
                     $v->{'Y'}  = int($3) + 2000;
                     $v->{'Y'} -= 100 if $v->{'Y'} > Time::Piece->new->year() + 1;
@@ -348,7 +348,7 @@ sub parse {
                 } elsif( $p =~ m|\A(\d{1,2})[-/](\d{1,2})[-/](\d{4})| ) {
                     # 29-04-2017 22:22
                     $v->{'d'} = int $1 if $1 < 32;
-                    $v->{'M'} = $MonthName->{'abbr'}->[int($2) - 1];
+                    $v->{'M'} = MonthName->{'abbr'}->[int($2) - 1];
                     $v->{'Y'} = int($3);
                 }
             }
@@ -410,7 +410,7 @@ sub abbr2tz {
     #   abbr2tz('JST')  #=> '+0900'
     my $class = shift;
     my $argv1 = shift || return undef;
-    return $TimeZoneAbbr->{ $argv1 };
+    return TimeZones->{ $argv1 };
 }
 
 sub tz2second {
@@ -440,7 +440,7 @@ sub tz2second {
         return $ztime;
 
     } elsif( $argv1 =~ /\A[A-Za-z]+\z/ ) {
-        return __PACKAGE__->tz2second($TimeZoneAbbr->{ $argv1 });
+        return __PACKAGE__->tz2second(TimeZones->{ $argv1 });
 
     } else {
         return undef;
