@@ -208,7 +208,7 @@ sub makemap {
     # Select and convert all the headers in $argv0. The following regular expression
     # is based on https://gist.github.com/xtetsuji/b080e1f5551d17242f6415aba8a00239
     my $firstpairs = { $$argv0 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms };
-    my $headermaps = {};
+    my $headermaps = { 'subject' => '' };
     my $recvheader = [];
 
 
