@@ -69,7 +69,7 @@ use constant OrderE1 => [
 ];
 
 # The following order is decided by the first 2 words of Subject: header
-state $Subject = {
+use constant $Subject = {
     'abuse-report'     => ['Sisimai::ARF'],
     'auto'             => ['Sisimai::RFC3834'],
     'auto-reply'       => ['Sisimai::RFC3834'],
@@ -177,7 +177,7 @@ sub make {
         $first = join('-', splice(@words, 0, 2));
     }
     $first =~ y/:",*//d;
-    return $Subject->{ $first } || [];
+    return Subject->{ $first } || [];
 }
 
 sub default {

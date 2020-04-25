@@ -4,40 +4,6 @@ use strict;
 use warnings;
 
 # http://tools.ietf.org/html/rfc3834
-my    $MarkingsOf = { 'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/ };
-state $AutoReply1 = {
-    # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
-    'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/,
-    # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
-    'x-auto-response-suppress' => qr/(?:oof|autoreply)/,
-    'x-apple-action' => qr/\Avacation\z/,
-    'precedence' => qr/\Aauto_reply\z/,
-    'subject' => qr/\A(?>
-         auto:
-        |auto[ ]response:
-        |automatic[ ]reply:
-        |out[ ]of[ ](?:the[ ])*office:
-        )
-    /x,
-};
-state $Excludings = {
-    'subject' => qr{(?:
-          security[ ]information[ ]for  # sudo
-         |mail[ ]failure[ ][-]          # Exim
-         )
-    }x,
-    'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/,
-    'to'      => qr/root[@]/,
-};
-state $SubjectSet = qr{\A(?>
-     (?:.+?)?re:
-    |auto(?:[ ]response):
-    |automatic[ ]reply:
-    |out[ ]of[ ]office:
-    )
-    [ ]*(.+)\z
-}x;
-
 sub description { 'Detector for auto replied message' }
 sub make {
     # Detect auto reply message as RFC3834
@@ -55,21 +21,55 @@ sub make {
     return undef unless keys %$mhead;
     return undef unless ref $mbody eq 'SCALAR';
 
-    DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$Excludings ) {
+    my    $markingsof = { 'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/ };
+    state $autoreply1 = {
+        # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
+        'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/,
+        # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
+        'x-auto-response-suppress' => qr/(?:oof|autoreply)/,
+        'x-apple-action' => qr/\Avacation\z/,
+        'precedence' => qr/\Aauto_reply\z/,
+        'subject' => qr/\A(?>
+             auto:
+            |auto[ ]response:
+            |automatic[ ]reply:
+            |out[ ]of[ ](?:the[ ])*office:
+            )
+        /x,
+    };
+    state $excludings = {
+        'subject' => qr{(?:
+              security[ ]information[ ]for  # sudo
+             |mail[ ]failure[ ][-]          # Exim
+             )
+        }x,
+        'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/,
+        'to'      => qr/root[@]/,
+    };
+    state $subjectset = qr{\A(?>
+         (?:.+?)?re:
+        |auto(?:[ ]response):
+        |automatic[ ]reply:
+        |out[ ]of[ ]office:
+        )
+        [ ]*(.+)\z
+    }x;
+
+    DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$excludings ) {
         # Exclude message from root@
         next unless exists $mhead->{ $e };
         next unless defined $mhead->{ $e };
-        next unless lc($mhead->{ $e }) =~ $Excludings->{ $e };
+        next unless lc($mhead->{ $e }) =~ $excludings->{ $e };
         $leave = 1;
         last;
     }
     return undef if $leave;
 
-    DETECT_AUTO_REPLY_MESSAGE: for my $e ( keys %$AutoReply1 ) {
+    DETECT_AUTO_REPLY_MESSAGE: for my $e ( keys %$autoreply1 ) {
         # RFC3834 Auto-Submitted and other headers
         next unless exists $mhead->{ $e };
         next unless defined $mhead->{ $e };
-        next unless lc($mhead->{ $e }) =~ $AutoReply1->{ $e };
+        next unless lc($mhead->{ $e }) =~ $autoreply1->{ $e };
         $match++;
         last;
     }
@@ -107,14 +107,14 @@ sub make {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
         my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 0);
-        $MarkingsOf->{'boundary'} = qr/\A\Q$b0\E\z/ if length $b0;
+        $markingsof->{'boundary'} = qr/\A\Q$b0\E\z/ if length $b0;
     }
 
     BODY_PARSER: {
         # Get vacation message
         for my $e ( split("\n", $$mbody) ) {
             # Read the first 5 lines except a blank line
-            $countuntil += 1 if $e =~ $MarkingsOf->{'boundary'};
+            $countuntil += 1 if $e =~ $markingsof->{'boundary'};
 
             unless( length $e ) {
                 # Check a blank line
@@ -138,7 +138,7 @@ sub make {
     $v->{'status'}    = '';
 
     # Get the Subject header from the original message
-    my $rfc822part = lc($mhead->{'subject'}) =~ $SubjectSet ? 'Subject: '.$1."\n" : '';
+    my $rfc822part = lc($mhead->{'subject'}) =~ $subjectset ? 'Subject: '.$1."\n" : '';
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 
