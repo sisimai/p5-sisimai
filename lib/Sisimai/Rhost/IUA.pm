@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $ErrorCodes = {
+use constant ErrorCodes => {
     # http://mail.i.ua/err/$(CODE)
     '1'  => 'norelaying',  # The use of SMTP as mail gate is forbidden.
     '2'  => 'userunknown', # User is not found.
@@ -27,7 +27,7 @@ sub get {
 
     my $statusmesg = lc $argvs->diagnosticcode;
     my $codenumber = $statusmesg =~ m|[.]i[.]ua/err/(\d+)| ? $1 : 0;
-    return $ErrorCodes->{ $codenumber } || '';
+    return ErrorCodes->{ $codenumber } || '';
 }
 
 1;

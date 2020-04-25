@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 # https://www.godaddy.com/help/what-does-my-email-bounceback-mean-3568
-state $ErrorCodes = {
+use constant ErrorCodes => {
     'IB103' => 'blocked',       # 554 Connection refused. This IP has a poor reputation on Cloudmark Sender Intelligence (CSI). IB103
     'IB104' => 'blocked',       # 554 Connection refused. This IP is listed on the Spamhaus Block List (SBL). IB104
     'IB105' => 'blocked',       # 554 Connection refused. This IP is listed on the Exploits Block List (XBL). IB105
@@ -28,7 +28,7 @@ state $ErrorCodes = {
     'IB705' => 'virusdetected', # 552 Virus infected message rejected. IB705
 
 };
-state $MessagesOf = {
+use constant MessagesOf => {
     'blocked'     => ['www.spamhaus.org/query/bl?ip=', '554 RBL Reject.'],
     'expired'     => ['Delivery timeout', "451 Sorry, I wasn't able to establish an SMTP connection."],
     'suspend'     => ['Account disabled'],
@@ -50,11 +50,11 @@ sub get {
 
     if( $statusmesg =~ /\s(IB\d{3})\b/ ) {
         # 192.0.2.22 has sent to too many recipients this hour. IB607 ...
-        $reasontext = $ErrorCodes->{ $1 };
+        $reasontext = ErrorCodes->{ $1 };
     } else {
         # 553 http://www.spamhaus.org/query/bl?ip=192.0.0.222
-        for my $e ( keys %$MessagesOf ) {
-            for my $f ( @{ $MessagesOf->{ $e } } ) {
+        for my $e ( keys %{ MessagesOf() } ) {
+            for my $f ( @{ MessagesOf->{ $e } } ) {
                 next if index($statusmesg, $f) == -1;
                 $reasontext = $e;
                 last

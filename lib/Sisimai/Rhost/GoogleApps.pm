@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $StatusList = {
+use constant StatusList => {
     # https://support.google.com/a/answer/3726730
     'X.1.1' => [{ 'reason' => 'userunknown', 'string' => ['The email account that you tried to reach does not exist.'] }],
     'X.1.2' => [{ 'reason' => 'hostunknown', 'string' => ["We weren't able to find the recipient domain."] }],
@@ -104,11 +104,11 @@ sub get {
     return $argvs->reason if $argvs->reason;
 
     substr(my $statuscode = $argvs->deliverystatus, 0, 1, 'X');
-    return '' unless exists $StatusList->{ $statuscode };
-    return '' unless scalar @{ $StatusList->{ $statuscode } };
+    return '' unless exists StatusList->{ $statuscode };
+    return '' unless scalar @{ StatusList->{ $statuscode } };
 
     my $reasontext = '';
-    for my $e ( @{ $StatusList->{ $statuscode } } ) {
+    for my $e ( @{ StatusList->{ $statuscode } } ) {
         # Try to match
         next unless grep { rindex($argvs->diagnosticcode, $_) > -1 } @{ $e->{'string'} };
         $reasontext = $e->{'reason'};

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 # https://technet.microsoft.com/en-us/library/bb232118
-state $StatusList = {
+use constant StatusList => {
     '4.3.1'   => [{ 'reason' => 'systemfull', 'string' => 'Insufficient system resources' }],
     '4.3.2'   => [{ 'reason' => 'notaccept',  'string' => 'System not accepting network messages' }],
     '4.4.2'   => [{ 'reason' => 'blocked',    'string' => 'Connection dropped' }],
@@ -43,7 +43,7 @@ state $StatusList = {
     '5.7.511' => [{ 'reason' => 'blocked',      'string' => 'banned sender' }],
     '5.7.512' => [{ 'reason' => 'contenterror', 'string' => 'message must be RFC 5322' }],
 };
-state $ReStatuses = {
+use constant ReStatuses => {
     qr/\A4[.]4[.][17]\z/ => [
         { 'reason' => 'expired', 'string' => ['Connection timed out', 'Message expired'] }
     ],
@@ -122,10 +122,10 @@ sub get {
     my $statusmesg = $argvs->diagnosticcode;
     my $reasontext = '';
 
-    for my $e ( keys %$StatusList ) {
+    for my $e ( keys %{ StatusList() } ) {
         # Try to compare with each status code as a key
         next unless $statuscode eq $e;
-        for my $f ( @{ $StatusList->{ $e } } ) {
+        for my $f ( @{ StatusList->{ $e } } ) {
             # Try to compare with each string of error messages
             next if index($statusmesg, $f->{'string'}) == -1;
             $reasontext = $f->{'reason'};
@@ -135,10 +135,10 @@ sub get {
     }
     return $reasontext if $reasontext;
 
-    for my $e ( keys %$ReStatuses ) {
+    for my $e ( keys %{ ReStatuses() } ) {
         # Try to compare with each string of delivery status codes
         next unless $statuscode =~ $e;
-        for my $f ( @{ $ReStatuses->{ $e } } ) {
+        for my $f ( @{ ReStatuses->{ $e } } ) {
             # Try to compare with each string of error messages
             for my $g ( @{ $f->{'string'} } ) {
                 next if index($statusmesg, $g) == -1;
@@ -152,7 +152,7 @@ sub get {
     return $reasontext if $reasontext;
 
     # D.S.N. included in the error message did not matched with any key
-    # in $StatusList, $ReStatuses
+    # in StatusList, ReStatuses
     for my $e ( keys %$MessagesOf ) {
         # Try to compare with error messages defined in MessagesOf
         for my $f ( @{ $MessagesOf->{ $e } } ) {

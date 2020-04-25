@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $MessagesOf = {
+use constant MessagesOf => {
     # https://service.mail.qq.com/cgi-bin/help?id=20022
     'dmarc check failed'                    => 'blocked',
     'spf check failed'                      => 'blocked',
@@ -34,10 +34,10 @@ sub get {
     my $statusmesg = lc $argvs->diagnosticcode;
     my $reasontext = '';
 
-    for my $e ( keys %$MessagesOf ) {
+    for my $e ( keys %{ MessagesOf() } ) {
         # Try to match the error message with message patterns defined in $MessagesOf
         next unless index($statusmesg, $e) > -1;
-        $reasontext = $MessagesOf->{ $e };
+        $reasontext = MessagesOf->{ $e };
         last;
     }
     return $reasontext;

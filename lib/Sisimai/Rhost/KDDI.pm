@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $MessagesOf = {
+use constant MessagesOf => {
     'filtered'    => '550 : User unknown',  # The response was: 550 : User unknown
     'userunknown' => '>: User unknown',     # The response was: 550 <...>: User unknown
 };
@@ -18,9 +18,9 @@ sub get {
     my $statusmesg = $argvs->diagnosticcode;
     my $reasontext = '';
 
-    for my $e ( keys %$MessagesOf ) {
+    for my $e ( keys %{ MessagesOf() } ) {
         # Try to match the error message with message patterns defined in $MessagesOf
-        next unless rindex($statusmesg, $MessagesOf->{ $e }) > -1;
+        next unless rindex($statusmesg, MessagesOf->{ $e }) > -1;
         $reasontext = $e;
         last;
     }
