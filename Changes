@@ -4,6 +4,16 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.7
+--------------------------------------------------------------------------------
+- release: "Wed, 25 Apr 2020 22:22:22 +0900 (JST)"
+- version: "4.25.7"
+- changes:
+  - #391 Make required minimum Perl version clear: v5.10.1 or later
+  - Fix bug around state, constant only in Perl 5.10.0. Thanks to CPAN Testers:
+    - www.cpantesters.org/cpan/report/45cc37b2-848e-11ea-8c85-8657451fef07
+    - www.cpantesters.org/cpan/report/7a121fac-8590-11ea-9066-e374b0ba08e8
+
 v4.25.6
 --------------------------------------------------------------------------------
 - release: "Wed, 22 Apr 2020 16:22:22 +0900 (JST)"
@@ -41,7 +51,7 @@ v4.25.6
   - Some file global variables have been replaced with `state` #371
   - Performance improvement: 12% faster, reduced 6% of method calls
   - `Sisimai::Lhost::Google` has been renamed to `Sisimai::Lhost::Gmail` #377
-  - Implement 3 MTA modules: #373 #376
+  - Implement 4 MTA modules: #373 #376
     - `Sisimai::Lhost::Barracuda`
     - `Sisimai::Lhost::PowerMTA`
     - `Sisimai::Lhost::X6`
