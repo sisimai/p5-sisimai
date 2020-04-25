@@ -4,29 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;
-state $StartingOf = { 'message' => ['----- Transcript of session follows -----'] };
-state $MarkingsOf = {
-    # Error text regular expressions which defined in src/savemail.c
-    #   savemail.c:485| (void) fflush(stdout);
-    #   savemail.c:486| p = queuename(e->e_parent, 'x');
-    #   savemail.c:487| if ((xfile = fopen(p, "r")) == NULL)
-    #   savemail.c:488| {
-    #   savemail.c:489|   syserr("Cannot open %s", p);
-    #   savemail.c:490|   fprintf(fp, "  ----- Transcript of session is unavailable -----\n");
-    #   savemail.c:491| }
-    #   savemail.c:492| else
-    #   savemail.c:493| {
-    #   savemail.c:494|   fprintf(fp, "   ----- Transcript of session follows -----\n");
-    #   savemail.c:495|   if (e->e_xfp != NULL)
-    #   savemail.c:496|       (void) fflush(e->e_xfp);
-    #   savemail.c:497|   while (fgets(buf, sizeof buf, xfile) != NULL)
-    #   savemail.c:498|       putline(buf, fp, m);
-    #   savemail.c:499|   (void) fclose(xfile);
-    'error' => qr/\A[.]+ while talking to .+[:]\z/,
-};
-
 sub description { 'Sendmail version 5' }
 sub make {
     # Detect an error from V5sendmail
@@ -42,7 +19,30 @@ sub make {
     # 'from'    => qr/\AMail Delivery Subsystem/,
     return undef unless $mhead->{'subject'} =~ /\AReturned mail: [A-Z]/;
 
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;
+    state $startingof = { 'message' => ['----- Transcript of session follows -----'] };
+    state $markingsof = {
+        # Error text regular expressions which defined in src/savemail.c
+        #   savemail.c:485| (void) fflush(stdout);
+        #   savemail.c:486| p = queuename(e->e_parent, 'x');
+        #   savemail.c:487| if ((xfile = fopen(p, "r")) == NULL)
+        #   savemail.c:488| {
+        #   savemail.c:489|   syserr("Cannot open %s", p);
+        #   savemail.c:490|   fprintf(fp, "  ----- Transcript of session is unavailable -----\n");
+        #   savemail.c:491| }
+        #   savemail.c:492| else
+        #   savemail.c:493| {
+        #   savemail.c:494|   fprintf(fp, "   ----- Transcript of session follows -----\n");
+        #   savemail.c:495|   if (e->e_xfp != NULL)
+        #   savemail.c:496|       (void) fflush(e->e_xfp);
+        #   savemail.c:497|   while (fgets(buf, sizeof buf, xfile) != NULL)
+        #   savemail.c:498|       putline(buf, fp, m);
+        #   savemail.c:499|   (void) fclose(xfile);
+        'error' => qr/\A[.]+ while talking to .+[:]\z/,
+    };
+
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     return undef unless length $emailsteak->[1];
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -59,10 +59,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) > -1;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) > -1;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         #    ----- Transcript of session follows -----
@@ -102,7 +102,7 @@ sub make {
         } else {
             # Detect SMTP session error or connection error
             next if $v->{'sessionerr'};
-            if( $e =~ $MarkingsOf->{'error'} ) {
+            if( $e =~ $markingsof->{'error'} ) {
                 # ----- Transcript of session follows -----
                 # ... while talking to mta.example.org.:
                 $v->{'sessionerr'} = 1;

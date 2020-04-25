@@ -4,44 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $ReBackbone = qr|^Original[ ]mail[ ]as[ ]follows:|m;
-state $ErrorTitle = {
-    'rejected' => qr{(?>
-         (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
-        |reject[ ]mail[ ](?:.+:|from)[ ],
-        |Spam[ ]mail[ ]from[ ]a[ ]spammer[ ]is[ ]rejected
-        |You[ ].+[ ]are[ ]not[ ]member
-        )
-    }x,
-    'systemerror' => qr{(?:
-         fml[ ]system[ ]error[ ]message
-        |Loop[ ]Alert:[ ]
-        |Loop[ ]Back[ ]Warning:[ ]
-        |WARNING:[ ]UNIX[ ]FROM[ ]Loop
-        )
-    }x,
-    'securityerror' => qr/Security Alert/,
-};
-state $ErrorTable = {
-    'rejected' => qr{(?>
-        (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
-        |reject[ ](?:
-             mail[ ]from[ ].+[@].+
-            |since[ ].+[ ]header[ ]may[ ]cause[ ]mail[ ]loop
-            |spammers:
-            )
-        |You[ ]are[ ]not[ ]a[ ]member[ ]of[ ]this[ ]mailing[ ]list
-        )
-    }x,
-    'systemerror' => qr{(?:
-         Duplicated[ ]Message-ID
-        |fml[ ].+[ ]has[ ]detected[ ]a[ ]loop[ ]condition[ ]so[ ]that
-        |Loop[ ]Back[ ]Warning:
-        )
-    }x,
-    'securityerror' => qr/Security alert:/,
-};
-
 sub description { 'fml mailing list server/manager' };
 sub make {
     # Detect an error from fml mailing list server/manager
@@ -58,8 +20,46 @@ sub make {
     return undef unless $mhead->{'from'} =~ /.+[-]admin[@].+/;
     return undef unless $mhead->{'message-id'} =~ /\A[<]\d+[.]FML.+[@].+[>]\z/;
 
+    state $rebackbone = qr|^Original[ ]mail[ ]as[ ]follows:|m;
+    state $errortitle = {
+        'rejected' => qr{(?>
+             (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
+            |reject[ ]mail[ ](?:.+:|from)[ ],
+            |Spam[ ]mail[ ]from[ ]a[ ]spammer[ ]is[ ]rejected
+            |You[ ].+[ ]are[ ]not[ ]member
+            )
+        }x,
+        'systemerror' => qr{(?:
+             fml[ ]system[ ]error[ ]message
+            |Loop[ ]Alert:[ ]
+            |Loop[ ]Back[ ]Warning:[ ]
+            |WARNING:[ ]UNIX[ ]FROM[ ]Loop
+            )
+        }x,
+        'securityerror' => qr/Security Alert/,
+    };
+    state $errortable = {
+        'rejected' => qr{(?>
+            (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
+            |reject[ ](?:
+                 mail[ ]from[ ].+[@].+
+                |since[ ].+[ ]header[ ]may[ ]cause[ ]mail[ ]loop
+                |spammers:
+                )
+            |You[ ]are[ ]not[ ]a[ ]member[ ]of[ ]this[ ]mailing[ ]list
+            )
+        }x,
+        'systemerror' => qr{(?:
+             Duplicated[ ]Message-ID
+            |fml[ ].+[ ]has[ ]detected[ ]a[ ]loop[ ]condition[ ]so[ ]that
+            |Loop[ ]Back[ ]Warning:
+            )
+        }x,
+        'securityerror' => qr/Security alert:/,
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -95,18 +95,18 @@ sub make {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        for my $f ( keys %$ErrorTable ) {
-            # Try to match with error messages defined in $ErrorTable
-            next unless $e->{'diagnosis'} =~ $ErrorTable->{ $f };
+        for my $f ( keys %$errortable ) {
+            # Try to match with error messages defined in $errortable
+            next unless $e->{'diagnosis'} =~ $errortable->{ $f };
             $e->{'reason'} = $f;
             last;
         }
         next if $e->{'reason'};
 
         # Error messages in the message body did not matched
-        for my $f ( keys %$ErrorTitle ) {
+        for my $f ( keys %$errortitle ) {
             # Try to match with the Subject string
-            next unless $mhead->{'subject'} =~ $ErrorTitle->{ $f };
+            next unless $mhead->{'subject'} =~ $errortitle->{ $f };
             $e->{'reason'} = $f;
             last;
         }

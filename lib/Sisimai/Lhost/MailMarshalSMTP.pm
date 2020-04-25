@@ -4,14 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr/^[ \t]*[+]+[ \t]*/m;
-state $StartingOf = {
-    'message'  => ['Your message:'],
-    'error'    => ['Could not be delivered because of'],
-    'rcpts'    => ['The following recipients were affected:'],
-};
-
 sub description { 'Trustwave Secure Email Gateway' }
 sub make {
     # Detect an error from MailMarshalSMTP
@@ -25,6 +17,14 @@ sub make {
     my $mbody = shift // return undef;
     return undef unless index($mhead->{'subject'}, 'Undeliverable Mail: "') == 0;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr/^[ \t]*[+]+[ \t]*/m;
+    state $startingof = {
+        'message'  => ['Your message:'],
+        'error'    => ['Could not be delivered because of'],
+        'rcpts'    => ['The following recipients were affected:'],
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -34,18 +34,18 @@ sub make {
     if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
         # Convert to regular expression
         $boundary00 = '--'.$boundary00.'--';
-        $ReBackbone = qr/^\Q$boundary00\E/m;
+        $rebackbone = qr/^\Q$boundary00\E/m;
     }
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
 
         # Your message:
         #    From:    originalsender@example.com
@@ -72,7 +72,7 @@ sub make {
 
         } else {
             # Get error message lines
-            if( $e eq $StartingOf->{'error'}->[0] ) {
+            if( $e eq $startingof->{'error'}->[0] ) {
                 # Could not be delivered because of
                 #
                 # 550 5.1.1 User unknown
@@ -80,7 +80,7 @@ sub make {
 
             } elsif( $v->{'diagnosis'} && ! $endoferror ) {
                 # Append error messages
-                $endoferror = 1 if index($e, $StartingOf->{'rcpts'}->[0]) == 0;
+                $endoferror = 1 if index($e, $startingof->{'rcpts'}->[0]) == 0;
                 next if $endoferror;
 
                 $v->{'diagnosis'} .= ' '.$e;

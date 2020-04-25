@@ -4,11 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Received:[ ]*from[ ]mail[.]zoho[.]com[ ]by[ ]mx[.]zohomail[.]com|m;
-state $StartingOf = { 'message' => ['This message was created automatically by mail delivery'] };
-state $MessagesOf = { 'expired' => ['Host not reachable'] };
-
 sub description { 'Zoho Mail: https://www.zoho.com' }
 sub make {
     # Detect an error from Zoho Mail
@@ -26,8 +21,13 @@ sub make {
     # X-Mailer: Zoho Mail
     return undef unless $mhead->{'x-zohomail'};
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Received:[ ]*from[ ]mail[.]zoho[.]com[ ]by[ ]mx[.]zohomail[.]com|m;
+    state $startingof = { 'message' => ['This message was created automatically by mail delivery'] };
+    state $messagesof = { 'expired' => ['Host not reachable'] };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $qprintable = 0;
@@ -38,10 +38,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # This message was created automatically by mail delivery software.
@@ -98,9 +98,9 @@ sub make {
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$MessagesOf ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

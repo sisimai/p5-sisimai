@@ -4,31 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-state $MarkingsOf = {
-    # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
-    'message' => qr{\A(?>
-         [ ]+The[ ](?:
-             Postfix[ ](?:
-                 program\z              # The Postfix program
-                |on[ ].+[ ]program\z    # The Postfix on <os name> program
-                )
-            |\w+[ ]Postfix[ ]program\z  # The <name> Postfix program
-            |mail[ \t]system\z             # The mail system
-            |\w+[ \t]program\z             # The <custmized-name> program
-            )
-        |This[ ]is[ ]the[ ](?:
-             Postfix[ ]program          # This is the Postfix program
-            |\w+[ ]Postfix[ ]program    # This is the <name> Postfix program
-            |\w+[ ]program              # This is the <customized-name> Postfix program
-            |mail[ ]system[ ]at[ ]host  # This is the mail system at host <hostname>.
-            )
-        )
-    }x,
-    # 'from'=> qr/ [(]Mail Delivery System[)]\z/,
-};
-
 sub description { 'Postfix' }
 sub make {
     # Parse bounce messages from Postfix
@@ -40,8 +15,34 @@ sub make {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
     return undef if $mhead->{'x-aol-ip'};
+
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $markingsof = {
+        # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
+        'message' => qr{\A(?>
+             [ ]+The[ ](?:
+                 Postfix[ ](?:
+                     program\z              # The Postfix program
+                    |on[ ].+[ ]program\z    # The Postfix on <os name> program
+                    )
+                |\w+[ ]Postfix[ ]program\z  # The <name> Postfix program
+                |mail[ \t]system\z             # The mail system
+                |\w+[ \t]program\z             # The <custmized-name> program
+                )
+            |This[ ]is[ ]the[ ](?:
+                 Postfix[ ]program          # This is the Postfix program
+                |\w+[ ]Postfix[ ]program    # This is the <name> Postfix program
+                |\w+[ ]program              # This is the <customized-name> Postfix program
+                |mail[ ]system[ ]at[ ]host  # This is the mail system at host <hostname>.
+                )
+            )
+        }x,
+        # 'from'=> qr/ [(]Mail Delivery System[)]\z/,
+    };
 
     require Sisimai::RFC1894;
     require Sisimai::Address;
@@ -49,7 +50,7 @@ sub make {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $anotherset = {};    # (Hash) Another error information
@@ -63,10 +64,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         if( my $f = Sisimai::RFC1894->match($e) ) {

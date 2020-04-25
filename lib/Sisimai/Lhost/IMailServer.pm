@@ -4,25 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $ReBackbone = qr|^Original[ ]message[ ]follows[.]|m;
-state $StartingOf = { 'error' => ['Body of message generated response:'] };
-
-state $ReSMTP = {
-    'conn' => qr/(?:SMTP connection failed,|Unexpected connection response from server:)/,
-    'ehlo' => qr|Unexpected response to EHLO/HELO:|,
-    'mail' => qr|Server response to MAIL FROM:|,
-    'rcpt' => qr|Additional RCPT TO generated following response:|,
-    'data' => qr|DATA command generated response:|,
-};
-state $ReFailures = {
-    'hostunknown'   => qr/Unknown host/,
-    'userunknown'   => qr/\A(?:Unknown user|Invalid final delivery userid)/,
-    'mailboxfull'   => qr/\AUser mailbox exceeds allowed size/,
-    'securityerror' => qr/\ARequested action not taken: virus detected/,
-    'undefined'     => qr/\Aundeliverable to/,
-    'expired'       => qr/\ADelivery failed \d+ attempts/,
-};
-
 sub description { 'IPSWITCH IMail Server' }
 sub make {
     # Detect an error from IMailServer
@@ -41,8 +22,26 @@ sub make {
     $match ||= 1 if defined $mhead->{'x-mailer'} && index($mhead->{'x-mailer'}, '<SMTP32 v') == 0;
     return undef unless $match;
 
+    state $rebackbone = qr|^Original[ ]message[ ]follows[.]|m;
+    state $startingof = { 'error' => ['Body of message generated response:'] };
+    state $recommands = {
+        'conn' => qr/(?:SMTP connection failed,|Unexpected connection response from server:)/,
+        'ehlo' => qr|Unexpected response to EHLO/HELO:|,
+        'mail' => qr|Server response to MAIL FROM:|,
+        'rcpt' => qr|Additional RCPT TO generated following response:|,
+        'data' => qr|DATA command generated response:|,
+    };
+    state $refailures = {
+        'hostunknown'   => qr/Unknown host/,
+        'userunknown'   => qr/\A(?:Unknown user|Invalid final delivery userid)/,
+        'mailboxfull'   => qr/\AUser mailbox exceeds allowed size/,
+        'securityerror' => qr/\ARequested action not taken: virus detected/,
+        'undefined'     => qr/\Aundeliverable to/,
+        'expired'       => qr/\ADelivery failed \d+ attempts/,
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
@@ -80,7 +79,7 @@ sub make {
             # Other error message text
             $v->{'alterrors'} //= '';
             $v->{'alterrors'}  .= ' '.$e if $v->{'alterrors'};
-            $v->{'alterrors'}   = $e if index($e, $StartingOf->{'error'}->[0]) > -1;
+            $v->{'alterrors'}   = $e if index($e, $startingof->{'error'}->[0]) > -1;
         }
     }
     return undef unless $recipients;
@@ -94,16 +93,16 @@ sub make {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        COMMAND: for my $r ( keys %$ReSMTP ) {
+        COMMAND: for my $r ( keys %$recommands ) {
             # Detect SMTP command from the message
-            next unless $e->{'diagnosis'} =~ $ReSMTP->{ $r };
+            next unless $e->{'diagnosis'} =~ $recommands->{ $r };
             $e->{'command'} = uc $r;
             last;
         }
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$refailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless $e->{'diagnosis'} =~ $refailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

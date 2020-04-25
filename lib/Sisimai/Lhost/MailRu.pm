@@ -5,40 +5,6 @@ use strict;
 use warnings;
 
 # Based on Sisimai::Lhost::Exim
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^------ This is a copy of the message, including all the headers[.] ------|m;
-state $StartingOf = { 'message' => ['This message was created automatically by mail delivery software.'] };
-state $ReCommands = [
-    qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
-    qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
-];
-state $MessagesOf = {
-    'expired'     => [
-        'retry timeout exceeded',
-        'No action is required on your part',
-    ],
-    'userunknown' => ['user not found'],
-    'hostunknown' => [
-        'all host address lookups failed permanently',
-        'all relevant MX records point to non-existent hosts',
-        'Unrouteable address',
-    ],
-    'mailboxfull' => [
-        'mailbox is full',
-        'error: quota exceed',
-    ],
-    'notaccept'   => [
-        'an MX or SRV record indicated no SMTP service',
-        'no host found for existing SMTP connection',
-    ],
-    'systemerror' => [
-        'delivery to file forbidden',
-        'delivery to pipe forbidden',
-        'local delivery failed',
-    ],
-    'contenterror'=> ['Too many "Received" headers '],
-};
-
 sub description { '@mail.ru: https://mail.ru' }
 sub make {
     # Detect an error from @mail.ru
@@ -64,8 +30,42 @@ sub make {
         )
     }x;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^------ This is a copy of the message, including all the headers[.] ------|m;
+    state $startingof = { 'message' => ['This message was created automatically by mail delivery software.'] };
+    state $recommands = [
+        qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
+        qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
+    ];
+    state $messagesof = {
+        'expired'     => [
+            'retry timeout exceeded',
+            'No action is required on your part',
+        ],
+        'userunknown' => ['user not found'],
+        'hostunknown' => [
+            'all host address lookups failed permanently',
+            'all relevant MX records point to non-existent hosts',
+            'Unrouteable address',
+        ],
+        'mailboxfull' => [
+            'mailbox is full',
+            'error: quota exceed',
+        ],
+        'notaccept'   => [
+            'an MX or SRV record indicated no SMTP service',
+            'no host found for existing SMTP connection',
+        ],
+        'systemerror' => [
+            'delivery to file forbidden',
+            'delivery to pipe forbidden',
+            'local delivery failed',
+        ],
+        'contenterror'=> ['Too many "Received" headers '],
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
@@ -76,9 +76,9 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # Это письмо создано автоматически
@@ -178,7 +178,7 @@ sub make {
 
         unless( $e->{'command'} ) {
             # Get the SMTP command name for the session
-            SMTP: for my $r ( @$ReCommands ) {
+            SMTP: for my $r ( @$recommands ) {
                 # Verify each regular expression of SMTP commands
                 next unless $e->{'diagnosis'} =~ $r;
                 $e->{'command'} = uc $1;
@@ -196,9 +196,9 @@ sub make {
                     $e->{'reason'} = 'blocked';
 
                 } else {
-                    SESSION: for my $r ( keys %$MessagesOf ) {
+                    SESSION: for my $r ( keys %$messagesof ) {
                         # Verify each regular expression of session errors
-                        next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+                        next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
                         $e->{'reason'} = $r;
                         last;
                     }

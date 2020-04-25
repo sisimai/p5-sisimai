@@ -4,10 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $StartingOf = { 'message' => ['      This is an automatically generated Delivery Status Notification.'] };
-
 sub description { 'Unknown MTA #3' }
 sub make {
     # Detect an error from Unknown MTA #3
@@ -23,8 +19,12 @@ sub make {
     return undef unless index($mhead->{'from'}, 'Mail Delivery System') == 0;
     return undef unless index($mhead->{'subject'}, 'Delivery status notification') == 0;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $startingof = { 'message' => ['      This is an automatically generated Delivery Status Notification.'] };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -34,10 +34,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # ============================================================================

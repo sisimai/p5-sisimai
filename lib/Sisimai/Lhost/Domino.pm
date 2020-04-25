@@ -4,19 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/delivery-status|m;
-state $StartingOf = { 'message' => ['Your message'] };
-state $MessagesOf = {
-    'userunknown' => [
-        'not listed in Domino Directory',
-        'not listed in public Name & Address Book',
-        'Domino ディレクトリには見つかりません',
-    ],
-    'filtered'    => ['Cannot route mail to user'],
-    'systemerror' => ['Several matches found in Domino Directory'],
-};
-
 sub description { 'IBM Domino Server' }
 sub make {
     # Detect an error from IBM Domino
@@ -30,8 +17,21 @@ sub make {
     my $mbody = shift // return undef;
     return undef unless index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/delivery-status|m;
+    state $startingof = { 'message' => ['Your message'] };
+    state $messagesof = {
+        'userunknown' => [
+            'not listed in Domino Directory',
+            'not listed in public Name & Address Book',
+            'Domino ディレクトリには見つかりません',
+        ],
+        'filtered'    => ['Cannot route mail to user'],
+        'systemerror' => ['Several matches found in Domino Directory'],
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $subjecttxt = '';    # (String) The value of Subject:
@@ -43,10 +43,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # Your message
@@ -98,9 +98,9 @@ sub make {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
 
-        for my $r ( keys %$MessagesOf ) {
+        for my $r ( keys %$messagesof ) {
             # Check each regular expression of Domino error messages
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
             $e->{'reason'} = $r;
             $e->{'status'} = Sisimai::SMTP::Status->code($r, 0) || '';
             last;

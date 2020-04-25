@@ -4,21 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]text/rfc822-headers|m;
-state $StartingOf = { 'message' => ['Hello, this is the mail server on '] };
-state $Categories = {
-    'bad-domain'          => 'hostunknown',
-    'bad-mailbox'         => 'userunknown',
-    'inactive-mailbox'    => 'disabled',
-    'message-expired'     => 'expired',
-    'no-answer-from-host' => 'networkerror',
-    'policy-related'      => 'policyviolation',
-    'quota-issues'        => 'mailboxfull',
-    'routing-errors'      => 'systemerror',
-    'spam-related'        => 'spamdetected',
-};
-
 sub description { 'PowerMTA: https://www.sparkpost.com/powermta/' }
 sub make {
     # Detect an error from PowerMTA
@@ -32,12 +17,27 @@ sub make {
     my $mbody = shift // return undef;
     return undef unless index($mhead->{'subject'}, 'Delivery report') > -1;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]text/rfc822-headers|m;
+    state $startingof = { 'message' => ['Hello, this is the mail server on '] };
+    state $categories = {
+        'bad-domain'          => 'hostunknown',
+        'bad-mailbox'         => 'userunknown',
+        'inactive-mailbox'    => 'disabled',
+        'message-expired'     => 'expired',
+        'no-answer-from-host' => 'networkerror',
+        'policy-related'      => 'policyviolation',
+        'quota-issues'        => 'mailboxfull',
+        'routing-errors'      => 'systemerror',
+        'spam-related'        => 'spamdetected',
+    };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -47,12 +47,12 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( rindex($e, $StartingOf->{'message'}->[0]) > -1 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
+            if( rindex($e, $startingof->{'message'}->[0]) > -1 ) {
+                $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         if( my $f = Sisimai::RFC1894->match($e) ) {
@@ -113,7 +113,7 @@ sub make {
         # Set default values if each value is empty.
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'reason'}    = $Categories->{ $e->{'category'} } || '';
+        $e->{'reason'}    = $categories->{ $e->{'category'} } || '';
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }

@@ -3,20 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-use constant ErrorCodes => {
-    # http://mail.i.ua/err/$(CODE)
-    '1'  => 'norelaying',  # The use of SMTP as mail gate is forbidden.
-    '2'  => 'userunknown', # User is not found.
-    '3'  => 'suspend',     # Mailbox was not used for more than 3 months
-    '4'  => 'mailboxfull', # Mailbox is full.
-    '5'  => 'toomanyconn', # Letter sending limit is exceeded.
-    '6'  => 'norelaying',  # Use SMTP of your provider to send mail.
-    '7'  => 'blocked',     # Wrong value if command HELO/EHLO parameter.
-    '8'  => 'rejected',    # Couldn't check sender address.
-    '9'  => 'blocked',     # IP-address of the sender is blacklisted.
-    '10' => 'filtered',    # Not in the list Mail address management.
-};
-
 sub get {
     # Detect bounce reason from https://www.i.ua/
     # @param    [Sisimai::Data] argvs   Parsed email object
@@ -25,9 +11,22 @@ sub get {
     my $class = shift;
     my $argvs = shift // return undef;
 
+    state $errorcodes = {
+        # http://mail.i.ua/err/$(CODE)
+        '1'  => 'norelaying',  # The use of SMTP as mail gate is forbidden.
+        '2'  => 'userunknown', # User is not found.
+        '3'  => 'suspend',     # Mailbox was not used for more than 3 months
+        '4'  => 'mailboxfull', # Mailbox is full.
+        '5'  => 'toomanyconn', # Letter sending limit is exceeded.
+        '6'  => 'norelaying',  # Use SMTP of your provider to send mail.
+        '7'  => 'blocked',     # Wrong value if command HELO/EHLO parameter.
+        '8'  => 'rejected',    # Couldn't check sender address.
+        '9'  => 'blocked',     # IP-address of the sender is blacklisted.
+        '10' => 'filtered',    # Not in the list Mail address management.
+    };
     my $statusmesg = lc $argvs->diagnosticcode;
     my $codenumber = $statusmesg =~ m|[.]i[.]ua/err/(\d+)| ? $1 : 0;
-    return ErrorCodes->{ $codenumber } || '';
+    return $errorcodes->{ $codenumber } || '';
 }
 
 1;

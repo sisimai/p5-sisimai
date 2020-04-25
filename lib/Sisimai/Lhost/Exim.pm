@@ -4,121 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr{^(?:
-    # deliver.c:6423|          if (bounce_return_body) fprintf(f,
-    # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
-    # deliver.c:6425|          else fprintf(f,
-    # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
-     [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+?headers[.][ ][-]+
-    |Content-Type:[ ]*message/rfc822\n(?:[\s\t]+.*?\n\n)?
-    )
-}msx;
-state $StartingOf = { 'deliverystatus' => ['Content-type: message/delivery-status'] };
-state $MarkingsOf = {
-    # Error text regular expressions which defined in exim/src/deliver.c
-    #
-    # deliver.c:6292| fprintf(f,
-    # deliver.c:6293|"This message was created automatically by mail delivery software.\n");
-    # deliver.c:6294|        if (to_sender)
-    # deliver.c:6295|          {
-    # deliver.c:6296|          fprintf(f,
-    # deliver.c:6297|"\nA message that you sent could not be delivered to one or more of its\n"
-    # deliver.c:6298|"recipients. This is a permanent error. The following address(es) failed:\n");
-    # deliver.c:6299|          }
-    # deliver.c:6300|        else
-    # deliver.c:6301|          {
-    # deliver.c:6302|          fprintf(f,
-    # deliver.c:6303|"\nA message sent by\n\n  <%s>\n\n"
-    # deliver.c:6304|"could not be delivered to one or more of its recipients. The following\n"
-    # deliver.c:6305|"address(es) failed:\n", sender_address);
-    # deliver.c:6306|          }
-    'alias'   => qr/\A([ ]+an undisclosed address)\z/,
-    'message' => qr{\A(?>
-         This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
-        |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scannning[ ]code
-        |A[ ]message[ ]that[ ]you[ ]sent[ ]contained[ ]one[ ]or[ ]more[ ]recipient[ ]addresses[ ]
-        |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
-        |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
-        )
-    }x,
-    'frozen'  => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
-};
-
-state $ReCommands = [
-    # transports/smtp.c:564|  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
-    # transports/smtp.c:837|  string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
-    qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
-    qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
-    qr/LMTP error after ([A-Za-z]{4})/,
-    qr/LMTP error after end of ([A-Za-z]{4})/,
-];
-state $MessagesOf = {
-    # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
-    # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
-    'userunknown' => ['user not found'],
-    # transports/smtp.c:3524|  addr->message = US"all host address lookups failed permanently";
-    # routers/dnslookup.c:331|  addr->message = US"all relevant MX records point to non-existent hosts";
-    # route.c:1826|  uschar *message = US"Unrouteable address";
-    'hostunknown' => [
-        'all host address lookups failed permanently',
-        'all relevant MX records point to non-existent hosts',
-        'Unrouteable address',
-    ],
-    # transports/appendfile.c:2567|  addr->user_message = US"mailbox is full";
-    # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "
-    # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);
-    'mailboxfull' => [
-        'mailbox is full',
-        'error: quota exceed',
-    ],
-    # routers/dnslookup.c:328|  addr->message = US"an MX or SRV record indicated no SMTP service";
-    # transports/smtp.c:3502|  addr->message = US"no host found for existing SMTP connection";
-    'notaccept' => [
-        'an MX or SRV record indicated no SMTP service',
-        'no host found for existing SMTP connection',
-    ],
-    # parser.c:666| *errorptr = string_sprintf("%s (expected word or \"<\")", *errorptr);
-    # parser.c:701| if(bracket_count++ > 5) FAILED(US"angle-brackets nested too deep");
-    # parser.c:738| FAILED(US"domain missing in source-routed address");
-    # parser.c:747| : string_sprintf("malformed address: %.32s may not follow %.*s",
-    'syntaxerror' => [
-        'angle-brackets nested too deep',
-        'expected word or "<"',
-        'domain missing in source-routed address',
-        'malformed address:',
-    ],
-    # deliver.c:5614|  addr->message = US"delivery to file forbidden";
-    # deliver.c:5624|  addr->message = US"delivery to pipe forbidden";
-    # transports/pipe.c:1156|  addr->user_message = US"local delivery failed";
-    'systemerror' => [
-        'delivery to file forbidden',
-        'delivery to pipe forbidden',
-        'local delivery failed',
-        'LMTP error after ',
-    ],
-    # deliver.c:5425|  new->message = US"Too many \"Received\" headers - suspected mail loop";
-    'contenterror' => ['Too many "Received" headers'],
-};
-state $DelayedFor = [
-    # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
-    # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
-    # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
-    # smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
-    #                 "after this message arrived";
-    # deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
-    # deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
-    # receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
-    # receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
-    'retry timeout exceeded',
-    'No action is required on your part',
-    'retry time not reached for any host after a long failure period',
-    'all hosts have been failing for a long time and were last tried',
-    'Delay reason: ',
-    'has been frozen',
-    'was frozen on arrival by ',
-];
-
 sub description { 'Exim' }
 sub make {
     # Detect an error from Exim
@@ -131,7 +16,6 @@ sub make {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
-
     return undef if $mhead->{'from'} =~/[@].+[.]mail[.]ru[>]?/;
 
     # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
@@ -150,10 +34,124 @@ sub make {
     }x;
     return undef if $match < 2;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr{^(?:
+        # deliver.c:6423|          if (bounce_return_body) fprintf(f,
+        # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
+        # deliver.c:6425|          else fprintf(f,
+        # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
+         [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message.+?headers[.][ ][-]+
+        |Content-Type:[ ]*message/rfc822\n(?:[\s\t]+.*?\n\n)?
+        )
+    }msx;
+    state $startingof = { 'deliverystatus' => ['Content-type: message/delivery-status'] };
+    state $markingsof = {
+        # Error text regular expressions which defined in exim/src/deliver.c
+        #
+        # deliver.c:6292| fprintf(f,
+        # deliver.c:6293|"This message was created automatically by mail delivery software.\n");
+        # deliver.c:6294|        if (to_sender)
+        # deliver.c:6295|          {
+        # deliver.c:6296|          fprintf(f,
+        # deliver.c:6297|"\nA message that you sent could not be delivered to one or more of its\n"
+        # deliver.c:6298|"recipients. This is a permanent error. The following address(es) failed:\n");
+        # deliver.c:6299|          }
+        # deliver.c:6300|        else
+        # deliver.c:6301|          {
+        # deliver.c:6302|          fprintf(f,
+        # deliver.c:6303|"\nA message sent by\n\n  <%s>\n\n"
+        # deliver.c:6304|"could not be delivered to one or more of its recipients. The following\n"
+        # deliver.c:6305|"address(es) failed:\n", sender_address);
+        # deliver.c:6306|          }
+        'alias'   => qr/\A([ ]+an undisclosed address)\z/,
+        'message' => qr{\A(?>
+             This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
+            |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scannning[ ]code
+            |A[ ]message[ ]that[ ]you[ ]sent[ ]contained[ ]one[ ]or[ ]more[ ]recipient[ ]addresses[ ]
+            |Message[ ].+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
+            |The[ ].+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
+            )
+        }x,
+        'frozen'  => qr/\AMessage .+ (?:has been frozen|was frozen on arrival)/,
+    };
+    state $recommands = [
+        # transports/smtp.c:564|  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
+        # transports/smtp.c:837|  string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
+        qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
+        qr/SMTP error from remote (?:mail server|mailer) after end of ([A-Za-z]{4})/,
+        qr/LMTP error after ([A-Za-z]{4})/,
+        qr/LMTP error after end of ([A-Za-z]{4})/,
+    ];
+    state $messagesof = {
+        # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
+        # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
+        'userunknown' => ['user not found'],
+        # transports/smtp.c:3524|  addr->message = US"all host address lookups failed permanently";
+        # routers/dnslookup.c:331|  addr->message = US"all relevant MX records point to non-existent hosts";
+        # route.c:1826|  uschar *message = US"Unrouteable address";
+        'hostunknown' => [
+            'all host address lookups failed permanently',
+            'all relevant MX records point to non-existent hosts',
+            'Unrouteable address',
+        ],
+        # transports/appendfile.c:2567|  addr->user_message = US"mailbox is full";
+        # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "
+        # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);
+        'mailboxfull' => [
+            'mailbox is full',
+            'error: quota exceed',
+        ],
+        # routers/dnslookup.c:328|  addr->message = US"an MX or SRV record indicated no SMTP service";
+        # transports/smtp.c:3502|  addr->message = US"no host found for existing SMTP connection";
+        'notaccept' => [
+            'an MX or SRV record indicated no SMTP service',
+            'no host found for existing SMTP connection',
+        ],
+        # parser.c:666| *errorptr = string_sprintf("%s (expected word or \"<\")", *errorptr);
+        # parser.c:701| if(bracket_count++ > 5) FAILED(US"angle-brackets nested too deep");
+        # parser.c:738| FAILED(US"domain missing in source-routed address");
+        # parser.c:747| : string_sprintf("malformed address: %.32s may not follow %.*s",
+        'syntaxerror' => [
+            'angle-brackets nested too deep',
+            'expected word or "<"',
+            'domain missing in source-routed address',
+            'malformed address:',
+        ],
+        # deliver.c:5614|  addr->message = US"delivery to file forbidden";
+        # deliver.c:5624|  addr->message = US"delivery to pipe forbidden";
+        # transports/pipe.c:1156|  addr->user_message = US"local delivery failed";
+        'systemerror' => [
+            'delivery to file forbidden',
+            'delivery to pipe forbidden',
+            'local delivery failed',
+            'LMTP error after ',
+        ],
+        # deliver.c:5425|  new->message = US"Too many \"Received\" headers - suspected mail loop";
+        'contenterror' => ['Too many "Received" headers'],
+    };
+    state $delayedfor = [
+        # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
+        # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
+        # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
+        # smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
+        #                 "after this message arrived";
+        # deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
+        # deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
+        # receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
+        # receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
+        'retry timeout exceeded',
+        'No action is required on your part',
+        'retry time not reached for any host after a long failure period',
+        'all hosts have been failing for a long time and were last tried',
+        'Delay reason: ',
+        'has been frozen',
+        'was frozen on arrival by ',
+    ];
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $nextcursor = 0;
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -172,12 +170,12 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( $e =~ $MarkingsOf->{'message'} ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
-                next unless $e =~ $MarkingsOf->{'frozen'};
+            if( $e =~ $markingsof->{'message'} ) {
+                $readcursor |= $indicators->{'deliverystatus'};
+                next unless $e =~ $markingsof->{'frozen'};
             }
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # This message was created automatically by mail delivery software.
@@ -192,7 +190,7 @@ sub make {
 
         if( $e =~ /\A[ \t]{2}([^ \t]+[@][^ \t]+[.]?[a-zA-Z]+)(:.+)?\z/ ||
             $e =~ /\A[ \t]{2}[^ \t]+[@][^ \t]+[.][a-zA-Z]+[ ]<(.+?[@].+?)>:.+\z/ ||
-            $e =~ $MarkingsOf->{'alias'} ) {
+            $e =~ $markingsof->{'alias'} ) {
             #   kijitora@example.jp
             #   sabineko@example.jp: forced freeze
             #   mikeneko@example.jp <nekochan@example.org>: ...
@@ -233,7 +231,7 @@ sub make {
         } else {
             next unless length $e;
 
-            if( $e =~ $MarkingsOf->{'frozen'} ) {
+            if( $e =~ $markingsof->{'frozen'} ) {
                 # Message *** has been frozen by the system filter.
                 # Message *** was frozen on arrival by ACL.
                 $v->{'alterrors'} .= $e.' ';
@@ -266,7 +264,7 @@ sub make {
                         # Error message ?
                         next if $nextcursor;
                         # Content-type: message/delivery-status
-                        $nextcursor = 1 if index($e, $StartingOf->{'deliverystatus'}) == 0;
+                        $nextcursor = 1 if index($e, $startingof->{'deliverystatus'}) == 0;
                         $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
                     }
                 } else {
@@ -393,7 +391,7 @@ sub make {
 
         unless( $e->{'command'} ) {
             # Get the SMTP command name for the session
-            SMTP: for my $r ( @$ReCommands ) {
+            SMTP: for my $r ( @$recommands ) {
                 # Verify each regular expression of SMTP commands
                 next unless $e->{'diagnosis'} =~ $r;
                 $e->{'command'} = uc $1;
@@ -412,16 +410,16 @@ sub make {
 
             } else {
                 # Verify each regular expression of session errors
-                SESSION: for my $r ( keys %$MessagesOf ) {
+                SESSION: for my $r ( keys %$messagesof ) {
                     # Check each regular expression
-                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
                     $e->{'reason'} = $r;
                     last;
                 }
 
                 unless( $e->{'reason'} ) {
                     # The reason "expired"
-                    $e->{'reason'} = 'expired' if grep { index($e->{'diagnosis'}, $_) > -1 } @$DelayedFor;
+                    $e->{'reason'} = 'expired' if grep { index($e->{'diagnosis'}, $_) > -1 } @$delayedfor;
                 }
             }
         }

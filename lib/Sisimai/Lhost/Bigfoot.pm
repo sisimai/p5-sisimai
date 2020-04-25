@@ -4,10 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/partial|m;
-state $MarkingsOf = { 'message' => qr/\A[ \t]+[-]+[ \t]*Transcript of session follows/ };
-
 sub description { 'Bigfoot: http://www.bigfoot.com' }
 sub make {
     # Detect an error from Bigfoot
@@ -26,12 +22,16 @@ sub make {
     $match ||= 1 if grep { rindex($_, '.bigfoot.com ') > -1 } @{ $mhead->{'received'} };
     return undef unless $match;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/partial|m;
+    state $markingsof = { 'message' => qr/\A[ \t]+[-]+[ \t]*Transcript of session follows/ };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
@@ -44,10 +44,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         if( my $f = Sisimai::RFC1894->match($e) ) {

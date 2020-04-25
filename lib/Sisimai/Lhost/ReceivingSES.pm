@@ -5,17 +5,6 @@ use strict;
 use warnings;
 
 # https://aws.amazon.com/ses/
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^content-type:[ ]text/rfc822-headers|m;
-state $StartingOf = { 'message' => ['This message could not be delivered.'] };
-state $MessagesOf = {
-    # The followings are error messages in Rule sets/*/Actions/Template
-    'filtered'     => ['Mailbox does not exist'],
-    'mesgtoobig'   => ['Message too large'],
-    'mailboxfull'  => ['Mailbox full'],
-    'contenterror' => ['Message content rejected'],
-};
-
 sub description { 'Amazon SES(Receiving): https://aws.amazon.com/ses/' };
 sub make {
     # Detect an error from Amazon SES/Receiving
@@ -32,12 +21,23 @@ sub make {
     # Feedback-ID: 1.us-west-2.HX6/J9OVlHTadQhEu1+wdF9DBj6n6Pa9sW5Y/0pSOi8=:AmazonSES
     return undef unless $mhead->{'x-ses-outgoing'};
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^content-type:[ ]text/rfc822-headers|m;
+    state $startingof = { 'message' => ['This message could not be delivered.'] };
+    state $messagesof = {
+        # The followings are error messages in Rule sets/*/Actions/Template
+        'filtered'     => ['Mailbox does not exist'],
+        'mesgtoobig'   => ['Message too large'],
+        'mailboxfull'  => ['Mailbox full'],
+        'contenterror' => ['Message content rejected'],
+    };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -48,10 +48,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         if( my $f = Sisimai::RFC1894->match($e) ) {
@@ -116,9 +116,9 @@ sub make {
             $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
         }
 
-        SESSION: for my $r ( keys %$MessagesOf ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

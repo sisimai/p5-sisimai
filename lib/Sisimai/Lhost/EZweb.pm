@@ -4,35 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr<^(?:[-]{50}|Content-Type:[ ]*message/rfc822)>m;
-my    $MarkingsOf = {
-    'message' => qr{\A(?:
-         The[ ]user[(]s[)][ ]
-        |Your[ ]message[ ]
-        |Each[ ]of[ ]the[ ]following
-        |[<][^ ]+[@][^ ]+[>]\z
-        )
-    }x,
-    'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
-};
-state $ReFailures = {
-    #'notaccept'  => [qr/The following recipients did not receive this message:/],
-    'mailboxfull' => [qr/The user[(]s[)] account is temporarily over quota/],
-    'suspend'     => [
-        # http://www.naruhodo-au.kddi.com/qa3429203.html
-        # The recipient may be unpaid user...?
-        qr/The user[(]s[)] account is disabled[.]/,
-        qr/The user[(]s[)] account is temporarily limited[.]/,
-    ],
-    'expired' => [
-        # Your message was not delivered within 0 days and 1 hours.
-        # Remote host is not responding.
-        qr/Your message was not delivered within /,
-    ],
-    'onhold' => [qr/Each of the following recipients was rejected by a remote mail server/],
-};
-
 sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
 sub make {
     # Detect an error from EZweb
@@ -64,10 +35,39 @@ sub make {
     }
     return undef if $match < 2;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr<^(?:[-]{50}|Content-Type:[ ]*message/rfc822)>m;
+    my    $markingsof = {
+        'message' => qr{\A(?:
+             The[ ]user[(]s[)][ ]
+            |Your[ ]message[ ]
+            |Each[ ]of[ ]the[ ]following
+            |[<][^ ]+[@][^ ]+[>]\z
+            )
+        }x,
+        'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/,
+    };
+    state $refailures = {
+        #'notaccept'  => [qr/The following recipients did not receive this message:/],
+        'mailboxfull' => [qr/The user[(]s[)] account is temporarily over quota/],
+        'suspend'     => [
+            # http://www.naruhodo-au.kddi.com/qa3429203.html
+            # The recipient may be unpaid user...?
+            qr/The user[(]s[)] account is disabled[.]/,
+            qr/The user[(]s[)] account is temporarily limited[.]/,
+        ],
+        'expired' => [
+            # Your message was not delivered within 0 days and 1 hours.
+            # Remote host is not responding.
+            qr/Your message was not delivered within /,
+        ],
+        'onhold' => [qr/Each of the following recipients was rejected by a remote mail server/],
+    };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -76,18 +76,18 @@ sub make {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
         my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1);
-        $MarkingsOf->{'boundary'} = qr/\A\Q$b0\E\z/ if $b0; # Convert to regular expression
+        $markingsof->{'boundary'} = qr/\A\Q$b0\E\z/ if $b0; # Convert to regular expression
     }
-    my @rxmessages; push @rxmessages, @{ $ReFailures->{ $_ } } for keys %$ReFailures;
+    my @rxmessages; push @rxmessages, @{ $refailures->{ $_ } } for keys %$refailures;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # The user(s) account is disabled.
@@ -169,9 +169,9 @@ sub make {
 
             } else {
                 # SMTP command is not RCPT
-                SESSION: for my $r ( keys %$ReFailures ) {
+                SESSION: for my $r ( keys %$refailures ) {
                     # Verify each regular expression of session errors
-                    PATTERN: for my $rr ( @{ $ReFailures->{ $r } } ) {
+                    PATTERN: for my $rr ( @{ $refailures->{ $r } } ) {
                         # Check each regular expression
                         next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
                         $e->{'reason'} = $r;

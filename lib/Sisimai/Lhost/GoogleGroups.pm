@@ -4,9 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr/^-----[ ]Original[ ]message[ ]-----$/m;
-
 sub description { 'Google Groups: https://groups.google.com' }
 sub make {
     # Detect an error from Google Groups
@@ -41,8 +38,11 @@ sub make {
     # Thanks,
     #
     # Google Groups
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr/^-----[ ]Original[ ]message[ ]-----$/m;
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $recordwide = { 'rhost' => '', 'reason' => '', 'diagnosis' => '' };
     my $recipients = 0;
     my $v = $dscontents->[-1];

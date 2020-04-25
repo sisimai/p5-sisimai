@@ -4,9 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-my    $ReBackbone = qr/__BOUNDARY_STRING_HERE__/m;
-
 sub description { 'Verizon Wireless: https://www.verizonwireless.com' }
 sub make {
     # Detect an error from Verizon
@@ -30,6 +27,9 @@ sub make {
     }
     return undef if $match < 0;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+
+    my $rebackbone = qr/__BOUNDARY_STRING_HERE__/m;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = [];
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -37,15 +37,15 @@ sub make {
     my $senderaddr = '';    # (String) Sender address in the message body
     my $subjecttxt = '';    # (String) Subject of the original message
 
-    my $StartingOf = {};    # (Ref->Hash) Delimiter strings
-    my $MarkingsOf = {};    # (Ref->Hash) Delimiter patterns
-    my $MessagesOf = {};    # (Ref->Hash) Error message patterns
+    my $startingof = {};    # (Ref->Hash) Delimiter strings
+    my $markingsof = {};    # (Ref->Hash) Delimiter patterns
+    my $messagesof = {};    # (Ref->Hash) Error message patterns
     my $v = undef;
 
     if( $match == 1 ) {
         # vtext.com
-        $MarkingsOf = { 'message' => qr/\AError:[ \t]/ };
-        $MessagesOf = {
+        $markingsof = { 'message' => qr/\AError:[ \t]/ };
+        $messagesof = {
             # The attempted recipient address does not exist.
             'userunknown' => ['550 - Requested action not taken: no such user here'],
         };
@@ -53,19 +53,19 @@ sub make {
         if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
-            $ReBackbone = qr/^\Q$boundary00\E/m;
+            $rebackbone = qr/^\Q$boundary00\E/m;
         }
 
-        $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+        $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
         for my $e ( split("\n", $emailsteak->[0]) ) {
             # Read error messages and delivery status lines from the head of the email
             # to the previous line of the beginning of the original message.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+                $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
                 next;
             }
-            next unless $readcursor & $Indicators->{'deliverystatus'};
+            next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
 
             # Message details:
@@ -100,25 +100,25 @@ sub make {
         }
     } else {
         # vzwpix.com
-        $StartingOf = { 'message' => ['Message could not be delivered to mobile'] };
-        $MessagesOf = { 'userunknown' => ['No valid recipients for this MM'] };
+        $startingof = { 'message' => ['Message could not be delivered to mobile'] };
+        $messagesof = { 'userunknown' => ['No valid recipients for this MM'] };
 
         if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
             $boundary00 = '--'.$boundary00.'--';
-            $ReBackbone = qr/^\Q$boundary00\E/m;
+            $rebackbone = qr/^\Q$boundary00\E/m;
         }
 
-        $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+        $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
         for my $e ( split("\n", $emailsteak->[0]) ) {
             # Read error messages and delivery status lines from the head of the email
             # to the previous line of the beginning of the original message.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+                $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
                 next;
             }
-            next unless $readcursor & $Indicators->{'deliverystatus'};
+            next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
 
             # Original Message:
@@ -162,9 +162,9 @@ sub make {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$MessagesOf ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

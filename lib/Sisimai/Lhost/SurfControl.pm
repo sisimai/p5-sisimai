@@ -4,10 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $StartingOf = { 'message' => ['Your message could not be sent.'] };
-
 sub description { 'WebSense SurfControl' }
 sub make {
     # Detect an error from SurfControl
@@ -27,10 +23,14 @@ sub make {
     return undef unless $mhead->{'x-mailer'};
     return undef unless $mhead->{'x-mailer'} eq 'SurfControl E-mail Filter';
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $startingof = { 'message' => ['Your message could not be sent.'] };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -41,10 +41,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # Your message could not be sent.

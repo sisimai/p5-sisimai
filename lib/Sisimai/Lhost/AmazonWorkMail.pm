@@ -5,10 +5,6 @@ use strict;
 use warnings;
 
 # https://aws.amazon.com/workmail/
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^content-type:[ ]message/rfc822|m;
-state $StartingOf = { 'message' => ['Technical report:'] };
-
 sub description { 'Amazon WorkMail: https://aws.amazon.com/workmail/' }
 sub make {
     # Detect an error from Amazon WorkMail
@@ -34,12 +30,16 @@ sub make {
     }
     return undef if $match < 2;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^content-type:[ ]message/rfc822|m;
+    state $startingof = { 'message' => ['Technical report:'] };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -49,10 +49,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         if( my $f = Sisimai::RFC1894->match($e) ) {

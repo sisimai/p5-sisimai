@@ -4,19 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-state $MarkingsOf = {
-    'message' => qr/\A[*][*][ ].+[ ][*][*]\z/,
-    'error'   => qr/\AThe[ ]response([ ]from[ ]the[ ]remote[ ]server)?[ ]was:\z/,
-    'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
-};
-state $MessagesOf = {
-    'userunknown'  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
-    'notaccept'    => ['Null MX'],
-    'networkerror' => [' had no relevant answers.', ' responded with code NXDOMAIN'],
-};
-
 sub description { 'G Suite: https://gsuite.google.com/' }
 sub make {
     # Detect an error from G Suite (Transfer from G Suite to a destination host)
@@ -33,12 +20,25 @@ sub make {
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     return undef unless $mhead->{'x-gm-message-state'};
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $markingsof = {
+        'message' => qr/\A[*][*][ ].+[ ][*][*]\z/,
+        'error'   => qr/\AThe[ ]response([ ]from[ ]the[ ]remote[ ]server)?[ ]was:\z/,
+        'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
+    };
+    state $messagesof = {
+        'userunknown'  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
+        'notaccept'    => ['Null MX'],
+        'networkerror' => [' had no relevant answers.', ' responded with code NXDOMAIN'],
+    };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for a blank line after error messages
@@ -53,9 +53,9 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
 
         if( my $f = Sisimai::RFC1894->match($e) ) {
             # $e matched with any field defined in RFC3464
@@ -100,7 +100,7 @@ sub make {
                 next if $endoferror;
                 $v->{'diagnosis'} .= $e;
 
-            } elsif( $e =~ $MarkingsOf->{'error'} ) {
+            } elsif( $e =~ $markingsof->{'error'} ) {
                 # The response from the remote server was:
                 $anotherset->{'diagnosis'} .= $e;
 
@@ -129,7 +129,7 @@ sub make {
                     #
                     # Your message wasn't delivered to * because the address couldn't be found.
                     # Check for typos or unnecessary spaces and try again.
-                    next unless $e =~ $MarkingsOf->{'message'};
+                    next unless $e =~ $markingsof->{'message'};
                     $anotherset->{'diagnosis'} = $e;
                 }
             }
@@ -180,9 +180,9 @@ sub make {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        for my $q ( keys %$MessagesOf ) {
+        for my $q ( keys %$messagesof ) {
             # Guess an reason of the bounce
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $q } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $q } };
             $e->{'reason'} = $q;
             last;
         }

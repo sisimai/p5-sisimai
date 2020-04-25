@@ -4,44 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr{^(?:
-     Original[ ]message[ ]headers:                  # en-US
-    |En-t.tes[ ]de[ ]message[ ]d'origine[ ]:        # fr-FR/En-têtes de message d'origine
-    |Intestazioni[ ]originali[ ]del[ ]messaggio:    # it-CH
-    )
-}mx;
-state $MarkingsOf = {
-    'message' => qr{\A(?:
-         Diagnostic[ ]information[ ]for[ ]administrators:               # en-US
-        |Informations[ ]de[ ]diagnostic[ ]pour[ ]les[ ]administrateurs  # fr-FR
-        |Informazioni[ ]di[ ]diagnostica[ ]per[ ]gli[ ]amministratori   # it-CH
-        )
-    }x,
-    'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
-    'rhost'   => qr{\A(?:
-         Generating[ ]server            # en-US
-        |Serveur[ ]de[ ]g.+ration[ ]    # fr-FR/Serveur de génération
-        |Server[ ]di[ ]generazione      # it-CH
-        ):[ ]?(.*)
-    }x,
-    'subject' => qr/\A(?:Undeliverable|Non_remis_|Non[ ]recapitabile):/,
-};
-state $NDRSubject = {
-    'SMTPSEND.DNS.NonExistentDomain'=> 'hostunknown',   # 554 5.4.4 SMTPSEND.DNS.NonExistentDomain
-    'SMTPSEND.DNS.MxLoopback'       => 'networkerror',  # 554 5.4.4 SMTPSEND.DNS.MxLoopback
-    'RESOLVER.ADR.BadPrimary'       => 'systemerror',   # 550 5.2.0 RESOLVER.ADR.BadPrimary
-    'RESOLVER.ADR.RecipNotFound'    => 'userunknown',   # 550 5.1.1 RESOLVER.ADR.RecipNotFound
-    'RESOLVER.ADR.ExRecipNotFound'  => 'userunknown',   # 550 5.1.1 RESOLVER.ADR.ExRecipNotFound
-    'RESOLVER.ADR.RecipLimit'       => 'toomanyconn',   # 550 5.5.3 RESOLVER.ADR.RecipLimit
-    'RESOLVER.ADR.InvalidInSmtp'    => 'systemerror',   # 550 5.1.0 RESOLVER.ADR.InvalidInSmtp
-    'RESOLVER.ADR.Ambiguous'        => 'systemerror',   # 550 5.1.4 RESOLVER.ADR.Ambiguous, 420 4.2.0 RESOLVER.ADR.Ambiguous
-    'RESOLVER.RST.AuthRequired'     => 'securityerror', # 550 5.7.1 RESOLVER.RST.AuthRequired
-    'RESOLVER.RST.NotAuthorized'    => 'rejected',      # 550 5.7.1 RESOLVER.RST.NotAuthorized
-    'RESOLVER.RST.RecipSizeLimit'   => 'mesgtoobig',    # 550 5.2.3 RESOLVER.RST.RecipSizeLimit
-    'QUEUE.Expired'                 => 'expired',       # 550 4.4.7 QUEUE.Expired
-};
-
 sub description { 'Microsoft Exchange Server 2007' }
 sub make {
     # Detect an error from Microsoft Exchange Server 2007
@@ -55,7 +17,7 @@ sub make {
     my $mbody = shift // return undef;
 
     # Content-Language: en-US, fr-FR
-    return undef unless $mhead->{'subject'} =~ $MarkingsOf->{'subject'};
+    return undef unless $mhead->{'subject'} =~ /\A(?:Undeliverable|Non_remis_|Non[ ]recapitabile):/;
     return undef unless defined $mhead->{'content-language'};
     return undef unless $mhead->{'content-language'} =~ /\A[a-z]{2}(?:[-][A-Z]{2})?\z/;
 
@@ -63,8 +25,45 @@ sub make {
     return undef if $mhead->{'x-ms-exchange-crosstenant-originalarrivaltime'};
     return undef if $mhead->{'x-ms-exchange-crosstenant-fromentityheader'};
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr{^(?:
+         Original[ ]message[ ]headers:                  # en-US
+        |En-t.tes[ ]de[ ]message[ ]d'origine[ ]:        # fr-FR/En-têtes de message d'origine
+        |Intestazioni[ ]originali[ ]del[ ]messaggio:    # it-CH
+        )
+    }mx;
+    state $markingsof = {
+        'message' => qr{\A(?:
+             Diagnostic[ ]information[ ]for[ ]administrators:               # en-US
+            |Informations[ ]de[ ]diagnostic[ ]pour[ ]les[ ]administrateurs  # fr-FR
+            |Informazioni[ ]di[ ]diagnostica[ ]per[ ]gli[ ]amministratori   # it-CH
+            )
+        }x,
+        'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
+        'rhost'   => qr{\A(?:
+             Generating[ ]server            # en-US
+            |Serveur[ ]de[ ]g.+ration[ ]    # fr-FR/Serveur de génération
+            |Server[ ]di[ ]generazione      # it-CH
+            ):[ ]?(.*)
+        }x,
+    };
+    state $ndrsubject = {
+        'SMTPSEND.DNS.NonExistentDomain'=> 'hostunknown',   # 554 5.4.4 SMTPSEND.DNS.NonExistentDomain
+        'SMTPSEND.DNS.MxLoopback'       => 'networkerror',  # 554 5.4.4 SMTPSEND.DNS.MxLoopback
+        'RESOLVER.ADR.BadPrimary'       => 'systemerror',   # 550 5.2.0 RESOLVER.ADR.BadPrimary
+        'RESOLVER.ADR.RecipNotFound'    => 'userunknown',   # 550 5.1.1 RESOLVER.ADR.RecipNotFound
+        'RESOLVER.ADR.ExRecipNotFound'  => 'userunknown',   # 550 5.1.1 RESOLVER.ADR.ExRecipNotFound
+        'RESOLVER.ADR.RecipLimit'       => 'toomanyconn',   # 550 5.5.3 RESOLVER.ADR.RecipLimit
+        'RESOLVER.ADR.InvalidInSmtp'    => 'systemerror',   # 550 5.1.0 RESOLVER.ADR.InvalidInSmtp
+        'RESOLVER.ADR.Ambiguous'        => 'systemerror',   # 550 5.1.4 RESOLVER.ADR.Ambiguous, 420 4.2.0 RESOLVER.ADR.Ambiguous
+        'RESOLVER.RST.AuthRequired'     => 'securityerror', # 550 5.7.1 RESOLVER.RST.AuthRequired
+        'RESOLVER.RST.NotAuthorized'    => 'rejected',      # 550 5.7.1 RESOLVER.RST.NotAuthorized
+        'RESOLVER.RST.RecipSizeLimit'   => 'mesgtoobig',    # 550 5.2.3 RESOLVER.RST.RecipSizeLimit
+        'QUEUE.Expired'                 => 'expired',       # 550 4.4.7 QUEUE.Expired
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
@@ -78,10 +77,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
 
         if( $connvalues == scalar(keys %$connheader) ) {
             # Diagnostic information for administrators:
@@ -123,7 +122,7 @@ sub make {
             # Diagnostic information for administrators:
             #
             # Generating server: mta22.neko.example.org
-            next unless $e =~ $MarkingsOf->{'rhost'};
+            next unless $e =~ $markingsof->{'rhost'};
             next if $connheader->{'rhost'};
             $connheader->{'rhost'} = $1;
             $connvalues++;
@@ -132,13 +131,13 @@ sub make {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        if( $e->{'diagnosis'} =~ $MarkingsOf->{'error'} ) {
+        if( $e->{'diagnosis'} =~ $markingsof->{'error'} ) {
             # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
             my $f = $1;
-            for my $r ( keys %$NDRSubject ) {
+            for my $r ( keys %$ndrsubject ) {
                 # Try to match with error subject strings
                 next unless $f eq $r;
-                $e->{'reason'} = $NDRSubject->{ $r };
+                $e->{'reason'} = $ndrsubject->{ $r };
                 last;
             }
         }

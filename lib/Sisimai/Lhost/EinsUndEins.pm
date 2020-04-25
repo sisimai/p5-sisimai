@@ -4,14 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
-state $StartingOf = {
-    'message' => ['This message was created automatically by mail delivery software'],
-    'error'   => ['For the following reason:'],
-};
-state $MessagesOf = { 'mesgtoobig' => ['Mail size limit exceeded'] };
-
 # X-UI-Out-Filterresults: unknown:0;
 sub description { '1&1: https://www.1und1.de/' }
 sub make {
@@ -28,8 +20,16 @@ sub make {
     return undef unless index($mhead->{'from'}, '"Mail Delivery System"') == 0;
     return undef unless $mhead->{'subject'} eq 'Mail delivery failed: returning message to sender';
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
+    state $startingof = {
+        'message' => ['This message was created automatically by mail delivery software'],
+        'error'   => ['For the following reason:'],
+    };
+    state $messagesof = { 'mesgtoobig' => ['Mail size limit exceeded'] };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -39,10 +39,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # The following address failed:
@@ -65,7 +65,7 @@ sub make {
             $v->{'recipient'} = $1;
             $recipients++;
 
-        } elsif( index($e, $StartingOf->{'error'}->[0]) == 0 ) {
+        } elsif( index($e, $startingof->{'error'}->[0]) == 0 ) {
             # For the following reason:
             $v->{'diagnosis'} = $e;
 
@@ -97,13 +97,13 @@ sub make {
             $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
         } else {
             # For the following reason:
-            $e->{'diagnosis'} =~ s/\A$StartingOf->{'error'}->[0]//g;
+            $e->{'diagnosis'} =~ s/\A$startingof->{'error'}->[0]//g;
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$MessagesOf ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
             $e->{'reason'} = $r;
             last;
         }
