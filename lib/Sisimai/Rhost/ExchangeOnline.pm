@@ -91,7 +91,7 @@ use constant ReStatuses => {
         { 'reason' => 'toomanyconn', 'string' => ['Access denied, tenant has exceeded threshold'] }
     ],
 };
-state $MessagesOf = {
+use constant MessagesOf => {
     # Copied and converted from Sisimai::Lhost::Exchange2007
     'expired'       => ['QUEUE.Expired'],
     'hostunknown'   => ['SMTPSEND.DNS.NonExistentDomain'],
@@ -153,9 +153,9 @@ sub get {
 
     # D.S.N. included in the error message did not matched with any key
     # in StatusList, ReStatuses
-    for my $e ( keys %$MessagesOf ) {
+    for my $e ( keys %{ MessagesOf() } ) {
         # Try to compare with error messages defined in MessagesOf
-        for my $f ( @{ $MessagesOf->{ $e } } ) {
+        for my $f ( @{ MessagesOf->{ $e } } ) {
             next if index($statusmesg, $f) == -1;
             $reasontext = $e;
             last;
