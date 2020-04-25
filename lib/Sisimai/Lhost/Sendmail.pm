@@ -4,20 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-state $StartingOf = {
-    #   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
-    #   savemail.c:1041|          mci))
-    #   savemail.c:1042|  goto writeerr;
-    #   savemail.c:1360|if (!putline(
-    #   savemail.c:1361|    sendbody
-    #   savemail.c:1362|    ? "   ----- Original message follows -----\n"
-    #   savemail.c:1363|    : "   ----- Message header follows -----\n",
-    'message' => ['   ----- Transcript of session follows -----'],
-    'error'   => ['... while talking to '],
-};
-
 sub description { 'V8Sendmail: /usr/sbin/sendmail' }
 sub make {
     # Parse bounce messages from Sendmail
@@ -33,12 +19,26 @@ sub make {
     return undef unless $mhead->{'subject'} =~ /(?:see transcript for details\z|\AWarning: )/;
     return undef if $mhead->{'x-aol-ip'};   # X-AOL-IP is a header defined in AOL
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $startingof = {
+        #   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
+        #   savemail.c:1041|          mci))
+        #   savemail.c:1042|  goto writeerr;
+        #   savemail.c:1360|if (!putline(
+        #   savemail.c:1361|    sendbody
+        #   savemail.c:1362|    ? "   ----- Original message follows -----\n"
+        #   savemail.c:1363|    : "   ----- Message header follows -----\n",
+        'message' => ['   ----- Transcript of session follows -----'],
+        'error'   => ['... while talking to '],
+    };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
@@ -53,10 +53,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         if( my $f = Sisimai::RFC1894->match($e) ) {
@@ -115,7 +115,7 @@ sub make {
                 } else {
                     # Detect SMTP session error or connection error
                     next if $sessionerr;
-                    if( index($e, $StartingOf->{'error'}->[0]) == 0 ) {
+                    if( index($e, $startingof->{'error'}->[0]) == 0 ) {
                         # ----- Transcript of session follows -----
                         # ... while talking to mta.example.org.:
                         $sessionerr = 1;

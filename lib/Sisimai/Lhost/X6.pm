@@ -4,10 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr/^The attachment contains the original mail headers.+$/m;
-state $MarkingsOf = { 'message' => qr/\A\d+[ ]*error[(]s[)]:/ };
-
 sub description { 'Unknown MTA #6' }
 sub make {
     # Detect an error from Unknown MTA #6
@@ -21,8 +17,12 @@ sub make {
     my $mbody = shift // return undef;
     return undef unless index($mhead->{'subject'}, 'There was an error sending your mail') == 0;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr/^The attachment contains the original mail headers.+$/m;
+    state $markingsof = { 'message' => qr/\A\d+[ ]*error[(]s[)]:/ };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -32,10 +32,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # 1 error(s):

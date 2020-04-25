@@ -18,19 +18,6 @@ use Class::Accessor::Lite (
     ]
 );
 
-state $Indicators = {
-    'email-address' => (1 << 0),    # <neko@example.org>
-    'quoted-string' => (1 << 1),    # "Neko, Nyaan"
-    'comment-block' => (1 << 2),    # (neko)
-};
-state $ValidEmail = qr{(?>
-    (?:([^\s]+|["].+?["]))          # local part
-    [@]
-    (?:([^@\s]+|[0-9A-Za-z:\.]+))   # domain part
-    )
-}x;
-state $Delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
-
 sub undisclosed {
     # Return pseudo recipient or sender address
     # @param    [String] atype  Address type: 'r' or 's'
@@ -136,6 +123,19 @@ sub find {
     my $argv1 = shift // return undef;
     my $addrs = shift // undef;
 
+    state $indicators = {
+        'email-address' => (1 << 0),    # <neko@example.org>
+        'quoted-string' => (1 << 1),    # "Neko, Nyaan"
+        'comment-block' => (1 << 2),    # (neko)
+    };
+    state $delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
+    state $validemail = qr{(?>
+        (?:([^\s]+|["].+?["]))          # local part
+        [@]
+        (?:([^@\s]+|[0-9A-Za-z:\.]+))   # domain part
+        )
+    }x;
+
     my $emailtable = { 'address' => '', 'name' => '', 'comment' => '' };
     my $addrtables = [];
     my @readbuffer;
@@ -148,7 +148,7 @@ sub find {
 
     for my $e ( split('', $argv1) ) {
         # Check each characters
-        if( exists $Delimiters->{ $e } ) {
+        if( $delimiters->{ $e } ) {
             # The character is a delimiter character
             if( $e eq ',' ) {
                 # Separator of email addresses or not
@@ -156,11 +156,11 @@ sub find {
                     rindex($v->{'address'}, '@') > -1 &&
                     substr($v->{'address'}, -1, 1) eq '>' ) {
                     # An email address has already been picked
-                    if( $readcursor & $Indicators->{'comment-block'} ) {
+                    if( $readcursor & $indicators->{'comment-block'} ) {
                         # The cursor is in the comment block (Neko, Nyaan)
                         $v->{'comment'} .= $e;
 
-                    } elsif( $readcursor & $Indicators->{'quoted-string'} ) {
+                    } elsif( $readcursor & $indicators->{'quoted-string'} ) {
                         # "Neko, Nyaan"
                         $v->{'name'} .= $e;
 
@@ -185,7 +185,7 @@ sub find {
 
                 } else {
                     # <neko@nyaan.example.org>
-                    $readcursor |= $Indicators->{'email-address'};
+                    $readcursor |= $indicators->{'email-address'};
                     $v->{'address'} .= $e;
                     $p = 'address';
                 }
@@ -194,9 +194,9 @@ sub find {
 
             if( $e eq '>' ) {
                 # >: The end of an email address or not
-                if( $readcursor & $Indicators->{'email-address'} ) {
+                if( $readcursor & $indicators->{'email-address'} ) {
                     # <neko@example.org>
-                    $readcursor &= ~$Indicators->{'email-address'};
+                    $readcursor &= ~$indicators->{'email-address'};
                     $v->{'address'} .= $e;
                     $p = '';
 
@@ -209,7 +209,7 @@ sub find {
 
             if( $e eq '(' ) {
                 # The beginning of a comment block or not
-                if( $readcursor & $Indicators->{'email-address'} ) {
+                if( $readcursor & $indicators->{'email-address'} ) {
                     # <"neko(nyaan)"@example.org> or <neko(nyaan)@example.org>
                     if( rindex($v->{'address'}, '"') > -1 ) {
                         # Quoted local part: <"neko(nyaan)"@example.org>
@@ -217,23 +217,23 @@ sub find {
 
                     } else {
                         # Comment: <neko(nyaan)@example.org>
-                        $readcursor |= $Indicators->{'comment-block'};
+                        $readcursor |= $indicators->{'comment-block'};
                         $v->{'comment'} .= ' ' if substr($v->{'comment'}, -1, 1) eq ')';
                         $v->{'comment'} .= $e;
                         $p = 'comment';
                     }
-                } elsif( $readcursor & $Indicators->{'comment-block'} ) {
+                } elsif( $readcursor & $indicators->{'comment-block'} ) {
                     # Comment at the outside of an email address (...(...)
                     $v->{'comment'} .= ' ' if substr($v->{'comment'}, -1, 1) eq ')';
                     $v->{'comment'} .= $e;
 
-                } elsif( $readcursor & $Indicators->{'quoted-string'} ) {
+                } elsif( $readcursor & $indicators->{'quoted-string'} ) {
                     # "Neko, Nyaan(cat)", Deal as a display name
                     $v->{'name'} .= $e;
 
                 } else {
                     # The beginning of a comment block
-                    $readcursor |= $Indicators->{'comment-block'};
+                    $readcursor |= $indicators->{'comment-block'};
                     $v->{'comment'} .= ' ' if substr($v->{'comment'}, -1, 1) eq ')';
                     $v->{'comment'} .= $e;
                     $p = 'comment';
@@ -243,7 +243,7 @@ sub find {
 
             if( $e eq ')' ) {
                 # The end of a comment block or not
-                if( $readcursor & $Indicators->{'email-address'} ) {
+                if( $readcursor & $indicators->{'email-address'} ) {
                     # <"neko(nyaan)"@example.org> OR <neko(nyaan)@example.org>
                     if( rindex($v->{'address'}, '"') > -1 ) {
                         # Quoted string in the local part: <"neko(nyaan)"@example.org>
@@ -251,19 +251,19 @@ sub find {
 
                     } else {
                         # Comment: <neko(nyaan)@example.org>
-                        $readcursor &= ~$Indicators->{'comment-block'};
+                        $readcursor &= ~$indicators->{'comment-block'};
                         $v->{'comment'} .= $e;
                         $p = 'address';
                     }
-                } elsif( $readcursor & $Indicators->{'comment-block'} ) {
+                } elsif( $readcursor & $indicators->{'comment-block'} ) {
                     # Comment at the outside of an email address (...(...)
-                    $readcursor &= ~$Indicators->{'comment-block'};
+                    $readcursor &= ~$indicators->{'comment-block'};
                     $v->{'comment'} .= $e;
                     $p = '';
 
                 } else {
                     # Deal as a display name
-                    $readcursor &= ~$Indicators->{'comment-block'};
+                    $readcursor &= ~$indicators->{'comment-block'};
                     $v->{'name'} .= $e;
                     $p = '';
                 }
@@ -279,9 +279,9 @@ sub find {
                 } else {
                     # Display name like "Neko, Nyaan"
                     $v->{'name'} .= $e;
-                    next unless $readcursor & $Indicators->{'quoted-string'};
+                    next unless $readcursor & $indicators->{'quoted-string'};
                     next if $v->{'name'} =~ /\x5c["]\z/;    # "Neko, Nyaan \"...
-                    $readcursor &= ~$Indicators->{'quoted-string'};
+                    $readcursor &= ~$indicators->{'quoted-string'};
                     $p = '';
                 }
                 next;
@@ -299,7 +299,7 @@ sub find {
 
     } else {
         # No email address like <neko@example.org> in the argument
-        if( $v->{'name'} =~ $ValidEmail ) {
+        if( $v->{'name'} =~ $validemail ) {
             # String like an email address will be set to the value of "address"
              $v->{'address'} = $1.'@'.$2;
 

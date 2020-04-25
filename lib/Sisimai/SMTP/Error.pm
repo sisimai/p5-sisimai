@@ -5,15 +5,6 @@ use warnings;
 use Sisimai::SMTP::Reply;
 use Sisimai::SMTP::Status;
 
-state $SoftOrHard = {
-    'soft' => [qw|
-        blocked contenterror exceedlimit expired filtered mailboxfull mailererror
-        mesgtoobig networkerror norelaying policyviolation rejected securityerror
-        spamdetected suspend syntaxerror systemerror systemfull toomanyconn virusdetected
-    |],
-    'hard' => [qw|hasmoved hostunknown userunknown|],
-};
-
 sub is_permanent {
     # Permanent error or not
     # @param    [String] argv1  String including SMTP Status code
@@ -74,6 +65,15 @@ sub soft_or_hard {
     my $argv2 = shift || '';
     my $value = undef;
 
+    state $softorhard = {
+        'soft' => [qw|
+            blocked contenterror exceedlimit expired filtered mailboxfull mailererror
+            mesgtoobig networkerror norelaying policyviolation rejected securityerror
+            spamdetected suspend syntaxerror systemerror systemfull toomanyconn virusdetected
+        |],
+        'hard' => [qw|hasmoved hostunknown userunknown|],
+    };
+
     if( $argv1 eq 'deliverd' || $argv1 eq 'feedback' || $argv1 eq 'vacation' ) {
         # These are not dealt as a bounce reason
         $value = '';
@@ -98,7 +98,7 @@ sub soft_or_hard {
         # Check all the reasons defined at the above
         SOFT_OR_HARD: for my $e ('hard', 'soft') {
             # Soft or Hard?
-            for my $f ( @{ $SoftOrHard->{ $e } } ) {
+            for my $f ( @{ $softorhard->{ $e } } ) {
                 # Hard bounce?
                 next unless $argv1 eq $f;
                 $value = $e;

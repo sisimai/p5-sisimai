@@ -4,14 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr/^-------original[ ](?:message|mail[ ]info)/m;
-state $StartingOf = {
-    'command'  => ['-------SMTP command'],
-    'error'    => ['-------server message'],
-};
-state $MarkingsOf = { 'message' => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/ };
-
 sub description { 'Digital Arts m-FILTER' }
 sub make {
     # Detect an error from DigitalArts m-FILTER
@@ -29,8 +21,16 @@ sub make {
     return undef unless $mhead->{'x-mailer'} eq 'm-FILTER';
     return undef unless $mhead->{'subject'}  eq 'failure notice';
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr/^-------original[ ](?:message|mail[ ]info)/m;
+    state $startingof = {
+        'command'  => ['-------SMTP command'],
+        'error'    => ['-------server message'],
+    };
+    state $markingsof = { 'message' => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/ };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $markingset = { 'diagnosis' => 0, 'command' => 0 };
@@ -41,9 +41,9 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # このメールは「m-FILTER」が自動的に生成して送信しています。
@@ -82,11 +82,11 @@ sub make {
 
         } else {
             # Get error message and SMTP command
-            if( $e eq $StartingOf->{'error'}->[0] ) {
+            if( $e eq $startingof->{'error'}->[0] ) {
                 # -------server message
                 $markingset->{'diagnosis'} = 1;
 
-            } elsif( $e eq $StartingOf->{'command'}->[0] ) {
+            } elsif( $e eq $startingof->{'command'}->[0] ) {
                 # -------SMTP command
                 $markingset->{'command'} = 1;
 

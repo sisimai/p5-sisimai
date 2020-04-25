@@ -4,40 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $StartingOf = {
-    'message' => ['Your message'],
-    'error'   => ['did not reach the following recipient(s):'],
-};
-state $ErrorCodes = {
-    'onhold' => [
-        '000B099C', # Host Unknown, Message exceeds size limit, ...
-        '000B09AA', # Unable to relay for, Message exceeds size limit,...
-        '000B09B6', # Error messages by remote MTA
-    ],
-    'userunknown' => [
-        '000C05A6', # Unknown Recipient,
-    ],
-    'systemerror' => [
-        '00010256', # Too many recipients.
-        '000D06B5', # No proxy for recipient (non-smtp mail?)
-    ],
-    'networkerror' => [
-        '00120270', # Too Many Hops
-    ],
-    'contenterror' => [
-        '00050311', # Conversion to Internet format failed
-        '000502CC', # Conversion to Internet format failed
-    ],
-    'securityerror' => [
-        '000B0981', # 502 Server does not support AUTH
-    ],
-    'filtered' => [
-        '000C0595', # Ambiguous Recipient
-    ],
-};
-
 sub description { 'Microsoft Exchange Server 2003' }
 sub make {
     # Detect an error from Microsoft Exchange Server 2003
@@ -85,8 +51,42 @@ sub make {
     }
     return undef unless $match;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $startingof = {
+        'message' => ['Your message'],
+        'error'   => ['did not reach the following recipient(s):'],
+    };
+    state $errorcodes = {
+        'onhold' => [
+            '000B099C', # Host Unknown, Message exceeds size limit, ...
+            '000B09AA', # Unable to relay for, Message exceeds size limit,...
+            '000B09B6', # Error messages by remote MTA
+        ],
+        'userunknown' => [
+            '000C05A6', # Unknown Recipient,
+        ],
+        'systemerror' => [
+            '00010256', # Too many recipients.
+            '000D06B5', # No proxy for recipient (non-smtp mail?)
+        ],
+        'networkerror' => [
+            '00120270', # Too Many Hops
+        ],
+        'contenterror' => [
+            '00050311', # Conversion to Internet format failed
+            '000502CC', # Conversion to Internet format failed
+        ],
+        'securityerror' => [
+            '000B0981', # 502 Server does not support AUTH
+        ],
+        'filtered' => [
+            '000C0595', # Ambiguous Recipient
+        ],
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $statuspart = 0;     # (Integer) Flag, 1 = have got delivery status part.
@@ -103,10 +103,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next if $statuspart;
 
         if( $connvalues == scalar(keys %$connheader) ) {
@@ -194,9 +194,9 @@ sub make {
             my $capturedcode = $1;
             my $errormessage = $2;
 
-            for my $r ( keys %$ErrorCodes ) {
+            for my $r ( keys %$errorcodes ) {
                 # Find captured code from the error code table
-                next unless grep { $capturedcode eq $_ } @{ $ErrorCodes->{ $r } };
+                next unless grep { $capturedcode eq $_ } @{ $errorcodes->{ $r } };
                 $e->{'reason'} = $r;
                 $e->{'status'} = Sisimai::SMTP::Status->code($r) || '';
                 last;

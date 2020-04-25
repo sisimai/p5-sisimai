@@ -4,56 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $MarkingsOf = {
-    'eoe'     => qr/\A(?:Original[ ][Mm]essage[ ][Hh]eaders:?|Message[ ]Hops)/,
-    'error'   => qr/\A(?:Diagnostic[ ]information[ ]for[ ]administrators:|Error[ ]Details)/,
-    'message' => qr{\A(?:
-         Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
-        |Original[ ]Message[ ]Details
-        |.+[ ]rejected[ ]your[ ]message[ ]to[ ]the[ ]following[ ]e[-]?mail[ ]addresses:
-        )
-    }x,
-};
-state $StatusList = {
-    # https://support.office.com/en-us/article/Email-non-delivery-reports-in-Office-365-51daa6b9-2e35-49c4-a0c9-df85bf8533c3
-    qr/\A4[.]4[.]7\z/        => 'expired',
-    qr/\A4[.]4[.]312\z/      => 'networkerror',
-    qr/\A4[.]4[.]316\z/      => 'expired',
-    qr/\A4[.]7[.]26\z/       => 'securityerror',
-    qr/\A4[.]7[.][56]\d\d\z/ => 'blocked',
-    qr/\A4[.]7[.]8[5-9]\d\z/ => 'blocked',
-    qr/\A5[.]0[.]350\z/      => 'contenterror',
-    qr/\A5[.]1[.]10\z/       => 'userunknown',
-    qr/\A5[.]4[.]1\z/        => 'norelaying',
-    qr/\A5[.]4[.]6\z/        => 'networkerror',
-    qr/\A5[.]4[.]312\z/      => 'networkerror',
-    qr/\A5[.]4[.]316\z/      => 'expired',
-    qr/\A5[.]6[.]11\z/       => 'contenterror',
-    qr/\A5[.]7[.]1\z/        => 'rejected',
-    qr/\A5[.]7[.]1[23]\z/    => 'rejected',
-    qr/\A5[.]7[.]124\z/      => 'rejected',
-    qr/\A5[.]7[.]13[3-6]\z/  => 'rejected',
-    qr/\A5[.]7[.]23\z/       => 'blocked',
-    qr/\A5[.]7[.]25\z/       => 'networkerror',
-    qr/\A5[.]7[.]50[1-3]\z/  => 'spamdetected',
-    qr/\A5[.]7[.]50[4-5]\z/  => 'filtered',
-    qr/\A5[.]7[.]50[6-7]\z/  => 'blocked',
-    qr/\A5[.]7[.]508\z/      => 'toomanyconn',
-    qr/\A5[.]7[.]509\z/      => 'securityerror',
-    qr/\A5[.]7[.]510\z/      => 'notaccept',
-    qr/\A5[.]7[.]511\z/      => 'rejected',
-    qr/\A5[.]7[.]512\z/      => 'securityerror',
-    qr/\A5[.]7[.]57\z/       => 'securityerror',
-    qr/\A5[.]7[.]60[6-9]\z/  => 'blocked',
-    qr/\A5[.]7[.]6[1-4]\d\z/ => 'blocked',
-    qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
-};
-state $ReCommands = {
-    'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<]?.+[@].+[.][a-zA-Z]+[>]?/,
-};
-
 sub description { 'Microsoft Office 365: https://office.microsoft.com/' }
 sub make {
     # Detect an error from Microsoft Office 365
@@ -90,11 +40,61 @@ sub make {
     }
     return undef if $match < 2;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $markingsof = {
+        'eoe'     => qr/\A(?:Original[ ][Mm]essage[ ][Hh]eaders:?|Message[ ]Hops)/,
+        'error'   => qr/\A(?:Diagnostic[ ]information[ ]for[ ]administrators:|Error[ ]Details)/,
+        'message' => qr{\A(?:
+             Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
+            |Original[ ]Message[ ]Details
+            |.+[ ]rejected[ ]your[ ]message[ ]to[ ]the[ ]following[ ]e[-]?mail[ ]addresses:
+            )
+        }x,
+    };
+    state $statuslist = {
+        # https://support.office.com/en-us/article/Email-non-delivery-reports-in-Office-365-51daa6b9-2e35-49c4-a0c9-df85bf8533c3
+        qr/\A4[.]4[.]7\z/        => 'expired',
+        qr/\A4[.]4[.]312\z/      => 'networkerror',
+        qr/\A4[.]4[.]316\z/      => 'expired',
+        qr/\A4[.]7[.]26\z/       => 'securityerror',
+        qr/\A4[.]7[.][56]\d\d\z/ => 'blocked',
+        qr/\A4[.]7[.]8[5-9]\d\z/ => 'blocked',
+        qr/\A5[.]0[.]350\z/      => 'contenterror',
+        qr/\A5[.]1[.]10\z/       => 'userunknown',
+        qr/\A5[.]4[.]1\z/        => 'norelaying',
+        qr/\A5[.]4[.]6\z/        => 'networkerror',
+        qr/\A5[.]4[.]312\z/      => 'networkerror',
+        qr/\A5[.]4[.]316\z/      => 'expired',
+        qr/\A5[.]6[.]11\z/       => 'contenterror',
+        qr/\A5[.]7[.]1\z/        => 'rejected',
+        qr/\A5[.]7[.]1[23]\z/    => 'rejected',
+        qr/\A5[.]7[.]124\z/      => 'rejected',
+        qr/\A5[.]7[.]13[3-6]\z/  => 'rejected',
+        qr/\A5[.]7[.]23\z/       => 'blocked',
+        qr/\A5[.]7[.]25\z/       => 'networkerror',
+        qr/\A5[.]7[.]50[1-3]\z/  => 'spamdetected',
+        qr/\A5[.]7[.]50[4-5]\z/  => 'filtered',
+        qr/\A5[.]7[.]50[6-7]\z/  => 'blocked',
+        qr/\A5[.]7[.]508\z/      => 'toomanyconn',
+        qr/\A5[.]7[.]509\z/      => 'securityerror',
+        qr/\A5[.]7[.]510\z/      => 'notaccept',
+        qr/\A5[.]7[.]511\z/      => 'rejected',
+        qr/\A5[.]7[.]512\z/      => 'securityerror',
+        qr/\A5[.]7[.]57\z/       => 'securityerror',
+        qr/\A5[.]7[.]60[6-9]\z/  => 'blocked',
+        qr/\A5[.]7[.]6[1-4]\d\z/ => 'blocked',
+        qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
+    };
+    state $recommands = {
+        'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<]?.+[@].+[.][a-zA-Z]+[>]?/,
+    };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for the end of error messages
@@ -105,10 +105,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # kijitora@example.com<mailto:kijitora@example.com>
@@ -150,7 +150,7 @@ sub make {
                 $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
             } else {
-                if( $e =~ $MarkingsOf->{'error'} ) {
+                if( $e =~ $markingsof->{'error'} ) {
                     # Diagnostic information for administrators:
                     $v->{'diagnosis'} = $e;
                 } else {
@@ -158,7 +158,7 @@ sub make {
                     # Remote Server returned '550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipien=
                     # t not found by SMTP address lookup'
                     next unless $v->{'diagnosis'};
-                    if( $e =~ $MarkingsOf->{'eoe'} ) {
+                    if( $e =~ $markingsof->{'eoe'} ) {
                         # Original message headers:
                         $endoferror = 1;
                         next;
@@ -180,19 +180,19 @@ sub make {
             $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || $e->{'status'};
         }
 
-        for my $p ( keys %$ReCommands ) {
-            # Try to match with regular expressions defined in ReCommands
-            next unless $e->{'diagnosis'} =~ $ReCommands->{ $p };
+        for my $p ( keys %$recommands ) {
+            # Try to match with regular expressions defined in recommands
+            next unless $e->{'diagnosis'} =~ $recommands->{ $p };
             $e->{'command'} = $p;
             last;
         }
 
-        # Find the error code from $StatusList
+        # Find the error code from $statuslist
         next unless $e->{'status'};
-        for my $f ( keys %$StatusList ) {
+        for my $f ( keys %$statuslist ) {
             # Try to match with each key as a regular expression
             next unless $e->{'status'} =~ $f;
-            $e->{'reason'} = $StatusList->{ $f };
+            $e->{'reason'} = $statuslist->{ $f };
             last;
         }
     }

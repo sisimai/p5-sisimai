@@ -4,10 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $StartingOf = { 'message' => ['Content-Type: message/delivery-status'] };
-
 sub description { 'Unknown MTA #5' }
 sub make {
     # Detect an error from Unknown MTA #5
@@ -41,6 +37,10 @@ sub make {
     }
     return undef if $match < 2;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $startingof = { 'message' => ['Content-Type: message/delivery-status'] };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -51,19 +51,19 @@ sub make {
 
     # Pick the second message/rfc822 part because the format of email-x5-*.eml
     # is nested structure
-    my $prefillets = [split($ReBackbone, $$mbody, 2)];
+    my $prefillets = [split($rebackbone, $$mbody, 2)];
        $prefillets->[1] =~ s/\A.+?\n\n//ms;
-    my $emailsteak = Sisimai::RFC5322->fillet(\$prefillets->[1], $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet(\$prefillets->[1], $rebackbone);
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         $v = $dscontents->[-1];

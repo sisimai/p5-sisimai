@@ -5,31 +5,6 @@ use warnings;
 use Sisimai::Lhost;
 
 # http://tools.ietf.org/html/rfc3464
-state $Indicators = Sisimai::Lhost->INDICATORS;
-state $MarkingsOf = {
-    'command' => qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
-    'message' => qr{\A(?>
-         content-type:[ ]*(?:
-              message/x?delivery-status
-             |message/disposition-notification
-             |text/plain;[ ]charset=
-             )
-        |the[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
-        |this[ ]report[ ]relates[ ]to[ ]your[ ]message
-        |your[ ]message[ ](?:
-            could[ ]not[ ]be[ ]delivered
-           |was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
-           )
-        )
-    }x,
-    'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/,
-    'rfc822' => qr{\A(?>
-         content-type:[ ]*(?:message/rfc822|text/rfc822-headers)
-        |return-path:[ ]*[<].+[>]
-        )\z
-    }x,
-};
-
 sub description { 'Fallback Module for MTAs' };
 sub make {
     # Detect an error for RFC3464
@@ -44,6 +19,31 @@ sub make {
 
     return undef unless keys %$mhead;
     return undef unless ref $mbody eq 'SCALAR';
+
+    state $indicators = Sisimai::Lhost->INDICATORS;
+    state $markingsof = {
+        'command' => qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
+        'message' => qr{\A(?>
+             content-type:[ ]*(?:
+                  message/x?delivery-status
+                 |message/disposition-notification
+                 |text/plain;[ ]charset=
+                 )
+            |the[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
+            |this[ ]report[ ]relates[ ]to[ ]your[ ]message
+            |your[ ]message[ ](?:
+                could[ ]not[ ]be[ ]delivered
+               |was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
+               )
+            )
+        }x,
+        'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/,
+        'rfc822' => qr{\A(?>
+             content-type:[ ]*(?:message/rfc822|text/rfc822-headers)
+            |return-path:[ ]*[<].+[>]
+            )\z
+        }x,
+    };
 
     require Sisimai::MDA;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
@@ -67,21 +67,21 @@ sub make {
         my $d = lc $e;
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( $d =~ $MarkingsOf->{'message'} ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
+            if( $d =~ $markingsof->{'message'} ) {
+                $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
         }
 
-        unless( $readcursor & $Indicators->{'message-rfc822'} ) {
+        unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part(message/rfc822)
-            if( $d =~ $MarkingsOf->{'rfc822'} ) {
-                $readcursor |= $Indicators->{'message-rfc822'};
+            if( $d =~ $markingsof->{'rfc822'} ) {
+                $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
         }
 
-        if( $readcursor & $Indicators->{'message-rfc822'} ) {
+        if( $readcursor & $indicators->{'message-rfc822'} ) {
             # message/rfc822 OR text/rfc822-headers part
             unless( length $e ) {
                 last if ++$blanklines > 1;
@@ -91,7 +91,7 @@ sub make {
 
         } else {
             # message/delivery-status part
-            next unless $readcursor & $Indicators->{'deliverystatus'};
+            next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
 
             $v = $dscontents->[-1];
@@ -275,7 +275,7 @@ sub make {
                     } else {
                         # Get error message
                         next if $e =~ /\A[ -]+/;
-                        next unless $e =~ $MarkingsOf->{'error'};
+                        next unless $e =~ $markingsof->{'error'};
 
                         # 500 User Unknown
                         # <kijitora@example.jp> Unknown
@@ -377,7 +377,7 @@ sub make {
         for my $e ( split("\n", $$mbody) ) {
             # Get the recipient's email address and error messages.
             my $d = lc $e;
-            last if $d =~ $MarkingsOf->{'rfc822'};
+            last if $d =~ $markingsof->{'rfc822'};
             last if $d =~ $re_stop;
 
             next unless length $e;
@@ -444,7 +444,7 @@ sub make {
         }
         $e->{'date'}   ||= $mhead->{'date'};
         $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
-        $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $MarkingsOf->{'command'};
+        $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $markingsof->{'command'};
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }

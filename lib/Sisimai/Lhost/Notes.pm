@@ -5,17 +5,6 @@ use strict;
 use warnings;
 use Encode;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^-------[ ]Returned[ ]Message[ ]--------|m;
-state $StartingOf = { 'message' => ['------- Failure Reasons '] };
-state $MessagesOf = {
-    'userunknown' => [
-        'User not listed in public Name & Address Book',
-        'ディレクトリのリストにありません',
-    ],
-    'networkerror' => ['Message has exceeded maximum hop count'],
-};
-
 sub description { 'Lotus Notes' }
 sub make {
     # Detect an error from Lotus Notes
@@ -29,8 +18,19 @@ sub make {
     my $mbody = shift // return undef;
     return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^-------[ ]Returned[ ]Message[ ]--------|m;
+    state $startingof = { 'message' => ['------- Failure Reasons '] };
+    state $messagesof = {
+        'userunknown' => [
+            'User not listed in public Name & Address Book',
+            'ディレクトリのリストにありません',
+        ],
+        'networkerror' => ['Message has exceeded maximum hop count'],
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $removedmsg = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';
@@ -45,10 +45,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
 
         # ------- Failure Reasons  --------
         #
@@ -105,9 +105,9 @@ sub make {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
 
-        for my $r ( keys %$MessagesOf ) {
+        for my $r ( keys %$messagesof ) {
             # Check each regular expression of Notes error messages
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
             $e->{'reason'} = $r;
             $e->{'status'} = Sisimai::SMTP::Status->code($r) || '';
             last;

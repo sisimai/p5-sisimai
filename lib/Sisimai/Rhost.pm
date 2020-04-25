@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $RhostClass = {
+use constant RhostClass => {
     qr/[.](?:prod|protection)[.]outlook[.]com\z/      => 'ExchangeOnline',
     qr/\b(?>laposte[.]net|(?:orange|wanadoo)[.]fr)\z/ => 'FrancePTT',
     qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/  => 'GoDaddy',
@@ -16,11 +16,11 @@ state $RhostClass = {
 sub list {
     # Retrun the list of remote hosts Sisimai support
     # @return   [Array] Remote host list
-    return [keys %$RhostClass];
+    return [keys %{ RhostClass() }];
 }
 
 sub match {
-    # The value of "rhost" is listed in $RhostClass or not
+    # The value of "rhost" is listed in RhostClass or not
     # @param    [String] argv1  Remote host name
     # @return   [Integer]       0: did not match
     #                           1: match
@@ -29,8 +29,8 @@ sub match {
     my $host0 = lc($rhost) || return 0;
     my $match = 0;
 
-    for my $e ( keys %$RhostClass ) {
-        # Try to match with each key of $RhostClass
+    for my $e ( keys %{ RhostClass() } ) {
+        # Try to match with each key of RhostClass
         next unless $host0 =~ $e;
         $match = 1;
         last;
@@ -49,10 +49,10 @@ sub get {
     my $remotehost = lc $argvs->rhost;
     my $rhostclass = '';
 
-    for my $e ( keys %$RhostClass ) {
-        # Try to match with each key of $RhostClass
+    for my $e ( keys %{ RhostClass() } ) {
+        # Try to match with each key of RhostClass
         next unless $remotehost =~ $e;
-        $rhostclass = __PACKAGE__.'::'.$RhostClass->{ $e };
+        $rhostclass = __PACKAGE__.'::'.RhostClass->{ $e };
         last;
     }
     return undef unless $rhostclass;

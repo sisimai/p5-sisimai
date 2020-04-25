@@ -3,62 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $FieldNames = [
-    # https://tools.ietf.org/html/rfc3464#section-2.2
-    #   Some fields of a DSN apply to all of the delivery attempts described by
-    #   that DSN. At most, these fields may appear once in any DSN. These fields
-    #   are used to correlate the DSN with the original message transaction and
-    #   to provide additional information which may be useful to gateways.
-    #
-    #   The following fields (not defined in RFC 3464) are used in Sisimai
-    #     - X-Original-Message-ID: <....> (GSuite)
-    #
-    #   The following fields are not used in Sisimai:
-    #     - Original-Envelope-Id
-    #     - DSN-Gateway
-    [qw|Reporting-MTA Received-From-MTA Arrival-Date X-Original-Message-ID|],
-
-    # https://tools.ietf.org/html/rfc3464#section-2.3
-    #   A DSN contains information about attempts to deliver a message to one or
-    #   more recipients. The delivery information for any particular recipient is
-    #   contained in a group of contiguous per-recipient fields.
-    #   Each group of per-recipient fields is preceded by a blank line.
-    #
-    #   The following fields (not defined in RFC 3464) are used in Sisimai
-    #     - X-Actual-Recipient: RFC822; ....
-    #
-    #   The following fields are not used in Sisimai:
-    #     - Will-Retry-Until
-    #     - Final-Log-ID
-    [qw|Original-Recipient Final-Recipient Action Status Remote-MTA
-        Diagnostic-Code Last-Attempt-Date X-Actual-Recipient|],
-];
-state $CapturesOn = {
-    'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*(.+)/,
-    'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
-    'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
-    'host' => qr/\A((?:Reporting|Received-From|Remote)-MTA):[ ]*(.+?);[ ]*(.+)/,
-    'list' => qr/\A(Action):[ ]*(failed|delayed|delivered|relayed|expanded|expired|failure)/i,
-    'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
-    'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
-   #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
-};
-state $Correction = { 'action' => { 'failure' => 'failed', 'expired' => 'delayed' } };
-state $FieldGroup = {
-    'original-recipient'    => 'addr',
-    'final-recipient'       => 'addr',
-    'x-actual-recipient'    => 'addr',
-    'diagnostic-code'       => 'code',
-    'arrival-date'          => 'date',
-    'last-attempt-date'     => 'date',
-    'received-from-mta'     => 'host',
-    'remote-mta'            => 'host',
-    'reporting-mta'         => 'host',
-    'action'                => 'list',
-    'status'                => 'stat',
-    'x-original-message-id' => 'text',
-};
-
 sub FIELDTABLE {
     # Return pairs that a field name and key name defined in Sisimai::Lhost class
     return {
@@ -84,8 +28,39 @@ sub match {
     my $class = shift;
     my $argv0 = shift || return undef;
 
-    return 1 if grep { index($argv0, $_) == 0 } @{ $FieldNames->[0] };
-    return 2 if grep { index($argv0, $_) == 0 } @{ $FieldNames->[1] };
+    state $fieldnames = [
+        # https://tools.ietf.org/html/rfc3464#section-2.2
+        #   Some fields of a DSN apply to all of the delivery attempts described by
+        #   that DSN. At most, these fields may appear once in any DSN. These fields
+        #   are used to correlate the DSN with the original message transaction and
+        #   to provide additional information which may be useful to gateways.
+        #
+        #   The following fields (not defined in RFC 3464) are used in Sisimai
+        #     - X-Original-Message-ID: <....> (GSuite)
+        #
+        #   The following fields are not used in Sisimai:
+        #     - Original-Envelope-Id
+        #     - DSN-Gateway
+        [qw|Reporting-MTA Received-From-MTA Arrival-Date X-Original-Message-ID|],
+
+        # https://tools.ietf.org/html/rfc3464#section-2.3
+        #   A DSN contains information about attempts to deliver a message to one or
+        #   more recipients. The delivery information for any particular recipient is
+        #   contained in a group of contiguous per-recipient fields.
+        #   Each group of per-recipient fields is preceded by a blank line.
+        #
+        #   The following fields (not defined in RFC 3464) are used in Sisimai
+        #     - X-Actual-Recipient: RFC822; ....
+        #
+        #   The following fields are not used in Sisimai:
+        #     - Will-Retry-Until
+        #     - Final-Log-ID
+        [qw|Original-Recipient Final-Recipient Action Status Remote-MTA
+            Diagnostic-Code Last-Attempt-Date X-Actual-Recipient|],
+    ];
+
+    return 1 if grep { index($argv0, $_) == 0 } @{ $fieldnames->[0] };
+    return 2 if grep { index($argv0, $_) == 0 } @{ $fieldnames->[1] };
     return 0;
 }
 
@@ -96,12 +71,39 @@ sub field {
     # @since v4.25.0
     my $class = shift;
     my $argv0 = shift || return undef;
-    my $group = $FieldGroup->{ lc((split(':', $argv0, 2))[0]) };
+
+    state $fieldgroup = {
+        'original-recipient'    => 'addr',
+        'final-recipient'       => 'addr',
+        'x-actual-recipient'    => 'addr',
+        'diagnostic-code'       => 'code',
+        'arrival-date'          => 'date',
+        'last-attempt-date'     => 'date',
+        'received-from-mta'     => 'host',
+        'remote-mta'            => 'host',
+        'reporting-mta'         => 'host',
+        'action'                => 'list',
+        'status'                => 'stat',
+        'x-original-message-id' => 'text',
+    };
+    my $group = $fieldgroup->{ lc((split(':', $argv0, 2))[0]) };
     my $match = [];
 
+    state $captureson = {
+        'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*(.+)/,
+        'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
+        'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
+        'host' => qr/\A((?:Reporting|Received-From|Remote)-MTA):[ ]*(.+?);[ ]*(.+)/,
+        'list' => qr/\A(Action):[ ]*(failed|delayed|delivered|relayed|expanded|expired|failure)/i,
+        'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
+        'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
+       #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
+    };
+    state $correction = { 'action' => { 'failure' => 'failed', 'expired' => 'delayed' } };
+
     return undef unless $group;
-    return undef unless exists $CapturesOn->{ $group };
-    while( $argv0 =~ $CapturesOn->{ $group } ) {
+    return undef unless exists $captureson->{ $group };
+    while( $argv0 =~ $captureson->{ $group } ) {
         # Try to match with each pattern of Per-Message field, Per-Recipient field
         # - 0: Field-Name
         # - 1: Sub Type: RFC822, DNS, X-Unix, and so on)
@@ -126,8 +128,8 @@ sub field {
 
             # Correct invalid value in Action field:
             last unless $group eq 'list';
-            last unless exists $Correction->{'action'}->{ $match->[2] };
-            $match->[2] = $Correction->{'action'}->{ $match->[2] };
+            last unless exists $correction->{'action'}->{ $match->[2] };
+            $match->[2] = $correction->{'action'}->{ $match->[2] };
         }
         last;
     }

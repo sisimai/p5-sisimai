@@ -3,26 +3,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $MessagesOf = {
-    # https://service.mail.qq.com/cgi-bin/help?id=20022
-    'dmarc check failed'                    => 'blocked',
-    'spf check failed'                      => 'blocked',
-    'suspected spam ip'                     => 'blocked',
-    'mail is rejected by recipients'        => 'filtered',
-    'message too large'                     => 'mesgtoobig',
-    'mail content denied'                   => 'spamdetected',
-    'spam is embedded in the email'         => 'spamdetected',
-    'suspected spam'                        => 'spamdetected',
-    'bad address syntax'                    => 'syntaxerror',
-    'connection denied'                     => 'toomanyconn',
-    'connection frequency limited'          => 'toomanyconn',
-    'domain frequency limited'              => 'toomanyconn',
-    'ip frequency limited'                  => 'toomanyconn',
-    'sender frequency limited'              => 'toomanyconn',
-    'mailbox unavailable or access denied'  => 'toomanyconn',
-    'mailbox not found'                     => 'userunknown',
-};
-
 sub get {
     # Detect bounce reason from Tencent QQ
     # @param    [Sisimai::Data] argvs   Parsed email object
@@ -31,13 +11,32 @@ sub get {
     my $class = shift;
     my $argvs = shift // return undef;
 
+    state $messagesof = {
+        # https://service.mail.qq.com/cgi-bin/help?id=20022
+        'dmarc check failed'                    => 'blocked',
+        'spf check failed'                      => 'blocked',
+        'suspected spam ip'                     => 'blocked',
+        'mail is rejected by recipients'        => 'filtered',
+        'message too large'                     => 'mesgtoobig',
+        'mail content denied'                   => 'spamdetected',
+        'spam is embedded in the email'         => 'spamdetected',
+        'suspected spam'                        => 'spamdetected',
+        'bad address syntax'                    => 'syntaxerror',
+        'connection denied'                     => 'toomanyconn',
+        'connection frequency limited'          => 'toomanyconn',
+        'domain frequency limited'              => 'toomanyconn',
+        'ip frequency limited'                  => 'toomanyconn',
+        'sender frequency limited'              => 'toomanyconn',
+        'mailbox unavailable or access denied'  => 'toomanyconn',
+        'mailbox not found'                     => 'userunknown',
+    };
     my $statusmesg = lc $argvs->diagnosticcode;
     my $reasontext = '';
 
-    for my $e ( keys %$MessagesOf ) {
+    for my $e ( keys %$messagesof ) {
         # Try to match the error message with message patterns defined in $MessagesOf
         next unless index($statusmesg, $e) > -1;
-        $reasontext = $MessagesOf->{ $e };
+        $reasontext = $messagesof->{ $e };
         last;
     }
     return $reasontext;

@@ -4,21 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $MarkingsOf = {
-    'message' => qr/\AYour[ ]mail[ ](?:
-         sent[ ]on:?[ ][A-Z][a-z]{2}[,]
-        |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
-        )
-    /x,
-};
-state $MessagesOf = {
-    'mailboxfull' => ['As their mailbox is full'],
-    'norelaying'  => ['Due to the following SMTP relay error'],
-    'hostunknown' => ['As the remote domain doesnt exist'],
-};
-
 sub description { 'au by KDDI: https://www.au.kddi.com' }
 sub make {
     # Detect an error from au by KDDI
@@ -39,8 +24,23 @@ sub make {
     $match ||= 1 if grep { rindex($_, '.au.com (') > -1 } @{ $mhead->{'received'} };
     return undef unless $match;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $markingsof = {
+        'message' => qr/\AYour[ ]mail[ ](?:
+             sent[ ]on:?[ ][A-Z][a-z]{2}[,]
+            |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
+            )
+        /x,
+    };
+    state $messagesof = {
+        'mailboxfull' => ['As their mailbox is full'],
+        'norelaying'  => ['Due to the following SMTP relay error'],
+        'hostunknown' => ['As the remote domain doesnt exist'],
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -50,9 +50,9 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if $e =~ $MarkingsOf->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         $v = $dscontents->[-1];
@@ -98,9 +98,9 @@ sub make {
 
             } else {
                 # SMTP command is not RCPT
-                SESSION: for my $r ( keys %$MessagesOf ) {
+                SESSION: for my $r ( keys %$messagesof ) {
                     # Verify each regular expression of session errors
-                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
                     $e->{'reason'} = $r;
                     last;
                 }

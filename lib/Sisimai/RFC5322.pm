@@ -2,9 +2,7 @@ package Sisimai::RFC5322;
 use feature ':5.10';
 use strict;
 use warnings;
-
-state $LONGHEADERS = __PACKAGE__->LONGFIELDS;
-state $HEADERTABLE = {
+use constant HEADERTABLE => {
     'messageid' => ['message-id'],
     'subject'   => ['subject'],
     'listid'    => ['list-id'],
@@ -43,7 +41,7 @@ my $HEADERINDEX = {};
 BUILD_FLATTEN_RFC822HEADER_LIST: {
     # Convert $HEADER: hash reference to flatten hash reference for being
     # called from Sisimai::Lhost::*
-    for my $v ( values %$HEADERTABLE ) {
+    for my $v ( values %{ HEADERTABLE() } ) {
         $HEADERINDEX->{ $_ } = 1 for @$v;
     }
 }
@@ -54,8 +52,8 @@ sub HEADERFIELDS {
     # @return   [Array,Hash]    RFC822 Header list
     my $class = shift;
     my $group = shift || return $HEADERINDEX;
-    return $HEADERTABLE->{ $group } if exists $HEADERTABLE->{ $group };
-    return $HEADERTABLE;
+    return HEADERTABLE->{ $group } if exists HEADERTABLE->{ $group };
+    return HEADERTABLE;
 }
 
 sub LONGFIELDS {

@@ -4,19 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $StartingOf = { 'message' => ['--- The following addresses had delivery problems ---'] };
-state $ReFailures = {
-    'userunknown' => qr{(?:
-         [ ]User[ ][(].+[@].+[)][ ]unknown[.][ ]
-        |550[ ]Unknown[ ]user[ ][^ ]+[@][^ ]+
-        |550[ ][<].+?[@].+?[>][.]+[ ]User[ ]not[ ]exist
-        |No[ ]such[ ]user
-        )
-    }x,
-};
-
 sub description { 'McAfee Email Appliance' }
 sub make {
     # Detect an error from McAfee
@@ -34,10 +21,23 @@ sub make {
     return undef unless index($mhead->{'x-nai-header'}, 'Modified by McAfee') > -1;
     return undef unless $mhead->{'subject'} eq 'Delivery Status';
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $startingof = { 'message' => ['--- The following addresses had delivery problems ---'] };
+    state $refailures = {
+        'userunknown' => qr{(?:
+             [ ]User[ ][(].+[@].+[)][ ]unknown[.][ ]
+            |550[ ]Unknown[ ]user[ ][^ ]+[@][^ ]+
+            |550[ ][<].+?[@].+?[>][.]+[ ]User[ ]not[ ]exist
+            |No[ ]such[ ]user
+            )
+        }x,
+    };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $diagnostic = '';    # (String) Alternative diagnostic message
@@ -49,10 +49,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) > -1;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) > -1;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # Content-Type: text/plain; name="deliveryproblems.txt"
@@ -104,9 +104,9 @@ sub make {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);
 
-        SESSION: for my $r ( keys %$ReFailures ) {
+        SESSION: for my $r ( keys %$refailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $ReFailures->{ $r };
+            next unless $e->{'diagnosis'} =~ $refailures->{ $r };
             $e->{'reason'} = $r;
             last;
         }

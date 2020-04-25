@@ -19,8 +19,6 @@ use Class::Accessor::Lite (
     ]
 );
 
-state $DefaultSet = Sisimai::Order->another;
-state $LhostTable = Sisimai::Lhost->path;
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 
@@ -208,7 +206,7 @@ sub makemap {
     # Select and convert all the headers in $argv0. The following regular expression
     # is based on https://gist.github.com/xtetsuji/b080e1f5551d17242f6415aba8a00239
     my $firstpairs = { $$argv0 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms };
-    my $headermaps = {};
+    my $headermaps = { 'subject' => '' };
     my $recvheader = [];
 
 
@@ -273,6 +271,9 @@ sub parse {
     my $hookmethod = $argvs->{'hook'} || undef;
     my $havecaught = undef;
 
+    state $defaultset = Sisimai::Order->another;
+    state $lhosttable = Sisimai::Lhost->path;
+
     $mailheader->{'from'}         //= '';
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
@@ -334,10 +335,10 @@ sub parse {
             last(PARSER) if $parseddata;
         }
 
-        TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$DefaultSet ) {
+        TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$defaultset ) {
             # Try MTA module candidates
             next if exists $haveloaded->{ $r };
-            require $LhostTable->{ $r };
+            require $lhosttable->{ $r };
             $parseddata = $r->make($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;

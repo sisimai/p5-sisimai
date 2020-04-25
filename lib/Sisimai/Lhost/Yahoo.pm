@@ -4,10 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^--- Below this line is a copy of the message[.]|m;
-state $StartingOf = { 'message' => ['Sorry, we were unable to deliver your message'] };
-
 sub description { 'Yahoo! MAIL: https://www.yahoo.com' }
 sub make {
     # Detect an error from Yahoo! MAIL
@@ -26,8 +22,12 @@ sub make {
     # X-Originating-IP: [192.0.2.9]
     return undef unless $mhead->{'x-ymailisg'};
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^--- Below this line is a copy of the message[.]|m;
+    state $startingof = { 'message' => ['Sorry, we were unable to deliver your message'] };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -37,10 +37,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # Sorry, we were unable to deliver your message to the following address.

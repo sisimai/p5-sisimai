@@ -4,98 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr/^[ ]*-----[ ](?:Original[ ]message|Message[ ]header[ ]follows)[ ]-----/m;
-state $StartingOf = {
-    'message' => ['Delivery to the following recipient'],
-    'error'   => ['The error that the other server returned was:'],
-};
-state $MarkingsOf = { 'start' => qr/Technical details of (?:permanent|temporary) failure:/ };
-state $MessagesOf = {
-    'expired' => [
-        'DNS Error: Could not contact DNS servers',
-        'Delivery to the following recipient has been delayed',
-        'The recipient server did not accept our requests to connect',
-    ],
-    'hostunknown' => [
-        'DNS Error: Domain name not found',
-        'DNS Error: DNS server returned answer with no data',
-    ],
-};
-state $StateTable = {
-    # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 500 Remote server does not support TLS (state 6).
-    '6'  => { 'command' => 'MAIL', 'reason' => 'systemerror' },
-
-    # https://www.google.td/support/forum/p/gmail/thread?tid=08a60ebf5db24f7b&hl=en
-    # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 535 SMTP AUTH failed with the remote server. (state 8).
-    '8'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
-
-    # https://www.google.co.nz/support/forum/p/gmail/thread?tid=45208164dbca9d24&hl=en
-    # Technical details of temporary failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 454 454 TLS missing certificate: error:0200100D:system library:fopen:Permission denied (#4.3.0) (state 9).
-    '9'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
-
-    # https://www.google.com/support/forum/p/gmail/thread?tid=5cfab8c76ec88638&hl=en
-    # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 500 Remote server does not support SMTP Authenticated Relay (state 12).
-    '12' => { 'command' => 'AUTH', 'reason' => 'relayingdenied' },
-
-    # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 550 550 5.7.1 <****@gmail.com>... Access denied (state 13).
-    '13' => { 'command' => 'EHLO', 'reason' => 'blocked' },
-
-    # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 550 550 5.1.1 <******@*********.**>... User Unknown (state 14).
-    # 550 550 5.2.2 <*****@****.**>... Mailbox Full (state 14).
-    #
-    '14' => { 'command' => 'RCPT', 'reason' => 'userunknown' },
-
-    # https://www.google.cz/support/forum/p/gmail/thread?tid=7090cbfd111a24f9&hl=en
-    # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 550 550 5.7.1 SPF unauthorized mail is prohibited. (state 15).
-    # 554 554 Error: no valid recipients (state 15).
-    '15' => { 'command' => 'DATA', 'reason' => 'filtered' },
-
-    # https://www.google.com/support/forum/p/Google%20Apps/thread?tid=0aac163bc9c65d8e&hl=en
-    # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 550 550 <****@***.**> No such user here (state 17).
-    # 550 550 #5.1.0 Address rejected ***@***.*** (state 17).
-    '17' => { 'command' => 'DATA', 'reason' => 'filtered' },
-
-    # Technical details of permanent failure:
-    # Google tried to deliver your message, but it was rejected by the recipient domain.
-    # We recommend contacting the other email provider for further information about the
-    # cause of this error. The error that the other server returned was:
-    # 550 550 Unknown user *****@***.**.*** (state 18).
-    '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
-};
-
 sub description { 'Gmail: https://mail.google.com' }
 sub make {
     # Detect an error from Gmail
@@ -158,8 +66,100 @@ sub make {
     return undef unless rindex($mhead->{'from'}, '<mailer-daemon@googlemail.com>') > -1;
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr/^[ ]*-----[ ](?:Original[ ]message|Message[ ]header[ ]follows)[ ]-----/m;
+    state $startingof = {
+        'message' => ['Delivery to the following recipient'],
+        'error'   => ['The error that the other server returned was:'],
+    };
+    state $markingsof = { 'start' => qr/Technical details of (?:permanent|temporary) failure:/ };
+    state $messagesof = {
+        'expired' => [
+            'DNS Error: Could not contact DNS servers',
+            'Delivery to the following recipient has been delayed',
+            'The recipient server did not accept our requests to connect',
+        ],
+        'hostunknown' => [
+            'DNS Error: Domain name not found',
+            'DNS Error: DNS server returned answer with no data',
+        ],
+    };
+    state $statetable = {
+        # Technical details of permanent failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 500 Remote server does not support TLS (state 6).
+        '6'  => { 'command' => 'MAIL', 'reason' => 'systemerror' },
+
+        # https://www.google.td/support/forum/p/gmail/thread?tid=08a60ebf5db24f7b&hl=en
+        # Technical details of permanent failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 535 SMTP AUTH failed with the remote server. (state 8).
+        '8'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
+
+        # https://www.google.co.nz/support/forum/p/gmail/thread?tid=45208164dbca9d24&hl=en
+        # Technical details of temporary failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 454 454 TLS missing certificate: error:0200100D:system library:fopen:Permission denied (#4.3.0) (state 9).
+        '9'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
+
+        # https://www.google.com/support/forum/p/gmail/thread?tid=5cfab8c76ec88638&hl=en
+        # Technical details of permanent failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 500 Remote server does not support SMTP Authenticated Relay (state 12).
+        '12' => { 'command' => 'AUTH', 'reason' => 'relayingdenied' },
+
+        # Technical details of permanent failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 550 550 5.7.1 <****@gmail.com>... Access denied (state 13).
+        '13' => { 'command' => 'EHLO', 'reason' => 'blocked' },
+
+        # Technical details of permanent failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 550 550 5.1.1 <******@*********.**>... User Unknown (state 14).
+        # 550 550 5.2.2 <*****@****.**>... Mailbox Full (state 14).
+        #
+        '14' => { 'command' => 'RCPT', 'reason' => 'userunknown' },
+
+        # https://www.google.cz/support/forum/p/gmail/thread?tid=7090cbfd111a24f9&hl=en
+        # Technical details of permanent failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 550 550 5.7.1 SPF unauthorized mail is prohibited. (state 15).
+        # 554 554 Error: no valid recipients (state 15).
+        '15' => { 'command' => 'DATA', 'reason' => 'filtered' },
+
+        # https://www.google.com/support/forum/p/Google%20Apps/thread?tid=0aac163bc9c65d8e&hl=en
+        # Technical details of permanent failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 550 550 <****@***.**> No such user here (state 17).
+        # 550 550 #5.1.0 Address rejected ***@***.*** (state 17).
+        '17' => { 'command' => 'DATA', 'reason' => 'filtered' },
+
+        # Technical details of permanent failure:
+        # Google tried to deliver your message, but it was rejected by the recipient domain.
+        # We recommend contacting the other email provider for further information about the
+        # cause of this error. The error that the other server returned was:
+        # 550 550 Unknown user *****@***.**.*** (state 18).
+        '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -169,9 +169,9 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # Technical details of permanent failure:=20
@@ -231,15 +231,15 @@ sub make {
         }
 
         my $statecode0 = $e->{'diagnosis'} =~ /[(]state[ ](\d+)[)][.]/ ? $1 : 0;
-        if( exists $StateTable->{ $statecode0 } ) {
+        if( exists $statetable->{ $statecode0 } ) {
             # (state *)
-            $e->{'reason'}  = $StateTable->{ $statecode0 }->{'reason'};
-            $e->{'command'} = $StateTable->{ $statecode0 }->{'command'};
+            $e->{'reason'}  = $statetable->{ $statecode0 }->{'reason'};
+            $e->{'command'} = $statetable->{ $statecode0 }->{'command'};
         } else {
             # No state code
-            SESSION: for my $r ( keys %$MessagesOf ) {
+            SESSION: for my $r ( keys %$messagesof ) {
                 # Verify each regular expression of session errors
-                next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+                next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
                 $e->{'reason'} = $r;
                 last;
             }

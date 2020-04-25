@@ -4,7 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $ReBackbone = qr|^Content-type:[ ]message/rfc822|m;
 sub description { 'Trend Micro InterScan Messaging Security Suite' }
 sub make {
     # Detect an error from InterScanMSS
@@ -29,8 +28,9 @@ sub make {
     $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
     return undef unless $match;
 
+    state $rebackbone = qr|^Content-type:[ ]message/rfc822|m;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 

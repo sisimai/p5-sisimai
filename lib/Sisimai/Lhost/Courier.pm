@@ -4,24 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
-state $StartingOf = {
-    # https://www.courier-mta.org/courierdsn.html
-    # courier/module.dsn/dsn*.txt
-    'message' => ['DELAYS IN DELIVERING YOUR MESSAGE', 'UNDELIVERABLE MAIL'],
-};
-
-state $MessagesOf = {
-    # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
-    'hostunknown' => ['No such domain.'],
-    # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
-    # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
-    'systemerror' => ["This domain's DNS violates RFC 1035."],
-    # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
-    'networkerror'=> ['DNS lookup failed.'],
-};
-
 sub description { 'Courier MTA' }
 sub make {
     # Detect an error from Courier MTA
@@ -43,12 +25,29 @@ sub make {
     }
     return undef unless $match;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $startingof = {
+        # https://www.courier-mta.org/courierdsn.html
+        # courier/module.dsn/dsn*.txt
+        'message' => ['DELAYS IN DELIVERING YOUR MESSAGE', 'UNDELIVERABLE MAIL'],
+    };
+    state $messagesof = {
+        # courier/module.esmtp/esmtpclient.c:526| hard_error(del, ctf, "No such domain.");
+        'hostunknown' => ['No such domain.'],
+        # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
+        # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
+        'systemerror' => ["This domain's DNS violates RFC 1035."],
+        # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
+        'networkerror'=> ['DNS lookup failed.'],
+    };
+
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
@@ -60,13 +59,13 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( rindex($e, $StartingOf->{'message'}->[0]) > -1 ||
-                rindex($e, $StartingOf->{'message'}->[1]) > -1 ) {
-                $readcursor |= $Indicators->{'deliverystatus'};
+            if( rindex($e, $startingof->{'message'}->[0]) > -1 ||
+                rindex($e, $startingof->{'message'}->[1]) > -1 ) {
+                $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         if( my $f = Sisimai::RFC1894->match($e) ) {
@@ -147,9 +146,9 @@ sub make {
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        for my $r ( keys %$MessagesOf ) {
+        for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

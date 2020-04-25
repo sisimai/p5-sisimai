@@ -4,17 +4,6 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $Indicators = __PACKAGE__->INDICATORS;
-state $ReBackbone = qr|^Content-Type:[ ]message/rfc822|m;
-state $StartingOf = {
-    'message' => ['   ----- The following addresses had delivery problems -----'],
-    'error'   => ['   ----- Non-delivered information -----'],
-};
-state $MessagesOf = {
-    'filtered'    => ['Mail Delivery Failed... User unknown'],
-    'mailboxfull' => ["The number of messages in recipient's mailbox exceeded the local limit."],
-};
-
 sub description { 'BIGLOBE: https://www.biglobe.ne.jp' }
 sub make {
     # Detect an error from Biglobe
@@ -30,8 +19,19 @@ sub make {
     return undef unless $mhead->{'from'} =~ /postmaster[@](?:biglobe|inacatv|tmtv|ttv)[.]ne[.]jp/;
     return undef unless index($mhead->{'subject'}, 'Returned mail:') == 0;
 
+    state $indicators = __PACKAGE__->INDICATORS;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $startingof = {
+        'message' => ['   ----- The following addresses had delivery problems -----'],
+        'error'   => ['   ----- Non-delivered information -----'],
+    };
+    state $messagesof = {
+        'filtered'    => ['Mail Delivery Failed... User unknown'],
+        'mailboxfull' => ["The number of messages in recipient's mailbox exceeded the local limit."],
+    };
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $ReBackbone);
+    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -41,10 +41,10 @@ sub make {
         # to the previous line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $Indicators->{'deliverystatus'} if index($e, $StartingOf->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $Indicators->{'deliverystatus'};
+        next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         # This is a MIME-encapsulated message.
@@ -87,9 +87,9 @@ sub make {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$MessagesOf ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $MessagesOf->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
             $e->{'reason'} = $r;
             last;
         }

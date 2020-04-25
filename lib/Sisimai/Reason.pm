@@ -3,9 +3,9 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-state $ModulePath = __PACKAGE__->path;
-state $GetRetried = __PACKAGE__->retry;
-state $ClassOrder = [
+my $ModulePath = __PACKAGE__->path;
+my $GetRetried = __PACKAGE__->retry;
+my $ClassOrder = [
     [qw|MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown
         Filtered Rejected HostUnknown SpamDetected TooManyConn Blocked
     |],
