@@ -1,8 +1,8 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 
-[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-Sisimai/blob/master/LICENSE)
-[![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
-[![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
+[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
+[![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
+[![Build Status](https://travis-ci.org/sisimai/p5-sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.30-blue.svg)](https://www.perl.org)
 [![CPAN](https://img.shields.io/badge/cpan-v4.25.7-blue.svg)](https://metacpan.org/pod/Sisimai)
 
@@ -62,7 +62,7 @@ Key features
 Command line demo
 -------------------------------------------------------------------------------
 The following screen shows a demonstration of Sisimai at the command line using
-Perl(p5-Sisimai) and Ruby(rb-Sisimai) version of Sisimai.
+Perl(p5-sisimai) and Ruby(rb-sisimai) version of Sisimai.
 ![](https://libsisimai.org/static/images/demo/sisimai-dump-01.gif)
 
 Setting Up Sisimai
@@ -96,8 +96,8 @@ $ perldoc -l Sisimai
 
 ```shell
 $ cd /usr/local/src
-$ git clone https://github.com/sisimai/p5-Sisimai.git
-$ cd ./p5-Sisimai
+$ git clone https://github.com/sisimai/p5-sisimai.git
+$ cd ./p5-sisimai
 $ make install-from-local
 --> Working on .
 Configuring Sisimai-4.25.5 ... OK
@@ -250,7 +250,7 @@ and Sisimai. More information about differences are available at
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
 1. Implement yourself with using DBI or any O/R Mapper you like
-2. See [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-Sisimai/blob/master/ANALYTICAL-PRECISION)
+2. See [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-sisimai/blob/master/ANALYTICAL-PRECISION)
 3. Xeon E5-2640 2.5GHz x 2 cores | 5000 bogomips | 1GB RAM | Perl 5.24.1
 
 Other specification of Sisimai
@@ -265,7 +265,7 @@ Contributing
 
 Bug report
 -------------------------------------------------------------------------------
-Please use the [issue tracker](https://github.com/sisimai/p5-Sisimai/issues)
+Please use the [issue tracker](https://github.com/sisimai/p5-sisimai/issues)
 to report any bugs.
 
 Emails could not be parsed
@@ -284,16 +284,16 @@ Related sites
 * __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](https://libsisimai.org/)
 * __Sisimai Blog__ | [blog.libsisimai.org](http://blog.libsisimai.org/)
 * __Facebook Page__ | [facebook.com/libsisimai](https://www.facebook.com/libsisimai/)
-* __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
+* __GitHub__ | [github.com/sisimai/p5-sisimai](https://github.com/sisimai/p5-sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 * __CPAN Testers Reports__ | [CPAN Testers Reports: Reports for Sisimai](http://cpantesters.org/distro/S/Sisimai.html)
-* __Ruby verson__ | [Ruby version of Sisimai](https://github.com/sisimai/rb-Sisimai)
+* __Ruby verson__ | [Ruby version of Sisimai](https://github.com/sisimai/rb-sisimai)
 * __Fixtures__ | [set-of-emails - Sample emails for "make test"](https://github.com/sisimai/set-of-emails)
 * __bounceHammer.JP__ | [bounceHammer will be EOL on February 29, 2016](http://bouncehammer.jp/)
 
 See also
 -------------------------------------------------------------------------------
-* [README-JA.md - README.md in Japanese(日本語)](https://github.com/sisimai/p5-Sisimai/blob/master/README-JA.md)
+* [README-JA.md - README.md in Japanese(日本語)](https://github.com/sisimai/p5-sisimai/blob/master/README-JA.md)
 * [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
 * [RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
 * [RFC3834 - Recommendations for Automatic Responses to Electronic Mail](https://tools.ietf.org/html/rfc3834)

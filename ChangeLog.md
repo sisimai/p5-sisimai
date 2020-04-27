@@ -1,8 +1,15 @@
 RELEASE NOTES for Perl version of Sisimai
 ================================================================================
-- releases: "https://github.com/sisimai/p5-Sisimai/releases"
+- releases: "https://github.com/sisimai/p5-sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
+
+v4.25.7p0
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - **Repository URL was changed to https://github.com/sisimai/p5-sisimai**
 
 v4.25.7
 --------------------------------------------------------------------------------

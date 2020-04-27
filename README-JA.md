@@ -1,8 +1,8 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 
-[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-Sisimai/blob/master/LICENSE)
-[![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-Sisimai.svg)](https://coveralls.io/r/sisimai/p5-Sisimai)
-[![Build Status](https://travis-ci.org/sisimai/p5-Sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-Sisimai) 
+[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
+[![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
+[![Build Status](https://travis-ci.org/sisimai/p5-sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.30-blue.svg)](https://www.perl.org)
 [![CPAN](https://img.shields.io/badge/cpan-v4.25.7-blue.svg)](https://metacpan.org/pod/Sisimai)
 
@@ -60,7 +60,7 @@ Key features
 
 Command line demo
 -------------------------------------------------------------------------------
-次の画像のように、Perl版シシマイ(p5-Sisimai)もRuby版シシマイ(rb-Sisimai)も、
+次の画像のように、Perl版シシマイ(p5-sisimai)もRuby版シシマイ(rb-sisimai)も、
 コマンドラインから簡単にバウンスメールを解析することができます。
 ![](https://libsisimai.org/static/images/demo/sisimai-dump-01.gif)
 
@@ -94,8 +94,8 @@ $ perldoc -l Sisimai
 ### From GitHub
 ```shell
 $ cd /usr/local/src
-$ git clone https://github.com/sisimai/p5-Sisimai.git
-$ cd ./p5-Sisimai
+$ git clone https://github.com/sisimai/p5-sisimai.git
+$ cd ./p5-sisimai
 $ sudo make install-from-local
 --> Working on .
 Configuring Sisimai-4.25.5 ... OK
@@ -245,7 +245,7 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
 1. DBIまたは好きなORMを使って自由に実装してください
-2. [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-Sisimai/blob/master/ANALYTICAL-PRECISION)を参照
+2. [./ANALYTICAL-PRECISION](https://github.com/sisimai/p5-sisimai/blob/master/ANALYTICAL-PRECISION)を参照
 3. Xeon E5-2640 2.5GHz x 2 cores | 5000 bogomips | 1GB RAM | Perl 5.24.1
 
 Other spec of Sisimai
@@ -259,7 +259,7 @@ Contributing
 
 Bug report
 -------------------------------------------------------------------------------
-もしもSisimaiにバグを発見した場合は[Issues](https://github.com/sisimai/p5-Sisimai/issues)
+もしもSisimaiにバグを発見した場合は[Issues](https://github.com/sisimai/p5-sisimai/issues)
 にて連絡をいただけると助かります。
 
 Emails could not be parsed
@@ -277,16 +277,16 @@ Related sites
 * __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](https://libsisimai.org/)
 * __Sisimai Blog__ | [blog.libsisimai.org](http://blog.libsisimai.org/)
 * __Facebook Page__ | [facebook.com/libsisimai](https://www.facebook.com/libsisimai/)
-* __GitHub__ | [github.com/sisimai/p5-Sisimai](https://github.com/sisimai/p5-Sisimai)
+* __GitHub__ | [github.com/sisimai/p5-sisimai](https://github.com/sisimai/p5-sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 * __CPAN Testers Reports__ | [CPAN Testers Reports: Reports for Sisimai](http://cpantesters.org/distro/S/Sisimai.html)
-* __Ruby verson__ | [Ruby version of Sisimai](https://github.com/sisimai/rb-Sisimai)
+* __Ruby verson__ | [Ruby version of Sisimai](https://github.com/sisimai/rb-sisimai)
 * __Fixtures__ | [set-of-emails - Sample emails for "make test"](https://github.com/sisimai/set-of-emails)
 * __bounceHammer.JP__ | [bounceHammer will be EOL on February 29, 2016](http://bouncehammer.jp/)
 
 See also
 -------------------------------------------------------------------------------
-* [README.md - README.md in English](https://github.com/sisimai/p5-Sisimai/blob/master/README.md)
+* [README.md - README.md in English](https://github.com/sisimai/p5-sisimai/blob/master/README.md)
 * [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
 * [RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
 * [RFC3834 - Recommendations for Automatic Responses to Electronic Mail](https://tools.ietf.org/html/rfc3834)

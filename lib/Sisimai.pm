@@ -305,13 +305,13 @@ C<version> method returns the version number of Sisimai.
 
 =head1 REPOSITORY
 
-L<https://github.com/sisimai/p5-Sisimai> - Sisimai on GitHub
+L<https://github.com/sisimai/p5-sisimai> - Sisimai on GitHub
 
 =head1 WEB SITE
 
 L<https://libsisimai.org/> - A successor to bounceHammer, Library to parse error mails.
 
-L<https://github.com/sisimai/rb-Sisimai> - Ruby version of Sisimai
+L<https://github.com/sisimai/rb-sisimai> - Ruby version of Sisimai
 
 =head1 AUTHOR
 

@@ -60,13 +60,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/sisimai/p5-Sisimai/issues"
+         "web" : "https://github.com/sisimai/p5-sisimai/issues"
       },
       "homepage" : "https://libsisimai.org/",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/sisimai/p5-Sisimai.git",
-         "web" : "https://github.com/sisimai/p5-Sisimai"
+         "url" : "git://github.com/sisimai/p5-sisimai.git",
+         "web" : "https://github.com/sisimai/p5-sisimai"
       }
    },
    "version" : "v4.25.7",
