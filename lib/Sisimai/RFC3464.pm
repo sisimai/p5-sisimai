@@ -45,9 +45,7 @@ sub make {
         }x,
     };
 
-    require Sisimai::MDA;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
-    my $mdabounced = Sisimai::MDA->make($mhead, $mbody);
     my $rfc822text = '';    # (String) message/rfc822 part text
     my $maybealias = '';    # (String) Original-Recipient field
     my $blanklines = 0;     # (Integer) The number of blank lines
@@ -420,6 +418,8 @@ sub make {
     }
     return undef unless $recipients;
 
+    require Sisimai::MDA;
+    my $mdabounced = Sisimai::MDA->make($mhead, $mbody);
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{ $_ } ||= $connheader->{ $_ } || '' for keys %$connheader;
