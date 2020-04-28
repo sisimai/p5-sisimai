@@ -81,7 +81,7 @@ sub new {
 
 sub make {
     # Another constructor of Sisimai::Data
-    # @param        [Hash] argvs       Data and orders
+    # @param        [Hash] argvs       Data
     # @option argvs [Sisimai::Message] Data Object
     # @return       [Array, Undef]     List of Sisimai::Data or Undef if the
     #                                  argument is not Sisimai::Message object
@@ -95,39 +95,12 @@ sub make {
 
     state $retryindex = Sisimai::Reason->retry;
     state $rfc822head = Sisimai::RFC5322->HEADERFIELDS('all');
-    state $addrheader = {
-        'addresser' => $rfc822head->{'addresser'},
-        'recipient' => $rfc822head->{'recipient'},
-    };
-
+    state $addressers = $rfc822head->{'addresser'};
 
     my $delivered1 = $argvs->{'delivered'} // 0;
     my $messageobj = $argvs->{'data'};
     my $rfc822data = $messageobj->rfc822;
-    my $fieldorder = { 'recipient' => [], 'addresser' => [] };
-    my $givenorder = $argvs->{'order'} ? $argvs->{'order'} : {};
     my $objectlist = [];
-
-    # Decide the order of email headers: user specified or system default.
-    if( ref $givenorder eq 'HASH' && scalar keys %$givenorder ) {
-        # If the order of headers for searching is specified, use the order
-        # for detecting an email address.
-        for my $e ( keys %$fieldorder ) {
-            # The order should be "Array Reference".
-            next unless $givenorder->{ $e };
-            next unless ref $givenorder->{ $e } eq 'ARRAY';
-            next unless scalar @{ $givenorder->{ $e } };
-            push @{ $fieldorder->{ $e } }, @{ $givenorder->{ $e } };
-        }
-    }
-
-    for my $e ( keys %$fieldorder ) {
-        # If the order is empty, use default order.
-        next if scalar @{ $fieldorder->{ $e } };
-
-        # Load default order of each accessor.
-        $fieldorder->{ $e } = $addrheader->{ $e };
-    }
 
     LOOP_DELIVERY_STATUS: for my $e ( @{ $messageobj->ds } ) {
         # Create parameters for new() constructor.
@@ -155,7 +128,7 @@ sub make {
 
         EMAIL_ADDRESS: {
             # Detect email address from message/rfc822 part
-            for my $f ( @{ $fieldorder->{'addresser'} } ) {
+            for my $f ( @$addressers ) {
                 # Check each header in message/rfc822 part
                 my $h = lc $f;
                 next unless exists $rfc822data->{ $h };
@@ -755,3 +728,4 @@ Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+
