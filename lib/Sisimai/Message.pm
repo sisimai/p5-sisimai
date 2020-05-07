@@ -129,7 +129,7 @@ sub load {
 sub divideup {
     # Divide email data up headers and a body part.
     # @param         [String] email  Email data
-    # @return        [Hash]          Email data after split
+    # @return        [Array]         Email data after split
     # @since v4.14.0
     my $class = shift;
     my $email = shift // return undef;
