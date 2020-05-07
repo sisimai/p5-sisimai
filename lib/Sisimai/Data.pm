@@ -96,7 +96,6 @@ sub make {
 
     state $retryindex = Sisimai::Reason->retry;
     state $rfc822head = Sisimai::RFC5322->HEADERFIELDS('all');
-    state $addressers = $rfc822head->{'addresser'};
 
     my $delivered1 = $argvs->{'delivered'} // 0;
     my $messageobj = $argvs->{'data'};
@@ -129,7 +128,7 @@ sub make {
 
         EMAIL_ADDRESS: {
             # Detect email address from message/rfc822 part
-            for my $f ( @$addressers ) {
+            for my $f ( @{ $rfc822head->{'addresser'} } ) {
                 # Check each header in message/rfc822 part
                 my $h = lc $f;
                 next unless exists $rfc822data->{ $h };
