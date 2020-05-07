@@ -172,6 +172,7 @@ messages like following.
             print $e->deliverystatus;       # 5.1.1
             print $e->replycode;            # 550
             print $e->reason;               # userunknown
+            print $e->origin;               # /var/spool/bounce/2022-2222.eml
 
             my $h = $e->damn;               # Convert to HASH reference
             my $j = $e->dump('json');       # Convert to JSON string
@@ -319,7 +320,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

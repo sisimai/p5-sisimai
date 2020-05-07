@@ -33,90 +33,55 @@ sub new {
     #                                   value of the arguments are missing
     my $class = shift;
     my $argvs = { @_ };
-    my $email = $argvs->{'data'}  || return undef;
+    my $param = {};
+    my $email = $argvs->{'data'} || return undef;
+    my $thing = { 'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [], 'catch' => undef };
 
-    my $methodargv = { 'data' => $email, 'hook' => $argvs->{'hook'} // undef };
+    # 1. Load specified MTA modules
     for my $e ('load', 'order') {
         # Order of MTA modules
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
         next unless scalar @{ $argvs->{ $e } };
-        $methodargv->{ $e } = $argvs->{ $e };
+        $param->{ $e } = $argvs->{ $e };
     }
+    $ToBeLoaded = __PACKAGE__->load(%$param);
 
-    my $datasource = __PACKAGE__->make(%$methodargv);
-    return undef unless $datasource->{'ds'};
-
-    my $mesgobject = {
-        'from'   => $datasource->{'from'},
-        'header' => $datasource->{'header'},
-        'ds'     => $datasource->{'ds'},
-        'rfc822' => $datasource->{'rfc822'},
-        'catch'  => $datasource->{'catch'} || undef,
-    };
-    return bless($mesgobject, $class);
-}
-
-sub make {
-    # Make data structure from the email (a body part and headers or JSON)
-    # @param         [Hash] argvs   Email data
-    # @options argvs [String] data  Entire email message
-    # @options argvs [Array]  load  User defined MTA module list
-    # @options argvs [Array]  order The order of MTA modules
-    # @options argvs [Code]   hook  Reference to callback method
-    # @return        [Hash]         Resolved data structure
-    my $class = shift;
-    my $argvs = { @_ };
-    my $email = $argvs->{'data'};
-
-    my $hookmethod = $argvs->{'hook'} || undef;
-    my $processing = {
-        'from'   => '',     # From_ line
-        'header' => {},     # Email header
-        'rfc822' => '',     # Original message part
-        'ds'     => [],     # Parsed data, Delivery Status
-        'catch'  => undef,  # Data parsed by callback method
-    };
-    my $methodargv = {
-        'load'  => $argvs->{'load'}  || [],
-        'order' => $argvs->{'order'} || [],
-    };
-    $ToBeLoaded = __PACKAGE__->load(%$methodargv);
-
-    # 1. Split email data to headers and a body part.
+    # 2. Split email data to headers and a body part.
     return undef unless my $aftersplit = __PACKAGE__->divideup(\$email);
 
-    # 2. Convert email headers from text to hash reference
-    $processing->{'from'}   = $aftersplit->{'from'};
-    $processing->{'header'} = __PACKAGE__->makemap(\$aftersplit->{'header'});
+    # 3. Convert email headers from text to hash reference
+    $thing->{'from'}   = $aftersplit->[0];
+    $thing->{'header'} = __PACKAGE__->makemap(\$aftersplit->[1]);
 
-    # 3. Decode and rewrite the "Subject:" header
-    if( $processing->{'header'}->{'subject'} ) {
+    # 4. Decode and rewrite the "Subject:" header
+    if( $thing->{'header'}->{'subject'} ) {
         # Decode MIME-Encoded "Subject:" header
-        my $s = $processing->{'header'}->{'subject'};
+        my $s = $thing->{'header'}->{'subject'};
         my $q = Sisimai::MIME->is_mimeencoded(\$s) ? Sisimai::MIME->mimedecode([split(/[ ]/, $s)]) : $s;
 
         # Remove "Fwd:" string from the "Subject:" header
         if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
             # Delete quoted strings, quote symbols(>)
             $q = $1;
-            $aftersplit->{'body'} =~ s/^[>]+[ ]//gm;
-            $aftersplit->{'body'} =~ s/^[>]$//gm;
+            $aftersplit->[2] =~ s/^[>]+[ ]//gm;
+            $aftersplit->[2] =~ s/^[>]$//gm;
         }
-        $processing->{'header'}->{'subject'} = $q;
+        $thing->{'header'}->{'subject'} = $q;
     }
 
-    # 4. Rewrite message body for detecting the bounce reason
-    $TryOnFirst = Sisimai::Order->make($processing->{'header'}->{'subject'});
-    $methodargv = { 'hook' => $hookmethod, 'mail' => $processing, 'body' => \$aftersplit->{'body'} };
-    return undef unless my $bouncedata = __PACKAGE__->parse(%$methodargv);
+    # 5. Rewrite message body for detecting the bounce reason
+    $TryOnFirst = Sisimai::Order->make($thing->{'header'}->{'subject'});
+    $param = { 'hook' => $argvs->{'hook'} || undef, 'mail' => $thing, 'body' => \$aftersplit->[2] };
+    return undef unless my $bouncedata = __PACKAGE__->parse(%$param);
     return undef unless keys %$bouncedata;
 
-    # 5. Rewrite headers of the original message in the body part
-    $processing->{ $_ } = $bouncedata->{ $_ } for ('ds', 'catch', 'rfc822');
-    my $p = $bouncedata->{'rfc822'} || $aftersplit->{'body'};
-    $processing->{'rfc822'} = ref $p ? $p : __PACKAGE__->makemap(\$p, 1);
-    return $processing;
+    # 6. Rewrite headers of the original message in the body part
+    $thing->{ $_ } = $bouncedata->{ $_ } for ('ds', 'catch', 'rfc822');
+    my $r = $bouncedata->{'rfc822'} || $aftersplit->[2];
+    $thing->{'rfc822'} = ref $r ? $r : __PACKAGE__->makemap(\$r, 1);
+
+    return bless($thing, $class);
 }
 
 sub load {
@@ -164,30 +129,30 @@ sub load {
 sub divideup {
     # Divide email data up headers and a body part.
     # @param         [String] email  Email data
-    # @return        [Hash]          Email data after split
+    # @return        [Array]         Email data after split
     # @since v4.14.0
     my $class = shift;
     my $email = shift // return undef;
-    my $block = { 'from' => '', 'header' => '', 'body' => '' };
+    my $block = ['', '', ''];   # 0:From, 1:Header, 2:Body
 
     $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
     $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
 
-    ($block->{'header'}, $block->{'body'}) = split(/\n\n/, $$email, 2);
-    return undef unless $block->{'header'};
-    return undef unless $block->{'body'};
+    ($block->[1], $block->[2]) = split(/\n\n/, $$email, 2);
+    return undef unless $block->[1];
+    return undef unless $block->[2];
 
-    if( substr($block->{'header'}, 0, 5) eq 'From ' ) {
+    if( substr($block->[1], 0, 5) eq 'From ' ) {
         # From MAILER-DAEMON Tue Feb 11 00:00:00 2014
-        $block->{'from'} =  [split(/\n/, $block->{'header'}, 2)]->[0];
-        $block->{'from'} =~ y/\r\n//d;
+        $block->[0] =  [split(/\n/, $block->[1], 2)]->[0];
+        $block->[0] =~ y/\r\n//d;
     } else {
         # Set pseudo UNIX From line
-        $block->{'from'} =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
+        $block->[0] =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     }
 
-    $block->{'header'} .= "\n" unless $block->{'header'} =~ /\n\z/;
-    $block->{'body'}   .= "\n";
+    $block->[1] .= "\n" unless $block->[1] =~ /\n\z/;
+    $block->[2] .= "\n";
     return $block;
 }
 

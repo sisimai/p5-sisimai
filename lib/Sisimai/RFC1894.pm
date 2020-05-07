@@ -71,6 +71,7 @@ sub field {
     # @since v4.25.0
     my $class = shift;
     my $argv0 = shift || return undef;
+    my $match = [];
 
     state $fieldgroup = {
         'original-recipient'    => 'addr',
@@ -86,9 +87,6 @@ sub field {
         'status'                => 'stat',
         'x-original-message-id' => 'text',
     };
-    my $group = $fieldgroup->{ lc((split(':', $argv0, 2))[0]) };
-    my $match = [];
-
     state $captureson = {
         'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*(.+)/,
         'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
@@ -101,8 +99,9 @@ sub field {
     };
     state $correction = { 'action' => { 'failure' => 'failed', 'expired' => 'delayed' } };
 
-    return undef unless $group;
+    my $group = $fieldgroup->{ lc((split(':', $argv0, 2))[0]) } || return undef;
     return undef unless exists $captureson->{ $group };
+
     while( $argv0 =~ $captureson->{ $group } ) {
         # Try to match with each pattern of Per-Message field, Per-Recipient field
         # - 0: Field-Name
