@@ -81,8 +81,9 @@ sub new {
 
 sub make {
     # Another constructor of Sisimai::Data
-    # @param        [Hash] argvs       Data
-    # @option argvs [Sisimai::Message] Data Object
+    # @param        [Hash] argvs
+    # @option argvs [Sisimai::Message] data Data Object
+    # @option argvs [Integeer] delivered    Include "delivered" status or not
     # @return       [Array, Undef]     List of Sisimai::Data or Undef if the
     #                                  argument is not Sisimai::Message object
     my $class = shift;
