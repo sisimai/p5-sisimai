@@ -275,7 +275,6 @@ sub parse {
             'datasrc' => 'email',
             'headers' => $mailheader,
             'message' => $$bodystring,
-            'bounces' => undef,
         };
         eval { $havecaught = $hookmethod->($p) };
         warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
