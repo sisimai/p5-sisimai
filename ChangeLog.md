@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.7p1
+v4.25.7p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -14,6 +14,7 @@ v4.25.7p1
   - `Sisimai::Message->divideup` returns an array (faster than a hash) #390
   - Remove unused code blocks for deciding the order of email header fields at
     `Sisimai::Data->make` method
+  - Remove old parameters: `datasrc` and `bounces` at the callback feature #394
 
 v4.25.7
 --------------------------------------------------------------------------------
