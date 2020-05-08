@@ -99,18 +99,15 @@ MAKE_TEST: {
             my $callbackto = sub {
                 my $argvs = shift;
                 my $catch = { 
-                    'type' => $argvs->{'datasrc'},
                     'x-mailer' => '',
                     'return-path' => '',
                     'x-virus-scanned' => '',
                 };
 
-                if( $argvs->{'datasrc'} eq 'email' ) {
-                    $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
-                    $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '';
-                    $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
-                    $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
-                }
+                $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
+                $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '';
+                $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
+                $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
             };
             $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto);
@@ -119,7 +116,6 @@ MAKE_TEST: {
                 isa_ok $ee, 'Sisimai::Data';
                 isa_ok $ee->catch, 'HASH';
 
-                is $ee->catch->{'type'}, 'email';
                 ok defined $ee->catch->{'x-mailer'};
                 if( length $ee->catch->{'x-mailer'} ) {
                     like $ee->catch->{'x-mailer'}, qr/[A-Z]/;

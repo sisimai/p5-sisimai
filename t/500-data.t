@@ -30,7 +30,6 @@ MAKE_TEST: {
             'x-mailer' => '',
             'return-path' => '',
         };
-        $catch->{'type'} = $argvs->{'datasrc'};
         $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
         $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
         $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
@@ -92,7 +91,6 @@ MAKE_TEST: {
             is $e->origin, $file, 'origin = '.$e->origin;
 
             isa_ok $e->catch, 'HASH';
-            is $e->catch->{'type'}, 'email';
             ok length $e->catch->{'x-mailer'};
             like $e->catch->{'x-mailer'}, qr/Apple/;
             ok length $e->catch->{'return-path'};

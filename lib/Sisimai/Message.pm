@@ -271,11 +271,7 @@ sub parse {
 
     if( ref $hookmethod eq 'CODE' ) {
         # Call hook method
-        my $p = {
-            'datasrc' => 'email',
-            'headers' => $mailheader,
-            'message' => $$bodystring,
-        };
+        my $p = { 'headers' => $mailheader, 'message' => $$bodystring };
         eval { $havecaught = $hookmethod->($p) };
         warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
     }
