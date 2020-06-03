@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.7p2
+v4.25.7p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -15,6 +15,8 @@ v4.25.7p2
   - Remove unused code blocks for deciding the order of email header fields at
     `Sisimai::Data->make` method
   - Remove old parameters: `datasrc` and `bounces` at the callback feature #394
+  - Implement `Sisimai::Rhost::Spectrum` for parsing bounce mails returned from
+    https://www.spectrum.com/. Thanks to @meir-w #395
 
 v4.25.7
 --------------------------------------------------------------------------------
