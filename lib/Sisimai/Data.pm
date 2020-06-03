@@ -285,6 +285,7 @@ sub make {
         if( $o->reason eq '' || exists $retryindex->{ $o->reason } ) {
             # Decide the reason of email bounce
             my $r; $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->rhost);
+                   $r ||= Sisimai::Rhost->get($o, $o->destination) if Sisimai::Rhost->match($o->destination);
                    $r ||= Sisimai::Reason->get($o);
                    $r ||= 'undefined';
             $o->reason($r);

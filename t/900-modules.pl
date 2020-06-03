@@ -114,6 +114,7 @@ sub list {
             Rhost/GoogleApps.pm
             Rhost/IUA.pm
             Rhost/KDDI.pm
+            Rhost/Spectrum.pm
             Rhost/TencentQQ.pm
         SMTP.pm
             SMTP/Error.pm
