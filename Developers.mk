@@ -129,7 +129,7 @@ parser-log:
 	done
 
 reason-coverage:
-	@ for v in `ls -1 $(MAILCLASSDIR) | sort | tr '[A-Z]' '[a-z]' | sed -e 's|.pm||g' -e 's|^|bite-email-|g'`; do \
+	@ for v in `ls -1 $(MAILCLASSDIR) | sort | tr '[A-Z]' '[a-z]' | sed -e 's|.pm||g' -e 's|^|lhost-|g'`; do \
 		for e in `echo $(REASON_TABLE) | tr '[A-Z]' '[a-z]'`; do \
 			printf "%d," `grep $$e xt/*-$$v.t t/*-$$v.t | wc -l`; \
 		done; \
