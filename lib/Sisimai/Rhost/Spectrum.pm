@@ -43,7 +43,7 @@ sub get {
         [1350, 1490, 'toomanyconn'],     # Spectrum limits emails by the number of messages sent, amount of recipients,...
     ];
     my $statusmesg = $argvs->diagnosticcode;
-    my $codenumber = $statusmesg =~ m/AUP#(?:[-A-Za-z]+)?(\d{4})/ ? int $1 : 0;
+    my $codenumber = $statusmesg =~ m/AUP#[-A-Za-z]*(\d{4})/ ? int $1 : 0;
     my $reasontext = $errorcodes->{ $codenumber } || '';
 
     unless( $reasontext ) {
