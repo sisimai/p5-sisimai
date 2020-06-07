@@ -44,19 +44,19 @@ sub get {
     ];
     my $statusmesg = $argvs->diagnosticcode;
     my $codenumber = $statusmesg =~ m/AUP#(?:[-A-Za-z]+)?(\d{4})/ ? int $1 : 0;
-    my $reasonname = $errorcodes->{ $codenumber } || '';
+    my $reasontext = $errorcodes->{ $codenumber } || '';
 
-    unless( $reasonname ) {
+    unless( $reasontext ) {
         # The error code was not found in $errorcodes
         for my $e ( @$coderanges ) {
             # Check the code range
             next if $codenumber < $e->[0];
             next if $codenumber > $e->[1];
-            $reasonname = $e->[2];
+            $reasontext = $e->[2];
             last;
         }
     }
-    return $reasonname;
+    return $reasontext;
 }
 
 1;
