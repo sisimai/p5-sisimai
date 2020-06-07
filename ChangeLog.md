@@ -17,6 +17,7 @@ v4.25.7p3
   - Remove old parameters: `datasrc` and `bounces` at the callback feature #394
   - Implement `Sisimai::Rhost::Spectrum` for parsing bounce mails returned from
     https://www.spectrum.com/. Thanks to @meir-w #395
+  - Remove unused method `Sisimai::Rhost->list` #396
 
 v4.25.7
 --------------------------------------------------------------------------------

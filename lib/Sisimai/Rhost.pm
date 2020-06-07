@@ -14,12 +14,6 @@ use constant RhostClass => {
     qr/mx[0-9]+[.]qq[.]com\z/                         => 'TencentQQ',
 };
 
-sub list {
-    # Retrun the list of remote hosts Sisimai support
-    # @return   [Array] Remote host list
-    return [keys %{ RhostClass() }];
-}
-
 sub match {
     # The value of "rhost" is listed in RhostClass or not
     # @param    [String] argv1  Remote host name
@@ -85,11 +79,6 @@ is listed in the results of Sisimai::Rhost->list() method.
 This class is called only Sisimai::Data class.
 
 =head1 CLASS METHODS
-
-=head2 C<B<list()>>
-
-Return the list of remote hosts which is supported by Sisimai for detecting the
-reason of bounce from major email services.
 
 =head2 C<B<match(I<remote host>)>>
 

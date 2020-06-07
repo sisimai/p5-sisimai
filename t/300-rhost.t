@@ -7,7 +7,7 @@ use Sisimai::Reason;
 
 my $PackageName = 'Sisimai::Rhost';
 my $MethodNames = {
-    'class' => ['list', 'match', 'get'],
+    'class' => ['match', 'get'],
     'object' => [],
 };
 
@@ -15,11 +15,9 @@ use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };
 
 MAKE_TEST: {
-    isa_ok $PackageName->list, 'ARRAY';
     is $PackageName->match, undef;
     is $PackageName->get, undef;
 
-    my $list = $PackageName->list;
     my $host = [
         'aspmx.l.google.com',
         'gmail-smtp-in.l.google.com',
@@ -34,7 +32,6 @@ MAKE_TEST: {
 
     for my $e ( @$host ) {
         ok $PackageName->match($e), '->match('.$e.')';
-        ok grep { $e =~ $_ } @$list;
     }
 
     my $rset = Sisimai::Reason->index;
