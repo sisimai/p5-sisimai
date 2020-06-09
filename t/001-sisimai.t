@@ -3,6 +3,7 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use IO::File;
 use Sisimai;
+use Time::Piece;
 use JSON;
 require './t/999-values.pl';
 
@@ -96,6 +97,14 @@ MAKE_TEST: {
             }
 
             my $havecaught = undef;
+            my $emailhooks = sub {
+                my $argvs = shift;
+                my $timep = localtime(Time::Piece->new);
+
+                for my $p ( @{ $argvs->{'sisi'} } ) {
+                    $p->{'parsedat'} = sprintf("%s %s", $timep->ymd('-'), $timep->hms);
+                }
+            };
             my $callbackto = sub {
                 my $argvs = shift;
                 my $catch = { 
@@ -110,7 +119,7 @@ MAKE_TEST: {
                 $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
             };
-            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto);
+            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto, 'c___' => $emailhooks);
 
             for my $ee ( @$havecaught ) {
                 isa_ok $ee, 'Sisimai::Data';
@@ -134,6 +143,11 @@ MAKE_TEST: {
                 ok defined $ee->catch->{'x-virus-scanned'};
                 if( length $ee->catch->{'x-virus-scanned'} ) {
                     like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam)/i;
+                }
+
+                ok defined $ee->{'parsedat'};
+                if( length $ee->{'parsedat'} ) {
+                    like $ee->{'parsedat'}, qr/\A\d{4}[-]\d{2}[-]\d{2}/;
                 }
             }
 
