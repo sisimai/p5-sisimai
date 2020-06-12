@@ -29,6 +29,7 @@ sub make {
 
     my $list = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
+    my $kind = $mail->kind;
     my $c___ = ref $argv1->{'c___'} eq 'CODE' ? $argv1->{'c___'} : undef;
 
     while( my $r = $mail->data->read ) {
@@ -47,7 +48,7 @@ sub make {
             # Run the callback function specified with "c___" parameter of Sisimai->make
             # after reading each email file in Maildir/ every time
             eval {
-                $args = { 'kind' => $mail->kind, 'mail' => \$r, 'path' => $mail->data->path, 'sisi' => $sisi };
+                $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'sisi' => $sisi };
                 $c___->($args);
             };
             warn sprintf(" ***warning: Something is wrong in hook method 'c___': %s", $@) if $@;
