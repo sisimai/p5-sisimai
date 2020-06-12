@@ -202,7 +202,7 @@ print $data->[0]->catch->{'queue-id'};    # "43f4KX6WR7z1xcMG"
 
 ### For each email file
 Beginning from v4.25.8, `c___` argument is available at `Sisimai->make()` and
-`Sisimai->dump()` meethod for callback feature. The argument `c___` receives a
+`Sisimai->dump()` method for callback feature. The argument `c___` receives a
 callback method for each email file like the following:
 
 ```perl
