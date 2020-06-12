@@ -83,36 +83,6 @@ sub read {
     return $self->{'data'}->read;
 }
 
-sub hook {
-    # Callback method for each email file
-    # @param    [Code]   hook   Hook method
-    # @param    [String] data   Contents of the email
-    # @apram    [Array]  sisi   List of Sisimai::Data object (parsed results)
-    # @return   [Integer]       1 = Successfully executed the callback method
-    #                           0 = Something was wrong at the callback method
-    # @since v4.25.8
-    my $self = shift;
-    my $hook = shift || return undef;
-    my $data = shift || return undef;
-    my $sisi = shift || return undef;
-
-    return undef unless length $$data;
-    eval {
-        # Run the callback function specified with "c___" parameter of Sisimai->make
-        # after reading each email file in Maildir/ every time
-        my $args = {
-            'kind' => $self->{'kind'},
-            'mail' => $data,
-            'path' => $self->{'data'}->{'path'},
-            'sisi' => $sisi,
-        };
-        $hook->($args);
-    };
-    warn sprintf(" ***warning: Something is wrong in hook method 'c___': %s", $@) if $@;
-    return 0 if $@;
-    return 1;
-}
-
 sub close {
     # Close the handle
     # @return   [Integer] 0: Mail handle is not defined
@@ -208,37 +178,6 @@ Sisimai::Mail::Mbox->read or Sisimai::Mail::Maildir->read method.
         print $r;   # print each email in /var/mail/neko
     }
     $mailbox->close;
-
-=head2 C<B<close()>>
-
-=head2 C<B<hook()>>
-
-C<hook()> is a method of the callback feature for each email file, is called
-from inside of the loop in C<Sisimai->make()> method when a hook method was
-specified at C<c___> parameter as an argument.
-
-    my $e = sub {
-        my $argv = shift;
-        my $kind = $argv->{'kind'}; # Sisimai::Mail->kind
-        my $mail = $argv->{'data'}; # Contents of each email file
-        my $path = $argv->{'path'}; # Sisimai::Mail->path
-        my $sisi = $argv->{'sisi'}; # List of Sisimai::Data objects
-
-        my $time = localtime(Time::Piece->new);
-        for my $p ( @$sisi ) {
-            # Add "parsedat" into the parsed results
-            $p->{'parsedat'} = sprintf("%s %s", $time->ymd('-'), $time->hms());
-        }
-
-        if( $kind eq 'maildir' ) {
-            # Remove the email file in Maildir/ if it parsed successfully
-            unlink $path if scalar @$sisi;
-        }
-        return 1;   # Not needed, Sisimai::Mail->hook does not receive the return value
-    };
-    my $v = Sisimai->make('path/to/maildir', 'c___' => $e);
-    print $v->[0]->{'parsedat'};    # 2020/02/22 22:22:22
-
 
 =head2 C<B<close()>>
 

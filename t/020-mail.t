@@ -6,7 +6,7 @@ use Sisimai::Mail;
 my $PackageName = 'Sisimai::Mail';
 my $MethodNames = {
     'class' => ['new'],
-    'object' => ['path', 'kind', 'data', 'type', 'mail', 'hook', 'close'],
+    'object' => ['path', 'kind', 'data', 'type', 'mail', 'close'],
 };
 my $SampleEmail = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',

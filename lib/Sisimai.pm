@@ -42,7 +42,16 @@ sub make {
             $args = { 'data' => $mesg, 'delivered' => $argv1->{'delivered'}, 'origin' => $path };
             $sisi = Sisimai::Data->make(%$args);
         }
-        $mail->hook($c___, \$r, $sisi) if $c___;
+
+        if( $c___ ) {
+            # Run the callback function specified with "c___" parameter of Sisimai->make
+            # after reading each email file in Maildir/ every time
+            eval {
+                $args = { 'kind' => $mail->kind, 'mail' => \$r, 'path' => $mail->data->path, 'sisi' => $sisi };
+                $c___->($args);
+            };
+            warn sprintf(" ***warning: Something is wrong in hook method 'c___': %s", $@) if $@;
+        }
         push @$list, @$sisi if scalar @$sisi;
     }
     return undef unless scalar @$list;
