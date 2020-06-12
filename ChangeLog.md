@@ -21,8 +21,7 @@ v4.25.7p4
   - Implement `Sisimai::Rhost::Cox` for parsing bounce mails returned from Cox:
     https://cox.com/. Thanks to @meir-w #398
   - Callback feature for each email file in Maildir/ #399
-    - `Sisimai->make` receives a hook method at `c___` argument
-    - `Sisimai::Mail->hook` runs the hook method
+    - `Sisimai->make`, `Sisimai->dump` receive a hook method at `c___` argument
 
 v4.25.7
 --------------------------------------------------------------------------------
