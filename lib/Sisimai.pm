@@ -39,7 +39,7 @@ sub make {
         my $sisi = [];
 
         if( my $mesg = Sisimai::Message->new(%$args) ) {
-            # Sisimai::Message object was created successfull
+            # Sisimai::Message object was created successfully
             $args = { 'data' => $mesg, 'delivered' => $argv1->{'delivered'}, 'origin' => $path };
             $sisi = Sisimai::Data->make(%$args);
         }
@@ -47,10 +47,8 @@ sub make {
         if( $c___ ) {
             # Run the callback function specified with "c___" parameter of Sisimai->make
             # after reading each email file in Maildir/ every time
-            eval {
-                $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'sisi' => $sisi };
-                $c___->($args);
-            };
+            $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'sisi' => $sisi };
+            eval { $c___->($args) };
             warn sprintf(" ***warning: Something is wrong in hook method 'c___': %s", $@) if $@;
         }
         push @$list, @$sisi if scalar @$sisi;
