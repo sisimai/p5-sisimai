@@ -167,10 +167,9 @@ my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 Callback feature
 -------------------------------------------------------------------------------
 ### メールヘッダと本文に対して
-Sisimai 4.19.0から`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを
-引数`hook`に指定できるコールバック機能が実装されました。
-`hook`に指定したサブルーチンによって処理された結果は`Sisimai::Data->catch`
-メソッドで得ることができます。
+Sisimai 4.19.0から`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを引数
+`hook`に指定できるコールバック機能が実装されました。`hook`に指定したサブルーチン
+によって処理された結果は`Sisimai::Data->catch`メソッドで得ることができます。
 
 ```perl
 #! /usr/bin/env perl
@@ -196,8 +195,8 @@ print $data->[0]->catch->{'queue-id'};    # "43f4KX6WR7z1xcMG"
 ```
 
 ### 各メールのファイルに対して
-Sisimai 4.25.8からは`Sisimai->make()`と`Sisimai->dump()`の両メソッドで`c___`引数
-にコードリファレンスを渡せるようになりました。`c___`に渡されたコードリファレンス
+Sisimai 4.25.8から`Sisimai->make()`と`Sisimai->dump()`の両メソッドで引数`c___`
+にコードリファレンスを渡せるようになりました。`c___`に渡したコードリファレンス
 は解析したメールのファイルごとに呼び出されます。
 
 ```perl
