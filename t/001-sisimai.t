@@ -103,6 +103,8 @@ MAKE_TEST: {
 
                 for my $p ( @{ $argvs->{'sisi'} } ) {
                     $p->{'parsedat'} = sprintf("%s %s", $timep->ymd('-'), $timep->hms);
+                    $p->{'size'} = length $argvs->{'path'};
+                    $p->{'kind'} = ucfirst $argvs->{'kind'};
                 }
             };
             my $callbackto = sub {
@@ -145,10 +147,14 @@ MAKE_TEST: {
                     like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam)/i;
                 }
 
-                ok defined $ee->{'parsedat'};
-                if( length $ee->{'parsedat'} ) {
-                    like $ee->{'parsedat'}, qr/\A\d{4}[-]\d{2}[-]\d{2}/;
-                }
+                ok $ee->{'parsedat'};
+                like $ee->{'parsedat'}, qr/\A\d{4}[-]\d{2}[-]\d{2}/;
+
+                ok $ee->{'size'};
+                ok $ee->{'size'} > 0;
+
+                ok $ee->{'kind'};
+                like $ee->{'kind'}, qr/\AMail(?:box|dir)/;
             }
 
             my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'hook' => {});
