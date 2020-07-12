@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.7p3
+v4.25.7p4
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -18,6 +18,8 @@ v4.25.7p3
   - Implement `Sisimai::Rhost::Spectrum` for parsing bounce mails returned from
     https://www.spectrum.com/. Thanks to @meir-w #395
   - Remove unused method `Sisimai::Rhost->list` #396
+  - Implement `Sisimai::Rhost::Cox` for parsing bounce mails returned from Cox:
+    https://cox.com/. Thanks to @meir-w #398
 
 v4.25.7
 --------------------------------------------------------------------------------
