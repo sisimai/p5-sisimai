@@ -1,8 +1,25 @@
 RELEASE NOTES for Perl version of Sisimai
 ================================================================================
-- releases: "https://github.com/sisimai/p5-Sisimai/releases"
+- releases: "https://github.com/sisimai/p5-sisimai/releases"
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
+
+v4.25.8
+--------------------------------------------------------------------------------
+- release: ""Fri, 17 Jul 2020 11:59:49 +0900 (JST)
+- version: "4.25.8"
+- changes:
+  - **Repository URL was changed to https://github.com/sisimai/p5-sisimai**
+  - `Sisimai::Message->make` method was merged into `Sisimai::Message->new`
+  - `Sisimai::Message->divideup` returns an array (faster than a hash) #390
+  - Remove unused code blocks for deciding the order of email header fields at
+    `Sisimai::Data->make` method
+  - Remove old parameters: `datasrc` and `bounces` at the callback feature #394
+  - Implement `Sisimai::Rhost::Spectrum` for parsing bounce mails returned from
+    https://www.spectrum.com/. Thanks to @meir-w #395
+  - Remove unused method `Sisimai::Rhost->list` #396
+  - Implement `Sisimai::Rhost::Cox` for parsing bounce mails returned from Cox:
+    https://cox.com/. Thanks to @meir-w #398
 
 v4.25.7
 --------------------------------------------------------------------------------
