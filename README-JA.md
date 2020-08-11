@@ -38,8 +38,8 @@ What is sisimai
 ===============================================================================
 Sisimai(シシマイ)はRFC5322準拠のエラーメールを解析し、解析結果をデータ構造に
 変換するインターフェイスを提供するPerlモジュールです。
-__シシマイ__ はbounceHammer version 4として開発していたものであり、Version 4なので
-__シ(Si)__ から始まりマイ(MAI: __Mail Analyzing Interface__)を含む名前になりました。
+__シシマイ__ はbounceHammer version 4として開発していたものであり、bounceHammer
+後継となるライブラリです。
 
 ![](https://libsisimai.org/static/images/figure/sisimai-overview-1.png)
 
@@ -166,10 +166,16 @@ my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 
 Callback feature
 -------------------------------------------------------------------------------
-### メールヘッダと本文に対して
-Sisimai 4.19.0から`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを引数
-`hook`に指定できるコールバック機能が実装されました。`hook`に指定したサブルーチン
-によって処理された結果は`Sisimai::Data->catch`メソッドで得ることができます。
+`Sisimai->make`と`Sisimai->dump`の`c___`引数はコールバック機能で呼び出されるコード
+リファンレンスを保持する配列リファレンスです。`c___`の1番目の要素には`Sisimai::Message->parse`
+で呼び出されるコードリファレンスでメールヘッダと本文に対して行う処理を、2番目の要素
+には、解析対象のメールファイルに対して行う処理をそれぞれ入れます。
+
+各コードリファレンスで処理した結果は`Sisimai::Data->catch`を通して得られます。
+
+### [0] メールヘッダと本文に対して
+`c___`に渡す配列リファレンスの最初の要素に入れたコードリファレンスは`Sisimai::Message->parse()`
+で呼び出されます。
 
 ```perl
 #! /usr/bin/env perl
@@ -187,8 +193,8 @@ my $code = sub {
     $adds->{'x-mailer'} = $head->{'x-mailer'} || '';
     return $adds;
 };
-my $data = Sisimai->make('/path/to/mbox', 'hook' => $code);
-my $json = Sisimai->dump('/path/to/mbox', 'hook' => $code);
+my $data = Sisimai->make('/path/to/mbox', 'c___' => [$code, undef]);
+my $json = Sisimai->dump('/path/to/mbox', 'c___' => [$code, undef]);
 
 print $data->[0]->catch->{'x-mailer'};    # "Apple Mail (2.1283)"
 print $data->[0]->catch->{'queue-id'};    # "43f4KX6WR7z1xcMG"
@@ -233,7 +239,7 @@ my $code = sub {
     # Need to not return a value
 };
 
-my $list = Sisimai->make($path, 'c___' => $code);
+my $list = Sisimai->make($path, 'c___' => [undef, $code]);
 print $list->[0]->{'catch'}->{'size'};          # 2202
 print $list->[0]->{'catch'}->{'kind'};          # "Maildir"
 print $list->[0]->{'catch'}->{'return-path'};   # "<MAILER-DAEMON>"
