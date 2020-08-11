@@ -43,8 +43,8 @@ sub make {
         }
 
         if( $c___->[1] ) {
-            # Run the callback function specified with "c___" parameter of Sisimai->make
-            # after reading each email file in Maildir/ every time
+            # Run the callback function specified with "c___" parameter of Sisimai->make after reading
+            # each email file in Maildir/ every time
             $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'sisi' => $sisi };
             eval { $c___->[1]->($args) if ref $c___->[1] eq 'CODE' };
             warn sprintf(" ***warning: Something is wrong in the second element of the 'c___': %s", $@) if $@;
@@ -158,17 +158,14 @@ Sisimai - Mail Analyzing Interface for bounce mails.
 
 =head1 DESCRIPTION
 
-C<Sisimai> is a Mail Analyzing Interface for email bounce, is a Perl module to
-parse RFC5322 bounce mails and generating structured data as JSON from parsed
-results. C<Sisimai> is a coined word: Sisi (the number 4 is pronounced "Si" in
-Japanese) and MAI (acronym of "Mail Analyzing Interface").
+C<Sisimai> is a Mail Analyzing Interface for email bounce, is a Perl module to parse RFC5322 bounce
+mails and generating structured data as JSON from parsed results. 
 
 =head1 BASIC USAGE
 
 =head2 C<B<make(I<'/path/to/mbox'>)>>
 
-C<make> method provides feature for getting parsed data from bounced email
-messages like following.
+C<make> method provides feature for getting parsed data from bounced email messages like following.
 
     use Sisimai;
     my $v = Sisimai->make('/path/to/mbox'); # or Path to Maildir/
@@ -200,8 +197,8 @@ messages like following.
         printf "%s\n", $json->encode($v);
     }
 
-If you want to get bounce records which reason is "delivered", set "delivered"
-option to make() method like the following:
+If you want to get bounce records which reason is "delivered", set "delivered" option to make()
+method like the following:
 
     my $v = Sisimai->make('/path/to/mbox', 'delivered' => 1);
 
@@ -217,8 +214,8 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 
 =head2 Read email data from STDIN
 
-If you want to pass email data from STDIN, specify B<STDIN> at the first argument
-of dump() and make() method like following command:
+If you want to pass email data from STDIN, specify B<STDIN> at the first argument of dump() and make()
+method like following command:
 
     % cat ./path/to/bounce.eml | perl -MSisimai -lE 'print Sisimai->dump(STDIN)'
 
@@ -261,7 +258,7 @@ of C<hook> argument, and is called as a callback method for entire email message
 
 =head3 For each email file
 
-Beginning from v5.0.0, C<c___> argument is available at C<Sisimai->make()> and C<Sisimai->dump()> meethod
+Beginning from v5.0.0, C<c___> argument is available at C<Sisimai->make()> and C<Sisimai->dump()> method
 for callback feature. The argument C<c___> is an array reference to holding two code references for a
 callback method. The first element of the C<c___> is called at C<Sisimai::Message> for dealing the entire
 message body. The second element of the C<c___> is called at the end of each email file parsing.
@@ -329,8 +326,7 @@ C<reason> method provides table including all the reasons Sisimai can detect
 
 =head2 C<B<match()>>
 
-C<match> method receives an error message as a string and returns a reason name
-like the following:
+C<match> method receives an error message as a string and returns a reason name like the following:
 
     use Sisimai;
     my $v = '550 5.1.1 User unknown';
