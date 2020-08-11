@@ -28,11 +28,11 @@ sub make {
     my $list = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
     my $kind = $mail->kind;
-    my $c___ = ref $argv1->{'c___'} eq 'ARRAY' ? $argv1->{'c___'} : undef;
+    my $c___ = ref $argv1->{'c___'} eq 'ARRAY' ? $argv1->{'c___'} : [undef, undef]
 
     while( my $r = $mail->data->read ) {
         # Read and parse each email file
-        my $args = { 'data' => $r, 'hook' => $c___->[0] || undef };
+        my $args = { 'data' => $r, 'hook' => $c___->[0] };
         my $path = $mail->data->path;
         my $sisi = [];
 
