@@ -166,29 +166,77 @@ my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 
 Callback feature
 -------------------------------------------------------------------------------
-Sisimai 4.19.0から`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを
-引数`hook`に指定できるコールバック機能が実装されました。
-`hook`に指定したサブルーチンによって処理された結果は`Sisimai::Data->catch`
-メソッドで得ることができます。
+### メールヘッダと本文に対して
+Sisimai 4.19.0から`Sisimai->make()`と`Sisimai->dump()`にコードリファレンスを引数
+`hook`に指定できるコールバック機能が実装されました。`hook`に指定したサブルーチン
+によって処理された結果は`Sisimai::Data->catch`メソッドで得ることができます。
 
 ```perl
 #! /usr/bin/env perl
 use Sisimai;
-my $callbackto = sub {
-    my $emdata = shift;
-    my $caught = { 'x-mailer' => '', 'queue-id' => '' };
+my $code = sub {
+    my $args = shift;               # (*Hash)
+    my $head = $args->{'headers'};  # (*Hash)  Email headers
+    my $body = $args->{'message'};  # (String) Message body
+    my $adds = { 'x-mailer' => '', 'queue-id' => '' };
 
-    if( $emdata->{'message'} =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
-        $caught->{'queue-id'} = $1;
+    if( $body =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
+        $adds->{'queue-id'} = $1;
     }
 
-    $caught->{'x-mailer'} = $emdata->{'headers'}->{'x-mailer'} || '';
-    return $caught;
+    $adds->{'x-mailer'} = $head->{'x-mailer'} || '';
+    return $adds;
 };
-my $data = Sisimai->make('/path/to/mbox', 'hook' => $callbackto);
-my $json = Sisimai->dump('/path/to/mbox', 'hook' => $callbackto);
+my $data = Sisimai->make('/path/to/mbox', 'hook' => $code);
+my $json = Sisimai->dump('/path/to/mbox', 'hook' => $code);
 
-print $data->[0]->catch->{'x-mailer'};    # Apple Mail (2.1283)
+print $data->[0]->catch->{'x-mailer'};    # "Apple Mail (2.1283)"
+print $data->[0]->catch->{'queue-id'};    # "43f4KX6WR7z1xcMG"
+```
+
+### 各メールのファイルに対して
+Sisimai 4.25.8から`Sisimai->make()`と`Sisimai->dump()`の両メソッドで引数`c___`
+にコードリファレンスを渡せるようになりました。`c___`に渡したコードリファレンス
+は解析したメールのファイルごとに呼び出されます。
+
+```perl
+my $path = '/path/to/maildir';
+my $code = sub {
+    my $args = shift;           # (*Hash)
+    my $kind = $args->{'kind'}; # (String)  Sisimai::Mail->kind
+    my $mail = $args->{'mail'}; # (*String) Entire email message
+    my $path = $args->{'path'}; # (String)  Sisimai::Mail->path
+    my $sisi = $args->{'sisi'}; # (*Array)  List of Sisimai::Data
+
+    for my $e ( @$sisi ) {
+        # Insert custom fields into the parsed results
+        $e->{'catch'} ||= {};
+        $e->{'catch'}->{'size'} = length $$mail;
+        $e->{'catch'}->{'kind'} = ucfirst $kind;
+
+        if( $$mail =~ /^Return-Path: (.+)$/m ) {
+            # Return-Path: <MAILER-DAEMON>
+            $e->{'catch'}->{'return-path'} = $1;
+        }
+
+        # Append X-Sisimai-Parsed: header and save into other path
+        my $a = sprintf("X-Sisimai-Parsed: %d\n", scalar @$sisi);
+        my $p = sprintf("/path/to/another/directory/sisimai-%s.eml", $e->token);
+        my $f = IO::File->new($p, 'w');
+        my $v = $$mail; $v =~ s/^(From:.+)$/$a$1/m;
+        print $f $v; $f->close;
+    }
+
+    # Remove the email file in Maildir/ after parsed
+    unlink $path if $kind eq 'maildir';
+
+    # Need to not return a value
+};
+
+my $list = Sisimai->make($path, 'c___' => $code);
+print $list->[0]->{'catch'}->{'size'};          # 2202
+print $list->[0]->{'catch'}->{'kind'};          # "Maildir"
+print $list->[0]->{'catch'}->{'return-path'};   # "<MAILER-DAEMON>"
 ```
 
 コールバック機能のより詳細な使い方は

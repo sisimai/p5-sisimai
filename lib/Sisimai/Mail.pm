@@ -5,11 +5,11 @@ use warnings;
 use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
-        'path',     # [String] path to mbox or Maildir/
-        'kind',     # [String] Data type: mailbox, maildir, stdin, or memory
+        'path', # [String] path to mbox or Maildir/
+        'kind', # [String] Data type: mailbox, maildir, stdin, or memory
     ],
     'rw'  => [
-        'data',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
+        'data', # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
     ]
 );
 use constant Until => 'v4.25.10';

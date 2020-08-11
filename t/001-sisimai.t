@@ -3,14 +3,13 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use IO::File;
 use Sisimai;
+use Time::Piece;
 use JSON;
 require './t/999-values.pl';
 
 my $PackageName = 'Sisimai';
 my $MethodNames = {
-    'class' => [
-        'sysname', 'libname', 'version', 'make', 'dump', 'engine', 'match',
-    ],
+    'class' => ['libname', 'version', 'make', 'dump', 'engine', 'match'],
     'object' => [],
 };
 my $SampleEmail = {
@@ -28,7 +27,6 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     my $v  = $Sisimai::VERSION;
        $v .= 'p'.$Sisimai::PATCHLV if $Sisimai::PATCHLV > 0;
-    is $PackageName->sysname, 'bouncehammer', '->sysname = bouncehammer';
     is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
     is 'v'.$PackageName->version, $v, '->version = v'.$v;
     is $PackageName->make(undef), undef;
@@ -96,6 +94,16 @@ MAKE_TEST: {
             }
 
             my $havecaught = undef;
+            my $emailhooks = sub {
+                my $argvs = shift;
+                my $timep = localtime(Time::Piece->new);
+
+                for my $p ( @{ $argvs->{'sisi'} } ) {
+                    $p->{'parsedat'} = sprintf("%s %s", $timep->ymd('-'), $timep->hms);
+                    $p->{'size'} = length $argvs->{'path'};
+                    $p->{'kind'} = ucfirst $argvs->{'kind'};
+                }
+            };
             my $callbackto = sub {
                 my $argvs = shift;
                 my $catch = { 
@@ -110,7 +118,7 @@ MAKE_TEST: {
                 $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
             };
-            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto);
+            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'c___' => [$callbackto, $emailhooks]);
 
             for my $ee ( @$havecaught ) {
                 isa_ok $ee, 'Sisimai::Data';
@@ -135,9 +143,18 @@ MAKE_TEST: {
                 if( length $ee->catch->{'x-virus-scanned'} ) {
                     like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam)/i;
                 }
+
+                ok $ee->{'parsedat'};
+                like $ee->{'parsedat'}, qr/\A\d{4}[-]\d{2}[-]\d{2}/;
+
+                ok $ee->{'size'};
+                ok $ee->{'size'} > 0;
+
+                ok $ee->{'kind'};
+                like $ee->{'kind'}, qr/\AMail(?:box|dir)/;
             }
 
-            my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'hook' => {});
+            my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'c___' => {});
             for my $ee ( @$isntmethod ) {
                 isa_ok $ee, 'Sisimai::Data';
                 is $ee->catch, undef;

@@ -273,7 +273,7 @@ sub parse {
         # Call hook method
         my $p = { 'headers' => $mailheader, 'message' => $$bodystring };
         eval { $havecaught = $hookmethod->($p) };
-        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
+        warn sprintf(" ***warning: Something is wrong in hook method 'hook': %s", $@) if $@;
     }
 
     my $haveloaded = {};
