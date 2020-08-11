@@ -5,8 +5,7 @@ use warnings;
 use version; our $VERSION = version->declare('v5.0.0'); our $PATCHLV = 0;
 
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
-sub sysname { 'bouncehammer' }
-sub libname { 'Sisimai'      }
+sub libname { 'Sisimai' }
 
 sub make {
     # Wrapper method for parsing mailbox or Maildir/

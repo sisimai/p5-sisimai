@@ -9,9 +9,7 @@ require './t/999-values.pl';
 
 my $PackageName = 'Sisimai';
 my $MethodNames = {
-    'class' => [
-        'sysname', 'libname', 'version', 'make', 'dump', 'engine', 'match',
-    ],
+    'class' => ['libname', 'version', 'make', 'dump', 'engine', 'match'],
     'object' => [],
 };
 my $SampleEmail = {
@@ -29,7 +27,6 @@ can_ok $PackageName, @{ $MethodNames->{'class'} };
 MAKE_TEST: {
     my $v  = $Sisimai::VERSION;
        $v .= 'p'.$Sisimai::PATCHLV if $Sisimai::PATCHLV > 0;
-    is $PackageName->sysname, 'bouncehammer', '->sysname = bouncehammer';
     is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
     is 'v'.$PackageName->version, $v, '->version = v'.$v;
     is $PackageName->make(undef), undef;
