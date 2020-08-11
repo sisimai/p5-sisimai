@@ -14,8 +14,7 @@ sub make {
     # @param         [Handle]  argv0      or STDIN
     # @param         [Hash]    argv1      Parser options
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
-    # @options argv1 [Code]    hook       Code reference to a callback method for an email message
-    # @options argv1 [Code]    c___       Code reference to a callback method for each email file
+    # @options argv1 [Array]   c___       Code references to a callback method for the message and each file
     # @return        [Array]              Parsed objects
     # @return        [Undef]              Undef if the argument was wrong or an empty array
     my $class = shift;
@@ -29,11 +28,11 @@ sub make {
     my $list = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
     my $kind = $mail->kind;
-    my $c___ = ref $argv1->{'c___'} eq 'CODE' ? $argv1->{'c___'} : undef;
+    my $c___ = ref $argv1->{'c___'} eq 'ARRAY' ? $argv1->{'c___'} : undef;
 
     while( my $r = $mail->data->read ) {
         # Read and parse each email file
-        my $args = { 'data' => $r, 'hook' => $argv1->{'hook'} };
+        my $args = { 'data' => $r, 'hook' => $c___->[0] || undef };
         my $path = $mail->data->path;
         my $sisi = [];
 
@@ -43,12 +42,12 @@ sub make {
             $sisi = Sisimai::Data->make(%$args);
         }
 
-        if( $c___ ) {
+        if( $c___->[1] ) {
             # Run the callback function specified with "c___" parameter of Sisimai->make
             # after reading each email file in Maildir/ every time
             $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'sisi' => $sisi };
-            eval { $c___->($args) };
-            warn sprintf(" ***warning: Something is wrong in hook method 'c___': %s", $@) if $@;
+            eval { $c___->[1]->($args) if ref $c___->[1] eq 'CODE' };
+            warn sprintf(" ***warning: Something is wrong in the second element of the 'c___': %s", $@) if $@;
         }
         push @$list, @$sisi if scalar @$sisi;
     }
@@ -227,8 +226,8 @@ of dump() and make() method like following command:
 
 =head3 For email headers and the body
 
-Beginning from v4.19.0, C<hook> argument is available to receive a callback method
-for entire email message like the following codes:
+C<hook> argument has been removed at Sisimai 5.0.0. The first element of C<c___> argument is the successor
+of C<hook> argument, and is called as a callback method for entire email message like the following codes:
 
     my $code = sub {
         my $argv = shift;           # (*Hash)
@@ -254,16 +253,18 @@ for entire email message like the following codes:
         return $data;
     };
 
-    my $message = Sisimai::Message->new('data' => $mailtxt, 'hook' => $code);
-    print $message->catch->{'x-mailer'};    # "Apple Mail (2.1283)"
-    print $message->catch->{'queue-id'};    # "2DAEB222022E"
-    print $message->catch->{'precedence'};  # "bulk"
+    my $methods = [$code, undef];
+    my $sisimai = Sisimai->make($path, 'c___' => $methods);
+    print $sisimai->[0]->{'catch'}->{'x-mailer'};    # "Apple Mail (2.1283)"
+    print $sisimai->[0]->{'catch'}->{'queue-id'};    # "2DAEB222022E"
+    print $sisimai->[0]->{'catch'}->{'precedence'};  # "bulk"
 
 =head3 For each email file
 
-Beginning from v4.25.8, C<c___> argument is available at C<Sisimai->make()> and
-C<Sisimai->dump()> meethod for callback feature. The argument C<c___> receives
-a callback method for each email file like the following:
+Beginning from v5.0.0, C<c___> argument is available at C<Sisimai->make()> and C<Sisimai->dump()> meethod
+for callback feature. The argument C<c___> is an array reference to holding two code references for a
+callback method. The first element of the C<c___> is called at C<Sisimai::Message> for dealing the entire
+message body. The second element of the C<c___> is called at the end of each email file parsing.
 
     my $path = '/path/to/maildir';
     my $code = sub {
@@ -297,7 +298,7 @@ a callback method for each email file like the following:
 
         # Need to not return a value
     };
-    my $list = Sisimai->make($path, 'c___' => $code);
+    my $list = Sisimai->make($path, 'c___' => [undef, $code]);
     print $list->[0]->{'catch'}->{'size'};          # 2202
     print $list->[0]->{'catch'}->{'kind'};          # "Maildir"
     print $list->[0]->{'catch'}->{'return-path'};   # "<MAILER-DAEMON>"

@@ -118,7 +118,7 @@ MAKE_TEST: {
                 $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
             };
-            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'hook' => $callbackto, 'c___' => $emailhooks);
+            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'c___' => [$callbackto, $emailhooks]);
 
             for my $ee ( @$havecaught ) {
                 isa_ok $ee, 'Sisimai::Data';
@@ -154,7 +154,7 @@ MAKE_TEST: {
                 like $ee->{'kind'}, qr/\AMail(?:box|dir)/;
             }
 
-            my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'hook' => {});
+            my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'c___' => {});
             for my $ee ( @$isntmethod ) {
                 isa_ok $ee, 'Sisimai::Data';
                 is $ee->catch, undef;
