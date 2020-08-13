@@ -12,7 +12,6 @@ use Class::Accessor::Lite (
         'data', # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
     ]
 );
-use constant Until => 'v4.25.10';
 
 sub new {
     # Constructor of Sisimai::Mail
@@ -63,36 +62,12 @@ sub new {
     return bless($param, __PACKAGE__);
 }
 
-sub mail {
-    my $self = shift;
-    printf(STDERR " ***warning: %s->mail will be removed at %s. Use %s->data instead\n", __PACKAGE__, Until, __PACKAGE__);
-    return $self->data;
-}
-
-sub type {
-    my $self = shift;
-    printf(STDERR " ***warning: %s->type will be removed at %s. Use %s->kind instead\n", __PACKAGE__, Until, __PACKAGE__);
-    return $self->kind;
-}
-
 sub read {
     # Alias method of Sisimai::Mail::*->read()
     # @return   [String] Contents of mbox/Maildir
     my $self = shift;
     return undef unless ref $self->{'data'};
     return $self->{'data'}->read;
-}
-
-sub close {
-    # Close the handle
-    # @return   [Integer] 0: Mail handle is not defined
-    #                     1: Successfully closed the handle
-    my $self = shift;
-    printf(STDERR " ***warning: %s->close will be removed at %s. The handle automatically closes at the EOF\n", __PACKAGE__, Until);
-    return 0 unless $self->{'data'}->{'handle'};
-
-    $self->{'data'}->{'handle'} = undef;
-    return 1;
 }
 
 1;
@@ -111,13 +86,11 @@ Sisimai::Mail - Handler of Mbox/Maildir for reading each mail.
     while( my $r = $mailbox->read ) {
         print $r;
     }
-    $mailbox->close;
 
     my $maildir = Sisimai::Mail->new('/home/neko/Maildir/cur');
     while( my $r = $maildir->read ) {
         print $r;
     }
-    $maildir->close;
 
     my $mailtxt = 'From Mailer-Daemon ...';
     my $mailobj = Sisimai::Mail->new(\$mailtxt);
@@ -177,14 +150,6 @@ Sisimai::Mail::Mbox->read or Sisimai::Mail::Maildir->read method.
     while( my $r = $mailbox->read ) {
         print $r;   # print each email in /var/mail/neko
     }
-    $mailbox->close;
-
-=head2 C<B<close()>>
-
-C<close()> Close the handle of the mailbox or the Maildir/.
-
-    my $o = $mailbox->close;
-    print $o;   # 1 = Successfully closed, 0 = already closed.
 
 =head1 AUTHOR
 
