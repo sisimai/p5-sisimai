@@ -192,9 +192,9 @@ sub fillet {
     if( length $b ) {
         # Remove blank lines, the message body of the original message,
         # and append "\n" at the end of the original message headers
-        $b  =~ s/\A[\r\n\s]+//m;   # Remove leading blank lines
-        $b  =~ s/\n\n.+\z//ms;     # Remove text after the first blank line
-        $b  .= "\n" unless $b =~ /\n\z/;
+        $b =~ s/\A[\r\n\s]+//m;   # Remove leading blank lines
+        $b =~ s/\n\n.+\z//ms;     # Remove text after the first blank line
+        $b .= "\n" unless $b =~ /\n\z/;
     }
     return [$a, $b];
 }
