@@ -2,12 +2,12 @@ package Sisimai::Message;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::RFC2047;
 use Sisimai::RFC5322;
 use Sisimai::Address;
 use Sisimai::String;
 use Sisimai::Order;
 use Sisimai::Lhost;
-use Sisimai::MIME;
 use Class::Accessor::Lite (
     'new' => 0,
     'rw'  => [
@@ -58,7 +58,7 @@ sub new {
     if( $thing->{'header'}->{'subject'} ) {
         # Decode MIME-Encoded "Subject:" header
         my $s = $thing->{'header'}->{'subject'};
-        my $q = Sisimai::MIME->is_mimeencoded(\$s) ? Sisimai::MIME->mimedecode([split(/[ ]/, $s)]) : $s;
+        my $q = Sisimai::RFC2047->is_mimeencoded(\$s) ? Sisimai::RFC2047->mimedecode([split(/[ ]/, $s)]) : $s;
 
         # Remove "Fwd:" string from the "Subject:" header
         if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
@@ -202,17 +202,17 @@ sub makemap {
     } else {
         # MIME-Encoded subject field or ASCII characters only
         my $r = [];
-        if( Sisimai::MIME->is_mimeencoded(\$headermaps->{'subject'}) ) {
+        if( Sisimai::RFC2047->is_mimeencoded(\$headermaps->{'subject'}) ) {
             # split the value of Subject by $borderline
             for my $v ( split(/ /, $headermaps->{'subject'}) ) {
                 # Insert value to the array if the string is MIME encoded text
-                push @$r, $v if Sisimai::MIME->is_mimeencoded(\$v);
+                push @$r, $v if Sisimai::RFC2047->is_mimeencoded(\$v);
             }
         } else {
             # Subject line is not MIME encoded
             $r = [$headermaps->{'subject'}];
         }
-        $headermaps->{'subject'} = Sisimai::MIME->mimedecode($r);
+        $headermaps->{'subject'} = Sisimai::RFC2047->mimedecode($r);
     }
     return $headermaps;
 }
@@ -250,11 +250,11 @@ sub parse {
         # Content-Type: text/plain; charset=UTF-8
         if( $ctencoding eq 'base64' ) {
             # Content-Transfer-Encoding: base64
-            $bodystring = Sisimai::MIME->base64d($bodystring);
+            $bodystring = Sisimai::RFC2047->base64d($bodystring);
 
         } elsif( $ctencoding eq 'quoted-printable' ) {
             # Content-Transfer-Encoding: quoted-printable
-            $bodystring = Sisimai::MIME->qprintd($bodystring);
+            $bodystring = Sisimai::RFC2047->qprintd($bodystring);
         }
 
         # Content-Type: text/html;...
@@ -263,7 +263,7 @@ sub parse {
         # NOT text/plain
         if( index($mesgformat, 'multipart/') == 0 ) {
             # In case of Content-Type: multipart/*
-            my $p = Sisimai::MIME->makeflat($mailheader->{'content-type'}, $bodystring);
+            my $p = Sisimai::RFC2047->makeflat($mailheader->{'content-type'}, $bodystring);
             $bodystring = $p if length $$p;
         }
     }

@@ -106,7 +106,7 @@ sub make {
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
-        my $b0 = Sisimai::MIME->boundary($mhead->{'content-type'}, 0);
+        my $b0 = Sisimai::RFC2047->boundary($mhead->{'content-type'}, 0);
         $markingsof->{'boundary'} = qr/\A\Q$b0\E\z/ if length $b0;
     }
 

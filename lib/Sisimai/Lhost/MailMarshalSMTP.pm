@@ -31,9 +31,8 @@ sub make {
     my $endoferror = 0;     # (Integer) Flag for the end of error message
     my $v = undef;
 
-    if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
+    if( my $boundary00 = Sisimai::RFC2047->boundary($mhead->{'content-type'}, 1) ) {
         # Convert to regular expression
-        $boundary00 = '--'.$boundary00.'--';
         $rebackbone = qr/^\Q$boundary00\E/m;
     }
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);

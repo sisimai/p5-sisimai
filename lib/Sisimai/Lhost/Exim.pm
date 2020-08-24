@@ -162,7 +162,7 @@ sub make {
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
-        $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
+        $boundary00 = Sisimai::RFC2047->boundary($mhead->{'content-type'});
     }
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
