@@ -1,14 +1,14 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::MIME;
+use Sisimai::RFC2047;
 use Encode;
 
-my $PackageName = 'Sisimai::MIME';
+my $PackageName = 'Sisimai::RFC2047';
 my $MethodNames = {
     'class' => [
-        'is_mimeencoded', 'mimedecode', 'boundary', 'qprintd',
-        'base64d', 'makeflat', 'breaksup',
+        'is_mimeencoded', 'mimedecode', 'ctvalue', 'boundary', 'qprintd', 'base64d',
+        'levelout', 'makeflat'
     ],
     'object' => [],
 };
@@ -79,9 +79,101 @@ MAKE_TEST: {
 
     QPRINTD: {
         # Part of Quoted-Printable
-        my $h7 = { 'content-type' => 'multipart/report; report-type=delivery-status; boundary="b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw=="' };
         my $q7 = '
+--971a94f0830fce8d511b5f45b46e17c7
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+This is the mail delivery agent at messagelabs.com.
+
+I was unable to deliver your message to the following addresses:
+
+maria@dest.example.net
+
+Reason: 550 maria@dest.example.net... No such user
+
+The message subject was: Re: BOAS FESTAS!
+The message date was: Tue, 23 Dec 2014 20:39:24 +0000
+The message identifier was: DB/3F-17375-60D39495
+The message reference was: server-5.tower-143.messagelabs.com!1419367172!32=
+691968!1
+
+Please do not reply to this email as it is sent from an unattended mailbox.
+Please visit www.messagelabs.com/support for more details
+about this error message and instructions to resolve this issue.
+
+
+--971a94f0830fce8d511b5f45b46e17c7
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
+Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
+
+--971a94f0830fce8d511b5f45b46e17c7--
+        ';
+        my $v7 = ${ $PackageName->qprintd(\$q7) };
+        ok length $v7, '->qprintd($a)';
+        ok length($q7) > length($v7), '->qprintd($a)';
+        like $v7, qr|\Q--971a94f0830fce8d511b5f45b46e17c7\E|m, '->qprintd(boundary)';
+        unlike $v7, qr|32=$|m, '->qprintd() does not match 32=';
+
+        my $q8 = 'neko';
+        is $q8, ${ $PackageName->qprintd(\$q8) };
+    }
+
+    CTVALUE: {
+        my $c1 = 'multipart/MIXED; boundary="nekochan"; charset=utf-8';
+        is $PackageName->ctvalue($c1), 'multipart/mixed', '->ctvalue() = multipart/mixed';
+        is $PackageName->ctvalue($c1, 'boundary'), 'nekochan', '->ctvalue(boundary) = nekochan';
+        is $PackageName->ctvalue($c1, 'charset'), 'utf-8', '->ctvalue(charset) = utf-8';
+        is $PackageName->ctvalue($c1, 'nyaan'), '', '->ctvalue(nyaan) = ""';
+
+        my $c2 = 'QUOTED-PRINTABLE';
+        is $PackageName->ctvalue($c2), 'quoted-printable', '->ctvalue() = quoted-printable';
+        is $PackageName->ctvalue($c2, 'neko'), '', '->ctvalue("neko") = ""';
+    }
+
+    BOUNDARY: {
+        my $x1 = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
+        my $x2 = 'Apple-Mail-1-526612466';
+        is $PackageName->boundary($x1), $x2, '->boundary() = '.$x2;
+        is $PackageName->boundary($x1, 0), '--'.$x2, '->boundary(0) = --'.$x2;
+        is $PackageName->boundary($x1, 1), '--'.$x2.'--', '->boundary(1) = --'.$x2.'--';
+        is $PackageName->boundary($x1, 2), '--'.$x2.'--', '->boundary(2) = --'.$x2.'--';
+    }
+
+    HAIRCUT: {
+        my $mp = 'Content-Description: "error-message"
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+This is the mail delivery agent at messagelabs.com.
+
+I was unable to deliver your message to the following addresses:
+
+maria@dest.example.net
+
+Reason: 550 maria@dest.example.net... No such user';
+        my $v1 = $PackageName->haircut(\$mp);
+        isa_ok $v1, 'ARRAY';
+        is scalar @$v1, 3;
+
+        is $v1->[0], 'text/plain; charset="utf-8"', '->haircut->[0] = text/plain; charset=utf-8';
+        is $v1->[1], 'quoted-printable', '->haircut->[1] = quoted-printable';
+        ok length $v1->[2];
+
+        my $v2 = $PackageName->haircut(\$mp, 1);
+        isa_ok $v2, 'ARRAY';
+        is scalar @$v2, 2;
+        is $v2->[0], 'text/plain; charset="utf-8"', '->haircut->[0] = text/plain; charset=utf-8';
+        is $v2->[1], 'quoted-printable', '->haircut->[1] = quoted-printable';
+    }
+
+    LEVELOUT: {
+        my $ct = 'multipart/mixed; boundary="b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw=="';
+        my $mp = '
 --b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==
+Content-Description: "error-message"
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -111,24 +203,15 @@ Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
 Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
 
         ';
-        my $v7 = ${ $PackageName->qprintd(\$q7, $h7) };
-        ok length $v7, '->qprintd($a, $b)';
-        ok length($q7) > length($v7), '->qprintd($a, $b)';
-        like $v7, qr|\Q--b0Nvs+XKfKLLRaP/Qo8jZhQPoiqeWi3KWPXMgw==\E|m, '->qprintd(boundary)';
-        unlike $v7, qr|32=$|m, '->qprintd() does not match 32=';
+        my $v1 = $PackageName->levelout($ct, \$mp);
+        isa_ok $v1, 'ARRAY';
+        is scalar @$v1, 2;
 
-        my $q8 = 'neko';
-        my $h8 = { 'content-type' => 'neko/nyan' };
-        is $q8, ${ $PackageName->qprintd(\$q8, $8) };
-    }
-
-    BOUNDARY: {
-        my $x1 = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
-        my $x2 = 'Apple-Mail-1-526612466';
-        is $PackageName->boundary($x1 ), $x2, '->boundary() = '.$x2;
-        is $PackageName->boundary($x1, 0), '--'.$x2, '->boundary(0) = --'.$x2;
-        is $PackageName->boundary($x1, 1), '--'.$x2.'--', '->boundary(1) = --'.$x2.'--';
-        is $PackageName->boundary($x1, 2), '--'.$x2.'--', '->boundary(2) = --'.$x2.'--';
+        for my $e ( @$v1 ) {
+            isa_ok $e, 'HASH';
+            ok length $e->{'head'}->{'content-type'};
+            ok length $e->{'body'};
+        }
     }
 
     MAKEFLAT: {
@@ -192,32 +275,6 @@ Received: ...
         like $v9, qr/kijitora[@]/m, '->makeflat() contains message/delivery-status part';
         like $v9, qr/Received:/m, '->makeflat() contains message/rfc822 part';
         is $PackageName->makeflat(), undef;
-    }
-
-    BREAKSUP: {
-        # multipart/* decoding
-        my $h10 = 'multipart/alternative';
-        my $p10 = 'Content-Type: multipart/alternative; boundary="NekoNyaan--------3"
-
---NekoNyaan--------3
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-
-c2lyb25la28K
-
---NekoNyaan--------3
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: base64
-
-PGh0bWw+CjxoZWFkPgogICAgPHRpdGxlPk5la28gTnlhYW48L3RpdGxlPgo8L2hl
-YWQ+Cjxib2R5PgogICAgPGgxPk5la28gTnlhYW48L2gxPgo8L2JvZHk+CjwvaHRt
-bD4K';
-        my $v10 = ${ $PackageName->breaksup(\$p10, $h10) };
-        ok length $v10, '->breaksup($a, $b)';
-        ok length($v10) < length($p10), '->breaksup($a, $b)';
-        like $v10, qr/sironeko/m, '->breaksup() contains text/plain part';
-        unlike $v10, qr/[<]html[>]/m, '->breaksup() does not contain text/html part';
-        is $PackageName->breaksup(), undef;
     }
 
     IRREGULAR_CASE: {
