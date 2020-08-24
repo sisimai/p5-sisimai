@@ -224,6 +224,7 @@ sub levelout {
     # @param    [String] argv0  The value of Content-Type header
     # @param    [String] argv1  A pointer to multipart/* message blocks
     # @return   [Array]         List of each part of multipart/*
+    # @since v5.0.0
     my $class = shift;
     my $argv0 = shift || return [];
     my $argv1 = shift || return [];
