@@ -74,7 +74,7 @@ sub soft_or_hard {
         'hard' => [qw|hasmoved hostunknown userunknown|],
     };
 
-    if( $argv1 eq 'deliverd' || $argv1 eq 'feedback' || $argv1 eq 'vacation' ) {
+    if( $argv1 eq 'delivered' || $argv1 eq 'feedback' || $argv1 eq 'vacation' ) {
         # These are not dealt as a bounce reason
         $value = '';
 
