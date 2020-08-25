@@ -79,43 +79,18 @@ MAKE_TEST: {
 
     QPRINTD: {
         # Part of Quoted-Printable
-        my $q7 = '
---971a94f0830fce8d511b5f45b46e17c7
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        my $q7 = 'I will be traveling for work on July 10-31.  During that time I will have i=
+ntermittent access to email and phone, and I will respond to your message a=
+s promptly as possible.
 
-This is the mail delivery agent at messagelabs.com.
-
-I was unable to deliver your message to the following addresses:
-
-maria@dest.example.net
-
-Reason: 550 maria@dest.example.net... No such user
-
-The message subject was: Re: BOAS FESTAS!
-The message date was: Tue, 23 Dec 2014 20:39:24 +0000
-The message identifier was: DB/3F-17375-60D39495
-The message reference was: server-5.tower-143.messagelabs.com!1419367172!32=
-691968!1
-
-Please do not reply to this email as it is sent from an unattended mailbox.
-Please visit www.messagelabs.com/support for more details
-about this error message and instructions to resolve this issue.
-
-
---971a94f0830fce8d511b5f45b46e17c7
-Content-Type: message/delivery-status
-
-Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
-Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
-
---971a94f0830fce8d511b5f45b46e17c7--
-        ';
+Please contact our Client Service Support Team (information below) if you n=
+eed immediate assistance on regular account matters, or contact my colleagu=
+e Neko Nyaan (neko@example.org; +0-000-000-0000) for all other needs.
+';
         my $v7 = ${ $PackageName->qprintd(\$q7) };
         ok length $v7, '->qprintd($a)';
         ok length($q7) > length($v7), '->qprintd($a)';
-        like $v7, qr|\Q--971a94f0830fce8d511b5f45b46e17c7\E|m, '->qprintd(boundary)';
-        unlike $v7, qr|32=$|m, '->qprintd() does not match 32=';
+        unlike $v7, qr|a=$|m, '->qprintd() does not match a=';
 
         my $q8 = 'neko';
         is $q8, ${ $PackageName->qprintd(\$q8) };
@@ -202,7 +177,7 @@ Content-Type: message/delivery-status
 Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
 Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
 
-        ';
+';
         my $v1 = $PackageName->levelout($ct, \$mp);
         isa_ok $v1, 'ARRAY';
         is scalar @$v1, 2;

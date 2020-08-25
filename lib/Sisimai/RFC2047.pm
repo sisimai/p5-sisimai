@@ -20,7 +20,7 @@ sub is_mimeencoded {
 
     # Multiple MIME-Encoded strings in a line
     @piece = split(' ', $text1) if rindex($text1, ' ') > -1;
-    for my $e ( @piece ) {
+    while( my $e = shift @piece ) {
         # Check all the string in the array
         next unless $e =~ /[ \t]*=[?][-_0-9A-Za-z]+[?][BbQq][?].+[?]=?[ \t]*/;
         $mime1 = 1;
@@ -39,7 +39,7 @@ sub mimedecode {
     my $qbencoding = '';
     my @textblocks;
 
-    for my $e ( @$argvs ) {
+    while( my $e = shift @$argvs ) {
         # Check and decode each element
         $e =~ s/\A[ \t]+//g;
         $e =~ s/[ \t]+\z//g;
@@ -88,21 +88,20 @@ sub ctvalue {
     my $argv0 = shift || return undef;
     my $argv1 = shift || '';
 
-    my $foundtoken = '';
     my $parameterq = length $argv1 > 0 ? lc $argv1.'=' : '';
-    my $paramindex = length $argv1 > 0 ? index($argv0, $parameterq): 0;
-    return $foundtoken if $paramindex == -1;
+    my $paramindex = length $argv1 > 0 ? index($argv0, $parameterq) : 0;
+    return '' if $paramindex == -1;
 
     # Find the value of the parameter name specified in $argv1
-    $foundtoken =  [split(';', substr($argv0, $paramindex + length($parameterq)), 2)]->[0];
-    $foundtoken =  lc $foundtoken unless $argv1 eq 'boundary';
-    $foundtoken =~ y/"'//d;
+    my $foundtoken =  [split(';', substr($argv0, $paramindex + length($parameterq)), 2)]->[0];
+       $foundtoken =  lc $foundtoken unless $argv1 eq 'boundary';
+       $foundtoken =~ y/"'//d;
     return $foundtoken;
 }
 
 sub boundary {
     # Get a boundary string
-    # @param    [String]  argv1 The value of Content-Type header
+    # @param    [String]  argv0 The value of Content-Type header
     # @param    [Integer] start -1: boundary string itself
     #                            0: Start of boundary
     #                            1: End of boundary
@@ -139,7 +138,6 @@ sub base64d {
     my $class = shift;
     my $argv0 = shift // return undef;
 
-    # Decode BASE64
     my $p = $$argv0 =~ m|([+/=0-9A-Za-z\r\n]+)| ? MIME::Base64::decode($1) : '';
     return \$p;
 }
@@ -154,14 +152,12 @@ sub haircut {
     my $block = shift // return undef;
     my $heads = shift // undef;
 
+    my($upperchunk, $lowerchunk) = split("\n\n", $$block, 2);
+    return ['', ''] unless $upperchunk;
+    return ['', ''] unless index($upperchunk, 'Content-Type:') > -1;
+
     my $headerpart = ['', ''];  # ["text/plain; charset=iso-2022-jp; ...", "quoted-printable"]
     my $multipart1 = [];        # [@$headerpart, "body"]
-    my $upperchunk = '';        # Uppper chunk of the part: Headers of multipart/* block
-    my $lowerchunk = '';        # Lower chunk of the part: Body part of multipart/* block
-
-    ($upperchunk, $lowerchunk) = split("\n\n", $$block, 2);
-    return $headerpart unless $upperchunk;
-    return $headerpart unless index($upperchunk, 'Content-Type:') > -1;
 
     for my $e ( split("\n", $upperchunk) ) {
         # Remove fields except Content-Type:, and Content-Transfer-Encoding: in each part
@@ -181,7 +177,7 @@ sub haircut {
             $headerpart->[1] = lc [split(' ', $e, 2)]->[-1];
 
         } elsif( index($e, 'boundary=') > -1 || index($e, 'charset=') > -1 ) {
-            # Parameters of "Content-Type" field: boundary="...", charset="utf-8"
+            # "Content-Type" field has boundary="..." or charset="utf-8"
             next unless length $headerpart->[0];
             $headerpart->[0] .= " ".$e;
             $headerpart->[0] =~ s/\s\s+/ /g;
@@ -233,8 +229,8 @@ sub levelout {
     return [] unless length $$argv1;
 
     my $boundary00 = __PACKAGE__->ctvalue($argv0, 'boundary') || return [];
-    my $boundary01 = sprintf("--%s\n", $boundary00);
-    my $multiparts = [split(/\Q$boundary01\E/, $$argv1)];
+    my $boundary01 = sprintf("--%s", $boundary00);
+    my $multiparts = [split(/\Q$boundary01\E\n/, $$argv1)];
     my $partstable = [];
 
     # Remove empty or useless preamble and epilogue of multipart/* block
@@ -279,7 +275,7 @@ sub makeflat {
     # Make flat multipart/* part blocks and decode
     # @param    [String] argv0  The value of Content-Type header
     # @param    [String] argv1  A pointer to multipart/* message blocks
-    # @return   [String] Decoded message body
+    # @return   [String]        Message body
     my $class = shift;
     my $argv0 = shift // return undef;
     my $argv1 = shift // return undef;
@@ -287,19 +283,19 @@ sub makeflat {
     return \'' unless index($argv0, 'multipart/') > -1;
     return \'' unless index($argv0, 'boundary=')  > -1;
 
-    # 1. Some bounce messages include lower-cased "content-type:" field such as the followings:
-    #    - content-type: message/delivery-status        => Content-Type: message/delivery-status
-    #    - content-transfer-encoding: quoted-printable  => Content-Transfer-Encoding: quoted-printable
-    #    - message/xdelivery-status                     => message/delivery-status
-    $$argv1 =~ s/[Cc]ontent-[Tt]ype:/Content-Type:/g;
-    $$argv1 =~ s/[Cc]ontent-[Tt]ransfer-[Ee]ncodeing:/Content-Transfer-Encoding:/g;
-    $$argv1 =~ s|message/xdelivery-status|message/delivery-status|g;
+    # Some bounce messages include lower-cased "content-type:" field such as the followings:
+    #   - content-type: message/delivery-status        => Content-Type: message/delivery-status
+    #   - content-transfer-encoding: quoted-printable  => Content-Transfer-Encoding: quoted-printable
+    #   - message/xdelivery-status                     => message/delivery-status
+    $$argv1 =~ s/[Cc]ontent-[Tt]ype:/Content-Type:/gm;
+    $$argv1 =~ s/[Cc]ontent-[Tt]ransfer-[Ee]ncoding:/Content-Transfer-Encoding:/gm;
+    $$argv1 =~ s|message/xdelivery-status|message/delivery-status|gm;
 
     my $iso2022set = qr/charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/;
     my $multiparts = __PACKAGE__->levelout($argv0, $argv1);
     my $flattenout = '';
 
-    for my $e ( @$multiparts ) {
+    while( my $e = shift @$multiparts ) {
         # Pick only the following parts Sisimai::Lhost will use, and decode each part
         # - text/plain, text/rfc822-headers
         # - message/delivery-status, message/rfc822, message/partial, message/feedback-report
@@ -310,7 +306,7 @@ sub makeflat {
         if( $ctypevalue eq 'text/html' ) {
             # Skip text/html part when the value of Content-Type: header in an internal part of
             # multipart/* includes multipart/alternative;
-            next if index($e, 'multipart/alternative') > -1;
+            next if index($argv1, 'multipart/alternative') > -1;
             $istexthtml = 1;
         }
         my $ctencoding = $e->{'head'}->{'content-transfer-encoding'} || '';
@@ -361,7 +357,7 @@ sub makeflat {
             $bodystring = sprintf("Content-Type: %s\n%s", $ctypevalue, $bodystring);
         }
         # Append "\n" when the last character of $bodystring is not LF
-        $bodystring .= "\n\n" unless substr($bodystring, -1, 2) eq "\n\n";
+        $bodystring .= "\n\n" unless substr($bodystring, -2, 2) eq "\n\n";
         $flattenout .= $bodystring;
     }
     return \$flattenout;
