@@ -4,9 +4,16 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.8p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Fix typo in `Sisimai::SMTP::Error`. Thanks to @hekeli #410
+
 v4.25.8
 --------------------------------------------------------------------------------
-- release: ""Fri, 17 Jul 2020 11:59:49 +0900 (JST)
+- release: "Fri, 17 Jul 2020 11:59:49 +0900 (JST)"
 - version: "4.25.8"
 - changes:
   - **Repository URL was changed to https://github.com/sisimai/p5-sisimai**
@@ -20,7 +27,6 @@ v4.25.8
   - Remove unused method `Sisimai::Rhost->list` #396
   - Implement `Sisimai::Rhost::Cox` for parsing bounce mails returned from Cox:
     https://cox.com/. Thanks to @meir-w #398
-  - Fix typo in `Sisimai::SMTP::Error`. Thanks to @hekeli #410
 
 v4.25.7
 --------------------------------------------------------------------------------
