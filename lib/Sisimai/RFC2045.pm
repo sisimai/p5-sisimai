@@ -1,4 +1,4 @@
-package Sisimai::RFC2047;
+package Sisimai::RFC2045;
 use feature ':5.10';
 use strict;
 use warnings;
@@ -365,22 +365,22 @@ __END__
 
 =head1 NAME
 
-Sisimai::RFC2047 - MIME Utilities
+Sisimai::RFC2045 - MIME Utilities
 
 =head1 SYNOPSIS
 
-    use Sisimai::RFC2047;
+    use Sisimai::RFC2045;
 
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::RFC2047->is_encoded(\$e);
+    my $v = Sisimai::RFC2045->is_encoded(\$e);
     print $v;   # 1
 
-    my $x = Sisimai::RFC2047->decodeH([$e]);
+    my $x = Sisimai::RFC2045->decodeH([$e]);
     print $x;
 
 =head1 DESCRIPTION
 
-Sisimai::RFC2047 is MIME Utilities for C<Sisimai>, is formerly known as C<Sisimai::MIME>.
+Sisimai::RFC2045 is MIME Utilities for C<Sisimai>, is formerly known as C<Sisimai::MIME>.
 
 =head1 CLASS METHODS
 
@@ -389,7 +389,7 @@ Sisimai::RFC2047 is MIME Utilities for C<Sisimai>, is formerly known as C<Sisima
 C<is_encoded()> returns that the argument is MIME-Encoded string or not.
 
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::RFC2047->is_encoded(\$e);  # 1
+    my $v = Sisimai::RFC2045->is_encoded(\$e);  # 1
 
 =head2 C<B<decodeH(I<Array-Ref>)>>
 
@@ -397,41 +397,41 @@ C<decodeH()> is a decoder method for getting the original string from MIME-Encod
 email headers.
 
     my $r = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::RFC2047->decodeH([$r]);
+    my $v = Sisimai::RFC2045->decodeH([$r]);
 
 =head2 C<B<decodeB(I<\String>)>>
 
 C<decodeB> is a decoder method for getting the original string from MIME Base64 encoded string.
 
     my $r = '44Gr44KD44O844KT';
-    my $v = Sisimai::RFC2047->decodeB(\$r);
+    my $v = Sisimai::RFC2045->decodeB(\$r);
 
 =head2 C<B<decodeQ(I<\String>)>>
 
 C<decodeQ> is a decoder method for getting the original string from MIME quoted-printable encoded string.
 
     my $r = '=4e=65=6b=6f';
-    my $v = Sisimai::RFC2047->decodeQ(\$r);
+    my $v = Sisimai::RFC2045->decodeQ(\$r);
 
 =head2 C<B<ctvalue(I<String>, I<String>)>>
 
 C<ctvalue()> returns the value of parameter in Content-Type header.
 
     my $r = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466'; charset=utf8;
-    print Sisimai::RFC2047->ctvalue($r, 'charset');  # utf8
-    print Sisimai::RFC2047->ctvalue($r, 'boundary'); # Apple-Mail-1-526612466
-    print Sisimai::RFC2047->ctvalue($r);             # multipart/mixed
+    print Sisimai::RFC2045->ctvalue($r, 'charset');  # utf8
+    print Sisimai::RFC2045->ctvalue($r, 'boundary'); # Apple-Mail-1-526612466
+    print Sisimai::RFC2045->ctvalue($r);             # multipart/mixed
 
 =head2 C<B<boundary(I<String>, I<Integer>)>>
 
 C<boundary()> returns a boundary string from the value of Content-Type header.
 
     my $r = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
-    my $v = Sisimai::RFC2047->boundary($r);
+    my $v = Sisimai::RFC2045->boundary($r);
     print $v;   # Apple-Mail-1-526612466
 
-    print Sisimai::RFC2047->boundary($r, 0); # --Apple-Mail-1-526612466
-    print Sisimai::RFC2047->boundary($r, 1); # --Apple-Mail-1-526612466--
+    print Sisimai::RFC2045->boundary($r, 0); # --Apple-Mail-1-526612466
+    print Sisimai::RFC2045->boundary($r, 1); # --Apple-Mail-1-526612466--
 
 =head2 C<B<haircut(I<\String>, I<Boolean>)>>
 

@@ -1,10 +1,10 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::RFC2047;
+use Sisimai::RFC2045;
 use Encode;
 
-my $PackageName = 'Sisimai::RFC2047';
+my $PackageName = 'Sisimai::RFC2045';
 my $MethodNames = {
     'class' => [
         'is_encoded', 'decodeH', 'ctvalue', 'boundary', 'decodeQ', 'decodeB',

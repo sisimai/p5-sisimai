@@ -24,15 +24,15 @@ sub make {
         #       Mail Delivery Subsystem
         for my $f ( split(' ', $mhead->{'from'}) ) {
             # Check each element of From: header
-            next unless Sisimai::RFC2047->is_encoded(\$f);
-            $match++ if rindex(Sisimai::RFC2047->decodeH([$f]), 'Mail Delivery Subsystem') > -1;
+            next unless Sisimai::RFC2045->is_encoded(\$f);
+            $match++ if rindex(Sisimai::RFC2045->decodeH([$f]), 'Mail Delivery Subsystem') > -1;
             last;
         }
     }
 
-    if( Sisimai::RFC2047->is_encoded(\$mhead->{'subject'}) ) {
+    if( Sisimai::RFC2045->is_encoded(\$mhead->{'subject'}) ) {
         # Subject: =?iso-2022-jp?B?UmV0dXJuZWQgbWFpbDogVXNlciB1bmtub3du?=
-        $plain = Sisimai::RFC2047->decodeH([$mhead->{'subject'}]);
+        $plain = Sisimai::RFC2045->decodeH([$mhead->{'subject'}]);
         $match++ if rindex($plain, 'Mail Delivery Subsystem') > -1;
     }
     return undef if $match < 2;

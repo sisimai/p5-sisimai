@@ -31,7 +31,7 @@ sub make {
     my $endoferror = 0;     # (Integer) Flag for the end of error message
     my $v = undef;
 
-    if( my $boundary00 = Sisimai::RFC2047->boundary($mhead->{'content-type'}, 1) ) {
+    if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1) ) {
         # Convert to regular expression
         $rebackbone = qr/^\Q$boundary00\E/m;
     }

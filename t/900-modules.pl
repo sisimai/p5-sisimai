@@ -103,7 +103,7 @@ sub list {
             Reason/Vacation.pm
             Reason/VirusDetected.pm
         RFC1894.pm
-        RFC2047.pm
+        RFC2045.pm
         RFC3464.pm
         RFC3834.pm
         RFC5322.pm
