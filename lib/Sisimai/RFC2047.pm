@@ -29,7 +29,7 @@ sub is_encoded {
 }
 
 sub decodeH {
-    # Decode MIME-Encoded string
+    # Decode MIME-Encoded string in an email header
     # @param    [Array] argvs   Reference to an array including MIME-Encoded text
     # @return   [String]        MIME-Decoded text
     my $class = shift;
@@ -78,6 +78,29 @@ sub decodeH {
     return $p;
 }
 
+sub decodeB {
+    # Decode MIME BASE64 Encoded string
+    # @param    [String] argv0   MIME Encoded text
+    # @return   [String]         MIME-Decoded text
+    my $class = shift;
+    my $argv0 = shift // return undef;
+
+    my $p = $$argv0 =~ m|([+/=0-9A-Za-z\r\n]+)| ? MIME::Base64::decode($1) : '';
+    return \$p;
+}
+
+sub decodeQ {
+    # Decode MIME Quoted-Printable Encoded string
+    # @param    [String] argv0  Entire MIME-Encoded text
+    # @param    [String] argv1  The value of Content-Type: header
+    # @return   [String]        MIME Decoded text
+    my $class = shift;
+    my $argv0 = shift // return undef;
+
+    my $p = MIME::QuotedPrint::decode($$argv0) || '';
+    return \$p;
+}
+
 sub ctvalue {
     # Find a value of specified field name from Content-Type: header
     # @param    [String] argv0  The value of Content-Type: header
@@ -117,29 +140,6 @@ sub boundary {
     $btext =  '--'.$btext if $start > -1;
     $btext =  $btext.'--' if $start >  0;
     return $btext;
-}
-
-sub decodeQ {
-    # Decode MIME Quoted-Printable Encoded string
-    # @param    [String] argv0  Entire MIME-Encoded text
-    # @param    [String] argv1  The value of Content-Type: header
-    # @return   [String]        MIME Decoded text
-    my $class = shift;
-    my $argv0 = shift // return undef;
-
-    my $p = MIME::QuotedPrint::decode($$argv0) || '';
-    return \$p;
-}
-
-sub decodeB {
-    # Decode MIME BASE64 Encoded string
-    # @param    [String] argv0   MIME Encoded text
-    # @return   [String]         MIME-Decoded text
-    my $class = shift;
-    my $argv0 = shift // return undef;
-
-    my $p = $$argv0 =~ m|([+/=0-9A-Za-z\r\n]+)| ? MIME::Base64::decode($1) : '';
-    return \$p;
 }
 
 sub haircut {
