@@ -7,7 +7,7 @@ use MIME::Base64 ();
 use MIME::QuotedPrint ();
 use Sisimai::String;
 
-sub is_mimeencoded {
+sub is_encoded {
     # Check that the argument is MIME-Encoded string or not
     # @param    [String] argv0  String to be checked
     # @return   [Boolean]       0: Not MIME encoded string
@@ -45,7 +45,7 @@ sub decodeH {
         $e =~ s/[ \t]+\z//g;
         $e =~ y/"//d;
 
-        if( __PACKAGE__->is_mimeencoded(\$e) ) {
+        if( __PACKAGE__->is_encoded(\$e) ) {
             # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
             next unless $e =~ m{\A(.*)=[?]([-_0-9A-Za-z]+)[?]([BbQq])[?](.+)[?]=?(.*)\z};
             $ctxcharset ||= lc $2;
@@ -372,7 +372,7 @@ Sisimai::RFC2047 - MIME Utilities
     use Sisimai::RFC2047;
 
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::RFC2047->is_mimeencoded(\$e);
+    my $v = Sisimai::RFC2047->is_encoded(\$e);
     print $v;   # 1
 
     my $x = Sisimai::RFC2047->decodeH([$e]);
@@ -384,12 +384,12 @@ Sisimai::RFC2047 is MIME Utilities for C<Sisimai>, is formerly known as C<Sisima
 
 =head1 CLASS METHODS
 
-=head2 C<B<is_mimeencoded(I<Scalar Reference>)>>
+=head2 C<B<is_encoded(I<Scalar Reference>)>>
 
-C<is_mimeencoded()> returns that the argument is MIME-Encoded string or not.
+C<is_encoded()> returns that the argument is MIME-Encoded string or not.
 
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::RFC2047->is_mimeencoded(\$e);  # 1
+    my $v = Sisimai::RFC2047->is_encoded(\$e);  # 1
 
 =head2 C<B<decodeH(I<Array-Ref>)>>
 

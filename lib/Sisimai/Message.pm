@@ -58,7 +58,7 @@ sub new {
     if( $thing->{'header'}->{'subject'} ) {
         # Decode MIME-Encoded "Subject:" header
         my $s = $thing->{'header'}->{'subject'};
-        my $q = Sisimai::RFC2047->is_mimeencoded(\$s) ? Sisimai::RFC2047->decodeH([split(/[ ]/, $s)]) : $s;
+        my $q = Sisimai::RFC2047->is_encoded(\$s) ? Sisimai::RFC2047->decodeH([split(/[ ]/, $s)]) : $s;
 
         # Remove "Fwd:" string from the "Subject:" header
         if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
@@ -202,11 +202,11 @@ sub makemap {
     } else {
         # MIME-Encoded subject field or ASCII characters only
         my $r = [];
-        if( Sisimai::RFC2047->is_mimeencoded(\$headermaps->{'subject'}) ) {
+        if( Sisimai::RFC2047->is_encoded(\$headermaps->{'subject'}) ) {
             # split the value of Subject by $borderline
             for my $v ( split(/ /, $headermaps->{'subject'}) ) {
                 # Insert value to the array if the string is MIME encoded text
-                push @$r, $v if Sisimai::RFC2047->is_mimeencoded(\$v);
+                push @$r, $v if Sisimai::RFC2047->is_encoded(\$v);
             }
         } else {
             # Subject line is not MIME encoded

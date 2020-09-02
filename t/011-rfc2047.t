@@ -7,7 +7,7 @@ use Encode;
 my $PackageName = 'Sisimai::RFC2047';
 my $MethodNames = {
     'class' => [
-        'is_mimeencoded', 'decodeH', 'ctvalue', 'boundary', 'decodeQ', 'decodeB',
+        'is_encoded', 'decodeH', 'ctvalue', 'boundary', 'decodeQ', 'decodeB',
         'levelout', 'makeflat'
     ],
     'object' => [],
@@ -25,10 +25,10 @@ MAKE_TEST: {
         my $b2 = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
         my $q3 = '=?utf-8?Q?=E3=83=8B=E3=83=A5=E3=83=BC=E3=82=B9=E3=83=AC=E3=82=BF=E3=83=BC?=';
 
-        is $PackageName->is_mimeencoded(\$p1), 0, '->is_mimeencoded = 0';
-        is $PackageName->is_mimeencoded(\$p2), 0, '->is_mimeencoded = 0';
-        is $PackageName->is_mimeencoded(\$b2), 1, '->is_mimeencoded = 1';
-        is $PackageName->is_mimeencoded(\$q3), 1, '->is_mimeencoded = 1';
+        is $PackageName->is_encoded(\$p1), 0, '->is_encoded = 0';
+        is $PackageName->is_encoded(\$p2), 0, '->is_encoded = 0';
+        is $PackageName->is_encoded(\$b2), 1, '->is_encoded = 1';
+        is $PackageName->is_encoded(\$q3), 1, '->is_encoded = 1';
 
         for my $e ( $p1, $p2 ) {
             $v0 = $PackageName->decodeH([$e]);
@@ -265,7 +265,7 @@ Received: ...
                $vE = Encode::encode_utf8 $vE if utf8::is_utf8 $vE;
             chomp $vE;
 
-            is $PackageName->is_mimeencoded(\$e), 1, '->is_mimeencoded = 1';
+            is $PackageName->is_encoded(\$e), 1, '->is_encoded = 1';
             ok length $vE, '->decodeH = '.$vE;
             like $vE, qr/ニャーン/, 'Decoded text matches with /ニャーン/';
         }
