@@ -7,7 +7,7 @@ use Encode;
 my $PackageName = 'Sisimai::RFC2047';
 my $MethodNames = {
     'class' => [
-        'is_mimeencoded', 'mimedecode', 'ctvalue', 'boundary', 'qprintd', 'base64d',
+        'is_mimeencoded', 'mimedecode', 'ctvalue', 'boundary', 'decodeQ', 'decodeB',
         'levelout', 'makeflat'
     ],
     'object' => [],
@@ -73,8 +73,8 @@ MAKE_TEST: {
         # Base64, Quoted-Printable
         my $b6 = '44Gr44KD44O844KT';
         my $p6 = 'にゃーん';
-        is ${ $PackageName->base64d(\$b6) }, $p6, '->base64d = '.$p6;
-        is ${ $PackageName->qprintd(\'=4e=65=6b=6f') }, 'Neko', '->qprintd = Neko';
+        is ${ $PackageName->decodeB(\$b6) }, $p6, '->decodeB = '.$p6;
+        is ${ $PackageName->decodeQ(\'=4e=65=6b=6f') }, 'Neko', '->decodeQ = Neko';
     }
 
     QPRINTD: {
@@ -87,13 +87,13 @@ Please contact our Client Service Support Team (information below) if you n=
 eed immediate assistance on regular account matters, or contact my colleagu=
 e Neko Nyaan (neko@example.org; +0-000-000-0000) for all other needs.
 ';
-        my $v7 = ${ $PackageName->qprintd(\$q7) };
-        ok length $v7, '->qprintd($a)';
-        ok length($q7) > length($v7), '->qprintd($a)';
-        unlike $v7, qr|a=$|m, '->qprintd() does not match a=';
+        my $v7 = ${ $PackageName->decodeQ(\$q7) };
+        ok length $v7, '->decodeQ($a)';
+        ok length($q7) > length($v7), '->decodeQ($a)';
+        unlike $v7, qr|a=$|m, '->decodeQ() does not match a=';
 
         my $q8 = 'neko';
-        is $q8, ${ $PackageName->qprintd(\$q8) };
+        is $q8, ${ $PackageName->decodeQ(\$q8) };
     }
 
     CTVALUE: {

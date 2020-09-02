@@ -119,7 +119,7 @@ sub boundary {
     return $btext;
 }
 
-sub qprintd {
+sub decodeQ {
     # Decode MIME Quoted-Printable Encoded string
     # @param    [String] argv0  Entire MIME-Encoded text
     # @param    [String] argv1  The value of Content-Type: header
@@ -131,7 +131,7 @@ sub qprintd {
     return \$p;
 }
 
-sub base64d {
+sub decodeB {
     # Decode MIME BASE64 Encoded string
     # @param    [String] argv0   MIME Encoded text
     # @return   [String]         MIME-Decoded text
@@ -313,11 +313,11 @@ sub makeflat {
             # Check the value of Content-Transfer-Encoding: header
             if( $ctencoding eq 'base64' ) {
                 # Content-Transfer-Encoding: base64
-                $bodystring = ${ __PACKAGE__->base64d(\$bodyinside) };
+                $bodystring = ${ __PACKAGE__->decodeB(\$bodyinside) };
 
             } elsif( $ctencoding eq 'quoted-printable') {
                 # Content-Transfer-Encoding: quoted-printable
-                $bodystring = ${ __PACKAGE__->qprintd(\$bodyinside) };
+                $bodystring = ${ __PACKAGE__->decodeQ(\$bodyinside) };
 
             } elsif( $ctencoding eq '7bit' ) {
                 # Content-Transfer-Encoding: 7bit
@@ -399,19 +399,19 @@ email headers.
     my $r = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
     my $v = Sisimai::RFC2047->mimedecode([$r]);
 
-=head2 C<B<base64d(I<\String>)>>
+=head2 C<B<decodeB(I<\String>)>>
 
-C<base64d> is a decoder method for getting the original string from MIME Base64 encoded string.
+C<decodeB> is a decoder method for getting the original string from MIME Base64 encoded string.
 
     my $r = '44Gr44KD44O844KT';
-    my $v = Sisimai::RFC2047->base64d(\$r);
+    my $v = Sisimai::RFC2047->decodeB(\$r);
 
-=head2 C<B<qprintd(I<\String>)>>
+=head2 C<B<decodeQ(I<\String>)>>
 
-C<qprintd> is a decoder method for getting the original string from MIME quoted-printable encoded string.
+C<decodeQ> is a decoder method for getting the original string from MIME quoted-printable encoded string.
 
     my $r = '=4e=65=6b=6f';
-    my $v = Sisimai::RFC2047->qprintd(\$r);
+    my $v = Sisimai::RFC2047->decodeQ(\$r);
 
 =head2 C<B<ctvalue(I<String>, I<String>)>>
 

@@ -250,11 +250,11 @@ sub parse {
         # Content-Type: text/plain; charset=UTF-8
         if( $ctencoding eq 'base64' ) {
             # Content-Transfer-Encoding: base64
-            $bodystring = Sisimai::RFC2047->base64d($bodystring);
+            $bodystring = Sisimai::RFC2047->decodeB($bodystring);
 
         } elsif( $ctencoding eq 'quoted-printable' ) {
             # Content-Transfer-Encoding: quoted-printable
-            $bodystring = Sisimai::RFC2047->qprintd($bodystring);
+            $bodystring = Sisimai::RFC2047->decodeQ($bodystring);
         }
 
         # Content-Type: text/html;...
