@@ -228,8 +228,7 @@ sub levelout {
     return [] unless length $argv0;
     return [] unless length $$argv1;
 
-    my $boundary00 = __PACKAGE__->ctvalue($argv0, 'boundary') || return [];
-    my $boundary01 = sprintf("--%s", $boundary00);
+    my $boundary01 = __PACKAGE__->boundary($argv0, 0) || return [];
     my $multiparts = [split(/\Q$boundary01\E\n/, $$argv1)];
     my $partstable = [];
 
@@ -242,10 +241,10 @@ sub levelout {
         my $f = __PACKAGE__->haircut(\$e);
         if( index($f->[0], 'multipart/') > -1 ) {
             # There is nested multipart/* block
-            my $boundary02 = __PACKAGE__->ctvalue($f->[0], 'boundary') || next;
+            my $boundary02 = __PACKAGE__->boundary($f->[0], 0) || next;
             my $bodyinside = [split(/\n\n/, $f->[-1], 2)]->[-1];
             next unless length $bodyinside > 8;
-            next unless index($bodyinside, '--'.$boundary02) > -1;
+            next unless index($bodyinside, $boundary02) > -1;
 
             my $v = __PACKAGE__->levelout($f->[0], \$bodyinside);
             push @$partstable, @$v if scalar @$v;
