@@ -252,10 +252,7 @@ sub levelout {
         } else {
             # The part is not a multipart/* block
             my $b = length $f->[-1] ? $f->[-1] : $e;
-            my $v = {
-                'head' => { 'content-type' => $f->[0], 'content-transfer-encoding' => $f->[1] },
-                'body' => length $f->[0] ? [split("\n\n", $b, 2)]->[-1] : $b,
-            };
+            my $v = [$f->[0], $f->[1], length $f->[0] ? [split("\n\n", $b, 2)]->[-1] : $b];
             push @$partstable, $v;
         }
     }
@@ -263,9 +260,9 @@ sub levelout {
 
     # Remove $boundary01.'--' and strings from the boundary to the end of the body part.
     chomp $boundary01;
-    my $b = $partstable->[-1]->{'body'};
+    my $b = $partstable->[-1]->[2];
     my $p = index($b, $boundary01.'--');
-    substr($partstable->[-1]->{'body'}, $p, length $b, "") if $p > -1;
+    substr($partstable->[-1]->[2], $p, length $b, "") if $p > -1;
 
     return $partstable;
 }
@@ -298,8 +295,8 @@ sub makeflat {
         # Pick only the following parts Sisimai::Lhost will use, and decode each part
         # - text/plain, text/rfc822-headers
         # - message/delivery-status, message/rfc822, message/partial, message/feedback-report
-        my $ctypevalue = __PACKAGE__->ctvalue($e->{'head'}->{'content-type'}) || 'text/plain';
         my $istexthtml = 0;
+        my $ctypevalue = __PACKAGE__->ctvalue($e->[0]) || 'text/plain';
         next unless $ctypevalue =~ m<\A(?:text|message)/>;
 
         if( $ctypevalue eq 'text/html' ) {
@@ -308,8 +305,8 @@ sub makeflat {
             next if index($argv1, 'multipart/alternative') > -1;
             $istexthtml = 1;
         }
-        my $ctencoding = $e->{'head'}->{'content-transfer-encoding'} || '';
-        my $bodyinside = $e->{'body'};
+        my $ctencoding = $e->[1] || '';
+        my $bodyinside = $e->[2];
         my $bodystring = '';
 
         if( length $ctencoding ) {
@@ -324,7 +321,7 @@ sub makeflat {
 
             } elsif( $ctencoding eq '7bit' ) {
                 # Content-Transfer-Encoding: 7bit
-                if( lc $e->{'head'}->{'content-type'} =~ $iso2022set ) {
+                if( lc $e->[0] =~ $iso2022set ) {
                     # Content-Type: text/plain; charset=ISO-2022-JP
                     $bodystring = ${ Sisimai::String->to_utf8(\$bodyinside, $1) };
 
@@ -346,7 +343,7 @@ sub makeflat {
 
         } else {
             # There is no Content-Transfer-Encoding header in the part
-            $bodystring .= $e->{'body'};
+            $bodystring .= $bodyinside;
         }
 
         if( $ctypevalue =~ m</(?:delivery-status|rfc822)> ) {
