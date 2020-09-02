@@ -183,9 +183,9 @@ Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
         is scalar @$v1, 2;
 
         for my $e ( @$v1 ) {
-            isa_ok $e, 'HASH';
-            ok length $e->{'head'}->{'content-type'};
-            ok length $e->{'body'};
+            isa_ok $e, 'ARRAY';
+            ok length $e->[0];
+            ok length $e->[2];
         }
     }
 
