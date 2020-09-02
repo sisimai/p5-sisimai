@@ -28,7 +28,7 @@ sub is_mimeencoded {
     return $mime1;
 }
 
-sub mimedecode {
+sub decodeH {
     # Decode MIME-Encoded string
     # @param    [Array] argvs   Reference to an array including MIME-Encoded text
     # @return   [String]        MIME-Decoded text
@@ -375,7 +375,7 @@ Sisimai::RFC2047 - MIME Utilities
     my $v = Sisimai::RFC2047->is_mimeencoded(\$e);
     print $v;   # 1
 
-    my $x = Sisimai::RFC2047->mimedecode([$e]);
+    my $x = Sisimai::RFC2047->decodeH([$e]);
     print $x;
 
 =head1 DESCRIPTION
@@ -391,13 +391,13 @@ C<is_mimeencoded()> returns that the argument is MIME-Encoded string or not.
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
     my $v = Sisimai::RFC2047->is_mimeencoded(\$e);  # 1
 
-=head2 C<B<mimedecode(I<Array-Ref>)>>
+=head2 C<B<decodeH(I<Array-Ref>)>>
 
-C<mimedecode()> is a decoder method for getting the original string from MIME-Encoded string in
+C<decodeH()> is a decoder method for getting the original string from MIME-Encoded string in
 email headers.
 
     my $r = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
-    my $v = Sisimai::RFC2047->mimedecode([$r]);
+    my $v = Sisimai::RFC2047->decodeH([$r]);
 
 =head2 C<B<decodeB(I<\String>)>>
 

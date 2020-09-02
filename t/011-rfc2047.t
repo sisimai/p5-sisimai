@@ -7,7 +7,7 @@ use Encode;
 my $PackageName = 'Sisimai::RFC2047';
 my $MethodNames = {
     'class' => [
-        'is_mimeencoded', 'mimedecode', 'ctvalue', 'boundary', 'decodeQ', 'decodeB',
+        'is_mimeencoded', 'decodeH', 'ctvalue', 'boundary', 'decodeQ', 'decodeB',
         'levelout', 'makeflat'
     ],
     'object' => [],
@@ -31,18 +31,18 @@ MAKE_TEST: {
         is $PackageName->is_mimeencoded(\$q3), 1, '->is_mimeencoded = 1';
 
         for my $e ( $p1, $p2 ) {
-            $v0 = $PackageName->mimedecode([$e]);
+            $v0 = $PackageName->decodeH([$e]);
             $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
-            is $v0, $e, '->is_mimedecode = '.$e;
+            is $v0, $e, '->decodeH = '.$e;
         }
 
-        $v0 = $PackageName->mimedecode([$b2]);
+        $v0 = $PackageName->decodeH([$b2]);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
-        is $v0, $p2, '->is_mimedecode = '.$p2;
+        is $v0, $p2, '->decodeH = '.$p2;
 
-        $v0 = $PackageName->mimedecode([$q3]);
+        $v0 = $PackageName->decodeH([$q3]);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
-        is $v0, $p3, '->is_mimedecode = '.$p3;
+        is $v0, $p3, '->decodeH = '.$p3;
 
         # MIME-Encoded text in multiple lines
         my $p4 = '何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。';
@@ -51,9 +51,9 @@ MAKE_TEST: {
             '=?utf-8?B?44Gn44OL44Oj44O844OL44Oj44O85rOj44GE44Gm44GE44Gf5LqL?=',
             '=?utf-8?B?44Gg44GR44Gv6KiY5oa244GX44Gm44GE44KL44CC?=',
         ];
-        $v0 = $PackageName->mimedecode($b4);
+        $v0 = $PackageName->decodeH($b4);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
-        is $v0, $p4, '->is_mimedecode = '.$p4;
+        is $v0, $p4, '->decodeH = '.$p4;
 
         # Other encodings
         my $b5 = [
@@ -62,10 +62,10 @@ MAKE_TEST: {
         ];
 
         for my $e ( @$b5 ) {
-            $v0 = $PackageName->mimedecode([$e]);
+            $v0 = $PackageName->decodeH([$e]);
             $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
             chomp $v0;
-            ok length $v0, '->is_mimedecode = '.$v0;
+            ok length $v0, '->decodeH = '.$v0;
         }
     }
 
@@ -261,12 +261,12 @@ Received: ...
         ];
 
         for my $e ( @$bE ) {
-            my $vE = $PackageName->mimedecode([$e]);
+            my $vE = $PackageName->decodeH([$e]);
                $vE = Encode::encode_utf8 $vE if utf8::is_utf8 $vE;
             chomp $vE;
 
             is $PackageName->is_mimeencoded(\$e), 1, '->is_mimeencoded = 1';
-            ok length $vE, '->mimedecode = '.$vE;
+            ok length $vE, '->decodeH = '.$vE;
             like $vE, qr/ニャーン/, 'Decoded text matches with /ニャーン/';
         }
     }

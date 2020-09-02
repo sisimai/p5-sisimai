@@ -58,7 +58,7 @@ sub new {
     if( $thing->{'header'}->{'subject'} ) {
         # Decode MIME-Encoded "Subject:" header
         my $s = $thing->{'header'}->{'subject'};
-        my $q = Sisimai::RFC2047->is_mimeencoded(\$s) ? Sisimai::RFC2047->mimedecode([split(/[ ]/, $s)]) : $s;
+        my $q = Sisimai::RFC2047->is_mimeencoded(\$s) ? Sisimai::RFC2047->decodeH([split(/[ ]/, $s)]) : $s;
 
         # Remove "Fwd:" string from the "Subject:" header
         if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
@@ -212,7 +212,7 @@ sub makemap {
             # Subject line is not MIME encoded
             $r = [$headermaps->{'subject'}];
         }
-        $headermaps->{'subject'} = Sisimai::RFC2047->mimedecode($r);
+        $headermaps->{'subject'} = Sisimai::RFC2047->decodeH($r);
     }
     return $headermaps;
 }
