@@ -7,7 +7,7 @@ use Encode;
 my $PackageName = 'Sisimai::RFC2045';
 my $MethodNames = {
     'class' => [
-        'is_encoded', 'decodeH', 'ctvalue', 'boundary', 'decodeQ', 'decodeB',
+        'is_encoded', 'decodeH', 'parameter', 'boundary', 'decodeQ', 'decodeB',
         'levelout', 'makeflat'
     ],
     'object' => [],
@@ -98,14 +98,14 @@ e Neko Nyaan (neko@example.org; +0-000-000-0000) for all other needs.
 
     CTVALUE: {
         my $c1 = 'multipart/MIXED; boundary="nekochan"; charset=utf-8';
-        is $PackageName->ctvalue($c1), 'multipart/mixed', '->ctvalue() = multipart/mixed';
-        is $PackageName->ctvalue($c1, 'boundary'), 'nekochan', '->ctvalue(boundary) = nekochan';
-        is $PackageName->ctvalue($c1, 'charset'), 'utf-8', '->ctvalue(charset) = utf-8';
-        is $PackageName->ctvalue($c1, 'nyaan'), '', '->ctvalue(nyaan) = ""';
+        is $PackageName->parameter($c1), 'multipart/mixed', '->parameter() = multipart/mixed';
+        is $PackageName->parameter($c1, 'boundary'), 'nekochan', '->parameter(boundary) = nekochan';
+        is $PackageName->parameter($c1, 'charset'), 'utf-8', '->parameter(charset) = utf-8';
+        is $PackageName->parameter($c1, 'nyaan'), '', '->parameter(nyaan) = ""';
 
         my $c2 = 'QUOTED-PRINTABLE';
-        is $PackageName->ctvalue($c2), 'quoted-printable', '->ctvalue() = quoted-printable';
-        is $PackageName->ctvalue($c2, 'neko'), '', '->ctvalue("neko") = ""';
+        is $PackageName->parameter($c2), 'quoted-printable', '->parameter() = quoted-printable';
+        is $PackageName->parameter($c2, 'neko'), '', '->parameter("neko") = ""';
     }
 
     BOUNDARY: {

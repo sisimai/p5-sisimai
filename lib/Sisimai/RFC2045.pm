@@ -101,10 +101,10 @@ sub decodeQ {
     return \$p;
 }
 
-sub ctvalue {
+sub parameter {
     # Find a value of specified field name from Content-Type: header
     # @param    [String] argv0  The value of Content-Type: header
-    # @param    [String] argv1  Parameter name
+    # @param    [String] argv1  Attribute name of the parameter
     # @return   [String]        The value of the parameter
     # @since v5.0.0
     my $class = shift;
@@ -132,7 +132,7 @@ sub boundary {
     my $class = shift;
     my $argv0 = shift || return undef;
     my $start = shift // -1;
-    my $btext = __PACKAGE__->ctvalue($argv0, 'boundary') || return '';
+    my $btext = __PACKAGE__->parameter($argv0, 'boundary') || return '';
 
     # Content-Type: multipart/mixed; boundary=Apple-Mail-5--931376066
     # Content-Type: multipart/report; report-type=delivery-status;
@@ -296,7 +296,7 @@ sub makeflat {
         # - text/plain, text/rfc822-headers
         # - message/delivery-status, message/rfc822, message/partial, message/feedback-report
         my $istexthtml = 0;
-        my $ctypevalue = __PACKAGE__->ctvalue($e->[0]) || 'text/plain';
+        my $ctypevalue = __PACKAGE__->parameter($e->[0]) || 'text/plain';
         next unless $ctypevalue =~ m<\A(?:text|message)/>;
 
         if( $ctypevalue eq 'text/html' ) {
@@ -413,14 +413,14 @@ C<decodeQ> is a decoder method for getting the original string from MIME quoted-
     my $r = '=4e=65=6b=6f';
     my $v = Sisimai::RFC2045->decodeQ(\$r);
 
-=head2 C<B<ctvalue(I<String>, I<String>)>>
+=head2 C<B<parameter(I<String>, I<String>)>>
 
-C<ctvalue()> returns the value of parameter in Content-Type header.
+C<parameter()> returns the value of parameter in Content-Type header.
 
     my $r = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466'; charset=utf8;
-    print Sisimai::RFC2045->ctvalue($r, 'charset');  # utf8
-    print Sisimai::RFC2045->ctvalue($r, 'boundary'); # Apple-Mail-1-526612466
-    print Sisimai::RFC2045->ctvalue($r);             # multipart/mixed
+    print Sisimai::RFC2045->parameter($r, 'charset');  # utf8
+    print Sisimai::RFC2045->parameter($r, 'boundary'); # Apple-Mail-1-526612466
+    print Sisimai::RFC2045->parameter($r);             # multipart/mixed
 
 =head2 C<B<boundary(I<String>, I<Integer>)>>
 
