@@ -305,7 +305,7 @@ sub makeflat {
         if( $ctypevalue eq 'text/html' ) {
             # Skip text/html part when the value of Content-Type: header in an internal part of
             # multipart/* includes multipart/alternative;
-            next if index($argv1, 'multipart/alternative') > -1;
+            next if index($argv0, 'multipart/alternative') > -1;
             $istexthtml = 1;
         }
         my $ctencoding = $e->[1] || '';
