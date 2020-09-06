@@ -104,14 +104,14 @@ sub decodeQ {
 sub parameter {
     # Find a value of specified field name from Content-Type: header
     # @param    [String] argv0  The value of Content-Type: header
-    # @param    [String] argv1  Attribute name of the parameter
+    # @param    [String] argv1  Lower-cased attribute name of the parameter
     # @return   [String]        The value of the parameter
     # @since v5.0.0
     my $class = shift;
     my $argv0 = shift || return undef;
     my $argv1 = shift || '';
 
-    my $parameterq = length $argv1 > 0 ? lc $argv1.'=' : '';
+    my $parameterq = length $argv1 > 0 ? $argv1.'=' : '';
     my $paramindex = length $argv1 > 0 ? index($argv0, $parameterq) : 0;
     return '' if $paramindex == -1;
 
@@ -282,9 +282,12 @@ sub makeflat {
     # Some bounce messages include lower-cased "content-type:" field such as the followings:
     #   - content-type: message/delivery-status        => Content-Type: message/delivery-status
     #   - content-transfer-encoding: quoted-printable  => Content-Transfer-Encoding: quoted-printable
+    #   - CHARSET=, BOUNDARY=                          => charset-, boundary=
     #   - message/xdelivery-status                     => message/delivery-status
     $$argv1 =~ s/[Cc]ontent-[Tt]ype:/Content-Type:/gm;
     $$argv1 =~ s/[Cc]ontent-[Tt]ransfer-[Ee]ncoding:/Content-Transfer-Encoding:/gm;
+    $$argv1 =~ s/charset=/charset=/igm;
+    $$argv1 =~ s/boundary=/boundary=/igm;
     $$argv1 =~ s|message/xdelivery-status|message/delivery-status|gm;
 
     my $iso2022set = qr/charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/;
