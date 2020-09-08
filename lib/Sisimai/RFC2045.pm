@@ -241,7 +241,7 @@ sub levelout {
         my $f = __PACKAGE__->haircut(\$e);
         if( index($f->[0], 'multipart/') > -1 ) {
             # There is nested multipart/* block
-            my $boundary02 = __PACKAGE__->boundary($f->[0], 0) || next;
+            my $boundary02 = __PACKAGE__->boundary($f->[0], -1) || next;
             my $bodyinside = [split(/\n\n/, $f->[-1], 2)]->[-1];
             next unless length $bodyinside > 8;
             next unless index($bodyinside, $boundary02) > -1;
@@ -337,11 +337,9 @@ sub makeflat {
                 $bodystring = $bodyinside;
             }
 
-            if( $istexthtml ) {
-                # Try to delete HTML tags inside of text/html part whenever possible
-                $bodystring = ${ Sisimai::String->to_plain(\$bodystring) };
-            }
-            next unless length $bodystring;
+            # Try to delete HTML tags inside of text/html part whenever possible
+            $bodystring = ${ Sisimai::String->to_plain(\$bodystring) } if $istexthtml;
+            next unless $bodystring;
             $bodystring =~ s|\r\n|\n|g if index($bodystring, "\r\n") > -1;    # Convert CRLF to LF
 
         } else {
@@ -355,6 +353,7 @@ sub makeflat {
             # or text/rfc822-headers
             $bodystring = sprintf("Content-Type: %s\n%s", $ctypevalue, $bodystring);
         }
+
         # Append "\n" when the last character of $bodystring is not LF
         $bodystring .= "\n\n" unless substr($bodystring, -2, 2) eq "\n\n";
         $flattenout .= $bodystring;
