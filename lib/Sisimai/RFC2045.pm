@@ -185,7 +185,7 @@ sub haircut {
     }
     return $headerpart if $heads;
 
-    my $ctypevalue = lc $headerpart->[0];
+    my $mediatypev = lc $headerpart->[0];
     my $ctencoding = $headerpart->[1];
     push @$multipart1, @$headerpart, '';
 
@@ -195,8 +195,8 @@ sub haircut {
 
         # Do not append Content-Transfer-Encoding: header when the part is the original message:
         # Content-Type is message/rfc822 or text/rfc822-headers, or message/delivery-status
-        last if index($ctypevalue, '/rfc822') > -1;
-        last if index($ctypevalue, '/delivery-status') > -1;
+        last if index($mediatypev, '/rfc822') > -1;
+        last if index($mediatypev, '/delivery-status') > -1;
         last if length $ctencoding == 0;
 
         $multipart1->[2] .= sprintf("Content-Transfer-Encoding: %s\n", $ctencoding);
@@ -299,10 +299,10 @@ sub makeflat {
         # - text/plain, text/rfc822-headers
         # - message/delivery-status, message/rfc822, message/partial, message/feedback-report
         my $istexthtml = 0;
-        my $ctypevalue = __PACKAGE__->parameter($e->[0]) || 'text/plain';
-        next unless $ctypevalue =~ m<\A(?:text|message)/>;
+        my $mediatypev = __PACKAGE__->parameter($e->[0]) || 'text/plain';
+        next unless $mediatypev =~ m<\A(?:text|message)/>;
 
-        if( $ctypevalue eq 'text/html' ) {
+        if( $mediatypev eq 'text/html' ) {
             # Skip text/html part when the value of Content-Type: header in an internal part of
             # multipart/* includes multipart/alternative;
             next if index($argv0, 'multipart/alternative') > -1;
@@ -347,11 +347,11 @@ sub makeflat {
             $bodystring .= $bodyinside;
         }
 
-        if( $ctypevalue =~ m</(?:delivery-status|rfc822)> ) {
+        if( $mediatypev =~ m</(?:delivery-status|rfc822)> ) {
             # Add Content-Type: header of each part (will be used as a delimiter at Sisimai::Lhost) into
             # the body inside when the value of Content-Type: is message/delivery-status, message/rfc822,
             # or text/rfc822-headers
-            $bodystring = sprintf("Content-Type: %s\n%s", $ctypevalue, $bodystring);
+            $bodystring = sprintf("Content-Type: %s\n%s", $mediatypev, $bodystring);
         }
 
         # Append "\n" when the last character of $bodystring is not LF
