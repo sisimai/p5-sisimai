@@ -30,14 +30,13 @@ sub match {
         |content[ ]filter[ ]rejection
         |cyberoam[ ]anti[ ]spam[ ]engine[ ]has[ ]identified[ ]this[ ]email[ ]as[ ]a[ ]bulk[ ]email
         |denied[ ]due[ ]to[ ]spam[ ]list
-        |dt:spm[ ]mx.+[ ]http://mail[.]163[.]com/help/help_spam_16[.]htm
         |greylisted.?.[ ]please[ ]try[ ]again[ ]in
-        |http://(?:www[.]spamhaus[.]org|dsbl[.]org)
+        |https?://(?:www[.]spamhaus[.]org|dsbl[.]org|mail[.]163[.]com/help/help_spam_16[.]htm)
         |listed[ ]in[ ]work[.]drbl[.]imedia[.]ru
         |mail[ ](?:
              appears[ ]to[ ]be[ ]unsolicited    # rejected due to spam
             |content[ ]denied   # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000726
-            |rejete.+[a-z]{3}.+506
+            |rejete[.][ ]mail[ ]rejected[.][ ][a-z0-9]+_506
             )
         |may[ ]consider[ ]spam
         |message[ ](?:
@@ -49,7 +48,6 @@ sub match {
                 |refer[ ]to[ ]the[ ]troubleshooting[ ]page[ ]at[ ]
                 )
             |looks[ ]like[ ]spam
-            |not[ ]accepted[ ]for[ ]policy[ ]reasons[.][ ]see[ ]http:   # Yahoo!
             |refused[ ]by[ ]mailmarshal[ ]spamprofiler
             |rejected[ ](?:
                  as[ ]spam
@@ -60,25 +58,24 @@ sub match {
             )
         |our[ ](?:
              email[ ]server[ ]thinks[ ]this[ ]email[ ]is[ ]spam
-            |filters[ ]rate[ ]at[ ]and[ ]above[ ].+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
+            |filters[ ]rate[ ]at[ ]and[ ]above[ ]\d+[ ]percent[ ]probability[ ]of[ ]being[ ]spam
             |system[ ]has[ ]detected[ ]that[ ]this[ ]message[ ]is
             )
-        |permanent[ ]failure[ ]for[ ]one[ ]or[ ]more[ ]recipients[ ][(].+:blocked[)]
         |probable[ ]spam
         |reject[ ]bulk[.]advertising
-        |reject,.+[ ][-][ ]spam[.][ ]
+        |554[ ]5[.]7[.]0[ ]reject,[ ]id=\d+
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
-            |[ ]by[ ].+[ ][(]spam[)]
+            |[ ]by[ ][^ ]+[ ][(]spam[)]
             |[ ]due[ ]to[ ]spam[ ](?:classification|content)
             )
         |rejecting[ ]banned[ ]content
         |related[ ]to[ ]content[ ]with[ ]spam[-]like[ ]characteristics
-        |rule[ ]imposed[ ]as[ ].+is[ ]blacklisted[ ]on              # Mailmarshal RBLs
-        |sender[ ]domain[ ]listed[ ]at[ ].+
+        |rule[ ]imposed[ ]as[ ][^ ]+[ ]is[ ]blacklisted[ ]on
+        |sender[ ]domain[ ]listed[ ]at[ ][^ ]+
         |sending[ ]address[ ]not[ ]accepted[ ]due[ ]to[ ]spam[ ]filter
         |spam[ ](?:
-             .+[ ]exceeded
+             [^ ]+[ ]exceeded
             |blocked
             |check
             |content[ ]matched
@@ -110,7 +107,7 @@ sub match {
                  identified[ ]as[ ]spam
                 |scored[ ]as[ ]spam[ ]with[ ]a[ ]probability
                 )
-            |scored[ ].+[ ]spam[ ]points
+            |scored[ ][^ ]+[ ]spam[ ]points
             |was[ ]classified[ ]as[ ]spam
             |was[ ]rejected[ ]by[ ]recurrent[ ]pattern[ ]detection[ ]system
             )
@@ -215,7 +212,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
