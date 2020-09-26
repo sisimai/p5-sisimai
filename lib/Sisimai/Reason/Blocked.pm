@@ -130,7 +130,7 @@ sub match {
             |unwanted[ ]messages[ ]have[ ]been[ ]sent[ ]from[ ]the[ ]following[ ]ip[ ]address[ ]above
             )
         |unresolvable[ ]relay[ ]host[ ]name
-        |veuillez[ ]essayer[ ]plus[ ]tard[.][ ]service[ ]refused,[ ]please[ ]try[ ]later[.][a-z0-9]+_(?:103|510)
+        |veuillez[ ]essayer[ ]plus[ ]tard[.][ ]service[ ]refused,[ ]please[ ]try[ ]later[.][ ][0-9a-z_]+(?:103|510)
         |your[ ](?:
              network[ ]is[ ]temporary[ ]blacklisted
             |sender's[ ]ip[ ]address[ ]is[ ]listed[ ]at[ ][^ ]+[.]abuseat[.]org

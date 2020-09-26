@@ -19,7 +19,7 @@ sub match {
         |[<][^ ]+[>][ ]not[ ]found
         |[<][^ ]+[@][^ ]+[>][.][.][.][ ]blocked[ ]by[ ]
         |5[.]1[.]0[ ]address[ ]rejected[.]
-        |adresse[ ]d[ ]au[ ]moins[ ]un[ ]destinataire[ ]invalide[.][ ]invalid[ ]recipient[.][a-z0-9_]+41[68]
+        |adresse[ ]d[ ]au[ ]moins[ ]un[ ]destinataire[ ]invalide[.][ ]invalid[ ]recipient[.][0-9a-z_]+41[68]
         |address[ ](?:does[ ]not[ ]exist|unknown)
         |archived[ ]recipient
         |bad[-_ \t]recipient

@@ -36,7 +36,7 @@ sub match {
         |mail[ ](?:
              appears[ ]to[ ]be[ ]unsolicited    # rejected due to spam
             |content[ ]denied   # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000726
-            |rejete[.][ ]mail[ ]rejected[.][ ][a-z0-9]+_506
+            |rejete[.][ ]mail[ ]rejected[.][ ][0-9a-z_]+506
             )
         |may[ ]consider[ ]spam
         |message[ ](?:
