@@ -24,7 +24,7 @@ sub match {
             )
         |exit[ ]\d+
         |mailer[ ]error
-        |pipe[ ]to[ ][|][/].+
+        |pipe[ ]to[ ][|][/][^ ]+
         |x[-]unix[;][ ]\d+  # X-UNIX; 127
         )
     }x;
@@ -91,7 +91,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
