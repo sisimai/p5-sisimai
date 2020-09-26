@@ -30,7 +30,9 @@ sub match {
         'unknown host',
         'unrouteable address',
     ];
+    state $regex = qr/553[ ][^ ]+[ ]does[ ]not[ ]exist/;
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if $argv1 =~ $regex;
     return 0;
 }
 
@@ -115,7 +117,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
