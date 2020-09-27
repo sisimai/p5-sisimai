@@ -4,12 +4,14 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.8p1
+v4.25.8p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
   - Fix typo in `Sisimai::SMTP::Error`. Thanks to @hekeli #410
+  - #411 Fix a serious performance problem in regular expressions using `.+` at
+    some error message patterns in Sisimai::Reason. Thanks to Martin Kluge.
 
 v4.25.8
 --------------------------------------------------------------------------------
