@@ -22,7 +22,7 @@ sub make {
         # dovecot/src/deliver/deliver.c
         # 11: #define DEFAULT_MAIL_REJECTION_HUMAN_REASON \
         # 12: "Your message to <%t> was automatically rejected:%n%r"
-        'dovecot'    => qr/\AYour message to .+ was automatically rejected:\z/,
+        'dovecot'    => qr/\AYour message to [^ ]+ was automatically rejected:\z/,
         'mail.local' => qr/\Amail[.]local: /,
         'procmail'   => qr/\Aprocmail: /,
         'maildrop'   => qr/\Amaildrop: /,
@@ -31,7 +31,7 @@ sub make {
     };
     state $markingsof = {
         'message' => qr{\A(?>
-                         Your[ ]message[ ]to[ ].+[ ]was[ ]automatically[ ]rejected:\z
+                         Your[ ]message[ ]to[ ][^ ]+[ ]was[ ]automatically[ ]rejected:\z
                         |(?:mail[.]local|procmail|maildrop|vdelivermail|vdeliver):[ ]
                         )
                      }x,
