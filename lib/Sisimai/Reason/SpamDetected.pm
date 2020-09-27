@@ -18,6 +18,7 @@ sub match {
          ["]the[ ]mail[ ]server[ ]detected[ ]your[ ]message[ ]as[ ]spam[ ]and[ ]
             has[ ]prevented[ ]delivery[.]["]    # CPanel/Exim with SA rejections on
         |(?:\d[.]\d[.]\d|\d{3})[ ]spam\z
+        |554[ ]5[.]7[.]0[ ]reject,[ ]id=\d+
         |appears[ ]to[ ]be[ ]unsolicited
         |blacklisted[ ]url[ ]in[ ]message
         |block[ ]for[ ]spam
@@ -63,7 +64,6 @@ sub match {
             )
         |probable[ ]spam
         |reject[ ]bulk[.]advertising
-        |554[ ]5[.]7[.]0[ ]reject,[ ]id=\d+
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
             |[ ]by[ ][^ ]+[ ][(]spam[)]
