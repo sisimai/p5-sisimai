@@ -42,7 +42,7 @@ sub make {
         'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
         'rhost'   => qr{\A(?:
              Generating[ ]server            # en-US
-            |Serveur[ ]de[ ]g.+ration[ ]    # fr-FR/Serveur de génération
+            |Serveur[ ]de[ ]g[^ ]+ration[ ] # fr-FR/Serveur de génération
             |Server[ ]di[ ]generazione      # it-CH
             ):[ ]?(.*)
         }x,
