@@ -24,6 +24,15 @@ v5.0.0
   - Implemenet Sisimai::RFC2045(Born again Sisimai::MIME) for compatibility with
     the Go language version of Sisimai #407
 
+v4.25.8p2
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Fix typo in `Sisimai::SMTP::Error`. Thanks to @hekeli #410
+  - #411 Fix a serious performance problem in regular expressions using `.+` at
+    some error message patterns in Sisimai::Reason. Thanks to Martin Kluge.
+
 v4.25.8
 --------------------------------------------------------------------------------
 - release: "Fri, 17 Jul 2020 11:59:49 +0900 (JST)"
