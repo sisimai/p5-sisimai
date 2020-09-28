@@ -27,7 +27,7 @@ sub make {
     $match ||= 1 if index($mhead->{'from'}, 'Mail Delivery System') == 0;
     $match ||= 1 if $mhead->{'subject'} =~ qr{(?:
          Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
-        |Warning:[ ]message[ ].+[ ]delayed[ ]+
+        |Warning:[ ]message[ ][^ ]+[ ]delayed[ ]+
         |Delivery[ ]Status[ ]Notification
         )
     }x;

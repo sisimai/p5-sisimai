@@ -19,14 +19,13 @@ sub match {
         |authentication[ ](?:
              credentials invalid
             |failure
-            |failed;[ ]server[ ].+[ ]said:  # Postfix
+            |failed;[ ]server[ ][^ ]+[ ]said:  # Postfix
             |required
             |turned[ ]on[ ]in[ ]your[ ]email[ ]client
             )
-        |authentification[ ]requise.+[a-z]{3}.+402
-        |\d+[ ]denied[ ]\[[a-z]+\][ ].+[(]mode:[ ].+[)]
-        |codes?[ ]d'?[ ]*authentification[ ]invalide.+[a-z]{3}.+305
-        |domain[ ].+[ ]is[ ]a[ ]dead[ ]domain
+        |authentification[ ]requise.+[0-9a-z_]+402
+        |codes?[ ]d'?[ ]*authentification[ ]invalide.+[0-9a-z_]+305
+        |domain[ ][^ ]+[ ]is[ ]a[ ]dead[ ]domain
         |executable[ ]files[ ]are[ ]not[ ]allowed[ ]in[ ]compressed[ ]files
         |insecure[ ]mail[ ]relay
         |recipient[ ]address[ ]rejected:[ ]access[ ]denied
@@ -34,7 +33,7 @@ sub match {
                 my[ ]list[ ]of[ ]allowed[ ]rcpthosts
         |tls[ ]required[ ]but[ ]not[ ]supported # SendGrid:the recipient mailserver does not support TLS or have a valid certificate
         |unauthenticated[ ]senders[ ]not[ ]allowed
-        |user[ ].+[ ]is[ ]not[ ]authorized[ ]to[ ]perform[ ]ses:sendrawemail[ ]on[ ]resource
+        |user[ ][^ ]+[ ]is[ ]not[ ]authorized[ ]to[ ]perform[ ]ses:sendrawemail[ ]on[ ]resource
         |you[ ]are[ ]not[ ]authorized[ ]to[ ]send[ ]mail,[ ]authentication[ ]is[ ]required
         |verification[ ]failure
         )
@@ -107,7 +106,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
