@@ -181,7 +181,7 @@ sub make {
 
         if( exists $anotherset->{'status'} && $anotherset->{'status'} ) {
             # Check alternative status code
-            if( ! $e->{'status'} || $e->{'status'} !~ /\A[45][.]\d[.]\d\z/ ) {
+            if( ! $e->{'status'} || $e->{'status'} !~ /\A[45][.]\d[.]\d{1,3}\z/ ) {
                 # Override alternative status code
                 $e->{'status'} = $anotherset->{'status'};
             }

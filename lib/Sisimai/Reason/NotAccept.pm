@@ -17,6 +17,7 @@ sub match {
     # Destination mail server does not accept any message
     state $index = [
         'host/domain does not accept mail', # iCloud
+        'host does not accept mail',        # Sendmail
         'name server: .: host not found',   # Sendmail
         'no mx record found for domain=',   # Oath(Yahoo!)
         'smtp protocol returned a permanent error',
@@ -92,7 +93,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -643,7 +643,7 @@ use constant StandardCode => {
     '5.7.24' => 'securityerror',# SPF validation error
     '5.7.25' => 'blocked',      # Reverse DNS validation failed
     '5.7.26' => 'securityerror',# Multiple authentication checks failed
-    '5.7.27' => 'rejected',     # Sender address has null MX
+    '5.7.27' => 'notaccept',    # MX of Destination host is null MX
 };
 
 use constant InternalCode => {
