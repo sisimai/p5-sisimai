@@ -4,14 +4,15 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.8p2
+v4.25.9
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Sat,  3 Oct 2020 22:00:00 +0900 (JST)"
+- version: "4.25.9"
 - changes:
   - Fix typo in `Sisimai::SMTP::Error`. Thanks to @hekeli #410
   - #411 Fix a serious performance problem in regular expressions using `.+` at
     some error message patterns in Sisimai::Reason. Thanks to Martin Kluge.
+  - #414 Support Null MX (RFC7505) on Sendmail sisimai/set-of-emails#4
 
 v4.25.8
 --------------------------------------------------------------------------------
