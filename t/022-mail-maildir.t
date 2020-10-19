@@ -8,7 +8,7 @@ my $MethodNames = {
     'class' => ['new'],
     'object' => ['path', 'dir', 'file', 'size', 'offset', 'handle', 'read'],
 };
-my $MaildirSize = 490;
+my $MaildirSize = 491;
 my $SampleEmail = './set-of-emails/maildir/bsd';
 my $NewInstance = $PackageName->new($SampleEmail);
 
