@@ -4,6 +4,13 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.9p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #416 Exim and X3 in `Sisimai::Lhost` improved. Thanks to @AmarkhiS
+
 v4.25.9
 --------------------------------------------------------------------------------
 - release: "Sat,  3 Oct 2020 22:00:00 +0900 (JST)"
