@@ -77,6 +77,10 @@ sub make {
             } elsif( $e =~ /\ARouting: (.+)/ ) {
                 # Routing: Could not find a gateway for kijitora@example.co.jp
                 $v->{'diagnosis'} = $1;
+
+            } elsif( $e =~ /\ADiagnostic-Code: smtp; (.+)/ ) {
+                # Diagnostic-Code: smtp; 552 5.2.2 Over quota
+                $v->{'diagnosis'} = $1;
             }
         }
     }
