@@ -231,7 +231,7 @@ sub make {
                 # Reporting-MTA: dns; mx.example.jp
                 $commondata->{'rhost'} = $1;
 
-            } elsif( $e =~ /\ASource-IP:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\ASource-I[Pp]:[ ]*(.+)\z/ ) {
                 # The header is optional and MUST NOT appear more than once.
                 # Source-IP: 192.0.2.45
                 $arfheaders->{'rhost'} = $1;
