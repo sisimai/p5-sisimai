@@ -57,7 +57,7 @@ sub make {
     state $startingof = { 'rfc822' => ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'] };
     state $markingsof = {
         'message' => qr{\A(?>
-             [Tt]his[ ]is[ ]a[ ][^ ]+[ ]email[ ]abuse[ ]report
+             [Tt]his[ ]is[ ]a[ ][^ ]+[ ](?:email[ ])?[Aa]buse[ ][Rr]eport
             |[Tt]his[ ]is[ ]an[ ]email[ ]abuse[ ]report
             |[Tt]his[ ]is[ ](?:
                  a[ ][^ ]+[ ]authentication[ -]failure[ ]report
