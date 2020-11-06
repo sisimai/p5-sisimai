@@ -116,12 +116,16 @@ sub make {
     #
     for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
+
+        # This is an email abuse report for an email message with the
+        #   message-id of 0000-000000000000000000000000000000000@mx
+        #   received from IP address 192.0.2.1 on
+        #   Thu, 29 Apr 2010 00:00:00 +0900 (JST)
+        $commondata->{'diagnosis'} ||= $e if $e =~ $markingsof->{'message'};
+
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( $e =~ $markingsof->{'message'} ) {
-                $readcursor |= $indicators->{'deliverystatus'};
-                next;
-            }
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'report'}->[0]) == 0;
         }
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
@@ -177,7 +181,7 @@ sub make {
                 $rcptintext  = $rhs if $lhs eq 'to';
             }
         } else {
-            # message/delivery-status part
+            # message/feedback-report part
             next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
 
@@ -243,13 +247,6 @@ sub make {
                 # the header is optional and MUST NOT appear more than once.
                 # Original-Mail-From: <somespammer@example.net>
                 $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
-
-            } elsif( $e =~ $markingsof->{'message'} ) {
-                # This is an email abuse report for an email message with the
-                #   message-id of 0000-000000000000000000000000000000000@mx
-                #   received from IP address 192.0.2.1 on
-                #   Thu, 29 Apr 2010 00:00:00 +0900 (JST)
-                $commondata->{'diagnosis'} = $e;
             }
         } # End of if: rfc822
     }
