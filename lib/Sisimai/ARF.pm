@@ -8,8 +8,7 @@ use Sisimai::RFC5322;
 sub description { return 'Abuse Feedback Reporting Format' }
 sub is_arf {
     # Email is a Feedback-Loop message or not
-    # @param    [Hash] heads    Email header including "Content-Type", "From",
-    #                           and "Subject" field
+    # @param    [Hash] heads    Email header including "Content-Type", "From" and "Subject" field
     # @return   [Integer]       1: Feedback Loop
     #                           0: is not Feedback loop
     my $class = shift;
