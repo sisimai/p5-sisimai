@@ -4,11 +4,12 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.9p2
+v4.25.9p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
+  - #415 Code improvement for `Source-IP` field on ARF. Thanks to @cucx
   - #416 Exim and X3 in `Sisimai::Lhost` improved. Thanks to @AmarkhiS
 
 v4.25.9
