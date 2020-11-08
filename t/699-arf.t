@@ -22,6 +22,7 @@ my $isexpected = [
     { 'n' => '22', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
     { 'n' => '23', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
     { 'n' => '24', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
+    { 'n' => '25', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
 ];
 
 $enginetest->($enginename, $isexpected);
