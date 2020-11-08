@@ -347,7 +347,7 @@ sub makeflat {
             $bodystring .= $bodyinside;
         }
 
-        if( $mediatypev =~ m</(?:delivery-status|rfc822)> ) {
+        if( $mediatypev =~ m</(?:delivery-status|feedback-report|rfc822)> ) {
             # Add Content-Type: header of each part (will be used as a delimiter at Sisimai::Lhost) into
             # the body inside when the value of Content-Type: is message/delivery-status, message/rfc822,
             # or text/rfc822-headers
