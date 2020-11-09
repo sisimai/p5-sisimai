@@ -194,9 +194,11 @@ sub haircut {
         $multipart1->[2] = sprintf("Content-Type: %s\n", $headerpart->[0]);
 
         # Do not append Content-Transfer-Encoding: header when the part is the original message:
-        # Content-Type is message/rfc822 or text/rfc822-headers, or message/delivery-status
+        # Content-Type is message/rfc822 or text/rfc822-headers, or message/delivery-status or
+        # message/feedback-report
         last if index($mediatypev, '/rfc822') > -1;
         last if index($mediatypev, '/delivery-status') > -1;
+        last if index($mediatypev, '/feedback-report') > -1;
         last if length $ctencoding == 0;
 
         $multipart1->[2] .= sprintf("Content-Transfer-Encoding: %s\n", $ctencoding);
