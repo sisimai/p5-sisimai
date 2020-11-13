@@ -113,8 +113,7 @@ sub make {
             #           The mail system
             #
             # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
-            # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-            # command)
+            # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO command)
             if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
                 # Continued line of the value of Diagnostic-Code header
                 $v->{'diagnosis'} .= ' '.$1;
@@ -126,13 +125,9 @@ sub make {
 
             } else {
                 # Alternative error message and recipient
-                if( $e =~ /[ \t][(]in reply to ([A-Z]{4}).*/ ) {
+                if( $e =~ /[ \t][(]in reply to (?:end of )?([A-Z]{4}).*/ ||
+                    $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
                     # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                    push @commandset, $1;
-                    $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
-
-                } elsif( $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
-                    # to MAIL command)
                     push @commandset, $1;
                     $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
