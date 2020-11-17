@@ -224,6 +224,14 @@ my $isexpected = [
     { 'n' => '01217', 'r' => qr/blocked/        },
     { 'n' => '01218', 'r' => qr/blocked/        },
     { 'n' => '01219', 'r' => qr/notaccept/      },
+    { 'n' => '01220', 'r' => qr/policyviolation/},
+    { 'n' => '01221', 'r' => qr/contenterror/   },
+    { 'n' => '01222', 'r' => qr/policyviolation/},
+    { 'n' => '01223', 'r' => qr/policyviolation/},
+    { 'n' => '01224', 'r' => qr/policyviolation/},
+    { 'n' => '01225', 'r' => qr/policyviolation/},
+    { 'n' => '01226', 'r' => qr/rejected/       },
+    { 'n' => '01227', 'r' => qr/rejected/       },
 ];
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

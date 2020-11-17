@@ -19,6 +19,7 @@ sub match {
         'because the recipient is not accepting mail with ',    # AOL Phoenix
         'closed mailing list',
         'denied by policy',
+        'dmarc policy',
         'email not accepted for policy reasons',
         # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
         'email rejected due to security policies',
@@ -103,7 +104,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
