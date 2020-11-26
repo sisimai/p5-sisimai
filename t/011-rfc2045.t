@@ -6,10 +6,7 @@ use Encode;
 
 my $PackageName = 'Sisimai::RFC2045';
 my $MethodNames = {
-    'class' => [
-        'is_encoded', 'decodeH', 'parameter', 'boundary', 'decodeQ', 'decodeB',
-        'levelout', 'makeflat'
-    ],
+    'class'  => ['is_encoded', 'decodeH', 'parameter', 'boundary', 'decodeQ', 'decodeB', 'levelout', 'makeflat'],
     'object' => [],
 };
 
