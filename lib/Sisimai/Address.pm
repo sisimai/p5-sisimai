@@ -31,20 +31,6 @@ sub undisclosed {
     return sprintf("undisclosed-%s-in-headers%slibsisimai.org.invalid", $local, '@');
 }
 
-sub new {
-    # Old constructor of Sisimai::Address, wrapper method of make()
-    # @param        [String] email            Email address
-    # @return       [Sisimai::Address, Undef] Object or Undef when the email
-    #                                         address was not valid.
-    my $class = shift;
-    my $email = shift // return undef;
-    my $addrs = __PACKAGE__->find($email);
-
-    return undef unless $addrs;
-    return undef unless scalar @$addrs;
-    return __PACKAGE__->make($addrs->[0]);
-}
-
 sub make {
     # New constructor of Sisimai::Address
     # @param    [Hash] argvs        Email address, name, and other elements
@@ -423,7 +409,7 @@ Sisimai::Address - Email address object
 
     use Sisimai::Address;
 
-    my $v = Sisimai::Address->new('neko@example.org');
+    my $v = Sisimai::Address->make('neko@example.org');
     print $v->user;     # neko
     print $v->host;     # example.org
     print $v->address;  # neko@example.org
@@ -433,12 +419,6 @@ Sisimai::Address - Email address object
 Sisimai::Address provide methods for dealing email address.
 
 =head1 CLASS METHODS
-
-=head2 C<B<new(I<email address>)>>
-
-C<new()> is a constructor of Sisimai::Address
-
-    my $v = Sisimai::Address->new('neko@example.org');
 
 =head2 C<B<find(I<String>)>>
 
@@ -496,28 +476,28 @@ C<expand_alias()> gets the original email address from alias
 
 C<user()> returns a local part of the email address.
 
-    my $v = Sisimai::Address->new('neko@example.org');
+    my $v = Sisimai::Address->make('neko@example.org');
     print $v->user;     # neko
 
 =head2 C<B<host()>>
 
 C<host()> returns a domain part of the email address.
 
-    my $v = Sisimai::Address->new('neko@example.org');
+    my $v = Sisimai::Address->make('neko@example.org');
     print $v->host;     # example.org
 
 =head2 C<B<address()>>
 
 C<address()> returns an email address
 
-    my $v = Sisimai::Address->new('neko@example.org');
+    my $v = Sisimai::Address->make('neko@example.org');
     print $v->address;     # neko@example.org
 
 =head2 C<B<verp()>>
 
 C<verp()> returns a VERP email address
 
-    my $v = Sisimai::Address->new('neko+nyaan=example.org@example.org');
+    my $v = Sisimai::Address->make('neko+nyaan=example.org@example.org');
     print $v->verp;     # neko+nyaan=example.org@example.org
     print $v->address;  # nyaan@example.org
 
@@ -525,7 +505,7 @@ C<verp()> returns a VERP email address
 
 C<alias()> returns an email address (alias)
 
-    my $v = Sisimai::Address->new('neko+nyaan@example.org');
+    my $v = Sisimai::Address->make('neko+nyaan@example.org');
     print $v->alias;    # neko+nyaan@example.org
     print $v->address;  # neko@example.org
 
