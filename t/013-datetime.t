@@ -8,10 +8,7 @@ require './t/999-values.pl';
 
 my $PackageName = 'Sisimai::DateTime';
 my $MethodNames = {
-    'class' => [
-        'to_second', 'monthname', 'dayofweek',
-        'parse', 'abbr2tz', 'tz2second', 'second2tz',
-    ],
+    'class'  => ['to_second', 'monthname', 'dayofweek', 'parse', 'abbr2tz', 'tz2second', 'second2tz'],
     'object' => [],
 };
 
