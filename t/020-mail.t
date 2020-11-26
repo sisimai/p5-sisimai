@@ -5,7 +5,7 @@ use Sisimai::Mail;
 
 my $PackageName = 'Sisimai::Mail';
 my $MethodNames = {
-    'class' => ['new'],
+    'class'  => ['new'],
     'object' => ['path', 'kind', 'data']
 };
 my $SampleEmail = {

@@ -5,7 +5,7 @@ use Sisimai::Mail::Maildir;
 
 my $PackageName = 'Sisimai::Mail::Maildir';
 my $MethodNames = {
-    'class' => ['new'],
+    'class'  => ['new'],
     'object' => ['path', 'dir', 'file', 'size', 'offset', 'handle', 'read'],
 };
 my $MaildirSize = 503;

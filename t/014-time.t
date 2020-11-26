@@ -6,7 +6,7 @@ use Sisimai::Time;
 
 my $PackageName = 'Sisimai::Time';
 my $MethodNames = {
-    'class' => [],
+    'class'  => [],
     'object' => ['TO_JSON'],
 };
 

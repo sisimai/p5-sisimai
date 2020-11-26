@@ -5,7 +5,7 @@ use Sisimai::SMTP::Status;
 
 my $PackageName = 'Sisimai::SMTP::Status';
 my $MethodNames = {
-    'class' => ['code', 'name', 'find'],
+    'class'  => ['code', 'name', 'find'],
     'object' => [],
 };
 

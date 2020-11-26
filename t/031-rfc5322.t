@@ -5,10 +5,7 @@ use Sisimai::RFC5322;
 
 my $PackageName = 'Sisimai::RFC5322';
 my $MethodNames = {
-    'class' => [
-        'HEADERFIELDS', 'LONGFIELDS',
-        'is_emailaddress', 'is_mailerdaemon', 'received', 'fillet',
-    ],
+    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'is_emailaddress', 'is_mailerdaemon', 'received', 'fillet'],
     'object' => [],
 };
 

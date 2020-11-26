@@ -4,10 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP::Reply;
 
 my $PackageName = 'Sisimai::SMTP::Reply';
-my $MethodNames = {
-    'class' => ['find'],
-    'object' => [],
-};
+my $MethodNames = { 'class' => ['find'], 'object' => [] };
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };

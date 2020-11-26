@@ -5,7 +5,7 @@ use Sisimai::Mail::STDIN;
 
 my $PackageName = 'Sisimai::Mail::STDIN';
 my $MethodNames = {
-    'class' => ['new'],
+    'class'  => ['new'],
     'object' => ['path', 'size', 'handle', 'offset', 'read'],
 };
 my $SampleEmail = './set-of-emails/mailbox/mbox-0';

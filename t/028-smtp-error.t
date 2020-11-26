@@ -4,10 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP::Error;
 
 my $PackageName = 'Sisimai::SMTP::Error';
-my $MethodNames = {
-    'class' => ['is_permanent', 'soft_or_hard'],
-    'object' => [],
-};
+my $MethodNames = { 'class' => ['is_permanent', 'soft_or_hard'], 'object' => [] };
 
 use_ok $PackageName;
 can_ok $PackageName, @{ $MethodNames->{'class'} };

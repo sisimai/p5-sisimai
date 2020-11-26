@@ -6,7 +6,7 @@ use IO::File;
 
 my $PackageName = 'Sisimai::Mail::Memory';
 my $MethodNames = {
-    'class' => ['new'],
+    'class'  => ['new'],
     'object' => ['path', 'size', 'offset', 'payload', 'read'],
 };
 my $SampleEmail = [

@@ -5,7 +5,7 @@ use Sisimai::Mail::Mbox;
 
 my $PackageName = 'Sisimai::Mail::Mbox';
 my $MethodNames = {
-    'class' => ['new'],
+    'class'  => ['new'],
     'object' => ['path', 'dir', 'file', 'size', 'handle', 'offset', 'read'],
 };
 my $SampleEmail = './set-of-emails/mailbox/mbox-0';
