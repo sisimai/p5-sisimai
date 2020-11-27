@@ -31,7 +31,7 @@ sub undisclosed {
     return sprintf("undisclosed-%s-in-headers%slibsisimai.org.invalid", $local, '@');
 }
 
-sub rise {
+sub new {
     # Constructor of Sisimai::Address
     # @param    [Hash] argvs        Email address, name, and other elements
     # @return   [Sisimai::Address]  Object or undef when the email address was not valid
@@ -408,7 +408,7 @@ Sisimai::Address - Email address object
 
     use Sisimai::Address;
 
-    my $v = Sisimai::Address->rise('neko@example.org');
+    my $v = Sisimai::Address->new({ 'address' => 'neko@example.org' });
     print $v->user;     # neko
     print $v->host;     # example.org
     print $v->address;  # neko@example.org
@@ -475,28 +475,28 @@ C<expand_alias()> gets the original email address from alias
 
 C<user()> returns a local part of the email address.
 
-    my $v = Sisimai::Address->rise({ 'address' => 'neko@example.org' });
+    my $v = Sisimai::Address->new({ 'address' => 'neko@example.org' });
     print $v->user;     # neko
 
 =head2 C<B<host()>>
 
 C<host()> returns a domain part of the email address.
 
-    my $v = Sisimai::Address->rise({ 'address' => 'neko@example.org' });
+    my $v = Sisimai::Address->new({ 'address' => 'neko@example.org' });
     print $v->host;     # example.org
 
 =head2 C<B<address()>>
 
 C<address()> returns an email address
 
-    my $v = Sisimai::Address->rise({ 'address' => 'neko@example.org' });
+    my $v = Sisimai::Address->new({ 'address' => 'neko@example.org' });
     print $v->address;     # neko@example.org
 
 =head2 C<B<verp()>>
 
 C<verp()> returns a VERP email address
 
-    my $v = Sisimai::Address->rise({ 'address' => 'neko+nyaan=example.org@example.org' });
+    my $v = Sisimai::Address->new({ 'address' => 'neko+nyaan=example.org@example.org' });
     print $v->verp;     # neko+nyaan=example.org@example.org
     print $v->address;  # nyaan@example.org
 
@@ -504,7 +504,7 @@ C<verp()> returns a VERP email address
 
 C<alias()> returns an email address (alias)
 
-    my $v = Sisimai::Address->rise({ 'address' => 'neko+nyaan@example.org' });
+    my $v = Sisimai::Address->new({ 'address' => 'neko+nyaan@example.org' });
     print $v->alias;    # neko+nyaan@example.org
     print $v->address;  # neko@example.org
 
@@ -514,7 +514,7 @@ C<name()> returns a display name
 
     my $e = '"Neko, Nyaan" <neko@example.org>';
     my $r = Sisimai::Address->find($e);
-    my $v = Sisimai::Address->rise($r->[0]);
+    my $v = Sisimai::Address->new($r->[0]);
     print $v->address;  # neko@example.org
     print $v->name;     # Neko, Nyaan
 
@@ -523,7 +523,7 @@ C<name()> returns a display name
 C<name()> returns a comment
 
     my $e = '"Neko, Nyaan" <neko(nyaan)@example.org>';
-    my $v = Sisimai::Address->rise(shift @{ Sisimai::Address->find($e) });
+    my $v = Sisimai::Address->new(shift @{ Sisimai::Address->find($e) });
     print $v->address;  # neko@example.org
     print $v->comment;  # nyaan
 
