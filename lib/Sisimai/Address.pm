@@ -55,8 +55,8 @@ sub new {
     if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
         $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
         # Get the local part and the domain part from the email address
-        my $lpart = $1;
-        my $dpart = $2;
+        my $lpart = $1; $lpart =~ y/<//d if substr($lpart, 0,  1) eq '<';
+        my $dpart = $2; $dpart =~ y/>//d if substr($dpart, -1, 1) eq '>';
         my $email = __PACKAGE__->expand_verp($argvs->{'address'}) || '';
         my $alias = 0;
 
