@@ -55,7 +55,7 @@ sub make {
         # http://postmaster.1and1.com/en/error-messages?ip=%1s
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
+        if( $e =~ /\A([^ ]+[@][^ ]+?)[:]?\z/ ) {
             # general@example.eu
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
