@@ -89,6 +89,11 @@ sub make {
                 next unless exists $fieldtable->{ $o->[0] };
                 $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
+                if( $fieldtable->{ $o->[0] } eq 'lhost' ) {
+                    # Do not set an email address as a hostname in "lhost" value
+                    $v->{'lhost'} = '' if index($v->{'lhost'}, '@');
+                }
+
                 next unless $f == 1;
                 $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
             }
