@@ -261,9 +261,10 @@ sub parse {
 
     for my $p ( @timetokens ) {
         # Parse each piece of time
-        if( $p =~ /\A[A-Z][a-z]{2}[,]?\z/ ) {
+        if( $p =~ /\A[A-Z][a-z]{2,}[,]?\z/ ) {
             # Day of week or Day of week; Thu, Apr, ...
-            chop $p if length($p) == 4; # Thu, -> Thu
+            $p =~ s/,\z//g if substr($p, -1, 1) eq ','; # "Thu," => "Thu"
+            $p =  substr($p, 0, 3) if length $p > 3;
 
             if( grep { $p eq $_ } @{ DayOfWeek->{'abbr'} } ) {
                 # Day of week; Mon, Thu, Sun,...
