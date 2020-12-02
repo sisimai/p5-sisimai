@@ -51,12 +51,14 @@ sub new {
     return undef unless ref $argvs eq 'HASH';
     return undef unless exists $argvs->{'address'};
     return undef unless $argvs->{'address'};
+    my $heads = ['<'];
+    my $tails = ['>', ','];
 
     if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
         $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
         # Get the local part and the domain part from the email address
-        my $lpart = $1; $lpart =~ y/<//d if substr($lpart, 0,  1) eq '<';
-        my $dpart = $2; $dpart =~ y/>//d if substr($dpart, -1, 1) eq '>';
+        my $lpart = $1; for my $e ( @$heads ) { $lpart =~ s/\A$e//g if substr($lpart, 0,  1) eq $e }
+        my $dpart = $2; for my $e ( @$tails ) { $dpart =~ s/$e\z//g if substr($dpart, -1, 1) eq $e }
         my $email = __PACKAGE__->expand_verp($argvs->{'address'}) || '';
         my $alias = 0;
 
