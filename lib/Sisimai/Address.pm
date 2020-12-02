@@ -52,7 +52,7 @@ sub new {
     return undef unless exists $argvs->{'address'};
     return undef unless $argvs->{'address'};
     my $heads = ['<'];
-    my $tails = ['>', ','];
+    my $tails = ['>', ',', '.'];
 
     if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
         $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
