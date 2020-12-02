@@ -315,10 +315,10 @@ sub find {
             next unless Sisimai::RFC5322->is_mailerdaemon($e->{'address'});
         }
 
-        # Remove angle brackets, other brackets, and quotations: []<>{}'`
-        # except a domain part is an IP address like neko@[192.0.2.222]
+        # Remove angle brackets, other brackets, and quotations: []<>{}'` except a domain part is
+        # an IP address like neko@[192.0.2.222]
         $e->{'address'} =~ s/\A[\[<{('`]//;
-        $e->{'address'} =~ s/['`>})]\z//;
+        $e->{'address'} =~ s/[.'`>})]\z//;
         $e->{'address'} =~ s/\]\z// unless $e->{'address'} =~ /[@]\[[0-9A-Za-z:\.]+\]\z/;
 
         unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
