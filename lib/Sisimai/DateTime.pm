@@ -276,6 +276,7 @@ sub parse {
             }
         } elsif( $p =~ /\A\d{1,4}\z/ ) {
             # Year or Day; 2005, 31, 04,  1, ...
+            $p = int $p;
             if( $p > 31 ) {
                 # The piece is the value of an year
                 $v->{'Y'} = $p;
