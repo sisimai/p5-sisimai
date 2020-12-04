@@ -52,7 +52,7 @@ sub new {
     return undef unless exists $argvs->{'address'};
     return undef unless $argvs->{'address'};
     my $heads = ['<'];
-    my $tails = ['>', ',', '.'];
+    my $tails = ['>', ',', '.', ';'];
 
     if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
         $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
@@ -318,7 +318,7 @@ sub find {
         # Remove angle brackets, other brackets, and quotations: []<>{}'` except a domain part is
         # an IP address like neko@[192.0.2.222]
         $e->{'address'} =~ s/\A[\[<{('`]//;
-        $e->{'address'} =~ s/[.'`>})]\z//;
+        $e->{'address'} =~ s/[.'`>})];\z//;
         $e->{'address'} =~ s/\]\z// unless $e->{'address'} =~ /[@]\[[0-9A-Za-z:\.]+\]\z/;
 
         unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
