@@ -6,21 +6,22 @@ require './t/600-lhost-code';
 
 my $enginename = 'Office365';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]1[.]10\z/,'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '02', 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]1[.]0\z/, 'r' => qr/blocked/,     'b' => qr/\A1\z/ },
-    { 'n' => '04', 's' => qr/\A5[.]1[.]351\z/, 'r' => qr/filtered/,  'b' => qr/\A1\z/ },
-    { 'n' => '05', 's' => qr/\A5[.]1[.]8\z/,   'r' => qr/rejected/,    'b' => qr/\A1\z/ },
-    { 'n' => '06', 's' => qr/\A5[.]4[.]312\z/, 'r' => qr/networkerror/,'b' => qr/\A1\z/ },
-    { 'n' => '07', 's' => qr/\A5[.]1[.]351\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '08', 's' => qr/\A5[.]4[.]316\z/, 'r' => qr/expired/,   'b' => qr/\A1\z/ },
-    { 'n' => '09', 's' => qr/\A5[.]1[.]351\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '10', 's' => qr/\A5[.]1[.]351\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '11', 's' => qr/\A5[.]1[.]1\z/,   'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '12', 's' => qr/\A5[.]2[.]2\z/,   'r' => qr/mailboxfull/, 'b' => qr/\A1\z/ },
-    { 'n' => '13', 's' => qr/\A5[.]1[.]10\z/,  'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['5.1.10',  '550', 'userunknown',     1]],
+    '02' => [['5.1.1',   '550', 'userunknown',     1]],
+    '03' => [['5.1.0',   '550', 'blocked',         0]],
+    '04' => [['5.1.351', '550', 'filtered',        0]],
+    '05' => [['5.1.8',   '501', 'rejected',        0]],
+    '06' => [['5.4.312', '550', 'networkerror',    0]],
+    '07' => [['5.1.351', '550', 'userunknown',     1]],
+    '08' => [['5.4.316', '550', 'expired',         0]],
+    '09' => [['5.1.351', '550', 'userunknown',     1]],
+    '10' => [['5.1.351', '550', 'userunknown',     1]],
+    '11' => [['5.1.1',   '550', 'userunknown',     1]],
+    '12' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    '13' => [['5.1.10',  '550', 'userunknown',     1]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

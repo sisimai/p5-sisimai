@@ -6,10 +6,11 @@ require './t/600-lhost-code';
 
 my $enginename = 'Barracuda';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/spamdetected/, 'b' => qr/\A1\z/ },
-    { 'n' => '02', 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/spamdetected/, 'b' => qr/\A1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['5.7.1',   '550', 'spamdetected',    0]],
+    '02' => [['5.7.1',   '550', 'spamdetected',    0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

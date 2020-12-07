@@ -6,18 +6,20 @@ require './t/600-lhost-code';
 
 my $enginename = 'qmail';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]5[.]0\z/,    'r' => qr/userunknown/,  'b' => qr/\A0\z/ },
-    { 'n' => '02', 's' => qr/\A5[.][12][.]1\z/, 'r' => qr/(?:userunknown|filtered)/, 'b' => qr/\d\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]7[.]1\z/,    'r' => qr/rejected/,     'b' => qr/\A1\z/ },
-    { 'n' => '04', 's' => qr/\A5[.]0[.]0\z/,    'r' => qr/blocked/,      'b' => qr/\A1\z/ },
-    { 'n' => '05', 's' => qr/\A4[.]4[.]3\z/,    'r' => qr/systemerror/,  'b' => qr/\A1\z/ },
-    { 'n' => '06', 's' => qr/\A4[.]2[.]2\z/,    'r' => qr/mailboxfull/,  'b' => qr/\A1\z/ },
-    { 'n' => '07', 's' => qr/\A4[.]4[.]1\z/,    'r' => qr/networkerror/, 'b' => qr/\A1\z/ },
-    { 'n' => '08', 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/mailboxfull/,  'b' => qr/\A1\z/ },
-    { 'n' => '09', 's' => qr/\A5[.]7[.]\d+\z/,  'r' => qr/blocked/,      'b' => qr/\A1\z/ },
-    { 'n' => '10', 's' => qr/\A5[.]0[.]\d+\z/,  'r' => qr/suspend/,      'b' => qr/\A1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['5.5.0',   '550', 'userunknown',     1]],
+    '02' => [['5.1.1',   '550', 'userunknown',     1],
+             ['5.2.1',   '550', 'userunknown',     1]],
+    '03' => [['5.7.1',   '550', 'rejected',        0]],
+    '04' => [['5.0.0',   '501', 'blocked',         0]],
+    '05' => [['4.4.3',   '',    'systemerror',     0]],
+    '06' => [['4.2.2',   '450', 'mailboxfull',     0]],
+    '07' => [['4.4.1',   '',    'networkerror',    0]],
+    '08' => [['5.0.922', '552', 'mailboxfull',     0]],
+    '09' => [['5.7.606', '550', 'blocked',         0]],
+    '10' => [['5.0.921', '',    'suspend',         0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

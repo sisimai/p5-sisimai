@@ -6,14 +6,16 @@ require './t/600-lhost-code';
 
 my $enginename = 'OpenSMTPD';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]1[.]1\z/,        'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '02', 's' => qr/\A5[.][12][.][12]\z/,  'r' => qr/(?:userunknown|mailboxfull)/,'b' => qr/\d\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]0[.]\d+\z/,      'r' => qr/hostunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '04', 's' => qr/\A5[.]0[.]\d+\z/,      'r' => qr/networkerror/,'b' => qr/\A1\z/ },
-    { 'n' => '05', 's' => qr/\A5[.]0[.]\d+\z/,      'r' => qr/expired/,     'b' => qr/\A1\z/ },
-    { 'n' => '06', 's' => qr/\A5[.]0[.]\d+\z/,      'r' => qr/expired/,     'b' => qr/\A1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['5.1.1',   '550', 'userunknown',     1]],
+    '02' => [['5.2.2',   '550', 'mailboxfull',     0],
+             ['5.1.1',   '550', 'userunknown',     1]],
+    '03' => [['5.0.912', '',    'hostunknown',     1]],
+    '04' => [['5.0.944', '',    'networkerror',    0]],
+    '05' => [['5.0.947', '',    'expired',         0]],
+    '06' => [['5.0.947', '',    'expired',         0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

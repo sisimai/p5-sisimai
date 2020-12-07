@@ -6,9 +6,10 @@ require './t/600-lhost-code';
 
 my $enginename = 'X5';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['5.1.1',   '550', 'userunknown',     1]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

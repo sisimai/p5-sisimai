@@ -6,12 +6,13 @@ require './t/600-lhost-code';
 
 my $enginename = 'RFC3834';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
-    { 'n' => '02', 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
-    { 'n' => '03', 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
-    { 'n' => '04', 's' => qr/\A\z/, 'r' => qr/vacation/, 'b' => qr/\A-1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['', '', 'vacation', 0]],
+    '02' => [['', '', 'vacation', 0]],
+    '03' => [['', '', 'vacation', 0]],
+    '04' => [['', '', 'vacation', 0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

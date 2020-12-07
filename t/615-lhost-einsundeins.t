@@ -6,10 +6,11 @@ require './t/600-lhost-code';
 
 my $enginename = 'EinsUndEins';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '02', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/mesgtoobig/, 'b' => qr/\A1\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]2[.]0\z/,   'r' => qr/spamdetected/, 'b' => qr/\A1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '02' => [['5.0.934', '',    'mesgtoobig',      0]],
+    '03' => [['5.2.0',   '550', 'spamdetected',    0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

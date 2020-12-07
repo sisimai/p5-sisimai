@@ -6,15 +6,16 @@ require './t/600-lhost-code';
 
 my $enginename = 'EZweb';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
-    { 'n' => '02', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/suspend/,       'b' => qr/\A1\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/suspend/,       'b' => qr/\A1\z/ },
-    { 'n' => '04', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
-    { 'n' => '05', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
-    { 'n' => '07', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/},
-    { 'n' => '08', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/blocked/,       'b' => qr/\A1\z/},
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['5.0.910', '',    'filtered',        0]],
+    '02' => [['5.0.0',   '',    'suspend',         0]],
+    '03' => [['5.0.921', '',    'suspend',         0]],
+    '04' => [['5.0.911', '550', 'userunknown',     1]],
+    '05' => [['5.0.947', '',    'expired',         0]],
+    '07' => [['5.0.911', '550', 'userunknown',     1]],
+    '08' => [['5.0.971', '550', 'blocked',         0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

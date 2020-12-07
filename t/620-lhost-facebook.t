@@ -6,10 +6,11 @@ require './t/600-lhost-code';
 
 my $enginename = 'Facebook';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '03', 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/filtered/,    'b' => qr/\A1\z/ },
-    { 'n' => '04', 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '03' => [['5.1.1',   '550', 'filtered',        0]],
+    '04' => [['5.1.1',   '550', 'userunknown',     1]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

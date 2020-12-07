@@ -6,24 +6,32 @@ require './t/600-lhost-code';
 
 my $enginename = 'ARF';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '02', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '11', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '12', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/opt-out/,      'b' => qr/\A-1\z/ },
-    { 'n' => '14', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '15', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '16', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '17', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '18', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/auth-failure/, 'b' => qr/\A-1\z/ },
-    { 'n' => '19', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/auth-failure/, 'b' => qr/\A-1\z/ },
-    { 'n' => '20', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/auth-failure/, 'b' => qr/\A-1\z/ },
-    { 'n' => '21', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '22', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '23', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '24', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-    { 'n' => '25', 's' => qr/\A\z/, 'r' => qr/feedback/, 'f' => qr/abuse/,        'b' => qr/\A-1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'feedback-type'], [...]]
+    '01' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '02' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '11' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '12' => [['', '', 'feedback', 0, 'opt-out'     ]],
+    '14' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '15' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '16' => [['', '', 'feedback', 0, 'abuse'       ],
+             ['', '', 'feedback', 0, 'abuse'       ],
+             ['', '', 'feedback', 0, 'abuse'       ],
+             ['', '', 'feedback', 0, 'abuse'       ],
+             ['', '', 'feedback', 0, 'abuse'       ],
+             ['', '', 'feedback', 0, 'abuse'       ],
+             ['', '', 'feedback', 0, 'abuse'       ]],
+    '17' => [['', '', 'feedback', 0, 'abuse'       ],
+             ['', '', 'feedback', 0, 'abuse'       ]],
+    '18' => [['', '', 'feedback', 0, 'auth-failure']],
+    '19' => [['', '', 'feedback', 0, 'auth-failure']],
+    '20' => [['', '', 'feedback', 0, 'auth-failure']],
+    '21' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '22' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '23' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '24' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '25' => [['', '', 'feedback', 0, 'abuse'       ]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

@@ -6,20 +6,22 @@ require './t/600-lhost-code';
 
 my $enginename = 'MessagingServer';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]1[.]1\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
-    { 'n' => '02', 's' => qr/\A5[.]2[.]0\z/, 'r' => qr/mailboxfull/,   'b' => qr/\A1\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]7[.]1\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
-    { 'n' => '04', 's' => qr/\A5[.]2[.]2\z/, 'r' => qr/mailboxfull/,   'b' => qr/\A1\z/ },
-    { 'n' => '05', 's' => qr/\A5[.]4[.]4\z/, 'r' => qr/hostunknown/,   'b' => qr/\A0\z/ },
-    { 'n' => '06', 's' => qr/\A5[.]2[.]1\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
-    { 'n' => '07', 's' => qr/\A4[.]4[.]7\z/, 'r' => qr/expired/,       'b' => qr/\A1\z/ },
-    { 'n' => '08', 's' => qr/\A5[.]0[.]0\z/, 'r' => qr/filtered/,      'b' => qr/\A1\z/ },
-    { 'n' => '09', 's' => qr/\A5[.]0[.]0\z/, 'r' => qr/userunknown/,   'b' => qr/\A0\z/ },
-    { 'n' => '10', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/notaccept/,   'b' => qr/\A0\z/ },
-    { 'n' => '11', 's' => qr/\A5[.]1[.]8\z/, 'r' => qr/rejected/,      'b' => qr/\A1\z/ },
-    { 'n' => '12', 's' => qr/\A4[.]2[.]2\z/, 'r' => qr/mailboxfull/,   'b' => qr/\A1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['5.1.1',   '550', 'userunknown',     1]],
+    '02' => [['5.2.0',   '522', 'mailboxfull',     0]],
+    '03' => [['5.7.1',   '550', 'filtered',        0],
+             ['5.7.1',   '550', 'filtered',        0]],
+    '04' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    '05' => [['5.4.4',   '',    'hostunknown',     1]],
+    '06' => [['5.2.1',   '550', 'filtered',        0]],
+    '07' => [['4.4.7',   '',    'expired',         0]],
+    '08' => [['5.0.0',   '550', 'filtered',        0]],
+    '09' => [['5.0.0',   '550', 'userunknown',     1]],
+    '10' => [['5.0.932', '',    'notaccept',       1]],
+    '11' => [['5.1.8',   '501', 'rejected',        0]],
+    '12' => [['4.2.2',   '',    'mailboxfull',     0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

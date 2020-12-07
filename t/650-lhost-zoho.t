@@ -6,13 +6,15 @@ require './t/600-lhost-code';
 
 my $enginename = 'Zoho';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01', 's' => qr/\A5[.]1[.]1\z/,     'r' => qr/userunknown/, 'b' => qr/\A0\z/ },
-    { 'n' => '02', 's' => qr/\A5[.]2[.][12]\z/,  'r' => qr/(?:mailboxfull|filtered)/, 'b' => qr/\A1\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]0[.]\d+\z/,   'r' => qr/filtered/,    'b' => qr/\A1\z/ },
-    { 'n' => '04', 's' => qr/\A4[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
-    { 'n' => '05', 's' => qr/\A4[.]0[.]\d+\z/,   'r' => qr/expired/,     'b' => qr/\A1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01' => [['5.1.1',   '550', 'userunknown',     1]],
+    '02' => [['5.2.1',   '550', 'filtered',        0],
+             ['5.2.2',   '550', 'mailboxfull',     0]],
+    '03' => [['5.0.910', '550', 'filtered',        0]],
+    '04' => [['4.0.947', '421', 'expired',         0]],
+    '05' => [['4.0.947', '421', 'expired',         0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;

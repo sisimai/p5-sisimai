@@ -6,10 +6,11 @@ require './t/600-lhost-code';
 
 my $enginename = 'FML';
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '02', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/rejected/,    'b' => qr/\A1\z/ },
-    { 'n' => '03', 's' => qr/\A5[.]0[.]\d+\z/, 'r' => qr/systemerror/, 'b' => qr/\A1\z/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '02' => [['5.0.918', '',    'rejected',        0]],
+    '03' => [['5.0.930', '',    'systemerror',     0]],
+};
 
 $enginetest->($enginename, $isexpected);
 done_testing;
