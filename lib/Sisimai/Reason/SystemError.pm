@@ -40,7 +40,7 @@ sub match {
 
 sub true {
     # The bounce reason is system error or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is system error
     #                                   0: is not system error
     # @see http://www.ietf.org/rfc/rfc2822.txt
@@ -87,10 +87,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::SystemError->match('5.3.5 System config error'); # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is C<systemerror>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -98,7 +98,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

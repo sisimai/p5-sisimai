@@ -39,7 +39,7 @@ C<text()> returns string: C<feedback>.
 
 C<match()> always return undef
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> always return undef
 

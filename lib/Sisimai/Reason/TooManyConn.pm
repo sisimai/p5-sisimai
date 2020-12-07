@@ -36,7 +36,7 @@ sub match {
 
 sub true {
     # Blocked due to that connection rate limit exceeded
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: Too many connections(blocked)
     #                                   0: Not many connections
     # @since v4.1.26
@@ -44,9 +44,9 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return 1 if $argvs->reason eq 'toomanyconn';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->deliverystatus) || '') eq 'toomanyconn';
-    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
+    return 1 if $argvs->{'reason'} eq 'toomanyconn';
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'toomanyconn';
+    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0;
 }
 
@@ -90,10 +90,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::TooManyConn->match('Connection rate limit exceeded');  # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is C<toomanyconn>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -101,7 +101,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

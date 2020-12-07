@@ -36,14 +36,14 @@ sub match {
 
 sub get {
     # Detect the bounce reason from certain remote hosts
-    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
     # @param    [String]        proxy   The alternative of the "rhost"
     # @return   [String]                The value of bounce reason
     my $class = shift;
     my $argvs = shift || return undef;
     my $proxy = shift || undef;
 
-    my $remotehost = $proxy || lc $argvs->rhost;
+    my $remotehost = $proxy || lc $argvs->{'rhost'};
     my $rhostclass = '';
 
     for my $e ( keys %{ RhostClass() } ) {
@@ -74,10 +74,10 @@ Sisimai::Rhost - Detect the bounce reason returned from certain remote hosts.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
 object as an argument of get() method when the value of C<rhost> of the object
 is listed in the results of Sisimai::Rhost->list() method.
-This class is called only Sisimai::Data class.
+This class is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
@@ -86,7 +86,7 @@ This class is called only Sisimai::Data class.
 Returns 1 if the remote host is listed in the results of Sisimai::Rhost->list()
 method.
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 
@@ -103,3 +103,4 @@ Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

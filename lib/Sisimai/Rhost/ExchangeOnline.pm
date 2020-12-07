@@ -6,12 +6,12 @@ use warnings;
 # https://technet.microsoft.com/en-us/library/bb232118
 sub get {
     # Detect bounce reason from Exchange 2013 and Office 365
-    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason for Exchange Online
     # @see      https://technet.microsoft.com/en-us/library/bb232118
     my $class = shift;
     my $argvs = shift // return undef;
-    return $argvs->reason if $argvs->reason;
+    return $argvs->{'reason'} if $argvs->{'reason'};
 
     state $statuslist = {
         '4.3.1'   => [{ 'reason' => 'systemfull', 'string' => 'Insufficient system resources' }],
@@ -118,8 +118,8 @@ sub get {
         ],
     };
 
-    my $statuscode = $argvs->deliverystatus;
-    my $statusmesg = $argvs->diagnosticcode;
+    my $statuscode = $argvs->{'deliverystatus'};
+    my $statusmesg = $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     for my $e ( keys %$statuslist ) {
@@ -181,13 +181,13 @@ Exchange 2013 and Office 365.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
 object as an argument of get() method when the value of C<rhost> of the object
-is "*.protection.outlook.com". This class is called only Sisimai::Data class.
+is "*.protection.outlook.com". This class is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 

@@ -7,7 +7,7 @@ use version; our $VERSION = version->declare('v5.0.0'); our $PATCHLV = 0;
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub libname { 'Sisimai' }
 
-sub make {
+sub rise {
     # Wrapper method for parsing mailbox or Maildir/
     # @param         [String]  argv0      Path to mbox or Maildir/
     # @param         [Hash]    argv0      or Hash (decoded JSON)
@@ -16,43 +16,36 @@ sub make {
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Array]   c___       Code references to a callback method for the message and each file
     # @return        [Array]              Parsed objects
-    # @return        [Undef]              Undef if the argument was wrong or an empty array
+    # @return        [undef]              undef if the argument was wrong or an empty array
     my $class = shift;
     my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
 
-    require Sisimai::Data;
-    require Sisimai::Message;
     require Sisimai::Mail;
+    require Sisimai::Fact;
 
-    my $list = [];
+    my $sisi = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
     my $kind = $mail->kind;
     my $c___ = ref $argv1->{'c___'} eq 'ARRAY' ? $argv1->{'c___'} : [undef, undef];
 
     while( my $r = $mail->data->read ) {
         # Read and parse each email file
-        my $args = { 'data' => $r, 'hook' => $c___->[0] };
         my $path = $mail->data->path;
-        my $sisi = [];
-
-        if( my $mesg = Sisimai::Message->new(%$args) ) {
-            # Sisimai::Message object was created successfully
-            $args = { 'data' => $mesg, 'delivered' => $argv1->{'delivered'}, 'origin' => $path };
-            $sisi = Sisimai::Data->make(%$args);
-        }
+        my $args = { 'data' => $r, 'hook' => $c___->[0], 'origin' => $path, 'delivered' => $argv1->{'delivered'} };
+        my $fact = Sisimai::Fact->rise($args) || [];
 
         if( $c___->[1] ) {
             # Run the callback function specified with "c___" parameter of Sisimai->make after reading
             # each email file in Maildir/ every time
-            $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'sisi' => $sisi };
+            $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'fact' => $fact };
             eval { $c___->[1]->($args) if ref $c___->[1] eq 'CODE' };
             warn sprintf(" ***warning: Something is wrong in the second element of the 'c___': %s", $@) if $@;
         }
-        push @$list, @$sisi if scalar @$sisi;
+        push @$sisi, @$fact if scalar @$fact;
     }
-    return undef unless scalar @$list;
-    return $list;
+    return undef unless scalar @$sisi;
+    return $sisi;
 }
 
 sub dump {
@@ -67,7 +60,7 @@ sub dump {
     my $class = shift;
     my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
-    my $nyaan = __PACKAGE__->make($argv0, %$argv1) // [];
+    my $nyaan = __PACKAGE__->rise($argv0, %$argv1) // [];
 
     for my $e ( @$nyaan ) {
         # Set UTF8 flag before converting to JSON string
@@ -173,7 +166,7 @@ C<make> method provides feature for getting parsed data from bounced email messa
 
     if( defined $v ) {
         for my $e ( @$v ) {
-            print ref $e;                   # Sisimai::Data
+            print ref $e;                   # Sisimai::Fact
             print ref $e->recipient;        # Sisimai::Address
             print ref $e->timestamp;        # Sisimai::Time
 
@@ -269,7 +262,7 @@ message body. The second element of the C<c___> is called at the end of each ema
         my $kind = $args->{'kind'}; # (String)  Sisimai::Mail->kind
         my $mail = $args->{'mail'}; # (*String) Entire email message
         my $path = $args->{'path'}; # (String)  Sisimai::Mail->path
-        my $sisi = $args->{'sisi'}; # (*Array)  List of Sisimai::Data
+        my $sisi = $args->{'sisi'}; # (*Array)  List of Sisimai::Fact
 
         for my $e ( @$sisi ) {
             # Insert custom fields into the parsed results
@@ -346,7 +339,7 @@ C<version> method returns the version number of Sisimai.
 
 =item L<Sisimai::Mail> - Mailbox or Maildir object
 
-=item L<Sisimai::Data> - Parsed data object
+=item L<Sisimai::Fact> - Parsed data object
 
 =item L<https://libsisimai.org/> - Sisimai — A successor to bounceHammer, Library to parse error mails
 

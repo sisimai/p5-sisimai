@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from https://www.i.ua/
-    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason at https://www.i.ua/
     # @since v4.25.0
     my $class = shift;
@@ -24,7 +24,7 @@ sub get {
         '9'  => 'blocked',     # IP-address of the sender is blacklisted.
         '10' => 'filtered',    # Not in the list Mail address management.
     };
-    my $statusmesg = lc $argvs->diagnosticcode;
+    my $statusmesg = lc $argvs->{'diagnosticcode'};
     my $codenumber = $statusmesg =~ m|[.]i[.]ua/err/(\d+)| ? $1 : 0;
     return $errorcodes->{ $codenumber } || '';
 }
@@ -44,13 +44,13 @@ Sisimai::Rhost::IUA - Detect the bounce reason returned from https://www.i.ua/.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
 object as an argument of get() method when the value of C<rhost> of the object
-is "*.email.ua".  This class is called only Sisimai::Data class.
+is "*.email.ua".  This class is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 

@@ -69,7 +69,7 @@ sub match {
 
 sub true {
     # Rejected by the envelope sender address or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is rejected
     #                                   0: is not rejected by the sender
     # @since v4.0.0
@@ -77,13 +77,13 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return 1 if $argvs->reason eq 'rejected';
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || 'undefined';
+    return 1 if $argvs->{'reason'} eq 'rejected';
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || 'undefined';
     return 1 if $tempreason eq 'rejected';  # Delivery status code points "rejected".
 
     # Check the value of Diagnosic-Code: header with patterns
-    my $diagnostic = lc $argvs->diagnosticcode;
-    my $commandtxt = $argvs->smtpcommand;
+    my $diagnostic = lc $argvs->{'diagnosticcode'};
+    my $commandtxt = $argvs->{'smtpcommand'};
     if( $commandtxt eq 'MAIL' ) {
         # The session was rejected at 'MAIL FROM' command
         return 1 if __PACKAGE__->match($diagnostic);
@@ -144,10 +144,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::Rejected->match('550 Address rejected');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is C<rejected>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -155,7 +155,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

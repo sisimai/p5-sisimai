@@ -53,23 +53,22 @@ sub path {
 
 sub get {
     # Detect the bounce reason
-    # @param    [Sisimai::Data] argvs   Parsed email object
-    # @return   [String, Undef]         Bounce reason or Undef if the argument
-    #                                   is missing or invalid object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @return   [String]                Bounce reason or undef if the argument
+    #           [undef]                 is missing or invalid object
     # @see anotherone
     my $class = shift;
     my $argvs = shift // return undef;
-    return undef unless ref $argvs eq 'Sisimai::Data';
 
-    unless( exists $GetRetried->{ $argvs->reason } ) {
+    unless( exists $GetRetried->{ $argvs->{'reason'} } ) {
         # Return reason text already decided except reason match with the
         # regular expression of ->retry() method.
-        return $argvs->reason if $argvs->reason;
+        return $argvs->{'reason'} if $argvs->{'reason'};
     }
-    return 'delivered' if substr($argvs->deliverystatus, 0, 2) eq '2.';
+    return 'delivered' if substr($argvs->{'deliverystatus'}, 0, 2) eq '2.';
 
     my $reasontext = '';
-    if( $argvs->diagnostictype eq 'SMTP' || $argvs->diagnostictype eq '' ) {
+    if( $argvs->{'diagnostictype'} eq 'SMTP' || $argvs->{'diagnostictype'} eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
         for my $e ( @{ $ClassOrder->[0] } ) {
             # Check the value of Diagnostic-Code: and the value of Status:, it is a
@@ -87,13 +86,13 @@ sub get {
         # Bounce reason is not detected yet.
         $reasontext   = __PACKAGE__->anotherone($argvs);
         $reasontext   = '' if $reasontext eq 'undefined';
-        $reasontext ||= 'expired' if $argvs->action eq 'delayed';
+        $reasontext ||= 'expired' if $argvs->{'action'} eq 'delayed';
         return $reasontext if $reasontext;
 
         # Try to match with message patterns in Sisimai::Reason::Vacation
         require Sisimai::Reason::Vacation;
-        $reasontext   = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->diagnosticcode);
-        $reasontext ||= 'onhold'   if $argvs->diagnosticcode;
+        $reasontext   = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->{'diagnosticcode'});
+        $reasontext ||= 'onhold'   if $argvs->{'diagnosticcode'};
         $reasontext ||= 'undefined';
     }
     return $reasontext;
@@ -101,25 +100,23 @@ sub get {
 
 sub anotherone {
     # Detect the other bounce reason, fall back method for get()
-    # @param    [Sisimai::Data] argvs   Parsed email object
-    # @return   [String, Undef]         Bounce reason or Undef if the argument
-    #                                   is missing or invalid object
+    # @param    [Hash] argvs    Parsed email structure
+    # @return   [String]        Bounce reason or undef if the argument
+    #           [undef]         is missing or invalid object
     # @see get
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return undef unless ref $argvs eq 'Sisimai::Data';
-    return $argvs->reason if $argvs->reason;
+    return $argvs->{'reason'} if $argvs->{'reason'};
 
     require Sisimai::SMTP::Status;
-    my $statuscode = $argvs->deliverystatus // '';
+    my $statuscode = $argvs->{'deliverystatus'} // '';
     my $reasontext = Sisimai::SMTP::Status->name($statuscode) || '';
 
     TRY_TO_MATCH: while(1) {
-        my $diagnostic   = lc $argvs->diagnosticcode // '';
+        my $diagnostic   = lc $argvs->{'diagnosticcode'} // '';
         my $trytomatch   = $reasontext eq '' ? 1 : 0;
            $trytomatch ||= 1 if exists $GetRetried->{ $reasontext };
-           $trytomatch ||= 1 if $argvs->diagnostictype ne 'SMTP';
+           $trytomatch ||= 1 if $argvs->{'diagnostictype'} ne 'SMTP';
         last unless $trytomatch;
 
         # Could not decide the reason by the value of Status:
@@ -143,7 +140,7 @@ sub anotherone {
             #  X.7.0   Other or undefined security status
             $reasontext = 'securityerror';
 
-        } elsif( $argvs->diagnostictype eq 'X-UNIX' || $argvs->diagnostictype eq 'X-POSTFIX' ) {
+        } elsif( $argvs->{'diagnostictype'} =~ /\AX[-](?:UNIX|POSTFIX)\z/ ) {
             # Diagnostic-Code: X-UNIX; ...
             $reasontext = 'mailererror';
 
@@ -155,12 +152,13 @@ sub anotherone {
         last(TRY_TO_MATCH) if $reasontext;
 
         # Check the value of Action: field, first
-        if( $argvs->action =~ /\A(?:delayed|expired)/ ) {
+        if( $argvs->{'action'} =~ /\A(?:delayed|expired)/ ) {
             # Action: delayed, expired
             $reasontext = 'expired';
+
         } else {
             # Check the value of SMTP command
-            my $commandtxt = $argvs->smtpcommand // '';
+            my $commandtxt = $argvs->{'smtpcommand'} // '';
             if( $commandtxt eq 'EHLO' || $commandtxt eq 'HELO' ) {
                 # Rejected at connection or after EHLO|HELO
                 $reasontext = 'blocked';
@@ -199,6 +197,7 @@ sub match {
     if( $typestring eq 'X-UNIX' ) {
         # X-Unix; ...
         $reasontext = 'mailererror';
+
     } else {
         # Detect the bounce reason from "Status:" code
         require Sisimai::SMTP::Status;
@@ -223,17 +222,17 @@ Sisimai::Reason - Detect the bounce reason
 
 =head1 DESCRIPTION
 
-Sisimai::Reason detects the bounce reason from the content of Sisimai::Data
-object as an argument of get() method. This class is called only Sisimai::Data
+Sisimai::Reason detects the bounce reason from the content of Sisimai::Fact
+object as an argument of get() method. This class is called only Sisimai::Fact
 class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 
-=head2 C<B<anotherone(I<Sisimai::Data object>)>>
+=head2 C<B<anotherone(I<Sisimai::Fact object>)>>
 
 C<anotherone()> is a method for detecting the bounce reason, it works as a fall
 back method of get() and called only from get() method.
@@ -249,7 +248,7 @@ an argument of the method. However, this method is low analytical precision.
 
 C<Sisimai::Reason->get()> detects the reason of bounce with parsing the bounced
 messages. The following reasons will be set in the value of C<reason> property
-of Sisimai::Data instance.
+of Sisimai::Fact instance.
 
 =head2 C<blocked>
 
@@ -289,7 +288,7 @@ This is NOT AN ERROR and means the message you sent has delivered to recipients
 successfully.
 
     Final-Recipient: rfc822; kijitora@neko.nyaan.jp
-    Action: deliverable
+    Action: delivered
     Status: 2.1.5
     Remote-MTA: dns; home.neko.nyaan.jp
     Diagnostic-Code: SMTP; 250 2.1.5 OK
@@ -379,7 +378,7 @@ server. In many case, There are many attachment files with email, or the file
 size is too large. Sisimai will set C<mesgtoobig> to the reason of email bounce
 if the value of Status: field in a bounce email is C<5.3.4>.
 
-    Action: failure
+    Action: failed
     Status: 553 Exceeded maximum inbound message size
 
 =head2 C<networkerror>

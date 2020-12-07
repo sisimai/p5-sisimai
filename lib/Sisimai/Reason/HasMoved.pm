@@ -21,7 +21,7 @@ sub match {
 
 sub true {
     # Whether the address has moved or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: The address has moved
     #                                   0: Has not moved
     # @since v4.1.25
@@ -29,8 +29,8 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return 1 if $argvs->reason eq 'hasmoved';
-    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
+    return 1 if $argvs->{'reason'} eq 'hasmoved';
+    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0;
 }
 
@@ -74,10 +74,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::HasMoved->match('address cat@example.jp has been replaced by ');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is C<hasmoved>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -85,7 +85,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
