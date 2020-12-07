@@ -1,17 +1,17 @@
-package Sisimai::Data::YAML;
+package Sisimai::Fact::YAML;
 use feature ':5.10';
 use strict;
 use warnings;
 
 sub dump {
     # Data dumper(YAML)
-    # @param    [Sisimai::Data] argvs   Object
-    # @return   [String, Undef]         Dumped data or Undef if the argument is
+    # @param    [Sisimai::Fact] argvs   Object
+    # @return   [String, undef]         Dumped data or undef if the argument is
     #                                   missing
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless ref $argvs eq 'Sisimai::Data';
+    return undef unless ref $argvs eq 'Sisimai::Fact';
     my $damneddata = undef;
     my $yamlstring = undef;
     my $modulename = undef;
@@ -59,32 +59,31 @@ __END__
 
 =head1 NAME
 
-Sisimai::Data::YAML - Dumps parsed data object as a YAML format
+Sisimai::Fact::YAML - Dumps parsed data object as a YAML format
 
 =head1 SYNOPSIS
 
-    use Sisimai::Data;
-    my $data = Sisimai::Data->make('data' => <Sisimai::Message> object);
-    for my $e ( @$data ) {
+    use Sisimai::Fact;
+    my $fact = Sisimai::Fact->rise('data' => 'Entire email text');
+    for my $e ( @$fact ) {
         print $e->dump('yaml');
     }
 
 =head1 DESCRIPTION
 
-Sisimai::Data::YAML dumps parsed data object as a YAML format. This class and
-method should be called from the parent object "Sisimai::Data".
+Sisimai::Fact::YAML dumps parsed data object as a YAML format. This class and
+method should be called from the parent object "Sisimai::Fact".
 
 =head1 CLASS METHODS
 
-=head2 C<B<dump(I<Sisimai::Data>)>>
+=head2 C<B<dump(I<Sisimai::Fact>)>>
 
-C<dump> method returns Sisimai::Data object as a YAML formatted string.
+C<dump> method returns Sisimai::Fact object as a YAML formatted string.
 
     my $mail = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mail->read ) {
-        my $mesg = Sisimai::Message->new('data' => $r);
-        my $data = Sisimai::Data->make('data' => $mesg);
-        for my $e ( @$data ) {
+        my $fact = Sisimai::Fact->rise('data' => $r);
+        for my $e ( @$fact ) {
             print $e->dump('yaml');
         }
     }
@@ -95,10 +94,11 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+
