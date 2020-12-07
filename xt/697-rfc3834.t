@@ -7,20 +7,21 @@ require './t/600-lhost-code';
 my $enginename = 'RFC3834';
 my $samplepath = sprintf("./set-of-emails/private/%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01002', 'r' => qr/vacation/ },
-    { 'n' => '01003', 'r' => qr/vacation/ },
-    { 'n' => '01004', 'r' => qr/vacation/ },
-    { 'n' => '01005', 'r' => qr/vacation/ },
-    { 'n' => '01006', 'r' => qr/vacation/ },
-    { 'n' => '01007', 'r' => qr/vacation/ },
-    { 'n' => '01008', 'r' => qr/vacation/ },
-    { 'n' => '01009', 'r' => qr/vacation/ },
-    { 'n' => '01010', 'r' => qr/vacation/ },
-    { 'n' => '01011', 'r' => qr/vacation/ },
-    { 'n' => '01012', 'r' => qr/vacation/ },
-    { 'n' => '01013', 'r' => qr/vacation/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01002' => [['',        '',    'vacation',        0]],
+    '01003' => [['',        '',    'vacation',        0]],
+    '01004' => [['',        '',    'vacation',        0]],
+    '01005' => [['',        '',    'vacation',        0]],
+    '01006' => [['',        '',    'vacation',        0]],
+    '01007' => [['',        '',    'vacation',        0]],
+    '01008' => [['',        '',    'vacation',        0]],
+    '01009' => [['',        '',    'vacation',        0]],
+    '01010' => [['',        '',    'vacation',        0]],
+    '01011' => [['',        '',    'vacation',        0]],
+    '01012' => [['',        '',    'vacation',        0]],
+    '01013' => [['',        '',    'vacation',        0]],
+};
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
 $enginetest->($enginename, $isexpected, 1, 0);

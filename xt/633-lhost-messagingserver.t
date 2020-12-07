@@ -7,27 +7,29 @@ require './t/600-lhost-code';
 my $enginename = 'MessagingServer';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01001', 'r' => qr/hostunknown/ },
-    { 'n' => '01002', 'r' => qr/mailboxfull/ },
-    { 'n' => '01003', 'r' => qr/filtered/    },
-    { 'n' => '01004', 'r' => qr/mailboxfull/ },
-    { 'n' => '01005', 'r' => qr/hostunknown/ },
-    { 'n' => '01006', 'r' => qr/filtered/    },
-    { 'n' => '01007', 'r' => qr/mailboxfull/ },
-    { 'n' => '01008', 'r' => qr/filtered/    },
-    { 'n' => '01009', 'r' => qr/mailboxfull/ },
-    { 'n' => '01010', 'r' => qr/mailboxfull/ },
-    { 'n' => '01011', 'r' => qr/expired/     },
-    { 'n' => '01012', 'r' => qr/filtered/    },
-    { 'n' => '01013', 'r' => qr/mailboxfull/ },
-    { 'n' => '01014', 'r' => qr/mailboxfull/ },
-    { 'n' => '01015', 'r' => qr/filtered/    },
-    { 'n' => '01016', 'r' => qr/userunknown/ },
-    { 'n' => '01017', 'r' => qr/notaccept/   },
-    { 'n' => '01018', 'r' => qr/rejected/    },
-    { 'n' => '01019', 'r' => qr/mailboxfull/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01001' => [['5.4.4',   '',    'hostunknown',     1]],
+    '01002' => [['5.0.0',   '',    'mailboxfull',     0]],
+    '01003' => [['5.7.1',   '550', 'filtered',        0],
+                ['5.7.1',   '550', 'filtered',        0]],
+    '01004' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    '01005' => [['5.4.4',   '',    'hostunknown',     1]],
+    '01006' => [['5.7.1',   '550', 'filtered',        0]],
+    '01007' => [['5.2.0',   '522', 'mailboxfull',     0]],
+    '01008' => [['5.2.1',   '550', 'filtered',        0]],
+    '01009' => [['5.0.0',   '',    'mailboxfull',     0]],
+    '01010' => [['5.2.0',   '522', 'mailboxfull',     0]],
+    '01011' => [['4.4.7',   '',    'expired',         0]],
+    '01012' => [['5.0.0',   '550', 'filtered',        0]],
+    '01013' => [['4.2.2',   '',    'mailboxfull',     0]],
+    '01014' => [['4.2.2',   '',    'mailboxfull',     0]],
+    '01015' => [['5.0.0',   '550', 'filtered',        0]],
+    '01016' => [['5.0.0',   '550', 'userunknown',     1]],
+    '01017' => [['5.0.932', '',    'notaccept',       1]],
+    '01018' => [['5.1.8',   '501', 'rejected',        0]],
+    '01019' => [['4.2.2',   '',    'mailboxfull',     0]],
+};
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
 $enginetest->($enginename, $isexpected, 1, 0);

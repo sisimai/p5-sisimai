@@ -7,19 +7,20 @@ require './t/600-lhost-code';
 my $enginename = 'Yahoo';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01001', 'r' => qr/userunknown/ },
-    { 'n' => '01002', 'r' => qr/mailboxfull/ },
-    { 'n' => '01003', 'r' => qr/userunknown/ },
-    { 'n' => '01004', 'r' => qr/userunknown/ },
-    { 'n' => '01005', 'r' => qr/blocked/     },
-    { 'n' => '01006', 'r' => qr/userunknown/ },
-    { 'n' => '01007', 'r' => qr/mailboxfull/ },
-    { 'n' => '01008', 'r' => qr/notaccept/   },
-    { 'n' => '01009', 'r' => qr/userunknown/ },
-    { 'n' => '01010', 'r' => qr/rejected/    },
-    { 'n' => '01011', 'r' => qr/blocked/     },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01001' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01002' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    '01003' => [['5.2.1',   '550', 'userunknown',     1]],
+    '01004' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01005' => [['5.0.971', '554', 'blocked',         0]],
+    '01006' => [['5.0.911', '550', 'userunknown',     1]],
+    '01007' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    '01008' => [['5.0.932', '',    'notaccept',       1]],
+    '01009' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01010' => [['5.1.8',   '501', 'rejected',        0]],
+    '01011' => [['5.0.971', '554', 'blocked',         0]],
+};
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
 $enginetest->($enginename, $isexpected, 1, 0);

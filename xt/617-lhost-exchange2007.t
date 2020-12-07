@@ -7,18 +7,19 @@ require './t/600-lhost-code';
 my $enginename = 'Exchange2007';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01001', 'r' => qr/userunknown/ },
-    { 'n' => '01002', 'r' => qr/mesgtoobig/  },
-    { 'n' => '01003', 'r' => qr/userunknown/ },
-    { 'n' => '01004', 'r' => qr/userunknown/ },
-    { 'n' => '01005', 'r' => qr/mailboxfull/ },
-    { 'n' => '01006', 'r' => qr/mesgtoobig/  },
-    { 'n' => '01007', 'r' => qr/mailboxfull/ },
-    { 'n' => '01008', 'r' => qr/securityerror/ },
-    { 'n' => '01009', 'r' => qr/userunknown/ },
-    { 'n' => '01010', 'r' => qr/userunknown/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01001' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01002' => [['5.2.3',   '550', 'mesgtoobig',      0]],
+    '01003' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01004' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01005' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    '01006' => [['5.2.3',   '550', 'mesgtoobig',      0]],
+    '01007' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    '01008' => [['5.7.1',   '550', 'securityerror',   0]],
+    '01009' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01010' => [['5.1.1',   '550', 'userunknown',     1]],
+};
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
 $enginetest->($enginename, $isexpected, 1, 0);

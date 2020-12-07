@@ -7,10 +7,11 @@ require './t/600-lhost-code';
 my $enginename = 'Barracuda';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01001', 'r' => qr/spamdetected/ },
-    { 'n' => '01002', 'r' => qr/spamdetected/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01001' => [['5.7.1',   '550', 'spamdetected',    0]],
+    '01002' => [['5.7.1',   '550', 'spamdetected',    0]],
+};
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
 $enginetest->($enginename, $isexpected, 1, 0);

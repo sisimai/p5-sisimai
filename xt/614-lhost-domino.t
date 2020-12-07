@@ -7,24 +7,25 @@ require './t/600-lhost-code';
 my $enginename = 'Domino';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01001', 'r' => qr/onhold/      },
-    { 'n' => '01002', 'r' => qr/userunknown/ },
-    { 'n' => '01003', 'r' => qr/userunknown/ },
-    { 'n' => '01004', 'r' => qr/userunknown/ },
-    { 'n' => '01005', 'r' => qr/onhold/      },
-    { 'n' => '01006', 'r' => qr/userunknown/ },
-    { 'n' => '01007', 'r' => qr/userunknown/ },
-    { 'n' => '01008', 'r' => qr/userunknown/ },
-    { 'n' => '01009', 'r' => qr/userunknown/ },
-    { 'n' => '01010', 'r' => qr/userunknown/ },
-    { 'n' => '01011', 'r' => qr/userunknown/ },
-    { 'n' => '01012', 'r' => qr/userunknown/ },
-    { 'n' => '01013', 'r' => qr/userunknown/ },
-    { 'n' => '01014', 'r' => qr/userunknown/ },
-    { 'n' => '01015', 'r' => qr/networkerror/},
-    { 'n' => '01016', 'r' => qr/systemerror/ },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01001' => [['5.0.0',   '',    'onhold',          0]],
+    '01002' => [['5.1.1',   '',    'userunknown',     1]],
+    '01003' => [['5.0.0',   '',    'userunknown',     1]],
+    '01004' => [['5.0.0',   '',    'userunknown',     1]],
+    '01005' => [['5.0.0',   '',    'onhold',          0]],
+    '01006' => [['5.0.911', '',    'userunknown',     1]],
+    '01007' => [['5.0.0',   '',    'userunknown',     1]],
+    '01008' => [['5.0.911', '',    'userunknown',     1]],
+    '01009' => [['5.0.911', '',    'userunknown',     1]],
+    '01010' => [['5.0.911', '',    'userunknown',     1]],
+    '01011' => [['5.1.1',   '',    'userunknown',     1]],
+    '01012' => [['5.0.911', '',    'userunknown',     1]],
+    '01013' => [['5.0.911', '',    'userunknown',     1]],
+    '01014' => [['5.0.911', '',    'userunknown',     1]],
+    '01015' => [['5.0.0',   '',    'networkerror',    0]],
+    '01016' => [['5.0.0',   '',    'systemerror',     0]],
+};
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
 $enginetest->($enginename, $isexpected, 1, 0);

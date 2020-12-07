@@ -7,16 +7,17 @@ require './t/600-lhost-code';
 my $enginename = 'X3';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01001', 'r' => qr/userunknown/    },
-    { 'n' => '01002', 'r' => qr/undefined/      },
-    { 'n' => '01003', 'r' => qr/expired/        },
-    { 'n' => '01004', 'r' => qr/userunknown/    },
-    { 'n' => '01005', 'r' => qr/undefined/      },
-    { 'n' => '01006', 'r' => qr/userunknown/    },
-    { 'n' => '01007', 'r' => qr/expired/        },
-    { 'n' => '01008', 'r' => qr/userunknown/    },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01001' => [['5.3.0',   '553', 'userunknown',     1]],
+    '01002' => [['5.0.900', '',    'undefined',       0]],
+    '01003' => [['5.0.947', '',    'expired',         0]],
+    '01004' => [['5.3.0',   '553', 'userunknown',     1]],
+    '01005' => [['5.0.900', '',    'undefined',       0]],
+    '01006' => [['5.3.0',   '553', 'userunknown',     1]],
+    '01007' => [['5.0.947', '',    'expired',         0]],
+    '01008' => [['5.3.0',   '553', 'userunknown',     1]],
+};
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
 $enginetest->($enginename, $isexpected, 1, 0);

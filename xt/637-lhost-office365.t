@@ -7,28 +7,29 @@ require './t/600-lhost-code';
 my $enginename = 'Office365';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
-my $isexpected = [
-    { 'n' => '01001', 'r' => qr/userunknown/   },
-    { 'n' => '01002', 'r' => qr/userunknown/   },
-    { 'n' => '01003', 'r' => qr/userunknown/   },
-    { 'n' => '01004', 'r' => qr/userunknown/   },
-    { 'n' => '01005', 'r' => qr/userunknown/   },
-    { 'n' => '01006', 'r' => qr/networkerror/  },
-    { 'n' => '01007', 'r' => qr/userunknown/   },
-    { 'n' => '01008', 'r' => qr/userunknown/   },
-    { 'n' => '01009', 'r' => qr/securityerror/ },
-    { 'n' => '01010', 'r' => qr/blocked/       },
-    { 'n' => '01011', 'r' => qr/filtered/      },
-    { 'n' => '01012', 'r' => qr/rejected/      },
-    { 'n' => '01013', 'r' => qr/networkerror/  },
-    { 'n' => '01014', 'r' => qr/userunknown/   },
-    { 'n' => '01015', 'r' => qr/userunknown/   },
-    { 'n' => '01016', 'r' => qr/userunknown/   },
-    { 'n' => '01017', 'r' => qr/mailboxfull/   },
-    { 'n' => '01018', 'r' => qr/userunknown/   },
-    { 'n' => '01019', 'r' => qr/userunknown/   },
-    { 'n' => '01020', 'r' => qr/userunknown/   },
-];
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01001' => [['5.1.10',  '550', 'userunknown',     1]],
+    '01002' => [['5.1.10',  '550', 'userunknown',     1]],
+    '01003' => [['5.1.10',  '550', 'userunknown',     1]],
+    '01004' => [['5.1.10',  '550', 'userunknown',     1]],
+    '01005' => [['5.1.10',  '550', 'userunknown',     1]],
+    '01006' => [['5.4.14',  '554', 'networkerror',    0]],
+    '01007' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01008' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01009' => [['5.0.0',   '553', 'securityerror',   0]],
+    '01010' => [['5.1.0',   '550', 'blocked',         0]],
+    '01011' => [['5.1.351', '550', 'filtered',        0]],
+    '01012' => [['5.1.8',   '501', 'rejected',        0]],
+    '01013' => [['5.4.312', '550', 'networkerror',    0]],
+    '01014' => [['5.1.351', '550', 'userunknown',     1]],
+    '01015' => [['5.1.351', '550', 'userunknown',     1]],
+    '01016' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01017' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    '01018' => [['5.1.10',  '550', 'userunknown',     1]],
+    '01019' => [['5.1.10',  '550', 'userunknown',     1]],
+    '01020' => [['5.1.10',  '550', 'userunknown',     1]],
+};
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
 $enginetest->($enginename, $isexpected, 1, 0);
