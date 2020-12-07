@@ -72,7 +72,9 @@ sub field {
     my $class = shift;
     my $argv0 = shift || return undef;
 
-    state $correction = { 'action' => { 'failure' => 'failed', 'expired' => 'delayed' } };
+    state $correction = {
+        'action' => { 'deliverable' => 'delivered', 'expired' => 'delayed', 'failure' => 'failed' },
+    };
     state $fieldgroup = {
         'original-recipient'    => 'addr',
         'final-recipient'       => 'addr',
@@ -92,7 +94,7 @@ sub field {
         'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
         'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
         'host' => qr/\A((?:Reporting|Received-From|Remote)-MTA):[ ]*(.+?);[ ]*(.+)/,
-        'list' => qr/\A(Action):[ ]*(failed|delayed|delivered|relayed|expanded|expired|failure)/i,
+        'list' => qr/\A(Action):[ ]*(failed|delayed|deliverable|delivered|relayed|expanded|expired|failure)/i,
         'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
         'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
        #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
