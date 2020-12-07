@@ -406,7 +406,7 @@ sub parse {
 sub abbr2tz {
     # Abbreviation -> Tiemzone
     # @param    [String] argv1  Abbr. e.g.) JST, GMT, PDT
-    # @return   [String, Undef] +0900, +0000, -0600 or Undef if the argument is
+    # @return   [String, undef] +0900, +0000, -0600 or undef if the argument is
     #                           invalid format or not supported abbreviation
     # @example  Get the timezone string of "JST"
     #   abbr2tz('JST')  #=> '+0900'
@@ -418,7 +418,7 @@ sub abbr2tz {
 sub tz2second {
     # Convert to second
     # @param    [String] argv1  Timezone string e.g) +0900
-    # @return   [Integer,Undef] n: seconds or Undef it the argument is invalid
+    # @return   [Integer,undef] n: seconds or undef it the argument is invalid
     #                           format string
     # @see      second2tz
     # @example  Convert '+0900' to seconds

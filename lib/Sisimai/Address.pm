@@ -21,7 +21,7 @@ use Class::Accessor::Lite (
 sub undisclosed {
     # Return pseudo recipient or sender address
     # @param    [String] atype  Address type: 'r' or 's'
-    # @return   [String, undef] Pseudo recipient address or sender address or Undef when the $atype
+    # @return   [String, undef] Pseudo recipient address or sender address or undef when the $atype
     #                           is neither 'r' nor 's'
     my $class = shift;
     my $atype = shift || return undef;
@@ -103,7 +103,7 @@ sub find {
     # @param    [String] argv1  String including email address
     # @param    [Boolean] addrs 0 = Returns list including all the elements
     #                           1 = Returns list including email addresses only
-    # @return   [Array, Undef]  Email address list or Undef when there is no
+    # @return   [Array, undef]  Email address list or undef when there is no
     #                           email address in the argument
     # @since    v4.22.0
     my $class = shift;
