@@ -10,309 +10,459 @@ my $moduletest = sub {
     my $privateset = shift || 0;
     my $onlydebugs = shift || 0;
 
-    my $E = $modulename;
-    my $M = undef;
+    my $E = $modulename;    # Sendmail, Postfix, and so on.
+    my $M = undef;          # Sisiimai::Lhost::Sendmail, Sisimai::ARF, and so on.
     my $v = undef;
 
     use Test::More;
+    use JSON;
+    use YAML;
     use Module::Load;
     use Sisimai::Mail;
-    use Sisimai::Message;
-    use Sisimai::Data;
+    use Sisimai::Fact;
+    use Sisimai::Reason;
+    use Sisimai::RFC5322;
 
-    my $outofemail = ['ARF', 'RFC3464', 'RFC3834'];
+    my $isnotlhost = qr/\A(?:ARF|RFC3464|RFC3834)\z/;
     my $samplepath = 'set-of-emails/maildir/bsd';
-    my $methodlist = ['description', 'make', 'DELIVERYSTATUS'];
+    my $isntpublic = 'set-of-emails/private';
+    my $methodlist = ['DELIVERYSTATUS', 'INDICATORS', 'description', 'index', 'path'];
+    my $jsonobject = JSON->new;
     my $emailindex = 0;
-    my $mesgmethod = {
-        'length' => [qw|recipient agent|],
-        'exists' => [qw|
-            date spec reason status command action alias rhost lhost 
-            diagnosis feedbacktype softbounce
-        |],
-    };
-    my $getskipped = {
-        'undisclosed' => qr/\AARF-(?:11|12|15|1010|1011)-\d+/,
-    };
+    my $nameprefix = '';
+    my $reasonlist = [map { $_ = lc $_ } @{ Sisimai::Reason->index }];
+    push @$reasonlist, 'delivered', 'feedback', 'undefined', 'vacation';
 
-    if( grep { $E eq $_ } @$outofemail ) {
-        # ARF, RFC3464, RFC3834
+    my $getskipped = { 'undisclosed' => qr/\AARF-(?:11|12|15|1010|1011)-\d+/ };
+
+
+    if( $E =~ $isnotlhost ) {
+        # ARF, RFC3464, ARF3834
         $M = sprintf("Sisimai::%s", $E);
-        $samplepath = sprintf("set-of-emails/private/%s", lc $E) if $privateset;
 
     } else {
-        # Other MTA modules
-        $M = sprintf("Sisimai::Lhost::%s", $E);
-        $samplepath = sprintf("set-of-emails/private/lhost-%s", lc $E) if $privateset;
+        # Sisimai::Lhost OR Sisimai::Rhost
+        my $c = [caller()]->[1];
+        my $h = $c =~ /-rhost-/ ? 'rhost' : 'lhost';
+        $M = sprintf("Sisimai::%s::%s", ucfirst $h, $E);
+        $nameprefix = $h.'-';
     }
+    $samplepath = sprintf("set-of-emails/private/%s%s", $nameprefix, lc $E) if $privateset;
 
-    Module::Load::load($M);
+    Module::Load::load $M;
     use_ok $M;
-    can_ok $M, @$methodlist unless grep { $E eq $_ } @$outofemail;
+    can_ok $M, @$methodlist if $M =~ /Sisimai::Lhost/;
+    can_ok $M, ('make') unless $M =~ /Sisimai::Rhost/;
 
-    $v = $M->description; ok $v, $E.'->description = '.$v;
-    $v = $M->make;        is $v, undef, $E.'->make = undef';
-
-    PARSE_EACH_EMAIL: for my $e ( @$isexpected ) {
+    PARSE_EACH_EMAIL: for my $e ( sort keys %$isexpected ) {
         # Open each email in set-of-emails/ directory
-        my $samplefile = undef;
-        my $mailobject = undef;
-        my $indexlabel = sprintf("%02d", $e->{'n'});
+        my $cj = undef; # Current JSON/YAML string
+        my $cf = undef; # Current sample email file
+        my $cr = undef; # Current regular expression
+        my $ct = undef; # Current text for displaying with -v option
+        my $cv = undef; # Current value for test
+        my $cx = $isexpected->{ $e };
+
         my $haveparsed = 0;
 
         if( $onlydebugs ) {
             # Debug mode
             $emailindex += 1;
-            next unless int($onlydebugs) == int($e->{'n'});
-            ok $onlydebugs, sprintf("[%s] %s|DEBUG(%02d)", $e->{'n'}, $E, $onlydebugs);
+            next unless int($onlydebugs) == int($e);
+            ok $onlydebugs, sprintf("[%s] %s|DEBUG(%02d)", $e, $E, $onlydebugs);
         }
 
         if( $privateset ) {
-            # Private sample
-            $samplefile = [glob(sprintf("./%s/%s-*.eml", $samplepath, $e->{'n'}))]->[0];
+            # Private sample: 01227-581a7c3e4f0c0664ff171969c34bf988.eml
+            $cf = [glob(sprintf("./%s/%s-*.eml", $samplepath, $e))]->[0];
 
         } else {
-            # Public sample
-            if( grep { $E eq $_ } @$outofemail ) {
-                # ARF, RFC3464, and RFC3834
-                $samplefile = sprintf("./%s/%s-%02d.eml", $samplepath, lc $E, $e->{'n'});
-
-            } else {
-                # Other MTA modules
-                $samplefile = sprintf("./%s/lhost-%s-%02d.eml", $samplepath, lc $E, $e->{'n'});
-            }
+            # Public sample: lhost-sendmail-59.eml
+            $cf = $E =~ $isnotlhost
+                ? $cf = sprintf("./%s/%s-%02d.eml", $samplepath, lc $E, int $e)
+                : $cf = sprintf("./%s/%s%s-%02d.eml", $samplepath, $nameprefix, lc $E, int $e);
         }
 
-        ok -f $samplefile, sprintf("[%s] %s/email(path) = %s", $e->{'n'}, $E, $samplefile);
-        ok -s $samplefile, sprintf("[%s] %s/email(size) = %s", $e->{'n'}, $E, -s $samplefile);
+        ok -f $cf, sprintf("[%s---] %s/email(path) = %s", $e, $E, $cf);
+        ok -s $cf, sprintf("[%s---] %s/email(size) = %s", $e, $E, -s $cf);
 
-        $mailobject = Sisimai::Mail->new($samplefile);
-        next unless defined $mailobject;
+        my $mailobject = Sisimai::Mail->new($cf);
+        # next unless defined $mailobject;
         isa_ok $mailobject, 'Sisimai::Mail';
 
         READ_EACH_EMAIL: while( my $r = $mailobject->data->read ) {
             # Read messages in each email
-            my $mesgobject = undef;
-            my $dataobject = undef;
-            my $foundindex = 0;
+            my $methodargs = { 'data' => $r, 'delivered' => 1, 'origin' => $cf };
+            my $listoffact = Sisimai::Fact->rise($methodargs) || next;
+            my $recipients = scalar @$listoffact;
+            my $errorindex = 0;
+            my $reexpected = undef;
 
-            my $pp = undef; # Property
-            my $lb = undef; # Label
-            my $re = undef; # Regular expression
+            isa_ok $listoffact, 'ARRAY';
+            ok $recipients, sprintf("[%s---] %s/including %d bounces", $e, $E, $recipients);
 
-            $mesgobject = Sisimai::Message->new('data' => $r);
-            next unless defined $mesgobject;
-            $haveparsed++;
+            while( my $f = shift @$listoffact ) {
+                # Test each Sisimai::Fact object
+                isa_ok $f, 'Sisimai::Fact';
+                $errorindex += 1;
 
-            isa_ok $mesgobject,         'Sisimai::Message', sprintf("[%s] Sisimai::Message object", $e->{'n'});
-            isa_ok $mesgobject->ds,     'ARRAY', sprintf("[%s] Sisimai::Message->ds",     $e->{'n'});
-            isa_ok $mesgobject->header, 'HASH',  sprintf("[%s] Sisimai::Message->header", $e->{'n'});
-            isa_ok $mesgobject->rfc822, 'HASH',  sprintf("[%s] Sisimai::Message->rf822",  $e->{'n'});
+                ACTION: {
+                    $cv = $f->action;
+                    $cr = qr/\A(?:delayed|delivered|expanded|failed|relayed)\z/;
+                    $ct = sprintf("[%s-%02d] ->action =", $e, $errorindex);
 
-            ok length $mesgobject->from,    sprintf("[%s***] %s->from = %s", $e->{'n'}, $E, $mesgobject->from);
-            ok scalar @{ $mesgobject->ds }, sprintf("[%s***] %s->ds = %d entries", $e->{'n'}, $E, scalar @{ $mesgobject->ds });
-
-            SISIMAI_MESSAGE: for my $ds ( @{ $mesgobject->ds } ) {
-                $foundindex += 1;
-                $lb = sprintf("%02d-%02d", $e->{'n'}, $foundindex);
-
-                for my $rr ( @{ $mesgmethod->{'length'} } ) {
-                    # Lenght of each variable is greater than 0
-                    ok length $ds->{ $rr }, sprintf(" [%s] %s->%s = %s", $lb, $E, $rr, $ds->{ $rr });
-                }
-
-                for my $rr ( @{ $mesgmethod->{'exists'} } ) {
-                    # Each key should be exist
-                    ok exists $ds->{ $rr }, sprintf(" [%s] %s->%s = %s", $lb, $E, $rr, $ds->{ $rr } || '');
-                }
-
-                $pp = 'agent';
-                if( $E eq 'X4' ) {
-                    # X4 is qmail clone
-                    $re = qr/(?:qmail|X4)/;
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-
-                } elsif( $E eq 'RFC3464' ) {
-                    # RFC3464
-                    if( $privateset ) {
-                        ok length $ds->{ $pp }, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+                    if( $f->reason eq 'feedback' || $f->reason eq 'vacation' ) {
+                        # "action" is empty when the value of "reason" is "feedback" OR "vacation"
+                        is $cv, '', sprintf("%s %s", $ct, '');
 
                     } else {
-                        $re = $e->{'a'};
-                        like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                        # The value of "reason" is not "feedback"
+                        ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
                     }
-
-                } elsif( $E eq 'RFC3834' ) {
-                    # RFC3834
-                    $re = qr/\ARFC3834\z/;
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-
-                } elsif( $E eq 'ARF' ) {
-                    # ARF
-                    $re = qr/.+/;
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-
-                } else {
-                    # Other MTA modules
-                    $re = $E;
-                    is $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
                 }
 
-                $pp = 'recipient';
-                $re = qr/[0-9A-Za-z@-_.]+/;
-                like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                ADDRESSER: {
+                    isa_ok $f->addresser, 'Sisimai::Address';
 
-                if( sprintf("%s-%s", $E, $lb) =~ $getskipped->{'undisclosed'} ) {
-                    $re = qr/[@]libsisimai[.]org[.]invalid/;
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                }
+                    $cv = $f->addresser->address;
+                    $cr = qr/\A.+[@][0-9A-Za-z._-]+[A-Za-z]+?\z/;
+                    $ct = sprintf("[%s-%02d] ->addresser->", $e, $errorindex);
 
-                $pp = 'command';
-                unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
+                    ok defined $f->addresser->alias,   sprintf("%s%s = %s", $ct, 'alias', $f->addresser->alias);
+                    ok defined $f->addresser->verp,    sprintf("%s%s = %s", $ct, 'verp',  $f->addresser->verp);
+                    ok defined $f->addresser->name,    sprintf("%s%s = %s", $ct, 'name',  $f->addresser->name);
+                    ok defined $f->addresser->comment, sprintf("%s%s = %s", $ct, 'comment', $f->addresser->comment);
+                    ok length  $f->addresser->user,    sprintf("%s%s = %s", $ct, 'user',  $f->addresser->user);
 
-                $pp = 'status';
-                if( length $ds->{ $pp } ) {
-                    # Check the value of "status"
-                    $re = qr/\A(?:[245][.]\d[.]\d+)\z/;
-                    like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                    unlike $ds->{ $pp }, qr/[ ]/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                }
+                    unless( Sisimai::RFC5322->is_mailerdaemon($cv) ) {
+                        # Is not a MAILER-DAEMON
+                        ok length  $f->addresser->host,sprintf("%s%s = %s", $ct, 'host',  $f->addresser->host);
+                        ok $cv =~ $cr, sprintf("%s%s = %s", $ct, 'address', $cr);
 
-                $pp = 'action';
-                if( length $ds->{ $pp } ) {
-                    # Check the value of "action"
-                    $re = qr/\A(?:fail.+|delayed|deliverable|delivered|expired|expanded.*|relayed)\z/;
-                    like   $ds->{ $pp }, $re,     sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                }
+                        ok length $cv, sprintf("%s%s = %s", $ct, 'address', $cv);
+                        is $cv, $f->addresser->user.'@'.$f->addresser->host;
 
-                for my $rr ( 'rhost', 'lhost' ) {
-                    # Check rhost and lhost are valid hostname or not
-                    next unless $ds->{ $rr };
-                    next if $E =~ m/\A(?:qmail|Exim|Exchange|X4|MailRu|Outlook)/;
-                    next unless length $ds->{ $rr };
-
-                    $pp = $rr;
-                    $re = qr/\A(?:[0-9A-Za-z]+|.+[.].+)\z/;
-                    like $ds->{ $pp }, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $ds->{ $pp });
-                }
-            } # End of the loop for checking Sisimai::Message
-
-
-            $dataobject = Sisimai::Data->make('data' => $mesgobject, 'delivered' => 1, 'origin' => $mailobject->data->path);
-            isa_ok $dataobject, 'ARRAY',              sprintf("[%s] Data object", $e->{'n'});
-            isa_ok $dataobject->[0], 'Sisimai::Data', sprintf("[%s] Sisimai::Data", $e->{'n'});
-            ok scalar @$dataobject, sprintf("%s|Sisimai::Data = %s", $E, scalar @$dataobject);
-
-            SISIMAI_DATA: for my $pr ( @$dataobject ) {
-                # checking each Sisimai::Data object
-                isa_ok $pr,            'Sisimai::Data';
-                isa_ok $pr->timestamp, 'Sisimai::Time';
-                isa_ok $pr->addresser, 'Sisimai::Address';
-                isa_ok $pr->recipient, 'Sisimai::Address';
-
-                $pp = 'replycode';      ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'subject';        ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, '...');
-                            isnt utf8::is_utf8($pr->$pp), 1, sprintf(" [%s] %s->%s = NO-UTF8-FLAGGED", $lb, $E, $pp);
-                            unlike $pr->$pp, qr/\AMULTIBYTE/,sprintf(" [%s] %s->%s = IS-NOT-REMOVED", $lb, $E, $pp);
-                $pp = 'smtpcommand';    ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'diagnosticcode'; ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'diagnostictype'; ok defined $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-
-                if( $pr->reason eq 'feedback' ) {
-                    # reason: "feedback"
-                    $pp = 'deliverystatus'; is $pr->$pp, '', sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-
-                    if( $E eq 'ARF' ) {
-                        $pp = 'feedbacktype';
-                        if( $privateset ) {
-                            ok length $pr->$pp,       sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-
-                        } else {
-                            like $pr->$pp, $e->{'f'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                        }
+                        ok $f->addresser->alias =~ $cr if length $f->addresser->alias;
+                        ok $f->addresser->verp  =~ $cr if length $f->addresser->verp;
                     }
-
-                } elsif( $pr->reason eq 'vacation' ) {
-                    # RFC3834
-                    $pp = 'deliverystatus'; is $pr->$pp, '',  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                    $pp = 'feedbacktype';   is $pr->$pp, '',  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-
-                } else {
-                    # other reasons
-                    $pp = 'deliverystatus'; ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                    $pp = 'feedbacktype';   is $pr->$pp, '',    sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
                 }
 
-                $pp = 'token';          ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'smtpagent';      ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'timezoneoffset'; ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                ALIAS: {
+                    $cv = $f->alias;
+                    $ct = sprintf("[%s-%02d] ->alias =", $e, $errorindex);
 
-                $pp = 'senderdomain'; is $pr->addresser->host, $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'destination';  is $pr->recipient->host, $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-
-                $pp = 'softbounce';
-                cmp_ok $pr->$pp, '>=', -1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                cmp_ok $pr->$pp, '<=',  1,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-
-                if( $privateset ) {
-                    # Explicit value is not defined for private samples
-                    $pp = 'softbounce';     ok length $pr->$pp, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                    $re = qr/\A(?:[245][.]\d[.]\d+|)\z/;
-                    $pp = 'deliverystatus'; like $pr->$pp, $re,  sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-
-                } else {
-                    # Try to match with the explicit value
-                    $pp = 'softbounce';     like $pr->$pp, $e->{'b'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                    $pp = 'deliverystatus'; like $pr->$pp, $e->{'s'}, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
                 }
 
-                $pp = 'replycode';      like $pr->$pp, qr/\A(?:[245]\d\d|)\z/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'timezoneoffset'; like $pr->$pp, qr/\A[-+]\d{4}\z/,      sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'diagnostictype'; like $pr->$pp, qr/.*/,                 sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'reason';         like $pr->$pp, $e->{'r'},              sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'token';          like $pr->$pp, qr/\A([0-9a-f]{40})\z/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
-                $pp = 'alias';        unlike $pr->$pp, qr/[\r]/,               sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp) if $pr->$pp;
+                CATCH: {
+                    is $f->catch, undef, sprintf("[%s-%02d] ->catch = undef", $e, $errorindex);
+                }
 
-                $re = qr/[ \r]/;
-                for my $rr ( qw|deliverystatus smtpcommand lhost rhost alias listid action messageid origin| ) {
-                    # Each value does not include ' '
-                    $pp = $rr; 
-                    if( $rr ne 'alias' ) {
-                        unlike $pr->$pp, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                DELIVERYSTATUS: {
+                    $cv = $f->deliverystatus;
+                    $cr = qr/\A[245][.]\d[.]\d{1,3}\z/;
+                    $ct = sprintf("[%s-%02d] ->deliverystatus =", $e, $errorindex);
+
+                    if( $f->reason eq 'feedback' || $f->reason eq 'vacation') {
+                        # "deliverystatus" is empty when the value of "reason" is "feedback"
+                        ok defined $cv,sprintf("%s %s", $ct, $cr);
+
                     } else {
-                        unlike $pr->$pp, qr/\r/, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                        # Except the value of "reason" is "feedback"
+                        ok length $cv, sprintf("%s %s", $ct, $cv);
+                        ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
+                    }
+                    is $cv, $cx->[$errorindex - 1]->[0], sprintf("%s %s", $ct, $cv);
+                }
+
+                DESTINATION: {
+                    $cv = $f->destination;
+                    $cr = qr/\A[-_.0-9A-Za-z]+\z/;
+                    $ct = sprintf("[%s-%02d] ->destination =", $e, $errorindex);
+
+                    ok length $cv,               sprintf("%s %s", $ct, $cv);
+                    ok $cv =~ $cr,               sprintf("%s %s", $ct, $cr);
+                    is $cv, $f->recipient->host, sprintf("%s recipient->host", $ct);
+                }
+
+                DIAGNOSTICCODE: {
+                    $cv = $f->diagnosticcode;
+                    $ct = sprintf("[%s-%02d] ->diagnosticcode =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+                }
+
+                DIAGNOSTICTYPE: {
+                    $cv = $f->diagnostictype;
+                    $cr = qr/\A(?:LMTP|SMTP|UNKNOWN|X[.]?[45]00|X-[0-9A-Z-]+)/;
+                    $ct = sprintf("[%s-%02d] ->diagnostictype =", $e, $errorindex);
+
+                    if( $f->reason eq 'feedback' || $f->reason eq 'vacation' ) {
+                        # "deliverystatus" is empty when the value of "reason" is "feedback"
+                        ok defined $cv,sprintf("%s %s", $ct, $cr);
+
+                    } else {
+                        # Except the value of "reason" is "feedback"
+                        ok length $cv, sprintf("%s %s", $ct, $cv);
+                        ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
                     }
                 }
 
-                $re = qr/__END_OF_EMAIL_MESSAGE__/;
-                $pp = 'diagnosticcode'; unlike $pr->$pp, $re, sprintf(" [%s] %s->%s = %s", $lb, $E, $pp, $pr->$pp);
+                FEEDBACKTYPE: {
+                    $cv = $f->feedbacktype;
+                    $cr = qr/\A[\x21-\x7e]+\z/;
+                    $ct = sprintf("[%s-%02d] ->feedbacktype =", $e, $errorindex);
 
-                for my $rr ( qw|user host verp alias| ) {
-                    # Each value does not include ' '
-                    $pp = $rr;
-                    unlike $pr->addresser->$pp, $re, sprintf(" [%s] %s->addresser->%s = %s", $lb, $E, $pp, $pr->addresser->$pp);
-                    unlike $pr->recipient->$pp, $re, sprintf(" [%s] %s->recipient->%s = %s", $lb, $E, $pp, $pr->recipient->$pp);
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+
+                    if( $f->reason eq 'feedback' ) {
+                        # The value of "feedbacktype" is not empty
+                        ok length $cv,                        sprintf("%s %s", $ct, $cv);
+                        ok $cv =~ $cr,                        sprintf("%s %s", $ct, $cr);
+                        is $cv, $cx->[$errorindex - 1]->[4],  sprintf("%s %s", $ct, $cv);
+
+                    } else {
+                        # The value of "feedbacktype" is empty
+                        is $cv, '', sprintf("%s %s", $ct, $cr);
+                    }
                 }
 
-                for my $rr ( qw|addresser recipient| ) {
-                    $re = qr/\A.+[@][0-9A-Za-z.-]+[.][A-Za-z]+?\z/;
-                    if( length $pr->$rr->alias ) {
-                        $pp = 'alias'; like $pr->$rr->$pp, $re, sprintf(" [%s] %s->%s->%s = %s", $lb, $E, $rr, $pp, $pr->$rr->$pp);
-                    }
-                    if( length $pr->$rr->verp ) {
-                        $pp = 'verp';  like $pr->$rr->$pp, $re, sprintf(" [%s] %s->%s->%s = %s", $lb, $E, $rr, $pp, $pr->$rr->$pp);
-                    }
+                HARDBOUNCE: {
+                    $cv = $f->hardbounce;
+                    $cr = qr/\A[01]\z/;
+                    $ct = sprintf("[%s-%02d] ->hardbounce =", $e, $errorindex);
 
+                    ok defined $cv, sprintf("%s %d", $ct, $cv);
+                    ok $cv =~ $cr,  sprintf("%s %s", $ct, $cr);
+                    is $cv, $cx->[$errorindex - 1]->[3], sprintf("%s %d", $ct, $cv);
                 }
+
+                LHOST: {
+                    $cv = $f->lhost;
+                    $cr = qr/\A[-.0-9A-Za-z]+\z/;
+                    $ct = sprintf("[%s-%02d] ->lhost =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+                    ok $cv =~ $cr,  sprintf("%s %s", $ct, $cr) if length $cv;
+                }
+
+                LISTID: {
+                    $cv = $f->listid;
+                    $cr = qr/\A[\x21-\x7e]+\z/;
+                    $ct = sprintf("[%s-%02d] ->listid =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+
+                    if( length $cv ) {
+                        # The value of "listid" is not empty
+                        ok length $cv, sprintf("%s %s", $ct, $cv);
+                        ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
+
+                    } else {
+                        # The value of "listid" is empty
+                        is $cv, '', sprintf("%s %s", $ct, $cr);
+                    }
+                }
+
+                MESSAGEID: {
+                    $cv = $f->messageid;
+                    $cr = qr/\A[\x21-\x7e]+\z/;
+                    $ct = sprintf("[%s-%02d] ->messageid =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+
+                    if( length $cv ) {
+                        # The value of "messageid" is not empty
+                        ok length $cv, sprintf("%s %s", $ct, $cv);
+                        ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
+
+                    } else {
+                        # The value of "messageid" is empty
+                        is $cv, '', sprintf("%s %s", $ct, $cr);
+                    }
+                }
+
+                ORIGIN: {
+                    $cv = $f->origin;
+                    $ct = sprintf("[%s-%02d] ->origin =", $e, $errorindex);
+
+                    ok length $cv, sprintf("%s %s", $ct, $cv);
+                    ok -f $cv,     sprintf("%s %s: file", $ct, $cv);
+                    ok -s $cv,     sprintf("%s %s: %dKB", $ct, $cv, int((-s $cv) / 1000));
+                }
+
+                REASON: {
+                    $cv = $f->reason;
+                    $ct = sprintf("[%s-%02d] ->reason =", $e, $errorindex);
+
+                    ok length $cv,                        sprintf("%s %s", $ct, $cv);
+                    ok grep { $cv eq $_ } (@$reasonlist), sprintf("%s %s", $ct, $cv);
+                    is $cv, $cx->[$errorindex - 1]->[2],  sprintf("%s %s", $ct, $cv);
+                }
+
+                RECIPIENT: {
+                    isa_ok $f->recipient, 'Sisimai::Address';
+
+                    $cv = $f->recipient->address;
+                    $cr = qr/\A.+[@][0-9A-Za-z._-]+[A-Za-z]+?\z/;
+                    $ct = sprintf("[%s-%02d] ->recipient->", $e, $errorindex);
+
+                    ok defined $f->recipient->alias,   sprintf("%s%s = %s", $ct, 'alias', $f->recipient->alias);
+                    ok defined $f->recipient->verp,    sprintf("%s%s = %s", $ct, 'verp',  $f->recipient->verp);
+                    ok defined $f->recipient->name,    sprintf("%s%s = %s", $ct, 'name',  $f->recipient->name);
+                    ok defined $f->recipient->comment, sprintf("%s%s = %s", $ct, 'comment', $f->recipient->comment);
+                    ok length  $f->recipient->user,    sprintf("%s%s = %s", $ct, 'user',  $f->recipient->user);
+                    ok length  $f->recipient->host,    sprintf("%s%s = %s", $ct, 'host',  $f->recipient->host);
+
+                    ok $cv =~ $cr, sprintf("%s%s = %s", $ct, 'address', $cr);
+                    ok length $cv, sprintf("%s%s = %s", $ct, 'address', $cv);
+                    is $cv, sprintf("%s@%s", $f->recipient->user, $f->recipient->host);
+                    ok $f->recipient->alias =~ $cr if length $f->recipient->alias;
+                    ok $f->recipient->verp  =~ $cr if length $f->recipient->verp;
+                }
+
+                REPLYCODE: {
+                    $cv = $f->replycode;
+                    $cr = qr/\A[245]\d\d\z/;
+                    $ct = sprintf("[%s-%02d] ->replycode =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+
+                    if ( length $cv ) {
+                        # The value of "replycode" is not empty
+                        ok $cv =~ $cr, sprintf("%s %s", $ct, $cv);
+
+                        my $rv = int substr($cv, 0, 1);
+                        my $dv = int substr($f->deliverystatus, 0, 1);
+                        is $rv, $dv, sprintf("%s %dXX (%d.X.X)", $ct, $rv, $dv);
+                    }
+                    is $cv, $cx->[$errorindex - 1]->[1], sprintf("%s %s", $ct, $cv);
+                }
+
+                RHOST: {
+                    $cv = $f->rhost;
+                    $cr = qr/\A[-.:0-9A-Za-z]+\z/;
+                    $ct = sprintf("[%s-%02d] ->rhost =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+                    ok $cv =~ $cr,  sprintf("%s %s", $ct, $cr) if length $cv;
+                }
+
+                SENDERDOMAIN: {
+                    $cv = $f->senderdomain;
+                    $cr = qr/\A[-_.0-9A-Za-z]+\z/;
+                    $ct = sprintf("[%s-%02d] ->senderdomain =", $e, $errorindex);
+
+                    unless( Sisimai::RFC5322->is_mailerdaemon($f->addresser->address)) {
+                        ok length $cv,               sprintf("%s %s", $ct, $cv);
+                        ok $cv =~ $cr,               sprintf("%s %s", $ct, $cr);
+                        is $cv, $f->addresser->host, sprintf("%s addresser->host", $ct);
+                    }
+                }
+
+                SMTPAGENT: {
+                    $cv = $f->smtpagent;
+                    $cr = qr/\A[-.0-9A-Za-z]+\z/;
+                    $ct = sprintf("[%s-%02d] ->smtpagent =", $e, $errorindex);
+
+                    ok length $cv, sprintf("%s %s", $ct, $cv);
+                    ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
+                }
+
+                SMTPCOMMAND: {
+                    $cv = $f->smtpcommand;
+                    $cr = qr/\A(?:CONN|HELO|EHLO|MAIL|RCPT|DATA|QUIT)\z/;
+                    $ct = sprintf("[%s-%02d] ->smtpcommand =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+                    ok $cv =~ $cr,  sprintf("%s %s", $ct, $cr) if length $cv;
+                }
+
+                SUBJECT: {
+                    $cv = $f->subject;
+                    $ct = sprintf("[%s-%02d] ->subject =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+                }
+
+                TIMESTAMP: {
+                    $cv = $f->timestamp;
+                    $ct = sprintf("[%s-%02d] ->timestamp =", $e, $errorindex);
+
+                    isa_ok $cv, 'Sisimai::Time';
+                    ok $cv->epoch, sprintf("%s %s", $ct, $cv->epoch);
+                    ok $cv->cdate, sprintf("%s %s", $ct, $cv->cdate);
+                }
+
+                TIMEZONEOFFSET: {
+                    $cv = $f->timezoneoffset;
+                    $cr = qr/\A[-+]\d{4}/;
+                    $ct = sprintf("[%s-%02d] ->timezoneoffset =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %s", $ct, $cv);
+                    ok $cv =~ $cr,  sprintf("%s %s", $ct, $cr);
+                }
+
+                TOKEN: {
+                    $cv = $f->token;
+                    $cr = qr/\A[0-9a-f]+\z/;
+                    $ct = sprintf("[%s-%02d] ->token =", $e, $errorindex);
+
+                    ok length $cv, sprintf("%s %s", $ct, $cv);
+                    ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
+                }
+
+                DAMN: {
+                    $cv = $f->damn;
+                    $ct = sprintf("[%s-%02d] ->damn =", $e, $errorindex);
+
+                    isa_ok $cv, 'HASH';
+                    is $cv->{'addresser'}, $f->addresser->address, sprintf("%s %s", $ct, $cv->{'addresser'});
+                    is $cv->{'recipient'}, $f->recipient->address, sprintf("%s %s", $ct, $cv->{'recipient'});
+                    is $cv->{'timestamp'}, $f->timestamp->epoch,   sprintf("%s %d", $ct, $cv->{'timestamp'});
+                    is $cv->{'catch'},     '',                     sprintf("%s ''", $ct);
+                }
+
+                DUMP: {
+                    # JSON
+                    $cv = $f->dump('json');
+                    $ct = sprintf("[%s-%02d] ->dump(json) =", $e, $errorindex);
+                    $cj = $jsonobject->decode($cv);
+
+                    isa_ok $cj, 'HASH';
+                    ok length $cv,         sprintf("%s %s", $ct, substr($cv, 0, 32));
+                    is $cj->{'catch'}, '', sprintf("%s ''", $ct);
+                    is $f->addresser->address, $cj->{'addresser'}, sprintf("%s %s", $ct, $cj->{'addresser'});
+                    is $f->recipient->address, $cj->{'recipient'}, sprintf("%s %s", $ct, $cj->{'recipient'});
+                    is $f->timestamp->epoch,   $cj->{'timestamp'}, sprintf("%s %s", $ct, $cj->{'timestamp'});
+
+                    # YAML
+                    $cv = $f->dump('yaml');
+                    $ct = sprintf("[%s-%02d] ->dump(yaml) =", $e, $errorindex);
+                    $cj = YAML::Load($cv);
+
+                    isa_ok $cj, 'HASH';
+                    ok length $cv,         sprintf("%s %s", $ct, substr($cv, 0, 3));
+                    is $cj->{'catch'}, '', sprintf("%s ''", $ct);
+                    is $f->addresser->address, $cj->{'addresser'}, sprintf("%s %s", $ct, $cj->{'addresser'});
+                    is $f->recipient->address, $cj->{'recipient'}, sprintf("%s %s", $ct, $cj->{'recipient'});
+                    is $f->timestamp->epoch,   $cj->{'timestamp'}, sprintf("%s %s", $ct, $cj->{'timestamp'});
+                }
+
+                SOFTBOUNCE: {
+                    ;
+                }
+
 
             } # End of the loop for checking each Sisimai::Data object
             $emailindex++;
+            ok $errorindex, sprintf("%s is including %d bounces", $mailobject->data->path, $errorindex);
 
         } # End of READ_EACH_EMAIL
-        ok $haveparsed, sprintf("[%s] %s/email(count) = %s", $e->{'n'}, $E, $haveparsed);
 
     } # End of PARSE_EACH_EMAIL
-    ok $emailindex, sprintf("%s|the number of emails = %d", $M, $emailindex);
+    ok $emailindex, sprintf("%s have parsed %d emails", $M, $emailindex);
 };
 
 sub maketest { return $moduletest }
