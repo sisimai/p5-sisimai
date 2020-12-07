@@ -3,13 +3,13 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP::Reply;
 
-my $PackageName = 'Sisimai::SMTP::Reply';
-my $MethodNames = { 'class' => ['find'], 'object' => [] };
+my $Package = 'Sisimai::SMTP::Reply';
+my $Methods = { 'class' => ['find'], 'object' => [] };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $smtperrors = [
         q|smtp; 250 2.1.5 Ok|,
         q|smtp; 550 5.1.1 <kijitora@example.co.jp>... User Unknown|,
@@ -90,9 +90,9 @@ MAKE_TEST: {
     ];
 
     my $v = '';
-    is $PackageName->find(''), undef, '->find() returns undef';
+    is $Package->find(''), undef, '->find() returns undef';
     for my $e ( @$smtperrors ) {
-        $v = $PackageName->find($e);
+        $v = $Package->find($e);
         ok $e, 'Error message text = '.$e;
         like $v, qr/\A[2345][0-5][0-9]\z/, 'SMTP Reply Code = '.$v;
     }

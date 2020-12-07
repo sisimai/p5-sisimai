@@ -4,20 +4,20 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Time;
 
-my $PackageName = 'Sisimai::Time';
-my $MethodNames = {
+my $Package = 'Sisimai::Time';
+my $Methods = {
     'class'  => [],
     'object' => ['TO_JSON'],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'object'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'object'} };
 
-MAKE_TEST: {
-    my $v = $PackageName->new;
+MAKETEST: {
+    my $v = $Package->new;
     my $t = Time::Piece->new;
 
-    isa_ok $v, $PackageName;
+    isa_ok $v, $Package;
     is $v->TO_JSON, $v->epoch, 'TO_JSON() = '.$v->epoch;
 }
 

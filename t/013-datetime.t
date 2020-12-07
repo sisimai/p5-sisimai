@@ -6,17 +6,17 @@ use Sisimai::DateTime;
 use Time::Piece;
 require './t/999-values.pl';
 
-my $PackageName = 'Sisimai::DateTime';
-my $MethodNames = {
+my $Package = 'Sisimai::DateTime';
+my $Methods = {
     'class'  => ['to_second', 'monthname', 'dayofweek', 'parse', 'abbr2tz', 'tz2second', 'second2tz'],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
-    my $v = $PackageName; 
+MAKETEST: {
+    my $v = $Package; 
     my $L = {
         'false' => $Sisimai::Test::Values::False,
         'minus' => $Sisimai::Test::Values::Minus,

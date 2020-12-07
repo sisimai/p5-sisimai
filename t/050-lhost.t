@@ -3,8 +3,8 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Lhost;
 
-my $PackageName = 'Sisimai::Lhost';
-my $MethodNames = {
+my $Package = 'Sisimai::Lhost';
+my $Methods = {
     'class' => [
         'description', 'make', 'index', 'path',
         'DELIVERYSTATUS', 'INDICATORS',
@@ -12,16 +12,16 @@ my $MethodNames = {
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
-    is $PackageName->description, '', '->description';
-    is $PackageName->make, undef, '->make';
+MAKETEST: {
+    is $Package->description, '', '->description';
+    is $Package->make, undef, '->make';
 
-    isa_ok $PackageName->index, 'ARRAY';
-    isa_ok $PackageName->path, 'HASH';
-    isa_ok $PackageName->DELIVERYSTATUS, 'HASH';
-    isa_ok $PackageName->INDICATORS, 'HASH';
+    isa_ok $Package->index, 'ARRAY';
+    isa_ok $Package->path, 'HASH';
+    isa_ok $Package->DELIVERYSTATUS, 'HASH';
+    isa_ok $Package->INDICATORS, 'HASH';
 }
 done_testing;

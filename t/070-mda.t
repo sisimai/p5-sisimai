@@ -3,16 +3,13 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::MDA;
 
-my $PackageName = 'Sisimai::MDA';
-my $MethodNames = {
-    'class' => ['make'],
-    'object' => [],
-};
+my $Package = 'Sisimai::MDA';
+my $Methods = { 'class'  => ['make'], 'object' => [] };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     use Sisimai::Mail;
     use Sisimai::Message;
 
@@ -31,8 +28,8 @@ MAKE_TEST: {
     my $headers = {};
 
     while( my $r = $mailbox->data->read ) {
-        $message = Sisimai::Message->new('data' => $r);
-        $headers->{'from'} = $message->from;
+        $message = Sisimai::Message->rise({ 'data' => $r });
+        $headers->{'from'} = $message->{'from'};
 
         for my $e ( @$ErrorMesgs ) {
             my $v = Sisimai::MDA->make($headers, \$e);

@@ -3,16 +3,16 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::RFC1894;
 
-my $PackageName = 'Sisimai::RFC1894';
-my $MethodNames = {
+my $Package = 'Sisimai::RFC1894';
+my $Methods = {
     'class'  => ['FIELDTABLE', 'field', 'match'],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $RFC1894Field1 = [
         'Reporting-MTA: dns; neko.example.jp',
         'Received-From-MTA: dns; mx.libsisimai.org',
@@ -36,13 +36,13 @@ MAKE_TEST: {
     ];
     my $v = undef;
 
-    $v = $PackageName->FIELDTABLE;
+    $v = $Package->FIELDTABLE;
     isa_ok $v, 'HASH', '->table returns Hash';
     ok scalar keys %$v, '->FIELDTABLE() returns Hash';
 
     for my $e ( @$RFC1894Field1 ) {
-        is $PackageName->match($e), 1, '->match('.$e.') returns 1';
-        $v = $PackageName->field($e);
+        is $Package->match($e), 1, '->match('.$e.') returns 1';
+        $v = $Package->field($e);
         isa_ok $v, 'ARRAY', '->field('.$e.') returns Array';
         if( $v->[3] eq 'host' ) {
             is $v->[1], 'DNS', 'field->[1] is DNS';
@@ -54,8 +54,8 @@ MAKE_TEST: {
     }
 
     for my $e ( @$RFC1894Field2 ) {
-        is $PackageName->match($e), 2, '->match('.$e.') returns 2';
-        $v = $PackageName->field($e);
+        is $Package->match($e), 2, '->match('.$e.') returns 2';
+        $v = $Package->field($e);
         isa_ok $v, 'ARRAY', '->field('.$e.') returns Array';
         if( $v->[3] eq 'host' || $v->[3] eq 'addr' || $v->[3] eq 'code') {
             like $v->[1], qr/(?:DNS|RFC822|SMTP)/, 'field->[1] is DNS or RFC822 or SMTP';
@@ -67,8 +67,8 @@ MAKE_TEST: {
     }
 
     for my $e ( @$IsNotDSNField ) {
-        is $PackageName->match($e), 0, '->match('.$e.') returns 0';
-        $v = $PackageName->field($e);
+        is $Package->match($e), 0, '->match('.$e.') returns 0';
+        $v = $Package->field($e);
         is $v, undef, '->field('.$e.') returns undef';
         is $v, undef, '->field returns undef';
     }

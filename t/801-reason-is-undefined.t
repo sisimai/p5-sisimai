@@ -3,12 +3,12 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai;
 
-my $PackageName = 'Sisimai';
+my $Package = 'Sisimai';
 my $UndefinedES = './set-of-emails/to-be-debugged-because/reason-is-undefined';
 
-MAKE_TEST: {
+MAKETEST: {
     plan 'skip_all', sprintf("%s does not exist", $UndefinedES) unless -d $UndefinedES;
-    my $v = $PackageName->make($UndefinedES);
+    my $v = $Package->make($UndefinedES);
     isa_ok $v, 'ARRAY';
     ok scalar @$v, 'entries = '.scalar @$v;
 
