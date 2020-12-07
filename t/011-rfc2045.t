@@ -4,16 +4,16 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::RFC2045;
 use Encode;
 
-my $PackageName = 'Sisimai::RFC2045';
-my $MethodNames = {
+my $Package = 'Sisimai::RFC2045';
+my $Methods = {
     'class'  => ['is_encoded', 'decodeH', 'parameter', 'boundary', 'decodeQ', 'decodeB', 'levelout', 'makeflat'],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     MIMEDECODE: {
         my $v0  = '';
         my $p1 = 'ASCII TEXT';
@@ -22,22 +22,22 @@ MAKE_TEST: {
         my $b2 = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
         my $q3 = '=?utf-8?Q?=E3=83=8B=E3=83=A5=E3=83=BC=E3=82=B9=E3=83=AC=E3=82=BF=E3=83=BC?=';
 
-        is $PackageName->is_encoded(\$p1), 0, '->is_encoded = 0';
-        is $PackageName->is_encoded(\$p2), 0, '->is_encoded = 0';
-        is $PackageName->is_encoded(\$b2), 1, '->is_encoded = 1';
-        is $PackageName->is_encoded(\$q3), 1, '->is_encoded = 1';
+        is $Package->is_encoded(\$p1), 0, '->is_encoded = 0';
+        is $Package->is_encoded(\$p2), 0, '->is_encoded = 0';
+        is $Package->is_encoded(\$b2), 1, '->is_encoded = 1';
+        is $Package->is_encoded(\$q3), 1, '->is_encoded = 1';
 
         for my $e ( $p1, $p2 ) {
-            $v0 = $PackageName->decodeH([$e]);
+            $v0 = $Package->decodeH([$e]);
             $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
             is $v0, $e, '->decodeH = '.$e;
         }
 
-        $v0 = $PackageName->decodeH([$b2]);
+        $v0 = $Package->decodeH([$b2]);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
         is $v0, $p2, '->decodeH = '.$p2;
 
-        $v0 = $PackageName->decodeH([$q3]);
+        $v0 = $Package->decodeH([$q3]);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
         is $v0, $p3, '->decodeH = '.$p3;
 
@@ -48,7 +48,7 @@ MAKE_TEST: {
             '=?utf-8?B?44Gn44OL44Oj44O844OL44Oj44O85rOj44GE44Gm44GE44Gf5LqL?=',
             '=?utf-8?B?44Gg44GR44Gv6KiY5oa244GX44Gm44GE44KL44CC?=',
         ];
-        $v0 = $PackageName->decodeH($b4);
+        $v0 = $Package->decodeH($b4);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
         is $v0, $p4, '->decodeH = '.$p4;
 
@@ -59,7 +59,7 @@ MAKE_TEST: {
         ];
 
         for my $e ( @$b5 ) {
-            $v0 = $PackageName->decodeH([$e]);
+            $v0 = $Package->decodeH([$e]);
             $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
             chomp $v0;
             ok length $v0, '->decodeH = '.$v0;
@@ -70,8 +70,8 @@ MAKE_TEST: {
         # Base64, Quoted-Printable
         my $b6 = '44Gr44KD44O844KT';
         my $p6 = 'にゃーん';
-        is ${ $PackageName->decodeB(\$b6) }, $p6, '->decodeB = '.$p6;
-        is ${ $PackageName->decodeQ(\'=4e=65=6b=6f') }, 'Neko', '->decodeQ = Neko';
+        is ${ $Package->decodeB(\$b6) }, $p6, '->decodeB = '.$p6;
+        is ${ $Package->decodeQ(\'=4e=65=6b=6f') }, 'Neko', '->decodeQ = Neko';
     }
 
     QPRINTD: {
@@ -84,34 +84,34 @@ Please contact our Client Service Support Team (information below) if you n=
 eed immediate assistance on regular account matters, or contact my colleagu=
 e Neko Nyaan (neko@example.org; +0-000-000-0000) for all other needs.
 ';
-        my $v7 = ${ $PackageName->decodeQ(\$q7) };
+        my $v7 = ${ $Package->decodeQ(\$q7) };
         ok length $v7, '->decodeQ($a)';
         ok length($q7) > length($v7), '->decodeQ($a)';
         unlike $v7, qr|a=$|m, '->decodeQ() does not match a=';
 
         my $q8 = 'neko';
-        is $q8, ${ $PackageName->decodeQ(\$q8) };
+        is $q8, ${ $Package->decodeQ(\$q8) };
     }
 
     CTVALUE: {
         my $c1 = 'multipart/MIXED; boundary="nekochan"; charset=utf-8';
-        is $PackageName->parameter($c1), 'multipart/mixed', '->parameter() = multipart/mixed';
-        is $PackageName->parameter($c1, 'boundary'), 'nekochan', '->parameter(boundary) = nekochan';
-        is $PackageName->parameter($c1, 'charset'), 'utf-8', '->parameter(charset) = utf-8';
-        is $PackageName->parameter($c1, 'nyaan'), '', '->parameter(nyaan) = ""';
+        is $Package->parameter($c1), 'multipart/mixed', '->parameter() = multipart/mixed';
+        is $Package->parameter($c1, 'boundary'), 'nekochan', '->parameter(boundary) = nekochan';
+        is $Package->parameter($c1, 'charset'), 'utf-8', '->parameter(charset) = utf-8';
+        is $Package->parameter($c1, 'nyaan'), '', '->parameter(nyaan) = ""';
 
         my $c2 = 'QUOTED-PRINTABLE';
-        is $PackageName->parameter($c2), 'quoted-printable', '->parameter() = quoted-printable';
-        is $PackageName->parameter($c2, 'neko'), '', '->parameter("neko") = ""';
+        is $Package->parameter($c2), 'quoted-printable', '->parameter() = quoted-printable';
+        is $Package->parameter($c2, 'neko'), '', '->parameter("neko") = ""';
     }
 
     BOUNDARY: {
         my $x1 = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
         my $x2 = 'Apple-Mail-1-526612466';
-        is $PackageName->boundary($x1), $x2, '->boundary() = '.$x2;
-        is $PackageName->boundary($x1, 0), '--'.$x2, '->boundary(0) = --'.$x2;
-        is $PackageName->boundary($x1, 1), '--'.$x2.'--', '->boundary(1) = --'.$x2.'--';
-        is $PackageName->boundary($x1, 2), '--'.$x2.'--', '->boundary(2) = --'.$x2.'--';
+        is $Package->boundary($x1), $x2, '->boundary() = '.$x2;
+        is $Package->boundary($x1, 0), '--'.$x2, '->boundary(0) = --'.$x2;
+        is $Package->boundary($x1, 1), '--'.$x2.'--', '->boundary(1) = --'.$x2.'--';
+        is $Package->boundary($x1, 2), '--'.$x2.'--', '->boundary(2) = --'.$x2.'--';
     }
 
     HAIRCUT: {
@@ -126,7 +126,7 @@ I was unable to deliver your message to the following addresses:
 maria@dest.example.net
 
 Reason: 550 maria@dest.example.net... No such user';
-        my $v1 = $PackageName->haircut(\$mp);
+        my $v1 = $Package->haircut(\$mp);
         isa_ok $v1, 'ARRAY';
         is scalar @$v1, 3;
 
@@ -134,7 +134,7 @@ Reason: 550 maria@dest.example.net... No such user';
         is $v1->[1], 'quoted-printable', '->haircut->[1] = quoted-printable';
         ok length $v1->[2];
 
-        my $v2 = $PackageName->haircut(\$mp, 1);
+        my $v2 = $Package->haircut(\$mp, 1);
         isa_ok $v2, 'ARRAY';
         is scalar @$v2, 2;
         is $v2->[0], 'text/plain; charset="utf-8"', '->haircut->[0] = text/plain; charset=utf-8';
@@ -175,7 +175,7 @@ Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
 Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
 
 ';
-        my $v1 = $PackageName->levelout($ct, \$mp);
+        my $v1 = $Package->levelout($ct, \$mp);
         isa_ok $v1, 'ARRAY';
         is scalar @$v1, 2;
 
@@ -238,7 +238,7 @@ Received: ...
 
 --NekoNyaan--------2--
 ';
-        my $v9 = ${ $PackageName->makeflat($h9->{'content-type'}, \$p9) };
+        my $v9 = ${ $Package->makeflat($h9->{'content-type'}, \$p9) };
         ok length $v9, '->makeflat($a, $b)';
         ok length($v9) < length($p9), '->makeflat($a, $b)';
         like $v9, qr/sironeko/m, '->makeflat() contains text/plain part';
@@ -246,7 +246,7 @@ Received: ...
         unlike $v9, qr/4AAQSkZJRgABAQEBLAEsAAD/m, '->makeflat() does not contain base64';
         like $v9, qr/kijitora[@]/m, '->makeflat() contains message/delivery-status part';
         like $v9, qr/Received:/m, '->makeflat() contains message/rfc822 part';
-        is $PackageName->makeflat(), undef;
+        is $Package->makeflat(), undef;
     }
 
     IRREGULAR_CASE: {
@@ -258,11 +258,11 @@ Received: ...
         ];
 
         for my $e ( @$bE ) {
-            my $vE = $PackageName->decodeH([$e]);
+            my $vE = $Package->decodeH([$e]);
                $vE = Encode::encode_utf8 $vE if utf8::is_utf8 $vE;
             chomp $vE;
 
-            is $PackageName->is_encoded(\$e), 1, '->is_encoded = 1';
+            is $Package->is_encoded(\$e), 1, '->is_encoded = 1';
             ok length $vE, '->decodeH = '.$vE;
             like $vE, qr/ニャーン/, 'Decoded text matches with /ニャーン/';
         }

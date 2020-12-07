@@ -7,9 +7,9 @@ use Time::Piece;
 use JSON;
 require './t/999-values.pl';
 
-my $PackageName = 'Sisimai';
-my $MethodNames = {
-    'class' => ['libname', 'version', 'make', 'dump', 'engine', 'match'],
+my $Package = 'Sisimai';
+my $Methods = {
+    'class'  => ['libname', 'version', 'rise', 'dump', 'engine', 'match'],
     'object' => [],
 };
 my $SampleEmail = {
@@ -21,25 +21,25 @@ my $IsNotBounce = {
     'maildir' => './set-of-emails/maildir/not',
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $v  = $Sisimai::VERSION;
        $v .= 'p'.$Sisimai::PATCHLV if $Sisimai::PATCHLV > 0;
-    is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
-    is 'v'.$PackageName->version, $v, '->version = v'.$v;
-    is $PackageName->make(undef), undef;
-    is $PackageName->dump(undef), undef;
+    is $Package->libname, $Package, '->libname = '.$Package;
+    is 'v'.$Package->version, $v, '->version = v'.$v;
+    is $Package->rise(undef), undef;
+    is $Package->dump(undef), undef;
 
     # Wrong number of arguments
-    eval { $PackageName->make('/dev/null', undef) };
+    eval { $Package->rise('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    eval { $PackageName->dump('/dev/null', undef) };
+    eval { $Package->dump('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    for my $e ( 'mailbox', 'maildir', 'memory' ) {
+    for my $e ( keys %$SampleEmail ) {
         MAKE: {
             my $parseddata = undef;
             my $damnedhash = undef;
@@ -54,17 +54,17 @@ MAKE_TEST: {
                 ok length $entiremail;
                 $filehandle->close;
 
-                $parseddata = $PackageName->make(\$entiremail);
+                $parseddata = $Package->rise(\$entiremail);
 
             } else {
-                $parseddata = $PackageName->make($SampleEmail->{ $e });
+                $parseddata = $Package->rise($SampleEmail->{ $e });
             }
 
             isa_ok $parseddata, 'ARRAY';
             ok scalar @$parseddata, 'entries = '.scalar @$parseddata;
 
             for my $ee ( @$parseddata ) {
-                isa_ok $ee, 'Sisimai::Data';
+                isa_ok $ee, 'Sisimai::Fact';
                 isa_ok $ee->timestamp, 'Sisimai::Time';
                 isa_ok $ee->addresser, 'Sisimai::Address';
                 isa_ok $ee->recipient, 'Sisimai::Address';
@@ -82,8 +82,10 @@ MAKE_TEST: {
                 for my $eee ( keys %$damnedhash ) {
                     next if ref $ee->$eee;
                     next if $eee eq 'subject';
+
                     if( $eee eq 'catch' ) {
                         is $damnedhash->{ $eee }, '', '->'.$eee.' = ""';
+
                     } else {
                         is $damnedhash->{ $eee }, $ee->$eee, '->'.$eee.' = '.$damnedhash->{ $eee };
                     }
@@ -98,7 +100,7 @@ MAKE_TEST: {
                 my $argvs = shift;
                 my $timep = localtime(Time::Piece->new);
 
-                for my $p ( @{ $argvs->{'sisi'} } ) {
+                for my $p ( @{ $argvs->{'fact'} } ) {
                     $p->{'parsedat'} = sprintf("%s %s", $timep->ymd('-'), $timep->hms);
                     $p->{'size'} = length $argvs->{'path'};
                     $p->{'kind'} = ucfirst $argvs->{'kind'};
@@ -106,9 +108,9 @@ MAKE_TEST: {
             };
             my $callbackto = sub {
                 my $argvs = shift;
-                my $catch = { 
-                    'x-mailer' => '',
-                    'return-path' => '',
+                my $catch = {
+                    'x-mailer'        => '',
+                    'return-path'     => '',
                     'x-virus-scanned' => '',
                 };
 
@@ -118,10 +120,10 @@ MAKE_TEST: {
                 $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
             };
-            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'c___' => [$callbackto, $emailhooks]);
+            $havecaught = $Package->rise($SampleEmail->{ $e }, 'c___' => [$callbackto, $emailhooks]);
 
             for my $ee ( @$havecaught ) {
-                isa_ok $ee, 'Sisimai::Data';
+                isa_ok $ee, 'Sisimai::Fact';
                 isa_ok $ee->catch, 'HASH';
 
                 ok defined $ee->catch->{'x-mailer'};
@@ -154,15 +156,15 @@ MAKE_TEST: {
                 like $ee->{'kind'}, qr/\AMail(?:box|dir)/;
             }
 
-            my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'c___' => {});
+            my $isntmethod = $Package->rise($SampleEmail->{ $e }, 'c___' => {});
             for my $ee ( @$isntmethod ) {
-                isa_ok $ee, 'Sisimai::Data';
+                isa_ok $ee, 'Sisimai::Fact';
                 is $ee->catch, undef;
             }
         }
 
         DUMP: {
-            my $jsonstring = $PackageName->dump($SampleEmail->{ $e });
+            my $jsonstring = $Package->dump($SampleEmail->{ $e });
             my $perlobject = undef;
             my $tobetested = [ qw|
                 addresser recipient senderdomain destination reason timestamp 
@@ -193,14 +195,14 @@ MAKE_TEST: {
     }
 
     for my $e ( 'maildir' ) {
-        my $parseddata = $PackageName->make($IsNotBounce->{ $e });
-        my $jsonstring = $PackageName->dump($IsNotBounce->{ $e });
-        is $parseddata, undef, '->make = undef';
+        my $parseddata = $Package->rise($IsNotBounce->{ $e });
+        my $jsonstring = $Package->dump($IsNotBounce->{ $e });
+        is $parseddata, undef, '->rise = undef';
         is $jsonstring, '[]', '->dump = "[]"';
     }
 
     ENGINE: {
-        my $enginelist = $PackageName->engine;
+        my $enginelist = $Package->engine;
         isa_ok $enginelist, 'HASH';
         ok scalar(keys %$enginelist), '->engine = '.scalar(keys %$enginelist);
         for my $e ( keys %$enginelist ) {
@@ -210,7 +212,7 @@ MAKE_TEST: {
     }
 
     REASON: {
-        my $reasonlist = $PackageName->reason;
+        my $reasonlist = $Package->reason;
         isa_ok $reasonlist, 'HASH';
         ok scalar(keys %$reasonlist), '->reason = '.scalar(keys %$reasonlist);
         for my $e ( keys %$reasonlist ) {

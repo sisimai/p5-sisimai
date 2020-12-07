@@ -5,34 +5,32 @@ use Sisimai;
 use Sisimai::Reason;
 require './t/999-values.pl';
 
-my $PackageName = 'Sisimai::Reason';
-my $MethodNames = {
+my $Package = 'Sisimai::Reason';
+my $Methods = {
     'class' => ['get', 'path', 'retry', 'index', 'match'],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
-    is $PackageName->get, undef;
-    is $PackageName->anotherone, undef;
-    isa_ok $PackageName->index, 'ARRAY';
-    isa_ok $PackageName->retry, 'HASH';
-    isa_ok $PackageName->path,  'HASH';
+MAKETEST: {
+    is $Package->get, undef;
+    is $Package->anotherone, undef;
+    isa_ok $Package->index, 'ARRAY';
+    isa_ok $Package->retry, 'HASH';
+    isa_ok $Package->path,  'HASH';
 
     use Sisimai::Mail;
-    use Sisimai::Message;
-    use Sisimai::Data;
+    use Sisimai::Fact;
     my $mailbox = Sisimai::Mail->new('set-of-emails/maildir/bsd/lhost-sendmail-01.eml');
 
     while( my $r = $mailbox->data->read ) {
-        my $o = Sisimai::Message->new('data' => $r);
-        my $v = Sisimai::Data->make('data' => $o);
+        my $v = Sisimai::Fact->rise({'data' => $r});
         isa_ok $v, 'ARRAY';
 
         for my $e ( @$v ) {
-            isa_ok $e, 'Sisimai::Data';
+            isa_ok $e, 'Sisimai::Fact';
             is $e->reason, 'userunknown';
         }
     }

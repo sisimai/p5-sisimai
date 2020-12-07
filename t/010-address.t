@@ -4,19 +4,19 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Address;
 use Sisimai::RFC5322;
 
-my $PackageName = 'Sisimai::Address';
-my $MethodNames = {
+my $Package = 'Sisimai::Address';
+my $Methods = {
     'class'  => ['new', 'find', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed'],
     'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
 };
-my $NewInstance = $PackageName->new({ 'address' => 'maketest@bouncehammer.jp' });
+my $NewInstance = $Package->new({ 'address' => 'maketest@bouncehammer.jp' });
 
-use_ok $PackageName;
-isa_ok $NewInstance, $PackageName;
-can_ok $NewInstance, @{ $MethodNames->{'object'} };
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+isa_ok $NewInstance, $Package;
+can_ok $NewInstance, @{ $Methods->{'object'} };
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $emailaddrs = [
         { 'v' => '"Neko" <neko@example.jp>', 'a' => 'neko@example.jp', 'n' => 'Neko', 'c' => '' },
         { 'v' => '"=?ISO-2022-JP?B?dummy?=" <nyan@example.jp>',
@@ -120,9 +120,9 @@ MAKE_TEST: {
           'a' => 'neko-nyaan@example.com',
           'n' => 'neko-nyaan@example.com',
           'c' => '' },
-        { 'v' => 'neko-nyaan@example.com.',
-          'a' => 'neko-nyaan@example.com.',
-          'n' => 'neko-nyaan@example.com.',
+        { 'v' => 'neko-nyaan@example.org.',
+          'a' => 'neko-nyaan@example.org',
+          'n' => 'neko-nyaan@example.org.',
           'c' => '' },
         { 'v' => 'n@example.com',
           'a' => 'n@example.com',
