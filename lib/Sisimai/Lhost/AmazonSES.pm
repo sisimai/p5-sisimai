@@ -11,7 +11,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.0.2
     my $class = shift;
     my $mhead = shift // return undef;
@@ -179,7 +179,7 @@ sub make {
                 $v->{'status'}    = Sisimai::SMTP::Status->find($v->{'diagnosis'}) || '';
                 $v->{'replycode'} = Sisimai::SMTP::Reply->find($v->{'diagnosis'})  || '';
                 $v->{'reason'}    = 'delivered';
-                $v->{'action'}    = 'deliverable';
+                $v->{'action'}    = 'delivered';
                 ($v->{'date'} = $o->{'timestamp'} || $p->{'mail'}->{'timestamp'}) =~ s/[.]\d+Z\z//;
             }
         } else {
