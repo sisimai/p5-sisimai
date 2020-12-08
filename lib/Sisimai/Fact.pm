@@ -329,6 +329,7 @@ sub softbounce {
     # Emulate "softbounce" accessor for the backward compatible
     # @return   [Integer]
     my $self = shift;
+    warn ' ***warning: Sisimai::Fact->softbounce will be removed at v5.1.0. Use Sisimai::Fact->hardbounce instead';
     return 0  if $self->hardbounce == 1;
     return -1 if $self->reason =~ /\A(?:delivered|feedback|vacation)\z/;
     return 1;

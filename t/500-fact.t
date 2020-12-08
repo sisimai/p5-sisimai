@@ -96,6 +96,7 @@ MAKETEST: {
             is $e->replycode,      $cx->[1], sprintf("%s ->replycode = %s",      $ct, $cx->[1]);
             is $e->reason,         $cx->[2], sprintf("%s ->reason = %s",         $ct, $cx->[2]);
             is $e->hardbounce,     $cx->[3], sprintf("%s ->hardbounce = %s",     $ct, $cx->[3]);
+            is $e->softbounce,     $e->hardbounce ? 0 : 1;
 
             $cv = $e->catch;
             ok $cv->{'from'},        sprintf("%s ->catch(from) = %s", $ct, $cv->{'from'});
