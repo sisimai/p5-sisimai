@@ -21,7 +21,7 @@ my $moduletest = sub {
     use Sisimai::Mail;
     use Sisimai::Fact;
     use Sisimai::Reason;
-    use Sisimai::RFC5322;
+    use Sisimai::Address;
 
     my $isnotlhost = qr/\A(?:ARF|RFC3464|RFC3834)\z/;
     my $samplepath = 'set-of-emails/maildir/bsd';
@@ -135,7 +135,7 @@ my $moduletest = sub {
                     ok defined $f->addresser->comment, sprintf("%s%s = %s", $ct, 'comment', $f->addresser->comment);
                     ok length  $f->addresser->user,    sprintf("%s%s = %s", $ct, 'user',  $f->addresser->user);
 
-                    unless( Sisimai::RFC5322->is_mailerdaemon($cv) ) {
+                    unless( Sisimai::Address->is_mailerdaemon($cv) ) {
                         # Is not a MAILER-DAEMON
                         ok length  $f->addresser->host,sprintf("%s%s = %s", $ct, 'host',  $f->addresser->host);
                         ok $cv =~ $cr, sprintf("%s%s = %s", $ct, 'address', $cr);
@@ -354,7 +354,7 @@ my $moduletest = sub {
                     $cr = qr/\A[-_.0-9A-Za-z]+\z/;
                     $ct = sprintf("[%s-%02d] ->senderdomain =", $e, $errorindex);
 
-                    unless( Sisimai::RFC5322->is_mailerdaemon($f->addresser->address)) {
+                    unless( Sisimai::Address->is_mailerdaemon($f->addresser->address)) {
                         ok length $cv,               sprintf("%s %s", $ct, $cv);
                         ok $cv =~ $cr,               sprintf("%s %s", $ct, $cr);
                         is $cv, $f->addresser->host, sprintf("%s addresser->host", $ct);

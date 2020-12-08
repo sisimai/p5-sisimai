@@ -100,7 +100,7 @@ sub make {
             for my $e ( @$r ) {
                 # 'bouncedRecipients' => [ { 'emailAddress' => 'bounce@si...' }, ... ]
                 # 'complainedRecipients' => [ { 'emailAddress' => 'complaint@si...' }, ... ]
-                next unless Sisimai::RFC5322->is_emailaddress($e->{'emailAddress'});
+                next unless Sisimai::Address->is_emailaddress($e->{'emailAddress'});
 
                 $v = $dscontents->[-1];
                 if( $v->{'recipient'} ) {
@@ -164,7 +164,7 @@ sub make {
                 #       ],
                 #       'smtpResponse' => '250 2.6.0 Message received'
                 #   },
-                next unless Sisimai::RFC5322->is_emailaddress($e);
+                next unless Sisimai::Address->is_emailaddress($e);
 
                 $v = $dscontents->[-1];
                 if( $v->{'recipient'} ) {

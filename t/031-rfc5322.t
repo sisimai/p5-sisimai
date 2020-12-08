@@ -5,7 +5,7 @@ use Sisimai::RFC5322;
 
 my $Package = 'Sisimai::RFC5322';
 my $Methods = {
-    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'is_emailaddress', 'is_mailerdaemon', 'received', 'fillet'],
+    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'received', 'fillet'],
     'object' => [],
 };
 
@@ -47,51 +47,6 @@ MAKETEST: {
         ok length $e, $e;
         like $e, qr/\A[a-z-]+\z/;
         is $r->{ $e }, 1, $e.' = '.1;
-    }
-
-    my $emailaddrs = [
-        'neko@example.jp',
-        'neko+nyaa@example.jp',
-        'nyaa+neko=example.jp@example.org',
-        '"neko@nyaan"@example.org',
-        '"neko nyaan"@exaple.org',
-        '{nekonyaan}@example.org',
-        'neko|nyaan@example.org',
-        'neko?nyaan@example.org',
-        '"neko<>nyaan"@example.org',
-        '"neko(nyaan)"@example.org',
-        '"nora(:;)neko"@example.org',
-        'neko^_^nyaan@example.org',
-        'neko$nyaan@example.org',
-        'neko%nyaan@example.org',
-        'neko&nyaan@example.org',
-        'neko?nyaan@example.org',
-        'neko|nyaan@example.org',
-        '"neko\\nyaan"@example.org',
-    ];
-    my $isnotaddrs = ['neko', 'neko%example.jp'];
-    my $postmaster = [
-        'mailer-daemon@example.jp', 
-        'MAILER-DAEMON@example.cat',
-        'Mailer-Daemon <postmaster@example.org>',
-        'MAILER-DAEMON',
-        'postmaster',
-        'postmaster@example.org',
-    ];
-
-    for my $e ( @$emailaddrs ) {
-        ok $Package->is_emailaddress($e), '->is_emailaddress('.$e.') = 1';
-    }
-
-    for my $e ( @$isnotaddrs ) {
-        is $Package->is_emailaddress($e), 0, '->is_emailaddress('.$e.') = 0';
-    }
-
-    for my $e ( @$postmaster ) {
-        is $Package->is_mailerdaemon($e), 1, '->is_mailerdaemon('.$e.') = 1';
-    }
-    for my $e ( @$emailaddrs ) {
-        is $Package->is_mailerdaemon($e), 0, '->is_mailerdaemon('.$e.') = 0';
     }
 
     # Check the value of Received header

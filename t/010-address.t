@@ -6,7 +6,10 @@ use Sisimai::RFC5322;
 
 my $Package = 'Sisimai::Address';
 my $Methods = {
-    'class'  => ['new', 'find', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed'],
+    'class'  => [
+        'new', 'find', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
+        'is_emailaddress', 'is_mailerdaemon'
+    ],
     'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
 };
 my $NewInstance = $Package->new({ 'address' => 'maketest@bouncehammer.jp' });
@@ -173,6 +176,14 @@ MAKETEST: {
         '"Neko, Nyaan" <(nora)neko@example.jp>, Nora Nyaans <neko(nora)@example.jp>',
         'Neko (Nora, Nyaan) <neko@example.jp>, (Neko) "Nora, Mike" <neko@example.jp>',
     ];
+    my $postmaster = [
+        'mailer-daemon@example.jp', 
+        'MAILER-DAEMON@example.cat',
+        'Mailer-Daemon <postmaster@example.org>',
+        'MAILER-DAEMON',
+        'postmaster',
+        'postmaster@example.org',
+    ];
     my $emailindex = 1;
 
     my $a = undef;
@@ -219,9 +230,9 @@ MAKETEST: {
             # ->new()
             $v = $p->new(shift @{ $p->find($e->{'v'}) });
             if( $e->{'a'} =~ /\A(.+)[@]([^@]+)\z/ ){ $a->[0] = $1; $a->[1] = $2; }
-            if( Sisimai::RFC5322->is_mailerdaemon($e->{'v'}) ){ $a->[0] = $e->{'a'}; $a->[1] = ''; }
+            if( $Package->is_mailerdaemon($e->{'v'}) ){ $a->[0] = $e->{'a'}; $a->[1] = ''; }
 
-            is ref $v, 'Sisimai::Address', sprintf("%s %s->new(v)", $n, $p);
+            is ref $v, $p,             sprintf("%s %s->new(v)", $n, $p);
             is $v->address, $e->{'a'}, sprintf("%s %s->new(v)->address= %s", $n, $p, $e->{'a'});
             is $v->user,    $a->[0],   sprintf("%s %s->new(v)->user = %s", $n, $p, $a->[0]);
             is $v->host,    $a->[1],   sprintf("%s %s->new(v)->host = %s", $n, $p, $a->[1]);
@@ -242,6 +253,17 @@ MAKETEST: {
             ok length $v, sprintf("%s %s->s3s4 = %s", $n, $p, $v);
             is $v, $e->{'a'}, sprintf("%s %s->s3s4 = %s", $n, $p, $e->{'a'});
         }
+
+        IS_EMAILADDRESS: {
+            if( $e->{'a'} =~ /[@]/ ) {
+                # is_emailaddress
+                ok $p->is_emailaddress($e->{'a'}), sprintf("%s->is_emailaddress(%s)", $p, $e->{'a'});
+
+            } else {
+                ok $p->is_mailerdaemon($e->{'a'}), sprintf("%s->is_mailerdaemon(%s)", $p, $e->{'a'});
+            }
+        }
+
         $emailindex++;
     }
 
@@ -284,10 +306,17 @@ MAKETEST: {
         is $v->TO_JSON, $v->address, sprintf("%s->new(v)->TO_JSON = %s", $p, $a);
     }
 
+    IS_MAILERDAEMON: {
+        for my $e ( @$postmaster ) {
+            ok $p->is_mailerdaemon($e), sprintf("%s->is_mailerdaemon = %s", $p, $e);
+        }
+    }
+
     for my $e ( @$isnotemail ) {
-        $v = $p->s3s4($e);                 is $v, $e,   sprintf("%s->s3s4(v)= %s", $p, $e);
-        $v = $p->new({ 'address' => $e }); is $v, undef, sprintf("%s->new(v)= undef", $p);
-        $v = $p->find($e);                 is $v, undef, sprintf("%s->find(v)= undef", $p);
+        $v = $p->s3s4($e);                 is $v, $e,    sprintf("%s->s3s4(v) = %s", $p, $e);
+        $v = $p->new({ 'address' => $e }); is $v, undef, sprintf("%s->new(v) = undef", $p);
+        $v = $p->find($e);                 is $v, undef, sprintf("%s->find(v) = undef", $p);
+        $v = $p->is_emailaddress($e);      is $v, 0,     sprintf("%s->is_emailaddress = 0", $p);
     }
 
     UNDISCLOSED: {

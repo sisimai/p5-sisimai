@@ -64,7 +64,7 @@ sub make {
     for my $e ( split(',', $mhead->{'x-failed-recipients'}) ) {
         # X-Failed-Recipients: neko@example.jp, nyaan@example.org, ...
         next unless index($e, '@googlegroups.com') > -1;
-        next unless Sisimai::RFC5322->is_emailaddress($e);
+        next unless Sisimai::Address->is_emailaddress($e);
 
         if( $v->{'recipient'} ) {
             # There are multiple recipient addresses in the message body.

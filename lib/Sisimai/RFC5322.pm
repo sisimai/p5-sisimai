@@ -11,32 +11,6 @@ use constant HEADERTABLE => {
     'recipient' => [qw|to delivered-to forward-path envelope-to x-envelope-to resent-to apparently-to|],
 };
 
-# Regular expression of valid RFC-5322 email address(<addr-spec>)
-my $Re = { 'rfc5322' => undef, 'ignored' => undef, 'domain' => undef, };
-BUILD_REGULAR_EXPRESSIONS: {
-    # See http://www.ietf.org/rfc/rfc5322.txt
-    #  or http://www.ex-parrot.com/pdw/Mail-RFC822-Address.html ...
-    #   addr-spec       = local-part "@" domain
-    #   local-part      = dot-atom / quoted-string / obs-local-part
-    #   domain          = dot-atom / domain-literal / obs-domain
-    #   domain-literal  = [CFWS] "[" *([FWS] dcontent) [FWS] "]" [CFWS]
-    #   dcontent        = dtext / quoted-pair
-    #   dtext           = NO-WS-CTL /     ; Non white space controls
-    #                     %d33-90 /       ; The rest of the US-ASCII
-    #                     %d94-126        ;  characters not including "[",
-    #                                     ;  "]", or "\"
-    my $atom           = qr;[a-zA-Z0-9_!#\$\%&'*+/=?\^`{}~|\-]+;o;
-    my $quoted_string  = qr/"(?:\\[^\r\n]|[^\\"])*"/o;
-    my $domain_literal = qr/\[(?:\\[\x01-\x09\x0B-\x0c\x0e-\x7f]|[\x21-\x5a\x5e-\x7e])*\]/o;
-    my $dot_atom       = qr/$atom(?:[.]$atom)*/o;
-    my $local_part     = qr/(?:$dot_atom|$quoted_string)/o;
-    my $domain         = qr/(?:$dot_atom|$domain_literal)/o;
-
-    $Re->{'rfc5322'} = qr/\A$local_part[@]$domain\z/o;
-    $Re->{'ignored'} = qr/\A$local_part[.]*[@]$domain\z/o;
-    $Re->{'domain'}  = qr/\A$domain\z/o;
-}
-
 my $HEADERINDEX = {};
 BUILD_FLATTEN_RFC822HEADER_LIST: {
     # Convert $HEADER: hash reference to flatten hash reference for being
@@ -60,38 +34,6 @@ sub LONGFIELDS {
     # Fields that might be long
     # @return   [Hash] Long filed(email header) list
     return { 'to' => 1, 'from' => 1, 'subject' => 1, 'message-id' => 1 };
-}
-
-sub is_emailaddress {
-    # Check that the argument is an email address or not
-    # @param    [String] email  Email address string
-    # @return   [Integer]       0: Not email address
-    #                           1: Email address
-    my $class = shift;
-    my $email = shift // return 0;
-
-    return 0 if $email =~ /(?:[\x00-\x1f]|\x1f)/;
-    return 0 if length $email > 254;
-    return 1 if $email =~ $Re->{'ignored'};
-    return 0;
-}
-
-sub is_mailerdaemon {
-    # Check that the argument is mailer-daemon or not
-    # @param    [String] email  Email address
-    # @return   [Integer]       0: Not mailer-daemon
-    #                           1: Mailer-daemon
-    my $class = shift;
-    my $email = shift // return 0;
-    state $match = qr{(?>
-         (?:mailer-daemon|postmaster)[@]
-        |[<(](?:mailer-daemon|postmaster)[)>]
-        |\A(?:mailer-daemon|postmaster)\z
-        |[ ]?mailer-daemon[ ]
-        )
-    }x;
-    return 1 if lc($email) =~ $match;
-    return 0;
 }
 
 sub received {
@@ -212,45 +154,11 @@ Sisimai::RFC5322 - Email address related utilities
 
     use Sisimai::RFC5322;
 
-    print Sisimai::RFC5322->is_emailaddress('neko@example.jp');    # 1
-    print Sisimai::RFC5322->is_domainpart('example.jp');           # 1
-    print Sisimai::RFC5322->is_mailerdaemon('neko@example.jp');    # 0
-
 =head1 DESCRIPTION
 
 Sisimai::RFC5322 provide methods for checking email address.
 
 =head1 CLASS METHODS
-
-=head2 C<B<is_emailaddress(I<email address>)>>
-
-C<is_emailaddress()> checks the argument is valid email address or not.
-
-    print Sisimai::RFC5322->is_emailaddress('neko@example.jp');  # 1
-    print Sisimai::RFC5322->is_emailaddress('neko%example.jp');  # 0
-
-    my $addr_with_name = [
-        'Stray cat <neko@example.jp',
-        '=?UTF-8?B?55m954yr?= <shironeko@example.co.jp>',
-    ];
-    for my $e ( @$addr_with_name ) {
-        print Sisimai::RFC5322->is_emailaddress($e); # 1
-    }
-
-=head2 C<B<is_domainpart(I<Domain>)>>
-
-C<is_domainpart()> checks the argument is valid domain part of an email address
-or not.
-
-    print Sisimai::RFC5322->is_domainpart('neko@example.jp');  # 0
-    print Sisimai::RFC5322->is_domainpart('neko.example.jp');  # 1
-
-=head2 C<B<is_domainpart(I<Domain>)>>
-
-C<is_mailerdaemon()> checks the argument is mailer-daemon or not.
-
-    print Sisimai::RFC5322->is_mailerdaemon('neko@example.jp');          # 0
-    print Sisimai::RFC5322->is_mailerdaemon('mailer-daemon@example.jp'); # 1
 
 =head2 C<B<received(I<String>)>>
 

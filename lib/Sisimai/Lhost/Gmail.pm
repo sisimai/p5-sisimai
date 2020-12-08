@@ -200,7 +200,7 @@ sub make {
             }
 
             my $r = Sisimai::Address->s3s4($1);
-            next unless Sisimai::RFC5322->is_emailaddress($r);
+            next unless Sisimai::Address->is_emailaddress($r);
             $v->{'recipient'} = $r;
             $recipients++;
 
