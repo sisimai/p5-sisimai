@@ -9,8 +9,8 @@ sub libname { 'Sisimai' }
 
 sub make {
     # Emulate "rise" method for the backward compatible
-    my $class = shift;
     warn ' ***warning: Sisimai->make will be removed at v5.1.0. Use Sisimai->rise instead';
+    my $class = shift;
     my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
     return __PACKAGE__->rise($argv0, %$argv1);
