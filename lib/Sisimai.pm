@@ -24,10 +24,10 @@ sub rise {
     require Sisimai::Mail;
     require Sisimai::Fact;
 
-    my $sisi = [];
     my $mail = Sisimai::Mail->new($argv0) || return undef;
     my $kind = $mail->kind;
     my $c___ = ref $argv1->{'c___'} eq 'ARRAY' ? $argv1->{'c___'} : [undef, undef];
+    my $sisi = [];
 
     while( my $r = $mail->data->read ) {
         # Read and parse each email file
