@@ -343,15 +343,15 @@ sub damn {
     # @return   [Hash] Data in Hash reference
     my $self = shift;
     my $data = undef;
+    state $stringdata = [qw|
+        action alias catch deliverystatus destination diagnosticcode diagnostictype feedbacktype
+        lhost listid messageid origin reason replycode rhost senderdomain smtpagent smtpcommand
+        subject timezoneoffset token
+    |];
 
     eval {
         my $v = {};
-        state $stringdata = [qw|
-            action alias catch deliverystatus destination diagnosticcode diagnostictype feedbacktype
-            lhost listid messageid origin reason replycode rhost senderdomain smtpagent smtpcommand
-            subject timezoneoffset token
-        |];
-        $v->{ $_ } = $self->$_ // '' for @$stringdata;
+        $v->{ $_ }         = $self->$_ // '' for @$stringdata;
         $v->{'hardbounce'} = int $self->hardbounce;
         $v->{'addresser'}  = $self->addresser->address;
         $v->{'recipient'}  = $self->recipient->address;
