@@ -29,8 +29,7 @@ BUILD_REGULAR_EXPRESSIONS: {
     #   dcontent        = dtext / quoted-pair
     #   dtext           = NO-WS-CTL /     ; Non white space controls
     #                     %d33-90 /       ; The rest of the US-ASCII
-    #                     %d94-126        ;  characters not including "[",
-    #                                     ;  "]", or "\"
+    #                     %d94-126        ;  characters not including "[", "]", or "\"
     my $atom           = qr;[a-zA-Z0-9_!#\$\%&'*+/=?\^`{}~|\-]+;o;
     my $quoted_string  = qr/"(?:\\[^\r\n]|[^\\"])*"/o;
     my $domain_literal = qr/\[(?:\\[\x01-\x09\x0B-\x0c\x0e-\x7f]|[\x21-\x5a\x5e-\x7e])*\]/o;
