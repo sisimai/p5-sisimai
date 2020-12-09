@@ -93,11 +93,11 @@ sub field {
         'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*(.+)/,
         'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
         'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
-        'host' => qr/\A((?:Reporting|Received-From|Remote)-MTA):[ ]*(.+?);[ ]*(.+)/,
-        'list' => qr/\A(Action):[ ]*(failed|delayed|deliverable|delivered|relayed|expanded|expired|failure)/i,
+        'host' => qr/\A((?:Received-From|Remote|Reporting)-MTA):[ ]*(.+?);[ ]*(.+)/,
+        'list' => qr/\A(Action):[ ]*(delayed|deliverable|delivered|expanded|expired|failed|failure|relayed)/i,
         'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
         'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
-       #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
+       #'text' => qr/\A(Final-Log-ID|Original-Envelope-Id):[ ]*(.+)/,
     };
 
     my $group = $fieldgroup->{ lc((split(':', $argv0, 2))[0]) } || return undef;
