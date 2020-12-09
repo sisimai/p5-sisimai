@@ -280,7 +280,7 @@ sub rise {
 
         HARD_BOUNCE: {
             # Set the value of "hardbounce", default value of "bouncebounce" is 0
-            if( $o->{'reason'} =~ /\Adelivered|feedback|vacation\z/ ) {
+            if( $o->{'reason'} =~ /\A(?:delivered|feedback|vacation)\z/ ) {
                 # The value of "reason" is "delivered", "vacation" or "feedback".
                 $o->{'replycode'} = '' unless $o->{'reason'} eq 'delivered';
 
