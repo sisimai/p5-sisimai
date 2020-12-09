@@ -364,8 +364,8 @@ sub damn {
 sub dump {
     # Data dumper
     # @param    [String] type   Data format: json, yaml
-    # @return   [String, undef] Dumped data or undef if the value of first
-    #                           argument is neither "json" nor "yaml"
+    # @return   [String, undef] Dumped data or undef if the value of first argument is neither 
+    #                           "json" nor "yaml"
     my $self = shift;
     my $type = shift || 'json';
     return undef unless $type =~ /\A(?:json|yaml)\z/;
