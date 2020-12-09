@@ -269,12 +269,12 @@ sub rise {
             # Decide the reason of email bounce
             if( $o->{'reason'} eq '' || exists $retryindex->{ $o->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
-                my $r;
-                $r   = Sisimai::Rhost->get($o) if Sisimai::Rhost->match($o->{'rhost'});
-                $r ||= Sisimai::Rhost->get($o, $o->{'destination'}) if Sisimai::Rhost->match($o->{'destination'});
+                my $r; my $de = $o->{'destination'};
+                $r   = Sisimai::Rhost->get($o)      if Sisimai::Rhost->match($o->{'rhost'});
+                $r ||= Sisimai::Rhost->get($o, $de) if Sisimai::Rhost->match($de);
                 $r ||= Sisimai::Reason->get($o);
                 $r ||= 'undefined';
-                $o->{'reason'}= $r;
+                $o->{'reason'} = $r;
             }
         }
 
