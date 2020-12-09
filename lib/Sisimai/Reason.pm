@@ -61,8 +61,8 @@ sub get {
     my $argvs = shift // return undef;
 
     unless( exists $GetRetried->{ $argvs->{'reason'} } ) {
-        # Return reason text already decided except reason match with the
-        # regular expression of ->retry() method.
+        # Return reason text already decided except reason match with the regular expression of
+        # ->retry() method.
         return $argvs->{'reason'} if $argvs->{'reason'};
     }
     return 'delivered' if substr($argvs->{'deliverystatus'}, 0, 2) eq '2.';
@@ -71,8 +71,8 @@ sub get {
     if( $argvs->{'diagnostictype'} eq 'SMTP' || $argvs->{'diagnostictype'} eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
         for my $e ( @{ $ClassOrder->[0] } ) {
-            # Check the value of Diagnostic-Code: and the value of Status:, it is a
-            # deliverystats, with true() method in each Sisimai::Reason::* class.
+            # Check the value of Diagnostic-Code: and the value of Status:, it is a deliverystats,
+            # with true() method in each Sisimai::Reason::* class.
             my $p = 'Sisimai::Reason::'.$e;
             require $ModulePath->{ $p };
 
@@ -181,8 +181,8 @@ sub match {
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( @{ $ClassOrder->[2] } ) {
-        # Check the value of Diagnostic-Code: and the value of Status:, it is a
-        # deliverystats, with true() method in each Sisimai::Reason::* class.
+        # Check the value of Diagnostic-Code: and the value of Status:, it is a deliverystats, with
+        # true() method in each Sisimai::Reason::* class.
         my $p = 'Sisimai::Reason::'.$e;
         require $ModulePath->{ $p };
 
