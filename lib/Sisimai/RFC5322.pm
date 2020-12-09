@@ -13,8 +13,7 @@ use constant HEADERTABLE => {
 
 my $HEADERINDEX = {};
 BUILD_FLATTEN_RFC822HEADER_LIST: {
-    # Convert $HEADER: hash reference to flatten hash reference for being
-    # called from Sisimai::Lhost::*
+    # Convert $HEADER: hash reference to flatten hash reference for being called from Sisimai::Lhost::*
     for my $v ( values %{ HEADERTABLE() } ) {
         $HEADERINDEX->{ $_ } = 1 for @$v;
     }
@@ -49,8 +48,7 @@ sub received {
     return [] if $argv1 =~ /qmail[ \t]+.+invoked[ \t]+/;
 
     if( $argv1 =~ /\Afrom[ \t]+(.+)[ \t]+by[ \t]+([^ ]+)/ ) {
-        # Received: from localhost (localhost)
-        #   by nijo.example.jp (V8/cf) id s1QB5ma0018057;
+        # Received: from localhost (localhost) by nijo.example.jp (V8/cf) id s1QB5ma0018057;
         #   Wed, 26 Feb 2014 06:05:48 -0500
         $value->{'from'} = $1;
         $value->{'by'}   = $2;
@@ -63,10 +61,8 @@ sub received {
     }
 
     if( $value->{'from'} =~ / / ) {
-        # Received: from [10.22.22.222] (smtp-gateway.kyoto.ocn.ne.jp [192.0.2.222])
-        #   (authenticated bits=0)
-        #   by nijo.example.jp (V8/cf) with ESMTP id s1QB5ka0018055;
-        #   Wed, 26 Feb 2014 06:05:47 -0500
+        # Received: from [10.22.22.222] (smtp.kyoto.ocn.ne.jp [192.0.2.222]) (authenticated bits=0)
+        #   by nijo.example.jp (V8/cf) with ESMTP id s1QB5ka0018055; Wed, 26 Feb 2014 06:05:47 -0500
         my @received = split(' ', $value->{'from'});
         my @namelist;
         my @addrlist;
@@ -119,11 +115,11 @@ sub received {
 }
 
 sub fillet {
-    # Split given entire message body into error message lines and the original
-    # message part only include email headers
+    # Split given entire message body into error message lines and the original message part only
+    # include email headers
     # @param    [String] mbody  Entire message body
-    # @param    [Regexp] regex  Regular expression of the message/rfc822 or the
-    #                           beginning of the original message part
+    # @param    [Regexp] regex  Regular expression of the message/rfc822 or the beginning of the
+    #                           original message part
     # @return   [Array]         [Error message lines, The original message]
     # @since    v4.25.5
     my $class = shift;
@@ -132,8 +128,8 @@ sub fillet {
 
     my ($a, $b) = split($regex, $$mbody, 2); $b ||= '';
     if( length $b ) {
-        # Remove blank lines, the message body of the original message,
-        # and append "\n" at the end of the original message headers
+        # Remove blank lines, the message body of the original message, and append "\n" at the end
+        # of the original message headers
         $b =~ s/\A[\r\n\s]+//m;   # Remove leading blank lines
         $b =~ s/\n\n.+\z//ms;     # Remove text after the first blank line
         $b .= "\n" unless $b =~ /\n\z/;
