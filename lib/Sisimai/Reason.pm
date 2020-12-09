@@ -53,9 +53,8 @@ sub path {
 
 sub get {
     # Detect the bounce reason
-    # @param    [Sisimai::Fact] argvs   Parsed email object
-    # @return   [String]                Bounce reason or undef if the argument
-    #           [undef]                 is missing or invalid object
+    # @param    [Hash]   argvs  Parsed email object
+    # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
     # @see anotherone
     my $class = shift;
     my $argvs = shift // return undef;
@@ -101,8 +100,7 @@ sub get {
 sub anotherone {
     # Detect the other bounce reason, fall back method for get()
     # @param    [Hash] argvs    Parsed email structure
-    # @return   [String]        Bounce reason or undef if the argument
-    #           [undef]         is missing or invalid object
+    # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
     # @see get
     my $class = shift;
     my $argvs = shift // return undef;
