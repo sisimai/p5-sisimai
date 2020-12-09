@@ -43,11 +43,13 @@ use Class::Accessor::Lite ('new' => 0, 'rw' => [
 sub rise {
     # Constructor of Sisimai::Fact
     # @param         [Hash]   argvs
-    # @options argvs [String] data      Entire email message
-    # @options argvs [Array]  load      User defined MTA module list
-    # @options argvs [Array]  order     The order of MTA modules
-    # @options argvs [Code]   hook      Reference to callback method
-    # @return        [Array]            Array of Sisimai::Fact objects
+    # @options argvs [String]  data         Entire email message
+    # @options argvs [Integer] delivered    Include the result which has "delivered" reason
+    # @options argvs [Code]    hook         Code reference to callback method
+    # @options argvs [Array]   load         User defined MTA module list
+    # @options argvs [Array]   order        The order of MTA modules
+    # @options argvs [String]  origin       Path to the original email file
+    # @return        [Array]                Array of Sisimai::Fact objects
     my $class = shift;
     my $argvs = shift || return undef;
     die ' ***error: Sisimai::Fact->rise receives only a HASH reference as an argument' unless ref $argvs eq 'HASH';
@@ -99,11 +101,11 @@ sub rise {
             # Detect email address from message/rfc822 part
             for my $f ( @{ $rfc822head->{'addresser'} } ) {
                 # Check each header in message/rfc822 part
-                my $h = lc $f;
-                next unless exists $rfc822data->{ $h };
-                next unless $rfc822data->{ $h };
+                my $g = lc $f;
+                next unless exists $rfc822data->{ $g };
+                next unless $rfc822data->{ $g };
 
-                my $j = Sisimai::Address->find($rfc822data->{ $h }) || next;
+                my $j = Sisimai::Address->find($rfc822data->{ $g }) || next;
                 $p->{'addresser'} = shift @$j;
                 last;
             }
@@ -136,7 +138,8 @@ sub rise {
 
             while( my $v = shift @datevalues ) {
                 # Parse each date value in the array
-                $datestring = Sisimai::DateTime->parse($v) || last TIMESTAMP;
+                $datestring = Sisimai::DateTime->parse($v);
+                last if $datestring;
             }
 
             if( defined $datestring && $datestring =~ /\A(.+)[ ]+([-+]\d{4})\z/ ) {
