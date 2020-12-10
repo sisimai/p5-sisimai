@@ -110,13 +110,13 @@ MAKETEST: {
             my $callbackto = sub {
                 my $argvs = shift;
                 my $catch = {
-                    'x-mailer'        => '',
-                    'return-path'     => '',
-                    'x-virus-scanned' => '',
+                    'x-mailer'        => '?',
+                    'return-path'     => '?',
+                    'x-virus-scanned' => '?',
                 };
 
-                $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
-                $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '';
+                $catch->{'from'} = $argvs->{'headers'}->{'from'} || 'Postmaster';
+                $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '?';
                 $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
                 $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
@@ -127,33 +127,12 @@ MAKETEST: {
                 isa_ok $ee, 'Sisimai::Fact';
                 isa_ok $ee->catch, 'HASH';
 
-                ok defined $ee->catch->{'x-mailer'};
-                if( length $ee->catch->{'x-mailer'} ) {
-                    like $ee->catch->{'x-mailer'}, qr/[A-Z]/;
-                }
-
-                ok defined $ee->catch->{'return-path'};
-                if( length $ee->catch->{'return-path'} ) {
-                    like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
-                }
-
-                ok defined $ee->catch->{'from'};
-                if( length $ee->catch->{'from'} ) {
-                    like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|<?mailer-daemon>?)/i;
-                }
-
-                ok defined $ee->catch->{'x-virus-scanned'};
-                if( length $ee->catch->{'x-virus-scanned'} ) {
-                    like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam)/i;
-                }
-
-                ok $ee->{'parsedat'};
+                like $ee->catch->{'x-mailer'}, qr/[A-Z?]/;
+                like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|mailer-daemon|[?])/i;
+                like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|mailer-daemon|postmaster|[?])/i;
+                like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam|[?])/i;
                 like $ee->{'parsedat'}, qr/\A\d{4}[-]\d{2}[-]\d{2}/;
-
-                ok $ee->{'size'};
-                ok $ee->{'size'} > 0;
-
-                ok $ee->{'kind'};
+                ok   $ee->{'size'} > 0;
                 like $ee->{'kind'}, qr/\AMail(?:box|dir)/;
             }
 
