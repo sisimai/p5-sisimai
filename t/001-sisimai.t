@@ -9,15 +9,15 @@ require './t/999-values.pl';
 
 my $Package = 'Sisimai';
 my $Methods = {
-    'class'  => ['libname', 'version', 'rise', 'dump', 'engine', 'match', 'make'],
+    'class'  => ['libname', 'version', 'rise', 'dump', 'engine', 'reason', 'match', 'make'],
     'object' => [],
 };
-my $SampleEmail = {
+my $Samples = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
     'maildir' => './set-of-emails/maildir/bsd',
     'memory'  => './set-of-emails/mailbox/mbox-1',
 };
-my $IsNotBounce = {
+my $Normals = {
     'maildir' => './set-of-emails/maildir/not',
 };
 
@@ -40,14 +40,14 @@ MAKETEST: {
     eval { $Package->dump('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    for my $e ( keys %$SampleEmail ) {
+    for my $e ( keys %$Samples ) {
         MAKE: {
             my $parseddata = undef;
             my $damnedhash = undef;
             my $jsonstring = undef;
 
             if( $e eq 'memory' ) {
-                my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
+                my $filehandle = IO::File->new($Samples->{ $e }, 'r');
                 my $entiremail = undef;
 
                 { local $/ = undef; $entiremail = <$filehandle>; }
@@ -58,7 +58,7 @@ MAKETEST: {
                 $parseddata = $Package->rise(\$entiremail);
 
             } else {
-                $parseddata = $Package->rise($SampleEmail->{ $e });
+                $parseddata = $Package->rise($Samples->{ $e });
             }
 
             isa_ok $parseddata, 'ARRAY';
@@ -121,7 +121,7 @@ MAKETEST: {
                 $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
             };
-            $havecaught = $Package->rise($SampleEmail->{ $e }, 'c___' => [$callbackto, $emailhooks]);
+            $havecaught = $Package->rise($Samples->{ $e }, 'c___' => [$callbackto, $emailhooks]);
 
             for my $ee ( @$havecaught ) {
                 isa_ok $ee, 'Sisimai::Fact';
@@ -157,7 +157,7 @@ MAKETEST: {
                 like $ee->{'kind'}, qr/\AMail(?:box|dir)/;
             }
 
-            my $isntmethod = $Package->rise($SampleEmail->{ $e }, 'c___' => {});
+            my $isntmethod = $Package->rise($Samples->{ $e }, 'c___' => {});
             for my $ee ( @$isntmethod ) {
                 isa_ok $ee, 'Sisimai::Fact';
                 is $ee->catch, undef;
@@ -165,7 +165,7 @@ MAKETEST: {
         }
 
         DUMP: {
-            my $jsonstring = $Package->dump($SampleEmail->{ $e });
+            my $jsonstring = $Package->dump($Samples->{ $e });
             my $perlobject = undef;
             my $tobetested = [ qw|
                 addresser recipient senderdomain destination reason timestamp 
@@ -196,8 +196,8 @@ MAKETEST: {
     }
 
     for my $e ( 'maildir' ) {
-        my $parseddata = $Package->rise($IsNotBounce->{ $e });
-        my $jsonstring = $Package->dump($IsNotBounce->{ $e });
+        my $parseddata = $Package->rise($Normals->{ $e });
+        my $jsonstring = $Package->dump($Normals->{ $e });
         is $parseddata, undef, '->rise = undef';
         is $jsonstring, '[]', '->dump = "[]"';
     }
