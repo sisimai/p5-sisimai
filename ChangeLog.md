@@ -6,8 +6,8 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.25.10
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Tue, 22 Dec 2020 13:22:22 +0900 (JST)"
+- version: "4.25.10"
 - changes:
   - #384 Remove the following old methods (marked as obsolete from v4.25.6)
     - `Sisimai::Mail->close` (automatically closes at the EOF)
