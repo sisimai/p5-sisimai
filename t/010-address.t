@@ -10,7 +10,7 @@ my $Methods = {
         'new', 'find', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
         'is_emailaddress', 'is_mailerdaemon'
     ],
-    'object' => ['address', 'host', 'user', 'verp', 'alias', 'TO_JSON'],
+    'object' => ['address', 'host', 'user', 'verp', 'alias', 'name', 'comment', 'TO_JSON'],
 };
 my $NewInstance = $Package->new({ 'address' => 'maketest@bouncehammer.jp' });
 

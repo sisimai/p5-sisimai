@@ -136,7 +136,7 @@ MAKETEST: {
                 like $ee->{'kind'}, qr/\AMail(?:box|dir)/;
             }
 
-            my $isntmethod = $Package->rise($Samples->{ $e }, 'c___' => {});
+            my $isntmethod = $Package->rise($Samples->{ $e }, 'c___' => []);
             for my $ee ( @$isntmethod ) {
                 isa_ok $ee, 'Sisimai::Fact';
                 is $ee->catch, undef;
@@ -146,10 +146,7 @@ MAKETEST: {
         DUMP: {
             my $jsonstring = $Package->dump($Samples->{ $e });
             my $perlobject = undef;
-            my $tobetested = [ qw|
-                addresser recipient senderdomain destination reason timestamp 
-                token smtpagent origin|
-            ];
+            my $tobetested = [qw|addresser recipient senderdomain destination reason timestamp token smtpagent origin|];
             ok length $jsonstring;
             utf8::encode $jsonstring if utf8::is_utf8 $jsonstring;
             $perlobject = JSON::decode_json($jsonstring);
@@ -161,14 +158,8 @@ MAKETEST: {
                 is ref $ee->{'recipient'}, '', '->{reciipent} is a String';
 
                 for my $eee ( @$tobetested ) {
-                    if( $eee eq 'senderdomain' && $ee->{'addresser'} =~ /\A(?:postmaster|MAILER-DAEMON)\z/ ) {
-                        # addresser = postmaster
-                        is $ee->{'senderdomain'}, '', $eee.' = ""';
-
-                    } else {
-                        # other properties
-                        ok $ee->{ $eee }, $eee.' = '.$ee->{ $eee };
-                    }
+                    next if $eee eq 'senderdomain';
+                    ok $ee->{ $eee }, $eee.' = '.$ee->{ $eee };
                 }
             }
         }
