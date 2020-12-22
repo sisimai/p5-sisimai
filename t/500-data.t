@@ -44,6 +44,7 @@ MAKE_TEST: {
         for my $e ( @$data ) {
             isa_ok $e, $PackageName;
             ok length $e->token, 'token = '.$e->token;
+            is $e->token, 'e66edfc23709083576f3b88141473436ce8a7f04';
             ok length $e->lhost, 'lhost = '.$e->lhost;
             ok length $e->rhost, 'rhost = '.$e->rhost;
             like $e->alias, qr/\A.+[@].+[.].+\z/, 'alias = '.$e->alias;
@@ -115,6 +116,7 @@ MAKE_TEST: {
         for my $e ( @$data ) {
             isa_ok $e, $PackageName;
             ok length $e->token, 'token = '.$e->token;
+            is $e->token, 'cf02004cf5c8868f0f924eecefdb600599f238a6';
             ok length $e->lhost, 'lhost = '.$e->lhost;
             unlike $e->lhost, qr/[ ]/, '->lhost = '.$e->lhost;
 

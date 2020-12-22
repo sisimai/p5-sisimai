@@ -59,7 +59,7 @@ sub new {
         'senderdomain' => $as->host,
         'destination'  => $ar->host,
         'alias' => $argvs->{'alias'} || $ar->alias,
-        'token' => Sisimai::String->token($as, $ar, $argvs->{'timestamp'}),
+        'token' => Sisimai::String->token($as->address, $ar->address, $argvs->{'timestamp'}),
     };
 
     # Create Sisimai::Time object
