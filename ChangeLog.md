@@ -4,11 +4,15 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.9p4
+v4.25.10
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
+  - #384 Remove the following old methods (marked as obsolete from v4.25.6)
+    - `Sisimai::Mail->close` (automatically closes at the EOF)
+    - `Sisimai::Mail->type` (use `Sisimai::Mail->kind` instead)
+    - `Sisimai::Mail->mail->*` (use `Sisimai::Mail->data->*` instead)
   - #415 Code improvement for `Source-IP` field on ARF. Thanks to @cucx
   - #416 Exim and X3 in `Sisimai::Lhost` improved. Thanks to @AmarkhiS
   - #418 Updates for DMARC and SPF related errors
