@@ -77,7 +77,6 @@ my $isexpected = [
     { 'n' => '01067', 'r' => qr/hostunknown/    },
     { 'n' => '01068', 'r' => qr/hostunknown/    },
     { 'n' => '01069', 'r' => qr/filtered/       },
-    { 'n' => '01070', 'r' => qr/hostunknown/    },
     { 'n' => '01071', 'r' => qr/hostunknown/    },
     { 'n' => '01072', 'r' => qr/(?:hostunknown|userunknown)/ },
     { 'n' => '01073', 'r' => qr/(?:hostunknown|userunknown)/ },
