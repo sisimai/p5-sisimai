@@ -8,7 +8,6 @@ my $Methods = {
     'class'  => ['new'],
     'object' => ['path', 'size', 'handle', 'offset', 'read'],
 };
-my $SampleEmail = './set-of-emails/mailbox/mbox-0';
 my $NewInstance = $Package->new();
 
 use_ok $Package;
