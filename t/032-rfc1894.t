@@ -70,9 +70,7 @@ MAKETEST: {
         is $Package->match($e), 0, '->match('.$e.') returns 0';
         $v = $Package->field($e);
         is $v, undef, '->field('.$e.') returns undef';
-        is $v, undef, '->field returns undef';
     }
-
 }
 
 done_testing;
