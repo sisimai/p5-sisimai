@@ -27,7 +27,7 @@ MAKETEST: {
     isa_ok $r, 'ARRAY';
     for my $e ( @$r ) {
         ok length $e, $e;
-        like $e, qr/\A[A-Za-z-]+\z/;
+        like $e, qr/\A[a-z-]+\z/;
     }
 
     $r = $Package->HEADERFIELDS('neko');
@@ -37,7 +37,7 @@ MAKETEST: {
         ok scalar @{ $r->{ $e } }, $e.' = '.scalar @{ $r->{ $e } };
         for my $f ( @{ $r->{ $e } } ) {
             ok length $f, $e.'/'.$f;
-            like $f, qr/\A[A-Za-z-]+\z/;
+            like $f, qr/\A[a-z-]+\z/;
         }
     }
 
