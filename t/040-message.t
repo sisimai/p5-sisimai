@@ -5,14 +5,14 @@ use Sisimai::Message;
 
 my $Package = 'Sisimai::Message';
 my $Methods = { 'class'  => ['rise', 'load', 'parse', 'divideup', 'makemap'] };
-my $SampleEmail = './set-of-emails/mailbox/mbox-0';
+my $Mailbox = './set-of-emails/mailbox/mbox-0';
 
 use_ok $Package;
 can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
     use IO::File;
-    my $filehandle = IO::File->new($SampleEmail, 'r');
+    my $filehandle = IO::File->new($Mailbox, 'r');
     my $mailastext = '';
     my $tobeloaded = $Package->load;
     my $callbackto = sub {
@@ -55,10 +55,10 @@ MAKETEST: {
 
     for my $e ( @{ $p->{'ds'} } ) {
         is $e->{'spec'}, 'SMTP', '->spec = SMTP';
-        ok length $e->{'recipient'}, '->recipient = '.$e->{'recipient'};
+        like $e->{'recipient'}, qr/[@]/, '->recipient = '.$e->{'recipient'};
         like $e->{'status'}, qr/\d[.]\d[.]\d+/, '->status = '.$e->{'status'};
         ok exists $e->{'command'}, '->command = '.$e->{'command'};
-        ok length $e->{'date'}, '->date = '.$e->{'date'};
+        like $e->{'date'}, qr/\d{4}/, '->date = '.$e->{'date'};
         ok length $e->{'diagnosis'}, '->diagnosis = '.$e->{'diagnosis'};
         ok length $e->{'action'}, '->action = '.$e->{'action'};
         ok length $e->{'rhost'}, '->rhost = '.$e->{'rhost'};
