@@ -4,10 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Message;
 
 my $Package = 'Sisimai::Message';
-my $Methods = {
-    'class'  => ['rise', 'load', 'parse', 'divideup', 'makemap'],
-    'object' => ['from', 'header', 'ds', 'rfc822'],
-};
+my $Methods = { 'class'  => ['rise', 'load', 'parse', 'divideup', 'makemap'] };
 my $SampleEmail = './set-of-emails/mailbox/mbox-0';
 
 use_ok $Package;
