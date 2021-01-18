@@ -290,7 +290,6 @@ sub make {
         $e->{ $_ } ||= $arfheaders->{ $_ } for keys %$arfheaders;
         delete $e->{'authres'};
 
-        $e->{'softbounce'}  = -1;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
         $e->{'diagnosis'}   = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'date'}      ||= $mhead->{'date'};
@@ -362,7 +361,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
