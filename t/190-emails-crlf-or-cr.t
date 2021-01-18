@@ -4,17 +4,15 @@ use lib qw(./lib ./blib/lib);
 use Sisimai;
 
 my $Package = 'Sisimai';
-my $SampleEmail = {
+my $Samples = {
     'dos' => './set-of-emails/maildir/dos',
     'mac' => './set-of-emails/maildir/mac',
 };
 
 MAKETEST: {
-
-    for my $e ( keys %$SampleEmail ) {
-
+    for my $e ( keys %$Samples ) {
         next if $e eq 'mac';
-        my $v = $Package->rise($SampleEmail->{ $e });
+        my $v = $Package->rise($Samples->{ $e });
         isa_ok $v, 'ARRAY';
         ok scalar @$v, 'entries = '.scalar @$v;
 
