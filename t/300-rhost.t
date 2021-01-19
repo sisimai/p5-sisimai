@@ -20,16 +20,19 @@ MAKETEST: {
         isa_ok $v, 'ARRAY';
 
         while( my $f = shift @$v ) {
+            isa_ok $f, 'Sisimai::Fact';
             ok length $f->rhost;
             ok length $f->reason;
-            if( $Package->match($f->rhost) ) {
+            my $cx = $f->damn;
+
+            if( $Package->match($cx->{'rhost'}) ) {
                 # Get the reason by only the value of "rhost"
-                is $Package->get($f), $f->reason, sprintf("->reason = %s", $f->reason);
+                is $Package->get($cx), $f->reason, sprintf("->reason = %s", $f->reason);
 
             } else {
                 # Get the reason by the values of "rhost" and "desctination"
-                ok length $f->destination;
-                is $Package->get($f, $f->destination), $f->reason, sprintf("->reason = %s", $f->reason);
+                ok length $cx->{'destination'};
+                is $Package->get($cx, $cx->{'destination'}), $f->reason, sprintf("->reason = %s", $f->reason);
             }
         }
     }
