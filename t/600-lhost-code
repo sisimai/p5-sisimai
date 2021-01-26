@@ -24,17 +24,12 @@ my $moduletest = sub {
     use Sisimai::Address;
 
     my $isnotlhost = qr/\A(?:ARF|RFC3464|RFC3834)\z/;
-    my $samplepath = 'set-of-emails/maildir/bsd';
-    my $isntpublic = 'set-of-emails/private';
     my $methodlist = ['DELIVERYSTATUS', 'INDICATORS', 'description', 'index', 'path'];
     my $jsonobject = JSON->new;
     my $emailindex = 0;
     my $nameprefix = '';
     my $reasonlist = [map { $_ = lc $_ } @{ Sisimai::Reason->index }];
     push @$reasonlist, 'delivered', 'feedback', 'undefined', 'vacation';
-
-    my $getskipped = { 'undisclosed' => qr/\AARF-(?:11|12|15|1010|1011)-\d+/ };
-
 
     if( $E =~ $isnotlhost ) {
         # ARF, RFC3464, ARF3834
@@ -47,7 +42,7 @@ my $moduletest = sub {
         $M = sprintf("Sisimai::%s::%s", ucfirst $h, $E);
         $nameprefix = $h.'-';
     }
-    $samplepath = sprintf("set-of-emails/private/%s%s", $nameprefix, lc $E) if $privateset;
+    my $samplepath = $privateset ? sprintf("set-of-emails/private/%s%s", $nameprefix, lc $E) : 'set-of-emails/maildir/bsd';
 
     Module::Load::load $M;
     use_ok $M;
