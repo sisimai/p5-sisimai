@@ -446,7 +446,7 @@ my $moduletest = sub {
                 SOFTBOUNCE: {
                     ;
                 }
-            } # End of the loop for checking each Sisimai::Data object
+            } # End of the loop for checking each Sisimai::Fact object
             $emailindex++;
             ok $errorindex, sprintf("%s is including %d bounces", $mailobject->data->path, $errorindex);
 
