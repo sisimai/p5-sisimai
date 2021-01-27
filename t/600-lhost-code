@@ -25,6 +25,15 @@ my $moduletest = sub {
 
     my $isnotlhost = qr/\A(?:ARF|RFC3464|RFC3834)\z/;
     my $methodlist = ['DELIVERYSTATUS', 'INDICATORS', 'description', 'index', 'path'];
+    my $skiptonext = {
+        'public'  => ['lhost-postfix-49', 'lhost-postfix-50'],
+        'private' => [
+            'arf/01003', 'arf/01005', 'arf/01009', 'arf/01015',
+            'lhost-exim/01084', 'lhost-mailmarshalsmtp/01001', 
+            'lhost-postfix/01200', 'lhost-postfix/01201',
+            'rfc3464/01024', 'rfc3464/01061', 'rfc3464/01081',
+        ],
+    };
     my $jsonobject = JSON->new;
     my $emailindex = 0;
     my $nameprefix = '';
@@ -88,7 +97,25 @@ my $moduletest = sub {
         READ_EACH_EMAIL: while( my $r = $mailobject->data->read ) {
             # Read messages in each email
             my $methodargs = { 'data' => $r, 'delivered' => 1, 'origin' => $cf };
-            my $listoffact = Sisimai::Fact->rise($methodargs) || next;
+            my $listoffact = Sisimai::Fact->rise($methodargs);
+
+            unless( $listoffact ) {
+                my $bf = '';
+                my $be = '';
+
+                if( $privateset ) {
+                    $bf = [split('/', $cf, 4)]->[-1];
+                    $be = 'private';
+
+                } else {
+                    $bf = [split('/', $cf)]->[-1];
+                    $be = 'public';
+                }
+                $bf =~ s/[.]eml\z//;
+                next if grep { index($bf, $_) == 0 } @{ $skiptonext->{ $be } };
+                warn $bf;
+            }
+
             my $recipients = scalar @$listoffact;
             my $errorindex = 0;
 
@@ -444,6 +471,7 @@ my $moduletest = sub {
                 }
 
                 SOFTBOUNCE: {
+                    last;
                     $cv = $rr->softbounce;
                     $cr = qr/\A[-]?[01]\z/;
                     $ct = sprintf("[%s-%02d] ->softbounce =", $e, $errorindex);
