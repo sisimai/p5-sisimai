@@ -4,11 +4,11 @@ use lib qw(./lib ./blib/lib);
 use Sisimai;
 
 my $Package = 'Sisimai';
-my $UndefinedES = './set-of-emails/to-be-debugged-because/reason-is-undefined';
+my $Samples = './set-of-emails/to-be-debugged-because/reason-is-undefined';
 
 MAKETEST: {
-    plan 'skip_all', sprintf("%s does not exist", $UndefinedES) unless -d $UndefinedES;
-    my $v = $Package->make($UndefinedES);
+    plan 'skip_all', sprintf("%s does not exist", $Samples) unless -d $Samples;
+    my $v = $Package->make($Samples);
     isa_ok $v, 'ARRAY';
     ok scalar @$v, 'entries = '.scalar @$v;
 

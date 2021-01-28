@@ -5,11 +5,11 @@ use Sisimai;
 use Sisimai::Reason::OnHold;
 
 my $Package = 'Sisimai';
-my $ThatsOnHold = './set-of-emails/to-be-debugged-because/reason-is-onhold';
+my $Samples = './set-of-emails/to-be-debugged-because/reason-is-onhold';
 
 MAKETEST: {
-    plan 'skip_all', sprintf("%s does not exist", $ThatsOnHold) unless -d $ThatsOnHold;
-    my $v = $Package->make($ThatsOnHold);
+    plan 'skip_all', sprintf("%s does not exist", $Samples) unless -d $Samples;
+    my $v = $Package->make($Samples);
     isa_ok $v, 'ARRAY';
     ok scalar @$v, 'entries = '.scalar @$v;
 
