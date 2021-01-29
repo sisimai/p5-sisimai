@@ -130,8 +130,8 @@ sub fillet {
     if( length $b ) {
         # Remove blank lines, the message body of the original message, and append "\n" at the end
         # of the original message headers
-        $b =~ s/\A[\r\n\s]+//m;   # Remove leading blank lines
-        $b =~ s/\n\n.+\z//ms;     # Remove text after the first blank line
+        $b =~ s/\A[\r\n\s]+//m;                             # Remove leading blank lines
+        substr($b, index($b, "\n\n") + 1, length($b), '');  # Remove text after the first blank line
         $b .= "\n" unless $b =~ /\n\z/;
     }
     return [$a, $b];
@@ -192,7 +192,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
