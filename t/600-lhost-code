@@ -20,9 +20,11 @@ my $moduletest = sub {
     use Module::Load;
     use Sisimai::Mail;
     use Sisimai::Fact;
+    use Sisimai::Lhost;
     use Sisimai::Reason;
     use Sisimai::Address;
 
+    my $lhostindex = Sisimai::Lhost->index; push @$lhostindex, 'ARF', 'RFC3464', 'RFC3834';
     my $isnotlhost = qr/\A(?:ARF|RFC3464|RFC3834)\z/;
     my $methodlist = ['DELIVERYSTATUS', 'INDICATORS', 'description', 'index', 'path'];
     my $skiptonext = {
@@ -387,7 +389,26 @@ my $moduletest = sub {
                     $ct = sprintf("[%s-%02d] ->smtpagent =", $e, $errorindex);
 
                     ok length $cv, sprintf("%s %s", $ct, $cv);
-                    ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
+                    if( index($nameprefix, 'rhost') == 0 ) {
+                        # Sisimai::Rhost
+                        ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
+
+                    } else {
+                        # Sisimai::Lhost
+                        if( $E eq 'RFC3464' && $cv !~ /\ARFC3464/ ) {
+                            # Parsed by Sisimai::MDA
+                            ok $cv =~ $cr,                      sprintf("%s %s", $ct, $cr);
+                            ok grep { $cv ne $_ } @$lhostindex, sprintf("%s %s", $ct, $cr);
+
+                        } elsif( $E eq 'ARF' ) {
+                            # Parsed by Sisimai::ARF
+                            is $cv, 'Feedback-Loop', sprintf("%s %s", $ct, $cr);
+
+                        } else {
+                            # Other MTA modules
+                            is $cv, $E, sprintf("%s %s", $ct, $cr);
+                        }
+                    }
                 }
 
                 SMTPCOMMAND: {
