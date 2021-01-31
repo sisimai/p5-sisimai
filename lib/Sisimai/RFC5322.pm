@@ -130,8 +130,11 @@ sub fillet {
     if( length $b ) {
         # Remove blank lines, the message body of the original message, and append "\n" at the end
         # of the original message headers
-        $b =~ s/\A[\r\n\s]+//m;                             # Remove leading blank lines
-        substr($b, index($b, "\n\n") + 1, length($b), '');  # Remove text after the first blank line
+        # 1. Remove leading blank lines
+        # 2. Remove text after the first blank line: \n\n
+        # 3. Append "\n" at the end of test block when the last character is not "\n"
+        $b =~ s/\A[\r\n\s]+//m;
+        substr($b, index($b, "\n\n") + 1, length($b), '') if index($b, "\n\n") > 0;
         $b .= "\n" unless $b =~ /\n\z/;
     }
     return [$a, $b];
