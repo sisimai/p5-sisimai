@@ -397,8 +397,8 @@ my $moduletest = sub {
                         # Sisimai::Lhost
                         if( $E eq 'RFC3464' && $cv !~ /\ARFC3464/ ) {
                             # Parsed by Sisimai::MDA
-                            ok $cv =~ $cr,                      sprintf("%s %s", $ct, $cr);
-                            ok grep { $cv ne $_ } @$lhostindex, sprintf("%s %s", $ct, $cr);
+                            ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
+                            is scalar @{ [grep { $cv eq $_ } @$lhostindex] }, 0, sprintf("%s %s", $ct, $cv);
 
                         } elsif( $E eq 'ARF' ) {
                             # Parsed by Sisimai::ARF
