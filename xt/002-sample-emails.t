@@ -9,10 +9,17 @@ my $sampledirs = [
 
 for my $de ( @$sampledirs ) {
     ok -d $de;
+    ok -r $de;
+    ok -x $de;
+
     opendir(my $dr, $de);
     while( my $ce = readdir $dr ) {
         next if $ce eq '.';
         next if $ce eq '..';
+
+        ok -d sprintf("%s/%s", $de, $ce);
+        ok -r sprintf("%s/%s", $de, $ce);
+        ok -x sprintf("%s/%s", $de, $ce);
 
         opendir(my $sf, sprintf("%s/%s", $de, $ce));
         while( my $cx = readdir $sf) {
