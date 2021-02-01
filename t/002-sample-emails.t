@@ -25,7 +25,7 @@ for my $de ( @$sampledirs ) {
         my $lnindex = 0;
         my $fhandle = undef;
 
-        next unless -f $emailfn;
+        ok -f $emailfn, sprintf("%s: FILE", $ce);
         ok -T $emailfn, sprintf("%s: TEXT", $ce);
         ok -r $emailfn, sprintf("%s: READ", $ce);
         ok -s $emailfn, sprintf("%s: SIZE", $ce);
