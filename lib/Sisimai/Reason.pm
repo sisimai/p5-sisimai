@@ -70,8 +70,8 @@ sub get {
     if( $argvs->{'diagnostictype'} eq 'SMTP' || $argvs->{'diagnostictype'} eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
         for my $e ( @{ $ClassOrder->[0] } ) {
-            # Check the value of Diagnostic-Code: and the value of Status:, it is a deliverystats,
-            # with true() method in each Sisimai::Reason::* class.
+            # Check the values of Diagnostic-Code: and Status: fields using true() method of each
+            # child class in Sisimai::Reason
             my $p = 'Sisimai::Reason::'.$e;
             require $ModulePath->{ $p };
 
@@ -179,8 +179,8 @@ sub match {
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( @{ $ClassOrder->[2] } ) {
-        # Check the value of Diagnostic-Code: and the value of Status:, it is a deliverystats, with
-        # true() method in each Sisimai::Reason::* class.
+        # Check the values of Diagnostic-Code: and Status: fields using true() method of each child
+        # class in Sisimai::Reason
         my $p = 'Sisimai::Reason::'.$e;
         require $ModulePath->{ $p };
 
@@ -542,7 +542,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
