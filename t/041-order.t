@@ -3,19 +3,19 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Order;
 
-my $PackageName = 'Sisimai::Order';
-my $MethodNames = {
+my $Package = 'Sisimai::Order';
+my $Methods = {
     'class'  => ['make', 'default', 'another'],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
-    my $pattern = $PackageName->make('delivery failure');
-    my $default = $PackageName->default;
-    my $another = $PackageName->another;
+MAKETEST: {
+    my $pattern = $Package->make('delivery failure');
+    my $default = $Package->default;
+    my $another = $Package->another;
 
     isa_ok $pattern, 'ARRAY';
     isa_ok $default, 'ARRAY';

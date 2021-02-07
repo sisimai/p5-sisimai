@@ -2,37 +2,27 @@ package Sisimai::Message;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::RFC2045;
 use Sisimai::RFC5322;
 use Sisimai::Address;
 use Sisimai::String;
 use Sisimai::Order;
 use Sisimai::Lhost;
-use Sisimai::MIME;
-use Class::Accessor::Lite (
-    'new' => 0,
-    'rw'  => [
-        'from',     # [String] UNIX From line
-        'header',   # [Hash]   Header part of an email
-        'ds',       # [Array]  Parsed data by Sisimai::Lhost
-        'rfc822',   # [Hash]   Header part of the original message
-        'catch'     # [Any]    The results returned by hook method
-    ]
-);
 
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 
-sub new {
+sub rise {
     # Constructor of Sisimai::Message
-    # @param         [Hash] argvs       Email text data
-    # @options argvs [String] data      Entire email message
-    # @options argvs [Array]  load      User defined MTA module list
-    # @options argvs [Array]  order     The order of MTA modules
-    # @options argvs [Code]   hook      Reference to callback method
-    # @return        [Sisimai::Message] Structured email data or Undef if each
-    #                                   value of the arguments are missing
+    # @param         [Hash] argvs   Email text data
+    # @options argvs [String] data  Entire email message
+    # @options argvs [Array]  load  User defined MTA module list
+    # @options argvs [Array]  order The order of MTA modules
+    # @options argvs [Code]   hook  Reference to callback method
+    # @return        [Hash]         Structured email data
+    #                [Undef]        If each value of the arguments are missing
     my $class = shift;
-    my $argvs = { @_ };
+    my $argvs = shift || return undef;
     my $param = {};
     my $email = $argvs->{'data'} || return undef;
     my $thing = { 'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [], 'catch' => undef };
@@ -58,7 +48,7 @@ sub new {
     if( $thing->{'header'}->{'subject'} ) {
         # Decode MIME-Encoded "Subject:" header
         my $s = $thing->{'header'}->{'subject'};
-        my $q = Sisimai::MIME->is_mimeencoded(\$s) ? Sisimai::MIME->mimedecode([split(/[ ]/, $s)]) : $s;
+        my $q = Sisimai::RFC2045->is_encoded(\$s) ? Sisimai::RFC2045->decodeH([split(/[ ]/, $s)]) : $s;
 
         # Remove "Fwd:" string from the "Subject:" header
         if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
@@ -81,7 +71,7 @@ sub new {
     my $r = $bouncedata->{'rfc822'} || $aftersplit->[2];
     $thing->{'rfc822'} = ref $r ? $r : __PACKAGE__->makemap(\$r, 1);
 
-    return bless($thing, $class);
+    return $thing;
 }
 
 sub load {
@@ -202,17 +192,17 @@ sub makemap {
     } else {
         # MIME-Encoded subject field or ASCII characters only
         my $r = [];
-        if( Sisimai::MIME->is_mimeencoded(\$headermaps->{'subject'}) ) {
+        if( Sisimai::RFC2045->is_encoded(\$headermaps->{'subject'}) ) {
             # split the value of Subject by $borderline
             for my $v ( split(/ /, $headermaps->{'subject'}) ) {
                 # Insert value to the array if the string is MIME encoded text
-                push @$r, $v if Sisimai::MIME->is_mimeencoded(\$v);
+                push @$r, $v if Sisimai::RFC2045->is_encoded(\$v);
             }
         } else {
             # Subject line is not MIME encoded
             $r = [$headermaps->{'subject'}];
         }
-        $headermaps->{'subject'} = Sisimai::MIME->mimedecode($r);
+        $headermaps->{'subject'} = Sisimai::RFC2045->decodeH($r);
     }
     return $headermaps;
 }
@@ -250,11 +240,11 @@ sub parse {
         # Content-Type: text/plain; charset=UTF-8
         if( $ctencoding eq 'base64' ) {
             # Content-Transfer-Encoding: base64
-            $bodystring = Sisimai::MIME->base64d($bodystring);
+            $bodystring = Sisimai::RFC2045->decodeB($bodystring);
 
         } elsif( $ctencoding eq 'quoted-printable' ) {
             # Content-Transfer-Encoding: quoted-printable
-            $bodystring = Sisimai::MIME->qprintd($bodystring);
+            $bodystring = Sisimai::RFC2045->decodeQ($bodystring);
         }
 
         # Content-Type: text/html;...
@@ -263,7 +253,7 @@ sub parse {
         # NOT text/plain
         if( index($mesgformat, 'multipart/') == 0 ) {
             # In case of Content-Type: multipart/*
-            my $p = Sisimai::MIME->makeflat($mailheader->{'content-type'}, $bodystring);
+            my $p = Sisimai::RFC2045->makeflat($mailheader->{'content-type'}, $bodystring);
             $bodystring = $p if length $$p;
         }
     }
@@ -273,7 +263,7 @@ sub parse {
         # Call hook method
         my $p = { 'headers' => $mailheader, 'message' => $$bodystring };
         eval { $havecaught = $hookmethod->($p) };
-        warn sprintf(" ***warning: Something is wrong in hook method:%s", $@) if $@;
+        warn sprintf(" ***warning: Something is wrong in hook method 'hook': %s", $@) if $@;
     }
 
     my $haveloaded = {};
@@ -355,13 +345,13 @@ Sisimai::Message - Convert bounce email text to data structure.
 
     my $mailbox = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mailbox->read ) {
-        my $p = Sisimai::Message->new('data' => $r);
+        my $p = Sisimai::Message->rise('data' => $r);
     }
 
-    my $notmail = '/home/neko/Maildir/cur/22222';   # is not a bounce email
+    my $notmail = '/home/neko/Maildir/cur/22222';       # is not a bounce email
     my $mailobj = Sisimai::Mail->new($notmail);
     while( my $r = $mailobj->read ) {
-        my $p = Sisimai::Message->new('data' => $r);  # $p is "undef"
+        my $p = Sisimai::Message->rise('data' => $r);   # $p is "undef"
     }
 
 =head1 DESCRIPTION
@@ -373,7 +363,7 @@ bounce email, the method returns "undef".
 
 =head1 CLASS METHODS
 
-=head2 C<B<new(I<Hash reference>)>>
+=head2 C<B<rise(I<Hash reference>)>>
 
 C<new()> is a constructor of Sisimai::Message
 

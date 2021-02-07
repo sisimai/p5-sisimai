@@ -10,7 +10,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.13.0
     my $class = shift;
     my $mhead = shift // return undef;
@@ -24,15 +24,15 @@ sub make {
         #       Mail Delivery Subsystem
         for my $f ( split(' ', $mhead->{'from'}) ) {
             # Check each element of From: header
-            next unless Sisimai::MIME->is_mimeencoded(\$f);
-            $match++ if rindex(Sisimai::MIME->mimedecode([$f]), 'Mail Delivery Subsystem') > -1;
+            next unless Sisimai::RFC2045->is_encoded(\$f);
+            $match++ if rindex(Sisimai::RFC2045->decodeH([$f]), 'Mail Delivery Subsystem') > -1;
             last;
         }
     }
 
-    if( Sisimai::MIME->is_mimeencoded(\$mhead->{'subject'}) ) {
+    if( Sisimai::RFC2045->is_encoded(\$mhead->{'subject'}) ) {
         # Subject: =?iso-2022-jp?B?UmV0dXJuZWQgbWFpbDogVXNlciB1bmtub3du?=
-        $plain = Sisimai::MIME->mimedecode([$mhead->{'subject'}]);
+        $plain = Sisimai::RFC2045->decodeH([$mhead->{'subject'}]);
         $match++ if rindex($plain, 'Mail Delivery Subsystem') > -1;
     }
     return undef if $match < 2;

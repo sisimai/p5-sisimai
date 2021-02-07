@@ -10,7 +10,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.0.0
     my $class = shift;
     my $mhead = shift // return undef;
@@ -163,7 +163,7 @@ sub make {
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with
         # the boundary string.
-        $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'});
+        $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'});
     }
 
     for my $e ( split("\n", $emailsteak->[0]) ) {

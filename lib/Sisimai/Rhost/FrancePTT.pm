@@ -5,11 +5,11 @@ use warnings;
 
 sub get {
     # Detect bounce reason from Orange and La Poste
-    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason for Orange, La Poste
     my $class = shift;
     my $argvs = shift // return undef;
-    return $argvs->reason if $argvs->reason;
+    return $argvs->{'reason'} if $argvs->{'reason'};
 
     state $errorcodes = {
         # 550 5.7.1 Service unavailable; client [X.X.X.X] blocked using Spamhaus
@@ -132,7 +132,7 @@ sub get {
         '999' => 'blocked',
     };
 
-    my $statusmesg = $argvs->diagnosticcode;
+    my $statusmesg = $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     if( $statusmesg =~ /\b(LPN|LPNAAA|OFR|OUK)(_[0-9]{3}|[0-9]{3}[-_][0-9]{3})\b/i ) {
@@ -159,14 +159,14 @@ La Poste.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
 object as an argument of get() method when the value of C<rhost> of the object
 end with "laposte.net" or "orange.fr".
-This class is called only Sisimai::Data class.
+This class is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 

@@ -5,41 +5,36 @@ use Sisimai;
 use Sisimai::Rhost;
 use Sisimai::Reason;
 
-my $PackageName = 'Sisimai::Rhost';
-my $MethodNames = {
-    'class' => ['match', 'get'],
-    'object' => [],
-};
+my $Package = 'Sisimai::Rhost';
+my $Methods = { 'class' => ['match', 'get'], 'object' => [] };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+MAKETEST: {
+    use_ok $Package;
+    can_ok $Package, @{ $Methods->{'class'} };
+    is $Package->match, undef;
+    is $Package->get, undef;
 
-MAKE_TEST: {
-    is $PackageName->match, undef;
-    is $PackageName->get, undef;
-
-    my $host = [
-        'aspmx.l.google.com',
-        'gmail-smtp-in.l.google.com',
-        'neko.protection.outlook.com',
-        'smtp.secureserver.net',
-        'mailstore1.secureserver.net',
-        'smtpz4.laposte.net',
-        'smtp-in.orange.fr',
-        'mx2.qq.com',
-        'mx3.email.ua',
-    ];
-
-    for my $e ( @$host ) {
-        ok $PackageName->match($e), '->match('.$e.')';
-    }
-
-    my $rset = Sisimai::Reason->index;
     for my $e ( glob('./set-of-emails/maildir/bsd/rhost-*.eml') ) {
+        my $v = Sisimai->rise($e);
         ok -f $e, $e;
-        my $v = Sisimai->make($e);
-        ok length $v->[0]->{'reason'}, 'reason = '.$v->[0]->{'reason'};
-        ok length $v->[0]->{'rhost'},  'rhost = '.$v->[0]->{'rhost'};
+        isa_ok $v, 'ARRAY';
+
+        while( my $f = shift @$v ) {
+            isa_ok $f, 'Sisimai::Fact';
+            ok length $f->rhost;
+            ok length $f->reason;
+            my $cx = $f->damn;
+
+            if( $Package->match($cx->{'rhost'}) ) {
+                # Get the reason by only the value of "rhost"
+                is $Package->get($cx), $f->reason, sprintf("->reason = %s", $f->reason);
+
+            } else {
+                # Get the reason by the values of "rhost" and "desctination"
+                ok length $cx->{'destination'};
+                is $Package->get($cx, $cx->{'destination'}), $f->reason, sprintf("->reason = %s", $f->reason);
+            }
+        }
     }
 }
 

@@ -10,7 +10,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.1.9
     my $class = shift;
     my $mhead = shift // return undef;
@@ -31,9 +31,8 @@ sub make {
     my $endoferror = 0;     # (Integer) Flag for the end of error message
     my $v = undef;
 
-    if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
+    if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1) ) {
         # Convert to regular expression
-        $boundary00 = '--'.$boundary00.'--';
         $rebackbone = qr/^\Q$boundary00\E/m;
     }
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);

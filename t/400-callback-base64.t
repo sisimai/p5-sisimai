@@ -1,15 +1,12 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::Message;
+use Sisimai::Fact;
 use IO::File;
 
-my $SampleEmails = [
-    'lhost-domino-03.eml',
-    'lhost-mfilter-04.eml',
-];
+my $SampleEmails = ['lhost-domino-03.eml', 'lhost-mfilter-04.eml'];
 
-MAKE_TEST: {
+MAKETEST: {
     my $callbackto = sub {
         my $argvs = shift;
         my $catch = { 'passed' => 0, 'base64' => 0 };
@@ -33,12 +30,8 @@ MAKE_TEST: {
         $filehandle->close;
         ok length $mailastext;
 
-        my $p = Sisimai::Message->new('data' => $mailastext, 'hook' => $callbackto);
-        isa_ok $p, 'Sisimai::Message';
-        isa_ok $p->header, 'HASH', '->header';
-        isa_ok $p->ds, 'ARRAY', '->ds';
-        isa_ok $p->rfc822, 'HASH', '->rfc822';
-        ok length $p->from, $p->from;
+        my $p = shift @{ Sisimai::Fact->rise({ 'data' => $mailastext, 'hook' => $callbackto }) };
+        isa_ok $p, 'Sisimai::Fact';
 
         isa_ok $p->catch, 'HASH';
         is $p->catch->{'passed'}, 1, '->catch->passed = 1';

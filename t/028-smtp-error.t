@@ -3,16 +3,13 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP::Error;
 
-my $PackageName = 'Sisimai::SMTP::Error';
-my $MethodNames = {
-    'class' => ['is_permanent', 'soft_or_hard'],
-    'object' => [],
-};
+my $Package = 'Sisimai::SMTP::Error';
+my $Methods = { 'class' => ['is_permanent', 'soft_or_hard'], 'object' => [] };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $softbounces = [
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered',
         'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
@@ -44,42 +41,42 @@ MAKE_TEST: {
     ];
     my $v = undef;
 
-    is $PackageName->is_permanent(), undef;
+    is $Package->is_permanent(), undef;
     for my $e ( @$isnterrors ) {
-        $v = $PackageName->is_permanent($e);
+        $v = $Package->is_permanent($e);
         is $v, undef, '->is_permanent('.$e.') = undef';
     }
 
     for my $e ( @$temperrors ) {
-        $v = $PackageName->is_permanent($e);
+        $v = $Package->is_permanent($e);
         is $v, 0, '->is_permanent('.$e.') = 0';
     }
 
     for my $e ( @$permerrors ) {
-        $v = $PackageName->is_permanent($e);
+        $v = $Package->is_permanent($e);
         is $v, 1, '->is_permanent('.$e.') = 1';
     }
 
-    is $PackageName->soft_or_hard(), undef;
-    is $PackageName->soft_or_hard('neko'), '';
+    is $Package->soft_or_hard(), undef;
+    is $Package->soft_or_hard('neko'), '';
     for my $e ( @$softbounces ) {
-        $v = $PackageName->soft_or_hard($e);
+        $v = $Package->soft_or_hard($e);
         is $v, 'soft', '->soft_or_hard('.$e.') = soft';
     }
     for my $e ( @$hardbounces ) {
-        $v = $PackageName->soft_or_hard($e);
+        $v = $Package->soft_or_hard($e);
         is $v, 'hard', '->soft_or_hard('.$e.') = hard';
 
         if( $e eq 'notaccept' ) {
-            $v = $PackageName->soft_or_hard($e, '503 Not accept any email');
+            $v = $Package->soft_or_hard($e, '503 Not accept any email');
             is $v, 'hard', '->soft_or_hard('.$e.') = hard';
 
-            $v = $PackageName->soft_or_hard($e, '409 Not accept any email');
+            $v = $Package->soft_or_hard($e, '409 Not accept any email');
             is $v, 'soft', '->soft_or_hard('.$e.') = soft';
         }
     }
     for my $e ( @$isntbounces ) {
-        $v = $PackageName->soft_or_hard($e);
+        $v = $Package->soft_or_hard($e);
         is $v, '', '->soft_or_hard('.$e.') = ""';
     }
 }

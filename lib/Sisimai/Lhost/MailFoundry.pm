@@ -10,7 +10,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.1.1
     my $class = shift;
     my $mhead = shift // return undef;
@@ -22,7 +22,7 @@ sub make {
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $startingof = {
-        'message' => ['This is a MIME encoded message'],
+        'message' => ['Unable to deliver message to:'],
         'error'   => ['Delivery failed for the following reason:'],
     };
 
@@ -38,7 +38,6 @@ sub make {
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
-            next;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;

@@ -10,7 +10,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.0.0
     my $class = shift;
     my $mhead = shift // return undef;
@@ -50,9 +50,8 @@ sub make {
             'userunknown' => ['550 - Requested action not taken: no such user here'],
         };
 
-        if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
+        if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1) ) {
             # Convert to regular expression
-            $boundary00 = '--'.$boundary00.'--';
             $rebackbone = qr/^\Q$boundary00\E/m;
         }
 
@@ -103,9 +102,8 @@ sub make {
         $startingof = { 'message' => ['Message could not be delivered to mobile'] };
         $messagesof = { 'userunknown' => ['No valid recipients for this MM'] };
 
-        if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
+        if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}) ) {
             # Convert to regular expression
-            $boundary00 = '--'.$boundary00.'--';
             $rebackbone = qr/^\Q$boundary00\E/m;
         }
 

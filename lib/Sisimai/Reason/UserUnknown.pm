@@ -136,19 +136,19 @@ sub match {
 
 sub true {
     # Whether the address is "userunknown" or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is unknown user
     #                                   0: is not unknown user.
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
-    return 1 if $argvs->reason eq 'userunknown';
+    return 1 if $argvs->{'reason'} eq 'userunknown';
 
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || '';
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
     return 0 if $tempreason eq 'suspend';
 
-    my $diagnostic = lc $argvs->diagnosticcode;
+    my $diagnostic = lc $argvs->{'diagnosticcode'};
     if( $tempreason eq 'userunknown' ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
@@ -176,7 +176,7 @@ sub true {
         }
         return 1 unless $matchother;    # Did not match with other message patterns
 
-    } elsif( $argvs->smtpcommand eq 'RCPT' ) {
+    } elsif( $argvs->{'smtpcommand'} eq 'RCPT' ) {
         # When the SMTP command is not "RCPT", the session rejected by other
         # reason, maybe.
         return 1 if __PACKAGE__->match($diagnostic);
@@ -228,10 +228,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::UserUnknown->match('550 5.1.1 Unknown User');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is C<userunknown>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 

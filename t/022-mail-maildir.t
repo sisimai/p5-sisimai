@@ -3,27 +3,27 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Mail::Maildir;
 
-my $PackageName = 'Sisimai::Mail::Maildir';
-my $MethodNames = {
-    'class' => ['new'],
+my $Package = 'Sisimai::Mail::Maildir';
+my $Methods = {
+    'class'  => ['new'],
     'object' => ['path', 'dir', 'file', 'size', 'offset', 'handle', 'read'],
 };
 my $MaildirSize = 503;
 my $SampleEmail = './set-of-emails/maildir/bsd';
-my $NewInstance = $PackageName->new($SampleEmail);
+my $NewInstance = $Package->new($SampleEmail);
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
-isa_ok $NewInstance, $PackageName;
-can_ok $NewInstance, @{ $MethodNames->{'object'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
+isa_ok $NewInstance, $Package;
+can_ok $NewInstance, @{ $Methods->{'object'} };
 
-MAKE_TEST: {
+MAKETEST: {
     MAILDIR: {
-        my $maildir = $PackageName->new($SampleEmail);
+        my $maildir = $Package->new($SampleEmail);
         my $emindex = 0;
 
-        isa_ok $maildir, $PackageName;
-        can_ok $maildir, @{ $MethodNames->{'object'} };
+        isa_ok $maildir, $Package;
+        can_ok $maildir, @{ $Methods->{'object'} };
         is $maildir->dir, $SampleEmail, '->dir = '.$maildir->dir;
         is $maildir->file, undef, '->file = ""';
         is $maildir->size, $MaildirSize, '->size = '.$MaildirSize;

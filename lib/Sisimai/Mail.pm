@@ -5,11 +5,11 @@ use warnings;
 use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
-        'path',     # [String] path to mbox or Maildir/
-        'kind',     # [String] Data type: mailbox, maildir, stdin, or memory
+        'path', # [String] path to mbox or Maildir/
+        'kind', # [String] Data type: mailbox, maildir, stdin, or memory
     ],
     'rw'  => [
-        'data',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
+        'data', # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
     ]
 );
 
@@ -86,13 +86,11 @@ Sisimai::Mail - Handler of Mbox/Maildir for reading each mail.
     while( my $r = $mailbox->read ) {
         print $r;
     }
-    $mailbox->close;
 
     my $maildir = Sisimai::Mail->new('/home/neko/Maildir/cur');
     while( my $r = $maildir->read ) {
         print $r;
     }
-    $maildir->close;
 
     my $mailtxt = 'From Mailer-Daemon ...';
     my $mailobj = Sisimai::Mail->new(\$mailtxt);
@@ -152,14 +150,6 @@ Sisimai::Mail::Mbox->read or Sisimai::Mail::Maildir->read method.
     while( my $r = $mailbox->read ) {
         print $r;   # print each email in /var/mail/neko
     }
-    $mailbox->close;
-
-=head2 C<B<close()>>
-
-C<close()> Close the handle of the mailbox or the Maildir/.
-
-    my $o = $mailbox->close;
-    print $o;   # 1 = Successfully closed, 0 = already closed.
 
 =head1 AUTHOR
 

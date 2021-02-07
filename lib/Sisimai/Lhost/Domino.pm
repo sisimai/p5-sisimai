@@ -10,7 +10,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.0.2
     my $class = shift;
     my $mhead = shift // return undef;
@@ -18,7 +18,7 @@ sub make {
     return undef unless index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/delivery-status|m;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $startingof = { 'message' => ['Your message'] };
     state $messagesof = {
         'userunknown' => [
@@ -29,6 +29,10 @@ sub make {
         'filtered'    => ['Cannot route mail to user'],
         'systemerror' => ['Several matches found in Domino Directory'],
     };
+
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
@@ -89,6 +93,25 @@ sub make {
             } elsif( $e =~ /\A[ ][ ]Subject: (.+)\z/ ) {
                 #   Subject: Nyaa
                 $subjecttxt = $1;
+
+            } elsif( my $f = Sisimai::RFC1894->match($e) ) {
+                # There are some fields defined in RFC3464, try to match
+                next unless my $o = Sisimai::RFC1894->field($e);
+                next if $o->[-1] eq 'addr';
+
+                if( $o->[-1] eq 'code' ) {
+                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                    $v->{'spec'}      ||= $o->[1];
+                    $v->{'diagnosis'} ||= $o->[2];
+
+                } else {
+                    # Other DSN fields defined in RFC3464
+                    next unless exists $fieldtable->{ $o->[0] };
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                    next unless $f == 1;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                }
             }
         }
     }
@@ -97,18 +120,19 @@ sub make {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
+        $e->{'lhost'}   ||= $permessage->{'rhost'};
+        $e->{ $_ }      ||= $permessage->{ $_ } || '' for keys %$permessage;
 
         for my $r ( keys %$messagesof ) {
             # Check each regular expression of Domino error messages
             next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
-            $e->{'reason'} = $r;
-            $e->{'status'} = Sisimai::SMTP::Status->code($r, 0) || '';
+            $e->{'reason'}   = $r;
+            $e->{'status'} ||= Sisimai::SMTP::Status->code($r, 0) || '';
             last;
         }
     }
 
-    # Set the value of $subjecttxt as a Subject if there is no original
-    # message in the bounce mail.
+    # Set the value of $subjecttxt as a Subject if there is no original message in the bounce mail.
     $emailsteak->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailsteak->[1] =~ /^Subject:/m;
 
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };

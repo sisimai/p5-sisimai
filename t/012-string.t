@@ -3,16 +3,16 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::String;
 
-my $PackageName = 'Sisimai::String';
-my $MethodNames = {
+my $Package = 'Sisimai::String';
+my $Methods = {
     'class'  => ['token', 'is_8bit', 'sweep', 'to_plain', 'to_utf8'],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $s = 'envelope-sender@example.jp';
     my $r = 'envelope-recipient@example.org';
     my $t = '239aa35547613b2fa94f40c7f35f4394e99fdd88';

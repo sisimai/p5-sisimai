@@ -40,7 +40,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -290,7 +290,6 @@ sub make {
         $e->{ $_ } ||= $arfheaders->{ $_ } for keys %$arfheaders;
         delete $e->{'authres'};
 
-        $e->{'softbounce'}  = -1;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
         $e->{'diagnosis'}   = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'date'}      ||= $mhead->{'date'};
@@ -362,7 +361,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

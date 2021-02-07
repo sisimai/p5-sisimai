@@ -5,7 +5,7 @@ use lib qw(./lib ./blib/lib);
 my $CannotParse = './set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet';
 plan 'skip_all', sprintf("%s does not exist", $CannotParse) unless -d $CannotParse;
 
-MAKE_TEST: {
+MAKETEST: {
     SISIMAI: {
         use Sisimai;
         my $v = Sisimai->make($CannotParse);

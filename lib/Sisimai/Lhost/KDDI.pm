@@ -10,7 +10,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.0.0
     my $class = shift;
     my $mhead = shift // return undef;
@@ -67,7 +67,7 @@ sub make {
             }
 
             my $r = Sisimai::Address->s3s4($1);
-            next unless Sisimai::RFC5322->is_emailaddress($r);
+            next unless Sisimai::Address->is_emailaddress($r);
             $v->{'recipient'} = $r;
             $recipients++;
 
