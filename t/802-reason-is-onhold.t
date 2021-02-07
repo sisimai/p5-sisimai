@@ -4,12 +4,12 @@ use lib qw(./lib ./blib/lib);
 use Sisimai;
 use Sisimai::Reason::OnHold;
 
-my $PackageName = 'Sisimai';
-my $ThatsOnHold = './set-of-emails/to-be-debugged-because/reason-is-onhold';
+my $Package = 'Sisimai';
+my $Samples = './set-of-emails/to-be-debugged-because/reason-is-onhold';
 
-MAKE_TEST: {
-    plan 'skip_all', sprintf("%s does not exist", $ThatsOnHold) unless -d $ThatsOnHold;
-    my $v = $PackageName->make($ThatsOnHold);
+MAKETEST: {
+    plan 'skip_all', sprintf("%s does not exist", $Samples) unless -d $Samples;
+    my $v = $Package->make($Samples);
     isa_ok $v, 'ARRAY';
     ok scalar @$v, 'entries = '.scalar @$v;
 

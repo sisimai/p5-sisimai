@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from https://cox.com/
-    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason at Cox
     # @since v4.25.8
     my $class = shift;
@@ -82,7 +82,7 @@ sub get {
             'recipient rejected', # The intended recipient is not a valid Cox Email account.
         ],
     };
-    my $statusmesg = $argvs->diagnosticcode;
+    my $statusmesg = $argvs->{'diagnosticcode'};
     my $codenumber = $statusmesg =~ m/AUP#([0-9A-Z]+)/ ? $1 : 0;
     my $reasontext = $errorcodes->{ $codenumber } || '';
 
@@ -116,13 +116,13 @@ Sisimai::Rhost::Cox - Detect the bounce reason returned from Cox
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data object
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object
 as an argument of get() method when the value of C<rhost> or C<destination> of the
-object is "cox.net". This class is called only Sisimai::Data class.
+object is "cox.net". This class is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 

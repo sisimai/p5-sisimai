@@ -38,23 +38,24 @@ sub match {
 
 sub true {
     # Whether the host is unknown or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is unknown host
     #           [Integer]               0: is not unknown host.
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
-    return 1 if $argvs->reason eq 'hostunknown';
+    return 1 if $argvs->{'reason'} eq 'hostunknown';
 
-    my $statuscode = $argvs->deliverystatus // '';
-    my $diagnostic = lc $argvs->diagnosticcode // '';
+    my $statuscode = $argvs->{'deliverystatus'}    // '';
+    my $diagnostic = lc $argvs->{'diagnosticcode'} // '';
 
     if( (Sisimai::SMTP::Status->name($statuscode) || '') eq 'hostunknown' ) {
         # Status: 5.1.2
         # Diagnostic-Code: SMTP; 550 Host unknown
         require Sisimai::Reason::NetworkError;
         return 1 unless Sisimai::Reason::NetworkError->match($diagnostic);
+
     } else {
         # Check the value of Diagnosic-Code: header with patterns
         return 1 if __PACKAGE__->match($diagnostic);
@@ -106,10 +107,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::HostUnknown->match('550 5.2.1 Host Unknown');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is C<hostunknown>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 

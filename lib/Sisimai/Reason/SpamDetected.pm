@@ -141,7 +141,7 @@ sub match {
 
 sub true {
     # Rejected due to spam content in the message
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: rejected due to spam
     #                                   0: is not rejected due to spam
     # @since v4.1.19
@@ -149,10 +149,10 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless $argvs->deliverystatus;
-    return 1 if $argvs->reason eq 'spamdetected';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->deliverystatus) || '') eq 'spamdetected';
-    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
+    return undef unless $argvs->{'deliverystatus'};
+    return 1 if $argvs->{'reason'} eq 'spamdetected';
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'spamdetected';
+    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0;
 }
 
@@ -200,10 +200,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::SpamDetected->match('550 Spam detected');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in
-the message. The argument must be Sisimai::Data object and this method is called
+the message. The argument must be Sisimai::Fact object and this method is called
 only from Sisimai::Reason class.
 
 =head1 AUTHOR

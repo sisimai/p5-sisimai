@@ -3,23 +3,21 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai;
 
-my $PackageName = 'Sisimai';
-my $SampleEmail = {
+my $Package = 'Sisimai';
+my $Samples = {
     'dos' => './set-of-emails/maildir/dos',
     'mac' => './set-of-emails/maildir/mac',
 };
 
-MAKE_TEST: {
-
-    for my $e ( keys %$SampleEmail ) {
-
+MAKETEST: {
+    for my $e ( keys %$Samples ) {
         next if $e eq 'mac';
-        my $v = $PackageName->make($SampleEmail->{ $e });
+        my $v = $Package->rise($Samples->{ $e });
         isa_ok $v, 'ARRAY';
         ok scalar @$v, 'entries = '.scalar @$v;
 
         for my $r ( @$v ) {
-            isa_ok $r, 'Sisimai::Data';
+            isa_ok $r, 'Sisimai::Fact';
             isa_ok $r->timestamp, 'Sisimai::Time';
             isa_ok $r->addresser, 'Sisimai::Address';
             isa_ok $r->recipient, 'Sisimai::Address';

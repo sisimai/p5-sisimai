@@ -6,12 +6,12 @@ use warnings;
 # https://www.godaddy.com/help/what-does-my-email-bounceback-mean-3568
 sub get {
     # Detect bounce reason from GoDaddy (smtp.secureserver.net)
-    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason for GoDaddy
     # @see      https://www.godaddy.com/help/what-does-my-email-bounceback-mean-3568
     my $class = shift;
     my $argvs = shift // return undef;
-    return $argvs->reason if $argvs->reason;
+    return $argvs->{'reason'} if $argvs->{'reason'};
 
     state $errorcodes = {
         'IB103' => 'blocked',       # 554 Connection refused. This IP has a poor reputation on Cloudmark Sender Intelligence (CSI). IB103
@@ -45,7 +45,7 @@ sub get {
         'userunknown' => ['Account does not exist', '550 Recipient not found.'],
     };
 
-    my $statusmesg = $argvs->diagnosticcode;
+    my $statusmesg = $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     if( $statusmesg =~ /\s(IB\d{3})\b/ ) {
@@ -80,13 +80,13 @@ Sisimai::Rhost::GoDaddy - Detect the bounce reason returned from GoDaddy.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
 object as an argument of get() method when the value of C<rhost> of the object
-end with "secureserver.net". This class is called only Sisimai::Data class.
+end with "secureserver.net". This class is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 

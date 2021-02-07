@@ -34,22 +34,22 @@ sub match {
 
 sub true {
     # Rejected by domain or address filter ?
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is filtered
     #                                   0: is not filtered
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
-    return 1 if $argvs->reason eq 'filtered';
+    return 1 if $argvs->{'reason'} eq 'filtered';
 
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || '';
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
     return 0 if $tempreason eq 'suspend';
 
     require Sisimai::Reason::UserUnknown;
     my $alterclass = 'Sisimai::Reason::UserUnknown';
-    my $commandtxt = $argvs->smtpcommand // '';
-    my $diagnostic = lc $argvs->diagnosticcode // '';
+    my $commandtxt = $argvs->{'smtpcommand'} // '';
+    my $diagnostic = lc $argvs->{'diagnosticcode'} // '';
 
     if( $tempreason eq 'filtered' ) {
         # Delivery status code points "filtered".
@@ -62,7 +62,6 @@ sub true {
     }
     return 0;
 }
-
 
 1;
 __END__
@@ -111,10 +110,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::Filtered->match('550 5.1.2 User reject');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is C<filtered>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -122,7 +121,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

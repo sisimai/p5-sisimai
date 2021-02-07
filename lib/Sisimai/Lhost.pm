@@ -22,7 +22,7 @@ sub DELIVERYSTATUS {
         'replycode',   => '',   # SMTP Reply Code
         'diagnosis'    => '',   # The value of Diagnostic-Code header
         'recipient'    => '',   # The value of Final-Recipient header
-        'softbounce'   => '',   # Soft bounce or not
+        'hardbounce'   => '',   # Hard bounce or not
         'feedbacktype' => '',   # Feedback Type
     };
 }
@@ -71,7 +71,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     return undef;
 }
 
@@ -99,7 +99,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

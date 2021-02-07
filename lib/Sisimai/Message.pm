@@ -8,31 +8,21 @@ use Sisimai::Address;
 use Sisimai::String;
 use Sisimai::Order;
 use Sisimai::Lhost;
-use Class::Accessor::Lite (
-    'new' => 0,
-    'rw'  => [
-        'from',     # [String] UNIX From line
-        'header',   # [Hash]   Header part of an email
-        'ds',       # [Array]  Parsed data by Sisimai::Lhost
-        'rfc822',   # [Hash]   Header part of the original message
-        'catch'     # [Any]    The results returned by hook method
-    ]
-);
 
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
 
-sub new {
+sub rise {
     # Constructor of Sisimai::Message
-    # @param         [Hash] argvs       Email text data
-    # @options argvs [String] data      Entire email message
-    # @options argvs [Array]  load      User defined MTA module list
-    # @options argvs [Array]  order     The order of MTA modules
-    # @options argvs [Code]   hook      Reference to callback method
-    # @return        [Sisimai::Message] Structured email data or Undef if each
-    #                                   value of the arguments are missing
+    # @param         [Hash] argvs   Email text data
+    # @options argvs [String] data  Entire email message
+    # @options argvs [Array]  load  User defined MTA module list
+    # @options argvs [Array]  order The order of MTA modules
+    # @options argvs [Code]   hook  Reference to callback method
+    # @return        [Hash]         Structured email data
+    #                [Undef]        If each value of the arguments are missing
     my $class = shift;
-    my $argvs = { @_ };
+    my $argvs = shift || return undef;
     my $param = {};
     my $email = $argvs->{'data'} || return undef;
     my $thing = { 'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [], 'catch' => undef };
@@ -81,7 +71,7 @@ sub new {
     my $r = $bouncedata->{'rfc822'} || $aftersplit->[2];
     $thing->{'rfc822'} = ref $r ? $r : __PACKAGE__->makemap(\$r, 1);
 
-    return bless($thing, $class);
+    return $thing;
 }
 
 sub load {
@@ -355,13 +345,13 @@ Sisimai::Message - Convert bounce email text to data structure.
 
     my $mailbox = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mailbox->read ) {
-        my $p = Sisimai::Message->new('data' => $r);
+        my $p = Sisimai::Message->rise('data' => $r);
     }
 
-    my $notmail = '/home/neko/Maildir/cur/22222';   # is not a bounce email
+    my $notmail = '/home/neko/Maildir/cur/22222';       # is not a bounce email
     my $mailobj = Sisimai::Mail->new($notmail);
     while( my $r = $mailobj->read ) {
-        my $p = Sisimai::Message->new('data' => $r);  # $p is "undef"
+        my $p = Sisimai::Message->rise('data' => $r);   # $p is "undef"
     }
 
 =head1 DESCRIPTION
@@ -373,7 +363,7 @@ bounce email, the method returns "undef".
 
 =head1 CLASS METHODS
 
-=head2 C<B<new(I<Hash reference>)>>
+=head2 C<B<rise(I<Hash reference>)>>
 
 C<new()> is a constructor of Sisimai::Message
 

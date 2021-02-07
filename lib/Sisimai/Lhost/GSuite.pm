@@ -10,7 +10,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.21.0
     my $class = shift;
     my $mhead = shift // return undef;
@@ -88,6 +88,11 @@ sub make {
                 # Other DSN fields defined in RFC3464
                 next unless exists $fieldtable->{ $o->[0] };
                 $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                if( $fieldtable->{ $o->[0] } eq 'lhost' ) {
+                    # Do not set an email address as a hostname in "lhost" value
+                    $v->{'lhost'} = '' if index($v->{'lhost'}, '@');
+                }
 
                 next unless $f == 1;
                 $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];

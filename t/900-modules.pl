@@ -4,10 +4,10 @@ sub list {
     my $f = [ qw|
         Address.pm
         ARF.pm
-        Data.pm
-            Data/JSON.pm
-            Data/YAML.pm
         DateTime.pm
+        Fact.pm
+            Fact/JSON.pm
+            Fact/YAML.pm
         Lhost.pm
             Lhost/Activehunter.pm
             Lhost/Amavis.pm

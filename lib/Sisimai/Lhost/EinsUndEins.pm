@@ -11,7 +11,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.1.9
     my $class = shift;
     my $mhead = shift // return undef;
@@ -55,7 +55,7 @@ sub make {
         # http://postmaster.1and1.com/en/error-messages?ip=%1s
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
+        if( $e =~ /\A([^ ]+[@][^ ]+?)[:]?\z/ ) {
             # general@example.eu
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.

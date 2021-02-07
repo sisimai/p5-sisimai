@@ -3,22 +3,19 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::RFC5322;
 
-my $PackageName = 'Sisimai::RFC5322';
-my $MethodNames = {
-    'class' => [
-        'HEADERFIELDS', 'LONGFIELDS',
-        'is_emailaddress', 'is_mailerdaemon', 'received', 'fillet',
-    ],
+my $Package = 'Sisimai::RFC5322';
+my $Methods = {
+    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'received', 'fillet'],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $r = undef;
 
-    $r = $PackageName->HEADERFIELDS();
+    $r = $Package->HEADERFIELDS();
     isa_ok $r, 'HASH';
     for my $e ( keys %$r ) {
         ok length $e, $e;
@@ -26,75 +23,30 @@ MAKE_TEST: {
         is $r->{ $e }, 1, $e.' = '.1;
     }
 
-    $r = $PackageName->HEADERFIELDS('date');
+    $r = $Package->HEADERFIELDS('date');
     isa_ok $r, 'ARRAY';
     for my $e ( @$r ) {
         ok length $e, $e;
-        like $e, qr/\A[A-Za-z-]+\z/;
+        like $e, qr/\A[a-z-]+\z/;
     }
 
-    $r = $PackageName->HEADERFIELDS('neko');
+    $r = $Package->HEADERFIELDS('neko');
     isa_ok $r, 'HASH';
     for my $e ( keys %$r ) {
         isa_ok $r->{ $e }, 'ARRAY';
         ok scalar @{ $r->{ $e } }, $e.' = '.scalar @{ $r->{ $e } };
         for my $f ( @{ $r->{ $e } } ) {
             ok length $f, $e.'/'.$f;
-            like $f, qr/\A[A-Za-z-]+\z/;
+            like $f, qr/\A[a-z-]+\z/;
         }
     }
 
-    $r = $PackageName->LONGFIELDS;
+    $r = $Package->LONGFIELDS;
     isa_ok $r, 'HASH';
     for my $e ( keys %$r ) {
         ok length $e, $e;
         like $e, qr/\A[a-z-]+\z/;
         is $r->{ $e }, 1, $e.' = '.1;
-    }
-
-    my $emailaddrs = [
-        'neko@example.jp',
-        'neko+nyaa@example.jp',
-        'nyaa+neko=example.jp@example.org',
-        '"neko@nyaan"@example.org',
-        '"neko nyaan"@exaple.org',
-        '{nekonyaan}@example.org',
-        'neko|nyaan@example.org',
-        'neko?nyaan@example.org',
-        '"neko<>nyaan"@example.org',
-        '"neko(nyaan)"@example.org',
-        '"nora(:;)neko"@example.org',
-        'neko^_^nyaan@example.org',
-        'neko$nyaan@example.org',
-        'neko%nyaan@example.org',
-        'neko&nyaan@example.org',
-        'neko?nyaan@example.org',
-        'neko|nyaan@example.org',
-        '"neko\\nyaan"@example.org',
-    ];
-    my $isnotaddrs = ['neko', 'neko%example.jp'];
-    my $postmaster = [
-        'mailer-daemon@example.jp', 
-        'MAILER-DAEMON@example.cat',
-        'Mailer-Daemon <postmaster@example.org>',
-        'MAILER-DAEMON',
-        'postmaster',
-        'postmaster@example.org',
-    ];
-
-    for my $e ( @$emailaddrs ) {
-        ok $PackageName->is_emailaddress($e), '->is_emailaddress('.$e.') = 1';
-    }
-
-    for my $e ( @$isnotaddrs ) {
-        is $PackageName->is_emailaddress($e), 0, '->is_emailaddress('.$e.') = 0';
-    }
-
-    for my $e ( @$postmaster ) {
-        is $PackageName->is_mailerdaemon($e), 1, '->is_mailerdaemon('.$e.') = 1';
-    }
-    for my $e ( @$emailaddrs ) {
-        is $PackageName->is_mailerdaemon($e), 0, '->is_mailerdaemon('.$e.') = 0';
     }
 
     # Check the value of Received header
@@ -119,7 +71,7 @@ MAKE_TEST: {
     ];
 
     for my $e ( @$received00 ) {
-        my $v = $PackageName->received($e);
+        my $v = $Package->received($e);
         ok length $e, $e;
         isa_ok $v, 'ARRAY';
         ok scalar @$v, 'scalar = '.scalar @$v;
@@ -180,7 +132,7 @@ Nyaaan
 
 __END_OF_EMAIL_MESSAGE__
 EOB
-    my $emailsteak = $PackageName->fillet(\$rfc822body, qr|^Content-Type:[ ]message/rfc822|m);
+    my $emailsteak = $Package->fillet(\$rfc822body, qr|^Content-Type:[ ]message/rfc822|m);
     isa_ok $emailsteak, 'ARRAY';
     is scalar(@$emailsteak), 2;
     ok length $emailsteak->[0];

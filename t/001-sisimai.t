@@ -7,46 +7,47 @@ use Time::Piece;
 use JSON;
 require './t/999-values.pl';
 
-my $PackageName = 'Sisimai';
-my $MethodNames = {
-    'class' => ['libname', 'version', 'make', 'dump', 'engine', 'match'],
+my $Package = 'Sisimai';
+my $Methods = {
+    'class'  => ['libname', 'version', 'rise', 'dump', 'engine', 'reason', 'match', 'make'],
     'object' => [],
 };
-my $SampleEmail = {
+my $Samples = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
     'maildir' => './set-of-emails/maildir/bsd',
     'memory'  => './set-of-emails/mailbox/mbox-1',
 };
-my $IsNotBounce = {
+my $Normals = {
     'maildir' => './set-of-emails/maildir/not',
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $v  = $Sisimai::VERSION;
        $v .= 'p'.$Sisimai::PATCHLV if $Sisimai::PATCHLV > 0;
-    is $PackageName->libname, $PackageName, '->libname = '.$PackageName;
-    is 'v'.$PackageName->version, $v, '->version = v'.$v;
-    is $PackageName->make(undef), undef;
-    is $PackageName->dump(undef), undef;
+    is $Package->libname, $Package, '->libname = '.$Package;
+    is 'v'.$Package->version, $v, '->version = v'.$v;
+    is $Package->rise(undef), undef;
+    is $Package->dump(undef), undef;
+    is $Package->make(undef), undef;
 
     # Wrong number of arguments
-    eval { $PackageName->make('/dev/null', undef) };
+    eval { $Package->rise('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    eval { $PackageName->dump('/dev/null', undef) };
+    eval { $Package->dump('/dev/null', undef) };
     like $@, qr/error: wrong number of arguments/;
 
-    for my $e ( 'mailbox', 'maildir', 'memory' ) {
+    for my $e ( keys %$Samples ) {
         MAKE: {
             my $parseddata = undef;
             my $damnedhash = undef;
             my $jsonstring = undef;
 
             if( $e eq 'memory' ) {
-                my $filehandle = IO::File->new($SampleEmail->{ $e }, 'r');
+                my $filehandle = IO::File->new($Samples->{ $e }, 'r');
                 my $entiremail = undef;
 
                 { local $/ = undef; $entiremail = <$filehandle>; }
@@ -54,17 +55,17 @@ MAKE_TEST: {
                 ok length $entiremail;
                 $filehandle->close;
 
-                $parseddata = $PackageName->make(\$entiremail);
+                $parseddata = $Package->rise(\$entiremail);
 
             } else {
-                $parseddata = $PackageName->make($SampleEmail->{ $e });
+                $parseddata = $Package->rise($Samples->{ $e });
             }
 
             isa_ok $parseddata, 'ARRAY';
             ok scalar @$parseddata, 'entries = '.scalar @$parseddata;
 
             for my $ee ( @$parseddata ) {
-                isa_ok $ee, 'Sisimai::Data';
+                isa_ok $ee, 'Sisimai::Fact';
                 isa_ok $ee->timestamp, 'Sisimai::Time';
                 isa_ok $ee->addresser, 'Sisimai::Address';
                 isa_ok $ee->recipient, 'Sisimai::Address';
@@ -82,8 +83,10 @@ MAKE_TEST: {
                 for my $eee ( keys %$damnedhash ) {
                     next if ref $ee->$eee;
                     next if $eee eq 'subject';
+
                     if( $eee eq 'catch' ) {
                         is $damnedhash->{ $eee }, '', '->'.$eee.' = ""';
+
                     } else {
                         is $damnedhash->{ $eee }, $ee->$eee, '->'.$eee.' = '.$damnedhash->{ $eee };
                     }
@@ -98,7 +101,7 @@ MAKE_TEST: {
                 my $argvs = shift;
                 my $timep = localtime(Time::Piece->new);
 
-                for my $p ( @{ $argvs->{'sisi'} } ) {
+                for my $p ( @{ $argvs->{'fact'} } ) {
                     $p->{'parsedat'} = sprintf("%s %s", $timep->ymd('-'), $timep->hms);
                     $p->{'size'} = length $argvs->{'path'};
                     $p->{'kind'} = ucfirst $argvs->{'kind'};
@@ -106,68 +109,44 @@ MAKE_TEST: {
             };
             my $callbackto = sub {
                 my $argvs = shift;
-                my $catch = { 
-                    'x-mailer' => '',
-                    'return-path' => '',
-                    'x-virus-scanned' => '',
+                my $catch = {
+                    'x-mailer'        => '?',
+                    'return-path'     => '?',
+                    'x-virus-scanned' => '?',
                 };
 
-                $catch->{'from'} = $argvs->{'headers'}->{'from'} || '';
-                $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '';
+                $catch->{'from'} = $argvs->{'headers'}->{'from'} || 'Postmaster';
+                $catch->{'x-virus-scanned'} = $argvs->{'headers'}->{'x-virus-scanned'} || '?';
                 $catch->{'x-mailer'}    = $1 if $argvs->{'message'} =~ m/^X-Mailer:\s*(.*)$/m;
                 $catch->{'return-path'} = $1 if $argvs->{'message'} =~ m/^Return-Path:\s*(.+)$/m;
                 return $catch;
             };
-            $havecaught = $PackageName->make($SampleEmail->{ $e }, 'c___' => [$callbackto, $emailhooks]);
+            $havecaught = $Package->rise($Samples->{ $e }, 'c___' => [$callbackto, $emailhooks]);
 
             for my $ee ( @$havecaught ) {
-                isa_ok $ee, 'Sisimai::Data';
+                isa_ok $ee, 'Sisimai::Fact';
                 isa_ok $ee->catch, 'HASH';
 
-                ok defined $ee->catch->{'x-mailer'};
-                if( length $ee->catch->{'x-mailer'} ) {
-                    like $ee->catch->{'x-mailer'}, qr/[A-Z]/;
-                }
-
-                ok defined $ee->catch->{'return-path'};
-                if( length $ee->catch->{'return-path'} ) {
-                    like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|<mailer-daemon>)/i;
-                }
-
-                ok defined $ee->catch->{'from'};
-                if( length $ee->catch->{'from'} ) {
-                    like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|<?mailer-daemon>?)/i;
-                }
-
-                ok defined $ee->catch->{'x-virus-scanned'};
-                if( length $ee->catch->{'x-virus-scanned'} ) {
-                    like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam)/i;
-                }
-
-                ok $ee->{'parsedat'};
+                like $ee->catch->{'x-mailer'}, qr/[A-Z?]/;
+                like $ee->catch->{'return-path'}, qr/(?:<>|.+[@].+|mailer-daemon|[?])/i;
+                like $ee->catch->{'from'}, qr/(?:<>|.+[@].+|mailer-daemon|postmaster|[?])/i;
+                like $ee->catch->{'x-virus-scanned'}, qr/(?:amavis|clam|[?])/i;
                 like $ee->{'parsedat'}, qr/\A\d{4}[-]\d{2}[-]\d{2}/;
-
-                ok $ee->{'size'};
-                ok $ee->{'size'} > 0;
-
-                ok $ee->{'kind'};
+                ok   $ee->{'size'} > 0;
                 like $ee->{'kind'}, qr/\AMail(?:box|dir)/;
             }
 
-            my $isntmethod = $PackageName->make($SampleEmail->{ $e }, 'c___' => {});
+            my $isntmethod = $Package->rise($Samples->{ $e }, 'c___' => []);
             for my $ee ( @$isntmethod ) {
-                isa_ok $ee, 'Sisimai::Data';
+                isa_ok $ee, 'Sisimai::Fact';
                 is $ee->catch, undef;
             }
         }
 
         DUMP: {
-            my $jsonstring = $PackageName->dump($SampleEmail->{ $e });
+            my $jsonstring = $Package->dump($Samples->{ $e });
             my $perlobject = undef;
-            my $tobetested = [ qw|
-                addresser recipient senderdomain destination reason timestamp 
-                token smtpagent origin|
-            ];
+            my $tobetested = [qw|addresser recipient senderdomain destination reason timestamp token smtpagent origin|];
             ok length $jsonstring;
             utf8::encode $jsonstring if utf8::is_utf8 $jsonstring;
             $perlobject = JSON::decode_json($jsonstring);
@@ -179,28 +158,22 @@ MAKE_TEST: {
                 is ref $ee->{'recipient'}, '', '->{reciipent} is a String';
 
                 for my $eee ( @$tobetested ) {
-                    if( $eee eq 'senderdomain' && $ee->{'addresser'} =~ /\A(?:postmaster|MAILER-DAEMON)\z/ ) {
-                        # addresser = postmaster
-                        is $ee->{'senderdomain'}, '', $eee.' = ""';
-
-                    } else {
-                        # other properties
-                        ok $ee->{ $eee }, $eee.' = '.$ee->{ $eee };
-                    }
+                    next if $eee eq 'senderdomain';
+                    ok $ee->{ $eee }, $eee.' = '.$ee->{ $eee };
                 }
             }
         }
     }
 
     for my $e ( 'maildir' ) {
-        my $parseddata = $PackageName->make($IsNotBounce->{ $e });
-        my $jsonstring = $PackageName->dump($IsNotBounce->{ $e });
-        is $parseddata, undef, '->make = undef';
+        my $parseddata = $Package->rise($Normals->{ $e });
+        my $jsonstring = $Package->dump($Normals->{ $e });
+        is $parseddata, undef, '->rise = undef';
         is $jsonstring, '[]', '->dump = "[]"';
     }
 
     ENGINE: {
-        my $enginelist = $PackageName->engine;
+        my $enginelist = $Package->engine;
         isa_ok $enginelist, 'HASH';
         ok scalar(keys %$enginelist), '->engine = '.scalar(keys %$enginelist);
         for my $e ( keys %$enginelist ) {
@@ -210,7 +183,7 @@ MAKE_TEST: {
     }
 
     REASON: {
-        my $reasonlist = $PackageName->reason;
+        my $reasonlist = $Package->reason;
         isa_ok $reasonlist, 'HASH';
         ok scalar(keys %$reasonlist), '->reason = '.scalar(keys %$reasonlist);
         for my $e ( keys %$reasonlist ) {

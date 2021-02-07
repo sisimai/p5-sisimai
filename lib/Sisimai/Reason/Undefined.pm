@@ -39,7 +39,7 @@ C<text()> returns string: C<undefined>.
 
 C<match()> always return undef
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> always return undef
 
@@ -49,7 +49,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2016,2020 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

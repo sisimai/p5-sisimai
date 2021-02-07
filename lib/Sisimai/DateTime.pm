@@ -261,9 +261,10 @@ sub parse {
 
     for my $p ( @timetokens ) {
         # Parse each piece of time
-        if( $p =~ /\A[A-Z][a-z]{2}[,]?\z/ ) {
+        if( $p =~ /\A[A-Z][a-z]{2,}[,]?\z/ ) {
             # Day of week or Day of week; Thu, Apr, ...
-            chop $p if length($p) == 4; # Thu, -> Thu
+            $p =~ s/,\z//g if substr($p, -1, 1) eq ','; # "Thu," => "Thu"
+            $p =  substr($p, 0, 3) if length $p > 3;
 
             if( grep { $p eq $_ } @{ DayOfWeek->{'abbr'} } ) {
                 # Day of week; Mon, Thu, Sun,...
@@ -275,6 +276,7 @@ sub parse {
             }
         } elsif( $p =~ /\A\d{1,4}\z/ ) {
             # Year or Day; 2005, 31, 04,  1, ...
+            $p = int $p;
             if( $p > 31 ) {
                 # The piece is the value of an year
                 $v->{'Y'} = $p;
@@ -404,7 +406,7 @@ sub parse {
 sub abbr2tz {
     # Abbreviation -> Tiemzone
     # @param    [String] argv1  Abbr. e.g.) JST, GMT, PDT
-    # @return   [String, Undef] +0900, +0000, -0600 or Undef if the argument is
+    # @return   [String, undef] +0900, +0000, -0600 or undef if the argument is
     #                           invalid format or not supported abbreviation
     # @example  Get the timezone string of "JST"
     #   abbr2tz('JST')  #=> '+0900'
@@ -416,7 +418,7 @@ sub abbr2tz {
 sub tz2second {
     # Convert to second
     # @param    [String] argv1  Timezone string e.g) +0900
-    # @return   [Integer,Undef] n: seconds or Undef it the argument is invalid
+    # @return   [Integer,undef] n: seconds or undef it the argument is invalid
     #                           format string
     # @see      second2tz
     # @example  Convert '+0900' to seconds

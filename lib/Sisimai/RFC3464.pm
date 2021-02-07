@@ -11,7 +11,7 @@ sub make {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -120,7 +120,7 @@ sub make {
                     # Final-Recipient: ...
                     my $x = $v->{'recipient'} || '';
                     my $y = Sisimai::Address->s3s4($2);
-                       $y = $maybealias unless Sisimai::RFC5322->is_emailaddress($y);
+                       $y = $maybealias unless Sisimai::Address->is_emailaddress($y);
 
                     if( $x && $x ne $y ) {
                         # There are multiple recipient addresses in the message body.
@@ -386,7 +386,7 @@ sub make {
                 # May be an email address
                 my $x = $b->{'recipient'} || '';
                 my $y = Sisimai::Address->s3s4($1);
-                next unless Sisimai::RFC5322->is_emailaddress($y);
+                next unless Sisimai::Address->is_emailaddress($y);
 
                 if( $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.

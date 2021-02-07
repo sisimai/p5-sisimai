@@ -3,30 +3,29 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Mail::STDIN;
 
-my $PackageName = 'Sisimai::Mail::STDIN';
-my $MethodNames = {
-    'class' => ['new'],
+my $Package = 'Sisimai::Mail::STDIN';
+my $Methods = {
+    'class'  => ['new'],
     'object' => ['path', 'size', 'handle', 'offset', 'read'],
 };
-my $SampleEmail = './set-of-emails/mailbox/mbox-0';
-my $NewInstance = $PackageName->new();
+my $NewInstance = $Package->new();
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
-isa_ok $NewInstance, $PackageName;
-can_ok $NewInstance, @{ $MethodNames->{'object'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
+isa_ok $NewInstance, $Package;
+can_ok $NewInstance, @{ $Methods->{'object'} };
 ok $NewInstance->handle->close;
 
-MAKE_TEST: {
+MAKETEST: {
 
     MAILBOX: {
-        my $fakedev = '__SISIMAI_DUMMY_DEVICE_FOR_MAKE_TEST__';
+        my $fakedev = '__SISIMAI_DUMMY_DEVICE_FOR_MAKETEST__';
         my $datatxt = <DATA>; open(STDIN, '>>', $fakedev);
-        my $mailbox = $PackageName->new();
+        my $mailbox = $Package->new();
         my $emindex = 0;
 
-        isa_ok $mailbox, $PackageName;
-        can_ok $mailbox, @{ $MethodNames->{'object'} };
+        isa_ok $mailbox, $Package;
+        can_ok $mailbox, @{ $Methods->{'object'} };
         is $mailbox->path, '<STDIN>', '->path = <STDIN>';
         is $mailbox->size, 0, '->size = 0';
         isa_ok $mailbox->handle, 'IO::Handle';
