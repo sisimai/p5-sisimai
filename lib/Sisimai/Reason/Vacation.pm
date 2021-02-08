@@ -41,8 +41,8 @@ Sisimai::Reason::Vacation - A recipient is out of office
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Vacation is for only returning text and description.
-This class is called only from Sisimai->reason method.
+Sisimai::Reason::Vacation is for only returning text and description. This class is called only from
+Sisimai->reason method.
 
 =head1 CLASS METHODS
 
@@ -66,7 +66,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

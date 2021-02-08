@@ -34,8 +34,8 @@ sub make {
     my $v = undef;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
@@ -156,8 +156,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::MessagingServer - bounce mail parser class for
-C<Sun Java System Messaging Server> and C<Oracle Communications Messaging Server>.
+Sisimai::Lhost::MessagingServer - bounce mail parser class for C<Sun Java System Messaging Server>
+and C<Oracle Communications Messaging Server>.
 
 =head1 SYNOPSIS
 
@@ -165,9 +165,8 @@ C<Sun Java System Messaging Server> and C<Oracle Communications Messaging Server
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::MessagingServer parses a bounce email which created by
-C<Oracle Communications Messaging Server> and C<Sun Java System Messaging Server>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::MessagingServer parses a bounce email which created by C<Oracle Communications Messaging Server>
+and C<Sun Java System Messaging Server>. Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -179,8 +178,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -188,7 +187,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

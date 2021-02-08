@@ -73,8 +73,8 @@ sub make {
     my $v = undef;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
@@ -153,8 +153,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::Exchange2007 - bounce mail parser class for C<Microsft Exchange
-Server 2007>.
+Sisimai::Lhost::Exchange2007 - bounce mail parser class for C<Microsft Exchange Server 2007>.
 
 =head1 SYNOPSIS
 
@@ -162,8 +161,7 @@ Server 2007>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::Exchange2007 parses a bounce email which created by C<Microsoft
-Exchange Server 2007>.
+Sisimai::Lhost::Exchange2007 parses a bounce email which created by C<Microsoft Exchange Server 2007>.
 Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
@@ -176,8 +174,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -185,7 +183,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -24,8 +24,8 @@ Sisimai::Reason::Feedback - Email forwarded as a complaint message
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Feedback is for only returning text and description.
-This class is called only from Sisimai->reason method and Sisimai::ARF class.
+Sisimai::Reason::Feedback is for only returning text and description.  This class is called only
+from Sisimai->reason method and Sisimai::ARF class.
 
 =head1 CLASS METHODS
 
@@ -49,7 +49,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016 azumakuniyuki, All rights reserved.
+Copyright (C) 2016,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

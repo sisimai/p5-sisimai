@@ -215,8 +215,8 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 
 =head2 Read email data from STDIN
 
-If you want to pass email data from STDIN, specify B<STDIN> at the first argument of dump() and make()
-method like following command:
+If you want to pass email data from STDIN, specify B<STDIN> at the first argument of dump() and
+make() method like following command:
 
     % cat ./path/to/bounce.eml | perl -MSisimai -lE 'print Sisimai->dump(STDIN)'
 
@@ -224,8 +224,9 @@ method like following command:
 
 =head3 For email headers and the body
 
-C<hook> argument has been removed at Sisimai 5.0.0. The first element of C<c___> argument is the successor
-of C<hook> argument, and is called as a callback method for entire email message like the following codes:
+C<hook> argument has been removed at Sisimai 5.0.0. The first element of C<c___> argument is the
+successor of C<hook> argument, and is called as a callback method for entire email message like the
+following codes:
 
     my $code = sub {
         my $argv = shift;           # (*Hash)
@@ -259,10 +260,11 @@ of C<hook> argument, and is called as a callback method for entire email message
 
 =head3 For each email file
 
-Beginning from v5.0.0, C<c___> argument is available at C<Sisimai->make()> and C<Sisimai->dump()> method
-for callback feature. The argument C<c___> is an array reference to holding two code references for a
-callback method. The first element of the C<c___> is called at C<Sisimai::Message> for dealing the entire
-message body. The second element of the C<c___> is called at the end of each email file parsing.
+Beginning from v5.0.0, C<c___> argument is available at C<Sisimai->make()> and C<Sisimai->dump()>
+method for callback feature. The argument C<c___> is an array reference to holding two code
+references for a callback method. The first element of the C<c___> is called at C<Sisimai::Message>
+for dealing the entire message body. The second element of the C<c___> is called at the end of each
+email file parsing.
 
     my $path = '/path/to/maildir';
     my $code = sub {

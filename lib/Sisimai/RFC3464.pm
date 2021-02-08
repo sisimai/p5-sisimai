@@ -463,8 +463,8 @@ Sisimai::RFC3464 - bounce mail parser class for Fallback.
 
 =head1 DESCRIPTION
 
-Sisimai::RFC3464 is a class which called from called from only Sisimai::Message
-when other Sisimai::Lhost::* modules did not detected a bounce reason.
+Sisimai::RFC3464 is a class which called from called from only Sisimai::Message when other 
+Sisimai::Lhost::* modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
@@ -476,8 +476,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -485,7 +485,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

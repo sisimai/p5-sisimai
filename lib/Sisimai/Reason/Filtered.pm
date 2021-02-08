@@ -79,15 +79,13 @@ Sisimai::Reason::Filtered - Bounce reason is C<filtered> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Filtered checks the bounce reason is C<filtered> or not. This
-class is called only Sisimai::Reason class.
+Sisimai::Reason::Filtered checks the bounce reason is C<filtered> or not. This class is called only
+Sisimai::Reason class.
 
-This is the error that an email has been rejected by a header content after
-SMTP DATA command.
-In Japanese cellular phones, the error will incur that a sender's email address
-or a domain is rejected by recipient's email configuration. Sisimai will set
-C<filtered> to the reason of email bounce if the value of Status: field in a
-bounce email is C<5.2.0> or C<5.2.1>.
+This is the error that an email has been rejected by a header content after SMTP DATA command. In
+Japanese cellular phones, the error will incur that a sender's email address or a domain is rejected
+by recipient's email configuration. Sisimai will set C<filtered> to the reason of email bounce if
+the value of Status: field in a bounce email is C<5.2.0> or C<5.2.1>.
 
 This error reason is almost the same as UserUnknown.
 
@@ -112,8 +110,8 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<filtered>. The argument must be
-Sisimai::Fact object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<filtered>. The argument must be Sisimai::Fact object
+and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -121,7 +119,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

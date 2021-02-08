@@ -135,9 +135,9 @@ Sisimai::Rhost::GoogleApps - Detect the bounce reason returned from Google Apps.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
-object as an argument of get() method when the value of C<rhost> of the object
-is "aspmx.l.google.com". This class is called only Sisimai::Fact class.
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
+of get() method when the value of C<rhost> of the object is "aspmx.l.google.com". This class is
+called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
@@ -151,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

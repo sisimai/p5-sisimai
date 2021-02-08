@@ -397,8 +397,8 @@ C<is_encoded()> returns that the argument is MIME-Encoded string or not.
 
 =head2 C<B<decodeH(I<Array-Ref>)>>
 
-C<decodeH()> is a decoder method for getting the original string from MIME-Encoded string in
-email headers.
+C<decodeH()> is a decoder method for getting the original string from MIME-Encoded string in email
+headers.
 
     my $r = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
     my $v = Sisimai::RFC2045->decodeH([$r]);
@@ -447,10 +447,10 @@ C<levelout> breaks multipart/* message block into each part and returns an array
 
 =head2 C<B<makeflat(I<String>, I<\String>)>>
 
-C<makeflat> makes flat multipart/* message: This method breaks multipart/* block into each part,
-remove parts which are not needed to parse a bounce message such as image/* MIME type, and decode
-an encoded text part (text/*, message/*) in a body of each part that has C<Content-Transfer-Encoding>
-header and the value of the header is quoted-printabe, base64, or 7bit.
+C<makeflat> makes flat multipart/* message: This method breaks multipart/* block into each part, remove
+parts which are not needed to parse a bounce message such as image/* MIME type, and decode an encoded
+text part (text/*, message/*) in a body of each part that has C<Content-Transfer-Encoding> header and
+the value of the header is quoted-printabe, base64, or 7bit.
 
 =head1 AUTHOR
 
@@ -458,7 +458,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

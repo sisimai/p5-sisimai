@@ -65,12 +65,12 @@ sub soft_or_hard {
     my $value = undef;
 
     state $softorhard = {
-        'soft' => [qw|
-            blocked contenterror exceedlimit expired filtered mailboxfull mailererror
-            mesgtoobig networkerror norelaying policyviolation rejected securityerror
-            spamdetected suspend syntaxerror systemerror systemfull toomanyconn virusdetected
-        |],
-        'hard' => [qw|hasmoved hostunknown userunknown|],
+        'soft' => [qw/
+            blocked contenterror exceedlimit expired filtered mailboxfull mailererror mesgtoobig
+            networkerror norelaying policyviolation rejected securityerror spamdetected suspend
+            syntaxerror systemerror systemfull toomanyconn virusdetected/
+        ],
+        'hard' => [qw/hasmoved hostunknown userunknown/],
     };
 
     if( $argv1 eq 'delivered' || $argv1 eq 'feedback' || $argv1 eq 'vacation' ) {
@@ -140,9 +140,9 @@ C<is_permanent()> checks the given string points an permanent error or not.
 
 =head2 C<B<soft_or_hard(I<String>, I<String>)>>
 
-C<soft_or_hard()> returns string 'soft' if given bounce reason is a soft bounce.
-When the reason is a hard bounce, this method returns 'hard'. If the return
-value is an empty string, it means that returned email may not be a bounce.
+C<soft_or_hard()> returns string 'soft' if given bounce reason is a soft bounce. When the reason is
+a hard bounce, this method returns 'hard'. If the return value is an empty string, it means that
+returned email may not be a bounce.
 
     print Sisimai::SMTP::Error->soft_or_hard('userunknown', '5.1.1 No such user');   # 'hard'
     print Sisimai::SMTP::Error->soft_or_hard('mailboxfull');                         # 'soft'
@@ -154,7 +154,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

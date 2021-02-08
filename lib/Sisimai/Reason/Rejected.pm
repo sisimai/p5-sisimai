@@ -95,8 +95,8 @@ sub true {
             return 1 if __PACKAGE__->match($diagnostic);
         }
     } elsif( $tempreason =~ /\A(?:onhold|undefined|securityerror|systemerror)\z/ ) {
-        # Try to match with message patterns when the temporary reason
-        # is "onhold", "undefined", "securityerror", or "systemerror"
+        # Try to match with message patterns when the temporary reason is "onhold", "undefined",
+        # "securityerror", or "systemerror"
         return 1 if __PACKAGE__->match($diagnostic);
     }
     return 0;
@@ -118,13 +118,13 @@ Sisimai::Reason::Rejected - Bounce reason is C<rejected> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Rejected checks the bounce reason is C<rejected> or not. This
-class is called only Sisimai::Reason class.
+Sisimai::Reason::Rejected checks the bounce reason is C<rejected> or not. This class is called only
+Sisimai::Reason class.
 
-This is the error that a connection to destination server was rejected by a
-sender's email address (envelope from). Sisimai set C<rejected> to the reason
-of email bounce if the value of Status: field in a bounce email is C<5.1.8> or
-the connection has been rejected due to the argument of SMTP MAIL command.
+This is the error that a connection to destination server was rejected by a sender's email address
+(envelope from). Sisimai set C<rejected> to the reason of email bounce if the value of Status: field
+in a bounce email is C<5.1.8> or the connection has been rejected due to the argument of SMTP MAIL
+command.
 
     <kijitora@example.org>:
     Connected to 192.0.2.225 but sender was rejected.
@@ -146,8 +146,8 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<rejected>. The argument must be
-Sisimai::Fact object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<rejected>. The argument must be Sisimai::Fact object
+and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -155,7 +155,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

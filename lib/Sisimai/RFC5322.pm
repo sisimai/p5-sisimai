@@ -161,8 +161,7 @@ Sisimai::RFC5322 provide methods for checking email address.
 
 =head2 C<B<received(I<String>)>>
 
-C<received()> returns array reference which include host names in the Received
-header.
+C<received()> returns array reference which include host names in the Received header.
 
     my $v = 'from mx.example.org (c1.example.net [192.0.2.1]) by mx.example.jp';
     my $r = Sisimai::RFC5322->received($v);
@@ -175,8 +174,8 @@ header.
 
 =head2 C<B<fillet(I<String>, I<RegExp>)>>
 
-C<fillet()> returns array reference which include error message lines of given
-message body and the original message part split by the 2nd argument.
+C<fillet()> returns array reference which include error message lines of given message body and the
+original message part split by the 2nd argument.
 
     my $v = 'Error message here
     Content-Type: message/rfc822

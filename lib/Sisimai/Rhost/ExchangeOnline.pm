@@ -151,8 +151,7 @@ sub get {
     }
     return $reasontext if $reasontext;
 
-    # D.S.N. included in the error message did not matched with any key
-    # in statuslist, restatuses
+    # D.S.N. included in the error message did not matched with any key in statuslist, restatuses
     for my $e ( keys %$messagesof ) {
         # Try to compare with error messages defined in MessagesOf
         for my $f ( @{ $messagesof->{ $e } } ) {
@@ -172,8 +171,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Rhost::ExchangeOnline - Detect the bounce reason returned from on-premises
-Exchange 2013 and Office 365.
+Sisimai::Rhost::ExchangeOnline - Detect the bounce reason returned from on-premises Exchange 2013
+and Office 365.
 
 =head1 SYNOPSIS
 
@@ -181,9 +180,9 @@ Exchange 2013 and Office 365.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
-object as an argument of get() method when the value of C<rhost> of the object
-is "*.protection.outlook.com". This class is called only Sisimai::Fact class.
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
+of get() method when the value of C<rhost> of the object is "*.protection.outlook.com". This class
+is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
@@ -197,7 +196,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

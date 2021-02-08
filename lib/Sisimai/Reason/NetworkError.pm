@@ -60,12 +60,11 @@ Sisimai::Reason::NetworkError - Bounce reason is C<networkerror> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::NetworkError checks the bounce reason is C<networkerror> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::NetworkError checks the bounce reason is C<networkerror> or not. This class is called
+only Sisimai::Reason class.
 
-This is the error that SMTP connection failed due to DNS look up failure or
-other network problems. This reason has added in Sisimai 4.1.12 and does not
-exist in any version of bounceHammer.
+This is the error that SMTP connection failed due to DNS look up failure or other network problems.
+This reason has added in Sisimai 4.1.12 and does not exist in any version of bounceHammer.
 
     A message is delayed for more than 10 minutes for the following
     list of recipients:
@@ -88,8 +87,8 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<networkerror>. The argument must be
-Sisimai::Fact object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<networkerror>. The argument must be Sisimai::Fact
+object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -97,7 +96,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

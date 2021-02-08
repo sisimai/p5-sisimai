@@ -6,8 +6,7 @@ use warnings;
 sub dump {
     # Data dumper(YAML)
     # @param    [Sisimai::Fact] argvs   Object
-    # @return   [String, undef]         Dumped data or undef if the argument is
-    #                                   missing
+    # @return   [String, undef]         Dumped data or undef if the argument is missing
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -71,8 +70,8 @@ Sisimai::Fact::YAML - Dumps parsed data object as a YAML format
 
 =head1 DESCRIPTION
 
-Sisimai::Fact::YAML dumps parsed data object as a YAML format. This class and
-method should be called from the parent object "Sisimai::Fact".
+Sisimai::Fact::YAML dumps parsed data object as a YAML format. This class and method should be called
+from the parent object "Sisimai::Fact".
 
 =head1 CLASS METHODS
 
@@ -94,7 +93,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

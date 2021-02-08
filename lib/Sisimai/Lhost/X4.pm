@@ -149,8 +149,8 @@ sub make {
     my $v = undef;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
@@ -217,8 +217,7 @@ sub make {
         } else {
             # Try to match with each error message in the table
             if( $e->{'diagnosis'} =~ $reisonhold ) {
-                # To decide the reason require pattern match with
-                # Sisimai::Reason::* modules
+                # To decide the reason require pattern match with Sisimai::Reason::* modules
                 $e->{'reason'} = 'onhold';
 
             } else {
@@ -262,8 +261,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::X4 - bounce mail parser class for Unknown MTA which is
-developed as a C<qmail> clone.
+Sisimai::Lhost::X4 - bounce mail parser class for Unknown MTA which is developed as a C<qmail> clone.
 
 =head1 SYNOPSIS
 
@@ -271,8 +269,8 @@ developed as a C<qmail> clone.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::X4 parses a bounce email which created by some C<qmail>
-clone. Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::X4 parses a bounce email which created by some C<qmail> clone. Methods in the module
+are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -284,8 +282,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -293,7 +291,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

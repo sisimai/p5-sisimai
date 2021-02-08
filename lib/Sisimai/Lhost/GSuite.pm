@@ -49,8 +49,8 @@ sub make {
     my $v = undef;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
@@ -119,8 +119,7 @@ sub make {
                 # 550 #5.1.0 Address rejected.
                 next if $e =~ /\AContent-Type:/;
                 if( $anotherset->{'diagnosis'} ) {
-                    # Continued error messages from the previous line like
-                    # "550 #5.1.0 Address rejected."
+                    # Continued error messages from the previous line like "550 #5.1.0 Address rejected."
                     next if $emptylines > 5;
                     unless( length $e ) {
                         # Count and next()
@@ -210,8 +209,8 @@ Sisimai::Lhost::GSuite - bounce mail parser class for C<G Suite>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::GSuite parses a bounce email which created by C<G Suite>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::GSuite parses a bounce email which created by C<G Suite>. Methods in the module are
+called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -223,8 +222,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -232,7 +231,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

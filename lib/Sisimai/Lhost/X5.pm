@@ -49,15 +49,14 @@ sub make {
     my $v = undef;
     my $p = '';
 
-    # Pick the second message/rfc822 part because the format of email-x5-*.eml
-    # is nested structure
+    # Pick the second message/rfc822 part because the format of email-x5-*.eml is nested structure
     my $prefillets = [split($rebackbone, $$mbody, 2)];
        $prefillets->[1] =~ s/\A.+?\n\n//ms;
     my $emailsteak = Sisimai::RFC5322->fillet(\$prefillets->[1], $rebackbone);
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
@@ -130,8 +129,8 @@ Sisimai::Lhost::X5 - bounce mail parser class for unknown MTA #5.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::X5 parses a bounce email which created by Unknown MTA #5.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::X5 parses a bounce email which created by Unknown MTA #5. Methods in the module are
+called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -143,8 +142,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -152,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

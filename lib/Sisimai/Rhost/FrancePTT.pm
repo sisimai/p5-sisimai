@@ -150,8 +150,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Rhost::FrancePTT - Detect the bounce reason returned from Orange and
-La Poste.
+Sisimai::Rhost::FrancePTT - Detect the bounce reason returned from Orange and La Poste.
 
 =head1 SYNOPSIS
 
@@ -159,9 +158,8 @@ La Poste.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
-object as an argument of get() method when the value of C<rhost> of the object
-end with "laposte.net" or "orange.fr".
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
+of get() method when the value of C<rhost> of the object end with "laposte.net" or "orange.fr".
 This class is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
@@ -176,7 +174,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

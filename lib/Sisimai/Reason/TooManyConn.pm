@@ -66,12 +66,11 @@ Sisimai::Reason::TooManyConn - Bounced due to that too many connections.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::TooManyConn checks the bounce reason is C<toomanyconn> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::TooManyConn checks the bounce reason is C<toomanyconn> or not. This class is called
+only Sisimai::Reason class.
 
-This is the error that SMTP connection was rejected temporarily due to too many
-concurrency connections to the remote server. This reason has added in Sisimai
-4.1.26 and does not exist in any version of bounceHammer.
+This is the error that SMTP connection was rejected temporarily due to too many concurrency connections
+to the remote server. This reason has added in Sisimai 4.1.26.
 
     <kijitora@example.ne.jp>: host mx02.example.ne.jp[192.0.1.20] said:
         452 4.3.2 Connection rate limit exceeded. (in reply to MAIL FROM command)
@@ -92,8 +91,8 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<toomanyconn>. The argument must be
-Sisimai::Fact object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<toomanyconn>. The argument must be Sisimai::Fact
+object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -101,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

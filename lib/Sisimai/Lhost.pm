@@ -41,13 +41,11 @@ sub index {
     # Alphabetical sorted MTA module list
     # @return   [Array] MTA list with order
     return [qw|
-        Activehunter Amavis AmazonSES AmazonWorkMail Aol ApacheJames Barracuda Bigfoot
-        Biglobe Courier Domino EZweb EinsUndEins Exchange2003 Exchange2007 Exim FML
-        Facebook GMX GSuite GoogleGroups Gmail IMailServer InterScanMSS KDDI MXLogic
-        MailFoundry MailMarshalSMTP MailRu McAfee MessageLabs MessagingServer Notes
-        Office365 OpenSMTPD Outlook Postfix PowerMTA ReceivingSES SendGrid Sendmail
-        SurfControl V5sendmail Verizon X1 X2 X3 X4 X5 X6 Yahoo Yandex Zoho mFILTER
-        qmail
+        Activehunter Amavis AmazonSES AmazonWorkMail Aol ApacheJames Barracuda Bigfoot Biglobe Courier
+        Domino EZweb EinsUndEins Exchange2003 Exchange2007 Exim FML Facebook GMX GSuite GoogleGroups
+        Gmail IMailServer InterScanMSS KDDI MXLogic MailFoundry MailMarshalSMTP MailRu McAfee MessageLabs
+        MessagingServer Notes Office365 OpenSMTPD Outlook Postfix PowerMTA ReceivingSES SendGrid Sendmail
+        SurfControl V5sendmail Verizon X1 X2 X3 X4 X5 X6 Yahoo Yandex Zoho mFILTER qmail
     |];
 }
 
@@ -86,8 +84,7 @@ Sisimai::Lhost - Base class for Sisimai::Lhost::*
 
 =head1 SYNOPSIS
 
-Do not use or require this class directly, use Sisimai::Lhost::*, such as
-Sisimai::Lhost::Sendmail, instead.
+Do not use or require this class directly, use Sisimai::Lhost::*, such as Sisimai::Lhost::Sendmail, instead.
 
 =head1 DESCRIPTION
 

@@ -163,8 +163,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::SpamDetected - Bounce reason is C<spamdetected> due to Spam
-content in the message or not.
+Sisimai::Reason::SpamDetected - Bounce reason is C<spamdetected> due to Spam content in the message
+or not.
 
 =head1 SYNOPSIS
 
@@ -173,13 +173,11 @@ content in the message or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SpamDetected checks the bounce reason is C<spamdetected> due to
-Spam content in the message or not. This class is called only Sisimai::Reason
-class.
+Sisimai::Reason::SpamDetected checks the bounce reason is C<spamdetected> due to Spam content in the
+message or not. This class is called only Sisimai::Reason class.
 
-This is the error that the message you sent was rejected by C<spam> filter which
-is running on the remote host. This reason has added in Sisimai 4.1.25 and does
-not exist in any version of bounceHammer.
+This is the error that the message you sent was rejected by C<spam> filter which is running on the
+remote host. This reason has added in Sisimai 4.1.25.
 
     Action: failed
     Status: 5.7.1
@@ -202,9 +200,8 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in
-the message. The argument must be Sisimai::Fact object and this method is called
-only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in the message. The
+argument must be Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -212,7 +209,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

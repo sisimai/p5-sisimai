@@ -24,10 +24,9 @@ Sisimai::Reason::Delivered - Email delivered successfully
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Delivered checks the email you sent is delivered successfully
-or not by matching diagnostic messages with message patterns. Sisimai will set
-"delivered" to the value of "reason" when Status: field in the bounce message
-begins with "2" like following:
+Sisimai::Reason::Delivered checks the email you sent is delivered successfully or not by matching
+diagnostic messages with message patterns. Sisimai will set "delivered" to the value of "reason"
+when Status: field in the bounce message begins with "2" like following:
 
     Final-Recipient: rfc822; kijitora@neko.nyaan.jp
     Action: delivered
@@ -58,7 +57,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2016,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

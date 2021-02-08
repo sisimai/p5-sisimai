@@ -73,13 +73,12 @@ Sisimai::Reason::MesgTooBig - Bounce reason is C<mesgtoobig> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::MesgTooBig checks the bounce reason is C<mesgtoobig> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::MesgTooBig checks the bounce reason is C<mesgtoobig> or not. This class is called
+only Sisimai::Reason class.
 
-This is the error that a sent email size is too big for a destination mail
-server. In many case, There are many attachment files with email, or the file
-size is too large. Sisimai will set C<mesgtoobig> to the reason of email bounce
-if the value of Status: field in a bounce email is C<5.3.4>.
+This is the error that a sent email size is too big for a destination mail server. In many case,
+There are many attachment files with email, or the file size is too large. Sisimai will set C<mesgtoobig>
+to the reason of email bounce if the value of Status: field in a bounce email is C<5.3.4>.
 
     Action: failed
     Status: 553 Exceeded maximum inbound message size
@@ -100,8 +99,8 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<mesgtoobig>. The argument must be
-Sisimai::Fact object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<mesgtoobig>. The argument must be Sisimai::Fact object
+and this method is called only from Sisimai::Reason class.
 
 =head1 SEE ALSO
 
@@ -117,7 +116,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

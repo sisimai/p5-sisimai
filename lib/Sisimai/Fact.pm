@@ -364,8 +364,8 @@ sub damn {
 sub dump {
     # Data dumper
     # @param    [String] type   Data format: json, yaml
-    # @return   [String, undef] Dumped data or undef if the value of first argument is neither 
-    #                           "json" nor "yaml"
+    # @return   [String]        Dumped data
+    #           [undef]         When the value of first argument is neither "json" nor "yaml"
     my $self = shift;
     my $type = shift || 'json';
     return undef unless $type =~ /\A(?:json|yaml)\z/;
@@ -405,8 +405,7 @@ Sisimai::Fact generate parsed data from Sisimai::Message object.
 
 =head2 C<B<rise(I<Hash>)>>
 
-C<rise> generate parsed data and returns an array reference which are
-including Sisimai::Fact objects.
+C<rise> generate parsed data and returns an array reference which are including Sisimai::Fact objects.
 
     my $mail = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mail->read ) {
@@ -418,13 +417,13 @@ including Sisimai::Fact objects.
         }
     }
 
-If you want to get bounce records which reason is "delivered", set "delivered"
-option to rise() method like the following:
+If you want to get bounce records which reason is "delivered", set "delivered" option to rise() method
+like the following:
 
     my $fact = Sisimai::Fact->rise('data' => $r, 'delivered' => 1);
 
-Beginning from v4.19.0, `hook` argument is available to callback user defined
-method like the following codes:
+Beginning from v4.19.0, `hook` argument is available to callback user defined method like the following
+codes:
 
     my $call = sub {
         my $argv = shift;
@@ -457,16 +456,15 @@ Sisimai::Fact have the following properties:
 
 =head2 C<action> (I<String>)
 
-C<action> is the value of Action: field in a bounce email message such as
-C<failed> or C<delayed>.
+C<action> is the value of Action: field in a bounce email message such as C<failed> or C<delayed>.
 
     Action: failed
 
 =head2 C<addresser> (I<Sisimai::Address)>
 
-C<addressser> is L<Sisimai::Address> object generated from the sender address.
-When Sisimai::Fact object is dumped as JSON, this value converted to an email
-address. Sisimai::Address object have the following accessors:
+C<addressser> is L<Sisimai::Address> object generated from the sender address.  When Sisimai::Fact
+object is dumped as JSON, this value converted to an email address. Sisimai::Address object have
+the following accessors:
 
 =over
 
@@ -486,9 +484,8 @@ address. Sisimai::Address object have the following accessors:
 
 =head2 C<alias> (I<String>)
 
-C<alias> is an alias address of the recipient. When the Original-Recipient:
-field or C<expanded from "address"> string did not exist in a bounce message,
-this value is empty.
+C<alias> is an alias address of the recipient. When the Original-Recipient: field or 
+C<expanded from "address"> string did not exist in a bounce message, this value is empty.
 
     Original-Recipient: rfc822;kijitora@example.org
 
@@ -497,39 +494,36 @@ this value is empty.
 
 =head2 C<deliverystatus> (I<String>)
 
-C<deliverystatus> is the value of Status: field in a bounce message. When the
-message has no Status: field, Sisimai set pseudo value like 5.0.9XX to this
-value. The range of values only C<4.x.x> or C<5.x.x>.
+C<deliverystatus> is the value of Status: field in a bounce message. When the message has no Status:
+field, Sisimai set pseudo value like 5.0.9XX to this value. The range of values only C<4.x.x> or C<5.x.x>.
 
     Status: 5.0.0 (permanent failure)
 
 =head2 C<destination> (I<String>)
 
-C<destination> is the domain part of the recipient address. This value is the
-same as the return value from host() method of C<recipient> accessor.
+C<destination> is the domain part of the recipient address. This value is the same as the return
+value from host() method of C<recipient> accessor.
 
 =head2 C<diagnosticcode> (I<String>)
 
-C<diagnosticcode> is an error message picked from Diagnostic-Code: field or
-message body in a bounce message. This value and the value of C<diagnostictype>,
-C<action>, C<deliverystatus>, C<replycode>, and C<smtpcommand> will be referred
-by L<Sisimai::Reason> to decide the bounce reason.
+C<diagnosticcode> is an error message picked from Diagnostic-Code: field or message body in a bounce
+message. This value and the value of C<diagnostictype>, C<action>, C<deliverystatus>, C<replycode>,
+and C<smtpcommand> will be referred by L<Sisimai::Reason> to decide the bounce reason.
 
     Diagnostic-Code: SMTP; 554 5.4.6 Too many hops
 
 =head2 C<diagnostictype> (C<String>)
 
-C<diagnostictype> is a type like C<SMTP> or C<X-Unix> picked from Diagnostic-Code:
-field in a bounce message. When there is no Diagnostic-Code: field in the bounce
-message, this value will be empty.
+C<diagnostictype> is a type like C<SMTP> or C<X-Unix> picked from Diagnostic-Code: field in a bounce
+message. When there is no Diagnostic-Code: field in the bounce message, this value will be empty.
 
     Diagnostic-Code: X-Unix; 255
 
 =head2 C<feedbacktype> (I<String>)
 
-C<feedbacktype> is the value of Feedback-Type: field like C<abuse>, C<fraud>,
-C<opt-out> in a bounce message. When the message is not ARF format or the value
-of C<reason> is not C<feedback>, this value will be empty.
+C<feedbacktype> is the value of Feedback-Type: field like C<abuse>, C<fraud>, C<opt-out> in a bounce
+message. When the message is not ARF format or the value of C<reason> is not C<feedback>, this value
+will be empty.
 
     Content-Type: message/feedback-report
 
@@ -538,41 +532,39 @@ of C<reason> is not C<feedback>, this value will be empty.
 
 =head2 C<lhost> (I<String>)
 
-C<lhost> is a local MTA name to be used as a gateway for sending email message
-or the value of Reporting-MTA field in a bounce message. When there is no
-Reporting-MTA field in the bounce message, Sisimai try to get the value from
-Received header.
+C<lhost> is a local MTA name to be used as a gateway for sending email message or the value of
+Reporting-MTA field in a bounce message. When there is no Reporting-MTA field in the bounce message,
+Sisimai try to get the value from Received header.
 
     Reporting-MTA: dns; mx4.smtp.example.co.jp
 
 =head2 C<listid> (I<String>)
 
-C<listid> is the value of List-Id header of the original message. When there
-is no List-Id field in the original message or the bounce message did not
-include the original message, this value will be empty.
+C<listid> is the value of List-Id header of the original message. When there is no List-Id field in
+the original message or the bounce message did not include the original message, this value will be
+empty.
 
     List-Id: Mailman mailing list management users
 
 =head2 C<messageid> (I<String>)
 
-C<messageid> is the value of Message-Id header of the original message. When
-the original message did not include Message-Id: header or the bounce message
-did not include the original message, this value will be empty.
+C<messageid> is the value of Message-Id header of the original message. When the original message did
+not include Message-Id: header or the bounce message did not include the original message, this value
+will be empty.
 
     Message-Id: <201310160515.r9G5FZh9018575@smtpgw.example.jp>
 
 =head2 C<origin> (I<Path to the original email file>)
 
-C<origin> is the path to the original email file of the parsed results. When
-the original email data were input from STDIN, the value is C<<STDIN>>, were
-input from a variable, the value is C<<MEMORY>>. This accessor method has been
-implemented at v4.25.6.
+C<origin> is the path to the original email file of the parsed results. When the original email data
+were input from STDIN, the value is C<<STDIN>>, were input from a variable, the value is C<<MEMORY>>.
+This accessor method has been implemented at v4.25.6.
 
 =head2 C<recipient> (I<Sisimai::Address)>
 
-C<recipient> is L<Sisimai::Address> object generated from the recipient address.
-When Sisimai::Fact object is dumped as JSON, this value converted to an email
-address. Sisimai::Address object have the following accessors:
+C<recipient> is L<Sisimai::Address> object generated from the recipient address.  When Sisimai::Fact
+object is dumped as JSON, this value converted to an email address. Sisimai::Address object have the
+following accessors:
 
 =over
 
@@ -593,16 +585,14 @@ address. Sisimai::Address object have the following accessors:
 
 =head2 C<reason> (I<String>)
 
-C<reason> is the value of bounce reason Sisimai detected. When this value is
-C<undefined> or C<onhold>, it means that Sisimai could not decide the reason.
-All the reasons Sisismai can detect are available at L<Sisimai::Reason> or web
-site L<https://libsisimai.org/en/reason/>.
+C<reason> is the value of bounce reason Sisimai detected. When this value is C<undefined> or C<onhold>,
+it means that Sisimai could not decide the reason. All the reasons Sisismai can detect are available
+at L<Sisimai::Reason> or web site L<https://libsisimai.org/en/reason/>.
 
 =head2 C<replycode> (I<Integer>)
 
-C<replycode> is the value of SMTP reply code picked from the error message or
-the value of Diagnostic-Code: field in a bounce message. The range of values is
-only 4xx or 5xx.
+C<replycode> is the value of SMTP reply code picked from the error message or the value of Diagnostic-Code:
+field in a bounce message. The range of values is only 4xx or 5xx.
 
        ----- The following addresses had permanent fatal errors -----
     <userunknown@libsisimai.org>
@@ -610,86 +600,78 @@ only 4xx or 5xx.
 
 =head2 C<rhost> (I<String>)
 
-C<rhost> is a remote MTA name which has rejected the message you sent or the
-value of Remote-MTA: field in a bounce message. When there is no Remote-MTA
-field in the bounce message, Sisimai try to get the value from Received header.
+C<rhost> is a remote MTA name which has rejected the message you sent or the value of Remote-MTA:
+field in a bounce message. When there is no Remote-MTA field in the bounce message, Sisimai try to
+get the value from Received header.
 
     Remote-MTA: DNS; g5.example.net
 
 =head2 C<senderdomain> (I<String>)
 
-C<senderdomain> is the domain part of the sender address. This value is the same
-as the return value from host() method of addresser accessor.
+C<senderdomain> is the domain part of the sender address. This value is the same as the return value
+from host() method of addresser accessor.
 
 =head2 C<smtpagent> (I<String>)
 
-C<smtpagent> is a module name to be used for detecting bounce reason. For
-example, when the value is C<Sendmail>, Sisimai used L<Sisimai::Lhost::Sendmail>
-to get the recipient address and other delivery status information from a
-bounce message.
+C<smtpagent> is a module name to be used for detecting bounce reason. For example, when the value is
+C<Sendmail>, Sisimai used L<Sisimai::Lhost::Sendmail> to get the recipient address and other delivery
+status information from a bounce message.
 
 =head2 C<smtpcommand> (I<String>)
 
-C<smtpcommand> is a SMTP command name picked from the error message or the value
-of Diagnostic-Code: field in a bounce message. When there is no SMTP command in
-the bounce message, this value will be empty. The list of values is C<HELO>,
-C<EHLO>, C<MAIL>, C<RCPT>, and C<DATA>.
+C<smtpcommand> is a SMTP command name picked from the error message or the value of Diagnostic-Code:
+field in a bounce message. When there is no SMTP command in the bounce message, this value will be
+empty. The list of values is C<HELO>, C<EHLO>, C<MAIL>, C<RCPT>, and C<DATA>.
 
     <kijitora@example.go.jp>: host mx1.example.go.jp[192.0.2.127] said: 550 5.1.6 recipient
         no longer on server: kijitora@example.go.jp (in reply to RCPT TO command)
 
-=head2 C<softbounce> (I<Integer>)
+=head2 C<hardbounce> (I<Integer>)
 
-The value of C<softbounce> indicates whether the reason of the bounce is soft
-bounce or hard bounce. This accessor has added in Sisimai 4.1.28. The range of
-the values are the followings:
+The value of C<hardbounce> indicates whether the reason of the bounce is a hard bounce or not. This
+accessor has added in Sisimai 5.0.0. The range of the values are the followings:
 
 =over
 
-=item 1 = Soft bounce
+=item 1 = Hard bounce
 
-=item 0 = Hard bounce
-
-=item -1 = Sisimai could not decide
+=item 0 = Not a hard bounce
 
 =back
 
 =head2 C<subject> (I<String>)
 
-C<subject> is the value of Subject header of the original message. When the
-original message which is included in a bounce email contains no Subject header
-(removed by remote MTA), this value will be empty.
-If the value of Subject header of the original message contain any multibyte
-character (non-ASCII character), such as MIME encoded Japanese or German and so
-on, the value of subject in parsed data is encoded with UTF-8 again.
+C<subject> is the value of Subject header of the original message. When the original message which
+is included in a bounce email contains no Subject header (removed by remote MTA), this value will be
+empty. If the value of Subject header of the original message contain any multibyte character
+(non-ASCII character), such as MIME encoded Japanese or German and so on, the value of subject in
+parsed data is encoded with UTF-8 again.
 
 =head2 C<token> (I<String>)
 
-C<token> is an identifier of each email-bounce. The token string is created from
-the sender email address (addresser) and the recipient email address (recipient)
-and the machine time of the date in a bounce message as an MD5 hash value.
-The token value is generated at C<token()> method of L<Sisimai::String> class.
+C<token> is an identifier of each email-bounce. The token string is created from the sender email
+address (addresser) and the recipient email address (recipient) and the machine time of the date in
+a bounce message as an MD5 hash value. The token value is generated at C<token()> method of
+L<Sisimai::String> class.
 
-If you want to get the same token string at command line, try to run the
-following command:
+If you want to get the same token string at command line, try to run the following command:
 
     % printf "\x02%s\x1e%s\x1e%d\x03" sender@example.jp recipient@example.org `date '+%s'` | md5
     714d72dfd972242ad04f8053267e7365
 
 =head2 C<timestamp> (I<Sisimai::Time>)
 
-C<timestamp> is the date which email has bounced as a L<Sisima::Time> (Child
-class of Time::Piece) object. When Sisimai::Fact object is dumped as JSON, this
-value will be converted to an UNIX machine time (32 bits integer).
+C<timestamp> is the date which email has bounced as a L<Sisima::Time> (Child class of Time::Piece)
+object. When Sisimai::Fact object is dumped as JSON, this value will be converted to an UNIX machine
+time (32 bits integer).
 
     Arrival-Date: Thu, 29 Apr 2009 23:45:33 +0900
 
 =head2 C<timezomeoffset> (I<String>)
 
-C<timezoneoffset> is a time zone offset of a bounce email which its email has
-bounced. The format of this value is String like C<+0900>, C<-0200>.
-If Sisimai has failed to get a value of time zone offset, this value will be
-set as C<+0000>.
+C<timezoneoffset> is a time zone offset of a bounce email which its email has bounced. The format of
+this value is String like C<+0900>, C<-0200>.  If Sisimai has failed to get a value of time zone
+offset, this value will be set as C<+0000>.
 
 =head1 SEE ALSO
 

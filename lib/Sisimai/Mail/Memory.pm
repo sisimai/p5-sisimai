@@ -69,8 +69,7 @@ Sisimai::Mail::Memory - Mailbox reader
 
 =head1 DESCRIPTION
 
-Sisimai::Mail::Memory is a class for reading a mailbox, files in Maildir/, or
-JSON string from variable.
+Sisimai::Mail::Memory is a class for reading a mailbox, files in Maildir/, or JSON string from variable.
 
 =head1 CLASS METHODS
 
@@ -103,8 +102,8 @@ C<payload()> returns an array reference to each email message or JSON string
 
 =head2 C<B<offset()>>
 
-C<offset()> returns an offset position for seeking "payload" list. The value of
-"offset" is an index number which have already read.
+C<offset()> returns an offset position for seeking "payload" list. The value of "offset" is an index
+number which have already read.
 
     print $mailobj->offset;   # 0
 
@@ -124,7 +123,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

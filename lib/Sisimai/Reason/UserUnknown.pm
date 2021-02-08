@@ -177,8 +177,7 @@ sub true {
         return 1 unless $matchother;    # Did not match with other message patterns
 
     } elsif( $argvs->{'smtpcommand'} eq 'RCPT' ) {
-        # When the SMTP command is not "RCPT", the session rejected by other
-        # reason, maybe.
+        # When the SMTP command is not "RCPT", the session rejected by other reason, maybe.
         return 1 if __PACKAGE__->match($diagnostic);
     }
     return 0;
@@ -200,15 +199,14 @@ Sisimai::Reason::UserUnknown - Bounce reason is C<userunknown> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::UserUnknown checks the bounce reason is C<userunknown> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::UserUnknown checks the bounce reason is C<userunknown> or not. This class is called
+only Sisimai::Reason class.
 
-This is the error that a local part (Left hand side of @ sign) of a recipient's
-email address does not exist. In many case, a user has changed internet service
-provider, or has quit company, or the local part is misspelled. Sisimai will set
-C<userunknown> to the reason of email bounce if the value of Status: field in a
-bounce email is C<5.1.1>, or connection was refused at SMTP RCPT command, or the
-contents of Diagnostic-Code: field represents that it is unknown user.
+This is the error that a local part (Left hand side of @ sign) of a recipient's email address does
+not exist. In many case, a user has changed internet service provider, or has quit company, or the
+local part is misspelled. Sisimai will set C<userunknown> to the reason of email bounce if the value
+of Status: field in a bounce email is C<5.1.1>, or connection was refused at SMTP RCPT command, or
+the contents of Diagnostic-Code: field represents that it is unknown user.
 
     <kijitora@example.co.jp>: host mx01.example.co.jp[192.0.2.8] said:
       550 5.1.1 Address rejected kijitora@example.co.jp (in reply to
@@ -230,8 +228,8 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<userunknown>. The argument must be
-Sisimai::Fact object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<userunknown>. The argument must be Sisimai::Fact
+object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -239,7 +237,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

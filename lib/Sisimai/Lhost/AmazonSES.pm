@@ -183,8 +183,7 @@ sub make {
                 ($v->{'date'} = $o->{'timestamp'} || $p->{'mail'}->{'timestamp'}) =~ s/[.]\d+Z\z//;
             }
         } else {
-            # The value of "notificationType" is not any of "Bounce", "Complaint",
-            # or "Delivery".
+            # The value of "notificationType" is not any of "Bounce", "Complaint", or "Delivery".
             return undef;
         }
         return undef unless $recipients;
@@ -331,9 +330,8 @@ Sisimai::Lhost::AmazonSES - bounce mail parser class for C<Amazon SES>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::AmazonSES parses a bounce email or a JSON string which created
-by C<Amazon Simple Email Service>. Methods in the module are called from only
-Sisimai::Message.
+Sisimai::Lhost::AmazonSES parses a bounce email or a JSON string which created by C<Amazon Simple Email Service>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -345,13 +343,12 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head2 C<B<json(I<Hash>)>>
 
-C<json()> method adapts Amazon SES bounce object (JSON) for Perl hash object
-used at Sisimai::Message class.
+C<json()> method adapts Amazon SES bounce object (JSON) for Perl hash object used at Sisimai::Message class.
 
 =head1 AUTHOR
 
@@ -359,7 +356,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

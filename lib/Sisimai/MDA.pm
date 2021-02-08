@@ -156,9 +156,8 @@ Sisimai::MDA - Error message parser for MDA
 
 =head1 DESCRIPTION
 
-Sisimai::MDA parse bounced email which created by some MDA, such as C<dovecot>,
-C<mail.local>, C<procmail>, and so on.
-This class is called from Sisimai::Message only.
+Sisimai::MDA parse bounced email which created by some MDA, such as C<dovecot>, C<mail.local>,
+C<procmail>, and so on. This class is called from Sisimai::Message only.
 
 =head1 CLASS METHODS
 
@@ -182,7 +181,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

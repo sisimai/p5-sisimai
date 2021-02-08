@@ -7,8 +7,7 @@ use JSON;
 sub dump {
     # Data dumper(JSON)
     # @param    [Sisimai::Fact] argvs   Object
-    # @return   [String, undef]         Dumped data or undef if the argument is
-    #                                   missing
+    # @return   [String, undef]         Dumped data or undef if the argument is missing
     my $class = shift;
     my $argvs = shift // return undef;
     return undef unless ref $argvs eq 'Sisimai::Fact';
@@ -38,8 +37,8 @@ Sisimai::Fact::JSON - Dumps parsed data object as a JSON format
 
 =head1 DESCRIPTION
 
-Sisimai::Fact::JSON dumps parsed data object as a JSON format. This class and
-method should be called from the parent object "Sisimai::Fact".
+Sisimai::Fact::JSON dumps parsed data object as a JSON format. This class and method should be called
+from the parent object "Sisimai::Fact".
 
 =head1 CLASS METHODS
 
@@ -61,7 +60,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -100,9 +100,8 @@ Sisimai::Mail - Handler of Mbox/Maildir for reading each mail.
 
 =head1 DESCRIPTION
 
-Sisimai::Mail is a handler for reading a UNIX mbox, a Maildir, or any email
-message input from STDIN, variable. It is a wrapper class of the following 
-child classes:
+Sisimai::Mail is a handler for reading a UNIX mbox, a Maildir, or any email message input from STDIN,
+variable. It is a wrapper class of the following child classes:
 
     * Sisimai::Mail::Mbox
     * Sisimai::Mail::Maildir
@@ -143,8 +142,8 @@ C<mail()> returns Sisimai::Mail::Mbox object or Sisimai::Mail::Maildir object.
 
 =head2 C<B<read()>>
 
-C<read()> works as a iterator for reading each email in mbox or Maildir. It calls
-Sisimai::Mail::Mbox->read or Sisimai::Mail::Maildir->read method.
+C<read()> works as a iterator for reading each email in mbox or Maildir. It calls Sisimai::Mail::Mbox->read
+or Sisimai::Mail::Maildir->read method.
 
     my $mailbox = Sisimai::Mail->new('/var/mail/neko');
     while( my $r = $mailbox->read ) {
@@ -157,7 +156,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

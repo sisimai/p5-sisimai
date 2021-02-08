@@ -44,9 +44,9 @@ Sisimai::Rhost::IUA - Detect the bounce reason returned from https://www.i.ua/.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
-object as an argument of get() method when the value of C<rhost> of the object
-is "*.email.ua".  This class is called only Sisimai::Fact class.
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
+of get() method when the value of C<rhost> of the object is "*.email.ua".  This class is called
+only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
@@ -60,7 +60,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2019-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

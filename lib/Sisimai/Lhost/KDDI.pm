@@ -46,8 +46,8 @@ sub make {
     my $v = undef;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
@@ -92,8 +92,7 @@ sub make {
 
         } else {
             if( $e->{'command'} eq 'RCPT' ) {
-                # set "userunknown" when the remote server rejected after RCPT
-                # command.
+                # set "userunknown" when the remote server rejected after RCPT command.
                 $e->{'reason'} = 'userunknown';
 
             } else {
@@ -124,8 +123,8 @@ Sisimai::Lhost::KDDI - bounce mail parser class for C<au by KDDI>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::KDDI parses a bounce email which created by C<au by KDDI>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::KDDI parses a bounce email which created by C<au by KDDI>. Methods in the module are
+called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -137,8 +136,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -146,7 +145,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

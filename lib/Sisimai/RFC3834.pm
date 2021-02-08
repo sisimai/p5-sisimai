@@ -104,8 +104,7 @@ sub make {
     return undef unless $recipients;
 
     if( $mhead->{'content-type'} ) {
-        # Get the boundary string and set regular expression for matching with
-        # the boundary string.
+        # Get the boundary string and set regular expression for matching with the boundary string.
         my $b0 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 0);
         $markingsof->{'boundary'} = qr/\A\Q$b0\E\z/ if length $b0;
     }
@@ -156,8 +155,8 @@ Sisimai::RFC3834 - RFC3834 auto reply message detector
 
 =head1 DESCRIPTION
 
-Sisimai::RFC3834 is a class which called from called from only Sisimai::Message
-when other Sisimai::Lhost::* modules did not detected a bounce reason.
+Sisimai::RFC3834 is a class which called from called from only Sisimai::Message when other
+Sisimai::Lhost::* modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
@@ -169,8 +168,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<make(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses an auto replied message and return results as an array
-reference. See Sisimai::Message for more details.
+C<make()> method parses an auto replied message and return results as an array reference. See
+Sisimai::Message for more details.
 
 =head1 AUTHOR
 
@@ -178,7 +177,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

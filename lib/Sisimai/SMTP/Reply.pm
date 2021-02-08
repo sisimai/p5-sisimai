@@ -10,53 +10,43 @@ use warnings;
 #       4yz  Transient Negative Completion reply
 #       5yz  Permanent Negative Completion reply
 #
-#       x0z  Syntax: These replies refer to syntax errors, syntactically
-#            correct commands that do not fit any functional category, and
-#            unimplemented or superfluous commands.
-#       x1z  Information: These are replies to requests for information, such
-#            as status or help.
-#       x2z  Connections: These are replies referring to the transmission
-#            channel.
+#       x0z  Syntax: These replies refer to syntax errors, syntactically correct commands that do
+#            not fit any functional category, and unimplemented or superfluous commands.
+#       x1z  Information: These are replies to requests for information, such as status or help.
+#       x2z  Connections: These are replies referring to the transmission channel.
 #       x3z  Unspecified.
 #       x4z  Unspecified.
-#       x5z  Mail system: These replies indicate the status of the receiver
-#            mail system vis-a-vis the requested transfer or other mail system
-#            action.
+#       x5z  Mail system: These replies indicate the status of the receiver mail system vis-a-vis
+#            the requested transfer or other mail system action.
 #
 #  4.2.3.  Reply Codes in Numeric Order
 #       211  System status, or system help reply
-#       214  Help message (Information on how to use the receiver or the
-#            meaning of a particular non-standard command; this reply is useful
-#            only to the human user)
+#       214  Help message (Information on how to use the receiver or the meaning of a particular
+#            non-standard command; this reply is useful only to the human user)
 #       220  <domain> Service ready
 #       221  <domain> Service closing transmission channel
 #       250  Requested mail action okay, completed
 #       251  User not local; will forward to <forward-path> (See Section 3.4)
-#       252  Cannot VRFY user, but will accept message and attempt delivery
-#            (See Section 3.5.3)
+#       252  Cannot VRFY user, but will accept message and attempt delivery (See Section 3.5.3)
 #       354  Start mail input; end with <CRLF>.<CRLF>
-#       421  <domain> Service not available, closing transmission channel
-#            (This may be a reply to any command if the service knows it must
-#            shut down)
-#       450  Requested mail action not taken: mailbox unavailable (e.g.,
-#            mailbox busy or temporarily blocked for policy reasons)
+#       421  <domain> Service not available, closing transmission channel (This may be a reply to
+#            any command if the service knows it must shut down)
+#       450  Requested mail action not taken: mailbox unavailable (e.g., mailbox busy or temporarily
+#            blocked for policy reasons)
 #       451  Requested action aborted: local error in processing
 #       452  Requested action not taken: insufficient system storage
 #       455  Server unable to accommodate parameters
-#       500  Syntax error, command unrecognized (This may include errors such
-#            as command line too long)
+#       500  Syntax error, command unrecognized (This may include errors such as command line too long)
 #       501  Syntax error in parameters or arguments
 #       502  Command not implemented (see Section 4.2.4)
 #       503  Bad sequence of commands
 #       504  Command parameter not implemented
-#       550  Requested action not taken: mailbox unavailable (e.g., mailbox
-#            not found, no access, or command rejected for policy reasons)
+#       550  Requested action not taken: mailbox unavailable (e.g., mailbox not found, no access,
+#            or command rejected for policy reasons)
 #       551  User not local; please try <forward-path> (See Section 3.4)
 #       552  Requested mail action aborted: exceeded storage allocation
-#       553  Requested action not taken: mailbox name not allowed (e.g.,
-#            mailbox syntax incorrect)
-#       554  Transaction failed (Or, in the case of a connection-opening
-#            response, "No SMTP service here")
+#       553  Requested action not taken: mailbox name not allowed (e.g., mailbox syntax incorrect)
+#       554  Transaction failed (Or, in the case of a connection-opening response, "No SMTP service here")
 #       555  MAIL FROM/RCPT TO parameters not recognized or not implemented
 #
 sub find {
@@ -78,9 +68,8 @@ sub find {
     \b}x;
 
 
-    # Convert found IPv4 addresses to '***.***.***.***' to avoid that the
-    # following code detects an octet of the IPv4 adress as an SMTP reply
-    # code.
+    # Convert found IPv4 addresses to '***.***.***.***' to avoid that the following code detects an
+    # octet of the IPv4 adress as an SMTP reply code.
     $argv1 =~ s/$ip4re/***.***.***.***/g if $argv1 =~ $ip4re;
 
     if( $argv1 =~ /\b([45][0-7][0-9])\b/ || $argv1 =~ /\b(25[0-3])\b/ ) {
@@ -106,8 +95,7 @@ Sisimai::SMTP::Reply - SMTP reply code related class
 
 =head1 DESCRIPTION
 
-Sisimai::SMTP::Reply is utilities for getting SMTP reply code value from given
-error message text.
+Sisimai::SMTP::Reply is utilities for getting SMTP reply code value from given error message text.
 
 =head1 CLASS METHODS
 
@@ -125,7 +113,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

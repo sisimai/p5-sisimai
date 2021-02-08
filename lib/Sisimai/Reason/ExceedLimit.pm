@@ -58,12 +58,11 @@ Sisimai::Reason::ExceedLimit - Bounce reason is C<exceedlimit> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::ExceedLimit checks the bounce reason is C<exceedlimit> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::ExceedLimit checks the bounce reason is C<exceedlimit> or not. This class is called
+only Sisimai::Reason class.
 
-This is the error that a message was rejected due to an email exceeded the
-limit. The value of D.S.N. is 5.2.3. This reason is almost the same as
-C<MesgTooBig>, we think.
+This is the error that a message was rejected due to an email exceeded the limit. The value of D.S.N.
+is 5.2.3. This reason is almost the same as C<MesgTooBig>, we think.
 
     ... while talking to mx.example.org.:
     >>> MAIL From:<kijitora@example.co.jp> SIZE=16600348
@@ -86,8 +85,8 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<exceedlimit>. The argument must be
-Sisimai::Fact object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<exceedlimit>. The argument must be Sisimai::Fact object
+and this method is called only from Sisimai::Reason class.
 
 =head1 SEE ALSO
 
@@ -103,7 +102,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

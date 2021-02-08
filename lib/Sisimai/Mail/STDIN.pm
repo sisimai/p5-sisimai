@@ -94,8 +94,8 @@ C<size()> returns the data size which has been read
 
 =head2 C<B<offset()>>
 
-C<offset()> returns offset position for seeking the mbox. The value of "offset"
-is bytes which have already read.
+C<offset()> returns offset position for seeking the mbox. The value of "offset" is bytes which have
+already read.
 
     print $mailbox->offset;   # 0
 
@@ -120,7 +120,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
