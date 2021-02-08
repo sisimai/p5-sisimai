@@ -10,11 +10,19 @@ v5.0.0
 - version: ""
 - changes:
   - **INCOMPATIBLE CHANGES SINCE SISIMAI VERSION 4**
-    - Callback feature #399
+    - `Sisimai->make` marked as obsoleted, use `Sisimai->rise` instead
+    - `Sisimai::Data` and `Sisimai::Fact`
+      - #419, #420 `Sisimai::Data` class has been renamed to `Sisimai::Fact`
+      - #402 `Sisimai::Data->softboucne` marked as obsoleted and will be removed
+        at v5.1.0, use `Sisimai::Fact->hardbounce` instead
+    - #401 `Sisimai::Message`
+      - `Sisimai::Message` no longer create a object
+      - `Sisimai::Message->make` has been renamed to `Sisimai::Message->rise`
+    - #399 Callback feature
       - Parameter `hook` for callback has been removed from `Sisimai->make` and
         `Sisimai->dump`. Use the first element of `c___` parameter for setting
         a callback method instead.
-      - Parameter `c___` is a parameter of `Sisimai->make` and `Sisimai->dump`,
+      - Parameter `c___` is a parameter of `Sisimai->rise` and `Sisimai->dump`,
         is an array reference and have two elements:
       - The first element of `c___` is the same with `hook` parameter, is for a
         callback method email headers and entire message body
