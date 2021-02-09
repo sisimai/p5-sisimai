@@ -5,7 +5,7 @@ use warnings;
 
 # http://tools.ietf.org/html/rfc3834
 sub description { 'Detector for auto replied message' }
-sub make {
+sub inquire {
     # Detect auto reply message as RFC3834
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
@@ -166,9 +166,9 @@ C<description()> returns description string of this module.
 
     print Sisimai::RFC3834->description;
 
-=head2 C<B<make(I<header data>, I<reference to body string>)>>
+=head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses an auto replied message and return results as an array reference. See
+C<inquire()> method parses an auto replied message and return results as an array reference. See
 Sisimai::Message for more details.
 
 =head1 AUTHOR

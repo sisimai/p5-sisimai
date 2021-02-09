@@ -5,7 +5,7 @@ use Sisimai::Lhost;
 
 my $Package = 'Sisimai::Lhost';
 my $Methods = {
-    'class'  => [ 'description', 'make', 'index', 'path', 'DELIVERYSTATUS', 'INDICATORS' ],
+    'class'  => [ 'description', 'inquire', 'index', 'path', 'DELIVERYSTATUS', 'INDICATORS' ],
     'object' => [],
 };
 
@@ -14,7 +14,7 @@ can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
     is $Package->description, '', '->description';
-    is $Package->make, undef, '->make';
+    is $Package->inquire,  undef, '->inquire';
 
     isa_ok $Package->index, 'ARRAY';
     ok scalar @{ $Package->index };

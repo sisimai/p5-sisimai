@@ -64,7 +64,7 @@ sub path {
     return $table;
 }
 
-sub make {
+sub inquire {
     # Method of a parent class to parse a bounce message of each MTA
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email

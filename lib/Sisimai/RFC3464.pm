@@ -6,7 +6,7 @@ use Sisimai::Lhost;
 
 # http://tools.ietf.org/html/rfc3464
 sub description { 'Fallback Module for MTAs' };
-sub make {
+sub inquire {
     # Detect an error for RFC3464
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
@@ -419,7 +419,7 @@ sub make {
     return undef unless $recipients;
 
     require Sisimai::MDA;
-    my $mdabounced = Sisimai::MDA->make($mhead, $mbody);
+    my $mdabounced = Sisimai::MDA->inquire($mhead, $mbody);
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{ $_ } ||= $connheader->{ $_ } || '' for keys %$connheader;
@@ -436,7 +436,7 @@ sub make {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         if( $mdabounced ) {
-            # Make bounce data by the values returned from Sisimai::MDA->make()
+            # Make bounce data by the values returned from Sisimai::MDA->inquire()
             $e->{'agent'}     = $mdabounced->{'mda'} || 'RFC3464';
             $e->{'reason'}    = $mdabounced->{'reason'} || 'undefined';
             $e->{'diagnosis'} = $mdabounced->{'message'} if $mdabounced->{'message'};
@@ -474,9 +474,9 @@ C<description()> returns description string of this module.
 
     print Sisimai::RFC3464->description;
 
-=head2 C<B<make(I<header data>, I<reference to body string>)>>
+=head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
 for more details.
 
 =head1 AUTHOR

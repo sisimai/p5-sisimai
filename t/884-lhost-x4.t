@@ -5,7 +5,7 @@ use lib qw(./lib ./blib/lib);
 require './t/600-lhost-code';
 
 my $enginename = 'X4';
-my $enginetest = Sisimai::Lhost::Code->maketest;
+my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
     '01' => [['5.0.922', '',    'mailboxfull',     0]],

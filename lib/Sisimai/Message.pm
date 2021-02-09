@@ -278,7 +278,7 @@ sub parse {
         USER_DEFINED: for my $r ( @$ToBeLoaded ) {
             # Call user defined MTA modules
             next if exists $haveloaded->{ $r };
-            $parseddata = $r->make($mailheader, $bodystring);
+            $parseddata = $r->inquire($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;
             last(PARSER) if $parseddata;
@@ -288,7 +288,7 @@ sub parse {
             # Try MTA module candidates
             next if exists $haveloaded->{ $r };
             require $lhosttable->{ $r };
-            $parseddata = $r->make($mailheader, $bodystring);
+            $parseddata = $r->inquire($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;
             last(PARSER) if $parseddata;
@@ -297,7 +297,7 @@ sub parse {
         unless( $haveloaded->{'Sisimai::RFC3464'} ) {
             # When the all of Sisimai::Lhost::* modules did not return bounce data, call Sisimai::RFC3464;
             require Sisimai::RFC3464;
-            $parseddata = Sisimai::RFC3464->make($mailheader, $bodystring);
+            $parseddata = Sisimai::RFC3464->inquire($mailheader, $bodystring);
             $modulename = 'RFC3464';
             last(PARSER) if $parseddata;
         }
@@ -305,14 +305,14 @@ sub parse {
         unless( $haveloaded->{'Sisimai::ARF'} ) {
             # Feedback Loop message
             require Sisimai::ARF;
-            $parseddata = Sisimai::ARF->make($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
+            $parseddata = Sisimai::ARF->inquire($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
             last(PARSER) if $parseddata;
         }
 
         unless( $haveloaded->{'Sisimai::RFC3834'} ) {
             # Try to parse the message as auto reply message defined in RFC3834
             require Sisimai::RFC3834;
-            $parseddata = Sisimai::RFC3834->make($mailheader, $bodystring);
+            $parseddata = Sisimai::RFC3834->inquire($mailheader, $bodystring);
             $modulename = 'RFC3834';
             last(PARSER) if $parseddata;
         }

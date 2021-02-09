@@ -6,7 +6,7 @@ require './t/600-lhost-code';
 
 my $enginename = 'FML';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
-my $enginetest = Sisimai::Lhost::Code->maketest;
+my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
     '01001' => [['5.0.930', '',    'systemerror',     0]],
