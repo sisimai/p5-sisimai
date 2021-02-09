@@ -4,7 +4,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.30-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.10-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.0.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README(English)**](README.md)
 - [シシマイ? | What is Sisimai](#what-is-sisimai)
@@ -102,26 +102,26 @@ Usage
 ===================================================================================================
 Basic usage
 ---------------------------------------------------------------------------------------------------
-下記のようにSisimaiの`make()`メソッドをmboxかMaildir/のPATHを引数にして実行すると解析結果が配列
+下記のようにSisimaiの`rise()`メソッドをmboxかMaildir/のPATHを引数にして実行すると解析結果が配列
 リファレンスで返ってきます。v4.25.6から元データとなった電子メールファイルへのPATHを保持する`origin`
 が利用できます。
 
 ```perl
 #! /usr/bin/env perl
 use Sisimai;
-my $v = Sisimai->make('/path/to/mbox'); # or path to Maildir/
+my $v = Sisimai->rise('/path/to/mbox'); # or path to Maildir/
 
-# Beginning with v4.23.0, both make() and dump() method of Sisimai class can
-# read bounce messages from variable instead of a path to mailbox
+# Beginning with v4.23.0, both rise() and dump() method of Sisimai class can read bounce messages
+# from variable instead of a path to mailbox
 use IO::File;
 my $r = '';
 my $f = IO::File->new('/path/to/mbox'); # or path to Maildir/
 { local $/ = undef; $r = <$f>; $f->close }
-my $v = Sisimai->make(\$r);
+my $v = Sisimai->rise(\$r);
 
-# If you want to get bounce records which reason is "delivered", set "delivered"
-# option to make() method like the following:
-my $v = Sisimai->make('/path/to/mbox', 'delivered' => 1);
+# If you want to get bounce records which reason is "delivered", set "delivered" option to rise()
+# method like the following:
+my $v = Sisimai->rise('/path/to/mbox', 'delivered' => 1);
 
 if( defined $v ) {
     for my $e ( @$v ) {
@@ -136,6 +136,7 @@ if( defined $v ) {
         print $e->replycode;            # 550
         print $e->reason;               # userunknown
         print $e->origin;               # /var/spool/bounce/new/1740074341.eml
+        print $e->hardbounce;           # 0
 
         my $h = $e->damn();             # Convert to HASH reference
         my $j = $e->dump('json');       # Convert to JSON string
@@ -161,7 +162,7 @@ my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
 
 Callback feature
 ---------------------------------------------------------------------------------------------------
-`Sisimai->make`と`Sisimai->dump`の`c___`引数はコールバック機能で呼び出されるコードリファンレンスを
+`Sisimai->rise`と`Sisimai->dump`の`c___`引数はコールバック機能で呼び出されるコードリファンレンスを
 保持する配列リファレンスです。`c___`の1番目の要素には`Sisimai::Message->parse`で呼び出されるコード
 リファレンスでメールヘッダと本文に対して行う処理を、2番目の要素には、解析対象のメールファイルに対して
 行う処理をそれぞれ入れます。
@@ -188,7 +189,7 @@ my $code = sub {
     $adds->{'x-mailer'} = $head->{'x-mailer'} || '';
     return $adds;
 };
-my $data = Sisimai->make('/path/to/mbox', 'c___' => [$code, undef]);
+my $data = Sisimai->rise('/path/to/mbox', 'c___' => [$code, undef]);
 my $json = Sisimai->dump('/path/to/mbox', 'c___' => [$code, undef]);
 
 print $data->[0]->catch->{'x-mailer'};    # "Apple Mail (2.1283)"
@@ -196,7 +197,7 @@ print $data->[0]->catch->{'queue-id'};    # "43f4KX6WR7z1xcMG"
 ```
 
 ### 各メールのファイルに対して
-`Sisimai->make()`と`Sisimai->dump()`の両メソッドに渡せる引数`c___`(配列リファレンス)の2番目に入れた
+`Sisimai->rise()`と`Sisimai->dump()`の両メソッドに渡せる引数`c___`(配列リファレンス)の2番目に入れた
 コードリファレンスは解析したメールのファイルごとに呼び出されます。
 
 ```perl
@@ -233,7 +234,7 @@ my $code = sub {
     # Need to not return a value
 };
 
-my $list = Sisimai->make($path, 'c___' => [undef, $code]);
+my $list = Sisimai->rise($path, 'c___' => [undef, $code]);
 print $list->[0]->{'catch'}->{'size'};          # 2202
 print $list->[0]->{'catch'}->{'kind'};          # "Maildir"
 print $list->[0]->{'catch'}->{'return-path'};   # "<MAILER-DAEMON>"
@@ -255,7 +256,7 @@ Output example
 ![](https://libsisimai.org/static/images/demo/sisimai-dump-02.gif)
 
 ```json
-[{"listid": "","senderdomain": "example.com","replycode": "550","origin": "set-of-emails/maildir/bsd/lhost-office365-13.eml","smtpagent": "Office365","smtpcommand": "","timestamp": 1493541285,"diagnostictype": "SMTP","action": "failed","feedbacktype": "","lhost": "omls-1.kuins.neko.example.jp","timezoneoffset": "+0000","recipient": "kijitora-nyaan@neko.kyoto.example.jp","token": "3ea52cc68fa4ce73b0489a01e33f53477968252f","destination": "neko.kyoto.example.jp","addresser": "neko@example.com","diagnosticcode": "Error Details Reported error: 550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipient not found by SMTP address lookup DSN generated by: NEKONYAAN0022.apcprd01.prod.exchangelabs.com","softbounce": 0,"catch": {"x-mailer": "","sender": "","queue-id": ""},"messageid": "","deliverystatus": "5.1.10","rhost": "nekonyaan0022.apcprd01.prod.exchangelabs.com","subject": "にゃーん","alias": "","reason": "userunknown"}]
+[{"listid": "","senderdomain": "example.com","replycode": "550","origin": "set-of-emails/maildir/bsd/lhost-office365-13.eml","smtpagent": "Office365","smtpcommand": "","timestamp": 1493541285,"diagnostictype": "SMTP","action": "failed","feedbacktype": "","lhost": "omls-1.kuins.neko.example.jp","timezoneoffset": "+0000","recipient": "kijitora-nyaan@neko.kyoto.example.jp","token": "3ea52cc68fa4ce73b0489a01e33f53477968252f","destination": "neko.kyoto.example.jp","addresser": "neko@example.com","diagnosticcode": "Error Details Reported error: 550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipient not found by SMTP address lookup DSN generated by: NEKONYAAN0022.apcprd01.prod.exchangelabs.com","hardbounce": 1,"catch": {"x-mailer": "","sender": "","queue-id": ""},"messageid": "","deliverystatus": "5.1.10","rhost": "nekonyaan0022.apcprd01.prod.exchangelabs.com","subject": "にゃーん","alias": "","reason": "userunknown"}]
 ```
 
 Sisimai Specification
@@ -284,7 +285,7 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 | cpan, cpanm, cpmコマンドでのインストール       | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
 | LOC:ソースコードの行数                         | 18200行       | 10500行     |
-| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 265000件    |
+| テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 311000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
 
@@ -341,7 +342,7 @@ Author
 
 Copyright
 ===================================================================================================
-Copyright (C) 2014-2020 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All Rights Reserved.
 
 License
 ===================================================================================================
