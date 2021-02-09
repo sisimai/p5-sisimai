@@ -351,7 +351,7 @@ C<version> method returns the version number of Sisimai.
 
 =item L<Sisimai::Fact> - Parsed data object
 
-=item L<https://libsisimai.org/> - Sisimai — A successor to bounceHammer, Library to parse error mails
+=item L<https://libsisimai.org/> - Sisimai — Mail Analyzing Interface Library
 
 =item L<https://tools.ietf.org/html/rfc3463> - RFC3463: Enhanced Mail System Status Codes
 
@@ -369,7 +369,7 @@ L<https://github.com/sisimai/p5-sisimai> - Sisimai on GitHub
 
 =head1 WEB SITE
 
-L<https://libsisimai.org/> - A successor to bounceHammer, Library to parse error mails.
+L<https://libsisimai.org/> - Mail Analyzing Interface Library
 
 L<https://github.com/sisimai/rb-sisimai> - Ruby version of Sisimai
 
