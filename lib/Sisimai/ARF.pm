@@ -35,7 +35,7 @@ sub is_arf {
     return $match;
 }
 
-sub make {
+sub inquire {
     # Detect an error for Feedback Loop
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
@@ -324,7 +324,7 @@ Sisimai::ARF - Parser class for detecting ARF: Abuse Feedback Reporting Format.
 Do not use this class directly, use Sisimai::ARF.
 
     use Sisimai::ARF;
-    my $v = Sisimai::ARF->make($header, $body);
+    my $v = Sisimai::ARF->inquire($header, $body);
 
 =head1 DESCRIPTION
 

@@ -191,8 +191,7 @@ Sisimai::Reason::Blocked checks the bounce reason is "blocked" or not. This clas
 Sisimai::Reason class.
 
 This is the error that SMTP connection was rejected due to a client IP address or a hostname, or
-the parameter of "HELO/EHLO" command. This reason has added in Sisimai 4.0.0 and does not exist in
-any version of bounceHammer.
+the parameter of "HELO/EHLO" command. This reason has added in Sisimai 4.0.0.
 
     <kijitora@example.net>:
     Connected to 192.0.2.112 but my name was rejected.

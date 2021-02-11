@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub make {
+sub inquire {
     # Parse message body and return reason and text
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
@@ -152,7 +152,7 @@ Sisimai::MDA - Error message parser for MDA
     use Sisimai::MDA;
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
-    my $return = Sisimai::MDA->make($header, \$string);
+    my $return = Sisimai::MDA->inquire($header, \$string);
 
 =head1 DESCRIPTION
 
@@ -161,13 +161,13 @@ C<procmail>, and so on. This class is called from Sisimai::Message only.
 
 =head1 CLASS METHODS
 
-=head2 C<B<make(I<Header>, I<Reference to message body>)>>
+=head2 C<B<inquire(I<Header>, I<Reference to message body>)>>
 
-C<make()> is a parser for detecting an error from mail delivery agent.
+C<inquire()> is a parser for detecting an error from mail delivery agent.
 
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
-    my $return = Sisimai::MDA->make($header, \$string);
+    my $return = Sisimai::MDA->inquire($header, \$string);
     warn Dumper $return;
     $VAR1 = {
         'mda' => 'mail.local',

@@ -70,10 +70,8 @@ Sisimai::Reason::NoRelaying - Bounce reason is C<norelaying> or not.
 =head1 DESCRIPTION
 
 Sisimai::Reason::NoRelaying checks the bounce reason is C<norelaying> or not. This class is called
-only Sisimai::Reason class.
-
-This is the error that SMTP connection rejected with error message C<Relaying Denied>. This reason
-does not exist in any version of bounceHammer.
+only Sisimai::Reason class. This is the error that SMTP connection rejected with error message
+C<Relaying Denied>.
 
     ... while talking to mailin-01.mx.example.com.:
     >>> RCPT To:<kijitora@example.org>

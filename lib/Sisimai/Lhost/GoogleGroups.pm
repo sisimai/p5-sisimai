@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 sub description { 'Google Groups: https://groups.google.com' }
-sub make {
+sub inquire {
     # Detect an error from Google Groups
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
@@ -105,9 +105,9 @@ C<description()> returns description string of this module.
 
     print Sisimai::Lhost::GoogleGroups->description;
 
-=head2 C<B<make(I<header data>, I<reference to body string>)>>
+=head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
 for more details.
 
 =head1 AUTHOR

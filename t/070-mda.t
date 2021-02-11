@@ -4,7 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::MDA;
 
 my $Package = 'Sisimai::MDA';
-my $Methods = { 'class'  => ['make'], 'object' => [] };
+my $Methods = { 'class'  => ['inquire'], 'object' => [] };
 
 use_ok $Package;
 can_ok $Package, @{ $Methods->{'class'} };
@@ -32,7 +32,7 @@ MAKETEST: {
         $headers->{'from'} = $message->{'from'};
 
         for my $e ( @$ErrorMesgs ) {
-            my $v = Sisimai::MDA->make($headers, \$e);
+            my $v = Sisimai::MDA->inquire($headers, \$e);
 
             isa_ok $v, 'HASH';
             ok $v->{'mda'}, 'mda => '.$v->{'mda'};

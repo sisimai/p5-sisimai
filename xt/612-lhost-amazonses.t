@@ -6,7 +6,7 @@ require './t/600-lhost-code';
 
 my $enginename = 'AmazonSES';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
-my $enginetest = Sisimai::Lhost::Code->maketest;
+my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
     '01001' => [['5.2.2',   '550', 'mailboxfull',     0]],

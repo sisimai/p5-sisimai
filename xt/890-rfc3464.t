@@ -6,7 +6,7 @@ require './t/600-lhost-code';
 
 my $enginename = 'RFC3464';
 my $samplepath = sprintf("./set-of-emails/private/%s", lc $enginename);
-my $enginetest = Sisimai::Lhost::Code->maketest;
+my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
     '01001' => [['5.0.947', '',    'expired',         0]],
