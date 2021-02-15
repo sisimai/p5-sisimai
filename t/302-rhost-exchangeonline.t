@@ -25,7 +25,7 @@ MAKE_TEST: {
     use Sisimai::Message;
 
     PARSE_EACH_MAIL: for my $n ( keys %$rs ) {
-        my $emailfn = sprintf("./set-of-emails/maildir/bsd/rhost-exchange-online-%02d.eml", $n);
+        my $emailfn = sprintf("./set-of-emails/maildir/bsd/rhost-exchangeonline-%02d.eml", $n);
         my $mailbox = Sisimai::Mail->new($emailfn);
         my $mtahost = qr/[.].+[.](?:prod|protection)[.]outlook[.]com/;
         next unless defined $mailbox;
