@@ -22,7 +22,7 @@ sub make {
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $startingof = {
-        'message' => ['This is a MIME encoded message'],
+        'message' => ['Unable to deliver message to:'],
         'error'   => ['Delivery failed for the following reason:'],
     };
 
@@ -38,7 +38,6 @@ sub make {
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
-            next;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
@@ -123,7 +122,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
