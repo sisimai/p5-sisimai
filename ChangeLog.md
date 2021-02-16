@@ -12,7 +12,7 @@ v4.25.10p1
   - Import some commits from Sisimai version 5 preview #422
     - Improved code for getting an email address in `Sisimai::Address`
     - Improved code for checking the day of month value, for converting a full
-      month name and a full day of week at `Sisimai::DateTime`
+      month name and a full day of the week at `Sisimai::DateTime`
     - Improvement code for picking text blocks of message/rfc822 part in RFC5322
 
 v4.25.10
