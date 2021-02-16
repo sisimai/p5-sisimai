@@ -190,11 +190,14 @@ sub fillet {
 
     my ($a, $b) = split($regex, $$mbody, 2); $b ||= '';
     if( length $b ) {
-        # Remove blank lines, the message body of the original message,
-        # and append "\n" at the end of the original message headers
-        $b  =~ s/\A[\r\n\s]+//m;   # Remove leading blank lines
-        $b  =~ s/\n\n.+\z//ms;     # Remove text after the first blank line
-        $b  .= "\n" unless $b =~ /\n\z/;
+        # Remove blank lines, the message body of the original message, and
+        # append "\n" at the end of the original message headers
+        # 1. Remove leading blank lines
+        # 2. Remove text after the first blank line: \n\n
+        # 3. Append "\n" at the end of test block when the last character is not "\n"
+        $b =~ s/\A[\r\n\s]+//m;
+        substr($b, index($b, "\n\n") + 1, length($b), '') if index($b, "\n\n") > 0;
+        $b .= "\n" unless $b =~ /\n\z/;
     }
     return [$a, $b];
 }
@@ -288,7 +291,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
