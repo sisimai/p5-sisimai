@@ -261,9 +261,10 @@ sub parse {
 
     for my $p ( @timetokens ) {
         # Parse each piece of time
-        if( $p =~ /\A[A-Z][a-z]{2}[,]?\z/ ) {
+        if( $p =~ /\A[A-Z][a-z]{2,}[,]?\z/ ) {
             # Day of week or Day of week; Thu, Apr, ...
-            chop $p if length($p) == 4; # Thu, -> Thu
+            $p =~ s/,\z//g if substr($p, -1, 1) eq ','; # "Thu," => "Thu"
+            $p =  substr($p, 0, 3) if length $p > 3;
 
             if( grep { $p eq $_ } @{ DayOfWeek->{'abbr'} } ) {
                 # Day of week; Mon, Thu, Sun,...
@@ -275,6 +276,7 @@ sub parse {
             }
         } elsif( $p =~ /\A\d{1,4}\z/ ) {
             # Year or Day; 2005, 31, 04,  1, ...
+            $p = int $p;
             if( $p > 31 ) {
                 # The piece is the value of an year
                 $v->{'Y'} = $p;
@@ -520,7 +522,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

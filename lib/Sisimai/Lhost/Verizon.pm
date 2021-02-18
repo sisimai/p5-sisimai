@@ -50,9 +50,8 @@ sub make {
             'userunknown' => ['550 - Requested action not taken: no such user here'],
         };
 
-        if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
+        if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1) ) {
             # Convert to regular expression
-            $boundary00 = '--'.$boundary00.'--';
             $rebackbone = qr/^\Q$boundary00\E/m;
         }
 
@@ -103,9 +102,8 @@ sub make {
         $startingof = { 'message' => ['Message could not be delivered to mobile'] };
         $messagesof = { 'userunknown' => ['No valid recipients for this MM'] };
 
-        if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}) ) {
+        if( my $boundary00 = Sisimai::MIME->boundary($mhead->{'content-type'}, 1) ) {
             # Convert to regular expression
-            $boundary00 = '--'.$boundary00.'--';
             $rebackbone = qr/^\Q$boundary00\E/m;
         }
 
@@ -209,7 +207,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

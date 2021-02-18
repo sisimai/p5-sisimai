@@ -67,11 +67,14 @@ sub make {
     return undef unless exists $argvs->{'address'};
     return undef unless $argvs->{'address'};
 
+    my $heads = ['<'];
+    my $tails = ['>', ',', '.', ';'];
+
     if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
         $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
         # Get the local part and the domain part from the email address
-        my $lpart = $1;
-        my $dpart = $2;
+        my $lpart = $1; for my $e ( @$heads ) { $lpart =~ s/\A$e//g if substr($lpart, 0,  1) eq $e }
+        my $dpart = $2; for my $e ( @$tails ) { $dpart =~ s/$e\z//g if substr($dpart, -1, 1) eq $e }
         my $email = __PACKAGE__->expand_verp($argvs->{'address'}) || '';
         my $alias = 0;
 
@@ -331,7 +334,7 @@ sub find {
         # Remove angle brackets, other brackets, and quotations: []<>{}'`
         # except a domain part is an IP address like neko@[192.0.2.222]
         $e->{'address'} =~ s/\A[\[<{('`]//;
-        $e->{'address'} =~ s/['`>})]\z//;
+        $e->{'address'} =~ s/[.'`>});]\z//;
         $e->{'address'} =~ s/\]\z// unless $e->{'address'} =~ /[@]\[[0-9A-Za-z:\.]+\]\z/;
 
         unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
@@ -554,7 +557,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

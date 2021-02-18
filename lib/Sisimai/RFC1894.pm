@@ -71,8 +71,10 @@ sub field {
     # @since v4.25.0
     my $class = shift;
     my $argv0 = shift || return undef;
-    my $match = [];
 
+    state $correction = {
+        'action' => { 'deliverable' => 'delivered', 'expired' => 'delayed', 'failure' => 'failed' },
+    };
     state $fieldgroup = {
         'original-recipient'    => 'addr',
         'final-recipient'       => 'addr',
@@ -91,50 +93,52 @@ sub field {
         'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*(.+)/,
         'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
         'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
-        'host' => qr/\A((?:Reporting|Received-From|Remote)-MTA):[ ]*(.+?);[ ]*(.+)/,
-        'list' => qr/\A(Action):[ ]*(failed|delayed|delivered|relayed|expanded|expired|failure)/i,
+        'host' => qr/\A((?:Received-From|Remote|Reporting)-MTA):[ ]*(.+?);[ ]*(.+)/,
+        'list' => qr/\A(Action):[ ]*(delayed|deliverable|delivered|expanded|expired|failed|failure|relayed)/i,
         'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
         'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
-       #'text' => qr/\A(Original-Envelope-Id|Final-Log-ID):[ ]*(.+)/,
+       #'text' => qr/\A(Final-Log-ID|Original-Envelope-Id):[ ]*(.+)/,
     };
-    state $correction = { 'action' => { 'failure' => 'failed', 'expired' => 'delayed' } };
 
     my $group = $fieldgroup->{ lc((split(':', $argv0, 2))[0]) } || return undef;
     return undef unless exists $captureson->{ $group };
 
+    my $table = ['', '', '', ''];
+    my $match = 0;
     while( $argv0 =~ $captureson->{ $group } ) {
         # Try to match with each pattern of Per-Message field, Per-Recipient field
         # - 0: Field-Name
         # - 1: Sub Type: RFC822, DNS, X-Unix, and so on)
         # - 2: Value
         # - 3: Field Group(addr, code, date, host, stat, text)
-        $match->[0] = lc $1;
-        $match->[3] = $group;
+        $match = 1;
+        $table->[0] = lc $1;
+        $table->[3] = $group;
 
         if( $group eq 'addr' || $group eq 'code' || $group eq 'host' ) {
             # - Final-Recipient: RFC822; kijitora@nyaan.jp
             # - Diagnostic-Code: SMTP; 550 5.1.1 <kijitora@example.jp>... User Unknown
             # - Remote-MTA: DNS; mx.example.jp
-            $match->[1] = uc $2;
-            $match->[2] = $group eq 'host' ? lc $3 : $3;
-            $match->[2] = '' if $match->[2] =~ /\A\s+\z/;   # Remote-MTA: dns;
+            $table->[1] = uc $2;
+            $table->[2] = $group eq 'host' ? lc $3 : $3;
+            $table->[2] = '' if $table->[2] =~ /\A\s+\z/;   # Remote-MTA: dns;
 
         } else {
             # - Action: failed
             # - Status: 5.2.2
-            $match->[1] = '';
-            $match->[2] = $group eq 'date' ? $2 : lc $2;
+            $table->[1] = '';
+            $table->[2] = $group eq 'date' ? $2 : lc $2;
 
             # Correct invalid value in Action field:
             last unless $group eq 'list';
-            last unless exists $correction->{'action'}->{ $match->[2] };
-            $match->[2] = $correction->{'action'}->{ $match->[2] };
+            last unless exists $correction->{'action'}->{ $table->[2] };
+            $table->[2] = $correction->{'action'}->{ $table->[2] };
         }
         last;
     }
 
-    return undef unless scalar @$match;
-    return $match;
+    return undef unless $match;
+    return $table;
 }
 
 1;
@@ -189,7 +193,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

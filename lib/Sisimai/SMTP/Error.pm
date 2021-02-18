@@ -16,40 +16,40 @@ sub is_permanent {
     my $argv1 = shift || return undef;
 
     my $statuscode = Sisimai::SMTP::Status->find($argv1) || Sisimai::SMTP::Reply->find($argv1) || '';
-    my $getchecked = undef;
+    my $parmanent1 = undef;
 
     if( (my $classvalue = int(substr($statuscode, 0, 1) || 0)) > 0 ) {
         # 2, 4, or 5
         if( $classvalue == 5 ) {
             # Permanent error
-            $getchecked = 1;
+            $parmanent1 = 1;
 
         } elsif( $classvalue == 4 ) {
             # Temporary error
-            $getchecked = 0;
+            $parmanent1 = 0;
 
         } elsif( $classvalue == 2 ) {
             # Succeeded
-            $getchecked = undef;
+            $parmanent1 = undef;
         }
     } else {
         # Check with regular expression
         my $v = lc $argv1;
         if( rindex($v, 'temporar') > -1 || rindex($v, 'persistent') > -1 ) {
             # Temporary failure
-            $getchecked = 0;
+            $parmanent1 = 0;
 
         } elsif( rindex($v, 'permanent') > -1 ) {
             # Permanently failure
-            $getchecked = 1;
+            $parmanent1 = 1;
 
         } else {
             # did not find information to decide that it is a soft bounce
             # or a hard bounce.
-            $getchecked = undef;
+            $parmanent1 = undef;
         }
     }
-    return $getchecked;
+    return $parmanent1;
 }
 
 sub soft_or_hard {
@@ -155,7 +155,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

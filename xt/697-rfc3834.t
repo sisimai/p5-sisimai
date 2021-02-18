@@ -8,6 +8,7 @@ my $enginename = 'RFC3834';
 my $samplepath = sprintf("./set-of-emails/private/%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
 my $isexpected = [
+    { 'n' => '01001', 'r' => qr/vacation/ },
     { 'n' => '01002', 'r' => qr/vacation/ },
     { 'n' => '01003', 'r' => qr/vacation/ },
     { 'n' => '01004', 'r' => qr/vacation/ },

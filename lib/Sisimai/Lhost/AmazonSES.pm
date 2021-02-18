@@ -179,7 +179,7 @@ sub make {
                 $v->{'status'}    = Sisimai::SMTP::Status->find($v->{'diagnosis'}) || '';
                 $v->{'replycode'} = Sisimai::SMTP::Reply->find($v->{'diagnosis'})  || '';
                 $v->{'reason'}    = 'delivered';
-                $v->{'action'}    = 'deliverable';
+                $v->{'action'}    = 'delivered';
                 ($v->{'date'} = $o->{'timestamp'} || $p->{'mail'}->{'timestamp'}) =~ s/[.]\d+Z\z//;
             }
         } else {
@@ -359,7 +359,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
