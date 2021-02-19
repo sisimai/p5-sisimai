@@ -16,6 +16,7 @@ sub match {
 
     state $index = [
         'an illegal attachment on your message',
+        'by non-member to a members-only list',
         'because the recipient is not accepting mail with ',    # AOL Phoenix
         'closed mailing list',
         'denied by policy',
