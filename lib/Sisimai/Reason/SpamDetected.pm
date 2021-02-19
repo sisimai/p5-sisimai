@@ -67,7 +67,7 @@ sub match {
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
             |[ ]by[ ][^ ]+[ ][(]spam[)]
-            |[ ]due[ ]to[ ]spam[ ](?:classification|content)
+            |[ ]due[ ]to[ ]spam[ ](?:url[ ]in[ ])?(?:classification|content)
             )
         |rejecting[ ]banned[ ]content
         |related[ ]to[ ]content[ ]with[ ]spam[-]like[ ]characteristics
