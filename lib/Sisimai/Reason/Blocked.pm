@@ -134,7 +134,8 @@ sub match {
         |unresolvable[ ]relay[ ]host[ ]name
         |veuillez[ ]essayer[ ]plus[ ]tard[.][ ]service[ ]refused,[ ]please[ ]try[ ]later[.][ ][0-9a-z_]+(?:103|510)
         |your[ ](?:
-             network[ ]is[ ]temporary[ ]blacklisted
+             email[ ]address[ ]has[ ]been[ ]blacklisted
+            |network[ ]is[ ]temporary[ ]blacklisted
             |sender's[ ]ip[ ]address[ ]is[ ]listed[ ]at[ ][^ ]+[.]abuseat[.]org
             |server[ ]requires[ ]confirmation
             )
