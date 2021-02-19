@@ -17,6 +17,7 @@ sub match {
     state $index = [
         'connection timed out',
         'could not find a gateway for',
+        'delivery attempts will continue to be',
         'delivery time expired',
         'failed to deliver to domain ',
         'giving up on',
