@@ -19,6 +19,7 @@ sub match {
         |access[ ]denied[.][ ]ip[ ]name[ ]lookup[ ]failed
         |access[ ]from[ ]ip[ ]address[ ][^ ]+[ ]blocked
         |all[ ]mail[ ]servers[ ]must[ ]have[ ]a[ ]ptr[ ]record[ ]with[ ]a[ ]valid[ ]reverse[ ]dns[ ]entry
+        |are[ ]being[ ]rejected[ ]due[ ]to[ ]a[ ]poor[ ]email[ ]reputation[ ]score
         |bad[ ](:?dns[ ]ptr[ ]resource[ ]record|sender[ ]ip[ ]address)
         |banned[ ]sending[ ]ip  # Office365
         |blacklisted[ ]by
