@@ -17,6 +17,7 @@ sub match {
     state $index = [
         'as a relay',
         'insecure mail relay',
+        'is not permitted to relay through this server without authentication',
         'mail server requires authentication when attempting to send to a non-local e-mail address',    # MailEnable
         'not allowed to relay through this machine',
         'not an open relay, so get lost',
