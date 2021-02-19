@@ -27,6 +27,7 @@ sub match {
         'header are not accepted',
         'header error',
         'local policy violation',
+        'message bounced due to organizational settings',
         'message given low priority',
         'message not accepted for policy reasons',
         'messages with multiple addresses',
