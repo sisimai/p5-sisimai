@@ -21,6 +21,7 @@ sub match {
         'delivery time expired',
         'failed to deliver to domain ',
         'giving up on',
+        'have been failing for a long time',
         'has been delayed',
         'it has not been collected after',
         'message expired after sitting in queue for',
