@@ -50,6 +50,7 @@ sub match {
             |not[ ](?:present|found)
             |unavailable
             )
+        |nessun[ ]utente[ ]simile[ ]in[ ]questo[ ]indirizzo
         |no[ ](?:
              [ ][^ ]+[ ]in[ ]name[ ]directory
             |account[ ]by[ ]that[ ]name[ ]here
