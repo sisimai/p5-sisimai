@@ -49,7 +49,10 @@ sub match {
                 |refer[ ]to[ ]the[ ]troubleshooting[ ]page[ ]at[ ]
                 )
             |looks[ ]like[ ]spam
-            |refused[ ]by[ ]mailmarshal[ ]spamprofiler
+            |refused[ ]by[ ](?:
+                 mailmarshal[ ]spamprofiler
+                |trustwave[ ]seg[ ]spamprofiler
+                )
             |rejected[ ](?:
                  as[ ]spam
                 |because[ ]of[ ]unacceptable[ ]content
