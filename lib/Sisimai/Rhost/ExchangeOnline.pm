@@ -35,6 +35,7 @@ sub get {
         '5.4.1'   => [{ 'reason' => 'rejected',    'string' => 'Recipient address rejected: Access denied' }],
         '5.4.11'  => [{ 'reason' => 'contenterror','string' => 'Agent generated message depth exceeded' }],
         '5.4.14'  => [{ 'reason' => 'networkerror','string' => 'Hop count exceeded' }],
+        '5.4.310' => [{ 'reason' => 'systemerror', 'string' => 'does not exist'}], # DNS domain * does not exist
         '5.5.2'   => [{ 'reason' => 'syntaxerror', 'string' => 'Send hello first' }],
         '5.5.3'   => [{ 'reason' => 'syntaxerror', 'string' => 'Too many recipients' }],
         '5.5.4'   => [{ 'reason' => 'filtered',    'string' => 'Invalid domain name' }],
