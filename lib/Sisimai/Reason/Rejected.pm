@@ -52,6 +52,7 @@ sub match {
         'returned mail not accepted here',
         'rfc 1035 violation: recursive cname records for',
         'rule imposed mailbox access for',  # MailMarshal
+        'sender address has been blacklisted',
         'sender email address rejected',
         'sender is spammer',
         'sender not pre-approved',
