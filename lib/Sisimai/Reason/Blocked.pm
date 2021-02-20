@@ -15,7 +15,8 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $regex = qr{(?>
-         [(][^ ]+[@][^ ]+:blocked[)]
+         [ ]said:[ ]550[ ]blocked
+        |[(][^ ]+[@][^ ]+:blocked[)]
         |access[ ]denied[.][ ]ip[ ]name[ ]lookup[ ]failed
         |access[ ]from[ ]ip[ ]address[ ][^ ]+[ ]blocked
         |all[ ]mail[ ]servers[ ]must[ ]have[ ]a[ ]ptr[ ]record[ ]with[ ]a[ ]valid[ ]reverse[ ]dns[ ]entry
