@@ -58,6 +58,7 @@ sub match {
         'sender verify failed', # Exim callout
         'syntax error: empty email address',
         'the message has been rejected by batv defense',
+        'this server does not accept mail from',
         'transaction failed unsigned dsn for',
         'unroutable sender address',
         'you are sending to/from an address that has been blacklisted',
