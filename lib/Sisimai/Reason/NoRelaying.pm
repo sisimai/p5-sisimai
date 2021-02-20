@@ -31,6 +31,7 @@ sub match {
         "that domain isn't in my list of allowed rcpthost",
         'this system is not configured to relay mail',
         'unable to relay for',
+        "we don't handle mail for",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
