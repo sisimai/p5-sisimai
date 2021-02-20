@@ -84,6 +84,7 @@ sub match {
         |mail[ ]server[ ]at[ ][^ ]+[ ]is[ ]blocked
         |mail[ ]from[ ]\d+[.]\d+[.]\d+[.]\d[ ]refused:
         |message[ ]from[ ][^ ]+[ ]rejected[ ]based[ ]on[ ]blacklist
+        |message[ ]was[ ]rejected[ ]for[ ]possible[ ]spam/virus[ ]content
         |messages[ ]from[ ][^ ]+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
         |no[ ](?:
              access[ ]from[ ]mail[ ]server
@@ -133,6 +134,7 @@ sub match {
         |temporarily[ ]deferred[ ]due[ ]to[ ]unexpected[ ]volume[ ]or[ ]user[ ]complaints
         |the[ ](?:email|domain|ip)[ ][^ ]+[ ]is[ ]blacklisted
         |this[ ]system[ ]will[ ]not[ ]accept[ ]messages[ ]from[ ]servers[/]devices[ ]with[ ]no[ ]reverse[ ]dns
+        |to[ ]submit[ ]messages[ ]to[ ]this[ ]e-mail[ ]system[ ]has[ ]been[ ]rejected
         |too[ ]many[ ](?:
              spams[ ]from[ ]your[ ]ip  # free.fr
             |unwanted[ ]messages[ ]have[ ]been[ ]sent[ ]from[ ]the[ ]following[ ]ip[ ]address[ ]above
@@ -153,10 +155,6 @@ sub match {
         |you[ ]are[ ](?:
              not[ ]allowed[ ]to[ ]connect
             |sending[ ]spam
-            )
-        |your[ ](?:
-             access[ ]to[ ]submit[ ]messages[ ]to[ ]this[ ]e-mail[ ]system[ ]has[ ]been[ ]rejected
-            |message[ ]was[ ]rejected[ ]for[ ]possible[ ]spam/virus[ ]content
             )
         )
     }x;
