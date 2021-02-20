@@ -22,6 +22,7 @@ sub match {
     state $index = [
         '<> invalid sender',
         'access denied (in reply to mail from command)',
+        'access denied (sender blacklisted)',
         'address rejected',
         'administrative prohibition',
         'batv failed to verify',    # SoniWall
