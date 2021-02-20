@@ -64,6 +64,7 @@ sub match {
         |go[ ]away
         |helo[ ]command[ ]rejected:
         |host[ ][^ ]+[ ]refused[ ]to[ ]talk[ ]to[ ]me:[ ]\d+[ ]blocked
+        |host[ ]network[ ]not[ ]allowed
         |hosts[ ]with[ ]dynamic[ ]ip
         |http://(?:
              spf[.]pobox[.]com/why[.]html
