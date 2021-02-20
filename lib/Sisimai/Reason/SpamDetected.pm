@@ -73,7 +73,7 @@ sub match {
             |[ ]by[ ][^ ]+[ ][(]spam[)]
             |[ ]due[ ]to[ ]spam[ ](?:url[ ]in[ ])?(?:classification|content)
             )
-        |rejecting[ ]banned[ ]content
+        |rejecting[ ](?:banned|mail)[ ]content
         |related[ ]to[ ]content[ ]with[ ]spam[-]like[ ]characteristics
         |rule[ ]imposed[ ]as[ ][^ ]+[ ]is[ ]blacklisted[ ]on
         |sender[ ]domain[ ]listed[ ]at[ ][^ ]+
