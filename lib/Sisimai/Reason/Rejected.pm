@@ -31,6 +31,7 @@ sub match {
         'bogus mail from',          # IMail - block empty sender
         'connections not accepted from servers without a valid sender domain',
         'denied [bouncedeny]',      # McAfee
+        'denied by secumail valid-address-filter',
         'delivery not authorized, message refused',
         'does not exist e2110',
         'domain of sender address ',
