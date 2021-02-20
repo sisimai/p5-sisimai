@@ -35,6 +35,7 @@ sub match {
         'protocol violation',
         'the email address used to send your message is not subscribed to this group',
         'this message was blocked because its content presents a potential',
+        'we do not accept messages containing images or other attachments',
         'you have exceeded the allowable number of posts without solving a captcha',
         'you have exceeded the the allowable number of posts without solving a captcha',
     ];
