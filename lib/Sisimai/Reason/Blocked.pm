@@ -74,7 +74,7 @@ sub match {
         |ip[/]domain[ ]reputation[ ]problems
         |ips[ ]with[ ]missing[ ]ptr[ ]records
         |is[ ](?:
-             in[ ]a[ ]black[ ]list[ ]at[ ][^ ]+[.]
+             in[ ]a[ ]black[ ]list(?:[ ]at[ ][^ ]+[.])?
             |in[ ]an[ ][^ ]+rbl[ ]on[ ][^ ]+
             |not[ ]allowed[ ]to[ ]send[ ](?:
                  mail[ ]from
