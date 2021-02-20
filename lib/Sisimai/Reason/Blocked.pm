@@ -59,6 +59,7 @@ sub match {
         |dnsbl:attrbl
         |dynamic/zombied/spam[ ]ips[ ]blocked
         |email[ ]blocked[ ]by[ ](?:[^ ]+[.]barracudacentral[.]org|spamhaus)
+        |error:[ ]no[ ]valid[ ]recipients[ ]from[ ]
         |esmtp[ ]not[ ]accepting[ ]connections  # icloud.com
         |fix[ ]reverse[ ]dns[ ]for[ ][^ ]+
         |go[ ]away
