@@ -110,7 +110,12 @@ sub get {
         'networkerror'  => ['SMTPSEND.DNS.MxLoopback'],
         'rejected'      => ['RESOLVER.RST.NotAuthorized'],
         'securityerror' => ['RESOLVER.RST.AuthRequired'],
-        'systemerror'   => ['RESOLVER.ADR.Ambiguous', 'RESOLVER.ADR.BadPrimary', 'RESOLVER.ADR.InvalidInSmtp'],
+        'systemerror'   => [
+            'RESOLVER.ADR.Ambiguous',
+            'RESOLVER.ADR.BadPrimary',
+            'RESOLVER.ADR.InvalidInSmtp',
+            'RESOLVER.FWD.NotFound',
+        ],
         'toomanyconn'   => ['RESOLVER.ADR.RecipLimit', 'RESOLVER.ADR.RecipientLimit'],
         'userunknown'   => [
             'RESOLVER.ADR.RecipNotFound',
