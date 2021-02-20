@@ -27,6 +27,7 @@ sub match {
         'relay denied',
         'relay not permitted',
         'relaying denied',  # Sendmail
+        'relaying mail to ',
         "that domain isn't in my list of allowed rcpthost",
         'this system is not configured to relay mail',
         'unable to relay for',
