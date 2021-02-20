@@ -270,6 +270,7 @@ my $isexpected = {
     '01252' => [['5.0.0',   '',    'onhold',          0]],
     '01253' => [['5.0.0',   '554', 'spamdetected',    0]],
     '01254' => [['5.0.0',   '554', 'blocked',         0]],
+    '01255' => [['5.4.6',   '554', 'systemerror',     0]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

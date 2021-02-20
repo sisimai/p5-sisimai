@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $index = [
+        'aliasing/forwarding loop broken',
         "can't create user output file",
         'could not load drd for domain',
         'internal error reading data',  # Microsoft
