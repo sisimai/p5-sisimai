@@ -32,6 +32,7 @@ sub match {
         |cyberoam[ ]anti[ ]spam[ ]engine[ ]has[ ]identified[ ]this[ ]email[ ]as[ ]a[ ]bulk[ ]email
         |denied[ ]due[ ]to[ ]spam[ ]list
         |greylisted.?.[ ]please[ ]try[ ]again[ ]in
+        |high[ ]probability[ ]of[ ]spam
         |https?://(?:www[.]spamhaus[.]org|dsbl[.]org|mail[.]163[.]com/help/help_spam_16[.]htm)
         |listed[ ]in[ ]work[.]drbl[.]imedia[.]ru
         |mail[ ](?:
