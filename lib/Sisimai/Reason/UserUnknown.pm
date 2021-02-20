@@ -128,6 +128,7 @@ sub match {
             |not[ ](?:active|exist|found|known)
             |unknown
             )
+        |utilisateur[ ]inconnu[ ]!
         |vdeliver:[ ]invalid[ ]or[ ]unknown[ ]virtual[ ]user
         |your[ ]envelope[ ]recipient[ ]is[ ]in[ ]my[ ]badrcptto[ ]list
         )
