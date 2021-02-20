@@ -33,7 +33,7 @@ sub match {
         |email[ ]address[ ](?:does[ ]not[ ]exist|could[ ]not[ ]be[ ]found)
         |invalid[ ](?:
              address
-            |mailbox:
+            |mailbox:?
             |mailbox[ ]path|recipient
             )
         |is[ ]not[ ](?:
