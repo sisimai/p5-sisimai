@@ -27,6 +27,7 @@ sub get {
         '5.2.2'   => [{ 'reason' => 'mailboxfull', 'string' => 'Mailbox full' }],
         '5.2.3'   => [{ 'reason' => 'exceedlimit', 'string' => 'Message too large' }],
         '5.2.4'   => [{ 'reason' => 'systemerror', 'string' => 'Mailing list expansion problem' }],
+        '5.2.14'  => [{ 'reason' => 'systemerror', 'string' => 'misconfigured forwarding address' }],
         '5.2.122' => [{ 'reason' => 'toomanyconn', 'string' => 'The recipient has exceeded their limit for' }],
         '5.3.3'   => [{ 'reason' => 'systemfull',  'string' => 'Unrecognized command' }],
         '5.3.4'   => [{ 'reason' => 'mesgtoobig',  'string' => 'Message too big for system' }],
