@@ -97,6 +97,7 @@ sub match {
             |use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]isp
             )
         |ptr[ ]record[ ]setup
+        |rejected[ ]because[ ]the[ ]sending[ ]mta[ ]or[ ]the[ ]sender[ ]has[ ]not[ ]passed[ ]validation
         |rejected[ ]due[ ]to[ ](?:
              a[ ]poor[ ]email[ ]reputation[ ]score
             |the[ ]sending[ ]mta's[ ]poor[ ]reputation
