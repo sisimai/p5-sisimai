@@ -28,6 +28,7 @@ sub match {
             )
         |blocked[ ]for[ ]abuse[.][ ]see[ ]http://att[.]net/blocks   # AT&T
         |bulk[ ]email
+        |considered[ ]unsolicited[ ]bulk[ ]e-mail[ ][(]spam[)][ ]by[ ]our[ ]mail[ ]filters
         |content[ ]filter[ ]rejection
         |cyberoam[ ]anti[ ]spam[ ]engine[ ]has[ ]identified[ ]this[ ]email[ ]as[ ]a[ ]bulk[ ]email
         |denied[ ]due[ ]to[ ]spam[ ]list

@@ -20,7 +20,6 @@ sub match {
         'sender ip address rejected',
     ];
     state $index = [
-        '<> invalid sender',
         'access denied (in reply to mail from command)',
         'access denied (sender blacklisted)',
         'address rejected',
@@ -42,6 +41,7 @@ sub match {
         'from: domain is invalid. please provide a valid from:',
         'fully qualified email address required',   # McAfee
         'invalid domain, see <url:',
+        'invalid sender',
         'is not a registered gateway user',
         'mail from not owned by user',
         'message rejected: email address is not verified',

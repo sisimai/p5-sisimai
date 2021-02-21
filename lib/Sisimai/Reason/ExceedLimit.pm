@@ -14,7 +14,10 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
 
-    state $index = ['message too large'];
+    state $index = [
+        'message header size exceeds limit',
+        'message too large',
+    ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }
