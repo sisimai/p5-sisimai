@@ -4,6 +4,19 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.11
+--------------------------------------------------------------------------------
+- release: "Mon, 22 Feb 2021 21:11:22 +0900 (JST)"
+- version: "4.25.11"
+- changes:
+  - Import some commits from Sisimai version 5 preview #422
+    - Improved code for getting an email address in `Sisimai::Address`
+    - Improved code for checking the day of month value, for converting a full
+      month name and a full day of the week at `Sisimai::DateTime`
+    - Improvement code for picking text blocks of message/rfc822 part in RFC5322
+    - Add 60+ error message patterns
+    - Improved code for encodings in `Sisimai::Lhost::Domino`, `Sisimai::String`
+
 v4.25.10
 --------------------------------------------------------------------------------
 - release: "Tue, 22 Dec 2020 13:22:22 +0900 (JST)"
