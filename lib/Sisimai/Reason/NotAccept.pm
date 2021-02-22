@@ -20,6 +20,7 @@ sub match {
         'host does not accept mail',        # Sendmail
         'name server: .: host not found',   # Sendmail
         'no mx record found for domain=',   # Oath(Yahoo!)
+        'no route for current request',
         'smtp protocol returned a permanent error',
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;

@@ -28,6 +28,7 @@ sub match {
         'recipient domain must exist',
         'the account or domain may not exist',
         'unknown host',
+        'unroutable address',
         'unrouteable address',
     ];
     state $regex = qr/553[ ][^ ]+[ ]does[ ]not[ ]exist/;
