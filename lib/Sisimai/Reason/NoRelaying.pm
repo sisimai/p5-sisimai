@@ -17,16 +17,21 @@ sub match {
     state $index = [
         'as a relay',
         'insecure mail relay',
+        'is not permitted to relay through this server without authentication',
         'mail server requires authentication when attempting to send to a non-local e-mail address',    # MailEnable
+        'not a gateway',
         'not allowed to relay through this machine',
         'not an open relay, so get lost',
+        'not local host',
         'relay access denied',
         'relay denied',
+        'relaying mail to ',
         'relay not permitted',
         'relaying denied',  # Sendmail
         "that domain isn't in my list of allowed rcpthost",
         'this system is not configured to relay mail',
         'unable to relay for',
+        "we don't handle mail for",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -104,7 +109,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

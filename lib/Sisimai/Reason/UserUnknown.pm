@@ -18,9 +18,11 @@ sub match {
          [#]5[.]1[.]1[ ]bad[ ]address
         |[<][^ ]+[>][ ]not[ ]found
         |[<][^ ]+[@][^ ]+[>][.][.][.][ ]blocked[ ]by[ ]
+        |550[ ]address[ ]invalid
         |5[.]1[.]0[ ]address[ ]rejected[.]
+        |account[ ][^ ]+[ ]does[ ]not[ ]exist[ ]at[ ]the[ ]organization
         |adresse[ ]d[ ]au[ ]moins[ ]un[ ]destinataire[ ]invalide[.][ ]invalid[ ]recipient[.][0-9a-z_]+41[68]
-        |address[ ](?:does[ ]not[ ]exist|unknown)
+        |address[ ](?:does[ ]not[ ]exist|not[ ]present[ ]in[ ]directory|unknown)
         |archived[ ]recipient
         |bad[-_ \t]recipient
         |can[']t[ ]accept[ ]user
@@ -32,7 +34,7 @@ sub match {
         |email[ ]address[ ](?:does[ ]not[ ]exist|could[ ]not[ ]be[ ]found)
         |invalid[ ](?:
              address
-            |mailbox:
+            |mailbox:?
             |mailbox[ ]path|recipient
             )
         |is[ ]not[ ](?:
@@ -49,6 +51,7 @@ sub match {
             |not[ ](?:present|found)
             |unavailable
             )
+        |nessun[ ]utente[ ]simile[ ]in[ ]questo[ ]indirizzo
         |no[ ](?:
              [ ][^ ]+[ ]in[ ]name[ ]directory
             |account[ ]by[ ]that[ ]name[ ]here
@@ -126,6 +129,7 @@ sub match {
             |not[ ](?:active|exist|found|known)
             |unknown
             )
+        |utilisateur[ ]inconnu[ ]!
         |vdeliver:[ ]invalid[ ]or[ ]unknown[ ]virtual[ ]user
         |your[ ]envelope[ ]recipient[ ]is[ ]in[ ]my[ ]badrcptto[ ]list
         )
@@ -239,7 +243,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

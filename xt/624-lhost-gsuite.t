@@ -17,6 +17,8 @@ my $isexpected = [
     { 'n' => '01007', 'r' => qr/rejected/    },
     { 'n' => '01008', 'r' => qr/networkerror/},
     { 'n' => '01009', 'r' => qr/userunknown/ },
+    { 'n' => '01010', 'r' => qr/policyviolation/ },
+    { 'n' => '01011', 'r' => qr/systemerror/ },
 ];
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

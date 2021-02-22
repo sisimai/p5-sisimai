@@ -28,6 +28,7 @@ sub match {
         'recipient domain must exist',
         'the account or domain may not exist',
         'unknown host',
+        'unroutable address',
         'unrouteable address',
     ];
     state $regex = qr/553[ ][^ ]+[ ]does[ ]not[ ]exist/;
@@ -117,7 +118,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
