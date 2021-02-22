@@ -5,7 +5,7 @@ use Sisimai::String;
 
 my $PackageName = 'Sisimai::String';
 my $MethodNames = {
-    'class'  => ['token', 'is_8bit', 'sweep', 'to_plain', 'to_utf8'],
+    'class'  => ['encodenames', 'token', 'is_8bit', 'sweep', 'to_plain', 'to_utf8'],
     'object' => [],
 };
 
