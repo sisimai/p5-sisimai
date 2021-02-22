@@ -3,6 +3,9 @@ use parent 'Sisimai::Lhost';
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
+use Encode;
+use Encode::Guess; Encode::Guess->add_suspects(@{ Sisimai::String->encodenames });
 
 sub description { 'IBM Domino Server' }
 sub make {
@@ -15,7 +18,7 @@ sub make {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    return undef unless index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
+    return undef unless $mhead->{'subject'} =~ /\ADELIVERY(?:[ ]|_)FAILURE:/;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
@@ -24,6 +27,7 @@ sub make {
         'userunknown' => [
             'not listed in Domino Directory',
             'not listed in public Name & Address Book',
+            "non répertorié dans l'annuaire Domino",
             'Domino ディレクトリには見つかりません',
         ],
         'filtered'    => ['Cannot route mail to user'],
@@ -117,6 +121,22 @@ sub make {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
+        # Check the utf8 flag and fix
+        UTF8FLAG: while(1) {
+            # Delete the utf8 flag because there are a string including some characters which have 
+            # utf8 flag but utf8::is_utf8 returns false
+            last unless length $e->{'diagnosis'};
+            last unless Sisimai::String->is_8bit(\$e->{'diagnosis'});
+
+            my $cv = $e->{'diagnosis'};
+            my $ce = Encode::Guess->guess($cv);
+            last unless ref $ce;
+
+            $cv = Encode::encode_utf8($cv);
+            $e->{'diagnosis'} = $cv;
+            last;
+        }
+
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
         $e->{'lhost'}   ||= $permessage->{'rhost'};

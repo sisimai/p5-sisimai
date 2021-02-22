@@ -28,10 +28,12 @@ sub match {
             )
         |blocked[ ]for[ ]abuse[.][ ]see[ ]http://att[.]net/blocks   # AT&T
         |bulk[ ]email
+        |considered[ ]unsolicited[ ]bulk[ ]e-mail[ ][(]spam[)][ ]by[ ]our[ ]mail[ ]filters
         |content[ ]filter[ ]rejection
         |cyberoam[ ]anti[ ]spam[ ]engine[ ]has[ ]identified[ ]this[ ]email[ ]as[ ]a[ ]bulk[ ]email
         |denied[ ]due[ ]to[ ]spam[ ]list
         |greylisted.?.[ ]please[ ]try[ ]again[ ]in
+        |high[ ]probability[ ]of[ ]spam
         |https?://(?:www[.]spamhaus[.]org|dsbl[.]org|mail[.]163[.]com/help/help_spam_16[.]htm)
         |listed[ ]in[ ]work[.]drbl[.]imedia[.]ru
         |mail[ ](?:
@@ -49,7 +51,10 @@ sub match {
                 |refer[ ]to[ ]the[ ]troubleshooting[ ]page[ ]at[ ]
                 )
             |looks[ ]like[ ]spam
-            |refused[ ]by[ ]mailmarshal[ ]spamprofiler
+            |refused[ ]by[ ](?:
+                 mailmarshal[ ]spamprofiler
+                |trustwave[ ]seg[ ]spamprofiler
+                )
             |rejected[ ](?:
                  as[ ]spam
                 |because[ ]of[ ]unacceptable[ ]content
@@ -67,9 +72,9 @@ sub match {
         |rejected(?:
              :[ ]spamassassin[ ]score[ ]
             |[ ]by[ ][^ ]+[ ][(]spam[)]
-            |[ ]due[ ]to[ ]spam[ ](?:classification|content)
+            |[ ]due[ ]to[ ]spam[ ](?:url[ ]in[ ])?(?:classification|content)
             )
-        |rejecting[ ]banned[ ]content
+        |rejecting[ ](?:banned|mail)[ ]content
         |related[ ]to[ ]content[ ]with[ ]spam[-]like[ ]characteristics
         |rule[ ]imposed[ ]as[ ][^ ]+[ ]is[ ]blacklisted[ ]on
         |sender[ ]domain[ ]listed[ ]at[ ][^ ]+
@@ -212,7 +217,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

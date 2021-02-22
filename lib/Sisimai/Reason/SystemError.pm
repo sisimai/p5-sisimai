@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $index = [
+        'aliasing/forwarding loop broken',
         "can't create user output file",
         'could not load drd for domain',
         'internal error reading data',  # Microsoft
@@ -27,6 +28,7 @@ sub match {
         'loop was found in the mail exchanger',
         'loops back to myself',
         'mail system configuration error',
+        'remote server is misconfigured',
         'server configuration error',
         'service currently unavailable',
         'system config error',
@@ -98,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

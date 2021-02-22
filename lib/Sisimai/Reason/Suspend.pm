@@ -19,6 +19,7 @@ sub match {
         ' temporary locked',
         'boite du destinataire archivee',
         'email account that you tried to reach is disabled',
+        'has been suspended',
         'invalid/inactive user',
         'is a deactivated mailbox', # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
         'mailbox currently suspended',
@@ -98,7 +99,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
