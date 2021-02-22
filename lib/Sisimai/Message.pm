@@ -164,7 +164,6 @@ sub makemap {
     my $headermaps = { 'subject' => '' };
     my $recvheader = [];
 
-
     $headermaps->{ lc $_ } = $firstpairs->{ $_ } for keys %$firstpairs;
     for my $e ( values %$headermaps ) { $e =~ s/\n\s+/ /; $e =~ y/\t / /s }
 
