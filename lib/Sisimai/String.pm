@@ -3,8 +3,13 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Encode;
-use Encode::Guess;
 use Digest::SHA;
+
+my $EncodingsC = [qw/big5-eten gb2312/];
+my $EncodingsE = [qw/iso-8859-1/];
+my $EncodingsJ = [qw/7bit-jis iso-2022-jp euc-jp shiftjis/];
+use Encode::Guess; Encode::Guess->add_suspects(@$EncodingsC, @$EncodingsE, @$EncodingsJ);
+sub encodenames { return [@$EncodingsC, @$EncodingsE, @$EncodingsJ] };
 
 sub token {
     # Create the message token from an addresser and a recipient
