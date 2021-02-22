@@ -143,12 +143,6 @@ sub match {
             )
         |unresolvable[ ]relay[ ]host[ ]name
         |veuillez[ ]essayer[ ]plus[ ]tard[.][ ]service[ ]refused,[ ]please[ ]try[ ]later[.][ ][0-9a-z_]+(?:103|510)
-        |your[ ](?:
-             email[ ]address[ ]has[ ]been[ ]blacklisted
-            |network[ ]is[ ]temporary[ ]blacklisted
-            |sender's[ ]ip[ ]address[ ]is[ ]listed[ ]at[ ][^ ]+[.]abuseat[.]org
-            |server[ ]requires[ ]confirmation
-            )
         |was[ ]blocked[ ]by[ ][^ ]+
         |we[ ]do[ ]not[ ]accept[ ]mail[ ]from[ ](?: # @mail.ru
              dynamic[ ]ips
@@ -157,6 +151,12 @@ sub match {
         |you[ ]are[ ](?:
              not[ ]allowed[ ]to[ ]connect
             |sending[ ]spam
+            )
+        |your[ ](?:
+             email[ ]address[ ]has[ ]been[ ]blacklisted
+            |network[ ]is[ ]temporary[ ]blacklisted
+            |sender's[ ]ip[ ]address[ ]is[ ]listed[ ]at[ ][^ ]+[.]abuseat[.]org
+            |server[ ]requires[ ]confirmation
             )
         )
     }x;
