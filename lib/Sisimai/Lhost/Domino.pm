@@ -3,9 +3,9 @@ use parent 'Sisimai::Lhost';
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 use Encode;
-use Encode::Guess;
-    Encode::Guess->add_suspects('latin1');
+use Encode::Guess; Encode::Guess->add_suspects(@{ Sisimai::String->encodenames });
 
 sub description { 'IBM Domino Server' }
 sub inquire {
@@ -124,15 +124,15 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Check the utf8 flag and fix
         UTF8FLAG: while(1) {
-            # Add the utf8 flag because there are a string including some characters which have 
+            # Delete the utf8 flag because there are a string including some characters which have 
             # utf8 flag but utf8::is_utf8 returns false
             last unless length $e->{'diagnosis'};
             last unless Sisimai::String->is_8bit(\$e->{'diagnosis'});
 
             my $cv = $e->{'diagnosis'};
             my $ce = Encode::Guess->guess($cv);
-
             last unless ref $ce;
+
             $cv = Encode::encode_utf8($cv);
             $e->{'diagnosis'} = $cv;
             last;
