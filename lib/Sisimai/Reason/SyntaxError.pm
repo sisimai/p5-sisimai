@@ -17,7 +17,7 @@ sub true {
     my $argvs = shift // return undef;
 
     return 1 if $argvs->{'reason'} eq 'syntaxerror';
-    return 1 if $argvs->{'replycode'} =~ /\A[45]0[0-7]\z/;
+    return 1 if $argvs->{'replycode'} =~ /\A[45]0[1-7]\z/;
     return 0;
 }
 
