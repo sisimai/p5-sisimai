@@ -103,7 +103,7 @@ sub inquire {
                 $v->{'recipient'} = $1;
                 $recipients++;
 
-            } elsif( $e =~ /([45]\d{2})[ ]([45][.]\d[.]\d+)[ ].+\z/ ) {
+            } elsif( $e =~ /([45]\d{2})[ ]([45][.]\d[.]\d+)?[ ]?.+\z/ ) {
                 # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
                 # #550 5.2.3 RESOLVER.RST.RecipSizeLimit; message too large for this recipient ##
                 # Remote Server returned '550 5.1.1 RESOLVER.ADR.RecipNotFound; not found'
