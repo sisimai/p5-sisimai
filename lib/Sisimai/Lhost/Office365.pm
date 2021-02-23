@@ -44,6 +44,7 @@ sub inquire {
     state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $markingsof = {
         'eoe'     => qr/\A(?:Original[ ][Mm]essage[ ][Hh]eaders:?|Message[ ]Hops)/,
+        'rfc3464' => qr|\AContent-Type:[ ]message/delivery-status|,
         'error'   => qr/\A(?:Diagnostic[ ]information[ ]for[ ]administrators:|Error[ ]Details)/,
         'message' => qr{\A(?:
              Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
@@ -143,27 +144,43 @@ sub inquire {
                 next unless my $f = Sisimai::RFC1894->match($e);
                 next unless my $o = Sisimai::RFC1894->field($e);
                 next unless exists $fieldtable->{ $o->[0] };
-                next if $o->[0] =~ /\A(?:diagnostic-code|final-recipient)\z/;
-                $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                next unless $f == 1;
-                $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                if( $v->{'diagnosis'} ) {
+                    # Do not capture "Diagnostic-Code:" field because error message have already
+                    # been captured
+                    next if $o->[0] =~ /\A(?:diagnostic-code|final-recipient)\z/;
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
+                    next unless $f == 1;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+
+                } else {
+                    # Capture "Diagnostic-Code:" field because no error messages have been captured
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
+                }
             } else {
                 if( $e =~ $markingsof->{'error'} ) {
                     # Diagnostic information for administrators:
                     $v->{'diagnosis'} = $e;
+
                 } else {
                     # kijitora@example.com
                     # Remote Server returned '550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipien=
                     # t not found by SMTP address lookup'
-                    next unless $v->{'diagnosis'};
-                    if( $e =~ $markingsof->{'eoe'} ) {
-                        # Original message headers:
-                        $endoferror = 1;
-                        next;
+                    if( $v->{'diagnosis'} ) {
+                        # The error message text have already captured
+                        if( $e =~ $markingsof->{'eoe'} ) {
+                            # Original message headers:
+                            $endoferror = 1;
+                            next;
+                        }
+                        $v->{'diagnosis'} .= ' '.$e;
+
+                    } else {
+                        # The error message text has not been captured yet
+                        $endoferror = 1 if $e =~ $markingsof->{'rfc3464'};
                     }
-                    $v->{'diagnosis'} .= ' '.$e;
                 }
             }
         }
