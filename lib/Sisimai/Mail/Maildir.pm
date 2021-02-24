@@ -103,8 +103,7 @@ Sisimai::Mail::Maildir - Mailbox reader
 
 =head1 DESCRIPTION
 
-Sisimai::Mail::Maildir is a reader for getting contents of each email in the
-Maildir/ directory.
+Sisimai::Mail::Maildir is a reader for getting contents of each email in the Maildir/ directory.
 
 =head1 CLASS METHODS
 
@@ -167,7 +166,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

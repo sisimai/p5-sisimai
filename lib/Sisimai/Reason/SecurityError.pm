@@ -44,7 +44,7 @@ sub match {
 
 sub true {
     # The bounce reason is security error or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is security error
     #                                   0: is not security error
     # @see http://www.ietf.org/rfc/rfc2822.txt
@@ -67,13 +67,13 @@ Sisimai::Reason::SecurityError - Bounce reason is C<securityerror> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SecurityError checks the bounce reason is C<securityerror> or
-not. This class is called only Sisimai::Reason class.
+Sisimai::Reason::SecurityError checks the bounce reason is C<securityerror> or not. This class is
+called only Sisimai::Reason class.
 
-This is the error that a security violation was detected on a destination mail
-server. Depends on the security policy on the server, a sender's email address
-is camouflaged address. Sisimai will set C<securityerror> to the reason of email
-bounce if the value of Status: field in a bounce email is C<5.7.*>.
+This is the error that a security violation was detected on a destination mail server. Depends on
+the security policy on the server, a sender's email address is camouflaged address. Sisimai will
+set C<securityerror> to the reason of email bounce if the value of Status: field in a bounce email
+is C<5.7.*>.
 
     Action: failed
     Status: 5.7.1
@@ -95,10 +95,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::SecurityError->match('570 5.7.0 Authentication failure');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<securityerror>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<securityerror>. The argument must be Sisimai::Fact
+object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -106,7 +106,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

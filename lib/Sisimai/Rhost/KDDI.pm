@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from au(KDDI)
-    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason au.com and ezweb.ne.jp
     my $class = shift;
     my $argvs = shift // return undef;
@@ -14,7 +14,7 @@ sub get {
         'filtered'    => '550 : User unknown',  # The response was: 550 : User unknown
         'userunknown' => '>: User unknown',     # The response was: 550 <...>: User unknown
     };
-    my $statusmesg = $argvs->diagnosticcode;
+    my $statusmesg = $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     for my $e ( keys %$messagesof ) {
@@ -41,14 +41,13 @@ Sisimai::Rhost::KDDI - Detect the bounce reason returned from au (KDDI).
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
-object as an argument of get() method when the value of C<rhost> of the object
-is "msmx.au.com" or "lsean.ezweb.ne.jp".
-This class is called only Sisimai::Data class.
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
+of get() method when the value of C<rhost> of the object is "msmx.au.com" or "lsean.ezweb.ne.jp".
+This class is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 
@@ -58,7 +57,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -5,12 +5,12 @@ use strict;
 use warnings;
 
 sub description { 'fml mailing list server/manager' };
-sub make {
+sub inquire {
     # Detect an error from fml mailing list server/manager
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.22.3
     my $class = shift;
     my $mhead = shift // return undef;
@@ -60,17 +60,15 @@ sub make {
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
-    my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         next unless length $e;
 
-        # Duplicated Message-ID in <2ndml@example.com>.
-        # Original mail as follows:
+        # Duplicated Message-ID in <2ndml@example.com>. Original mail as follows:
         $v = $dscontents->[-1];
 
         if( $e =~ /[<]([^ ]+?[@][^ ]+?)[>][.]\z/ ) {
@@ -85,8 +83,7 @@ sub make {
             $recipients++;
 
         } else {
-            # If you know the general guide of this list, please send mail with
-            # the mail body
+            # If you know the general guide of this list, please send mail with the mail body
             $v->{'diagnosis'} .= $e;
         }
     }
@@ -129,8 +126,8 @@ Sisimai::Lhost::FML - bounce mail parser class for FML (fml.org).
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::FML parses a bounce email which created by C<fml mailing
-list server/manager>. Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::FML parses a bounce email which created by C<fml mailing list server/manager>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -140,10 +137,10 @@ C<description()> returns description string of this module.
 
     print Sisimai::Lhost::FML->description;
 
-=head2 C<B<make(I<header data>, I<reference to body string>)>>
+=head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -151,7 +148,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

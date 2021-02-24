@@ -6,12 +6,12 @@ use warnings;
 
 # https://www.amavis.org
 sub description { 'amavisd-new: https://www.amavis.org/' }
-sub make {
+sub inquire {
     # Detect an error from amavisd-new
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.25.0
     my $class = shift;
     my $mhead = shift // return undef;
@@ -95,8 +95,8 @@ sub make {
     my $v = undef;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
@@ -151,8 +151,7 @@ sub make {
         DETECT_REASON: for my $p ( keys %$messagesof ) {
             # Try to detect an error reason
             for my $r ( @{ $messagesof->{ $p } } ) {
-                # Try to find an error message including lower-cased string
-                # defined in $messagesof
+                # Try to find an error message including lower-cased string defined in $messagesof
                 next unless index($q, $r) > -1;
                 $e->{'reason'} = $p;
                 last(DETECT_REASON)
@@ -177,8 +176,8 @@ Sisimai::Lhost::Amavis - bounce mail parser class for C<amavisd-new>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::Amavis parses a bounce email which created by C<amavisd-new>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::Amavis parses a bounce email which created by C<amavisd-new>. Methods in the module
+are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -188,10 +187,10 @@ C<description()> returns description string of this module.
 
     print Sisimai::Lhost::Amavis->description;
 
-=head2 C<B<make(I<header data>, I<reference to body string>)>>
+=head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 
@@ -199,7 +198,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019,2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2019-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

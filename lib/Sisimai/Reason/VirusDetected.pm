@@ -27,7 +27,7 @@ sub match {
 
 sub true {
     # The bounce reason is security error or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: virus detected
     #                                   0: virus was not detected
     # @since v4.22.0
@@ -51,12 +51,11 @@ Sisimai::Reason::VirusDetected - Bounce reason is C<virusdetected> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::VirusDetected checks the bounce reason is C<virusdetected> or
-not. This class is called only Sisimai::Reason class.
+Sisimai::Reason::VirusDetected checks the bounce reason is C<virusdetected> or not. This class is
+called only Sisimai::Reason class.
 
-This is an error that any virus or trojan horse detected in the message by a
-virus scanner program at a destination mail server. This reason has been divided
-from C<securityerror> at Sisimai 4.22.0.
+This is an error that any virus or trojan horse detected in the message by a virus scanner program
+at a destination mail server. This reason has been divided from C<securityerror> at Sisimai 4.22.0.
 
     Your message was infected with a virus. You should download a virus
     scanner and check your computer for viruses.
@@ -79,10 +78,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
     my $v = 'Your message was infected with a virus. ...';
     print Sisimai::Reason::VirusDetected->match($v);    # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<virusdetected>. The argument must
-be Sisimai::Data object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<virusdetected>. The argument must be Sisimai::Fact
+object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -90,7 +89,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2019 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

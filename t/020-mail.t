@@ -3,12 +3,9 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Mail;
 
-my $PackageName = 'Sisimai::Mail';
-my $MethodNames = {
-    'class'  => ['new'],
-    'object' => ['path', 'kind', 'data'],
-};
-my $SampleEmail = {
+my $Package = 'Sisimai::Mail';
+my $Methods = { 'class'  => ['new'], 'object' => ['path', 'kind', 'data'] };
+my $Samples = {
     'mailbox' => './set-of-emails/mailbox/mbox-0',
     'maildir' => './set-of-emails/maildir/err',
 };
@@ -16,19 +13,19 @@ my $IsNotBounce = {
     'maildir' => './set-of-emails/maildir/not',
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     MAILBOX: {
-        my $mailbox = $PackageName->new($SampleEmail->{'mailbox'});
+        my $mailbox = $Package->new($Samples->{'mailbox'});
         my $emindex = 0;
 
-        isa_ok $mailbox, $PackageName;
-        can_ok $mailbox, @{ $MethodNames->{'object'} };
-        is $mailbox->path, $SampleEmail->{'mailbox'}, '->path = '.$mailbox->path;
+        isa_ok $mailbox, $Package;
+        can_ok $mailbox, @{ $Methods->{'object'} };
+        is $mailbox->path, $Samples->{'mailbox'}, '->path = '.$mailbox->path;
         is $mailbox->kind, 'mailbox', '->kind = mailbox';
-        isa_ok $mailbox->data, $PackageName.'::Mbox';
+        isa_ok $mailbox->data, $Package.'::Mbox';
 
         while( my $r = $mailbox->data->read ) {
             ok length $r, 'mailbox->data->read('.($emindex + 1).')';
@@ -38,14 +35,14 @@ MAKE_TEST: {
     }
 
     MAILDIR: {
-        my $maildir = $PackageName->new($SampleEmail->{'maildir'});
+        my $maildir = $Package->new($Samples->{'maildir'});
         my $emindex = 0;
 
-        isa_ok $maildir, $PackageName;
-        can_ok $maildir, @{ $MethodNames->{'object'} };
-        is $maildir->path, $SampleEmail->{'maildir'}, '->path = '.$maildir->path;
+        isa_ok $maildir, $Package;
+        can_ok $maildir, @{ $Methods->{'object'} };
+        is $maildir->path, $Samples->{'maildir'}, '->path = '.$maildir->path;
         is $maildir->kind, 'maildir', '->kind = maildir';
-        isa_ok $maildir->data, $PackageName.'::Maildir';
+        isa_ok $maildir->data, $Package.'::Maildir';
 
         while( my $r = $maildir->data->read ) {
             ok length $r, 'maildir->data->read('.($emindex + 1).')';
@@ -55,14 +52,14 @@ MAKE_TEST: {
     }
 
     NOTBOUNCE: {
-        my $maildir = $PackageName->new($IsNotBounce->{'maildir'});
+        my $maildir = $Package->new($IsNotBounce->{'maildir'});
         my $emindex = 0;
 
-        isa_ok $maildir, $PackageName;
-        can_ok $maildir, @{ $MethodNames->{'object'} };
+        isa_ok $maildir, $Package;
+        can_ok $maildir, @{ $Methods->{'object'} };
         is $maildir->path, $IsNotBounce->{'maildir'}, '->path = '.$maildir->path;
         is $maildir->kind, 'maildir', '->kind = maildir';
-        isa_ok $maildir->data, $PackageName.'::Maildir';
+        isa_ok $maildir->data, $Package.'::Maildir';
 
         while( my $r = $maildir->data->read ) {
             ok length $r, 'maildir->data->read('.($emindex + 1).')';
@@ -72,14 +69,14 @@ MAKE_TEST: {
     }
 
     DEVICE: {
-        my $mailobj = $PackageName->new('STDIN');
+        my $mailobj = $Package->new('STDIN');
         my $emindex = 0;
 
-        isa_ok $mailobj, $PackageName;
-        can_ok $mailobj, @{ $MethodNames->{'object'} };
+        isa_ok $mailobj, $Package;
+        can_ok $mailobj, @{ $Methods->{'object'} };
         is $mailobj->path, 'STDIN', '->path = '.$mailobj->path;
         is $mailobj->kind, 'stdin', '->kind = stdin';
-        isa_ok $mailobj->data, $PackageName.'::STDIN';
+        isa_ok $mailobj->data, $Package.'::STDIN';
         is $emindex, 0;
     }
 
@@ -91,30 +88,30 @@ MAKE_TEST: {
         my $emindex = 0;
 
         MAILBOX: {
-            $handler = IO::File->new($SampleEmail->{'mailbox'}, 'r');
+            $handler = IO::File->new($Samples->{'mailbox'}, 'r');
             { local $/ = undef; $mailset = <$handler>; }
             $handler->close;
-            $mailobj = $PackageName->new(\$mailset);
+            $mailobj = $Package->new(\$mailset);
 
-            isa_ok $mailobj, $PackageName;
-            can_ok $mailobj, @{ $MethodNames->{'object'} };
+            isa_ok $mailobj, $Package;
+            can_ok $mailobj, @{ $Methods->{'object'} };
             is $mailobj->path, 'MEMORY', '->path = '.$mailobj->path;
             is $mailobj->kind, 'memory', '->kind = memory';
-            isa_ok $mailobj->data, $PackageName.'::Memory';
+            isa_ok $mailobj->data, $Package.'::Memory';
             is $emindex, 0;
         }
 
         MAILDIR: {
-            $handler = IO::File->new($SampleEmail->{'maildir'}.'/make-test-01.eml', 'r');
+            $handler = IO::File->new($Samples->{'maildir'}.'/make-test-01.eml', 'r');
             { local $/ = undef; $mailset = <$handler>; }
             $handler->close;
-            $mailobj = $PackageName->new(\$mailset);
+            $mailobj = $Package->new(\$mailset);
 
-            isa_ok $mailobj, $PackageName;
-            can_ok $mailobj, @{ $MethodNames->{'object'} };
+            isa_ok $mailobj, $Package;
+            can_ok $mailobj, @{ $Methods->{'object'} };
             is $mailobj->path, 'MEMORY', '->path = '.$mailobj->path;
             is $mailobj->kind, 'memory', '->kind = memory';
-            isa_ok $mailobj->data, $PackageName.'::Memory';
+            isa_ok $mailobj->data, $Package.'::Memory';
 
             is $emindex, 0;
         }

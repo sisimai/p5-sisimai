@@ -4,6 +4,34 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.0.0
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - **INCOMPATIBLE CHANGES SINCE SISIMAI VERSION 4**
+    - `Sisimai->make` marked as obsoleted, use `Sisimai->rise` instead
+    - `Sisimai::Data` and `Sisimai::Fact`
+      - #419, #420 `Sisimai::Data` class has been renamed to `Sisimai::Fact`
+      - #402 `Sisimai::Data->softboucne` marked as obsoleted and will be removed
+        at v5.1.0, use `Sisimai::Fact->hardbounce` instead
+    - #401 `Sisimai::Message`
+      - `Sisimai::Message` no longer create a object
+      - `Sisimai::Message->make` has been renamed to `Sisimai::Message->rise`
+    - #399 Callback feature
+      - Parameter `hook` for callback has been removed from `Sisimai->make` and
+        `Sisimai->dump`. Use the first element of `c___` parameter for setting
+        a callback method instead.
+      - Parameter `c___` is a parameter of `Sisimai->rise` and `Sisimai->dump`,
+        is an array reference and have two elements:
+      - The first element of `c___` is the same with `hook` parameter, is for a
+        callback method email headers and entire message body
+      - The second element of `c___` parameter is for a callback method for each
+        email file in Maildir/. The callback method is called at the end of each
+        email file parsing.
+  - Implemenet Sisimai::RFC2045(Born again Sisimai::MIME) for compatibility with
+    the Go language version of Sisimai #407
+
 v4.25.11
 --------------------------------------------------------------------------------
 - release: "Mon, 22 Feb 2021 21:11:22 +0900 (JST)"

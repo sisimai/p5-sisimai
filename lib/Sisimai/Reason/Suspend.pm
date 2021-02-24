@@ -38,17 +38,17 @@ sub match {
 
 sub true {
     # The envelope recipient's mailbox is suspended or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is mailbox suspended
     #                                   0: is not suspended
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
-    return undef unless $argvs->deliverystatus;
+    return undef unless $argvs->{'deliverystatus'};
 
-    return 1 if $argvs->reason eq 'suspend';
-    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
+    return 1 if $argvs->{'reason'} eq 'suspend';
+    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0
 }
 
@@ -68,11 +68,9 @@ Sisimai::Reason::Suspend - Bounce reason is C<suspend> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Suspend checks the bounce reason is C<suspend> or not. This
-class is called only Sisimai::Reason class.
-
-This is the error that a recipient account is being suspended due to unpaid or
-other reasons.
+Sisimai::Reason::Suspend checks the bounce reason is C<suspend> or not. This class is called only
+Sisimai::Reason class. This is the error that a recipient account is being suspended due to unpaid
+or other reasons.
 
 =head1 CLASS METHODS
 
@@ -88,10 +86,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::Suspend->match('recipient suspend the service'); # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<suspend>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<suspend>. The argument must be Sisimai::Fact object
+and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -99,7 +97,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

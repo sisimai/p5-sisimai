@@ -35,22 +35,22 @@ sub match {
 
 sub true {
     # Rejected by domain or address filter ?
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is filtered
     #                                   0: is not filtered
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
-    return 1 if $argvs->reason eq 'filtered';
+    return 1 if $argvs->{'reason'} eq 'filtered';
 
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || '';
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
     return 0 if $tempreason eq 'suspend';
 
     require Sisimai::Reason::UserUnknown;
     my $alterclass = 'Sisimai::Reason::UserUnknown';
-    my $commandtxt = $argvs->smtpcommand // '';
-    my $diagnostic = lc $argvs->diagnosticcode // '';
+    my $commandtxt = $argvs->{'smtpcommand'} // '';
+    my $diagnostic = lc $argvs->{'diagnosticcode'} // '';
 
     if( $tempreason eq 'filtered' ) {
         # Delivery status code points "filtered".
@@ -63,7 +63,6 @@ sub true {
     }
     return 0;
 }
-
 
 1;
 __END__
@@ -81,15 +80,13 @@ Sisimai::Reason::Filtered - Bounce reason is C<filtered> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Filtered checks the bounce reason is C<filtered> or not. This
-class is called only Sisimai::Reason class.
+Sisimai::Reason::Filtered checks the bounce reason is C<filtered> or not. This class is called only
+Sisimai::Reason class.
 
-This is the error that an email has been rejected by a header content after
-SMTP DATA command.
-In Japanese cellular phones, the error will incur that a sender's email address
-or a domain is rejected by recipient's email configuration. Sisimai will set
-C<filtered> to the reason of email bounce if the value of Status: field in a
-bounce email is C<5.2.0> or C<5.2.1>.
+This is the error that an email has been rejected by a header content after SMTP DATA command. In
+Japanese cellular phones, the error will incur that a sender's email address or a domain is rejected
+by recipient's email configuration. Sisimai will set C<filtered> to the reason of email bounce if
+the value of Status: field in a bounce email is C<5.2.0> or C<5.2.1>.
 
 This error reason is almost the same as UserUnknown.
 
@@ -112,10 +109,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::Filtered->match('550 5.1.2 User reject');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<filtered>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<filtered>. The argument must be Sisimai::Fact object
+and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 
@@ -123,7 +120,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

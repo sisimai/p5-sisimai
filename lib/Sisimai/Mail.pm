@@ -5,11 +5,11 @@ use warnings;
 use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
-        'path',     # [String] path to mbox or Maildir/
-        'kind',     # [String] Data type: mailbox, maildir, stdin, or memory
+        'path', # [String] path to mbox or Maildir/
+        'kind', # [String] Data type: mailbox, maildir, stdin, or memory
     ],
     'rw'  => [
-        'data',     # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
+        'data', # [Sisimai::Mail::[Mbox,Maildir,Memory,STDIO] Object
     ]
 );
 
@@ -86,13 +86,11 @@ Sisimai::Mail - Handler of Mbox/Maildir for reading each mail.
     while( my $r = $mailbox->read ) {
         print $r;
     }
-    $mailbox->close;
 
     my $maildir = Sisimai::Mail->new('/home/neko/Maildir/cur');
     while( my $r = $maildir->read ) {
         print $r;
     }
-    $maildir->close;
 
     my $mailtxt = 'From Mailer-Daemon ...';
     my $mailobj = Sisimai::Mail->new(\$mailtxt);
@@ -102,9 +100,8 @@ Sisimai::Mail - Handler of Mbox/Maildir for reading each mail.
 
 =head1 DESCRIPTION
 
-Sisimai::Mail is a handler for reading a UNIX mbox, a Maildir, or any email
-message input from STDIN, variable. It is a wrapper class of the following 
-child classes:
+Sisimai::Mail is a handler for reading a UNIX mbox, a Maildir, or any email message input from STDIN,
+variable. It is a wrapper class of the following child classes:
 
     * Sisimai::Mail::Mbox
     * Sisimai::Mail::Maildir
@@ -145,21 +142,13 @@ C<mail()> returns Sisimai::Mail::Mbox object or Sisimai::Mail::Maildir object.
 
 =head2 C<B<read()>>
 
-C<read()> works as a iterator for reading each email in mbox or Maildir. It calls
-Sisimai::Mail::Mbox->read or Sisimai::Mail::Maildir->read method.
+C<read()> works as a iterator for reading each email in mbox or Maildir. It calls Sisimai::Mail::Mbox->read
+or Sisimai::Mail::Maildir->read method.
 
     my $mailbox = Sisimai::Mail->new('/var/mail/neko');
     while( my $r = $mailbox->read ) {
         print $r;   # print each email in /var/mail/neko
     }
-    $mailbox->close;
-
-=head2 C<B<close()>>
-
-C<close()> Close the handle of the mailbox or the Maildir/.
-
-    my $o = $mailbox->close;
-    print $o;   # 1 = Successfully closed, 0 = already closed.
 
 =head1 AUTHOR
 
@@ -167,7 +156,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

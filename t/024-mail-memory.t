@@ -4,9 +4,9 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Mail::Memory;
 use IO::File;
 
-my $PackageName = 'Sisimai::Mail::Memory';
-my $MethodNames = {
-    'class' => ['new'],
+my $Package = 'Sisimai::Mail::Memory';
+my $Methods = {
+    'class'  => ['new'],
     'object' => ['path', 'size', 'offset', 'payload', 'read'],
 };
 my $SampleEmail = [
@@ -14,12 +14,12 @@ my $SampleEmail = [
     './set-of-emails/maildir/bsd/lhost-sendmail-01.eml',
 ];
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
-    is undef, $PackageName->new();
-    is undef, $PackageName->new(\'');
+MAKETEST: {
+    is undef, $Package->new();
+    is undef, $Package->new(\'');
 
     MAILBOX: {
         my $handler = IO::File->new($SampleEmail->[0], 'r');
@@ -28,10 +28,10 @@ MAKE_TEST: {
         my $emindex = 0;
 
         { local $/ = undef; $mailset = <$handler>; $handler->close }
-        $mailobj = $PackageName->new(\$mailset);
+        $mailobj = $Package->new(\$mailset);
 
-        isa_ok $mailobj, $PackageName;
-        can_ok $mailobj, @{ $MethodNames->{'object'} };
+        isa_ok $mailobj, $Package;
+        can_ok $mailobj, @{ $Methods->{'object'} };
         isa_ok $mailobj->payload, 'ARRAY';
         is scalar @{ $mailobj->payload }, 37;
         is $mailobj->path, '<MEMORY>', '->path = <MEMORY>';
@@ -55,10 +55,10 @@ MAKE_TEST: {
         my $emindex = 0;
 
         { local $/ = undef; $mailset = <$handler>; $handler->close }
-        $mailobj = $PackageName->new(\$mailset);
+        $mailobj = $Package->new(\$mailset);
 
-        isa_ok $mailobj, $PackageName;
-        can_ok $mailobj, @{ $MethodNames->{'object'} };
+        isa_ok $mailobj, $Package;
+        can_ok $mailobj, @{ $Methods->{'object'} };
         isa_ok $mailobj->payload, 'ARRAY';
         is scalar @{ $mailobj->payload }, 1;
         is $mailobj->size, length $mailset, '->size = '.length($mailset);

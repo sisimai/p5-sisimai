@@ -32,8 +32,8 @@ my $reasonchildren = {
     'VirusDetected'   => ['550 5.7.9 The message was rejected because it contains prohibited virus or spam content'],
 };
 
-my $ss = shift @{ Sisimai->make('./set-of-emails/maildir/bsd/lhost-sendmail-01.eml') };
-isa_ok $ss, 'Sisimai::Data';
+my $ss = shift @{ Sisimai->rise('./set-of-emails/maildir/bsd/lhost-sendmail-01.eml') };
+isa_ok $ss, 'Sisimai::Fact';
 
 for my $e ( keys %$reasonchildren ) {
     my $r = 'Sisimai::Reason::'.$e;

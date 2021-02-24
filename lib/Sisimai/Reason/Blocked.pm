@@ -166,7 +166,7 @@ sub match {
 
 sub true {
     # Rejected due to client IP address or hostname
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is blocked
     #           [Integer]               0: is not blocked by the client
     # @see      http://www.ietf.org/rfc/rfc2822.txt
@@ -174,9 +174,9 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return 1 if $argvs->reason eq 'blocked';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->deliverystatus) || '') eq 'blocked';
-    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
+    return 1 if $argvs->{'reason'} eq 'blocked';
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'blocked';
+    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
 1;
@@ -195,12 +195,11 @@ Sisimai::Reason::Blocked - Bounce reason is "blocked" or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Blocked checks the bounce reason is "blocked" or not. This
-class is called only Sisimai::Reason class.
+Sisimai::Reason::Blocked checks the bounce reason is "blocked" or not. This class is called only
+Sisimai::Reason class.
 
-This is the error that SMTP connection was rejected due to a client IP address
-or a hostname, or the parameter of "HELO/EHLO" command. This reason has added
-in Sisimai 4.0.0 and does not exist in any version of bounceHammer.
+This is the error that SMTP connection was rejected due to a client IP address or a hostname, or
+the parameter of "HELO/EHLO" command. This reason has added in Sisimai 4.0.0.
 
     <kijitora@example.net>:
     Connected to 192.0.2.112 but my name was rejected.
@@ -220,10 +219,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::Blocked->match('Access from ip address 192.0.2.1 blocked');  # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is "blocked". The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is "blocked". The argument must be Sisimai::Fact object
+and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 

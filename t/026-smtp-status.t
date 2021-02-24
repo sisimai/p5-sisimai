@@ -3,16 +3,16 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP::Status;
 
-my $PackageName = 'Sisimai::SMTP::Status';
-my $MethodNames = {
-    'class' => ['code', 'name', 'find'],
+my $Package = 'Sisimai::SMTP::Status';
+my $Methods = {
+    'class'  => ['code', 'name', 'find'],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $reasonlist = [
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered', 'hasmoved',
         'hostunknown', 'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
@@ -46,18 +46,18 @@ MAKE_TEST: {
     ];
     my $v = '';
 
-    is $PackageName->code(''), undef, '->code() = undef';
+    is $Package->code(''), undef, '->code() = undef';
     PSEUDO_STATUS_CODE: for my $e ( @$reasonlist ) {
-        $v = $PackageName->code($e);
+        $v = $Package->code($e);
         like $v, qr/\A5[.]\d[.]9\d+/, 'pseudo status code('.$e.') = '.$v;
 
-        $v = $PackageName->code($e, 1);
+        $v = $Package->code($e, 1);
         like $v, qr/\A[45][.]\d[.]9\d+/, 'pseudo status code('.$e.',1) = '.$v;
     }
 
-    is $PackageName->name(''), undef, '->name() = undef';
+    is $Package->name(''), undef, '->name() = undef';
     STANRDARD_STATUS_CODE: for my $e ( @$statuslist ) {
-        $v = $PackageName->name($e);
+        $v = $Package->name($e);
         if( $v eq 'delivered' ) {
             is $v, 'delivered', '->name('.$e.') returns delivered';
 
@@ -66,9 +66,9 @@ MAKE_TEST: {
         }
     }
 
-    is $PackageName->find(''), undef, '->find("") = undef';
+    is $Package->find(''), undef, '->find("") = undef';
     for my $e ( @$smtperrors ) {
-        $v = $PackageName->find($e);
+        $v = $Package->find($e);
         like $v, qr/\A[245][.]\d[.]\d\z/, '->find() returns '.$v;
     }
 }

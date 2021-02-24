@@ -8,12 +8,12 @@ use Encode;
 use Encode::Guess; Encode::Guess->add_suspects(@{ Sisimai::String->encodenames });
 
 sub description { 'IBM Domino Server' }
-sub make {
+sub inquire {
     # Detect an error from IBM Domino
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.0.2
     my $class = shift;
     my $mhead = shift // return undef;
@@ -46,8 +46,8 @@ sub make {
     my $p = '';
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
-        # Read error messages and delivery status lines from the head of the email
-        # to the previous line of the beginning of the original message.
+        # Read error messages and delivery status lines from the head of the email to the previous
+        # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
@@ -151,8 +151,7 @@ sub make {
         }
     }
 
-    # Set the value of $subjecttxt as a Subject if there is no original
-    # message in the bounce mail.
+    # Set the value of $subjecttxt as a Subject if there is no original message in the bounce mail.
     $emailsteak->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailsteak->[1] =~ /^Subject:/m;
 
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
@@ -173,8 +172,8 @@ Sisimai::Lhost::Domino - bounce mail parser class for IBM Domino Server.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::Domino parses a bounce email which created by IBM Domino Server.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::Domino parses a bounce email which created by IBM Domino Server. Methods in the module
+are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -184,10 +183,10 @@ C<description()> returns description string of this module.
 
     print Sisimai::Lhost::Domino->description;
 
-=head2 C<B<make(I<header data>, I<reference to body string>)>>
+=head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head1 AUTHOR
 

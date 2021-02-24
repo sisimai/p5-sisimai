@@ -4,10 +4,10 @@ sub list {
     my $f = [ qw|
         Address.pm
         ARF.pm
-        Data.pm
-            Data/JSON.pm
-            Data/YAML.pm
         DateTime.pm
+        Fact.pm
+            Fact/JSON.pm
+            Fact/YAML.pm
         Lhost.pm
             Lhost/Activehunter.pm
             Lhost/Amavis.pm
@@ -64,7 +64,6 @@ sub list {
             Lhost/Yahoo.pm
             Lhost/Yandex.pm
             Lhost/Zoho.pm
-        MIME.pm
         Mail.pm
             Mail/Mbox.pm
             Mail/Maildir.pm
@@ -104,6 +103,7 @@ sub list {
             Reason/Vacation.pm
             Reason/VirusDetected.pm
         RFC1894.pm
+        RFC2045.pm
         RFC3464.pm
         RFC3834.pm
         RFC5322.pm

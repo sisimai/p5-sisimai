@@ -3,12 +3,12 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub make {
+sub inquire {
     # Parse message body and return reason and text
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -152,23 +152,22 @@ Sisimai::MDA - Error message parser for MDA
     use Sisimai::MDA;
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
-    my $return = Sisimai::MDA->make($header, \$string);
+    my $return = Sisimai::MDA->inquire($header, \$string);
 
 =head1 DESCRIPTION
 
-Sisimai::MDA parse bounced email which created by some MDA, such as C<dovecot>,
-C<mail.local>, C<procmail>, and so on.
-This class is called from Sisimai::Message only.
+Sisimai::MDA parse bounced email which created by some MDA, such as C<dovecot>, C<mail.local>,
+C<procmail>, and so on. This class is called from Sisimai::Message only.
 
 =head1 CLASS METHODS
 
-=head2 C<B<make(I<Header>, I<Reference to message body>)>>
+=head2 C<B<inquire(I<Header>, I<Reference to message body>)>>
 
-C<make()> is a parser for detecting an error from mail delivery agent.
+C<inquire()> is a parser for detecting an error from mail delivery agent.
 
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
-    my $return = Sisimai::MDA->make($header, \$string);
+    my $return = Sisimai::MDA->inquire($header, \$string);
     warn Dumper $return;
     $VAR1 = {
         'mda' => 'mail.local',
@@ -182,7 +181,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -3,25 +3,29 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::Lhost;
 
-my $PackageName = 'Sisimai::Lhost';
-my $MethodNames = {
-    'class' => [
-        'description', 'make', 'index', 'path',
-        'DELIVERYSTATUS', 'INDICATORS',
-    ],
+my $Package = 'Sisimai::Lhost';
+my $Methods = {
+    'class'  => [ 'description', 'inquire', 'index', 'path', 'DELIVERYSTATUS', 'INDICATORS' ],
     'object' => [],
 };
 
-use_ok $PackageName;
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
-    is $PackageName->description, '', '->description';
-    is $PackageName->make, undef, '->make';
+MAKETEST: {
+    is $Package->description, '', '->description';
+    is $Package->inquire,  undef, '->inquire';
 
-    isa_ok $PackageName->index, 'ARRAY';
-    isa_ok $PackageName->path, 'HASH';
-    isa_ok $PackageName->DELIVERYSTATUS, 'HASH';
-    isa_ok $PackageName->INDICATORS, 'HASH';
+    isa_ok $Package->index, 'ARRAY';
+    ok scalar @{ $Package->index };
+
+    isa_ok $Package->path, 'HASH';
+    ok scalar keys %{ $Package->path };
+
+    isa_ok $Package->DELIVERYSTATUS, 'HASH';
+    is scalar(keys %{ $Package->DELIVERYSTATUS }), 15;
+
+    isa_ok $Package->INDICATORS, 'HASH';
+    is scalar(keys %{ $Package->INDICATORS }), 2;
 }
 done_testing;

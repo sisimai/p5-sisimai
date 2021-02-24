@@ -4,24 +4,22 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Address;
 use Sisimai::RFC5322;
 
-my $PackageName = 'Sisimai::Address';
-my $MethodNames = {
-    'class' => [
-        'new', 'make', 'find', 's3s4', 'expand_verp', 'expand_alias',
-        'undisclosed',
+my $Package = 'Sisimai::Address';
+my $Methods = {
+    'class'  => [
+        'new', 'find', 's3s4', 'expand_verp', 'expand_alias', 'undisclosed',
+        'is_emailaddress', 'is_mailerdaemon'
     ],
-    'object' => [
-        'address', 'host', 'user', 'verp', 'alias', 'TO_JSON'
-    ],
+    'object' => ['address', 'host', 'user', 'verp', 'alias', 'name', 'comment', 'TO_JSON'],
 };
-my $NewInstance = $PackageName->new('maketest@bouncehammer.jp');
+my $NewInstance = $Package->new({ 'address' => 'maketest@bouncehammer.jp' });
 
-use_ok $PackageName;
-isa_ok $NewInstance, $PackageName;
-can_ok $NewInstance, @{ $MethodNames->{'object'} };
-can_ok $PackageName, @{ $MethodNames->{'class'} };
+use_ok $Package;
+isa_ok $NewInstance, $Package;
+can_ok $NewInstance, @{ $Methods->{'object'} };
+can_ok $Package, @{ $Methods->{'class'} };
 
-MAKE_TEST: {
+MAKETEST: {
     my $emailaddrs = [
         { 'v' => '"Neko" <neko@example.jp>', 'a' => 'neko@example.jp', 'n' => 'Neko', 'c' => '' },
         { 'v' => '"=?ISO-2022-JP?B?dummy?=" <nyan@example.jp>',
@@ -125,9 +123,9 @@ MAKE_TEST: {
           'a' => 'neko-nyaan@example.com',
           'n' => 'neko-nyaan@example.com',
           'c' => '' },
-        { 'v' => 'neko-nyaan@example.com.',
-          'a' => 'neko-nyaan@example.com',
-          'n' => 'neko-nyaan@example.com.',
+        { 'v' => 'neko-nyaan@example.org.',
+          'a' => 'neko-nyaan@example.org',
+          'n' => 'neko-nyaan@example.org.',
           'c' => '' },
         { 'v' => 'n@example.com',
           'a' => 'n@example.com',
@@ -178,6 +176,14 @@ MAKE_TEST: {
         '"Neko, Nyaan" <(nora)neko@example.jp>, Nora Nyaans <neko(nora)@example.jp>',
         'Neko (Nora, Nyaan) <neko@example.jp>, (Neko) "Nora, Mike" <neko@example.jp>',
     ];
+    my $postmaster = [
+        'mailer-daemon@example.jp', 
+        'MAILER-DAEMON@example.cat',
+        'Mailer-Daemon <postmaster@example.org>',
+        'MAILER-DAEMON',
+        'postmaster',
+        'postmaster@example.org',
+    ];
     my $emailindex = 1;
 
     my $a = undef;
@@ -220,24 +226,24 @@ MAKE_TEST: {
             is keys %{ $v->[0] }, 1, sprintf("%s %s->find(v,1) has 1 key", $n, $p);
         }
 
-        MAKE: {
-            # ->make()
-            $v = $p->make(shift @{ $p->find($e->{'v'}) });
+        NEW: {
+            # ->new()
+            $v = $p->new(shift @{ $p->find($e->{'v'}) });
             if( $e->{'a'} =~ /\A(.+)[@]([^@]+)\z/ ){ $a->[0] = $1; $a->[1] = $2; }
-            if( Sisimai::RFC5322->is_mailerdaemon($e->{'v'}) ){ $a->[0] = $e->{'a'}; $a->[1] = ''; }
+            if( $Package->is_mailerdaemon($e->{'v'}) ){ $a->[0] = $e->{'a'}; $a->[1] = ''; }
 
-            is ref $v, 'Sisimai::Address', sprintf("%s %s->make(v)", $n, $p);
-            is $v->address, $e->{'a'}, sprintf("%s %s->make(v)->address= %s", $n, $p, $e->{'a'});
-            is $v->user,    $a->[0],   sprintf("%s %s->make(v)->user = %s", $n, $p, $a->[0]);
-            is $v->host,    $a->[1],   sprintf("%s %s->make(v)->host = %s", $n, $p, $a->[1]);
-            is $v->verp,    '',        sprintf("%s %s->make(v)->verp = ''", $n, $p, '');
-            is $v->alias,   '',        sprintf("%s %s->make(v)->alias = ''", $n, $p, '');
-            is $v->name,    $e->{'n'}, sprintf("%s %s->make(v)->name = ''", $n, $p, $e->{'n'});
-            is $v->comment, $e->{'c'}, sprintf("%s %s->make(v)->comment = ''", $n, $p, $e->{'c'});
+            is ref $v, $p,             sprintf("%s %s->new(v)", $n, $p);
+            is $v->address, $e->{'a'}, sprintf("%s %s->new(v)->address= %s", $n, $p, $e->{'a'});
+            is $v->user,    $a->[0],   sprintf("%s %s->new(v)->user = %s", $n, $p, $a->[0]);
+            is $v->host,    $a->[1],   sprintf("%s %s->new(v)->host = %s", $n, $p, $a->[1]);
+            is $v->verp,    '',        sprintf("%s %s->new(v)->verp = ''", $n, $p, '');
+            is $v->alias,   '',        sprintf("%s %s->new(v)->alias = ''", $n, $p, '');
+            is $v->name,    $e->{'n'}, sprintf("%s %s->new(v)->name = ''", $n, $p, $e->{'n'});
+            is $v->comment, $e->{'c'}, sprintf("%s %s->new(v)->comment = ''", $n, $p, $e->{'c'});
 
             # name, and comment are writable accessor
-            $v->name('nyaan');    is $v->name,    'nyaan', sprintf("%s %s->make(v)->name = nyaan", $n, $p);
-            $v->comment('nyaan'); is $v->comment, 'nyaan', sprintf("%s %s->make(v)->comment = nyaan", $n, $p);
+            $v->name('nyaan');    is $v->name,    'nyaan', sprintf("%s %s->new(v)->name = nyaan", $n, $p);
+            $v->comment('nyaan'); is $v->comment, 'nyaan', sprintf("%s %s->new(v)->comment = nyaan", $n, $p);
         }
 
         S3S4: {
@@ -248,24 +254,16 @@ MAKE_TEST: {
             is $v, $e->{'a'}, sprintf("%s %s->s3s4 = %s", $n, $p, $e->{'a'});
         }
 
-        NEW: {
-            # ->new()
-            $v = $p->new($e->{'v'});
-            if( $e->{'a'} =~ /\A(.+)[@]([^@]+)\z/ ){ $a->[0] = $1; $a->[1] = $2; }
-            $a->[0] = $e->{'a'} if Sisimai::RFC5322->is_mailerdaemon($e->{'v'});
+        IS_EMAILADDRESS: {
+            if( $e->{'a'} =~ /[@]/ ) {
+                # is_emailaddress
+                ok $p->is_emailaddress($e->{'a'}), sprintf("%s->is_emailaddress(%s)", $p, $e->{'a'});
 
-            is ref $v, 'Sisimai::Address', sprintf("%s %s->new(v)", $n, $p);
-            is $v->address, $e->{'a'}, sprintf("%s %s->new(v)->address= %s", $n, $p, $e->{'a'});
-            is $v->user,    $a->[0],   sprintf("%s %s->new(v)->user = %s", $n, $p, $a->[0]);
-            is $v->verp,    '',        sprintf("%s %s->new(v)->verp = ''", $n, $p, '');
-            is $v->alias,   '',        sprintf("%s %s->new(v)->alias = ''", $n, $p, '');
-            is $v->name,    $e->{'n'}, sprintf("%s %s->new(v)->name = ''", $n, $p, $e->{'n'});
-            is $v->comment, $e->{'c'}, sprintf("%s %s->new(v)->comment = ''", $n, $p, $e->{'c'});
-
-            unless( Sisimai::RFC5322->is_mailerdaemon($e->{'v'}) ) {
-                is $v->host, $a->[1], sprintf("%s %s->new(v)->host = %s", $n, $p, $a->[1]);
+            } else {
+                ok $p->is_mailerdaemon($e->{'a'}), sprintf("%s->is_mailerdaemon(%s)", $p, $e->{'a'});
             }
         }
+
         $emailindex++;
     }
 
@@ -277,26 +275,26 @@ MAKE_TEST: {
             is scalar @$v, 2, sprintf("%s %s->find(v) = 2", $n, $p);
 
             for my $f ( @$v ) {
-                $a = Sisimai::Address->make($f);
+                $a = Sisimai::Address->new($f);
                 is ref $f, 'HASH',  sprintf("%s %s->find(v)->[]", $n, $p);
-                is ref $a, 'Sisimai::Address', sprintf("%s %s->make(f)", $n, $p);
-                ok $a->address, sprintf("%s %s->make(f)->address = %s", $n, $p, $a->address);
-                ok $a->comment, sprintf("%s %s->make(f)->comment = %s", $n, $p, $a->comment);
-                ok $a->name,    sprintf("%s %s->make(f)->name = %s",    $n, $p, $a->name);
+                is ref $a, 'Sisimai::Address', sprintf("%s %s->new(f)", $n, $p);
+                ok $a->address, sprintf("%s %s->new(f)->address = %s", $n, $p, $a->address);
+                ok $a->comment, sprintf("%s %s->new(f)->comment = %s", $n, $p, $a->comment);
+                ok $a->name,    sprintf("%s %s->new(f)->name = %s",    $n, $p, $a->name);
             }
         }
     }
 
     VERP: {
         $a = 'nyaa+neko=example.jp@example.org';
-        $v = $p->new($a);
+        $v = $p->new({ 'address' => $a });
         is $p->expand_verp($a), 'neko@example.jp', sprintf("%s->expand_verp(%s) = %s", $p, $a, $v);
         is $v->verp, $a, sprintf("%s->new(v)->verp = %s", $p, $a);
     }
 
     ALIAS: {
         $a = 'neko+nyaa@example.jp';
-        $v = $p->new($a);
+        $v = $p->new({ 'address' => $a });
 
         is $p->expand_alias($a), 'neko@example.jp', sprintf("%s->expand_alias(%s) = %s", $p, $a, $v);
         is $v->alias, $a, sprintf("%s->new(v)->alias = %s", $p, $a);
@@ -304,14 +302,21 @@ MAKE_TEST: {
 
     TO_JSON: {
         $a = 'nyaan@example.org';
-        $v = $p->new($a);
+        $v = $p->new({ 'address' => $a });
         is $v->TO_JSON, $v->address, sprintf("%s->new(v)->TO_JSON = %s", $p, $a);
     }
 
+    IS_MAILERDAEMON: {
+        for my $e ( @$postmaster ) {
+            ok $p->is_mailerdaemon($e), sprintf("%s->is_mailerdaemon = %s", $p, $e);
+        }
+    }
+
     for my $e ( @$isnotemail ) {
-        $v = $p->s3s4($e);    is $v, $e,    sprintf("%s->s3s4(v)= %s", $p, $e);
-        $v = $p->new($e);     is $v, undef, sprintf("%s->new(v)= undef", $p);
-        $v = $p->find($e);    is $v, undef, sprintf("%s->find(v)= undef", $p);
+        $v = $p->s3s4($e);                 is $v, $e,    sprintf("%s->s3s4(v) = %s", $p, $e);
+        $v = $p->new({ 'address' => $e }); is $v, undef, sprintf("%s->new(v) = undef", $p);
+        $v = $p->find($e);                 is $v, undef, sprintf("%s->find(v) = undef", $p);
+        $v = $p->is_emailaddress($e);      is $v, 0,     sprintf("%s->is_emailaddress = 0", $p);
     }
 
     UNDISCLOSED: {
@@ -324,3 +329,4 @@ MAKE_TEST: {
 }
 
 done_testing;
+

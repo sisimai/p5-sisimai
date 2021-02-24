@@ -146,7 +146,7 @@ sub match {
 
 sub true {
     # Rejected due to spam content in the message
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: rejected due to spam
     #                                   0: is not rejected due to spam
     # @since v4.1.19
@@ -154,10 +154,10 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless $argvs->deliverystatus;
-    return 1 if $argvs->reason eq 'spamdetected';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->deliverystatus) || '') eq 'spamdetected';
-    return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
+    return undef unless $argvs->{'deliverystatus'};
+    return 1 if $argvs->{'reason'} eq 'spamdetected';
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'spamdetected';
+    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0;
 }
 
@@ -168,8 +168,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::SpamDetected - Bounce reason is C<spamdetected> due to Spam
-content in the message or not.
+Sisimai::Reason::SpamDetected - Bounce reason is C<spamdetected> due to Spam content in the message
+or not.
 
 =head1 SYNOPSIS
 
@@ -178,13 +178,11 @@ content in the message or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SpamDetected checks the bounce reason is C<spamdetected> due to
-Spam content in the message or not. This class is called only Sisimai::Reason
-class.
+Sisimai::Reason::SpamDetected checks the bounce reason is C<spamdetected> due to Spam content in the
+message or not. This class is called only Sisimai::Reason class.
 
-This is the error that the message you sent was rejected by C<spam> filter which
-is running on the remote host. This reason has added in Sisimai 4.1.25 and does
-not exist in any version of bounceHammer.
+This is the error that the message you sent was rejected by C<spam> filter which is running on the
+remote host. This reason has added in Sisimai 4.1.25.
 
     Action: failed
     Status: 5.7.1
@@ -205,11 +203,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::SpamDetected->match('550 Spam detected');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in
-the message. The argument must be Sisimai::Data object and this method is called
-only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<rejected> due to Spam content in the message. The
+argument must be Sisimai::Fact object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 

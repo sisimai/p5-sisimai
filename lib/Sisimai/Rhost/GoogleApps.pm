@@ -5,12 +5,12 @@ use warnings;
 
 sub get {
     # Detect bounce reason from Google Apps
-    # @param    [Sisimai::Data] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason for Google Apps
     # @see      https://support.google.com/a/answer/3726730?hl=en
     my $class = shift;
     my $argvs = shift // return undef;
-    return $argvs->reason if $argvs->reason;
+    return $argvs->{'reason'} if $argvs->{'reason'};
 
     state $statuslist = {
         # https://support.google.com/a/answer/3726730
@@ -106,14 +106,14 @@ sub get {
         'X.7.4' => [{ 'reason' => 'syntaxerror', 'string' => ['Unrecognized Authentication Type.'] }],
     };
 
-    substr(my $statuscode = $argvs->deliverystatus, 0, 1, 'X');
+    substr(my $statuscode = $argvs->{'deliverystatus'}, 0, 1, 'X');
     return '' unless exists $statuslist->{ $statuscode };
     return '' unless scalar @{ $statuslist->{ $statuscode } };
 
     my $reasontext = '';
     for my $e ( @{ $statuslist->{ $statuscode } } ) {
         # Try to match
-        next unless grep { rindex($argvs->diagnosticcode, $_) > -1 } @{ $e->{'string'} };
+        next unless grep { rindex($argvs->{'diagnosticcode'}, $_) > -1 } @{ $e->{'string'} };
         $reasontext = $e->{'reason'};
         last;
     }
@@ -135,13 +135,13 @@ Sisimai::Rhost::GoogleApps - Detect the bounce reason returned from Google Apps.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data
-object as an argument of get() method when the value of C<rhost> of the object
-is "aspmx.l.google.com". This class is called only Sisimai::Data class.
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
+of get() method when the value of C<rhost> of the object is "aspmx.l.google.com". This class is
+called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Data Object>)>>
+=head2 C<B<get(I<Sisimai::Fact Object>)>>
 
 C<get()> detects the bounce reason.
 
@@ -151,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

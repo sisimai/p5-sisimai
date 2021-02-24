@@ -35,12 +35,12 @@ sub is_arf {
     return $match;
 }
 
-sub make {
+sub inquire {
     # Detect an error for Feedback Loop
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -144,9 +144,8 @@ sub make {
                 $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients++;
 
-                # The "X-HmXmrOriginalRecipient" header appears only once so
-                # we take this opportunity to hard-code ARF headers missing in
-                # Microsoft's implementation.
+                # The "X-HmXmrOriginalRecipient" header appears only once so we take this opportunity
+                # to hard-code ARF headers missing in Microsoft's implementation.
                 $arfheaders->{'feedbacktype'} = 'abuse';
                 $arfheaders->{'agent'} = 'Microsoft Junk Mail Reporting Program';
 
@@ -214,8 +213,8 @@ sub make {
                 $arfheaders->{'feedbacktype'} = $1;
 
             } elsif( $e =~ /\AAuthentication-Results:[ ]*(.+)\z/ ) {
-                # "Authentication-Results" indicates the result of one or more
-                # authentication checks run by the report generator.
+                # "Authentication-Results" indicates the result of one or more authentication checks
+                # run by the report generator.
                 #
                 # Authentication-Results: mail.example.com;
                 #   spf=fail smtp.mail=somespammer@example.com
@@ -227,8 +226,7 @@ sub make {
                 $arfheaders->{'agent'} = $1;
 
             } elsif( $e =~ /\A(?:Received|Arrival)-Date:[ ]*(.+)\z/ ) {
-                # Arrival-Date header is optional and MUST NOT appear more than
-                # once.
+                # Arrival-Date header is optional and MUST NOT appear more than once.
                 # Received-Date: Thu, 29 Apr 2010 00:00:00 JST
                 # Arrival-Date: Thu, 29 Apr 2010 00:00:00 +0000
                 $arfheaders->{'date'} = $1;
@@ -263,16 +261,15 @@ sub make {
             $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
 
         } else {
-            # Insert pseudo recipient address when there is no valid recipient
-            # address in the message.
+            # Insert pseudo recipient address when there is no valid recipient address in the message.
             $dscontents->[-1]->{'recipient'} = Sisimai::Address->undisclosed('r');
         }
         $recipients = 1;
     }
 
     unless( $rfc822part =~ /\bFrom: [^ ]+[@][^ ]+\b/ ) {
-        # There is no "From:" header in the original message
-        # Append the value of "Original-Mail-From" value as a sender address.
+        # There is no "From:" header in the original message Append the value of "Original-Mail-From"
+        # value as a sender address.
         $rfc822part .= 'From: '.$commondata->{'from'}."\n" if $commondata->{'from'};
     }
 
@@ -290,7 +287,6 @@ sub make {
         $e->{ $_ } ||= $arfheaders->{ $_ } for keys %$arfheaders;
         delete $e->{'authres'};
 
-        $e->{'softbounce'}  = -1;
         $e->{'diagnosis'} ||= $commondata->{'diagnosis'};
         $e->{'diagnosis'}   = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'date'}      ||= $mhead->{'date'};
@@ -306,8 +302,8 @@ sub make {
             $e->{'rhost'} = $commondata->{'rhost'};
 
         } elsif( $e->{'diagnosis'} =~ /\breceived from IP address ([^ ]+)/ ) {
-            # This is an email abuse report for an email message received
-            # from IP address 24.64.1.1 on Thu, 29 Apr 2010 00:00:00 +0000
+            # This is an email abuse report for an email message received from IP address 24.64.1.1
+            # on Thu, 29 Apr 2010 00:00:00 +0000
             $e->{'rhost'} = $1;
         }
     }
@@ -328,7 +324,7 @@ Sisimai::ARF - Parser class for detecting ARF: Abuse Feedback Reporting Format.
 Do not use this class directly, use Sisimai::ARF.
 
     use Sisimai::ARF;
-    my $v = Sisimai::ARF->make($header, $body);
+    my $v = Sisimai::ARF->inquire($header, $body);
 
 =head1 DESCRIPTION
 
@@ -362,7 +358,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -16,40 +16,39 @@ sub is_permanent {
     my $argv1 = shift || return undef;
 
     my $statuscode = Sisimai::SMTP::Status->find($argv1) || Sisimai::SMTP::Reply->find($argv1) || '';
-    my $parmanent1 = undef;
+    my $permanent1 = undef;
 
     if( (my $classvalue = int(substr($statuscode, 0, 1) || 0)) > 0 ) {
         # 2, 4, or 5
         if( $classvalue == 5 ) {
             # Permanent error
-            $parmanent1 = 1;
+            $permanent1 = 1;
 
         } elsif( $classvalue == 4 ) {
             # Temporary error
-            $parmanent1 = 0;
+            $permanent1 = 0;
 
         } elsif( $classvalue == 2 ) {
             # Succeeded
-            $parmanent1 = undef;
+            $permanent1 = undef;
         }
     } else {
         # Check with regular expression
         my $v = lc $argv1;
         if( rindex($v, 'temporar') > -1 || rindex($v, 'persistent') > -1 ) {
             # Temporary failure
-            $parmanent1 = 0;
+            $permanent1 = 0;
 
         } elsif( rindex($v, 'permanent') > -1 ) {
             # Permanently failure
-            $parmanent1 = 1;
+            $permanent1 = 1;
 
         } else {
-            # did not find information to decide that it is a soft bounce
-            # or a hard bounce.
-            $parmanent1 = undef;
+            # did not find information to decide that it is a soft bounce or a hard bounce.
+            $permanent1 = undef;
         }
     }
-    return $parmanent1;
+    return $permanent1;
 }
 
 sub soft_or_hard {
@@ -66,12 +65,12 @@ sub soft_or_hard {
     my $value = undef;
 
     state $softorhard = {
-        'soft' => [qw|
-            blocked contenterror exceedlimit expired filtered mailboxfull mailererror
-            mesgtoobig networkerror norelaying policyviolation rejected securityerror
-            spamdetected suspend syntaxerror systemerror systemfull toomanyconn virusdetected
-        |],
-        'hard' => [qw|hasmoved hostunknown userunknown|],
+        'soft' => [qw/
+            blocked contenterror exceedlimit expired filtered mailboxfull mailererror mesgtoobig
+            networkerror norelaying policyviolation rejected securityerror spamdetected suspend
+            syntaxerror systemerror systemfull toomanyconn virusdetected/
+        ],
+        'hard' => [qw/hasmoved hostunknown userunknown/],
     };
 
     if( $argv1 eq 'delivered' || $argv1 eq 'feedback' || $argv1 eq 'vacation' ) {
@@ -141,9 +140,9 @@ C<is_permanent()> checks the given string points an permanent error or not.
 
 =head2 C<B<soft_or_hard(I<String>, I<String>)>>
 
-C<soft_or_hard()> returns string 'soft' if given bounce reason is a soft bounce.
-When the reason is a hard bounce, this method returns 'hard'. If the return
-value is an empty string, it means that returned email may not be a bounce.
+C<soft_or_hard()> returns string 'soft' if given bounce reason is a soft bounce. When the reason is
+a hard bounce, this method returns 'hard'. If the return value is an empty string, it means that
+returned email may not be a bounce.
 
     print Sisimai::SMTP::Error->soft_or_hard('userunknown', '5.1.1 No such user');   # 'hard'
     print Sisimai::SMTP::Error->soft_or_hard('mailboxfull');                         # 'soft'

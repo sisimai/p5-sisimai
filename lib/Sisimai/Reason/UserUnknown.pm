@@ -140,19 +140,19 @@ sub match {
 
 sub true {
     # Whether the address is "userunknown" or not
-    # @param    [Sisimai::Data] argvs   Object to be detected the reason
+    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is unknown user
     #                                   0: is not unknown user.
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
-    return 1 if $argvs->reason eq 'userunknown';
+    return 1 if $argvs->{'reason'} eq 'userunknown';
 
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->deliverystatus) || '';
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
     return 0 if $tempreason eq 'suspend';
 
-    my $diagnostic = lc $argvs->diagnosticcode;
+    my $diagnostic = lc $argvs->{'diagnosticcode'};
     if( $tempreason eq 'userunknown' ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
@@ -180,9 +180,8 @@ sub true {
         }
         return 1 unless $matchother;    # Did not match with other message patterns
 
-    } elsif( $argvs->smtpcommand eq 'RCPT' ) {
-        # When the SMTP command is not "RCPT", the session rejected by other
-        # reason, maybe.
+    } elsif( $argvs->{'smtpcommand'} eq 'RCPT' ) {
+        # When the SMTP command is not "RCPT", the session rejected by other reason, maybe.
         return 1 if __PACKAGE__->match($diagnostic);
     }
     return 0;
@@ -204,15 +203,14 @@ Sisimai::Reason::UserUnknown - Bounce reason is C<userunknown> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::UserUnknown checks the bounce reason is C<userunknown> or not.
-This class is called only Sisimai::Reason class.
+Sisimai::Reason::UserUnknown checks the bounce reason is C<userunknown> or not. This class is called
+only Sisimai::Reason class.
 
-This is the error that a local part (Left hand side of @ sign) of a recipient's
-email address does not exist. In many case, a user has changed internet service
-provider, or has quit company, or the local part is misspelled. Sisimai will set
-C<userunknown> to the reason of email bounce if the value of Status: field in a
-bounce email is C<5.1.1>, or connection was refused at SMTP RCPT command, or the
-contents of Diagnostic-Code: field represents that it is unknown user.
+This is the error that a local part (Left hand side of @ sign) of a recipient's email address does
+not exist. In many case, a user has changed internet service provider, or has quit company, or the
+local part is misspelled. Sisimai will set C<userunknown> to the reason of email bounce if the value
+of Status: field in a bounce email is C<5.1.1>, or connection was refused at SMTP RCPT command, or
+the contents of Diagnostic-Code: field represents that it is unknown user.
 
     <kijitora@example.co.jp>: host mx01.example.co.jp[192.0.2.8] said:
       550 5.1.1 Address rejected kijitora@example.co.jp (in reply to
@@ -232,10 +230,10 @@ C<match()> returns 1 if the argument matched with patterns defined in this class
 
     print Sisimai::Reason::UserUnknown->match('550 5.1.1 Unknown User');   # 1
 
-=head2 C<B<true(I<Sisimai::Data>)>>
+=head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<userunknown>. The argument must be
-Sisimai::Data object and this method is called only from Sisimai::Reason class.
+C<true()> returns 1 if the bounce reason is C<userunknown>. The argument must be Sisimai::Fact
+object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 

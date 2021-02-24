@@ -179,8 +179,8 @@ C<match()> checks the argument includes a field defined in RFC3464 or not
 
 =head2 C<B<field(I<String>)>>
 
-C<field()> returns splited values as an array reference from given a string
-including DSN fields defined in RFC3464.
+C<field()> returns splited values as an array reference from given a string including DSN fields
+defined in RFC3464.
 
     my $v = Sisimai::RFC1894->field('Remote-MTA: DNS; mx.nyaan.jp');
     my $r = Sisimai::RFC1894->field('Status: 5.1.1');

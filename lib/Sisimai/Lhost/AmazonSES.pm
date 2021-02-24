@@ -6,12 +6,12 @@ use warnings;
 
 # https://aws.amazon.com/ses/
 sub description { 'Amazon SES(Sending): https://aws.amazon.com/ses/' };
-sub make {
+sub inquire {
     # Detect an error from Amazon SES
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [Undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to parse or the arguments are missing
     # @since v4.0.2
     my $class = shift;
     my $mhead = shift // return undef;
@@ -100,7 +100,7 @@ sub make {
             for my $e ( @$r ) {
                 # 'bouncedRecipients' => [ { 'emailAddress' => 'bounce@si...' }, ... ]
                 # 'complainedRecipients' => [ { 'emailAddress' => 'complaint@si...' }, ... ]
-                next unless Sisimai::RFC5322->is_emailaddress($e->{'emailAddress'});
+                next unless Sisimai::Address->is_emailaddress($e->{'emailAddress'});
 
                 $v = $dscontents->[-1];
                 if( $v->{'recipient'} ) {
@@ -164,7 +164,7 @@ sub make {
                 #       ],
                 #       'smtpResponse' => '250 2.6.0 Message received'
                 #   },
-                next unless Sisimai::RFC5322->is_emailaddress($e);
+                next unless Sisimai::Address->is_emailaddress($e);
 
                 $v = $dscontents->[-1];
                 if( $v->{'recipient'} ) {
@@ -183,8 +183,7 @@ sub make {
                 ($v->{'date'} = $o->{'timestamp'} || $p->{'mail'}->{'timestamp'}) =~ s/[.]\d+Z\z//;
             }
         } else {
-            # The value of "notificationType" is not any of "Bounce", "Complaint",
-            # or "Delivery".
+            # The value of "notificationType" is not any of "Bounce", "Complaint", or "Delivery".
             return undef;
         }
         return undef unless $recipients;
@@ -331,9 +330,8 @@ Sisimai::Lhost::AmazonSES - bounce mail parser class for C<Amazon SES>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::AmazonSES parses a bounce email or a JSON string which created
-by C<Amazon Simple Email Service>. Methods in the module are called from only
-Sisimai::Message.
+Sisimai::Lhost::AmazonSES parses a bounce email or a JSON string which created by C<Amazon Simple Email Service>.
+Methods in the module are called from only Sisimai::Message.
 
 =head1 CLASS METHODS
 
@@ -343,15 +341,14 @@ C<description()> returns description string of this module.
 
     print Sisimai::Lhost::AmazonSES->description;
 
-=head2 C<B<make(I<header data>, I<reference to body string>)>>
+=head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<make()> method parses a bounced email and return results as a array reference.
-See Sisimai::Message for more details.
+C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+for more details.
 
 =head2 C<B<json(I<Hash>)>>
 
-C<json()> method adapts Amazon SES bounce object (JSON) for Perl hash object
-used at Sisimai::Message class.
+C<json()> method adapts Amazon SES bounce object (JSON) for Perl hash object used at Sisimai::Message class.
 
 =head1 AUTHOR
 

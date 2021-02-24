@@ -3,11 +3,8 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP;
 
-my $PackageName = 'Sisimai::SMTP';
-my $MethodNames = {
-    'class' => [],
-    'object' => [],
-};
+my $Package = 'Sisimai::SMTP';
+my $Methods = { 'class'  => [], 'object' => [] };
 
-use_ok $PackageName;
+use_ok $Package;
 done_testing;
