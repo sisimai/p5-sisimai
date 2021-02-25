@@ -107,8 +107,6 @@ sub new {
     return undef unless ref $argvs eq 'HASH';
     return undef unless exists $argvs->{'address'};
     return undef unless $argvs->{'address'};
-    my $heads = ['<'];
-    my $tails = ['>', ',', '.', ';'];
 
     my $heads = ['<'];
     my $tails = ['>', ',', '.', ';'];
