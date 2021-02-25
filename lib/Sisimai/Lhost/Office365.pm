@@ -61,17 +61,17 @@ sub inquire {
         }x,
         'error'   => qr{\A(?:
              Diagnostic[ ]information[ ]for[ ]administrators:
+            |Error[ ]Details
             |Diagnostische[ ]gegevens[ ]voor[ ]beheerders:
             |Informa.+es[ ]de[ ]diagn.+stico[ ]para[ ]administradores:
-            |Error[ ]Details
             )
         }x,
         'message' => qr{\A(?:
              Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
-            |Falha[ ]na[ ]entrega[ ]a[ ]estes[ ]destinat.+rios[ ]ou[ ]grupos:
             |Original[ ]Message[ ]Details
-            |Uw[ ]bericht[ ]kan[ ]niet[ ]worden[ ]bezorgd[ ]bij[ ]de[ ]volgende[ ]geadresseerden[ ]of[ ]groepen:
             |.+[ ]rejected[ ]your[ ]message[ ]to[ ]the[ ]following[ ]e[-]?mail[ ]addresses:
+            |Falha[ ]na[ ]entrega[ ]a[ ]estes[ ]destinat.+rios[ ]ou[ ]grupos:
+            |Uw[ ]bericht[ ]kan[ ]niet[ ]worden[ ]bezorgd[ ]bij[ ]de[ ]volgende[ ]geadresseerden[ ]of[ ]groepen:
             )
         }x,
     };
