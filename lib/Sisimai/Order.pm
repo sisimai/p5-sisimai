@@ -67,6 +67,7 @@ sub make {
         'non-recapitabile' => ['Sisimai::Lhost::Exchange2007'],
         'non-remis' => ['Sisimai::Lhost::Exchange2007'],
         'notice'    => ['Sisimai::Lhost::Courier'],
+        'onbestelbaar'       => ['Sisimai::Lhost::Office365'],
         'permanent-delivery' => ['Sisimai::Lhost::X4'],
         'postmaster-notify'  => ['Sisimai::Lhost::Sendmail'],
         'returned-mail' => [

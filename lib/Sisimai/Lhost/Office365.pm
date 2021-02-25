@@ -26,6 +26,7 @@ sub inquire {
     # X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
     # X-MS-Exchange-Transport-CrossTenantHeadersStamped: ...
     $match++ if index($mhead->{'subject'}, 'Undeliverable:') > -1;
+    $match++ if index($mhead->{'subject'}, 'Onbestelbaar:')  > -1;
     $match++ if $mhead->{'x-ms-exchange-message-is-ndr'};
     $match++ if $mhead->{'x-microsoft-antispam-prvs'};
     $match++ if $mhead->{'x-exchange-antispam-report-test'};
@@ -43,12 +44,23 @@ sub inquire {
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $markingsof = {
-        'eoe'     => qr/\A(?:Original[ ][Mm]essage[ ][Hh]eaders:?|Message[ ]Hops)/,
+        'eoe'     => qr{\A(?:
+             Original[ ][Mm]essage[ ][Hh]eaders:?
+            |Message[ ]Hops
+            |Oorspronkelijke[ ]berichtkoppen:
+            )
+        }x,
         'rfc3464' => qr|\AContent-Type:[ ]message/delivery-status|,
-        'error'   => qr/\A(?:Diagnostic[ ]information[ ]for[ ]administrators:|Error[ ]Details)/,
+        'error'   => qr{\A(?:
+             Diagnostic[ ]information[ ]for[ ]administrators:
+            |Diagnostische[ ]gegevens[ ]voor[ ]beheerders:
+            |Error[ ]Details
+            )
+        }x,
         'message' => qr{\A(?:
              Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
             |Original[ ]Message[ ]Details
+            |Uw[ ]bericht[ ]kan[ ]niet[ ]worden[ ]bezorgd[ ]bij[ ]de[ ]volgende[ ]geadresseerden[ ]of[ ]groepen:
             |.+[ ]rejected[ ]your[ ]message[ ]to[ ]the[ ]following[ ]e[-]?mail[ ]addresses:
             )
         }x,
@@ -134,7 +146,7 @@ sub inquire {
             $v->{'recipient'} = $1;
             $recipients++;
 
-        } elsif( $e =~ /\AGenerating server: (.+)\z/ ) {
+        } elsif( $e =~ /\A(?:Bronserver|Generating server): (.+)\z/ ) {
             # Generating server: FFFFFFFFFFFF.e0.prod.outlook.com
             $permessage->{'lhost'} = lc $1;
 
