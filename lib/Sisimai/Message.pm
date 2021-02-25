@@ -11,6 +11,7 @@ use Sisimai::Lhost;
 
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
+my $ReWrapping = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m; 
 
 sub rise {
     # Constructor of Sisimai::Message
@@ -22,12 +23,12 @@ sub rise {
     # @return        [Hash]         Structured email data
     #                [Undef]        If each value of the arguments are missing
     my $class = shift;
-    my $argvs = shift || return undef;
-    my $param = {};
+    my $argvs = shift            || return undef;
     my $email = $argvs->{'data'} || return undef;
     my $thing = { 'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [], 'catch' => undef };
+    my $param = {};
 
-    # 1. Load specified MTA modules
+    # 0. Load specified MTA modules
     for my $e ('load', 'order') {
         # Order of MTA modules
         next unless exists $argvs->{ $e };
@@ -37,38 +38,52 @@ sub rise {
     }
     $ToBeLoaded = __PACKAGE__->load(%$param);
 
-    # 2. Split email data to headers and a body part.
-    return undef unless my $aftersplit = __PACKAGE__->divideup(\$email);
+    my $aftersplit = undef;
+    my $beforefact = undef;
+    my $parseagain = 0;
 
-    # 3. Convert email headers from text to hash reference
-    $thing->{'from'}   = $aftersplit->[0];
-    $thing->{'header'} = __PACKAGE__->makemap(\$aftersplit->[1]);
+    while($parseagain < 2) {
+        # 1. Split email data to headers and a body part.
+        last unless $aftersplit = __PACKAGE__->divideup(\$email);
 
-    # 4. Decode and rewrite the "Subject:" header
-    if( $thing->{'header'}->{'subject'} ) {
-        # Decode MIME-Encoded "Subject:" header
-        my $s = $thing->{'header'}->{'subject'};
-        my $q = Sisimai::RFC2045->is_encoded(\$s) ? Sisimai::RFC2045->decodeH([split(/[ ]/, $s)]) : $s;
+        # 2. Convert email headers from text to hash reference
+        $thing->{'from'}   = $aftersplit->[0];
+        $thing->{'header'} = __PACKAGE__->makemap(\$aftersplit->[1]);
 
-        # Remove "Fwd:" string from the "Subject:" header
-        if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
-            # Delete quoted strings, quote symbols(>)
-            $q = $1;
-            $aftersplit->[2] =~ s/^[>]+[ ]//gm;
-            $aftersplit->[2] =~ s/^[>]$//gm;
+        # 3. Decode and rewrite the "Subject:" header
+        if( $thing->{'header'}->{'subject'} ) {
+            # Decode MIME-Encoded "Subject:" header
+            my $s = $thing->{'header'}->{'subject'};
+            my $q = Sisimai::RFC2045->is_encoded(\$s) ? Sisimai::RFC2045->decodeH([split(/[ ]/, $s)]) : $s;
+
+            # Remove "Fwd:" string from the "Subject:" header
+            if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
+                # Delete quoted strings, quote symbols(>)
+                $q = $1;
+                $aftersplit->[2] =~ s/^[>]+[ ]//gm;
+                $aftersplit->[2] =~ s/^[>]$//gm;
+            }
+            $thing->{'header'}->{'subject'} = $q;
         }
-        $thing->{'header'}->{'subject'} = $q;
+
+        # 4. Rewrite message body for detecting the bounce reason
+        $TryOnFirst = Sisimai::Order->make($thing->{'header'}->{'subject'});
+        $param = { 'hook' => $argvs->{'hook'} || undef, 'mail' => $thing, 'body' => \$aftersplit->[2] };
+        last if $beforefact = __PACKAGE__->parse(%$param);
+        last unless $aftersplit->[2] =~ $ReWrapping;
+
+        # 5. Try to parse again
+        #    There is a bounce message inside of mutipart/*, try to parse the first message/rfc822
+        #    part as a entire message body again.
+        $parseagain++;
+        $email =  [split($ReWrapping, $aftersplit->[2], 2)]->[-1];
+        $email =~ s/\A[\r\n\s]+//m;
+        last unless length $email > 128;
     }
 
-    # 5. Rewrite message body for detecting the bounce reason
-    $TryOnFirst = Sisimai::Order->make($thing->{'header'}->{'subject'});
-    $param = { 'hook' => $argvs->{'hook'} || undef, 'mail' => $thing, 'body' => \$aftersplit->[2] };
-    return undef unless my $bouncedata = __PACKAGE__->parse(%$param);
-    return undef unless keys %$bouncedata;
-
     # 6. Rewrite headers of the original message in the body part
-    $thing->{ $_ } = $bouncedata->{ $_ } for ('ds', 'catch', 'rfc822');
-    my $r = $bouncedata->{'rfc822'} || $aftersplit->[2];
+    $thing->{ $_ } = $beforefact->{ $_ } for ('ds', 'catch', 'rfc822');
+    my $r = $beforefact->{'rfc822'} || $aftersplit->[2];
     $thing->{'rfc822'} = ref $r ? $r : __PACKAGE__->makemap(\$r, 1);
 
     return $thing;
@@ -219,8 +234,8 @@ sub parse {
     my $class = shift;
     my $argvs = { @_ };
 
-    my $mailheader = $argvs->{'mail'}->{'header'} || return '';
-    my $bodystring = $argvs->{'body'} || return '';
+    my $mailheader = $argvs->{'mail'}->{'header'} || return undef;
+    my $bodystring = $argvs->{'body'} || return undef;
     my $hookmethod = $argvs->{'hook'} || undef;
     my $havecaught = undef;
 
@@ -315,8 +330,8 @@ sub parse {
             $modulename = 'RFC3834';
             last(PARSER) if $parseddata;
         }
-
         last; # as of now, we have no sample email for coding this block
+
     } # End of while(PARSER)
     return undef unless $parseddata;
 
