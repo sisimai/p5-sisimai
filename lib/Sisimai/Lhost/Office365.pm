@@ -53,6 +53,12 @@ sub inquire {
             )
         }x,
         'rfc3464' => qr|\AContent-Type:[ ]message/delivery-status|,
+        'lhost'   => qr{\A(?:
+             Generating[ ]server
+            |Bronserver
+            |Servidor[ ]de[ ]origem
+            ):[ ](.+)\z
+        }x,
         'error'   => qr{\A(?:
              Diagnostic[ ]information[ ]for[ ]administrators:
             |Diagnostische[ ]gegevens[ ]voor[ ]beheerders:
@@ -150,7 +156,7 @@ sub inquire {
             $v->{'recipient'} = $1;
             $recipients++;
 
-        } elsif( $e =~ /\A(?:Bronserver|Generating server|Servidor de origem:): (.+)\z/ ) {
+        } elsif( $e =~ $markingsof->{'lhost'} ) {
             # Generating server: FFFFFFFFFFFF.e0.prod.outlook.com
             $permessage->{'lhost'} = lc $1;
 
