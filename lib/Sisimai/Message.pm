@@ -80,6 +80,7 @@ sub rise {
         $email =~ s/\A[\r\n\s]+//m;
         last unless length $email > 128;
     }
+    return undef unless $beforefact;
 
     # 6. Rewrite headers of the original message in the body part
     $thing->{ $_ } = $beforefact->{ $_ } for ('ds', 'catch', 'rfc822');
