@@ -66,6 +66,7 @@ sub make {
         'message-you'      => ['Sisimai::Lhost::Barracuda'],
         'non-recapitabile' => ['Sisimai::Lhost::Exchange2007'],
         'non-remis' => ['Sisimai::Lhost::Exchange2007'],
+        'não-entregue' => ['Sisimai::Lhost::Office365'],
         'notice'    => ['Sisimai::Lhost::Courier'],
         'onbestelbaar'       => ['Sisimai::Lhost::Office365'],
         'permanent-delivery' => ['Sisimai::Lhost::X4'],
