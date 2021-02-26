@@ -27,6 +27,7 @@ sub inquire {
         'userunknown' => [
             'not listed in Domino Directory',
             'not listed in public Name & Address Book',
+            'no se encuentra en el Directorio de Domino',
             "non répertorié dans l'annuaire Domino",
             'Domino ディレクトリには見つかりません',
         ],
