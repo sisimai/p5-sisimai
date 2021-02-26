@@ -19,6 +19,7 @@ sub match {
         'the message was rejected because it contains prohibited virus or spam content',
         'this form of attachment has been used by recent viruses or other malware',
         'virus detected',
+        'virus phishing/malicious_url detected',
         'your message was infected with a virus',
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
