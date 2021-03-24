@@ -17,7 +17,7 @@ MAKETEST: {
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered', 'hasmoved',
         'hostunknown', 'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
         'norelaying', 'notaccept', 'onhold', 'rejected', 'securityerror', 'spamdetected',
-        'suspend', 'systemerror', 'systemfull', 'toomanyconn', 'userunknown',
+        'suspend', 'systemerror', 'systemfull', 'toomanyconn', 'userunknown', 'syntaxerror',
     ];
     my $statuslist = [ qw/
         2.1.5
