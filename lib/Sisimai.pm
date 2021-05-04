@@ -22,6 +22,7 @@ sub rise {
     # @param         [Handle]  argv0      or STDIN
     # @param         [Hash]    argv1      Parser options
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
+    # @options argv1 [Integer] vacation   1 = Including "vacation" reason
     # @options argv1 [Array]   c___       Code references to a callback method for the message and each file
     # @return        [Array]              Parsed objects
     # @return        [undef]              undef if the argument was wrong or an empty array
@@ -40,7 +41,10 @@ sub rise {
     while( my $r = $mail->data->read ) {
         # Read and parse each email file
         my $path = $mail->data->path;
-        my $args = { 'data' => $r, 'hook' => $c___->[0], 'origin' => $path, 'delivered' => $argv1->{'delivered'} };
+        my $args = {
+            'data' => $r, 'hook' => $c___->[0], 'origin' => $path,
+            'delivered' => $argv1->{'delivered'}, 'vaction' => $argv1->{'vacation'}
+        };
         my $fact = Sisimai::Fact->rise($args) || [];
 
         if( $c___->[1] ) {
@@ -63,6 +67,7 @@ sub dump {
     # @param         [Handle]  argv0      or STDIN
     # @param         [Hash]    argv1      Parser options
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
+    # @options argv1 [Integer] vacation   1 = Including "vacation" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
     # @return        [String]             Parsed data as JSON text
     my $class = shift;
@@ -198,10 +203,16 @@ C<make> method provides feature for getting parsed data from bounced email messa
         printf "%s\n", $json->encode($v);
     }
 
-If you want to get bounce records which reason is "delivered", set "delivered" option to make()
+If you want to get bounce records which reason is "delivered" or "vacation", set "delivered" or 
+"vacation" option to make() method like the following:
+
+    my $v = Sisimai->make('/path/to/mbox', 'delivered' => 1, 'vacation' => 1);
+
+Beginning with v5.0.0, sisimai does not return the reulst which "reason" is "vaction" by default.
+If you want to get bounce records which reason is "vacation", set "vacation" option to rise()
 method like the following:
 
-    my $v = Sisimai->make('/path/to/mbox', 'delivered' => 1);
+    my $v = Sisimai->rise('/path/to/mbox', 'vacation' => 1);
 
 =head2 C<B<dump(I<'/path/to/mbox'>)>>
 

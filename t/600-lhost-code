@@ -98,7 +98,7 @@ my $moduletest = sub {
 
         READ_EACH_EMAIL: while( my $r = $mailobject->data->read ) {
             # Read messages in each email
-            my $methodargs = { 'data' => $r, 'delivered' => 1, 'origin' => $cf };
+            my $methodargs = { 'data' => $r, 'delivered' => 1, 'vacation' => 1, 'origin' => $cf };
             my $listoffact = Sisimai::Fact->rise($methodargs);
 
             unless( $listoffact ) {

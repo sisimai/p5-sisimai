@@ -45,6 +45,7 @@ sub rise {
     # @param         [Hash]   argvs
     # @options argvs [String]  data         Entire email message
     # @options argvs [Integer] delivered    Include the result which has "delivered" reason
+    # @options argvs [Integer] vcacation    Include the result which has "vacation" reason
     # @options argvs [Code]    hook         Code reference to callback method
     # @options argvs [Array]   load         User defined MTA module list
     # @options argvs [Array]   order        The order of MTA modules
@@ -95,6 +96,10 @@ sub rise {
         unless( $argvs->{'delivered'} ) {
             # Skip if the value of "deliverystatus" begins with "2." such as 2.1.5
             next RISEOF if index($p->{'deliverystatus'}, '2.') == 0;
+        }
+        unless( $argvs->{'vacation'} ) {
+            # Skip if the value of "reason" is "vacation"
+            next RISEOF if $p->{'reason'} eq 'vacation';
         }
 
         EMAILADDRESS: {
