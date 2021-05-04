@@ -11,6 +11,9 @@ v5.0.0(beta2)
 - changes:
   - **INCOMPATIBLE CHANGES SINCE SISIMAI VERSION 4**
     - `Sisimai->make` marked as obsoleted, use `Sisimai->rise` instead
+    - Sisimai does not return the result which reason is `vacation` by default.
+      Use `vacation => 1` option at `Sisimai->rise()` method to get the parsed
+      results for `vacation` reason. #436, #437
     - `Sisimai::Data` and `Sisimai::Fact`
       - #419, #420 `Sisimai::Data` class has been renamed to `Sisimai::Fact`
       - #402 `Sisimai::Data->softboucne` marked as obsoleted and will be removed
