@@ -48,7 +48,7 @@ sub rise {
         my $fact = Sisimai::Fact->rise($args) || [];
 
         if( $c___->[1] ) {
-            # Run the callback function specified with "c___" parameter of Sisimai->make after reading
+            # Run the callback function specified with "c___" parameter of Sisimai->rise after reading
             # each email file in Maildir/ every time
             $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'fact' => $fact };
             eval { $c___->[1]->($args) if ref $c___->[1] eq 'CODE' };
@@ -169,13 +169,13 @@ mails and generating structured data as JSON from parsed results.
 
 =head1 BASIC USAGE
 
-=head2 C<B<make(I<'/path/to/mbox'>)>>
+=head2 C<B<rise(I<'/path/to/mbox'>)>>
 
-C<make> method provides feature for getting parsed data from bounced email messages like following.
+C<rise> method provides feature for getting parsed data from bounced email messages like following.
 
     use Sisimai;
-    my $v = Sisimai->make('/path/to/mbox'); # or Path to Maildir/
-    #  $v = Sisimai->make(\'From Mailer-Daemon ...');
+    my $v = Sisimai->rise('/path/to/mbox'); # or Path to Maildir/
+    #  $v = Sisimai->rise(\'From Mailer-Daemon ...');
 
     if( defined $v ) {
         for my $e ( @$v ) {
@@ -204,9 +204,9 @@ C<make> method provides feature for getting parsed data from bounced email messa
     }
 
 If you want to get bounce records which reason is "delivered" or "vacation", set "delivered" or 
-"vacation" option to make() method like the following:
+"vacation" option to rise() method like the following:
 
-    my $v = Sisimai->make('/path/to/mbox', 'delivered' => 1, 'vacation' => 1);
+    my $v = Sisimai->rise('/path/to/mbox', 'delivered' => 1, 'vacation' => 1);
 
 Beginning with v5.0.0, sisimai does not return the reulst which "reason" is "vaction" by default.
 If you want to get bounce records which reason is "vacation", set "vacation" option to rise()
@@ -227,7 +227,7 @@ C<dump> method provides feature to get parsed data from bounced email as JSON.
 =head2 Read email data from STDIN
 
 If you want to pass email data from STDIN, specify B<STDIN> at the first argument of dump() and
-make() method like following command:
+rise() method like following command:
 
     % cat ./path/to/bounce.eml | perl -MSisimai -lE 'print Sisimai->dump(STDIN)'
 
@@ -264,14 +264,14 @@ following codes:
     };
 
     my $methods = [$code, undef];
-    my $sisimai = Sisimai->make($path, 'c___' => $methods);
+    my $sisimai = Sisimai->rise($path, 'c___' => $methods);
     print $sisimai->[0]->{'catch'}->{'x-mailer'};    # "Apple Mail (2.1283)"
     print $sisimai->[0]->{'catch'}->{'queue-id'};    # "2DAEB222022E"
     print $sisimai->[0]->{'catch'}->{'precedence'};  # "bulk"
 
 =head3 For each email file
 
-Beginning from v5.0.0, C<c___> argument is available at C<Sisimai->make()> and C<Sisimai->dump()>
+Beginning from v5.0.0, C<c___> argument is available at C<Sisimai->rise()> and C<Sisimai->dump()>
 method for callback feature. The argument C<c___> is an array reference to holding two code
 references for a callback method. The first element of the C<c___> is called at C<Sisimai::Message>
 for dealing the entire message body. The second element of the C<c___> is called at the end of each
@@ -309,7 +309,7 @@ email file parsing.
 
         # Need to not return a value
     };
-    my $list = Sisimai->make($path, 'c___' => [undef, $code]);
+    my $list = Sisimai->rise($path, 'c___' => [undef, $code]);
     print $list->[0]->{'catch'}->{'size'};          # 2202
     print $list->[0]->{'catch'}->{'kind'};          # "Maildir"
     print $list->[0]->{'catch'}->{'return-path'};   # "<MAILER-DAEMON>"
