@@ -4,6 +4,15 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.11p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #438 Localize global variables used by YAML and YAML::Syck:`$YAML::Syck::*`,
+    `$YAML::*`. at `Sisimai::Data::YAML` module. Thanks to @bschmalhofer
+  - Add `rfc3464-41.eml` and `rfc3464-42.eml`
+
 v4.25.11
 --------------------------------------------------------------------------------
 - release: "Mon, 22 Feb 2021 21:11:22 +0900 (JST)"
