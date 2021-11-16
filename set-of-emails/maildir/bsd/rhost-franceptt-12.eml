@@ -1,0 +1,61 @@
+Return-Path: <>
+X-Original-To: xxxx@xxxx.net
+Delivered-To: xxxx@xxxx.net
+Received: from xxxx.xxxx.net (xxxx.xxxx.net)
+	by xxxx.net (Postfix) with ESMTP id D827520D624B
+	for <xxxx@xxxx.net>; Fri, 15 Oct 2021 14:42:03 +0200 (CEST)
+Date: Fri, 15 Oct 2021 14:42:00 +0200 (CEST)
+From: MAILER-DAEMON@xxxx.xxxx.net (Mail Delivery System)
+Subject: Undelivered Mail Returned to Sender
+To: xxxx.xxxx.net
+Auto-Submitted: auto-replied
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status;
+	boundary="64BD1268DDF4.1634301720/xxxx.xxxx.net"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20211015124200.C6602268DDF8@xxxx.xxxx.net>
+
+This is a MIME-encapsulated message.
+
+--64BD1268DDF4.1634301720/xxxx.xxxx.net
+Content-Description: Notification
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+This is the mail system at host xxxx.xxxx.net.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients. It's attached below.
+
+For further assistance, please send mail to postmaster.
+
+If you do so, please include this problem report. You can
+delete your own text from the attached returned message.
+
+                   The mail system
+
+<xxxx@xxxx.net>: host xxxx.laposte.net said: 554
+    5.7.1 <xxxx.xxxx.net>: Client host rejected:
+    #216 lpn LPN000_630 (in reply to RCPT TO command)
+
+--64BD1268DDF4.1634301720/xxxx.xxxx.net
+Content-Description: Undelivered Message Headers
+Content-Type: text/rfc822-headers
+Content-Transfer-Encoding: 8bit
+
+Return-Path: <xxxx.xxxx.net>
+Received: from [#.#.#.#] (unknown [#.#.#.#])
+	by xxxx.xxxx.net (Postfix) with ESMTPS id 64BD1268DDF4
+	for <xxxx@xxxx.net>; Fri, 15 Oct 2021 14:41:59 +0200 (CEST)
+Message-Id: <xxxx.xxxx@xxxx.net>
+Precedence: bulk
+From: "=?UTF-8?Q?Kipli_par_AM?=" <xxxx@xxxx.net>
+To: xxxx@xxxx.net
+Reply-To: xxxx@xxxx.net
+Content-Type: multipart/alternative; boundary="_----------=_1634301717326132"
+Subject: =?UTF-8?Q?xxxxx?=
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+Date: Fri, 15 Oct 2021 14:41:57 +0200
+
+--64BD1268DDF4.1634301720/xxxx.xxxx.net--
