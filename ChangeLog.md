@@ -38,13 +38,16 @@ v5.0.0(beta2)
     bounced mail is multi parted begins with "message/rfc822".
   - #431 Add error messages in some European languages into Office365 and Domino
 
-v4.25.11p1
+v4.25.11p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
   - #438 Localize global variables used by YAML and YAML::Syck:`$YAML::Syck::*`,
     `$YAML::*`. at `Sisimai::Data::YAML` module. Thanks to @bschmalhofer
+  - #441 Add a new error code of La Poste at `Sisimai::Rhost::FrancePTT` module,
+    a new sample email `rhost-franceptt-12.eml` into `set-of-emails/` directory.
+    Thanks to @vhenon
   - Add `rfc3464-41.eml` and `rfc3464-42.eml`
 
 v4.25.11

@@ -18,6 +18,7 @@ my $isexpected = {
     '08' => [['4.2.0',   '421', 'systemerror',     0]],
     '10' => [['4.5.0',   '',    'undefined',       0]],
     '11' => [['4.2.1',   '421', 'undefined',       0]],
+    '12' => [['5.7.1',   '554', 'policyviolation', 0]],
 };
 
 $enginetest->($enginename, $isexpected);
