@@ -36,7 +36,7 @@ delete your own text from the attached returned message.
 
                    The mail system
 
-<xxxx@laposte.net>: host xxxx.laposte.net said: 554
+<xxxx@laposte.net>: host smtpz4.laposte.net said: 554
     5.7.1 <xxxx.xxxx.net>: Client host rejected:
     #216 lpn LPN000_630 (in reply to RCPT TO command)
 
@@ -53,7 +53,7 @@ Final-Recipient: rfc822; xxxx@laposte.net
 Original-Recipient: rfc822;xxxx@laposte.net
 Action: failed
 Status: 5.7.1
-Remote-MTA: dns; xxxx.laposte.net
+Remote-MTA: dns; smtpz4.laposte.net
 Diagnostic-Code: smtp; 554 5.7.1 <xxxx.xxxx.net[#.#.#.#]:49309>:
     Client host rejected: #216 lpn LPN000_630
 
