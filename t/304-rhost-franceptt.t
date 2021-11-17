@@ -24,6 +24,7 @@ MAKE_TEST: {
         '08' => { 'status' => qr/\A4[.]2[.]0\z/, 'reason' => qr/systemerror/ },
         '10' => { 'status' => qr/\A4[.]5[.]0\z/, 'reason' => qr/undefined/ },
         '11' => { 'status' => qr/\A4[.]2[.]1\z/, 'reason' => qr/undefined/ },
+        '12' => { 'status' => qr/\A5[.]7[.]1\z/, 'reason' => qr/policyviolation/ },
     };
     is $PackageName->get, undef;
 
