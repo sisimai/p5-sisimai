@@ -233,6 +233,7 @@ sub rise {
                     # 550-5.7.1 this message has been blocked. Please visit
                     # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
                     $p->{'diagnosticcode'} =~ s/$re/ /g;
+                    $p->{'diagnosticcode'} =~ s|<html>.+</html>||g;
                     $p->{'diagnosticcode'} =  Sisimai::String->sweep($p->{'diagnosticcode'});
                 }
             }
