@@ -49,6 +49,7 @@ v4.25.11p2
     a new sample email `rhost-franceptt-12.eml` into `set-of-emails/` directory.
     Thanks to @vhenon
   - Add `rfc3464-41.eml` and `rfc3464-42.eml`
+  - Remove all the HTML elements from the value of "diagnosticcode".
 
 v4.25.11
 --------------------------------------------------------------------------------
