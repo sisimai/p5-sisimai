@@ -44,7 +44,7 @@ sub match {
 }
 
 sub true {
-    # The bounce reason is security error or not
+    # The bounce reason is "policyviolation" or not
     # @param    [Sisimai::Data] argvs   Object to be detected the reason
     # @return   [Integer]               1: is policy violation
     #                                   0: is not policyviolation

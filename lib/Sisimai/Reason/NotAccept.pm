@@ -40,7 +40,7 @@ sub true {
 
     # SMTP Reply Code is 521, 554 or 556
     return 1 if $argvs->replycode =~ /\A(?:521|554|556)\z/;
-    return 0 unless $argvs->smtpcommand eq 'MAIL';
+    return 0 if $argvs->smtpcommand ne 'MAIL';
     return 1 if __PACKAGE__->match(lc $argvs->diagnosticcode);
     return 0;
 }
