@@ -20,8 +20,8 @@ CP    := cp
 RM    := rm -f
 
 .DEFAULT_GOAL = git-status
-REPOS_TARGETS = git-status git-push git-commit-amend git-tag-list git-diff \
-				git-reset-soft git-rm-cached git-branch
+REPOS_TARGETS = git-status git-push git-commit-amend git-tag-list git-diff git-reset-soft \
+				git-rm-cached git-branch
 DEVEL_TARGETS = private-sample update-analytical-precision-table
 BENCH_TARGETS = profile speed-test loc
 
