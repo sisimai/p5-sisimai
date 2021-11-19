@@ -16,6 +16,13 @@ v4.25.11p2
     Thanks to @vhenon
   - Add `rfc3464-41.eml` and `rfc3464-42.eml`
   - Remove all the HTML elements from the value of "diagnosticcode".
+  - #443 Fix serious bugs: imported from #442
+    - Values of `deliverystatus` and `replycode` detected from the message body
+      did not use at `Sisimai::Lhost::Exim`.
+    - `true()` method strictly checks the value of `smtpcommand` at some classes
+      in `Sisimai::Reason`. For example, when a detected reason is `spamdetected`
+      and `virusdetected` the value of `smtpcommand` should be `DATA` or an SMTP
+      command to be sent after `DATA`.
 
 v4.25.11
 --------------------------------------------------------------------------------
