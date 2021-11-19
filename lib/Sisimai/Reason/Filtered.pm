@@ -48,18 +48,19 @@ sub true {
     return 0 if $tempreason eq 'suspend';
 
     require Sisimai::Reason::UserUnknown;
-    my $alterclass = 'Sisimai::Reason::UserUnknown';
-    my $commandtxt = $argvs->{'smtpcommand'} // '';
-    my $diagnostic = lc $argvs->{'diagnosticcode'} // '';
-
+    my $diagnostic = lc $argvs->{'diagnosticcode'};
     if( $tempreason eq 'filtered' ) {
         # Delivery status code points "filtered".
-        return 1 if( $alterclass->match($diagnostic) || __PACKAGE__->match($diagnostic) );
-
-    } elsif( $commandtxt ne 'RCPT' && $commandtxt ne 'MAIL' ) {
-        # Check the value of Diagnostic-Code and the last SMTP command
+        return 1 if Sisimai::Reason::UserUnknown->match($diagnostic);
         return 1 if __PACKAGE__->match($diagnostic);
-        return 1 if $alterclass->match($diagnostic);
+
+    } else {
+        # The value of "reason" isn't "filtered" when the value of "smtpcommand" is an SMTP command
+        # to be sent before the SMTP DATA command because all the MTAs read the headers and the
+        # entire message body after the DATA command.
+        return 0 if $argvs->{'smtpcommand'} =~ /\A(?:CONN|EHLO|HELO|MAIL|RCPT)\z/;
+        return 1 if __PACKAGE__->match($diagnostic);
+        return 1 if Sisimai::Reason::UserUnknown->match($diagnostic);
     }
     return 0;
 }
