@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.11p2
+v4.25.12
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Mon, 22 Nov 2021 12:22:22 +0900 (JST)"
+- version: "4.25.12"
 - changes:
   - #438 Localize global variables used by YAML and YAML::Syck:`$YAML::Syck::*`,
     `$YAML::*`. at `Sisimai::Data::YAML` module. Thanks to @bschmalhofer

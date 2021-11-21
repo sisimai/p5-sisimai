@@ -4,7 +4,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.30-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.11-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.12-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README-JA(日本語)**](README-JA.md)
 - [What is Sisimai](#what-is-sisimai)
@@ -245,7 +245,7 @@ and Sisimai. More information about differences are available at
 | Install using cpan, cpanm, or cpm command      | N/A           | OK          |
 | Dependencies (Except core modules of Perl)     | 24 modules    | 2 modules   |
 | LOC:Source lines of code                       | 18200 lines   | 10500 lines |
-| The number of tests in t/, xt/ directory       | 27365 tests   | 265000 tests|
+| The number of tests in t/, xt/ directory       | 27365 tests   | 270000 tests|
 | License                                        | GPLv2 or Perl | 2 clause BSD|
 | Support Contract provided by Developer         | End Of Sales  | Available   |
 
@@ -306,7 +306,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2020 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2021 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================
