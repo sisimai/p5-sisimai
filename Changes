@@ -4,6 +4,26 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.12
+--------------------------------------------------------------------------------
+- release: "Mon, 22 Nov 2021 12:22:22 +0900 (JST)"
+- version: "4.25.12"
+- changes:
+  - #438 Localize global variables used by YAML and YAML::Syck:`$YAML::Syck::*`,
+    `$YAML::*`. at `Sisimai::Data::YAML` module. Thanks to @bschmalhofer
+  - #441 Add a new error code of La Poste at `Sisimai::Rhost::FrancePTT` module,
+    a new sample email `rhost-franceptt-12.eml` into `set-of-emails/` directory.
+    Thanks to @vhenon
+  - Add `rfc3464-41.eml` and `rfc3464-42.eml`
+  - Remove all the HTML elements from the value of "diagnosticcode".
+  - #443 Fix serious bugs: imported from #442
+    - Values of `deliverystatus` and `replycode` detected from the message body
+      did not use at `Sisimai::Lhost::Exim`.
+    - `true()` method strictly checks the value of `smtpcommand` at some classes
+      in `Sisimai::Reason`. For example, when a detected reason is `spamdetected`
+      and `virusdetected` the value of `smtpcommand` should be `DATA` or an SMTP
+      command to be sent after `DATA`.
+
 v4.25.11
 --------------------------------------------------------------------------------
 - release: "Mon, 22 Feb 2021 21:11:22 +0900 (JST)"
