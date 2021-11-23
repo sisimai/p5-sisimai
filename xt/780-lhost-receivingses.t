@@ -7,7 +7,10 @@ require './t/600-lhost-code';
 my $enginename = 'ReceivingSES';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
-my $isexpected = {};
+my $isexpected = {
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
+    '01001' => [['5.2.3',   '552', 'exceedlimit',     0]],
+};
 
 plan 'skip_all', sprintf("no private sample");
 $enginetest->($enginename, $isexpected, 1, 0);

@@ -31,6 +31,7 @@ my $isexpected = {
     '40' => [['4.4.6',   '',    'networkerror',    0]],
     '41' => [['5.0.901', '',    'onhold',          0]],
     '42' => [['5.0.0',   '',    'filtered',        0]],
+    '43' => [['4.3.0',   '451', 'onhold',          0]],
 };
  
 $enginetest->($enginename, $isexpected);
