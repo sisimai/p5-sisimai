@@ -3,7 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-sub make {
+sub rise {
     # Parse a transcript of an SMTP session and makes structured data
     # @param    [String] argv0  A transcript text MTA returned
     # @param    [Hash] label    A label strings of a SMTP client and a SMTP server
@@ -124,7 +124,7 @@ Sisimai::SMTP::Transcript - Transcript of SMTP session parser
 =head1 SYNOPSIS
 
     use Sisimai::SMTP::Transcript;
-    my $v = Sisimai::SMTP::Transcript->make($transcript, { 'client' => 'In:', 'server' => 'Out:' })
+    my $v = Sisimai::SMTP::Transcript->rise($transcript, { 'client' => 'In:', 'server' => 'Out:' })
 
 =head1 DESCRIPTION
 
