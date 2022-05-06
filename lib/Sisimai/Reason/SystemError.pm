@@ -28,6 +28,7 @@ sub match {
         'loop was found in the mail exchanger',
         'loops back to myself',
         'mail system configuration error',
+        'queue file write error',
         'recipient deferred because there is no mdb',
         'remote server is misconfigured',
         'server configuration error',
@@ -99,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
