@@ -23,8 +23,8 @@ sub inquire {
         # src/smtpd/smtpd_chat.c:|338:   var_mail_name, state->namaddr);
         $match++;
         $sessx++;
-
     } else {
+        # Subject: Undelivered Mail Returned to Sender
         $match++ if $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
     }
     return undef if $match == 0;
@@ -81,7 +81,11 @@ sub inquire {
             $v ||= $dscontents->[-1];
             $p   = $e->{'response'};
 
-            if( $e->{'command'} eq 'MAIL' ) {
+            if( $e->{'command'} =~ /\A(?:EHLO|HELO)/ ) {
+                # Use the argument of EHLO/HELO command as a value of "lhost"
+                $v->{'lhost'} = $e->{'argument'};
+
+            } elsif( $e->{'command'} eq 'MAIL' ) {
                 # Set the argument of "MAIL" command to pseudo To: header of the original message
                 $emailsteak->[1] .= sprintf("To: %s\n", $e->{'argument'}) unless length $emailsteak->[1];
 
@@ -94,10 +98,6 @@ sub inquire {
                 }
                 $v->{'recipient'} = $e->{'argument'};
                 $recipients++;
-
-            } elsif( $e->{'command'} =~ /\A(?:EHLO|HELO)/ ) {
-                # Use the argument of EHLO/HELO command as a value of "lhost"
-                $v->{'lhost'} = $e->{'argument'};
             }
             next if int($p->{'reply'}) < 400;
 
