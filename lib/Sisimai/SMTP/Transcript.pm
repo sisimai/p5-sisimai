@@ -8,7 +8,7 @@ sub rise {
     # @param    [String] argv1  A transcript text MTA returned
     # @param    [Hash] label    A label strings of a SMTP client and a SMTP server
     # @return   [Array]         Structured data
-    # @return   [undef]         Failed to parse or the arguments are missing
+    # @return   [undef]         Failed to parse or the 1st argument is missing
     # @since v5.0.0
     my $class = shift;
     my $argv1 = shift || return undef;
