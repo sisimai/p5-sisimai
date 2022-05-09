@@ -5,17 +5,17 @@ use warnings;
 
 sub rise {
     # Parse a transcript of an SMTP session and makes structured data
-    # @param    [String] argv0  A transcript text MTA returned
+    # @param    [String] argv1  A transcript text MTA returned
     # @param    [Hash] label    A label strings of a SMTP client and a SMTP server
     # @return   [Array]         Structured data
     # @return   [undef]         Failed to parse or the arguments are missing
     # @since v5.0.0
     my $class = shift;
-    my $argv0 = shift || return undef;
+    my $argv1 = shift || return undef;
     my $label = shift || { 'client' => '>>>', 'server' => '<<<' };
 
-    return undef unless ref $argv0 eq 'SCALAR';
-    return undef unless length $$argv0;
+    return undef unless ref $argv1 eq 'SCALAR';
+    return undef unless length $$argv1;
     return undef unless ref $label eq 'HASH';
     return undef unless exists $label->{'client'};
     return undef unless exists $label->{'server'};
@@ -35,30 +35,30 @@ sub rise {
     };
 
     # 1. Replace label strings of SMTP client/server at the each line
-    $$argv0 =~ s/^[ ]$label->{'client'}\s+/>>> /gm;
-    $$argv0 =~ s/^[ ]$label->{'server'}\s+/<<< /gm;
+    $$argv1 =~ s/^[ ]$label->{'client'}\s+/>>> /gm;
+    $$argv1 =~ s/^[ ]$label->{'server'}\s+/<<< /gm;
 
     # 2. Remove strings until the first '<<<' or '>>>'
     my $parameters = '';    # Command parameters of MAIL, RCPT
     my $cursession = undef; # Current session for $esmtp
 
-    if( index($$argv0, '<<<') < index($$argv0, '>>>') ) {
+    if( index($$argv1, '<<<') < index($$argv1, '>>>') ) {
         # An SMTP server response starting with '<<<' is the first
         push @$esmtp, $table->();
         $cursession = $esmtp->[-1];
         $cursession->{'command'} = 'CONN';
-        $$argv0 =~ s/\A.+?<<</<<</ms;
+        $$argv1 =~ s/\A.+?<<</<<</ms;
 
     } else {
         # An SMTP command starting with '>>>' is the first
-        $$argv0 =~ s/\A.+?>>>/>>>/ms;
+        $$argv1 =~ s/\A.+?>>>/>>>/ms;
     }
 
     # 3. Remove unused lines, concatenate folded lines
-    $$argv0 =~ s/\n\n.+\z//ms;      # Remove strings from the first blank line to the tail
-    $$argv0 =~ s/\n[\s\t]+/ /g;     # Concatenate folded lines to each previous line
+    $$argv1 =~ s/\n\n.+\z//ms;      # Remove strings from the first blank line to the tail
+    $$argv1 =~ s/\n[\s\t]+/ /g;     # Concatenate folded lines to each previous line
 
-    for my $e ( split("\n", $$argv0) ) {
+    for my $e ( split("\n", $$argv1) ) {
         # 4. Read each SMTP command and server response
         if( index($e, '>>> ') == 0 ) {
             # SMTP client sent a command ">>> SMTP-command arguments"
