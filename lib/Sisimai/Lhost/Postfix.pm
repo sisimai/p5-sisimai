@@ -70,8 +70,7 @@ sub inquire {
     if( $sessx ) {
         # The message body starts with 'Transcript of session follows.'
         require Sisimai::SMTP::Transcript;
-        my $methodargv = { 'client' => 'In:', 'server' => 'Out:' };
-        my $transcript = Sisimai::SMTP::Transcript->rise(\$emailsteak->[0], $methodargv);
+        my $transcript = Sisimai::SMTP::Transcript->rise(\$emailsteak->[0], 'In:', 'Out:');
 
         return undef unless $transcript;
         return undef unless scalar @$transcript;

@@ -14,8 +14,7 @@ MAKETEST: {
     my $targetmail = 'set-of-emails/maildir/bsd/lhost-postfix-75.eml';
     my $mailobject = Sisimai::Mail->new($targetmail);
     my $entiremesg = $mailobject->read; $entiremesg =~ s/\A.+?\n\n(.+)\z/$1/ms;
-    my $methodargv = { 'client' => 'In:', 'server' => 'Out:' };
-    my $transcript = Sisimai::SMTP::Transcript->rise(\$entiremesg, $methodargv);
+    my $transcript = Sisimai::SMTP::Transcript->rise(\$entiremesg, 'In:', 'Out:');
     my $resmtpcomm = qr/(?:CONN|HELO|EHLO|AUTH|MAIL|RCPT|DATA|QUIT|RSET|X[A-Z]+)/;
 
     isa_ok $transcript, 'ARRAY';
