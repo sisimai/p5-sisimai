@@ -121,6 +121,7 @@ sub list {
             SMTP/Error.pm
             SMTP/Reply.pm
             SMTP/Status.pm
+            SMTP/Transcript.pm
         String.pm
         Time.pm
     | ];
