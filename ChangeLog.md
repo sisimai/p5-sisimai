@@ -36,10 +36,10 @@ v5.0.0(beta3)
   - #431 Add error messages in some European languages into Office365 and Domino
   - #445 Implement `Sisimai::STMP::Transcript` for parsing a transcript of session log
 
-v4.25.11p2
+v4.25.12
 ---------------------------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: ""Mon, 22 Nov 2021 12:22:22 +0900 (JST)"
+- version: "4.25.12"
 - changes:
   - #438 Localize global variables used by YAML and YAML::Syck:`$YAML::Syck::*`, `$YAML::*`. at
     `Sisimai::Data::YAML` module. Thanks to @bschmalhofer
