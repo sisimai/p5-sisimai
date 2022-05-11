@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.0.0(beta2)
+v5.0.0(beta3)
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -34,6 +34,7 @@ v5.0.0(beta2)
   - #429 `Sisimai::Message->rise()` parses twice when the entire message body of a bounced mail is
     multi parted begins with "message/rfc822".
   - #431 Add error messages in some European languages into Office365 and Domino
+  - #445 Implement `Sisimai::STMP::Transcript` for parsing a transcript of session log
 
 v4.25.11p2
 ---------------------------------------------------------------------------------------------------
