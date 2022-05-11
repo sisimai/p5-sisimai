@@ -20,6 +20,8 @@ sub rise {
     return undef unless length $$argv0;
     return undef unless length $argv1;
     return undef unless length $argv2;
+    return undef unless index($$argv0, $argv1) > -1;
+    return undef unless index($$argv0, $argv2) > -1;
 
     my $esmtp = [];
     my $table = sub {

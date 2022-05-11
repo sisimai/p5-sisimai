@@ -56,9 +56,10 @@ MAKETEST: {
 
     is(Sisimai::SMTP::Transcript->rise(undef), undef);
     is(Sisimai::SMTP::Transcript->rise(\''), undef);
-    is(Sisimai::SMTP::Transcript->rise('neko', 2), undef);
-    is(Sisimai::SMTP::Transcript->rise('neko', []), undef);
-    is(Sisimai::SMTP::Transcript->rise('neko', {}), undef);
+    is(Sisimai::SMTP::Transcript->rise(\'neko', 2), undef);
+    is(Sisimai::SMTP::Transcript->rise(\'neko', ''), undef);
+    is(Sisimai::SMTP::Transcript->rise(\'neko', '', ''), undef);
+    is(Sisimai::SMTP::Transcript->rise(\'neko', 'x', 'y'), undef);
 }
 
 done_testing;
