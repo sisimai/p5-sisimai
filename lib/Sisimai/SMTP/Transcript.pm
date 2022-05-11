@@ -20,9 +20,12 @@ sub rise {
     return undef unless length $$argv0;
     return undef unless length $argv1;
     return undef unless length $argv2;
-    return undef unless index($$argv0, $argv1) > -1;
-    return undef unless index($$argv0, $argv2) > -1;
 
+    # 1. Replace label strings of SMTP client/server at the each line
+    $$argv0 =~ s/^[ ]+$argv1\s+/>>> /gm; return undef unless index($$argv0, '>>> ') > -1;
+    $$argv0 =~ s/^[ ]+$argv2\s+/<<< /gm; return undef unless index($$argv0, '<<< ') > -1;
+
+    # 2. Remove strings until the first '<<<' or '>>>'
     my $esmtp = [];
     my $table = sub {
         return {
@@ -36,12 +39,6 @@ sub rise {
             }
         };
     };
-
-    # 1. Replace label strings of SMTP client/server at the each line
-    $$argv0 =~ s/^[ ]$argv1\s+/>>> /gm;
-    $$argv0 =~ s/^[ ]$argv2\s+/<<< /gm;
-
-    # 2. Remove strings until the first '<<<' or '>>>'
     my $parameters = '';    # Command parameters of MAIL, RCPT
     my $cursession = undef; # Current session for $esmtp
 

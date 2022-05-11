@@ -54,12 +54,12 @@ MAKETEST: {
         }
     }
 
+    my $q = 'nekochan-nyaan';
     is(Sisimai::SMTP::Transcript->rise(undef), undef);
     is(Sisimai::SMTP::Transcript->rise(\''), undef);
-    is(Sisimai::SMTP::Transcript->rise(\'neko', 2), undef);
-    is(Sisimai::SMTP::Transcript->rise(\'neko', ''), undef);
-    is(Sisimai::SMTP::Transcript->rise(\'neko', '', ''), undef);
-    is(Sisimai::SMTP::Transcript->rise(\'neko', 'x', 'y'), undef);
+    is(Sisimai::SMTP::Transcript->rise(\$q, ''), undef);
+    is(Sisimai::SMTP::Transcript->rise(\$q, '', ''), undef);
+    is(Sisimai::SMTP::Transcript->rise(\$q, 'x', 'y'), undef);
 }
 
 done_testing;
