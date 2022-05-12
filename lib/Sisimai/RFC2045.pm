@@ -41,9 +41,7 @@ sub decodeH {
 
     while( my $e = shift @$argvs ) {
         # Check and decode each element
-        $e =~ s/\A[ \t]+//g;
-        $e =~ s/[ \t]+\z//g;
-        $e =~ y/"//d;
+        s/\A[ \t]+//g, s/[ \t]+\z//g, y/"//d for $e;
 
         if( __PACKAGE__->is_encoded(\$e) ) {
             # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
@@ -458,7 +456,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

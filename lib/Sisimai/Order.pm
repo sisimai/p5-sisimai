@@ -102,9 +102,7 @@ sub make {
         'warning' => ['Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Exim'],
     };
 
-
-    $argv0 =~ y/_[] / /s;
-    $argv0 =~ s/\A[ ]+//;
+    y/_[] / /s, s/\A[ ]+// for $argv0;
     my @words = split(/[ ]/, lc($argv0), 3);
 
     if( rindex($words[0], ':') > 0 ) {

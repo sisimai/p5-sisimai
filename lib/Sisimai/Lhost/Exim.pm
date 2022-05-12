@@ -305,7 +305,7 @@ sub inquire {
         if( defined $mhead->{'x-failed-recipients'} ) {
             # X-Failed-Recipients: kijitora@example.jp
             my @rcptinhead = split(',', $mhead->{'x-failed-recipients'});
-            for my $e ( @rcptinhead ) { $e =~ s/\A[ ]+//; $e =~ s/[ ]+\z// }
+            for my $e ( @rcptinhead ) { s/\A[ ]+//, s/[ ]+\z// for $e }
             $recipients = scalar @rcptinhead;
 
             for my $e ( @rcptinhead ) {
@@ -521,7 +521,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

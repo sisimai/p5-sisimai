@@ -60,8 +60,7 @@ sub rise {
             if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
                 # Delete quoted strings, quote symbols(>)
                 $q = $1;
-                $aftersplit->[2] =~ s/^[>]+[ ]//gm;
-                $aftersplit->[2] =~ s/^[>]$//gm;
+                s/^[>]+[ ]//gm, s/^[>]$//gm for $aftersplit->[2];
             }
             $thing->{'header'}->{'subject'} = $q;
         }
@@ -141,9 +140,7 @@ sub divideup {
     my $email = shift // return undef;
     my $block = ['', '', ''];   # 0:From, 1:Header, 2:Body
 
-    $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
-    $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
-
+    s/\r\n/\n/gm, s/[ \t]+$//gm for $$email;
     ($block->[1], $block->[2]) = split(/\n\n/, $$email, 2);
     return undef unless $block->[1];
     return undef unless $block->[2];
@@ -181,12 +178,12 @@ sub makemap {
     my $recvheader = [];
 
     $headermaps->{ lc $_ } = $firstpairs->{ $_ } for keys %$firstpairs;
-    for my $e ( values %$headermaps ) { $e =~ s/\n\s+/ /; $e =~ y/\t / /s }
+    for my $e ( values %$headermaps ) { s/\n\s+/ /, y/\t / /s for $e }
 
     if( $$argv0 =~ /^Received:/m ) {
         # Capture values of each Received: header
         $recvheader = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms];
-        for my $e ( @$recvheader ) { $e =~ s/\n\s+/ /; $e =~ y/\n\t / /s }
+        for my $e ( @$recvheader ) { s/\n\s+/ /, y/\n\t / /s for $e }
     }
     $headermaps->{'received'} = $recvheader;
 
@@ -464,7 +461,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

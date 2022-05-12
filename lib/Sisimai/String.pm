@@ -52,11 +52,8 @@ sub sweep {
     my $argv1 = shift // return undef;
 
     chomp $argv1;
-    $argv1 =~ y/ //s;
-    $argv1 =~ y/\t//d;
-    $argv1 =~ s/\A //g if index($argv1, ' ') == 0;
-    $argv1 =~ s/ \z//g if substr($argv1, -1, 1) eq ' ';
-    $argv1 =~ s/ [-]{2,}[^ \t].+\z//;
+    y/ //s, y/\t//d for $argv1;
+    s/\A //g, s/ \z//g, s/ [-]{2,}[^ \t].+\z// for $argv1;
     return $argv1;
 }
 
@@ -82,18 +79,13 @@ sub to_plain {
         # 2. Remove <style>...</style>
         # 3. <a href = 'http://...'>...</a> to " http://... "
         # 4. <a href = 'mailto:...'>...</a> to " Value <mailto:...> "
-        $plain =~ s|<head>.+</head>||gsim;
-        $plain =~ s|<style.+?>.+</style>||gsim;
+        s|<head>.+</head>||gsim, s|<style.+?>.+</style>||gsim for $plain;
         $plain =~ s|<a\s+href\s*=\s*['"](https?://.+?)['"].*?>(.*?)</a>| [$2]($1) |gsim;
         $plain =~ s|<a\s+href\s*=\s*["']mailto:([^\s]+?)["']>(.*?)</a>| [$2](mailto:$1) |gsim;
 
         $plain =~ s/<[^<@>]+?>\s*/ /g;  # Delete HTML tags except <neko@example.jp>
-        $plain =~ s/&lt;/</g;           # Convert to left angle brackets
-        $plain =~ s/&gt;/>/g;           # Convert to right angle brackets
-        $plain =~ s/&amp;/&/g;          # Convert to "&"
-        $plain =~ s/&quot;/"/g;         # Convert to '"'
-        $plain =~ s/&apos;/'/g;         # Convert to "'"
-        $plain =~ s/&nbsp;/ /g;         # Convert to ' '
+        s/&lt;/</g,   s/&gt;/>/g,   s/&amp;/&/g  for $plain;    # Convert to <, >, and &
+        s/&quot;/"/g, s/&apos;/'/g, s/&nbsp;/ /g for $plain;    # Convert to ", ', and [ ]
 
         if( length($$argv1) > length($plain) ) {
             $plain =~ y/ //s;
@@ -218,7 +210,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019,2021,2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

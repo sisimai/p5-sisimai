@@ -244,8 +244,8 @@ sub parse {
     my $argv1 = shift || return undef;
 
     my $datestring = $argv1;
-       $datestring =~ s{[,](\d+)}{, $1};  # Thu,13 -> Thu, 13
-       $datestring =~ s{(\d{1,2}),}{$1};    # Apr 29, -> Apr 29
+    s/[,](\d+)/, $1/, s/(\d{1,2}),/$1/ for $datestring; # "Apr 29", -> "Apr 29" "Thu,13" -> "Thu, 13"
+
     my @timetokens = split(' ', $datestring);
     my $parseddate = '';    # [String]  Canonified Date/Time string
     my $afternoon1 = 0;     # [Integer] After noon flag
@@ -521,7 +521,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
