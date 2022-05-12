@@ -22,7 +22,7 @@ sub inquire {
     # 'message-id' => qr/\d+[.]JavaMail[.].+[@]/,
     $match ||= 1 if $mhead->{'subject'} eq '[BOUNCE]';
     $match ||= 1 if defined $mhead->{'message-id'} && rindex($mhead->{'message-id'}, '.JavaMail.') > -1;
-    $match ||= 1 if grep { rindex($_, 'JAMES SMTP Server') > -1 } @{ $mhead->{'received'} };
+    $match ||= 1 if grep { rindex($_, 'JAMES SMTP Server') > -1 } $mhead->{'received'}->@*;
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
@@ -155,7 +155,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

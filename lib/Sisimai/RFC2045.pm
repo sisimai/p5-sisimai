@@ -318,17 +318,17 @@ sub makeflat {
             # Check the value of Content-Transfer-Encoding: header
             if( $ctencoding eq 'base64' ) {
                 # Content-Transfer-Encoding: base64
-                $bodystring = ${ __PACKAGE__->decodeB(\$bodyinside) };
+                $bodystring = __PACKAGE__->decodeB(\$bodyinside)->$*;
 
             } elsif( $ctencoding eq 'quoted-printable') {
                 # Content-Transfer-Encoding: quoted-printable
-                $bodystring = ${ __PACKAGE__->decodeQ(\$bodyinside) };
+                $bodystring = __PACKAGE__->decodeQ(\$bodyinside)->$*;
 
             } elsif( $ctencoding eq '7bit' ) {
                 # Content-Transfer-Encoding: 7bit
                 if( lc $e->[0] =~ $iso2022set ) {
                     # Content-Type: text/plain; charset=ISO-2022-JP
-                    $bodystring = ${ Sisimai::String->to_utf8(\$bodyinside, $1) };
+                    $bodystring = Sisimai::String->to_utf8(\$bodyinside, $1)->$*;
 
                 } else {
                     # No "charset" parameter in the value of Content-Type: header
@@ -340,7 +340,7 @@ sub makeflat {
             }
 
             # Try to delete HTML tags inside of text/html part whenever possible
-            $bodystring = ${ Sisimai::String->to_plain(\$bodystring) } if $istexthtml;
+            $bodystring = Sisimai::String->to_plain(\$bodystring)->$* if $istexthtml;
             next unless $bodystring;
             $bodystring =~ s|\r\n|\n|g if index($bodystring, "\r\n") > -1;    # Convert CRLF to LF
 
@@ -458,7 +458,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

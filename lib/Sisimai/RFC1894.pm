@@ -59,8 +59,8 @@ sub match {
             Diagnostic-Code Last-Attempt-Date X-Actual-Recipient|],
     ];
 
-    return 1 if grep { index($argv0, $_) == 0 } @{ $fieldnames->[0] };
-    return 2 if grep { index($argv0, $_) == 0 } @{ $fieldnames->[1] };
+    return 1 if grep { index($argv0, $_) == 0 } $fieldnames->[0]->@*;
+    return 2 if grep { index($argv0, $_) == 0 } $fieldnames->[1]->@*;
     return 0;
 }
 
@@ -193,7 +193,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

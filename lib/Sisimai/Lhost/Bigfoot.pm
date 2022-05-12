@@ -19,7 +19,7 @@ sub inquire {
 
     # 'subject'  => qr/\AReturned mail: /,
     $match ||= 1 if rindex($mhead->{'from'}, '@bigfoot.com>') > -1;
-    $match ||= 1 if grep { rindex($_, '.bigfoot.com ') > -1 } @{ $mhead->{'received'} };
+    $match ||= 1 if grep { rindex($_, '.bigfoot.com ') > -1 } $mhead->{'received'}->@*;
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
@@ -161,7 +161,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -318,7 +318,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
-    if( scalar @{ $mhead->{'received'} } ) {
+    if( scalar $mhead->{'received'}->@* ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
         $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ \t]([^ ]+) /;
@@ -381,10 +381,10 @@ sub inquire {
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
 
-            if( ! $e->{'rhost'} && scalar @{ $mhead->{'received'} } ) {
+            if( ! $e->{'rhost'} && scalar $mhead->{'received'}->@* ) {
                 # Get localhost and remote host name from Received header.
                 my $r0 = $mhead->{'received'};
-                $e->{'rhost'} = pop @{ Sisimai::RFC5322->received($r0->[-1]) };
+                $e->{'rhost'} = pop Sisimai::RFC5322->received($r0->[-1])->@*;
             }
         }
 
@@ -410,7 +410,7 @@ sub inquire {
                 # Verify each regular expression of session errors
                 SESSION: for my $r ( keys %$messagesof ) {
                     # Check each regular expression
-                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
+                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
                     $e->{'reason'} = $r;
                     last;
                 }
@@ -521,7 +521,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -40,8 +40,8 @@ sub inquire {
             last if $match;
         }
 
-        last unless scalar @{ $mhead->{'received'} };
-        for my $e ( @{ $mhead->{'received'} } ) {
+        last unless scalar $mhead->{'received'}->@*;
+        for my $e ( $mhead->{'received'}->@* ) {
             # Received: by ***.**.** with Internet Mail Service (5.5.2657.72)
             next unless rindex($e, ' with Internet Mail Service (') > -1;
             $match = 1;
@@ -196,7 +196,7 @@ sub inquire {
 
             for my $r ( keys %$errorcodes ) {
                 # Find captured code from the error code table
-                next unless grep { $capturedcode eq $_ } @{ $errorcodes->{ $r } };
+                next unless grep { $capturedcode eq $_ } $errorcodes->{ $r }->@*;
                 $e->{'reason'} = $r;
                 $e->{'status'} = Sisimai::SMTP::Status->code($r) || '';
                 last;
@@ -260,7 +260,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

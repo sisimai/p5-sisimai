@@ -14,7 +14,7 @@ use constant HEADERTABLE => {
 my $HEADERINDEX = {};
 BUILD_FLATTEN_RFC822HEADER_LIST: {
     # Convert $HEADER: hash reference to flatten hash reference for being called from Sisimai::Lhost::*
-    for my $v ( values %{ HEADERTABLE() } ) {
+    for my $v ( values HEADERTABLE()->%* ) {
         $HEADERINDEX->{ $_ } = 1 for @$v;
     }
 }

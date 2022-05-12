@@ -33,7 +33,7 @@ sub rise {
         # Order of MTA modules
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
-        next unless scalar @{ $argvs->{ $e } };
+        next unless scalar $argvs->{ $e }->@*;
         $param->{ $e } = $argvs->{ $e };
     }
     $ToBeLoaded = __PACKAGE__->load(%$param);
@@ -107,13 +107,13 @@ sub load {
         # The order of MTA modules specified by user
         next unless exists $argvs->{ $e };
         next unless ref $argvs->{ $e } eq 'ARRAY';
-        next unless scalar @{ $argvs->{ $e } };
+        next unless scalar $argvs->{ $e }->@*;
 
-        push @modulelist, @{ $argvs->{'order'} } if $e eq 'order';
+        push @modulelist, $argvs->{'order'}->@* if $e eq 'order';
         next unless $e eq 'load';
 
         # Load user defined MTA module
-        for my $v ( @{ $argvs->{'load'} } ) {
+        for my $v ( $argvs->{'load'}->@* ) {
             # Load user defined MTA module
             eval {
                 (my $modulepath = $v) =~ s|::|/|g;
@@ -338,7 +338,7 @@ sub parse {
 
     $parseddata->{'catch'} = $havecaught;
     $modulename =~ s/\A.+:://;
-    $_->{'agent'} ||= $modulename for @{ $parseddata->{'ds'} };
+    $_->{'agent'} ||= $modulename for $parseddata->{'ds'}->@*;
     return $parseddata;
 }
 
@@ -441,7 +441,7 @@ C<header()> returns the header part of the email.
 
 C<ds()> returns an array reference which include contents of delivery status.
 
-    for my $e ( @{ $message->ds } ) {
+    for my $e ( $message->ds->@* ) {
         print $e->{'status'};   # 5.1.1
         print $e->{'recipient'};# neko@example.jp
     }
@@ -464,7 +464,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

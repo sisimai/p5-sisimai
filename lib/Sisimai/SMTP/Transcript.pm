@@ -104,7 +104,7 @@ sub rise {
             $e =~ s/\A<<<[ ]//;
             $cursession->{'response'}->{'reply'}  = $1 if $e =~ /\A([2-5]\d\d)[ ]/;
             $cursession->{'response'}->{'status'} = $1 if $e =~ /\A[245]\d\d[ ]([245][.]\d{1,3}[.]\d{1,3})[ ]/;
-            push(@{ $cursession->{'response'}->{'text'} }, $e);
+            push $cursession->{'response'}->{'text'}->@*, $e;
         }
     }
 

@@ -54,7 +54,7 @@ sub get {
     } else {
         # 553 http://www.spamhaus.org/query/bl?ip=192.0.0.222
         for my $e ( keys %$messagesof ) {
-            for my $f ( @{ $messagesof->{ $e } } ) {
+            for my $f ( $messagesof->{ $e }->@* ) {
                 next if index($statusmesg, $f) == -1;
                 $reasontext = $e;
                 last
@@ -96,7 +96,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2018,2020-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

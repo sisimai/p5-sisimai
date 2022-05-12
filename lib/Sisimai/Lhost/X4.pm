@@ -24,7 +24,7 @@ sub inquire {
     #         Subject: failure notice
     $match ||= 1 if index($mhead->{'subject'}, 'failure notice') == 0;
     $match ||= 1 if index($mhead->{'subject'}, 'Permanent Delivery Failure') == 0;
-    $match ||= 1 if grep { $_ =~ $tryto } @{ $mhead->{'received'} };
+    $match ||= 1 if grep { $_ =~ $tryto } $mhead->{'received'}->@*;
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
@@ -225,12 +225,12 @@ sub inquire {
                     # Verify each regular expression of session errors
                     if( $e->{'alterrors'} ) {
                         # Check the value of "alterrors"
-                        next unless grep { index($e->{'alterrors'}, $_) > -1 } @{ $messagesof->{ $r } };
+                        next unless grep { index($e->{'alterrors'}, $_) > -1 } $messagesof->{ $r }->@*;
                         $e->{'reason'} = $r;
                     }
                     last if $e->{'reason'};
 
-                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
+                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
                     $e->{'reason'} = $r;
                     last;
                 }
@@ -238,7 +238,7 @@ sub inquire {
                 unless( $e->{'reason'} ) {
                     LDAP: for my $r ( keys %$failonldap ) {
                         # Verify each regular expression of LDAP errors
-                        next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $failonldap->{ $r } };
+                        next unless grep { index($e->{'diagnosis'}, $_) > -1 } $failonldap->{ $r }->@*;
                         $e->{'reason'} = $r;
                         last;
                     }
@@ -291,7 +291,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

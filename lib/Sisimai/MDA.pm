@@ -119,11 +119,11 @@ sub inquire {
     return undef unless $agentname0;
     return undef unless scalar @linebuffer;
 
-    for my $e ( keys %{ $messagesof->{ $agentname0 } } ) {
+    for my $e ( keys $messagesof->{ $agentname0 }->%* ) {
         # Detect an error reason from message patterns of the MDA.
         for my $f ( @linebuffer ) {
             # Whether the error message include each message defined in $messagesof
-            next unless grep { index(lc($f), $_) > -1 } @{ $messagesof->{ $agentname0 }->{ $e } };
+            next unless grep { index(lc($f), $_) > -1 } $messagesof->{ $agentname0 }->{ $e }->@*;
             $reasonname = $e;
             $bouncemesg = $f;
             last;
@@ -181,7 +181,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

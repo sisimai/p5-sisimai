@@ -20,7 +20,7 @@ sub inquire {
     while(1) {
         # Check the value of "From" header
         # 'subject' => qr/Undeliverable Message/,
-        last unless grep { rindex($_, '.vtext.com (') > -1 } @{ $mhead->{'received'} };
+        last unless grep { rindex($_, '.vtext.com (') > -1 } $mhead->{'received'}->@*;
         $match = 1 if $mhead->{'from'} eq 'post_master@vtext.com';
         $match = 0 if $mhead->{'from'} =~ /[<]?sysadmin[@].+[.]vzwpix[.]com[>]?\z/;
         last;
@@ -162,7 +162,7 @@ sub inquire {
 
         SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
             $e->{'reason'} = $r;
             last;
         }
@@ -207,7 +207,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

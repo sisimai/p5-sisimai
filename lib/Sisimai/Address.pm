@@ -607,7 +607,7 @@ C<name()> returns a display name
 C<name()> returns a comment
 
     my $e = '"Neko, Nyaan" <neko(nyaan)@example.org>';
-    my $v = Sisimai::Address->new(shift @{ Sisimai::Address->find($e) });
+    my $v = Sisimai::Address->new(shift Sisimai::Address->find($e)->@*);
     print $v->address;  # neko@example.org
     print $v->comment;  # nyaan
 
@@ -617,7 +617,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -97,7 +97,7 @@ sub soft_or_hard {
         # Check all the reasons defined at the above
         SOFT_OR_HARD: for my $e ('hard', 'soft') {
             # Soft or Hard?
-            for my $f ( @{ $softorhard->{ $e } } ) {
+            for my $f ( $softorhard->{ $e }->@* ) {
                 # Hard bounce?
                 next unless $argv1 eq $f;
                 $value = $e;
@@ -154,7 +154,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018,2020-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
