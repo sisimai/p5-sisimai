@@ -164,7 +164,7 @@ sub find {
     #                           email address in the argument
     # @since    v4.22.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return undef; y/\r//d, y/\n//d for $argv1; # Remove CR, NL
     my $addrs = shift // undef;
 
     state $indicators = {
@@ -186,9 +186,6 @@ sub find {
     my $readcursor = 0;
     my $v = $emailtable;   # temporary buffer
     my $p = '';            # current position
-
-    $argv1 =~ y/\r//d if index($argv1, "\r") > -1;  # Remove CR
-    $argv1 =~ y/\n//d if index($argv1, "\n") > -1;  # Remove NL
 
     for my $e ( split('', $argv1) ) {
         # Check each characters
@@ -374,8 +371,7 @@ sub find {
 
         # Remove angle brackets, other brackets, and quotations: []<>{}'` except a domain part is
         # an IP address like neko@[192.0.2.222]
-        $e->{'address'} =~ s/\A[\[<{('`]//;
-        $e->{'address'} =~ s/[.'`>});]\z//;
+        s/\A[\[<{('`]//, s/[.'`>});]\z// for $e->{'address'};
         $e->{'address'} =~ s/\]\z// unless $e->{'address'} =~ /[@]\[[0-9A-Za-z:\.]+\]\z/;
 
         unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
@@ -391,11 +387,7 @@ sub find {
 
         } else {
             # Remove double-quotations, trailing spaces.
-            for my $f ('name', 'comment') {
-                # Remove traliing spaces
-                $e->{ $f } =~ s/\A[ ]//g if index($e->{ $f }, ' ') == 0;
-                $e->{ $f } =~ s/[ ]\z//g if substr($e->{ $f }, -1, 1) eq ' ';
-            }
+            for my $f ('name', 'comment') { s/\A[ ]//g, s/[ ]\z//g for $e->{ $f } }
             $e->{'comment'} = ''   unless $e->{'comment'} =~ /\A[(].+[)]\z/;
             $e->{'name'} =~ y/ //s    unless $e->{'name'} =~ /\A["].+["]\z/;
             $e->{'name'} =~ s/\A["]// unless $e->{'name'} =~ /\A["].+["][@]/;
@@ -617,7 +609,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -60,8 +60,7 @@ sub rise {
             if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
                 # Delete quoted strings, quote symbols(>)
                 $q = $1;
-                $aftersplit->[2] =~ s/^[>]+[ ]//gm;
-                $aftersplit->[2] =~ s/^[>]$//gm;
+                s/^[>]+[ ]//gm, s/^[>]$//gm for $aftersplit->[2];
             }
             $thing->{'header'}->{'subject'} = $q;
         }
@@ -169,10 +168,8 @@ sub makemap {
     # @return   [Hash]          Structured email header data
     # @since    v4.25.6
     my $class = shift;
-    my $argv0 = shift || return {};
+    my $argv0 = shift || return {}; $$argv0 =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbols
     my $argv1 = shift || 0;
-
-    $$argv0 =~ s/^[>]+[ ]//mg;  # Remove '>' indent symbol of forwarded message
 
     # Select and convert all the headers in $argv0. The following regular expression is based on
     # https://gist.github.com/xtetsuji/b080e1f5551d17242f6415aba8a00239
@@ -181,12 +178,12 @@ sub makemap {
     my $recvheader = [];
 
     $headermaps->{ lc $_ } = $firstpairs->{ $_ } for keys %$firstpairs;
-    for my $e ( values %$headermaps ) { $e =~ s/\n\s+/ /; $e =~ y/\t / /s }
+    for my $e ( values %$headermaps ) { s/\n\s+/ /, y/\t / /s for $e }
 
     if( $$argv0 =~ /^Received:/m ) {
         # Capture values of each Received: header
         $recvheader = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms];
-        for my $e ( @$recvheader ) { $e =~ s/\n\s+/ /; $e =~ y/\n\t / /s }
+        for my $e ( @$recvheader ) { s/\n\s+/ /, y/\n\t / /s for $e }
     }
     $headermaps->{'received'} = $recvheader;
 
@@ -464,7 +461,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

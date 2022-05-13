@@ -10,7 +10,8 @@ sub make {
     # @return        [Array]        Order of MTA modules
     # @since         v4.25.4
     my $class = shift;
-    my $argv0 = shift || return [];
+    my $argv0 = shift || return []; y/_[] / /s, s/\A[ ]+// for $argv0;
+    my @words = split(/[ ]/, lc($argv0), 3);
     my $first = '';
 
     # The following order is decided by the first 2 words of Subject: header
@@ -101,11 +102,6 @@ sub make {
         ],
         'warning' => ['Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Exim'],
     };
-
-
-    $argv0 =~ y/_[] / /s;
-    $argv0 =~ s/\A[ ]+//;
-    my @words = split(/[ ]/, lc($argv0), 3);
 
     if( rindex($words[0], ':') > 0 ) {
         # Undeliverable: ..., notify: ...
@@ -239,7 +235,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017,2019-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017,2019-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
