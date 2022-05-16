@@ -108,12 +108,12 @@ sub get {
 
     substr(my $statuscode = $argvs->{'deliverystatus'}, 0, 1, 'X');
     return '' unless exists $statuslist->{ $statuscode };
-    return '' unless scalar @{ $statuslist->{ $statuscode } };
+    return '' unless scalar $statuslist->{ $statuscode }->@*;
 
     my $reasontext = '';
-    for my $e ( @{ $statuslist->{ $statuscode } } ) {
+    for my $e ( $statuslist->{ $statuscode }->@* ) {
         # Try to match
-        next unless grep { rindex($argvs->{'diagnosticcode'}, $_) > -1 } @{ $e->{'string'} };
+        next unless grep { rindex($argvs->{'diagnosticcode'}, $_) > -1 } $e->{'string'}->@*;
         $reasontext = $e->{'reason'};
         last;
     }
@@ -151,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

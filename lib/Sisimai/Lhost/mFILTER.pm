@@ -104,11 +104,11 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         # Get localhost and remote host name from Received header.
-        next unless scalar @{ $mhead->{'received'} };
+        next unless scalar $mhead->{'received'}->@*;
         my $rheads = $mhead->{'received'};
         my $rhosts = Sisimai::RFC5322->received($rheads->[-1]);
 
-        $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($rheads->[0]) };
+        $e->{'lhost'} ||= shift Sisimai::RFC5322->received($rheads->[0])->@*;
         for my $ee ( @$rhosts ) {
             # Avoid "... by m-FILTER"
             next unless rindex($ee, '.') > -1;
@@ -155,7 +155,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

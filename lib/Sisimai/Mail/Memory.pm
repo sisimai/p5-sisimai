@@ -32,8 +32,8 @@ sub new {
     if( (substr($$argv1, 0, 5) || '') eq 'From ') {
         # UNIX mbox
         $param->{'payload'} = [split(/^From /m, $$argv1)];
-        shift @{ $param->{'payload'} };
-        $_ = 'From '.$_ for @{ $param->{'payload'} };
+        shift $param->{'payload'}->@*;
+        $_ = 'From '.$_ for $param->{'payload'}->@*;
     } else {
         $param->{'payload'} = [$$argv1];
     }
@@ -44,10 +44,10 @@ sub read {
     # Memory reader, works as a iterator.
     # @return   [String] Contents of a bounce mail
     my $self = shift;
-    return undef unless scalar @{ $self->{'payload'} };
+    return undef unless scalar $self->{'payload'}->@*;
 
     $self->{'offset'} += 1;
-    return shift @{ $self->{'payload'} };
+    return shift $self->{'payload'}->@*;
 }
 
 1;
@@ -98,7 +98,7 @@ C<size()> returns a memory size of the mailbox or JSON string.
 
 C<payload()> returns an array reference to each email message or JSON string
 
-    print scalar @{ $mailobj->payload };   # 17
+    print scalar $mailobj->payload->@*; # 17
 
 =head2 C<B<offset()>>
 
@@ -123,7 +123,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

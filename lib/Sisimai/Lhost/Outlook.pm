@@ -22,7 +22,7 @@ sub inquire {
     $match++ if index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     $match++ if $mhead->{'x-message-delivery'};
     $match++ if $mhead->{'x-message-info'};
-    $match++ if grep { rindex($_, '.hotmail.com') > -1 } @{ $mhead->{'received'} };
+    $match++ if grep { rindex($_, '.hotmail.com') > -1 } $mhead->{'received'}->@*;
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
@@ -123,7 +123,7 @@ sub inquire {
 
         SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
             $e->{'reason'} = $r;
             last;
         }
@@ -168,7 +168,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -186,7 +186,7 @@ sub inquire {
 
         for my $q ( keys %$messagesof ) {
             # Guess an reason of the bounce
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $q } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $q }->@*;
             $e->{'reason'} = $q;
             last;
         }
@@ -231,7 +231,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

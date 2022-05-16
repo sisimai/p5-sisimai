@@ -150,7 +150,7 @@ sub inquire {
         my $q = lc $e->{'diagnosis'};
         DETECT_REASON: for my $p ( keys %$messagesof ) {
             # Try to detect an error reason
-            for my $r ( @{ $messagesof->{ $p } } ) {
+            for my $r ( $messagesof->{ $p }->@* ) {
                 # Try to find an error message including lower-cased string defined in $messagesof
                 next unless index($q, $r) > -1;
                 $e->{'reason'} = $p;
@@ -198,7 +198,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2019-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

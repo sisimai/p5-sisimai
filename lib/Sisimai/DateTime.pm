@@ -212,7 +212,7 @@ sub monthname {
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
 
-    return @{ MonthName->{ $value } } if wantarray;
+    return MonthName->{ $value }->@* if wantarray;
     return MonthName->{ $value };
 }
 
@@ -227,7 +227,7 @@ sub dayofweek {
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
 
-    return @{ DayOfWeek->{ $value } } if wantarray;
+    return DayOfWeek->{ $value }->@* if wantarray;
     return DayOfWeek->{ $value };
 }
 
@@ -266,11 +266,11 @@ sub parse {
             $p =~ s/,\z//g if substr($p, -1, 1) eq ','; # "Thu," => "Thu"
             $p =  substr($p, 0, 3) if length $p > 3;
 
-            if( grep { $p eq $_ } @{ DayOfWeek->{'abbr'} } ) {
+            if( grep { $p eq $_ } DayOfWeek->{'abbr'}->@* ) {
                 # Day of week; Mon, Thu, Sun,...
                 $v->{'a'} = $p;
 
-            } elsif( grep { $p eq $_ } @{ MonthName->{'abbr'} } ) {
+            } elsif( grep { $p eq $_ } MonthName->{'abbr'}->@* ) {
                 # Month name abbr.; Apr, May, ...
                 $v->{'M'} = $p;
             }
@@ -521,7 +521,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

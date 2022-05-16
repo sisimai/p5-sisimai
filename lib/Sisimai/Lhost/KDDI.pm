@@ -20,8 +20,8 @@ sub inquire {
     # 'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
     $match ||= 1 if $mhead->{'from'} =~ /no-reply[@].+[.]dion[.]ne[.]jp/;
     $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} eq 'no-reply@app.auone-net.jp';
-    $match ||= 1 if grep { rindex($_, 'ezweb.ne.jp (') > -1 } @{ $mhead->{'received'} };
-    $match ||= 1 if grep { rindex($_, '.au.com (') > -1 } @{ $mhead->{'received'} };
+    $match ||= 1 if grep { rindex($_, 'ezweb.ne.jp (') > -1 } $mhead->{'received'}->@*;
+    $match ||= 1 if grep { rindex($_, '.au.com (') > -1 } $mhead->{'received'}->@*;
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
@@ -99,7 +99,7 @@ sub inquire {
                 # SMTP command is not RCPT
                 SESSION: for my $r ( keys %$messagesof ) {
                     # Verify each regular expression of session errors
-                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
+                    next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
                     $e->{'reason'} = $r;
                     last;
                 }
@@ -145,7 +145,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

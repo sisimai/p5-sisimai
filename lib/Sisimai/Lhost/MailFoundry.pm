@@ -17,7 +17,7 @@ sub inquire {
     my $mbody = shift // return undef;
 
     return undef unless $mhead->{'subject'} eq 'Message delivery has failed';
-    return undef unless grep { rindex($_, '(MAILFOUNDRY) id') > -1 } @{ $mhead->{'received'} };
+    return undef unless grep { rindex($_, '(MAILFOUNDRY) id') > -1 } $mhead->{'received'}->@*;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
@@ -122,7 +122,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

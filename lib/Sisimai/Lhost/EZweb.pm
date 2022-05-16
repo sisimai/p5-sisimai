@@ -26,8 +26,8 @@ sub inquire {
     $match++ if rindex($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
     $match++ if rindex($mhead->{'from'}, 'Postmaster@au.com') > -1;
     $match++ if $mhead->{'subject'} eq 'Mail System Error - Returned Mail';
-    $match++ if grep { rindex($_, 'ezweb.ne.jp (EZweb Mail) with') > -1 } @{ $mhead->{'received'} };
-    $match++ if grep { rindex($_, '.au.com (') > -1 } @{ $mhead->{'received'} };
+    $match++ if grep { rindex($_, 'ezweb.ne.jp (EZweb Mail) with') > -1 } $mhead->{'received'}->@*;
+    $match++ if grep { rindex($_, '.au.com (') > -1 } $mhead->{'received'}->@*;
     if( defined $mhead->{'message-id'} ) {
         $match++ if substr($mhead->{'message-id'}, -13, 13) eq '.ezweb.ne.jp>';
         $match++ if substr($mhead->{'message-id'}, -8, 8) eq '.au.com>';
@@ -76,7 +76,7 @@ sub inquire {
         my $b0 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1);
         $markingsof->{'boundary'} = qr/\A\Q$b0\E\z/ if $b0; # Convert to regular expression
     }
-    my @rxmessages; push @rxmessages, @{ $refailures->{ $_ } } for keys %$refailures;
+    my @rxmessages; push @rxmessages, $refailures->{ $_ }->@* for keys %$refailures;
 
     for my $e ( split("\n", $emailsteak->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -168,7 +168,7 @@ sub inquire {
                 # SMTP command is not RCPT
                 SESSION: for my $r ( keys %$refailures ) {
                     # Verify each regular expression of session errors
-                    PATTERN: for my $rr ( @{ $refailures->{ $r } } ) {
+                    PATTERN: for my $rr ( $refailures->{ $r }->@* ) {
                         # Check each regular expression
                         next(PATTERN) unless $e->{'diagnosis'} =~ $rr;
                         $e->{'reason'} = $r;
@@ -220,7 +220,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
