@@ -41,9 +41,7 @@ sub decodeH {
 
     while( my $e = shift @$argvs ) {
         # Check and decode each element
-        $e =~ s/\A[ \t]+//g;
-        $e =~ s/[ \t]+\z//g;
-        $e =~ y/"//d;
+        s/\A[ \t]+//g, s/[ \t]+\z//g, y/"//d for $e;
 
         if( __PACKAGE__->is_encoded(\$e) ) {
             # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
@@ -286,11 +284,11 @@ sub makeflat {
     #   - content-transfer-encoding: quoted-printable  => Content-Transfer-Encoding: quoted-printable
     #   - CHARSET=, BOUNDARY=                          => charset-, boundary=
     #   - message/xdelivery-status                     => message/delivery-status
-    $$argv1 =~ s/[Cc]ontent-[Tt]ype:/Content-Type:/gm;
-    $$argv1 =~ s/[Cc]ontent-[Tt]ransfer-[Ee]ncoding:/Content-Transfer-Encoding:/gm;
-    $$argv1 =~ s/charset=/charset=/igm;
-    $$argv1 =~ s/boundary=/boundary=/igm;
-    $$argv1 =~ s|message/xdelivery-status|message/delivery-status|gm;
+    s/[Cc]ontent-[Tt]ype:/Content-Type:/gm,
+    s/[Cc]ontent-[Tt]ransfer-[Ee]ncoding:/Content-Transfer-Encoding:/gm,
+    s/charset=/charset=/igm,
+    s/boundary=/boundary=/igm,
+    s|message/xdelivery-status|message/delivery-status|gm for $$argv1;
 
     my $iso2022set = qr/charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/;
     my $multiparts = __PACKAGE__->levelout($argv0, $argv1);

@@ -174,8 +174,7 @@ sub rise {
             for my $v ('rhost', 'lhost') {
                 # Check and rewrite each host name
                 $p->{ $v } =  [split('@', $p->{ $v })]->[-1] if index($p->{ $v }, '@') > -1;
-                $p->{ $v } =~ y/[]()//d;    # Remove square brackets and curly brackets from the host variable
-                $p->{ $v } =~ s/\A.+=//;    # Remove string before "="
+                y/[]()//d, s/\A.+=// for $p->{ $v };    # Remove [] and (), and strings before "="
                 chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq "\r";   # Remove CR at the end of the value
 
                 # Check space character in each value and get the first element
@@ -232,8 +231,7 @@ sub rise {
                     # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
                     # 550-5.7.1 this message has been blocked. Please visit
                     # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
-                    $p->{'diagnosticcode'} =~ s/$re/ /g;
-                    $p->{'diagnosticcode'} =~ s|<html>.+</html>||i;
+                    s/$re/ /g, s|<html>.+</html>||i for $p->{'diagnosticcode'};
                     $p->{'diagnosticcode'} =  Sisimai::String->sweep($p->{'diagnosticcode'});
                 }
             }
