@@ -12,14 +12,12 @@ sub rise {
     # @return   [undef]         Failed to parse or the 1st argument is missing
     # @since v5.0.0
     my $class = shift;
-    my $argv0 = shift || return undef;
-    my $argv1 = shift || '>>>'; # Label for an SMTP Client
-    my $argv2 = shift || '<<<'; # Label for an SMTP Server
+    my $argv0 = shift // return undef;
+    my $argv1 = shift // '>>>'; # Label for an SMTP Client
+    my $argv2 = shift // '<<<'; # Label for an SMTP Server
 
     return undef unless ref $argv0 eq 'SCALAR';
     return undef unless length $$argv0;
-    return undef unless length $argv1;
-    return undef unless length $argv2;
 
     # 1. Replace label strings of SMTP client/server at the each line
     $$argv0 =~ s/^[ ]+$argv1\s+/>>> /gm; return undef unless index($$argv0, '>>> ') > -1;
