@@ -163,7 +163,7 @@ sub inquire {
 
         SESSION: for my $r ( keys %$errorcodes ) {
             # Verify each regular expression of session errors
-            PATTERN: for my $rr ( @{ $errorcodes->{ $r } } ) {
+            PATTERN: for my $rr ( $errorcodes->{ $r }->@* ) {
                 # Check each regular expression
                 next(PATTERN) unless $fbresponse eq $rr;
                 $e->{'reason'} = $r;
@@ -226,7 +226,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

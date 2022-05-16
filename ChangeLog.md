@@ -10,6 +10,8 @@ v5.0.0(beta3)
 - version: ""
 - changes:
   - **INCOMPATIBLE CHANGES SINCE SISIMAI VERSION 4**
+    - Sisimai version 5 requires Perl 5.26 or later
+      - #446, 448 Use the postfix dereference
     - `Sisimai->make` marked as obsoleted, use `Sisimai->rise` instead
     - Sisimai does not return the result which reason is `vacation` by default. Use `vacation => 1`
       option at `Sisimai->rise()` method to get the parsed results for `vacation` reason. #436 #437
@@ -35,6 +37,7 @@ v5.0.0(beta3)
     multi parted begins with "message/rfc822".
   - #431 Add error messages in some European languages into Office365 and Domino
   - #445 Implement `Sisimai::STMP::Transcript` for parsing a transcript of session log
+  - #451 Reduce substitution code by using `for`
 
 v4.25.12
 ---------------------------------------------------------------------------------------------------

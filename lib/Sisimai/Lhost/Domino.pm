@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Sisimai::String;
 use Encode;
-use Encode::Guess; Encode::Guess->add_suspects(@{ Sisimai::String->encodenames });
+use Encode::Guess; Encode::Guess->add_suspects(Sisimai::String->encodenames->@*);
 
 sub description { 'IBM Domino Server' }
 sub inquire {
@@ -145,7 +145,7 @@ sub inquire {
 
         for my $r ( keys %$messagesof ) {
             # Check each regular expression of Domino error messages
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
             $e->{'reason'}   = $r;
             $e->{'status'} ||= Sisimai::SMTP::Status->code($r, 0) || '';
             last;
@@ -195,7 +195,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

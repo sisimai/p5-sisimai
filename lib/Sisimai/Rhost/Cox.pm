@@ -90,7 +90,7 @@ sub get {
         # The error code was not found in $errorcodes
         REASON: for my $e ( keys %$messagesof ) {
             # Try to find with each error message defined in $messagesof
-            for my $f ( @{ $messagesof->{ $e } } ) {
+            for my $f ( $messagesof->{ $e }->@* ) {
                 # Find an error reason
                 next unless index($statusmesg, $f) > -1;
                 $reasontext = $e;
@@ -132,7 +132,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2020-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

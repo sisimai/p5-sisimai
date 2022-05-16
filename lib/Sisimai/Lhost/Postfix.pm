@@ -101,7 +101,7 @@ sub inquire {
             next if int($p->{'reply'}) < 400;
 
             push @commandset, $e->{'command'};
-            $v->{'diagnosis'} ||= join(' ', @{ $p->{'text'} });
+            $v->{'diagnosis'} ||= join ' ', $p->{'text'}->@*;
             $v->{'replycode'} ||= $p->{'reply'};
             $v->{'status'}    ||= $p->{'status'};
         }

@@ -66,7 +66,7 @@ sub get {
     my $reasontext = '';
     if( $argvs->{'diagnostictype'} eq 'SMTP' || $argvs->{'diagnostictype'} eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
-        for my $e ( @{ $ClassOrder->[0] } ) {
+        for my $e ( $ClassOrder->[0]->@* ) {
             # Check the values of Diagnostic-Code: and Status: fields using true() method of each
             # child class in Sisimai::Reason
             my $p = 'Sisimai::Reason::'.$e;
@@ -115,7 +115,7 @@ sub anotherone {
         last unless $trytomatch;
 
         # Could not decide the reason by the value of Status:
-        for my $e ( @{ $ClassOrder->[1] } ) {
+        for my $e ( $ClassOrder->[1]->@* ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
             my $p = 'Sisimai::Reason::'.$e;
             require $ModulePath->{ $p };
@@ -175,7 +175,7 @@ sub match {
     my $diagnostic = lc $argv1;
 
     # Diagnostic-Code: SMTP; ... or empty value
-    for my $e ( @{ $ClassOrder->[2] } ) {
+    for my $e ( $ClassOrder->[2]->@* ) {
         # Check the values of Diagnostic-Code: and Status: fields using true() method of each child
         # class in Sisimai::Reason
         my $p = 'Sisimai::Reason::'.$e;
@@ -518,7 +518,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -18,7 +18,7 @@ sub inquire {
 
     return undef unless index($mhead->{'subject'}, 'Delivery status notification') > -1;
     return undef unless index($mhead->{'from'}, 'Mailer Daemon <') > -1;
-    return undef unless grep { rindex($_, ' (OpenSMTPD) with ') > -1 } @{ $mhead->{'received'} };
+    return undef unless grep { rindex($_, ' (OpenSMTPD) with ') > -1 } $mhead->{'received'}->@*;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr|^[ ]+Below is a copy of the original message:|m;
@@ -127,7 +127,7 @@ sub inquire {
 
         SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } @{ $messagesof->{ $r } };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
             $e->{'reason'} = $r;
             last;
         }
@@ -172,7 +172,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
