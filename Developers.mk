@@ -5,7 +5,7 @@
 # | |_| |  __/\ V /  __/ | (_) | |_) |  __/ |  \__ \_| | | | | |   < 
 # |____/ \___| \_/ \___|_|\___/| .__/ \___|_|  |___(_)_| |_| |_|_|\_\
 #                              |_|                                   
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 SHELL := /bin/sh
 HERE  := $(shell pwd)
 NAME  := Sisimai
@@ -30,13 +30,12 @@ MACFORMATSET := $(SET_OF_EMAIL)/maildir/mac
 
 INDEX_LENGTH := 24
 DESCR_LENGTH := 50
-REASON_TABLE := Blocked ContentError Delivered ExceedLimit Expired Feedback Filtered \
-				HasMoved HostUnknown MailboxFull MailerError MesgTooBig NetworkError \
-				NoRelaying NotAccept OnHold PolicyViolation Rejected SecurityError \
-				SpamDetected Suspend SyntaxError SystemError SystemFull TooManyConn	\
-				Undefined UserUnknown Vacation VirusDetected
+REASON_TABLE := Blocked ContentError Delivered ExceedLimit Expired Feedback Filtered HasMoved \
+				HostUnknown MailboxFull MailerError MesgTooBig NetworkError NoRelaying NotAccept \
+				OnHold PolicyViolation Rejected SecurityError SpamDetected Suspend SyntaxError \
+				SystemError SystemFull TooManyConn Undefined UserUnknown Vacation VirusDetected
 
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 .PHONY: clean
 
 private-sample:

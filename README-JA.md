@@ -123,6 +123,11 @@ my $v = Sisimai->rise(\$r);
 # method like the following:
 my $v = Sisimai->rise('/path/to/mbox', 'delivered' => 1);
 
+# Beginning with v5.0.0, sisimai does not return the reulst which "reason" is "vaction" by default.
+# If you want to get bounce records which reason is "vacation", set "vacation" option to rise()
+# method like the following:
+my $v = Sisimai->rise('/path/to/mbox', 'vacation' => 1);
+
 if( defined $v ) {
     for my $e ( @$v ) {
         print ref $e;                   # Sisimai::Data

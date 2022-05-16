@@ -434,8 +434,8 @@ sub inquire {
             #
             # The value of "Status:" indicates permanent error but the value of SMTP reply code in
             # Diagnostic-Code: field is "TEMPERROR"!!!!
-            my $sv = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
-            my $rv = Sisimai::SMTP::Reply->find($e->{'diagnosis'})  || '';
+            my $sv = $e->{'status'}    || Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
+            my $rv = $e->{'replycode'} || Sisimai::SMTP::Reply->find($e->{'diagnosis'})  || '';
             my $s1 = 0; # First character of Status as integer
             my $r1 = 0; # First character of SMTP reply code as integer
             my $v1 = 0;
