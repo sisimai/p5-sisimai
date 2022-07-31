@@ -33,13 +33,8 @@ MAKE_TEST: {
         isa_ok $data, 'ARRAY';
 
         for my $e ( @$data ) {
-
-            $json = $e->dump('json');
-            ok length $json, '->dump()';
-
-            utf8::encode $json if utf8::is_utf8 $json;
-            $perl = JSON::from_json($json, { 'utf8' => 1 });
-            isa_ok $perl, 'HASH';
+            $json = $e->dump('json');       ok length $json, '->dump()';
+            $perl = JSON::from_json($json); isa_ok $perl, 'HASH';
 
             is $e->token, $perl->{'token'}, 'token = '.$e->token;
             is $e->lhost, $perl->{'lhost'}, 'lhost = '.$e->lhost;
