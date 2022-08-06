@@ -41,9 +41,7 @@ sub decodeH {
 
     while( my $e = shift @$argvs ) {
         # Check and decode each element
-        $e =~ s/\A[ \t]+//g;
-        $e =~ s/[ \t]+\z//g;
-        $e =~ y/"//d;
+        s/\A[ \t]+//g, s/[ \t]+\z//g, y/"//d for $e;
 
         if( __PACKAGE__->is_encoded(\$e) ) {
             # =?utf-8?B?55m954yr44Gr44KD44KT44GT?=
@@ -286,11 +284,11 @@ sub makeflat {
     #   - content-transfer-encoding: quoted-printable  => Content-Transfer-Encoding: quoted-printable
     #   - CHARSET=, BOUNDARY=                          => charset-, boundary=
     #   - message/xdelivery-status                     => message/delivery-status
-    $$argv1 =~ s/[Cc]ontent-[Tt]ype:/Content-Type:/gm;
-    $$argv1 =~ s/[Cc]ontent-[Tt]ransfer-[Ee]ncoding:/Content-Transfer-Encoding:/gm;
-    $$argv1 =~ s/charset=/charset=/igm;
-    $$argv1 =~ s/boundary=/boundary=/igm;
-    $$argv1 =~ s|message/xdelivery-status|message/delivery-status|gm;
+    s/[Cc]ontent-[Tt]ype:/Content-Type:/gm,
+    s/[Cc]ontent-[Tt]ransfer-[Ee]ncoding:/Content-Transfer-Encoding:/gm,
+    s/charset=/charset=/igm,
+    s/boundary=/boundary=/igm,
+    s|message/xdelivery-status|message/delivery-status|gm for $$argv1;
 
     my $iso2022set = qr/charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/;
     my $multiparts = __PACKAGE__->levelout($argv0, $argv1);
@@ -318,17 +316,17 @@ sub makeflat {
             # Check the value of Content-Transfer-Encoding: header
             if( $ctencoding eq 'base64' ) {
                 # Content-Transfer-Encoding: base64
-                $bodystring = ${ __PACKAGE__->decodeB(\$bodyinside) };
+                $bodystring = __PACKAGE__->decodeB(\$bodyinside)->$*;
 
             } elsif( $ctencoding eq 'quoted-printable') {
                 # Content-Transfer-Encoding: quoted-printable
-                $bodystring = ${ __PACKAGE__->decodeQ(\$bodyinside) };
+                $bodystring = __PACKAGE__->decodeQ(\$bodyinside)->$*;
 
             } elsif( $ctencoding eq '7bit' ) {
                 # Content-Transfer-Encoding: 7bit
                 if( lc $e->[0] =~ $iso2022set ) {
                     # Content-Type: text/plain; charset=ISO-2022-JP
-                    $bodystring = ${ Sisimai::String->to_utf8(\$bodyinside, $1) };
+                    $bodystring = Sisimai::String->to_utf8(\$bodyinside, $1)->$*;
 
                 } else {
                     # No "charset" parameter in the value of Content-Type: header
@@ -340,7 +338,7 @@ sub makeflat {
             }
 
             # Try to delete HTML tags inside of text/html part whenever possible
-            $bodystring = ${ Sisimai::String->to_plain(\$bodystring) } if $istexthtml;
+            $bodystring = Sisimai::String->to_plain(\$bodystring)->$* if $istexthtml;
             next unless $bodystring;
             $bodystring =~ s|\r\n|\n|g if index($bodystring, "\r\n") > -1;    # Convert CRLF to LF
 
@@ -458,7 +456,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

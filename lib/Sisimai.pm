@@ -103,7 +103,7 @@ sub engine {
 
         if( $e eq 'Lhost' ) {
             # Sisimai::Lhost::*
-            for my $ee ( @{ $r->index } ) {
+            for my $ee ( $r->index->@* ) {
                 # Load and get the value of "description" from each module
                 my $rr = 'Sisimai::'.$e.'::'.$ee;
                 ($loads = $rr) =~ s|::|/|g;
@@ -126,7 +126,7 @@ sub reason {
 
     # These reasons are not included in the results of Sisimai::Reason->index
     require Sisimai::Reason;
-    my @names = (@{ Sisimai::Reason->index }, qw|Delivered Feedback Undefined Vacation|);
+    my @names = ( Sisimai::Reason->index->@*, qw|Delivered Feedback Undefined Vacation|);
 
     for my $e ( @names ) {
         # Call ->description() method of Sisimai::Reason::*
@@ -390,7 +390,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -133,7 +133,7 @@ sub get {
     for my $e ( keys %$statuslist ) {
         # Try to compare with each status code as a key
         next unless $statuscode eq $e;
-        for my $f ( @{ $statuslist->{ $e } } ) {
+        for my $f ( $statuslist->{ $e }->@* ) {
             # Try to compare with each string of error messages
             next if index($statusmesg, $f->{'string'}) == -1;
             $reasontext = $f->{'reason'};
@@ -146,9 +146,9 @@ sub get {
     for my $e ( keys %$restatuses ) {
         # Try to compare with each string of delivery status codes
         next unless $statuscode =~ $e;
-        for my $f ( @{ $restatuses->{ $e } } ) {
+        for my $f ( $restatuses->{ $e }->@* ) {
             # Try to compare with each string of error messages
-            for my $g ( @{ $f->{'string'} } ) {
+            for my $g ( $f->{'string'}->@* ) {
                 next if index($statusmesg, $g) == -1;
                 $reasontext = $f->{'reason'};
                 last;
@@ -162,7 +162,7 @@ sub get {
     # D.S.N. included in the error message did not matched with any key in statuslist, restatuses
     for my $e ( keys %$messagesof ) {
         # Try to compare with error messages defined in MessagesOf
-        for my $f ( @{ $messagesof->{ $e } } ) {
+        for my $f ( $messagesof->{ $e }->@* ) {
             next if index($statusmesg, $f) == -1;
             $reasontext = $e;
             last;
@@ -204,7 +204,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -35,7 +35,7 @@ sub inquire {
     $match++ if $mhead->{'x-ms-exchange-crosstenant-originalarrivaltime'};
     $match++ if $mhead->{'x-ms-exchange-crosstenant-fromentityheader'};
     $match++ if $mhead->{'x-ms-exchange-transport-crosstenantheadersstamped'};
-    $match++ if grep { $_ =~ $tryto } @{ $mhead->{'received'} };
+    $match++ if grep { $_ =~ $tryto } $mhead->{'received'}->@*;
     if( defined $mhead->{'message-id'} ) {
         # Message-ID: <00000000-0000-0000-0000-000000000000@*.*.prod.outlook.com>
         $match++ if $mhead->{'message-id'} =~ $tryto;
@@ -275,7 +275,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

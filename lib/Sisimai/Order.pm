@@ -10,7 +10,8 @@ sub make {
     # @return        [Array]        Order of MTA modules
     # @since         v4.25.4
     my $class = shift;
-    my $argv0 = shift || return [];
+    my $argv0 = shift || return []; y/_[] / /s, s/\A[ ]+// for $argv0;
+    my @words = split(/[ ]/, lc($argv0), 3);
     my $first = '';
 
     # The following order is decided by the first 2 words of Subject: header
@@ -102,11 +103,6 @@ sub make {
         'warning' => ['Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Exim'],
     };
 
-
-    $argv0 =~ y/_[] / /s;
-    $argv0 =~ s/\A[ ]+//;
-    my @words = split(/[ ]/, lc($argv0), 3);
-
     if( rindex($words[0], ':') > 0 ) {
         # Undeliverable: ..., notify: ...
         $first = lc $1 if $argv0 =~ /\A(.+?):/;
@@ -123,7 +119,7 @@ sub default {
     # Make default order of MTA modules to be loaded
     # @return   [Array] Default order list of MTA modules
     # @since v4.13.1
-    return [map { 'Sisimai::Lhost::'.$_ } @{ Sisimai::Lhost->index() }];
+    return [map { 'Sisimai::Lhost::'.$_ } Sisimai::Lhost->index()->@*];
 }
 
 sub another {
@@ -224,14 +220,14 @@ JSON structure.
 C<default()> returns a default order of MTA modules as an array reference. The default order is
 defined at Sisimai::Lhost->index method.
 
-    print for @{ Sisimai::Order->default };
+    print for Sisimai::Order->default->@*;
 
 =head2 C<B<another()>>
 
 C<another()> returns another list of MTA modules as an array reference. Another list is defined at
 this class.
 
-    print for @{ Sisimai::Order->another };
+    print for Sisimai::Order->another->@*;
 
 =head1 AUTHOR
 
@@ -239,7 +235,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017,2019-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017,2019-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

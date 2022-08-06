@@ -25,7 +25,7 @@ sub match {
     my $host0 = lc($rhost) || return 0;
     my $match = 0;
 
-    for my $e ( keys %{ RhostClass() } ) {
+    for my $e ( keys RhostClass()->%* ) {
         # Try to match with each key of RhostClass
         next unless $host0 =~ $e;
         $match = 1;
@@ -46,7 +46,7 @@ sub get {
     my $remotehost = $proxy || lc $argvs->{'rhost'};
     my $rhostclass = '';
 
-    for my $e ( keys %{ RhostClass() } ) {
+    for my $e ( keys RhostClass()->%* ) {
         # Try to match with each key of RhostClass
         next unless $remotehost =~ $e;
         $rhostclass = __PACKAGE__.'::'.RhostClass->{ $e };
@@ -96,7 +96,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020,2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

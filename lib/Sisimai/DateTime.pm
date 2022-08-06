@@ -212,7 +212,7 @@ sub monthname {
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
 
-    return @{ MonthName->{ $value } } if wantarray;
+    return MonthName->{ $value }->@* if wantarray;
     return MonthName->{ $value };
 }
 
@@ -227,7 +227,7 @@ sub dayofweek {
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
 
-    return @{ DayOfWeek->{ $value } } if wantarray;
+    return DayOfWeek->{ $value }->@* if wantarray;
     return DayOfWeek->{ $value };
 }
 
@@ -243,9 +243,8 @@ sub parse {
     my $class = shift;
     my $argv1 = shift || return undef;
 
-    my $datestring = $argv1;
-       $datestring =~ s{[,](\d+)}{, $1};  # Thu,13 -> Thu, 13
-       $datestring =~ s{(\d{1,2}),}{$1};    # Apr 29, -> Apr 29
+    # "Apr 29", -> "Apr 29" "Thu,13" -> "Thu, 13"
+    my $datestring = $argv1; s/[,](\d+)/, $1/, s/(\d{1,2}),/$1/ for $datestring;
     my @timetokens = split(' ', $datestring);
     my $parseddate = '';    # [String]  Canonified Date/Time string
     my $afternoon1 = 0;     # [Integer] After noon flag
@@ -259,6 +258,7 @@ sub parse {
         'z' => undef,   # [Integer] Timezone offset
     };
 
+
     for my $p ( @timetokens ) {
         # Parse each piece of time
         if( $p =~ /\A[A-Z][a-z]{2,}[,]?\z/ ) {
@@ -266,11 +266,11 @@ sub parse {
             $p =~ s/,\z//g if substr($p, -1, 1) eq ','; # "Thu," => "Thu"
             $p =  substr($p, 0, 3) if length $p > 3;
 
-            if( grep { $p eq $_ } @{ DayOfWeek->{'abbr'} } ) {
+            if( grep { $p eq $_ } DayOfWeek->{'abbr'}->@* ) {
                 # Day of week; Mon, Thu, Sun,...
                 $v->{'a'} = $p;
 
-            } elsif( grep { $p eq $_ } @{ MonthName->{'abbr'} } ) {
+            } elsif( grep { $p eq $_ } MonthName->{'abbr'}->@* ) {
                 # Month name abbr.; Apr, May, ...
                 $v->{'M'} = $p;
             }
@@ -485,7 +485,7 @@ Sisimai::DateTime - Date and time utilities
 
 =head1 DESCRIPTION
 
-Sisimai::Tie provide methods for dealing date and time.
+Sisimai::DateTime provide methods for dealing date and time.
 
 =head1 CLASS METHODS
 
@@ -521,7 +521,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

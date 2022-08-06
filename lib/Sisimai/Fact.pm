@@ -104,7 +104,7 @@ sub rise {
 
         EMAILADDRESS: {
             # Detect email address from message/rfc822 part
-            for my $f ( @{ $rfc822head->{'addresser'} } ) {
+            for my $f ( $rfc822head->{'addresser'}->@* ) {
                 # Check each header in message/rfc822 part
                 my $g = lc $f;
                 next unless exists $rfc822data->{ $g };
@@ -132,7 +132,7 @@ sub rise {
             my @datevalues; push @datevalues, $e->{'date'} if $e->{'date'};
 
             # Date information did not exist in message/delivery-status part,...
-            for my $f ( @{ $rfc822head->{'date'} } ) {
+            for my $f ( $rfc822head->{'date'}->@* ) {
                 # Get the value of Date header or other date related header.
                 next unless $rfc822data->{ $f };
                 push @datevalues, $rfc822data->{ $f };
@@ -167,15 +167,14 @@ sub rise {
             my $recvheader = $mesg1->{'header'}->{'received'} || [];
             if( scalar @$recvheader ) {
                 # Get localhost and remote host name from Received header.
-                $e->{'lhost'} ||= shift @{ Sisimai::RFC5322->received($recvheader->[0]) };
-                $e->{'rhost'} ||= pop   @{ Sisimai::RFC5322->received($recvheader->[-1]) };
+                $e->{'lhost'} ||= shift Sisimai::RFC5322->received($recvheader->[0])->@*;
+                $e->{'rhost'} ||= pop   Sisimai::RFC5322->received($recvheader->[-1])->@*;
             }
 
             for my $v ('rhost', 'lhost') {
                 # Check and rewrite each host name
                 $p->{ $v } =  [split('@', $p->{ $v })]->[-1] if index($p->{ $v }, '@') > -1;
-                $p->{ $v } =~ y/[]()//d;    # Remove square brackets and curly brackets from the host variable
-                $p->{ $v } =~ s/\A.+=//;    # Remove string before "="
+                y/[]()//d, s/\A.+=// for $p->{ $v };    # Remove [] and (), and strings before "="
                 chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq "\r";   # Remove CR at the end of the value
 
                 # Check space character in each value and get the first element
@@ -232,8 +231,7 @@ sub rise {
                     # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
                     # 550-5.7.1 this message has been blocked. Please visit
                     # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
-                    $p->{'diagnosticcode'} =~ s/$re/ /g;
-                    $p->{'diagnosticcode'} =~ s|<html>.+</html>||i;
+                    s/$re/ /g, s|<html>.+</html>||i for $p->{'diagnosticcode'};
                     $p->{'diagnosticcode'} =  Sisimai::String->sweep($p->{'diagnosticcode'});
                 }
             }
@@ -689,7 +687,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
