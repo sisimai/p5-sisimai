@@ -16,6 +16,7 @@ sub match {
 
     state $index = [
         'as a relay',
+        'email address is not verified.',
         'insecure mail relay',
         'is not permitted to relay through this server without authentication',
         'mail server requires authentication when attempting to send to a non-local e-mail address',    # MailEnable
@@ -104,7 +105,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

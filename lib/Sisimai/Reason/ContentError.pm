@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $index = [
+        'duplicate header',
         'improper use of 8-bit data in message header',
         'message header size, or recipient list, exceeds policy limit',
         'message mime complexity exceeds the policy maximum',
@@ -99,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2021,2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
