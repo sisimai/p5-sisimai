@@ -38,9 +38,11 @@ v5.0.0(beta3)
   - #431 Add error messages in some European languages into Office365 and Domino
   - #445 Implement `Sisimai::STMP::Transcript` for parsing a transcript of session log
   - #451 Reduce substitution code by using `for`
+  - Add a sample email bounced from Rakuten Mobile: sisimai/set-of-emails#20
+    - `lhost-postfix-76.eml` (userunknown)
 
 v4.25.13
---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 - release: ""Mon,  1 Aug 2022 16:06:55 +0900 (JST)
 - version: "4.25.13"
 - changes:
