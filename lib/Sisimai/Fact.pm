@@ -160,7 +160,7 @@ sub rise {
                 $p->{'timestamp'} = ($t->epoch - $zoneoffset) // undef;
             };
         }
-        next RISEOF unless $p->{'timestamp'};
+        next RISEOF unless defined $p->{'timestamp'};
 
         OTHER_TEXT_HEADERS: {
             # Scan "Received:" header of the original message
@@ -265,7 +265,7 @@ sub rise {
             $o->{'catch'}          = $p->{'catch'} // undef;
             $o->{'hardbounce'}     = int $p->{'hardbounce'};
             $o->{'replycode'}    ||= Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}) || '';
-            $o->{'timestamp'}      = gmtime Sisimai::Time->new($p->{'timestamp'});
+            $o->{'timestamp'}      = Sisimai::Time->new($p->{'timestamp'});
             $o->{'timezoneoffset'} = $p->{'timezoneoffset'} // '+0000';
         }
 

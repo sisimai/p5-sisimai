@@ -44,9 +44,16 @@ v5.0.0(beta3)
     - `lhost-postfix-77.eml` (norelaying)
     - `lhost-postfix-78.eml` (contenterror)
 
+v4.25.14
+---------------------------------------------------------------------------------------------------
+- release: "Mon, 15 Aug 2022 14:00:22 +0900 (JST)"
+- version: "4.25.14"
+- changes:
+  - #461 Fix 2 bugs with the value of "timestamp" at the parsed result.
+
 v4.25.13
 ---------------------------------------------------------------------------------------------------
-- release: ""Mon,  1 Aug 2022 16:06:55 +0900 (JST)
+- release: "Mon,  1 Aug 2022 16:06:55 +0900 (JST)"
 - version: "4.25.13"
 - changes:
   - #455 Fix a bug related to utf8-flag in the value of Subject: header at test:
