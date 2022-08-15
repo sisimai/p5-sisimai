@@ -40,6 +40,9 @@ v5.0.0(beta3)
   - #451 Reduce substitution code by using `for`
   - Add a sample email bounced from Rakuten Mobile: sisimai/set-of-emails#20
     - `lhost-postfix-76.eml` (userunknown)
+  - Add sample emails bounced from Amazon SES
+    - `lhost-postfix-77.eml` (norelaying)
+    - `lhost-postfix-78.eml` (contenterror)
 
 v4.25.13
 ---------------------------------------------------------------------------------------------------

@@ -36,7 +36,7 @@ sub match {
         'system config error',
         'temporary local problem',
         'timeout waiting for input',
-        'transaction failed',
+        'transaction failed ',
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
