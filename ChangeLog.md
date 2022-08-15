@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.0.0(beta3)
+v5.0.0(beta5)
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
