@@ -63,7 +63,7 @@ sub new {
     };
 
     # Create Sisimai::Time object
-    $thing->{'timestamp'} = gmtime Sisimai::Time->new($argvs->{'timestamp'});
+    $thing->{'timestamp'} = Sisimai::Time->new($argvs->{'timestamp'});
     $thing->{'timezoneoffset'} = $argvs->{'timezoneoffset'} // '+0000';
 
     # Callback method
@@ -187,7 +187,7 @@ sub make {
                 $p->{'timestamp'} = ($t->epoch - $zoneoffset) // undef;
             };
         }
-        next unless $p->{'timestamp'};
+        next unless defined $p->{'timestamp'};
 
         OTHER_TEXT_HEADERS: {
             # Scan "Received:" header of the original message
@@ -723,7 +723,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020,2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
