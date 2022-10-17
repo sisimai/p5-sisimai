@@ -4,6 +4,16 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.14p1
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #465 Fix an error reason "5.2.1 exceedlimit" of an error message: "450-4.2.1
+    The user you are trying to contact is receiving mail at a rate that prevents
+    additional messages from being delivered" to "toomanyconn" at GoogleApps.pm
+    in Sisimai/Rhost.
+
 v4.25.14
 --------------------------------------------------------------------------------
 - release: "Mon, 15 Aug 2022 14:00:22 +0900 (JST)"
