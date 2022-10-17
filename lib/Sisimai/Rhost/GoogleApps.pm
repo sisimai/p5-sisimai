@@ -18,7 +18,7 @@ sub get {
         'X.1.2' => [{ 'reason' => 'hostunknown', 'string' => ["We weren't able to find the recipient domain."] }],
         'X.2.1' => [
             { 'reason' => 'suspend',     'string' => ['The email account that you tried to reach is disabled.'] },
-            { 'reason' => 'exceedlimit', 'string' => ['The user you are trying to contact is receiving mail ']  },
+            { 'reason' => 'toomanyconn', 'string' => ['The user you are trying to contact is receiving mail at a rate ']  },
         ],
         'X.2.2' => [{ 'reason' => 'mailboxfull', 'string' => ['The email account that you tried to reach is over quota.'] }],
         'X.2.3' => [{ 'reason' => 'exceedlimit', 'string' => ["Your message exceeded Google's message size limits."] }],
@@ -151,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2020 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2020,2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
