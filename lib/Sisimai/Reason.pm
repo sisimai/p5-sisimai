@@ -110,6 +110,7 @@ sub anotherone {
     TRY_TO_MATCH: while(1) {
         my $diagnostic   = lc $argvs->{'diagnosticcode'} // '';
         my $trytomatch   = $reasontext eq '' ? 1 : 0;
+           $trytomatch ||= 1 if $reasontext eq 'expired';
            $trytomatch ||= 1 if exists $GetRetried->{ $reasontext };
            $trytomatch ||= 1 if $argvs->{'diagnostictype'} ne 'SMTP';
         last unless $trytomatch;
