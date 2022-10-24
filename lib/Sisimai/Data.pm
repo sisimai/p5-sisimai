@@ -263,7 +263,7 @@ sub make {
                     }
                 }
                 $p->{'diagnostictype'} ||= 'X-UNIX'   if $p->{'reason'} eq 'mailererror';
-                $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ /\A(?:feedback|vacation|)\z/;
+                $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ /\A(?:feedback|vacation)\z/;
             }
 
             # Check the value of SMTP command
