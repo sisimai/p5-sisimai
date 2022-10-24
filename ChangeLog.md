@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.14p1
+v4.25.14p2
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -13,6 +13,17 @@ v4.25.14p1
     The user you are trying to contact is receiving mail at a rate that prevents
     additional messages from being delivered" to "toomanyconn" at GoogleApps.pm
     in Sisimai/Rhost.
+  - Add many error message patterns at the following classes in `Sisimai/Reason`
+    - `Blocked`
+    - `ContentError`
+    - `Filtered`
+    - `NetworkError`
+    - `NotAccept`
+    - `PolicyViolation`
+    - `Rejected`
+    - `SpamDetected`
+    - `TooManyConn`
+    - `UserUnknown`
 
 v4.25.14
 --------------------------------------------------------------------------------
