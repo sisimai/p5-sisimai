@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $index = [
+        'header size exceeds maximum permitted',
         'duplicate header',
         'improper use of 8-bit data in message header',
         'message header size, or recipient list, exceeds policy limit',
