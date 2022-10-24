@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.14p2
+v4.25.14p3
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -24,6 +24,8 @@ v4.25.14p2
     - `SpamDetected`
     - `TooManyConn`
     - `UserUnknown`
+  - When the value of `diagnosticcode` has enough error message for detecting a
+    bounce reason, `expired` will change to `networkerror` #468
 
 v4.25.14
 --------------------------------------------------------------------------------
