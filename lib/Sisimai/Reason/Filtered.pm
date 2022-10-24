@@ -21,6 +21,7 @@ sub match {
         'has restricted sms e-mail',    # AT&T
         'is not accepting any mail',
         'message rejected due to user rules',
+        'not found recipient account',
         'refused due to recipient preferences', # Facebook
         'resolver.rst.notauthorized',   # Microsoft Exchange
         'this account is protected by',
@@ -126,7 +127,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2021,2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
