@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.14p4
+v4.25.14p5
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -26,6 +26,9 @@ v4.25.14p4
     - `UserUnknown`
   - When the value of `diagnosticcode` has enough error message for detecting a
     bounce reason, `expired` will change to proper reason
+  - Update code in `Sisimai::Lhost::GoogleGroups` module to parse well a bounce
+    mail even if an email address of `X-Failed-Recipients:` header does not in-
+    clude a domain `@googlegroups.com` #470
 
 v4.25.14
 --------------------------------------------------------------------------------
