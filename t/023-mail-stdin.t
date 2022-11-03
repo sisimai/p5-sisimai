@@ -36,7 +36,6 @@ MAKE_TEST: {
             last;
         }
         ok close(STDIN);
-        ok $mailbox->handle->close, '->handle->close()';
         unlink $fakedev if -e $fakedev;
     }
 }
