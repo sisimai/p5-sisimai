@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.14p5
+v4.25.14p7
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -29,6 +29,8 @@ v4.25.14p5
   - Update code in `Sisimai::Lhost::GoogleGroups` module to parse well a bounce
     mail even if an email address of `X-Failed-Recipients:` header does not in-
     clude a domain `@googlegroups.com` #470
+  - Import #471 from Sisimai v5, Implement `Sisimai::Rhost::NTTDOCOMO` to parse
+    more strictly a bounce mail returned from `mfsmax.docomo.ne.jp`
 
 v4.25.14
 --------------------------------------------------------------------------------
