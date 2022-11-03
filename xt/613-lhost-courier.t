@@ -8,8 +8,8 @@ my $enginename = 'Courier';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
 my $isexpected = [
-    { 'n' => '01001', 'r' => qr/filtered/    },
-    { 'n' => '01002', 'r' => qr/filtered/    },
+    { 'n' => '01001', 'r' => qr/rejected/    },
+    { 'n' => '01002', 'r' => qr/rejected/    },
     { 'n' => '01003', 'r' => qr/blocked/     },
     { 'n' => '01004', 'r' => qr/userunknown/ },
     { 'n' => '01005', 'r' => qr/userunknown/ },

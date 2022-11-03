@@ -8,7 +8,7 @@ my $enginename = 'Postfix';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->maketest;
 my $isexpected = [
-    { 'n' => '01001', 'r' => qr/filtered/       },
+    { 'n' => '01001', 'r' => qr/rejected/       },
     { 'n' => '01002', 'r' => qr/userunknown/    },
     { 'n' => '01003', 'r' => qr/userunknown/    },
     { 'n' => '01004', 'r' => qr/userunknown/    },
@@ -41,10 +41,10 @@ my $isexpected = [
     { 'n' => '01031', 'r' => qr/userunknown/    },
     { 'n' => '01032', 'r' => qr/userunknown/    },
     { 'n' => '01033', 'r' => qr/userunknown/    },
-    { 'n' => '01034', 'r' => qr/filtered/       },
+    { 'n' => '01034', 'r' => qr/rejected/       },
     { 'n' => '01035', 'r' => qr/mailboxfull/    },
     { 'n' => '01036', 'r' => qr/hostunknown/    },
-    { 'n' => '01037', 'r' => qr/filtered/       },
+    { 'n' => '01037', 'r' => qr/rejected/       },
     { 'n' => '01038', 'r' => qr/blocked/        },
     { 'n' => '01039', 'r' => qr/userunknown/    },
     { 'n' => '01040', 'r' => qr/userunknown/    },
@@ -152,7 +152,7 @@ my $isexpected = [
     { 'n' => '01142', 'r' => qr/blocked/        },
     { 'n' => '01143', 'r' => qr/userunknown/    },
     { 'n' => '01144', 'r' => qr/suspend/        },
-    { 'n' => '01145', 'r' => qr/filtered/       },
+    { 'n' => '01145', 'r' => qr/rejected/       },
     { 'n' => '01146', 'r' => qr/userunknown/    },
     { 'n' => '01147', 'r' => qr/userunknown/    },
     { 'n' => '01148', 'r' => qr/userunknown/    },
@@ -275,6 +275,8 @@ my $isexpected = [
     { 'n' => '01265', 'r' => qr/rejected/       },
     { 'n' => '01266', 'r' => qr/suspend/        },
     { 'n' => '01267', 'r' => qr/onhold/         }, # spamdetected
+    { 'n' => '01272', 'r' => qr/rejected/       },
+    { 'n' => '01273', 'r' => qr/rejected/       },
 ];
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
