@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.14p7
+v4.25.14p8
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -37,6 +37,11 @@ v4.25.14p7
     - http://www.cpantesters.org/cpan/report/a0412418-49fe-11ed-b08f-a5e1b655df6e
     - http://www.cpantesters.org/cpan/report/eb7fbeb2-546c-11ed-ac00-78c860ca80ec
     - http://www.cpantesters.org/cpan/report/4c3721d4-5763-11ed-8a1d-3dcb3994ee8b
+  - Add the following error messages at `Sisimai::Rhost::ExchangeOnline:
+    - 451 4.7.650 The mail server [...] has been temporarily rate limited due to
+      IP reputation ... (S775)
+    - 550 5.7.1 ... Please contact your Internet service provider since part of
+      their network is on our block list (S3150)
 
 v4.25.14
 --------------------------------------------------------------------------------
