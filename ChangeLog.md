@@ -31,6 +31,12 @@ v4.25.14p7
     clude a domain `@googlegroups.com` #470
   - Import #471 from Sisimai v5, Implement `Sisimai::Rhost::NTTDOCOMO` to parse
     more strictly a bounce mail returned from `mfsmax.docomo.ne.jp`
+  - #464 Fix a bug related to a `handle->close` in t/023-mail-stdin.t Thanks to
+    CPAN Testers:
+    - http://www.cpantesters.org/cpan/report/d49e1af4-4157-11ed-af16-c84d753c3a36
+    - http://www.cpantesters.org/cpan/report/a0412418-49fe-11ed-b08f-a5e1b655df6e
+    - http://www.cpantesters.org/cpan/report/eb7fbeb2-546c-11ed-ac00-78c860ca80ec
+    - http://www.cpantesters.org/cpan/report/4c3721d4-5763-11ed-8a1d-3dcb3994ee8b
 
 v4.25.14
 --------------------------------------------------------------------------------
