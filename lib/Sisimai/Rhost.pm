@@ -12,6 +12,7 @@ use constant RhostClass => {
     qr/[.](?:ezweb[.]ne[.]jp|au[.]com)\z/             => 'KDDI',
     qr/charter[.]net/                                 => 'Spectrum',
     qr/cox[.]net/                                     => 'Cox',
+    qr/mfsmax[.]docomo[.]ne[.]jp\z/                   => 'NTTDOCOMO',
     qr/mx[0-9]+[.]qq[.]com\z/                         => 'TencentQQ',
 };
 
