@@ -6,7 +6,7 @@ use warnings;
 sub get {
     # Detect bounce reason from NTT docomo
     # @param    [Sisimai::Fact] argvs   Parsed email object
-    # @return   [String]                The bounce reason au.com and ezweb.ne.jp
+    # @return   [String]                The bounce reason for docomo.ne.jp
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -126,8 +126,8 @@ Sisimai::Rhost::NTTDOCOMO - Detect the bounce reason returned from NTT docomo.
 =head1 DESCRIPTION
 
 Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
-of get() method when the value of C<rhost> of the object is "msmx.au.com" or "lsean.ezweb.ne.jp".
-This class is called only Sisimai::Fact class.
+of get() method when the value of C<rhost> of the object is "mfsmax.docomo.ne.jp". This class is
+called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
