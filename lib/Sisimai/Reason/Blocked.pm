@@ -68,10 +68,7 @@ sub match {
         |host[ ][^ ]+[ ]refused[ ]to[ ]talk[ ]to[ ]me:[ ]\d+[ ]blocked
         |host[ ]network[ ]not[ ]allowed
         |hosts[ ]with[ ]dynamic[ ]ip
-        |http://(?:
-             spf[.]pobox[.]com/why[.]html
-            |www[.]spamcop[.]net/bl[.]
-            )
+        |http://www[.]spamcop[.]net/bl[.]
         |invalid[ ]ip[ ]for[ ]sending[ ]mail[ ]of[ ]domain
         |ip[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]earthlink # Earthlink
         |ip[/]domain[ ]reputation[ ]problems
@@ -79,10 +76,7 @@ sub match {
         |is[ ](?:
              in[ ]a[ ]black[ ]list(?:[ ]at[ ][^ ]+[.])?
             |in[ ]an[ ][^ ]+rbl[ ]on[ ][^ ]+
-            |not[ ]allowed[ ]to[ ]send[ ](?:
-                 mail[ ]from
-                |from[ ][<][^ ]+[>][ ]per[ ]it's[ ]spf[ ]record
-                )
+            |not[ ]allowed[ ]to[ ]send[ ]mail[ ]from
             )
         |mail[ ]server[ ]at[ ][^ ]+[ ]is[ ]blocked
         |mail[ ]from[ ]\d+[.]\d+[.]\d+[.]\d[ ]refused:
@@ -97,7 +91,6 @@ sub match {
         |part[ ]of[ ]their[ ]network[ ]is[ ]on[ ]our[ ]block[ ]list
         |please[ ](?:
              get[ ]a[ ]custom[ ]reverse[ ]dns[ ]name[ ]from[ ]your[ ]isp[ ]for[ ]your[ ]host
-            |inspect[ ]your[ ]spf[ ]settings
             |use[ ]the[ ]smtp[ ]server[ ]of[ ]your[ ]isp
             )
         |ptr[ ]record[ ]setup
@@ -128,12 +121,6 @@ sub match {
              that[ ]domain[ ]isn'?t[ ]in[ ]my[ ]list[ ]of[ ]allowed[ ]rcpthosts
             |your[ ]remotehost[ ]looks[ ]suspiciously[ ]like[ ]spammer
             )
-        |spf[ ](?:
-             [(]sender[ ]policy[ ]framework[)][ ]domain[ ]authentication[ ]fail
-            |record
-            |check:[ ]fail
-            )
-        |spf:[ ][^ ]+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[.][ ][a-z0-9]_401
         |temporarily[ ]deferred[ ]due[ ]to[ ]unexpected[ ]volume[ ]or[ ]user[ ]complaints
         |the[ ](?:email|domain|ip)[ ][^ ]+[ ]is[ ]blacklisted
         |this[ ]system[ ]will[ ]not[ ]accept[ ]messages[ ]from[ ]servers[/]devices[ ]with[ ]no[ ]reverse[ ]dns

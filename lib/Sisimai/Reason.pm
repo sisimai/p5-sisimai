@@ -6,15 +6,15 @@ use warnings;
 my $ModulePath = __PACKAGE__->path;
 my $GetRetried = __PACKAGE__->retry;
 my $ClassOrder = [
-    [qw/MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying UserUnknown Filtered Rejected
-        HostUnknown SpamDetected TooManyConn Blocked/
+    [qw/MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying AuthFailure UserUnknown
+        Filtered Rejected HostUnknown SpamDetected TooManyConn Blocked/
     ],
-    [qw/MailboxFull SpamDetected PolicyViolation VirusDetected NoRelaying SecurityError SystemError
-        NetworkError Suspend Expired ContentError SystemFull NotAccept MailerError/
+    [qw/MailboxFull SpamDetected PolicyViolation VirusDetected NoRelaying AuthFailure SecurityError
+        SystemError NetworkError Suspend Expired ContentError SystemFull NotAccept MailerError/
     ],
     [qw/MailboxFull MesgTooBig ExceedLimit Suspend UserUnknown Filtered Rejected HostUnknown SpamDetected
-        TooManyConn Blocked SpamDetected SecurityError SystemError NetworkError Suspend Expired ContentError
-        HasMoved SystemFull NotAccept MailerError NoRelaying SyntaxError OnHold/
+        TooManyConn Blocked SpamDetected AuthFailure SecurityError SystemError NetworkError Suspend
+        Expired ContentError HasMoved SystemFull NotAccept MailerError NoRelaying SyntaxError OnHold/
     ],
 ];
 
@@ -31,9 +31,9 @@ sub index {
     # All the error reason list Sisimai support
     # @return   [Array] Reason list
     return [qw/
-        Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown MailboxFull MailerError
-        MesgTooBig NetworkError NotAccept OnHold Rejected NoRelaying SpamDetected VirusDetected PolicyViolation
-        SecurityError Suspend SystemError SystemFull TooManyConn UserUnknown SyntaxError/
+        AuthFailure Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown MailboxFull
+        MailerError MesgTooBig NetworkError NotAccept OnHold Rejected NoRelaying SpamDetected VirusDetected
+        PolicyViolation SecurityError Suspend SystemError SystemFull TooManyConn UserUnknown SyntaxError/
     ];
 }
 
