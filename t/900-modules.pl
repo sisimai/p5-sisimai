@@ -73,6 +73,7 @@ sub list {
         MDA.pm
         Order.pm
         Reason.pm
+            Reason/AuthFailure.pm
             Reason/Blocked.pm
             Reason/ContentError.pm
             Reason/Delivered.pm
