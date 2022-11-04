@@ -477,7 +477,7 @@ use warnings;
 # -------------------------------------------------------------------------------------------------
 use constant StandardCode => {
     '2.1.5'  => 'delivered',    # Successfully delivered
-    # ------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
     '4.1.6'  => 'hasmoved',     # Destination mailbox has moved, No forwarding address
     '4.1.7'  => 'rejected',     # Bad sender's mailbox address syntax
     '4.1.8'  => 'rejected',     # Bad sender's system address
@@ -517,7 +517,7 @@ use constant StandardCode => {
     '4.7.24' => 'authfailure',  # SPF validation error
     '4.7.25' => 'blocked',      # Reverse DNS validation failed
     '4.7.26' => 'authfailure',  # Must pass either SPF or DKIM validation
-# ------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
     '5.1.0'  => 'userunknown',  # Other address status
     '5.1.1'  => 'userunknown',  # Bad destination mailbox address
     '5.1.2'  => 'hostunknown',  # Bad destination system address
