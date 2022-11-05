@@ -94,6 +94,7 @@ sub list {
             Reason/Rejected.pm
             Reason/SecurityError.pm
             Reason/SpamDetected.pm
+            Reason/Speeding.pm
             Reason/Suspend.pm
             Reason/SyntaxError.pm
             Reason/SystemError.pm

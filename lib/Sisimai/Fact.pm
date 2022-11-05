@@ -224,14 +224,17 @@ sub rise {
                 }
 
                 if( $vm > 2 ) {
-                    # Build regular expression for removing string like '550-5.1.1' from the value of "diagnosticcode"
-                    my $re = qr/[ ]$vr[- ](?:\Q$vs\E)?/;
+                    # Build regular expression for removing string like '550-5.1.1' from the value
+                    # of "diagnosticcode"
+                    my $re0 = qr/;?[ ]$vr[- ](?:\Q$vs\E)?/;
+                    my $re1 = qr/;?[ ][45]\d\d[- ](?:\Q$vs\E)?/;
+                    my $re2 = qr/;?[ ]$vr[- ](?:[45][.]\d[.]\d+)?/;
 
                     # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
                     # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
                     # 550-5.7.1 this message has been blocked. Please visit
                     # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
-                    s/$re/ /g, s|<html>.+</html>||i for $p->{'diagnosticcode'};
+                    s/$re0/ /g, s/$re1/ /g, s/$re2/ /g, s|<html>.+</html>||i for $p->{'diagnosticcode'};
                     $p->{'diagnosticcode'} =  Sisimai::String->sweep($p->{'diagnosticcode'});
                 }
             }
