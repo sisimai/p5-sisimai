@@ -23,7 +23,7 @@ sub match {
 }
 
 sub true {
-    # Rejected due to exceeding a rate limit or sending faster
+    # Rejected due to exceeding a rate limit or sending too fast
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is speeding
     #                                   0: is not speeding
