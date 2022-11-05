@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 sub text  { 'speeding' }
-sub description { 'Rejected due to exceeding a rate limit or sending faster' }
+sub description { 'Rejected due to exceeding a rate limit or sending too fast' }
 sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
@@ -53,15 +53,14 @@ Sisimai::Reason::Speeding - Bounce reason is C<speeding> or not.
 =head1 SYNOPSIS
 
     use Sisimai::Reason::Speeding;
-    print Sisimai::Reason::Speeding->match('400 Delivery time speeding');   # 1
+    my $v = '451 4.7.1 <mx.example.jp[192.0.2.2]>: Client host rejected: Please try again slower';
+    print Sisimai::Reason::Speeding->match($v); # 1
 
 =head1 DESCRIPTION
 
 Sisimai::Reason::Speeding checks the bounce reason is C<speeding> or not. This class is called only
-Sisimai::Reason class.
-
-This is the error that delivery time has speeding due to connection failure or network error and the
-message you sent has been in the queue for long time.
+Sisimai::Reason class. This is the error that a connection rejected due to exceeding a rate limit
+or sending too fast.
 
 =head1 CLASS METHODS
 
@@ -75,7 +74,8 @@ C<text()> returns string: C<speeding>.
 
 C<match()> returns 1 if the argument matched with patterns defined in this class.
 
-    print Sisimai::Reason::Speeding->match('400 Delivery time speeding');   # 1
+    my $v = '451 4.7.1 <mx.example.jp[192.0.2.2]>: Client host rejected: Please try again slower';
+    print Sisimai::Reason::Speeding->match($v); # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
@@ -88,7 +88,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
