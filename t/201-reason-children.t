@@ -25,6 +25,7 @@ my $reasonchildren = {
     'PolicyViolation' => ['570 5.7.7 Email not accepted for policy reasons'],
     'SecurityError'   => ['570 5.7.0 Authentication failure'],
     'SpamDetected'    => ['570 5.7.7 Spam Detected'],
+    'Speeding'        => ['451 4.7.1 <smtp.example.jp[192.0.2.3]>: Client host rejected: Please try again slower'],
     'Suspend'         => ['550 5.0.0 Recipient suspend the service'],
     'SystemError'     => ['500 5.3.5 System config error'],
     'SystemFull'      => ['550 5.0.0 Mail system full'],
