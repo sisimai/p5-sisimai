@@ -71,7 +71,6 @@ sub match {
         |http://www[.]spamcop[.]net/bl[.]
         |invalid[ ]ip[ ]for[ ]sending[ ]mail[ ]of[ ]domain
         |ip[ ]\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[ ]is[ ]blocked[ ]by[ ]earthlink # Earthlink
-        |ip[/]domain[ ]reputation[ ]problems
         |ips[ ]with[ ]missing[ ]ptr[ ]records
         |is[ ](?:
              in[ ]a[ ]black[ ]list(?:[ ]at[ ][^ ]+[.])?
@@ -95,10 +94,6 @@ sub match {
             )
         |ptr[ ]record[ ]setup
         |rejected[ ]because[ ]the[ ]sending[ ]mta[ ]or[ ]the[ ]sender[ ]has[ ]not[ ]passed[ ]validation
-        |rejected[ ]due[ ]to[ ](?:
-             a[ ]poor[ ]email[ ]reputation[ ]score
-            |the[ ]sending[ ]mta's[ ]poor[ ]reputation
-            )
         |rejecting[ ]open[ ]proxy   # Sendmail(srvrsmtp.c)
         |reverse[ ]dns[ ](?:
               failed

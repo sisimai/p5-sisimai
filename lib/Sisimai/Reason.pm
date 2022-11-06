@@ -9,12 +9,14 @@ my $ClassOrder = [
     [qw/MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying AuthFailure UserUnknown
         Filtered Rejected HostUnknown SpamDetected Speeding TooManyConn Blocked/
     ],
-    [qw/MailboxFull SpamDetected PolicyViolation VirusDetected NoRelaying AuthFailure SecurityError
-        SystemError NetworkError Speeding Suspend Expired ContentError SystemFull NotAccept MailerError/
+    [qw/MailboxFull SpamDetected PolicyViolation VirusDetected NoRelaying AuthFailure BadReputation
+        SecurityError SystemError NetworkError Speeding Suspend Expired ContentError SystemFull
+        NotAccept MailerError/
     ],
-    [qw/MailboxFull MesgTooBig ExceedLimit Suspend UserUnknown Filtered Rejected HostUnknown SpamDetected
-        Speeding TooManyConn Blocked SpamDetected AuthFailure SecurityError SystemError NetworkError
-        Suspend Expired ContentError HasMoved SystemFull NotAccept MailerError NoRelaying SyntaxError OnHold/
+    [qw/MailboxFull MesgTooBig ExceedLimit Suspend UserUnknown Filtered Rejected HostUnknown
+        SpamDetected Speeding TooManyConn Blocked SpamDetected AuthFailure SecurityError SystemError
+        NetworkError Suspend Expired ContentError HasMoved SystemFull NotAccept MailerError
+        NoRelaying SyntaxError OnHold/
     ],
 ];
 
@@ -31,10 +33,10 @@ sub index {
     # All the error reason list Sisimai support
     # @return   [Array] Reason list
     return [qw/
-        AuthFailure Blocked ContentError ExceedLimit Expired Filtered HasMoved HostUnknown MailboxFull
-        MailerError MesgTooBig NetworkError NotAccept OnHold Rejected NoRelaying SpamDetected VirusDetected
-        PolicyViolation SecurityError Speeding Suspend SystemError SystemFull TooManyConn UserUnknown
-        SyntaxError/
+        AuthFailure BadReputation Blocked ContentError ExceedLimit Expired Filtered HasMoved
+        HostUnknown MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold Rejected
+        NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError Speeding Suspend
+        SystemError SystemFull TooManyConn UserUnknown SyntaxError/
     ];
 }
 
