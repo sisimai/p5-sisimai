@@ -31,6 +31,11 @@ v5.0.0(beta5)
         email headers and entire message body
       - The second element of the `c___` parameter is for a callback method for each email file in
         Maildir/. The callback method is called at the end of each email file parsing.
+      - Implement the following error reasons:
+        - `AuthFailure` is a bounce reason which rejected due to SPF, DKIM, or DMARC failure #467
+        - `BadReputation` is a bounce reason which rejected due to an IP address reputation #469
+        - `Speeding` is a bounce reason which rejected due to exceeding a rate limit or sending too
+          fast #466
   - Implement `Sisimai::RFC2045`: Born again `Sisimai::MIME` for compatibility with the Go language
     version of Sisimai #407
   - #429 `Sisimai::Message->rise()` parses twice when the entire message body of a bounced mail is
