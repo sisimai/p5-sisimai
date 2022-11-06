@@ -74,6 +74,7 @@ sub list {
         Order.pm
         Reason.pm
             Reason/AuthFailure.pm
+            Reason/BadReputation.pm
             Reason/Blocked.pm
             Reason/ContentError.pm
             Reason/Delivered.pm
