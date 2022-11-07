@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.14p8
+v4.25.14p9
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -31,6 +31,7 @@ v4.25.14p8
     clude a domain `@googlegroups.com` #470
   - Import #471 from Sisimai v5, Implement `Sisimai::Rhost::NTTDOCOMO` to parse
     more strictly a bounce mail returned from `mfsmax.docomo.ne.jp`
+  - Import #475 from Sisimai v5, Implement `Sisimai::Rhost::Mimecast`
   - #464 Fix a bug related to a `handle->close` in t/023-mail-stdin.t Thanks to
     CPAN Testers:
     - http://www.cpantesters.org/cpan/report/d49e1af4-4157-11ed-af16-c84d753c3a36

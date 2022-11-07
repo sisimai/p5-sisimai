@@ -115,6 +115,7 @@ sub list {
             Rhost/GoogleApps.pm
             Rhost/IUA.pm
             Rhost/KDDI.pm
+            Rhost/Mimecast.pm
             Rhost/NTTDOCOMO.pm
             Rhost/Spectrum.pm
             Rhost/TencentQQ.pm
