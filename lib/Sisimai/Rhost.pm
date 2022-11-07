@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use constant RhostClass => {
+    qr/cox[.]net/                                     => 'Cox',
     qr/[.](?:prod|protection)[.]outlook[.]com\z/      => 'ExchangeOnline',
     qr/\b(?>laposte[.]net|(?:orange|wanadoo)[.]fr)\z/ => 'FrancePTT',
     qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/  => 'GoDaddy',
@@ -11,9 +12,8 @@ use constant RhostClass => {
     qr/[.]email[.]ua\z/                               => 'IUA',
     qr/[.](?:ezweb[.]ne[.]jp|au[.]com)\z/             => 'KDDI',
     qr/[.]mimecast[.]com\z/                           => 'Mimecast',
-    qr/charter[.]net/                                 => 'Spectrum',
-    qr/cox[.]net/                                     => 'Cox',
     qr/mfsmax[.]docomo[.]ne[.]jp\z/                   => 'NTTDOCOMO',
+    qr/charter[.]net/                                 => 'Spectrum',
     qr/mx[0-9]+[.]qq[.]com\z/                         => 'TencentQQ',
 };
 
