@@ -39,8 +39,8 @@ sub get {
             # - The sending mail server is subjected to Greylisting. This requires the server to
             #   retry the connection, between one minute and 12 hours. Alternatively, the sender's
             #   IP address has a poor reputation.
-            # - These reputation checks can be bypassed with an Auto Allow or Permitted Senders policy.
-            #   If it's legitimate traffic, amend your Greylisting policy.
+            # - These reputation checks can be bypassed with an Auto Allow or Permitted Senders
+            #   policy. If it's legitimate traffic, amend your Greylisting policy.
             [451, 'internal resources are temporarily unavailable'],
 
             # - Ongoing reputation checks have resulted in the message being rejected due to poor
@@ -62,7 +62,8 @@ sub get {
             [451, 'recipient temporarily unavailable'],
 
             # - You've reached your mail server's limit.
-            # - Wait and try again. The mail server won't accept any messages until you're under the limit.
+            # - Wait and try again. The mail server won't accept any messages until you're under
+            #   the limit.
             [451, 'ip temporarily blacklisted'],
 
             # - The sender's IP address is listed in an RBL. The text displayed is specific to the
@@ -264,16 +265,15 @@ sub get {
         ],
     };
 
-    my $statusmesg = lc $argvs->{'diagnosticcode'};
+    my $esmtperror = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
-    # The error code was not found in $errorcodes
     REASON: for my $e ( keys %$messagesof ) {
         # Try to find with each error message defined in $messagesof
         for my $f ( $messagesof->{ $e }->@* ) {
             # Find an error reason
             next unless $argvs->{'replycode'} == $f->[0];
-            next unless index($statusmesg, $f->[1]) > -1;
+            next unless index($esmtperror, $f->[1]) > -1;
             $reasontext = $e;
             last REASON;
         }
