@@ -10,6 +10,7 @@ use constant RhostClass => {
     qr/(?:aspmx|gmail-smtp-in)[.]l[.]google[.]com\z/  => 'GoogleApps',
     qr/[.]email[.]ua\z/                               => 'IUA',
     qr/[.](?:ezweb[.]ne[.]jp|au[.]com)\z/             => 'KDDI',
+    qr/[.]mimecast[.]com\z/                           => 'Mimecast',
     qr/charter[.]net/                                 => 'Spectrum',
     qr/cox[.]net/                                     => 'Cox',
     qr/mfsmax[.]docomo[.]ne[.]jp\z/                   => 'NTTDOCOMO',
