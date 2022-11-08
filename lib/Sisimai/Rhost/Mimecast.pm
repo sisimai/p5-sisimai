@@ -7,7 +7,7 @@ sub get {
     # Detect bounce reason from https://www.mimecast.com/
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason at Mimecast
-    # @since v5.0.0
+    # @since v4.25.15
     my $class = shift;
     my $argvs = shift // return undef;
 
