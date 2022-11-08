@@ -7,6 +7,7 @@ sub get {
     # Detect bounce reason from NTT DOCOMO
     # @param    [Sisimai::Data] argvs   Parsed email object
     # @return   [String]                The bounce reason for docomo.ne.jp
+    # @since v4.25.15
     my $class = shift;
     my $argvs = shift // return undef;
 
