@@ -11,6 +11,9 @@ sub get {
     my $class = shift;
     my $argvs = shift // return undef;
 
+    return undef unless length $argvs->{'diagnosticcode'};
+    return undef unless $argvs->{'replycode'} =~ /\A[245]\d\d\z/;
+
     state $messagesof = {
         # https://community.mimecast.com/s/article/Mimecast-SMTP-Error-Codes-842605754
         'authfailure' => [
@@ -265,14 +268,15 @@ sub get {
         ],
     };
 
-    my $esmtperror = lc $argvs->{'diagnosticcode'};
+    my $esmtperror = lc  $argvs->{'diagnosticcode'} // 0;
+    my $esmtpreply = int $argvs->{'replycode'}      // 0;
     my $reasontext = '';
 
     REASON: for my $e ( keys %$messagesof ) {
         # Try to find with each error message defined in $messagesof
         for my $f ( $messagesof->{ $e }->@* ) {
             # Find an error reason
-            next unless $argvs->{'replycode'} == $f->[0];
+            next unless $esmtpreply == $f->[0];
             next unless index($esmtperror, $f->[1]) > -1;
             $reasontext = $e;
             last REASON;
