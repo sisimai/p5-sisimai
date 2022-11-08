@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from https://www.mimecast.com/
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Data] argvs   Parsed email object
     # @return   [String]                The bounce reason at Mimecast
     # @since v5.0.0
     my $class = shift;
@@ -294,13 +294,13 @@ Sisimai::Rhost::Mimecast - Detect the bounce reason returned from Mimecast
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument of
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Data object as an argument of
 get() method when the value of C<rhost> or C<destination> of the object is "mimecast.com". This
-class is called only Sisimai::Fact class.
+class is called only Sisimai::Data class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<get(I<Sisimai::Data Object>)>>
 
 C<get()> detects the bounce reason.
 
