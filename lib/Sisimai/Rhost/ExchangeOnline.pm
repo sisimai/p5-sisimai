@@ -352,7 +352,8 @@ sub get {
             #   message is related to Rich Text formatted messages. The specific Requested action
             #   not taken: policy violation detected (AS345) message is related to nested attach-
             #   ments.
-            ['5.0.350', 0, 0, 'generic error, x-dg-ref header is too long, or requested action not taken: policy violation detected (as345)'],
+            ['5.0.350', 0, 0, 'x-dg-ref header is too long'],
+            ['5.0.350', 0, 0, 'requested action not taken: policy violation detected (as345)'],
 
             # - The message was rejected by a mail flow rule (also known as a transport rule). This
             #   enhanced status code range is available when the rule is configured to reject mes-
