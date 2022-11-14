@@ -13,7 +13,11 @@ sub get {
     # @see      https://technet.microsoft.com/en-us/library/bb232118
     my $class = shift;
     my $argvs = shift // return undef;
+
     return $argvs->{'reason'} if $argvs->{'reason'};
+    return '' unless $argvs->{'diagnosticcode'};
+    return '' unless $argvs->{'deliverystatus'};
+    return '' unless $argvs->{'deliverystatus'} =~ /\A[245][.]\d[.]\d+\z/;
 
     state $messagesof = {
         'authfailure' => [
@@ -708,9 +712,9 @@ sub get {
         ],
     };
 
-    my $esmtperror = lc $argvs->{'diagnosticcode'};
-    my $statuscode = $argvs->{'deliverystatus'} || return '';
-    my $thirddigit = int([split('.', $statuscode)]->[-1] || 0);
+    my $statuscode = $argvs->{'deliverystatus'};
+    my $thirddigit = int [split /[.]/, $statuscode]->[-1];
+    my $esmtperror = lc  $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     REASON: for my $e ( keys %$messagesof ) {
