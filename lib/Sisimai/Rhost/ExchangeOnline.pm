@@ -714,7 +714,7 @@ sub get {
     my $reasontext = '';
 
     REASON: for my $e ( keys %$messagesof ) {
-        # The key is a reason name
+        # Each key is a reason name
         for my $f ( $messagesof->{ $e }->@* ) {
             # ["status-code", min, max, "error message"]
             if( $f->[1] == $f->[2] ) {
