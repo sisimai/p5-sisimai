@@ -687,7 +687,6 @@ sub get {
             # Previous versions of Exchange Server ------------------------------------------------
             ['5.1.2', 0, 0, 'invalid x.400 address'],
         ],
-        'virusdetected' => [],
     };
 
     my $esmtperror = lc $argvs->{'diagnosticcode'};
