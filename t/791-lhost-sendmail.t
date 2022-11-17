@@ -67,7 +67,7 @@ my $isexpected = {
     '56' => [['5.5.0',   '554', 'blocked',         0]],
     '57' => [['5.7.27',  '550', 'notaccept',       1]],
     '58' => [['5.7.1',   '550', 'authfailure',     0]],
-    '59' => [['5.7.1',   '550', 'rejected',        0]],
+    '59' => [['5.7.1',   '550', 'authfailure',     0]],
 };
 
 $enginetest->($enginename, $isexpected);
