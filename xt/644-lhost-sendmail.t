@@ -230,8 +230,8 @@ my $isexpected = [
     { 'n' => '01223', 'r' => qr/policyviolation/},
     { 'n' => '01224', 'r' => qr/policyviolation/},
     { 'n' => '01225', 'r' => qr/policyviolation/},
-    { 'n' => '01226', 'r' => qr/rejected/       },
-    { 'n' => '01227', 'r' => qr/rejected/       },
+    { 'n' => '01226', 'r' => qr/blocked/        },
+    { 'n' => '01227', 'r' => qr/blocked/        },
     { 'n' => '01228', 'r' => qr/userunknown/    },
     { 'n' => '01230', 'r' => qr/filtered/       },
 ];
