@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.14p10
+v4.25.14p11
 --------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -44,6 +44,7 @@ v4.25.14p10
     - 550 5.7.1 ... Please contact your Internet service provider since part of
       their network is on our block list (S3150)
     - Error messages of Exchange Server 2019 #476
+  - Add many error messages at `Sisimai::LRhost::GoogleApps`, Import #479
 
 v4.25.14
 --------------------------------------------------------------------------------
