@@ -33,7 +33,7 @@ sub inquire {
             |this[ ]report[ ]relates[ ]to[ ]your[ ]message
             |your[ ]message[ ](?:
                 could[ ]not[ ]be[ ]delivered
-               |was[ ]not[ ]delivered[ ]to[ ]the[ ]following[ ]recipients
+               |was[ ]not[ ]delivered[ ]to[ ](?:the[ ]following[ ]recipients)?
                )
             )
         }x,
@@ -48,6 +48,7 @@ sub inquire {
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
     my $rfc822text = '';    # (String) message/rfc822 part text
     my $maybealias = '';    # (String) Original-Recipient field
+    my $lowercased = '';    # (String) Lowercased each line of the loop
     my $blanklines = 0;     # (Integer) The number of blank lines
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -62,10 +63,10 @@ sub inquire {
 
     for my $e ( split("\n", $$mbody) ) {
         # Read each line between the start of the message and the start of rfc822 part.
-        my $d = lc $e;
+        $lowercased = lc $e;
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( $d =~ $markingsof->{'message'} ) {
+            if( $lowercased =~ $markingsof->{'message'} ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -73,7 +74,7 @@ sub inquire {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part(message/rfc822)
-            if( $d =~ $markingsof->{'rfc822'} ) {
+            if( $lowercased =~ $markingsof->{'rfc822'} ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -287,106 +288,164 @@ sub inquire {
         $p = $e;
     }
 
+    # ---------------------------------------------------------------------------------------------
     BODY_PARSER_FOR_FALLBACK: {
         # Fallback, parse entire message body
         last if $recipients;
 
         # Failed to get a recipient address at code above
-        $match ||= 1 if lc($mhead->{'from'}) =~ /\b(?:postmaster|mailer-daemon|root)[@]/;
-        $match ||= 1 if lc($mhead->{'subject'}) =~ qr{(?>
-             delivery[ ](?:failed|failure|report)
-            |failure[ ]notice
-            |mail[ ](?:delivery|error)
-            |non[-]delivery
-            |returned[ ]mail
-            |undeliverable[ ]mail
-            |warning:[ ]
-            )
-        }x;
-        if( defined $mhead->{'return-path'} ) {
-            # Check the value of Return-Path of the message
-            $match ||= 1 if lc($mhead->{'return-path'}) =~ /(?:[<][>]|mailer-daemon)/;
-        }
+        my $returnpath = lc($mhead->{'return-path'} // '');
+        my $headerfrom = lc($mhead->{'from'}        // '');
+        my $errortitle = lc($mhead->{'subject'}     // '');
+        my $patternsof = {
+            'from'        => ['postmaster@', 'mailer-daemon@', 'root@'],
+            'return-path' => ['<>', 'mailer-daemon'],
+            'subject'     => ['delivery fail', 'delivery report', 'failure notice', 'mail delivery',
+                              'mail failed', 'mail error', 'non-delivery', 'returned mail',
+                              'undeliverable mail', 'warning: '],
+        };
+
+        $match ||= 1 if grep { index($headerfrom, $_) > -1 } $patternsof->{'from'}->@*;
+        $match ||= 1 if grep { index($errortitle, $_) > -1 } $patternsof->{'subject'}->@*;
+        $match ||= 1 if grep { index($returnpath, $_) > -1 } $patternsof->{'return-path'}->@*;
         last unless $match;
 
-        state $re_skip = qr{(?>
-             \A[-]+=
-            |\A\s+\z
-            |\A\s*--
-            |\A\s+[=]\d+
-            |\Ahi[ ][!]
-            |content-(?:description|disposition|transfer-encoding|type):[ ]
-            |(?:name|charset)=
-            |--\z
-            |:[ ]--------
-            )
-        }x;
-        state $re_stop  = qr{(?:
-             \A[*][*][*][ ].+[ ].+[ ][*][*][*]
-            |\Acontent-type:[ ]message/delivery-status
-            |\Ahere[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]first[ ]part[ ]of[ ]the[ ]message
-            |\Athe[ ]non-delivered[ ]message[ ]is[ ]attached[ ]to[ ]this[ ]message.
-            |\Areceived:[ \t]*
-            |\Areceived-from-mta:[ \t]*
-            |\Areporting-mta:[ \t]*
-            |\Areturn-path:[ \t]*
-            |\Aa[ ]copy[ ]of[ ]the[ ]original[ ]message[ ]below[ ]this[ ]line:
-            |attachment[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
-            |below[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]original[ ]message:
-            |below[ ]this[ ]line[ ]is[ ]a[ ]copy[ ]of[ ]the[ ]message
-            |message[ ]contains[ ].+[ ]file[ ]attachments
-            |message[ ]text[ ]follows:[ ]
-            |original[ ]message[ ]follows
-            |the[ ]attachment[ ]contains[ ]the[ ]original[ ]mail[ ]headers
-            |the[ ]first[ ]\d+[ ]lines[ ]
-            |unsent[ ]message[ ]below
-            |your[ ]message[ ]reads[ ][(]in[ ]part[)]:
-            )
-        }x;
-        state $re_addr = qr{(?:
-             \A\s*
-            |\A["].+["]\s*
-            |\A[ \t]*recipient:[ \t]*
-            |\A[ ]*address:[ ]
-            |addressed[ ]to[ ]
-            |could[ ]not[ ]be[ ]delivered[ ]to:[ ]
-            |delivered[ ]to[ ]+
-            |delivery[ ]failed:[ ]
-            |did[ ]not[ ]reach[ ]the[ ]following[ ]recipient:[ ]
-            |error-for:[ ]+
-            |failed[ ]recipient:[ ]
-            |failed[ ]to[ ]deliver[ ]to[ ]
-            |intended[ ]recipient:[ ]
-            |mailbox[ ]is[ ]full:[ ]
-            |rcpt[ ]to:
-            |smtp[ ]server[ ][<].+[>][ ]rejected[ ]recipient[ ]
-            |the[ ]following[ ]recipients[ ]returned[ ]permanent[ ]errors:[ ]
-            |the[ ]following[ ]message[ ]to[ ]
-            |unknown[ ]User:[ ]
-            |undeliverable[ ]to[ ]
-            |undeliverable[ ]address:[ ]*
-            |you[ ]sent[ ]mail[ ]to[ ]
-            |your[ ]message[ ]to[ ]
-            )
-            ['"]?[<]?([^\s\n\r@=<>]+[@][-.0-9a-z]+[.][0-9a-z]+)[>]?['"]?
-        }x;
+        state $readuntil0 = [
+            # Stop reading when the following string have appeared at the first of a line
+            'a copy of the original message below this line:',
+            'content-type: message/delivery-status',
+            'for further assistance, please contact ',
+            'here is a copy of the first part of the message',
+            'received:',
+            'received-from-mta:',
+            'reporting-mta:',
+            'reporting-ua:',
+            'return-path:',
+            'the non-delivered message is attached to this message',
+        ];
+        state $readuntil1 = [
+            # Stop reading when the following string have appeared in a line
+            'attachment is a copy of the message',
+            'below is a copy of the original message:',
+            'below this line is a copy of the message',
+            'message contains ',
+            'message text follows: ',
+            'original message follows',
+            'the attachment contains the original mail headers',
+            'the first ',
+            'unsent message below',
+            'your message reads (in part):',
+        ];
+        state $readafter0 = [
+            # Do not read before the following strings
+            '	the postfix ',
+            'a summary of the undelivered message you sent follows:',
+            'the following is the error message',
+            'the message that you sent was undeliverable to the following',
+            'your message was not delivered to ',
+        ];
+        state $donotread0 = ['   -----', ' -----', '--', '|--', '*'];
+        state $donotread1 = ['mail from:'];
+        state $reademail0 = [' ', '"', '<',];
+        state $reademail1 = [
+            # There is an email address around the following strings
+            'address:',
+            'addressed to',
+            'could not be delivered to:',
+            'delivered to',
+            'delivery failed:',
+            'did not reach the following recipient:',
+            'error-for:',
+            'failed recipient:',
+            'failed to deliver to',
+            'intended recipient:',
+            'mailbox is full:',
+            'recipient:',
+            'rcpt to:',
+            'smtp server <',
+            'the following recipients returned permanent errors:',
+            'the following addresses had permanent errors',
+            'the following message to',
+            'to: ',
+            'unknown user:',
+            'unable to deliver mail to the following recipient',
+            'undeliverable to',
+            'undeliverable address:',
+            'you sent mail to',
+            'your message has encountered delivery problems to the following recipients:',
+            'was automatically rejected',
+            'was rejected due to',
+        ];
 
         my $b = $dscontents->[-1];
+        my $hasmatched = 0;     # There may be an email address around the line
+        my $readslices = [];    # Previous line of this loop
+           $lowercased = lc $$mbody;
+
+        for my $e ( @$readafter0 ) {
+            # Cut strings from the begining of $$mbody to the strings defined in $readafter0
+            my $i = index($lowercased, $e); next if $i == -1;
+            $$mbody = substr($$mbody, $i);
+        }
+
         for my $e ( split("\n", $$mbody) ) {
             # Get the recipient's email address and error messages.
-            my $d = lc $e;
-            last if $d =~ $markingsof->{'rfc822'};
-            last if $d =~ $re_stop;
-
             next unless length $e;
-            next if $d =~ $re_skip;
-            next if index($e, '*') == 0;
 
-            if( $d =~ $re_addr ) {
+            $hasmatched = 0;
+            $lowercased = lc $e;
+            push @$readslices, $lowercased;
+
+            last if $lowercased =~ $markingsof->{'rfc822'};
+            last if grep { index($lowercased, $_) == 0 } @$readuntil0;
+            last if grep { index($lowercased, $_) > -1 } @$readuntil1;
+            next if grep { index($lowercased, $_) == 0 } @$donotread0;
+            next if grep { index($lowercased, $_) > -1 } @$donotread1;
+
+            while(1) {
+                # There is an email address with an error message at this line(1)
+                last unless grep { index($lowercased, $_) == 0 } @$reademail0;
+                last unless index($lowercased, '@') > 1;
+
+                $hasmatched = 1;
+                last;
+            }
+
+            while(2) {
+                # There is an email address with an error message at this line(2)
+                last if $hasmatched > 0;
+                last unless grep { index($lowercased, $_) > -1 } @$reademail1;
+                last unless index($lowercased, '@') > 1;
+
+                $hasmatched = 2;
+                last;
+            }
+
+            while(3) {
+                # There is an email address without an error message at this line
+                last if $hasmatched > 0;
+                last if scalar @$readslices < 2;
+                last unless grep { index($readslices->[-2], $_) > -1 } @$reademail1;
+                last unless index($lowercased, '@')  >  1;  # Must contain "@"
+                last unless index($lowercased, '.')  >  1;  # Must contain "."
+                last unless index($lowercased, '$') == -1;
+                $hasmatched = 3;
+                last;
+            }
+
+            if( $hasmatched > 0 && index($lowercased, '@') > 0 ) {
                 # May be an email address
+                my $w = [split(' ', $e)];
                 my $x = $b->{'recipient'} || '';
-                my $y = Sisimai::Address->s3s4($1);
-                next unless Sisimai::Address->is_emailaddress($y);
+                my $y = '';
+
+                for my $ee ( @$w ) {
+                    # Find an email address (including "@")
+                    next unless index($ee, '@') > 1;
+                    $y = Sisimai::Address->s3s4($ee);
+                    next unless Sisimai::Address->is_emailaddress($y);
+                    last;
+                }
 
                 if( $x && $x ne $y ) {
                     # There are multiple recipient addresses in the message body.
@@ -418,6 +477,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     require Sisimai::MDA;
     my $mdabounced = Sisimai::MDA->inquire($mhead, $mbody);
     for my $e ( @$dscontents ) {
@@ -442,9 +502,10 @@ sub inquire {
             $e->{'diagnosis'} = $mdabounced->{'message'} if $mdabounced->{'message'};
             $e->{'command'}   = '';
         }
-        $e->{'date'}   ||= $mhead->{'date'};
-        $e->{'status'} ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
-        $e->{'command'}  = $1 if $e->{'diagnosis'} =~ $markingsof->{'command'};
+        $e->{'date'}    ||= $mhead->{'date'};
+        $e->{'status'}  ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
+        $e->{'command'} ||= $1 if $e->{'diagnosis'} =~ $markingsof->{'command'};
+        $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'});
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
 }
@@ -485,7 +546,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

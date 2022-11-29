@@ -12,6 +12,7 @@ my $isexpected = {
     '02' => [['', '', 'vacation', 0]],
     '03' => [['', '', 'vacation', 0]],
     '04' => [['', '', 'vacation', 0]],
+    '05' => [['', '', 'vacation', 0]],
 };
 
 $enginetest->($enginename, $isexpected);
