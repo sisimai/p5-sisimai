@@ -15,7 +15,7 @@ sub find {
     return undef unless length $argv0 > 3;
     return undef unless $argv0 =~ /(?:HELO|EHLO|START|AUTH|MAIL|RCPT|DATA)/;
 
-    state $esmtpcomms = [
+    state $detectable = [
         'HELO', 'EHLO', 'STARTTLS', 'AUTH PLAIN', 'AUTH LOGIN', 'AUTH CRAM-', 'AUTH DIGEST-',
         'MAIL F', 'RCPT T', 'DATA'
     ];
@@ -23,12 +23,12 @@ sub find {
     my $commandset = [];
     my $previouspp = 0;
 
-    for my $e ( @$esmtpcomms ) {
+    for my $e ( @$detectable ) {
         # Find an SMTP command from the given string
         my $p = index $argv0, $e, $previouspp;
         next if $p < 0;
         last if $p + 4 > $stringsize;
-       $previouspp = $p;
+        $previouspp = $p;
 
         my $v = substr($argv0, $p, 4); next if grep { $v eq $_ } @$commandset;
            $v = 'STARTTLS' if $v eq 'STAR';
