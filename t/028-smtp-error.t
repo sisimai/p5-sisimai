@@ -16,9 +16,9 @@ MAKE_TEST: {
     my $softbounces = [
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered',
         'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
-        'norelaying', 'rejected', 'securityerror',
-        'spamdetected', 'suspend', 'systemerror', 'systemfull', 'toomanyconn',
-        'undefined', 'onhold',
+        'norelaying', 'policyviolation', 'rejected', 'securityerror',
+        'spamdetected', 'suspend', 'syntaxerror', 'systemerror', 'systemfull',
+        'toomanyconn', 'virusdetected', 'undefined', 'onhold',
     ];
     my $hardbounces = ['userunknown', 'hostunknown', 'hasmoved', 'notaccept'];
     my $isntbounces = ['delivered', 'feedback', 'vacation'];

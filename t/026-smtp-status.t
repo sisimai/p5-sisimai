@@ -16,8 +16,9 @@ MAKE_TEST: {
     my $reasonlist = [
         'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered', 'hasmoved',
         'hostunknown', 'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
-        'norelaying', 'notaccept', 'onhold', 'rejected', 'securityerror', 'spamdetected',
-        'suspend', 'systemerror', 'systemfull', 'toomanyconn', 'userunknown',
+        'norelaying', 'notaccept', 'onhold', 'policyviolation', 'rejected', 'securityerror',
+        'spamdetected', 'suspend', 'syntaxerror', 'systemerror', 'systemfull', 'toomanyconn',
+        'userunknown', 'virusdetected',
     ];
     my $statuslist = [ qw/
         2.1.5
