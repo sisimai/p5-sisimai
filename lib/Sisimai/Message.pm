@@ -246,7 +246,7 @@ sub parse {
     # Decode BASE64 Encoded message body
     my $mesgformat = lc($mailheader->{'content-type'} || '');
     my $ctencoding = lc($mailheader->{'content-transfer-encoding'} || '');
-    if( index($mesgformat, 'text/plain') == 0 || index($mesgformat, 'text/html') == 0 ) {
+    if( index($mesgformat, 'text/') == 0 ) {
         # Content-Type: text/plain; charset=UTF-8
         if( $ctencoding eq 'base64' ) {
             # Content-Transfer-Encoding: base64
