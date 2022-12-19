@@ -371,8 +371,8 @@ sub find {
 
         # Remove angle brackets, other brackets, and quotations: []<>{}'` except a domain part is
         # an IP address like neko@[192.0.2.222]
-        s/\A[\[<{('`]//, s/[.'`>});]\z// for $e->{'address'};
-        $e->{'address'} =~ s/\]\z// unless $e->{'address'} =~ /[@]\[[0-9A-Za-z:\.]+\]\z/;
+        s/\A[\[<{('`]//g, s/[.,'`>});]\z//g for $e->{'address'};
+        $e->{'address'} =~ s/[^A-Za-z]\z//g unless index($e->{'address'}, '@[') > 1;
 
         unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
             # Remove double-quotations

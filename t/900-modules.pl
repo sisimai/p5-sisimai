@@ -123,6 +123,8 @@ sub list {
             Rhost/Spectrum.pm
             Rhost/TencentQQ.pm
         SMTP.pm
+            SMTP/Command.pm
+            SMTP/Error.pm
             SMTP/Error.pm
             SMTP/Reply.pm
             SMTP/Status.pm

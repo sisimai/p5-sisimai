@@ -14,7 +14,6 @@ Sisimai::SMTP - SMTP Status Codes related utilities
 =head1 SYNOPSIS
 
     use Sisimai::SMTP;
-    print keys Sisimai::SMTP->command->%*;  # helo, mail, rcpt, data
 
 =head1 DESCRIPTION
 
