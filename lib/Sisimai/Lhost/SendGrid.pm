@@ -122,6 +122,10 @@ sub inquire {
                 # in RCPT TO, in MAIL FROM, end of DATA
                 $commandtxt = $1;
 
+            } elsif( $e =~ /\ADiagnostic-Code:[ ]*(.+)\z/ ) {
+                # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown
+                $v->{'diagnosis'} = $e;
+
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
@@ -196,7 +200,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
