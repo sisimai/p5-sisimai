@@ -45,6 +45,11 @@ sub inquire {
         }x,
     };
 
+    require Sisimai::Address;
+    require Sisimai::RFC1894;
+    my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
+
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
     my $rfc822text = '';    # (String) message/rfc822 part text
     my $maybealias = '';    # (String) Original-Recipient field
@@ -92,187 +97,78 @@ sub inquire {
             # message/delivery-status part
             next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
-
+        
             $v = $dscontents->[-1];
-            if( $e =~ /\A(Original|Final)-[Rr]ecipient:[ ]*.+;[ ]*([^ ]+)\z/ ) {
-                # 2.3.2 Final-Recipient field
-                #   The Final-Recipient field indicates the recipient for which this set of per-re-
-                #   cipient fields applies.  This field MUST be present in each set of per-recipi-
-                #   ent data. The syntax of the field is as follows:
-                #
-                #       final-recipient-field =
-                #           "Final-Recipient" ":" address-type ";" generic-address
-                #
-                # 2.3.1 Original-Recipient field
-                #   The Original-Recipient field indicates the original recipient address as speci-
-                #   fied by the sender of the message for which the DSN is being issued.
-                #
-                #       original-recipient-field =
-                #           "Original-Recipient" ":" address-type ";" generic-address
-                #
-                #       generic-address = *text
-                if( $1 eq 'Original' ) {
-                    # Original-Recipient: ...
-                    $maybealias = $2;
+            if( my $f = Sisimai::RFC1894->match($e) ) {
+                # $e matched with any field defined in RFC3464
+                next unless my $o = Sisimai::RFC1894->field($e);
+
+                if( $o->[-1] eq 'addr' ) {
+                    # Final-Recipient: rfc822; kijitora@example.jp
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    if( $o->[0] eq 'final-recipient' || $o->[0] eq 'original-recipient' ) {
+                        # Final-Recipient: rfc822; kijitora@example.jp
+                        if( $o->[0] eq 'original-recipient' ) {
+                            # Original-Recipient: ...
+                            $maybealias = $o->[2];
+
+                        } else {
+                            # Final-Recipient: ...
+                            my $x = $v->{'recipient'} || '';
+                            my $y = Sisimai::Address->s3s4($o->[2]);
+                               $y = $maybealias unless Sisimai::Address->is_emailaddress($y);
+
+                            if( $x && $x ne $y ) {
+                                # There are multiple recipient addresses in the message body.
+                                push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS;
+                                $v = $dscontents->[-1];
+                            }
+                            $v->{'recipient'} = $y;
+                            $recipients++;
+                            $itisbounce ||= 1;
+
+                            $v->{'alias'} ||= $maybealias;
+                            $maybealias = '';
+                        }
+                    } elsif( $o->[0] eq 'x-actual-recipient' ) {
+                        # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
+                        # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
+                        $v->{'alias'} = $o->[2] unless $o->[2] =~ /[ \t]+/;
+                    }
+                } elsif( $o->[-1] eq 'code' ) {
+                    # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
+                    $v->{'spec'}      = $o->[1];
+                    $v->{'diagnosis'} = $o->[2];
 
                 } else {
-                    # Final-Recipient: ...
-                    my $x = $v->{'recipient'} || '';
-                    my $y = Sisimai::Address->s3s4($2);
-                       $y = $maybealias unless Sisimai::Address->is_emailaddress($y);
+                    # Other DSN fields defined in RFC3464
+                    next unless exists $fieldtable->{ $o->[0] };
+                    $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
-                    if( $x && $x ne $y ) {
-                        # There are multiple recipient addresses in the message body.
-                        push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS;
-                        $v = $dscontents->[-1];
-                    }
-                    $v->{'recipient'} = $y;
-                    $recipients++;
-                    $itisbounce ||= 1;
-
-                    $v->{'alias'} ||= $maybealias;
-                    $maybealias = '';
+                    next unless $f == 1;
+                    $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
                 }
-            } elsif( $e =~ /\AX-Actual-Recipient:[ ]*(?:RFC|rfc)822;[ ]*([^ ]+)\z/ ) {
-                # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
-                # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
-                $v->{'alias'} = $1 unless $1 =~ /[ \t]+/;
-
-            } elsif( $e =~ /\AAction:[ ]*(.+)\z/ ) {
-                # 2.3.3 Action field
-                #   The Action field indicates the action performed by the Reporting-MTA as a re-
-                #   sult of its attempt to deliver the message to this recipient address.
-                #   This field MUST be present for each recipient named in the DSN. The syntax for
-                #   the action-field is:
-                #
-                #       action-field = "Action" ":" action-value
-                #       action-value =
-                #           "failed" / "delayed" / "delivered" / "relayed" / "expanded"
-                #
-                #   The action-value may be spelled in any combination of upper and lower case char-
-                #   acters.
-                $v->{'action'} = lc $1;
-                $v->{'action'} = $1 if $v->{'action'} =~ /\A([^ ]+)[ ]/; # failed (bad destination mailbox address)
-
-            } elsif( $e =~ /\AStatus:[ ]*(\d[.]\d+[.]\d+)/ ) {
-                # 2.3.4 Status field
-                #   The per-recipient Status field contains a transport-independent status code
-                #   that indicates the delivery status of the message to that recipient. This field
-                #   MUST be present for each delivery attempt which is described by a DSN.
-                #
-                #   The syntax of the status field is:
-                #
-                #       status-field = "Status" ":" status-code
-                #       status-code = DIGIT "." 1*3DIGIT "." 1*3DIGIT
-                $v->{'status'} = $1;
-
-            } elsif( $e =~ /\AStatus:[ ]*(\d+[ ]+.+)\z/ ) {
-                # Status: 553 Exceeded maximum inbound message size
-                $v->{'alterrors'} = $1;
-
-            } elsif( $e =~ /Remote-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                # 2.3.5 Remote-MTA field
-                #   The value associated with the Remote-MTA DSN field is a printable ASCII repre-
-                #   sentation of the name of the "remote" MTA that reported delivery status to the
-                #   "reporting" MTA.
-                #
-                #       remote-mta-field = "Remote-MTA" ":" mta-name-type ";" mta-name
-                #
-                #   NOTE: The Remote-MTA field preserves the "while talking to" information that
-                #         was provided in some pre-existing nondelivery reports.
-                #
-                #   This field is optional.  It MUST NOT be included if no remote MTA was involved
-                #   in the attempted delivery of the message to that recipient.
-                $v->{'rhost'} = lc $1;
-
-            } elsif( $e =~ /\ALast-Attempt-Date:[ ]*(.+)\z/ ) {
-                # 2.3.7 Last-Attempt-Date field
-                #   The Last-Attempt-Date field gives the date and time of the last attempt to re-
-                #   lay, gateway, or deliver the message (whether successful or unsuccessful) by
-                #   the Reporting MTA. This is not necessarily the same as the value of the Date
-                #   field from the header of the message used to transmit this delivery status no-
-                #   tification: In cases where the DSN was generated by a gateway, the Date field
-                #   in the message header contains the time the DSN was sent by the gateway and the
-                #   DSN Last-Attempt-Date field contains the time the last delivery attempt occurr-
-                #   ed.
-                #
-                #       last-attempt-date-field = "Last-Attempt-Date" ":" date-time
-                $v->{'date'} = $1;
-
             } else {
-                if( $e =~ /\ADiagnostic-Code:[ ]*(.+?);[ ]*(.+)\z/ ) {
-                    # 2.3.6 Diagnostic-Code field
-                    #   For a "failed" or "delayed" recipient, the Diagnostic-Code DSN field con-
-                    #   tains the actual diagnostic code issued by the mail transport. Since such
-                    #   codes vary from one mail transport to another, the diagnostic-type subfield
-                    #   is needed to specify which type of diagnostic code is represented.
-                    #
-                    #       diagnostic-code-field =
-                    #           "Diagnostic-Code" ":" diagnostic-type ";" *text
-                    $v->{'spec'} = uc $1;
-                    $v->{'diagnosis'} = $2;
-
-                } elsif( $e =~ /\ADiagnostic-Code:[ ]*(.+)\z/ ) {
-                    # No value of "diagnostic-type"
-                    # Diagnostic-Code: 554 ...
+                # The line did not match with any fields defined in RFC3464
+                if( $e =~ /\ADiagnostic-Code:[ ]*([^;]+)\z/ ) {
+                    # There is no value of "diagnostic-type" such as Diagnostic-Code: 554 ...
                     $v->{'diagnosis'} = $1;
 
+                } elsif( $e =~ /\AStatus:[ ]*(\d{3}[ ]+.+)\z/ ) {
+                    # Status: 553 Exceeded maximum inbound message size
+                    $v->{'alterrors'} = $1;
+
                 } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
-                    # Continued line of the value of Diagnostic-Code header
-                    $v->{'diagnosis'} .= ' '.$1;
+                    # Continued line of the value of Diagnostic-Code field
+                    $v->{'diagnosis'} .= $e;
                     $e = 'Diagnostic-Code: '.$e;
 
                 } else {
-                    if( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                        # 2.2.2 The Reporting-MTA DSN field
-                        #
-                        #       reporting-mta-field =
-                        #           "Reporting-MTA" ":" mta-name-type ";" mta-name
-                        #       mta-name = *text
-                        #
-                        #   The Reporting-MTA field is defined as follows:
-                        #
-                        #   A DSN describes the results of attempts to deliver, relay, or gateway a
-                        #   message to one or more recipients.  In all cases, the Reporting-MTA is
-                        #   the MTA that attempted to perform the delivery, relay, or gateway oper-
-                        #   ation described in the DSN.  This field is required.
-                        $connheader->{'rhost'} ||= lc $1;
-
-                    } elsif( $e =~ /\AReceived-From-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
-                        # 2.2.4 The Received-From-MTA DSN field
-                        #   The optional Received-From-MTA field indicates the name of the MTA from
-                        #   which the message was received.
-                        #
-                        #       received-from-mta-field =
-                        #           "Received-From-MTA" ":" mta-name-type ";" mta-name
-                        #
-                        #   If the message was received from an Internet host via SMTP, the con-
-                        #   tents of the mta-name sub-field SHOULD be the Internet domain name sup-
-                        #   plied in the HELO or EHLO command, and the network address used by the
-                        #   SMTP client SHOULD be included as a comment enclosed in parentheses.
-                        #   (In this case, the MTA-name-type will be "dns".)
-                        $connheader->{'lhost'} = lc $1;
-
-                    } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
-                        # 2.2.5 The Arrival-Date DSN field
-                        #   The optional Arrival-Date field indicates the date and time at which
-                        #   the message arrived at the Reporting MTA.  If the Last-Attempt-Date
-                        #   field is also provided in a per-recipient field, this can be used to
-                        #   determine the interval between when the message arrived at the Report-
-                        #   ing MTA and when the report was issued for that recipient.
-                        #
-                        #       arrival-date-field = "Arrival-Date" ":" date-time
-                        $connheader->{'date'} = $1;
-
-                    } else {
-                        # Get error message
-                        next if $e =~ /\A[ -]+/;
-                        next unless $e =~ $markingsof->{'error'};
-
-                        # 500 User Unknown
-                        # <kijitora@example.jp> Unknown
-                        $v->{'alterrors'} .= ' '.$e;
-                    }
+                    # Get error messages which is written in the message body directly
+                    next if index($e, ' ') == 0;
+                    next if index($e, '	') == 0;
+                    next unless $e =~ $markingsof->{'error'};
+                    $v->{'alterrors'} .= ' '.$e;
                 }
             }
         } # End of message/delivery-status
@@ -338,7 +234,7 @@ sub inquire {
             'your message was not delivered to ',
         ];
         state $donotread0 = ['   -----', ' -----', '--', '|--', '*'];
-        state $donotread1 = ['mail from:'];
+        state $donotread1 = ['mail from:', 'message-id:', '  from: '];
         state $reademail0 = [' ', '"', '<',];
         state $reademail1 = [
             # There is an email address around the following strings
