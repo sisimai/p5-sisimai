@@ -4,7 +4,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Build Status](https://travis-ci.org/sisimai/p5-sisimai.svg?branch=master)](https://travis-ci.org/sisimai/p5-sisimai) 
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.30-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.14-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.15-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README(English)**](README.md)
 - [シシマイ? | What is Sisimai](#what-is-sisimai)
@@ -223,7 +223,7 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
-| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.30 |
+| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.32 |
 | コマンドラインツール                           | あり          | 無し        |
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(同梱)  |
 | WebUIとAPI                                     | あり          | 無し        |
@@ -239,7 +239,7 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 | インストール作業が簡単かどうか                 | やや面倒      | 簡単で楽    |
 | cpan, cpanm, cpmコマンドでのインストール       | 非対応        | 対応済      |
 | 依存モジュール数(Perlのコアモジュールを除く)   | 24モジュール  | 2モジュール |
-| LOC:ソースコードの行数                         | 18200行       | 10500行     |
+| LOC:ソースコードの行数                         | 18200行       | 10800行     |
 | テスト件数(t/,xt/ディレクトリ)                 | 27365件       | 270000件    |
 | ライセンス                                     | GPLv2かPerl   | 二条項BSD   |
 | 開発会社によるサポート契約                     | 終売(EOS)     | 提供中      |
@@ -299,7 +299,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2021 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================

@@ -4,11 +4,20 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.14p12
+v4.25.15
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Thu, 22 Dec 2022 13:00:22 +0900 (JST)"
+- version: "4.25.15"
 - changes:
+  - #464 Fix a bug related to a `handle->close` in t/023-mail-stdin.t Thanks to
+    CPAN Testers:
+    - https://www.cpantesters.org/cpan/report/d49e1af4-4157-11ed-af16-c84d753c3a36
+    - https://www.cpantesters.org/cpan/report/a0412418-49fe-11ed-b08f-a5e1b655df6e
+    - https://www.cpantesters.org/cpan/report/eb7fbeb2-546c-11ed-ac00-78c860ca80ec
+    - https://www.cpantesters.org/cpan/report/4c3721d4-5763-11ed-8a1d-3dcb3994ee8b
+    - https://www.cpantesters.org/cpan/report/6345c226-7848-11ed-afec-b281abd50193
+    - https://www.cpantesters.org/cpan/report/c52dd804-6f1d-11ed-9b5d-686ea04ca71f
+    - https://www.cpantesters.org/cpan/report/60a09c2a-6af7-11ed-affb-ea61756bb578
   - #465 Fix an error reason "5.2.1 exceedlimit" of an error message: "450-4.2.1
     The user you are trying to contact is receiving mail at a rate that prevents
     additional messages from being delivered" to "toomanyconn" at GoogleApps.pm
@@ -32,15 +41,6 @@ v4.25.14p12
   - Import #471 from Sisimai v5, Implement `Sisimai::Rhost::NTTDOCOMO` to parse
     more strictly a bounce mail returned from `mfsmax.docomo.ne.jp`
   - Import #475 from Sisimai v5, Implement `Sisimai::Rhost::Mimecast`
-  - #464 Fix a bug related to a `handle->close` in t/023-mail-stdin.t Thanks to
-    CPAN Testers:
-    - https://www.cpantesters.org/cpan/report/d49e1af4-4157-11ed-af16-c84d753c3a36
-    - https://www.cpantesters.org/cpan/report/a0412418-49fe-11ed-b08f-a5e1b655df6e
-    - https://www.cpantesters.org/cpan/report/eb7fbeb2-546c-11ed-ac00-78c860ca80ec
-    - https://www.cpantesters.org/cpan/report/4c3721d4-5763-11ed-8a1d-3dcb3994ee8b
-    - https://www.cpantesters.org/cpan/report/6345c226-7848-11ed-afec-b281abd50193
-    - https://www.cpantesters.org/cpan/report/c52dd804-6f1d-11ed-9b5d-686ea04ca71f
-    - https://www.cpantesters.org/cpan/report/60a09c2a-6af7-11ed-affb-ea61756bb578
   - Add the following error messages at `Sisimai::Rhost::ExchangeOnline:
     - 451 4.7.650 The mail server [...] has been temporarily rate limited due to
       IP reputation ... (S775)
