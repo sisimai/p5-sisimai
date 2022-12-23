@@ -103,8 +103,8 @@ v4.25.13
 - release: "Mon,  1 Aug 2022 16:06:55 +0900 (JST)"
 - version: "4.25.13"
 - changes:
-  - #455 Fix a bug related to utf8-flag in the value of Subject: header at test:
-    t/501-data-json.t file. Thanks to CPAN Testers:
+  - #455 Fix a bug related to utf8-flag in the value of Subject: header at test: t/501-data-json.t.
+    Thanks to CPAN Testers:
     - http://www.cpantesters.org/cpan/report/8d7d0a08-f7a2-11ec-b1f1-9c81f839ead0
     - http://www.cpantesters.org/cpan/report/de86d022-f898-11ec-a81a-c3b444d77217
     - http://www.cpantesters.org/cpan/report/3169fa64-0198-11ed-a82a-d5de2185f16d
