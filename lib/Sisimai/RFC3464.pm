@@ -97,7 +97,7 @@ sub inquire {
             # message/delivery-status part
             next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
-        
+
             $v = $dscontents->[-1];
             if( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
