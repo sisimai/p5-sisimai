@@ -49,6 +49,48 @@ v5.0.0(beta5)
     - `lhost-postfix-77.eml` (norelaying)
     - `lhost-postfix-78.eml` (contenterror)
 
+v4.25.15
+---------------------------------------------------------------------------------------------------
+- release: "Thu, 22 Dec 2022 13:00:22 +0900 (JST)"
+- version: "4.25.15"
+- changes:
+  - #464 Fix a bug related to a `handle->close` in t/023-mail-stdin.t Thanks to CPAN Testers:
+    - https://www.cpantesters.org/cpan/report/d49e1af4-4157-11ed-af16-c84d753c3a36
+    - https://www.cpantesters.org/cpan/report/a0412418-49fe-11ed-b08f-a5e1b655df6e
+    - https://www.cpantesters.org/cpan/report/eb7fbeb2-546c-11ed-ac00-78c860ca80ec
+    - https://www.cpantesters.org/cpan/report/4c3721d4-5763-11ed-8a1d-3dcb3994ee8b
+    - https://www.cpantesters.org/cpan/report/6345c226-7848-11ed-afec-b281abd50193
+    - https://www.cpantesters.org/cpan/report/c52dd804-6f1d-11ed-9b5d-686ea04ca71f
+    - https://www.cpantesters.org/cpan/report/60a09c2a-6af7-11ed-affb-ea61756bb578
+  - #465 Fix an error reason "5.2.1 exceedlimit" of an error message: "450-4.2.1 The user you are
+    trying to contact is receiving mail at a rate that prevents additional messages from being de-
+    livered" to "toomanyconn" at GoogleApps.pm in Sisimai/Rhost.
+  - Add many error message patterns at the following classes in `Sisimai/Reason`
+    - `Blocked`
+    - `ContentError`
+    - `Filtered`
+    - `NetworkError`
+    - `NotAccept`
+    - `PolicyViolation`
+    - `Rejected`
+    - `SpamDetected`
+    - `TooManyConn`
+    - `UserUnknown`
+  - When the value of `diagnosticcode` has enough error message for detecting a bounce reason,
+    `expired` will change to proper reason
+  - Update code in `Sisimai::Lhost::GoogleGroups` module to parse well a bounce mail even if an e-
+    mail address of `X-Failed-Recipients` header does not include a domain `@googlegroups.com` #470
+  - Import #471 from Sisimai v5, Implement `Sisimai::Rhost::NTTDOCOMO` to parse more strictly a
+    bounce mail returned from `mfsmax.docomo.ne.jp`
+  - Import #475 from Sisimai v5, Implement `Sisimai::Rhost::Mimecast`
+  - Add the following error messages at `Sisimai::Rhost::ExchangeOnline:
+    - 451 4.7.650 The mail server ... has been temporarily rate limited due to IP reputation (S775)
+    - 550 5.7.1 ... Please contact your Internet service provider since part of their network is on
+      our block list (S3150)
+    - Error messages of Exchange Server 2019 #476
+  - Add many error messages at `Sisimai::Rhost::GoogleApps`, Import #479
+  - Import sisimai/rb-sisimai#244, Prevent ReDOS in `Sisimai::String->to_plain` method #484
+
 v4.25.14
 ---------------------------------------------------------------------------------------------------
 - release: "Mon, 15 Aug 2022 14:00:22 +0900 (JST)"
