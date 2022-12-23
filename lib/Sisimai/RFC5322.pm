@@ -60,7 +60,7 @@ sub received {
         $value->{'by'}   = $1;
     }
 
-    if( $value->{'from'} =~ / / ) {
+    if( index($value->{'from'}, ' ') > -1 ) {
         # Received: from [10.22.22.222] (smtp.kyoto.ocn.ne.jp [192.0.2.222]) (authenticated bits=0)
         #   by nijo.example.jp (V8/cf) with ESMTP id s1QB5ka0018055; Wed, 26 Feb 2014 06:05:47 -0500
         my @received = split(' ', $value->{'from'});
@@ -194,7 +194,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
