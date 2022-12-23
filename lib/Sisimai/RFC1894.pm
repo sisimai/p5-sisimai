@@ -26,14 +26,15 @@ sub match {
     # @return   [Integer]      0: did not matched, 1,2: matched
     # @since v4.25.0
     my $class = shift;
-    my $argv0 = shift || return undef;
+    my $argv0 = shift                      || return undef;
+    my $label = __PACKAGE__->label($argv0) || return undef;
 
-    state $fieldnames = [
+    state $fieldnames = {
         # https://tools.ietf.org/html/rfc3464#section-2.2
-        #   Some fields of a DSN apply to all of the delivery attempts described by
-        #   that DSN. At most, these fields may appear once in any DSN. These fields
-        #   are used to correlate the DSN with the original message transaction and
-        #   to provide additional information which may be useful to gateways.
+        #   Some fields of a DSN apply to all of the delivery attempts described by that DSN. At
+        #   most, these fields may appear once in any DSN. These fields are used to correlate the
+        #   DSN with the original message transaction and to provide additional information which
+        #   may be useful to gateways.
         #
         #   The following fields (not defined in RFC 3464) are used in Sisimai
         #     - X-Original-Message-ID: <....> (GSuite)
@@ -41,13 +42,16 @@ sub match {
         #   The following fields are not used in Sisimai:
         #     - Original-Envelope-Id
         #     - DSN-Gateway
-        [qw|Reporting-MTA Received-From-MTA Arrival-Date X-Original-Message-ID|],
+        'arrival-date'          => ':',
+        'received-from-mta'     => ';',
+        'reporting-mta'         => ';',
+        'x-original-message-id' => '@',
 
         # https://tools.ietf.org/html/rfc3464#section-2.3
-        #   A DSN contains information about attempts to deliver a message to one or
-        #   more recipients. The delivery information for any particular recipient is
-        #   contained in a group of contiguous per-recipient fields.
-        #   Each group of per-recipient fields is preceded by a blank line.
+        #   A DSN contains information about attempts to deliver a message to one or more recipi-
+        #   ents. The delivery information for any particular recipient is contained in a group of
+        #   contiguous per-recipient fields. Each group of per-recipient fields is preceded by a
+        #   blank line.
         #
         #   The following fields (not defined in RFC 3464) are used in Sisimai
         #     - X-Actual-Recipient: RFC822; ....
@@ -55,13 +59,29 @@ sub match {
         #   The following fields are not used in Sisimai:
         #     - Will-Retry-Until
         #     - Final-Log-ID
-        [qw|Original-Recipient Final-Recipient Action Status Remote-MTA
-            Diagnostic-Code Last-Attempt-Date X-Actual-Recipient|],
-    ];
+        'action'                => 'e',
+        'diagnostic-code'       => ';',
+        'final-recipient'       => ';',
+        'last-attempt-date'     => ':',
+        'original-recipient'    => ';',
+        'remote-mta'            => ';',
+        'status'                => '.',
+        'x-actual-recipient'    => ';',
+    };
 
-    return 1 if grep { index($argv0, $_) == 0 } $fieldnames->[0]->@*;
-    return 2 if grep { index($argv0, $_) == 0 } $fieldnames->[1]->@*;
-    return 0;
+    return 0 unless exists $fieldnames->{ $label };
+    return 0 unless index($argv0, $fieldnames->{ $label }) > 0;
+    return 1;
+}
+
+sub label {
+    # Returns a field name as a lqbel from the given string
+    # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
+    # @return   [String]       Field name as a label
+    # @since v4.25.15
+    my $class = shift;
+    my $argv0 = shift || return undef;
+    return lc((split(':', $argv0, 2))[0]) || undef;
 }
 
 sub field {
@@ -90,7 +110,7 @@ sub field {
         'x-original-message-id' => 'text',
     };
     state $captureson = {
-        'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ]*(.+?);[ ]*(.+)/,
+        'addr' => qr/\A((?:Original|Final|X-Actual)-[Rr]ecipient):[ ]*(.+?);[ ]*(.+)/,
         'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
         'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
         'host' => qr/\A((?:Received-From|Remote|Reporting)-MTA):[ ]*(.+?);[ ]*(.+)/,
@@ -100,7 +120,8 @@ sub field {
        #'text' => qr/\A(Final-Log-ID|Original-Envelope-Id):[ ]*(.+)/,
     };
 
-    my $group = $fieldgroup->{ lc((split(':', $argv0, 2))[0]) } || return undef;
+    my $label = __PACKAGE__->label($argv0) || return undef;
+    my $group = $fieldgroup->{ $label }    || return undef;
     return undef unless exists $captureson->{ $group };
 
     my $table = ['', '', '', ''];
@@ -176,6 +197,16 @@ C<match()> checks the argument includes a field defined in RFC3464 or not
     print Sisimai::RFC1894->match('From: Nyaan <kijitora@libsisimai.org>'); # 0
     print Sisimai::RFC1894->match('Reporting-MTA: DNS; mx.libsisimai.org'); # 1
     print Sisimai::RFC1894->match('Final-Recipient: RFC822; cat@nyaan.jp'); # 2
+
+=head2 C<B<label(I<String>)>>
+
+C<label()> returns a lower cased field name such as "diagnostic-code" from given an email header or
+a delivery status field.
+
+    print Sisimai::RFC1894->label('Remote-MTA: DNS; mx.nyaan.jp');  # remote-mta
+    print Sisimai::RFC1894->field('Status: 5.1.1');                 # status
+    print Sisimai::RFC1894->field('Subject: Nyaan');                # subject
+    print Sisimai::RFC1894->field('');                              # undef
 
 =head2 C<B<field(I<String>)>>
 

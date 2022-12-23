@@ -5,7 +5,7 @@ use Sisimai::RFC1894;
 
 my $Package = 'Sisimai::RFC1894';
 my $Methods = {
-    'class'  => ['FIELDTABLE', 'field', 'match'],
+    'class'  => ['FIELDTABLE', 'field', 'match', 'label'],
     'object' => [],
 };
 
@@ -35,6 +35,7 @@ MAKETEST: {
         'Date: Sat, 9 Jun 2018 03:06:57 +0900 (JST)',
     ];
     my $v = undef;
+    my $q = undef;
 
     $v = $Package->FIELDTABLE;
     isa_ok $v, 'HASH', '->table returns Hash';
@@ -42,6 +43,7 @@ MAKETEST: {
 
     for my $e ( @$RFC1894Field1 ) {
         is $Package->match($e), 1, '->match('.$e.') returns 1';
+
         $v = $Package->field($e);
         isa_ok $v, 'ARRAY', '->field('.$e.') returns Array';
         if( $v->[3] eq 'host' ) {
@@ -51,10 +53,14 @@ MAKETEST: {
             is $v->[1], '';
         }
         like $v->[3], qr/(?:host|date)/;
+
+        $q = $Package->label($e);
+        is $q, $v->[0], '->label returns '.$q;
     }
 
     for my $e ( @$RFC1894Field2 ) {
-        is $Package->match($e), 2, '->match('.$e.') returns 2';
+        is $Package->match($e), 1, '->match('.$e.') returns 1';
+
         $v = $Package->field($e);
         isa_ok $v, 'ARRAY', '->field('.$e.') returns Array';
         if( $v->[3] eq 'host' || $v->[3] eq 'addr' || $v->[3] eq 'code') {
@@ -64,12 +70,19 @@ MAKETEST: {
             is $v->[1], '';
         }
         like $v->[3], qr/(?:host|date|addr|list|stat|code)/;
+
+        $q = $Package->label($e);
+        is $q, $v->[0], '->label returns '.$q;
     }
 
     for my $e ( @$IsNotDSNField ) {
         is $Package->match($e), 0, '->match('.$e.') returns 0';
+
         $v = $Package->field($e);
         is $v, undef, '->field('.$e.') returns undef';
+
+        $q = $Package->label($e);
+        ok $q, '->label returns '.$q;
     }
 }
 
