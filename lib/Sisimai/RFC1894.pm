@@ -3,6 +3,12 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+sub FIELDINDEX {
+    return [qw|
+        Action Arrival-Date Diagnostic-Code Final-Recipient Last-Attempt-Date Original-Recipient
+        Received-From-MTA Remote-MTA Reporting-MTA Status X-Actual-Recipienet
+        |];
+}
 sub FIELDTABLE {
     # Return pairs that a field name and key name defined in Sisimai::Lhost class
     return {
@@ -224,7 +230,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
