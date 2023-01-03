@@ -61,7 +61,8 @@ sub match {
         'sender not pre-approved',
         'sender rejected',
         'sender domain is empty',
-        'sender verify failed', # Exim callout
+        'sender verify failed',     # Exim callout
+        'spam reporting address',   # SendGrid|a message to an address has previously been marked as Spam by the recipient.
         'syntax error: empty email address',
         'the message has been rejected by batv defense',
         'this server does not accept mail from',
@@ -69,8 +70,10 @@ sub match {
         'unroutable sender address',
         'you are not allowed to post to this mailing list',
         'you are sending to/from an address that has been blacklisted',
-        'your access to submit messages to this e-mail system has been rejected'
+        'your access to submit messages to this e-mail system has been rejected',
+        'your email address has been blacklisted',  # MessageLabs
     ];
+
     return 0 if grep { rindex($argv1, $_) > -1 } @$isnot;
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -164,7 +167,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2019,2021,2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2019,2021-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

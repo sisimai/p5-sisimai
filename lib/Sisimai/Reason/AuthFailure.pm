@@ -19,6 +19,7 @@ sub match {
         'bad spf records for',
         'dmarc policy',
         'please inspect your spf settings',
+        'sender policy framework (spf) fail',
         'spf (sender policy framework) domain authentication fail',
         'spf check: fail',
     ];
@@ -100,7 +101,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

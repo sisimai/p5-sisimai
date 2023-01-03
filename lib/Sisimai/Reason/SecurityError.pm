@@ -14,30 +14,35 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return undef;
 
-    state $regex = qr{(?>
-         account[ ]not[ ]subscribed[ ]to[ ]ses
-        |authentication[ ](?:
-             credentials invalid
-            |failure
-            |failed;[ ]server[ ][^ ]+[ ]said:  # Postfix
-            |required
-            |turned[ ]on[ ]in[ ]your[ ]email[ ]client
-            )
-        |authentification[ ]requise.+[0-9a-z_]+402
-        |codes?[ ]d'?[ ]*authentification[ ]invalide.+[0-9a-z_]+305
-        |domain[ ][^ ]+[ ]is[ ]a[ ]dead[ ]domain
-        |executable[ ]files[ ]are[ ]not[ ]allowed[ ]in[ ]compressed[ ]files
-        |insecure[ ]mail[ ]relay
-        |recipient[ ]address[ ]rejected:[ ]access[ ]denied
-        |sorry,[ ]you[ ]don'?t[ ]authenticate[ ]or[ ]the[ ]domain[ ]isn'?t[ ]in[ ]
-                my[ ]list[ ]of[ ]allowed[ ]rcpthosts
-        |tls[ ]required[ ]but[ ]not[ ]supported # SendGrid:the recipient mailserver does not support TLS or have a valid certificate
-        |unauthenticated[ ]senders[ ]not[ ]allowed
-        |user[ ][^ ]+[ ]is[ ]not[ ]authorized[ ]to[ ]perform[ ]ses:sendrawemail[ ]on[ ]resource
-        |you[ ]are[ ]not[ ]authorized[ ]to[ ]send[ ]mail,[ ]authentication[ ]is[ ]required
-        |verification[ ]failure
-        )
-    }x;
+    state $index = [
+        'account not subscribed to ses',
+        'authentication credentials invalid',
+        'authentication failure',
+        'authentication required',
+        'authentication turned on in your email client',
+        'executable files are not allowed in compressed files',
+        'insecure mail relay',
+        'recipient address rejected: access denied',
+        "sorry, you don't authenticate or the domain isn't in my list of allowed rcpthosts",
+        'tls required but not supported',   # SendGrid:the recipient mailserver does not support TLS or have a valid certificate
+        'unauthenticated senders not allowed',
+        'verification failure',
+        'you are not authorized to send mail, authentication is required',
+    ];
+    state $pairs = [
+        ['authentication failed; server ', ' said: '],  # Postfix
+        ['authentification requise', '402'],
+        ['domain ', ' is a dead domain'],
+        ['user ', ' is not authorized to perform ses:sendrawemail on resource'],
+    ];
+    state $regex = qr/codes?[ ]d'?[ ]*authentification[ ]invalide.+[0-9a-z_]+305/;
+
+    return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep {
+        my $p = index($argv1, $_->[0]) + 1;
+        my $q = index($argv1, $_->[1]) + 1;
+        ($p * $q > 0) && ($p < $q);
+    } @$pairs;
     return 1 if $argv1 =~ $regex;
     return 0;
 }
@@ -106,7 +111,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

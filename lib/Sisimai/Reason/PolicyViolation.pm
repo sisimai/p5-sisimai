@@ -39,6 +39,7 @@ sub match {
         'we do not accept messages containing images or other attachments',
         'you have exceeded the allowable number of posts without solving a captcha',
         'you have exceeded the the allowable number of posts without solving a captcha',
+        "you're using a mass mailer",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -108,7 +109,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
