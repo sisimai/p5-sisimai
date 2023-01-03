@@ -5,7 +5,7 @@ use Sisimai::RFC5322;
 
 my $Package = 'Sisimai::RFC5322';
 my $Methods = {
-    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'received', 'fillet'],
+    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'FIELDINDEX', 'received', 'fillet', 'tidyup'],
     'object' => [],
 };
 
@@ -47,6 +47,13 @@ MAKETEST: {
         ok length $e, $e;
         like $e, qr/\A[a-z-]+\z/;
         is $r->{ $e }, 1, $e.' = '.1;
+    }
+
+    $r = $Package->FIELDINDEX;
+    isa_ok $r, 'ARRAY';
+    for my $e ( @$r ) {
+        ok length $e, $e;
+        like $e, qr/\A[A-Z][A-Za-z-]+\z/;
     }
 
     # Check the value of Received header
@@ -122,7 +129,7 @@ Received: (from shironeko@localhost)
 	for kijitora@example.net; Thu, 9 Apr 2014 23:34:45 +0900
 Date: Thu, 9 Apr 2014 23:34:45 +0900
 Message-Id: <0000000011111.fff0000000003@mx.example.co.jp>
-Content-Type: text/plain
+content-type:       text/plain
 MIME-Version: 1.0
 From: Shironeko <shironeko@example.co.jp>
 To: Kijitora <shironeko@example.co.jp>
@@ -143,6 +150,12 @@ EOB
     unlike $emailsteak->[0], qr/binary$/m;
     unlike $emailsteak->[1], qr/^Remote-MTA: /m;
     unlike $emailsteak->[1], qr/^Neko-Nyaan/m;
+
+    my $tidiedtext = $Package->tidyup(\$rfc822body);
+    isa_ok $tidiedtext, 'SCALAR';
+    ok length $$tidiedtext;
+    like   $$tidiedtext, qr{Content-Type: text/plain};
+    unlike $$tidiedtext, qr{content-type:   };
 }
 
 done_testing;
