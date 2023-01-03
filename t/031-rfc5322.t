@@ -5,7 +5,7 @@ use Sisimai::RFC5322;
 
 my $Package = 'Sisimai::RFC5322';
 my $Methods = {
-    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'FIELDINDEX', 'received', 'fillet', 'tidyup'],
+    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'FIELDINDEX', 'received', 'fillet'],
     'object' => [],
 };
 
@@ -150,12 +150,6 @@ EOB
     unlike $emailsteak->[0], qr/binary$/m;
     unlike $emailsteak->[1], qr/^Remote-MTA: /m;
     unlike $emailsteak->[1], qr/^Neko-Nyaan/m;
-
-    my $tidiedtext = $Package->tidyup(\$rfc822body);
-    isa_ok $tidiedtext, 'SCALAR';
-    ok length $$tidiedtext;
-    like   $$tidiedtext, qr{Content-Type: text/plain};
-    unlike $$tidiedtext, qr{content-type:   };
 }
 
 done_testing;

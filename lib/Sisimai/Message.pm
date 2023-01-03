@@ -2,6 +2,7 @@ package Sisimai::Message;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::RFC1894;
 use Sisimai::RFC2045;
 use Sisimai::RFC5322;
 use Sisimai::Address;
@@ -218,6 +219,87 @@ sub makemap {
     return $headermaps;
 }
 
+sub tidyup {
+    # Tidy up each field name and format
+    # @param    [String] argv0 Strings inlcuding field and value used at an email
+    # @return   [String]       Strings tidied up
+    # @since v5.0.0
+    my $class = shift;
+    my $argv0 = shift || return '';
+
+    return '' unless $argv0;
+    return '' unless length $$argv0;
+
+    state $fields1894 = Sisimai::RFC1894->FIELDINDEX;
+    state $fields5322 = Sisimai::RFC5322->FIELDINDEX;
+    state @fieldindex = ($fields1894->@*, $fields5322->@*);
+    my    $tidiedtext = '';
+
+    for my $e ( split("\n", $$argv0) ) {
+        # Find and tidy up fields defined in RFC5322 and RFC1894
+        my $fieldlabel = '';    # Field name of this line
+        my $substring0 = '';    # Substring picked by substr() from this line
+
+        # 1. Find a field label defined in RFC5322 or RFC1894 from this line
+        for my $f ( @fieldindex ) {
+            # Find a field name in this line
+            next unless index(lc($e), lc($f.':')) == 0;
+            $fieldlabel = $f;
+            last;
+        }
+
+        # 2. Replace the field name with a valid formatted field name
+        # 3. Add " " after ":"
+        # 4. Remove redundant space characters after ":"
+        # 5. Tidy up a sub type of each field defined in RFC1894
+        # 6. Remove redundant space characters after ";"
+        my $p0 = length $fieldlabel;
+        if( $p0 > 0 ) {
+            # 2. There is a field label defined in RFC5322 or RFC1894 from this line.
+            # Code below replaces the field name with a valid name listed in @fieldindex when the
+            # field name does not match with a valid name. For example, Message-ID: and Message-Id:
+            $substring0 = substr($e, 0, $p0);
+            substr($e, 0, $p0, $fieldlabel) if $substring0 ne $fieldlabel;
+
+            # 3. There is no " " (space character) immediately after ":". For example, To:<cat@...>
+            $substring0 = substr($e, $p0 + 1, 1);
+            substr($e, $p0, 1, ': ') if $substring0 ne ' ';
+
+            # 4. Remove redundant space characters after ":"
+            while(1) {
+                # For example, Message-ID:     <...>
+                last unless $p0 + 2 < length($e);
+                last unless substr($e, $p0 + 2, 1) eq ' ';
+                substr($e, $p0 + 2, 1, '');
+            }
+
+            # 5. Tidy up a sub type of each field defined in RFC1894 such as Reporting-MTA: DNS;...
+            my $p1 = index($e, ';');
+            while(1) {
+                # Such as Diagnostic-Code, Remote-MTA, and so on
+                last unless grep { $fieldlabel eq $_ } (@$fields1894, 'Content-Type');
+                last unless $p1 > $p0;
+
+                $substring0 = substr($e, $p0 + 2, $p1 - $p0 - 1);
+                substr($e, $p0 + 2, length($substring0), sprintf("%s ", lc $substring0));
+                last;
+            }
+
+            # 6. Remove redundant space characters after ";"
+            while(1) {
+                # Such as Diagnostic-Code: SMTP;        user unknown...
+                last unless $p1 + 2 < length($e);
+                last unless substr($e, $p1 + 2, 1) eq ' ';
+                substr($e, $p1 + 2, 1, '');
+            }
+        }
+        $tidiedtext .= $e."\n";
+    }
+
+    return  $argv0 unless length $tidiedtext;
+    return \$tidiedtext;
+}
+
 sub parse {
     # Parse bounce mail with each MTA module
     # @param               [Hash] argvs    Processing message entity.
@@ -269,7 +351,7 @@ sub parse {
         }
     }
     $$bodystring =~ tr/\r//d;
-    $$bodystring =  Sisimai::RFC5322->tidyup($bodystring)->$*;
+    $$bodystring =  __PACKAGE__->tidyup($bodystring)->$*;
 
     if( ref $hookmethod eq 'CODE' ) {
         # Call hook method
@@ -375,21 +457,21 @@ argument of "new" method is not a bounce email, the method returns "undef".
 
 =head2 C<B<rise(I<Hash reference>)>>
 
-C<new()> is a constructor of Sisimai::Message
+C<rise()> is a constructor of Sisimai::Message
 
     my $mailtxt = 'Entire email text';
-    my $message = Sisimai::Message->new('data' => $mailtxt);
+    my $message = Sisimai::Message->rise('data' => $mailtxt);
 
 If you have implemented a custom MTA module and use it, set the value of "load" in the argument of
 this method as an array reference like following code:
 
-    my $message = Sisimai::Message->new(
+    my $message = Sisimai::Message->rise(
                         'data' => $mailtxt,
                         'load' => ['Your::Custom::MTA::Module']
                   );
 
-Beginning from v4.19.0, `hook` argument is available to callback user defined method like the following
-codes:
+Beginning from v4.19.0, C<hook> argument is available to callback user defined method like the
+following codes:
 
     my $cmethod = sub {
         my $argv = shift;
@@ -413,7 +495,7 @@ codes:
         return $data;
     };
 
-    my $message = Sisimai::Message->new(
+    my $message = Sisimai::Message->rise(
         'data' => $mailtxt,
         'hook' => $cmethod,
     );

@@ -2,7 +2,6 @@ package Sisimai::RFC5322;
 use feature ':5.10';
 use strict;
 use warnings;
-use Sisimai::RFC1894;
 use constant HEADERTABLE => {
     'messageid' => ['message-id'],
     'subject'   => ['subject'],
@@ -151,88 +150,6 @@ sub fillet {
     return [$a, $b];
 }
 
-sub tidyup {
-    # Tidy up each field name and format
-    # @param    [String] argv0 Strings inlcuding field and value used at an email
-    # @return   [String]       Strings tidied up
-    # @since v5.0.0
-    my $class = shift;
-    my $argv0 = shift || return '';
-
-    return '' unless $argv0;
-    return '' unless length $$argv0;
-
-    state $fields1894 = Sisimai::RFC1894->FIELDINDEX;
-    state $fields5322 = __PACKAGE__->FIELDINDEX;
-    state @fieldindex = ($fields1894->@*, $fields5322->@*);
-    my    $tidiedtext = '';
-
-    for my $e ( split("\n", $$argv0) ) {
-        # Find and tidy up fields defined in RFC5322 and RFC1894
-        my $fieldlabel = '';    # Field name of this line
-        my $substring0 = '';    # Substring picked by substr() from this line
-
-        # 1. Find a field label defined in RFC5322 or RFC1894 from this line
-        for my $f ( @fieldindex ) {
-            # Find a field name in this line
-            next unless index(lc($e), lc($f.':')) == 0;
-            $fieldlabel = $f;
-            last;
-        }
-
-        # 2. Replace the field name with a valid formatted field name
-        # 3. Add " " after ":"
-        # 4. Remove redundant space characters after ":"
-        # 5. Tidy up a sub type of each field defined in RFC1894
-        # 6. Remove redundant space characters after ";"
-        my $p0 = length $fieldlabel;
-        if( $p0 > 0 ) {
-            # 2. There is a field label defined in RFC5322 or RFC1894 from this line.
-            # Code below replaces the field name with a valid name listed in @fieldindex when the
-            # field name does not match with a valid name. For example, Message-ID: and Message-Id:
-            $substring0 = substr($e, 0, $p0);
-            substr($e, 0, $p0, $fieldlabel) if $substring0 ne $fieldlabel;
-
-            # 3. There is no " " (space character) immediately after ":". For example, To:<cat@...>
-            $substring0 = substr($e, $p0 + 1, 1);
-            substr($e, $p0, 1, ': ') if $substring0 ne ' ';
-
-            # 4. Remove redundant space characters after ":"
-            while(1) {
-                # For example, Message-ID:     <...>
-                last unless $p0 + 2 < length($e);
-                last unless substr($e, $p0 + 2, 1) eq ' ';
-                substr($e, $p0 + 2, 1, '');
-            }
-
-            # 5. Tidy up a sub type of each field defined in RFC1894 such as Reporting-MTA: DNS;...
-            my $p1 = index($e, ';');
-            while(1) {
-                # Such as Diagnostic-Code, Remote-MTA, and so on
-                last unless grep { $fieldlabel eq $_ } (@$fields1894, 'Content-Type');
-                last unless $p1 > $p0;
-
-                $substring0 = substr($e, $p0 + 2, $p1 - $p0 - 1);
-                substr($e, $p0 + 2, length($substring0), sprintf("%s ", lc $substring0));
-                last;
-            }
-
-            # 6. Remove redundant space characters after ";"
-            while(1) {
-                # Such as Diagnostic-Code: SMTP;        user unknown...
-                last unless $p1 + 2 < length($e);
-                last unless substr($e, $p1 + 2, 1) eq ' ';
-                substr($e, $p1 + 2, 1, '');
-            }
-        }
-        $tidiedtext .= $e."\n";
-    }
-
-    return  $argv0 unless length $tidiedtext;
-    return \$tidiedtext;
-}
-
-
 1;
 __END__
 
@@ -280,15 +197,6 @@ original message part split by the 2nd argument.
         'Error message here',
         'Return-Path: <neko@libsisimai.org>';
     ];
-
-=head2 C<B<tidyup(I<String>, I<String>)>>
-
-C<tidyup()> tidies up each field defined in RFC5322 or RFC1894 in a given string. For example,
-"Content-type:     text/plain" will be rewrote to "Content-Type: text/plain".
-
-    my $v = 'Entire email message';
-       $v = Sisimai::RFC5322->tidyup(\$v)->$*
-
 
 =head1 AUTHOR
 
