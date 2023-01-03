@@ -256,18 +256,23 @@ sub tidyup {
         my $p0 = length $fieldlabel;
         if( $p0 > 0 ) {
             # 2. There is a field label defined in RFC5322 or RFC1894 from this line.
-            # Code below replaces the field name with a valid name listed in @fieldindex when the
-            # field name does not match with a valid name. For example, Message-ID: and Message-Id:
+            #       Code below replaces the field name with a valid name listed in @fieldindex when
+            #       the field name does not match with a valid name.
+            #       - Before: Message-id: <...>
+            #       - After:  Message-Id: <...>
             $substring0 = substr($e, 0, $p0);
             substr($e, 0, $p0, $fieldlabel) if $substring0 ne $fieldlabel;
 
-            # 3. There is no " " (space character) immediately after ":". For example, To:<cat@...>
+            # 3. There is no " " (space character) immediately after ":"
+            #       - before: Content-Type:text/plain
+            #       - After:  Content-Type: text/plain
             $substring0 = substr($e, $p0 + 1, 1);
             substr($e, $p0, 1, ': ') if $substring0 ne ' ';
 
             # 4. Remove redundant space characters after ":"
             while(1) {
-                # For example, Message-ID:     <...>
+                # - Before: Message-Id:    <...>
+                # - After:  Message-Id: <...>
                 last unless $p0 + 2 < length($e);
                 last unless substr($e, $p0 + 2, 1) eq ' ';
                 substr($e, $p0 + 2, 1, '');
@@ -277,6 +282,8 @@ sub tidyup {
             my $p1 = index($e, ';');
             while(1) {
                 # Such as Diagnostic-Code, Remote-MTA, and so on
+                # - Before: Diagnostic-Code: SMTP;550 User unknown
+                # - After:  Diagnostic-Code: SMTP; 550 User unknown
                 last unless grep { $fieldlabel eq $_ } (@$fields1894, 'Content-Type');
                 last unless $p1 > $p0;
 
@@ -287,7 +294,8 @@ sub tidyup {
 
             # 6. Remove redundant space characters after ";"
             while(1) {
-                # Such as Diagnostic-Code: SMTP;        user unknown...
+                # - Before: Diagnostic-Code: SMTP;      550 User unknown
+                # - After:  Diagnostic-Code: SMTP; 550 User unknown
                 last unless $p1 + 2 < length($e);
                 last unless substr($e, $p1 + 2, 1) eq ' ';
                 substr($e, $p1 + 2, 1, '');
