@@ -248,24 +248,19 @@ sub tidyup {
             last;
         }
 
-        # 2. Replace the field name with a valid formatted field name
-        # 3. Add " " after ":"
-        # 4. Remove redundant space characters after ":"
-        # 5. Tidy up a sub type of each field defined in RFC1894
-        # 6. Remove redundant space characters after ";"
         my $p0 = length $fieldlabel;
         if( $p0 > 0 ) {
             # 2. There is a field label defined in RFC5322 or RFC1894 from this line.
-            #       Code below replaces the field name with a valid name listed in @fieldindex when
-            #       the field name does not match with a valid name.
-            #       - Before: Message-id: <...>
-            #       - After:  Message-Id: <...>
+            #    Code below replaces the field name with a valid name listed in @fieldindex when
+            #    the field name does not match with a valid name.
+            #    - Before: Message-id: <...>
+            #    - After:  Message-Id: <...>
             $substring0 = substr($e, 0, $p0);
             substr($e, 0, $p0, $fieldlabel) if $substring0 ne $fieldlabel;
 
             # 3. There is no " " (space character) immediately after ":"
-            #       - before: Content-Type:text/plain
-            #       - After:  Content-Type: text/plain
+            #    - before: Content-Type:text/plain
+            #    - After:  Content-Type: text/plain
             $substring0 = substr($e, $p0 + 1, 1);
             substr($e, $p0, 1, ': ') if $substring0 ne ' ';
 
