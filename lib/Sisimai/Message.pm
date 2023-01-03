@@ -269,6 +269,7 @@ sub parse {
         }
     }
     $$bodystring =~ tr/\r//d;
+    $$bodystring =  Sisimai::RFC5322->tidyup($bodystring)->$*;
 
     if( ref $hookmethod eq 'CODE' ) {
         # Call hook method
@@ -461,7 +462,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
