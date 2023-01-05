@@ -233,7 +233,10 @@ sub tidyup {
     state $fields1894 = Sisimai::RFC1894->FIELDINDEX;
     state $fields5322 = Sisimai::RFC5322->FIELDINDEX;
     state @fieldindex = ($fields1894->@*, $fields5322->@*);
-    my    $tidiedtext = '';
+    state $replacesas = {
+        'Content-Type' => [['message/xdelivery-status', 'message/delivery-status']],
+    };
+    my $tidiedtext = '';
 
     for my $e ( split("\n", $$argv0) ) {
         # Find and tidy up fields defined in RFC5322 and RFC1894
@@ -295,11 +298,41 @@ sub tidyup {
                 last unless substr($e, $p1 + 2, 1) eq ' ';
                 substr($e, $p1 + 2, 1, '');
             }
+
+            # 7. Tidy up a value, and a parameter of Content-Type: field
+            while(1) {
+                # Replace the value of "Content-Type" field
+                last unless grep { $fieldlabel eq $_ } keys %$replacesas;
+
+                if( grep { index($e, $_->[0]) > 1 } $replacesas->{ $fieldlabel }->@* ) {
+                    # Content-Type: message/xdelivery-status
+                    for my $f ( $replacesas->{ $fieldlabel }->@* ) {
+                        next unless index($e, $f->[0]) > 1;
+                        substr($e, index($e, $f->[0]), length $f->[0], $f->[1]);
+
+                        $p1 = index($e, ';');
+                        last;
+                    }
+                }
+
+                # A parameter name of Content-Type field should be a lower-cased string
+                # - Before: Content-Type: text/plain; CharSet=ascii; Boundary=...
+                # - After:  Content-Type: text/plain; charset=ascii; boundary=...
+                last unless $fieldlabel eq 'Content-Type';
+                my $p2 = index($e, '=');
+                last unless $p2 > 0;
+                last unless $p2 > $p1;
+
+                $substring0 = substr($e, $p1 + 2, $p2 - $p1 - 2); 
+                substr($e, $p1 + 2, $p2 - $p1 - 2, lc $substring0);
+
+                last;
+            }
         }
         $tidiedtext .= $e."\n";
     }
 
-    return  $argv0 unless length $tidiedtext;
+    $tidiedtext .= "\n" if substr($tidiedtext, -2, 2) ne "\n\n";
     return \$tidiedtext;
 }
 
@@ -329,9 +362,13 @@ sub parse {
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
 
+    # Tidy up entire message body
+    $$bodystring =  __PACKAGE__->tidyup($bodystring)->$*;
+
     # Decode BASE64 Encoded message body
     my $mesgformat = lc($mailheader->{'content-type'} || '');
     my $ctencoding = lc($mailheader->{'content-transfer-encoding'} || '');
+
     if( index($mesgformat, 'text/plain') == 0 || index($mesgformat, 'text/html') == 0 ) {
         # Content-Type: text/plain; charset=UTF-8
         if( $ctencoding eq 'base64' ) {
@@ -345,16 +382,13 @@ sub parse {
 
         # Content-Type: text/html;...
         $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
-    } else {
-        # NOT text/plain
-        if( index($mesgformat, 'multipart/') == 0 ) {
-            # In case of Content-Type: multipart/*
-            my $p = Sisimai::RFC2045->makeflat($mailheader->{'content-type'}, $bodystring);
-            $bodystring = $p if length $$p;
-        }
+
+    } elsif( index($mesgformat, 'multipart/') == 0 ) {
+        # In case of Content-Type: multipart/*
+        my $p = Sisimai::RFC2045->makeflat($mailheader->{'content-type'}, $bodystring);
+        $bodystring = $p if length $$p;
     }
     $$bodystring =~ tr/\r//d;
-    $$bodystring =  __PACKAGE__->tidyup($bodystring)->$*;
 
     if( ref $hookmethod eq 'CODE' ) {
         # Call hook method
