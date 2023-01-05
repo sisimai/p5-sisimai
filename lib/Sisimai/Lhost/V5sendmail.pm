@@ -17,7 +17,7 @@ sub inquire {
     my $mbody = shift // return undef;
 
     # 'from'    => qr/\AMail Delivery Subsystem/,
-    return undef unless $mhead->{'subject'} =~ /\AReturned mail: [A-Z]/;
+    return undef unless index($mhead->{'subject'}, 'Returned mail: ') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;

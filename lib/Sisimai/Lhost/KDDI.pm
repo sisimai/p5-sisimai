@@ -77,7 +77,7 @@ sub inquire {
 
         } else {
             #     As their mailbox is full.
-            $v->{'diagnosis'} .= $e.' ' if $e =~ /\A[ ]+/;
+            $v->{'diagnosis'} .= $e.' ' if index($e, ' ') == 0;
         }
     }
     return undef unless $recipients;

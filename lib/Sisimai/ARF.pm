@@ -154,7 +154,7 @@ sub inquire {
                 $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
                 $previousfn = 'from';
 
-            } elsif( $e =~ /\A[ ]+/ ) {
+            } elsif( index($e, ' ') == 0 ) {
                 # Continued line from the previous line
                 if( $previousfn eq 'from' ) {
                     # Multiple lines at From: field

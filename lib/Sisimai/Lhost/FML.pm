@@ -17,7 +17,7 @@ sub inquire {
     my $mbody = shift // return undef;
 
     return undef unless defined $mhead->{'x-mlserver'};
-    return undef unless $mhead->{'from'} =~ /.+[-]admin[@].+/;
+    return undef unless index($mhead->{'from'}, '-admin@') > 0;
     return undef unless $mhead->{'message-id'} =~ /\A[<]\d+[.]FML.+[@].+[>]\z/;
 
     state $rebackbone = qr|^Original[ ]mail[ ]as[ ]follows:|m;
@@ -148,7 +148,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

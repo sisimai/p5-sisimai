@@ -281,7 +281,7 @@ sub inquire {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'}   = shift @commandset || '';
-        $e->{'command'} ||= 'HELO' if $e->{'diagnosis'} =~ /refused to talk to me:/;
+        $e->{'command'} ||= 'HELO' if index($e->{'diagnosis'}, 'refused to talk to me:') > -1;
         $e->{'spec'}    ||= 'SMTP' if $e->{'diagnosis'} =~ /host .+ said:/;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };

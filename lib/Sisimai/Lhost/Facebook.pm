@@ -187,7 +187,7 @@ sub inquire {
         # https://groups.google.com/forum/#!topic/cdmix/eXfi4ddgYLQ
         # This block has not been tested because we have no email sample
         # including "INT-T?" error code.
-        next unless $fbresponse =~ /\AINT-T\d+\z/;
+        next unless index($fbresponse, 'INT-T') == 0;
         $e->{'reason'} = 'systemerror';
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };

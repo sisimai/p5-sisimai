@@ -118,7 +118,7 @@ sub inquire {
 
         } else {
             # Error message when email address above does not include '@' and domain part.
-            next unless $e =~ /\A[ ]{4}/;
+            next unless index($e, '    ') == 0;
             $v->{'alterrors'} .= $e.' ';
         }
     }

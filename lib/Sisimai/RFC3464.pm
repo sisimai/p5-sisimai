@@ -128,7 +128,7 @@ sub inquire {
                     } elsif( $o->[0] eq 'x-actual-recipient' ) {
                         # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
                         # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
-                        $v->{'alias'} = $o->[2] unless $o->[2] =~ /[ ]+/;
+                        $v->{'alias'} = $o->[2] unless index($o->[2], ' ') > -1;
                     }
                 } elsif( $o->[-1] eq 'code' ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown

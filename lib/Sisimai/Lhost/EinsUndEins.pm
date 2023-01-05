@@ -92,8 +92,8 @@ sub inquire {
             #   host: smtp-in.orange.fr (193.252.22.65)
             #   reason: 550 5.2.0 Mail rejete. Mail rejected. ofr_506 [506]
             $e->{'rhost'}   = $1;
-            $e->{'command'} = 'DATA' if $e->{'diagnosis'} =~ /for TEXT command/;
-            $e->{'spec'}    = 'SMTP' if $e->{'diagnosis'} =~ /SMTP error/;
+            $e->{'command'} = 'DATA' if index($e->{'diagnosis'}, 'for TEXT command') > -1;
+            $e->{'spec'}    = 'SMTP' if index($e->{'diagnosis'}, 'SMTP error')       > -1;
             $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
         } else {
             # For the following reason:
@@ -148,7 +148,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

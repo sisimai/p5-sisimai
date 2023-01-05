@@ -383,7 +383,7 @@ sub parse {
         }
 
         # Content-Type: text/html;...
-        $bodystring = Sisimai::String->to_plain($bodystring, 1) if $mesgformat =~ m|text/html;?|;
+        $bodystring = Sisimai::String->to_plain($bodystring, 1) if index($mesgformat, 'text/html') > -1;
 
     } elsif( index($mesgformat, 'multipart/') == 0 ) {
         # In case of Content-Type: multipart/*

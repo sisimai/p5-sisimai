@@ -53,7 +53,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             $v->{'recipient'} = $cr;
-            $v->{'diagnosis'} = $e if $e =~ /Unable[ ]to[ ]deliver[ ]/;
+            $v->{'diagnosis'} = $e if index($e, 'Unable to deliver ') > -1;
             $recipients = scalar @$dscontents;
         }
 
@@ -77,7 +77,7 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'reason'} = 'userunknown' if $e->{'diagnosis'} =~ /Unable[ ]to[ ]deliver/;
+        $e->{'reason'} = 'userunknown' if index($e->{'diagnosis'}, 'Unable to deliver') > -1;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }
