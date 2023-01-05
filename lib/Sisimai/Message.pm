@@ -5,6 +5,7 @@ use warnings;
 use Sisimai::RFC1894;
 use Sisimai::RFC2045;
 use Sisimai::RFC5322;
+use Sisimai::RFC5965;
 use Sisimai::Address;
 use Sisimai::String;
 use Sisimai::Order;
@@ -157,7 +158,7 @@ sub divideup {
         $block->[0] =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     }
 
-    $block->[1] .= "\n" unless $block->[1] =~ /\n\z/;
+    $block->[1] .= "\n" unless substr($block->[1], -1, 1) eq "\n";
     $block->[2] .= "\n";
     return $block;
 }
@@ -232,18 +233,19 @@ sub tidyup {
 
     state $fields1894 = Sisimai::RFC1894->FIELDINDEX;
     state $fields5322 = Sisimai::RFC5322->FIELDINDEX;
-    state @fieldindex = ($fields1894->@*, $fields5322->@*);
+    state $fields5965 = Sisimai::RFC5965->FIELDINDEX;
+    state @fieldindex = ($fields1894->@*, $fields5322->@*, $fields5965->@*);
     state $replacesas = {
         'Content-Type' => [['message/xdelivery-status', 'message/delivery-status']],
     };
     my $tidiedtext = '';
 
     for my $e ( split("\n", $$argv0) ) {
-        # Find and tidy up fields defined in RFC5322 and RFC1894
+        # Find and tidy up fields defined in RFC5322, RFC1894, and RFC5965
         my $fieldlabel = '';    # Field name of this line
         my $substring0 = '';    # Substring picked by substr() from this line
 
-        # 1. Find a field label defined in RFC5322 or RFC1894 from this line
+        # 1. Find a field label defined in RFC5322, RFC1894, or RFC5965 from this line
         for my $f ( @fieldindex ) {
             # Find a field name in this line
             next unless index(lc($e), lc($f.':')) == 0;
@@ -253,7 +255,7 @@ sub tidyup {
 
         my $p0 = length $fieldlabel;
         if( $p0 > 0 ) {
-            # 2. There is a field label defined in RFC5322 or RFC1894 from this line.
+            # 2. There is a field label defined in RFC5322, RFC1894, or RFC5965 from this line.
             #    Code below replaces the field name with a valid name listed in @fieldindex when
             #    the field name does not match with a valid name.
             #    - Before: Message-id: <...>
@@ -281,7 +283,7 @@ sub tidyup {
             while(1) {
                 # Such as Diagnostic-Code, Remote-MTA, and so on
                 # - Before: Diagnostic-Code: SMTP;550 User unknown
-                # - After:  Diagnostic-Code: SMTP; 550 User unknown
+                # - After:  Diagnostic-Code: smtp; 550 User unknown
                 last unless grep { $fieldlabel eq $_ } (@$fields1894, 'Content-Type');
                 last unless $p1 > $p0;
 
@@ -389,6 +391,7 @@ sub parse {
         $bodystring = $p if length $$p;
     }
     $$bodystring =~ tr/\r//d;
+    $$bodystring =~ s/\t/ /g;
 
     if( ref $hookmethod eq 'CODE' ) {
         # Call hook method

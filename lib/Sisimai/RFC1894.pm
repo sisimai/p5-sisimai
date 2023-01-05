@@ -6,8 +6,8 @@ use warnings;
 sub FIELDINDEX {
     return [qw|
         Action Arrival-Date Diagnostic-Code Final-Recipient Last-Attempt-Date Original-Recipient
-        Received-From-MTA Remote-MTA Reporting-MTA Status X-Actual-Recipienet
-        |];
+        Received-From-MTA Remote-MTA Reporting-MTA Status X-Actual-Recipienet X-Original-Message-ID
+    |];
 }
 sub FIELDTABLE {
     # Return pairs that a field name and key name defined in Sisimai::Lhost class
@@ -116,13 +116,13 @@ sub field {
         'x-original-message-id' => 'text',
     };
     state $captureson = {
-        'addr' => qr/\A((?:Original|Final|X-Actual)-[Rr]ecipient):[ ]*(.+?);[ ]*(.+)/,
-        'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
-        'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
-        'host' => qr/\A((?:Received-From|Remote|Reporting)-MTA):[ ]*(.+?);[ ]*(.+)/,
-        'list' => qr/\A(Action):[ ]*(delayed|deliverable|delivered|expanded|expired|failed|failure|relayed)/i,
-        'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
-        'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
+        'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ](.+?);[ ](.+)/,
+        'code' => qr/\A(Diagnostic-Code):[ ](.+?);[ ](.*)/,
+        'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ](.+)/,
+        'host' => qr/\A((?:Received-From|Remote|Reporting)-MTA):[ ](.+?);[ ](.+)/,
+        'list' => qr/\A(Action):[ ](delayed|deliverable|delivered|expanded|expired|failed|failure|relayed)/i,
+        'stat' => qr/\A(Status):[ ]([245][.]\d+[.]\d+)/,
+        'text' => qr/\A(X-Original-Message-ID):[ ](.+)/,
        #'text' => qr/\A(Final-Log-ID|Original-Envelope-Id):[ ]*(.+)/,
     };
 

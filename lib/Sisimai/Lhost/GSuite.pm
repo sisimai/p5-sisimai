@@ -25,7 +25,7 @@ sub inquire {
     state $markingsof = {
         'message' => qr/\A[*][*][ ].+[ ][*][*]\z/,
         'error'   => qr/\AThe[ ]response([ ]from[ ]the[ ]remote[ ]server)?[ ]was:\z/,
-        'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
+        'html'    => qr{\AContent-Type:[ ]text/html;[ ]charset=['"]?(?:UTF|utf)[-]8['"]?\z},
     };
     state $messagesof = {
         'userunknown'  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
@@ -117,7 +117,7 @@ sub inquire {
                 #
                 # The response from the remote server was:
                 # 550 #5.1.0 Address rejected.
-                next if $e =~ /\AContent-Type:/;
+                next if index($e, 'Content-Type:') == 0;
                 if( $anotherset->{'diagnosis'} ) {
                     # Continued error messages from the previous line like "550 #5.1.0 Address rejected."
                     next if $emptylines > 5;
@@ -231,7 +231,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

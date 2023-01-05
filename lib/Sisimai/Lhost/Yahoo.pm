@@ -49,7 +49,7 @@ sub inquire {
         # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<](.+[@].+)[>]:[ \t]*\z/ ) {
+        if( $e =~ /\A[<](.+[@].+)[>]:[ ]*\z/ ) {
             # <kijitora@example.org>:
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -136,7 +136,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

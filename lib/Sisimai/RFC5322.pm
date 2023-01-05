@@ -55,15 +55,15 @@ sub received {
     my $value = { 'from' => '', 'by'   => '' };
 
     # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
-    return [] if $argv1 =~ /qmail[ \t]+.+invoked[ \t]+/;
+    return [] if index($argv1, 'qmail ') > 0 && index($argv1, 'invoked ') > 0;
 
-    if( $argv1 =~ /\Afrom[ \t]+(.+)[ \t]+by[ \t]+([^ ]+)/ ) {
+    if( $argv1 =~ /\Afrom[ ]+(.+)[ ]+by[ ]+([^ ]+)/ ) {
         # Received: from localhost (localhost) by nijo.example.jp (V8/cf) id s1QB5ma0018057;
         #   Wed, 26 Feb 2014 06:05:48 -0500
         $value->{'from'} = $1;
         $value->{'by'}   = $2;
 
-    } elsif( $argv1 =~ /\bby[ \t]+([^ ]+)(.+)/ ) {
+    } elsif( $argv1 =~ /\bby[ ]+([^ ]+)(.+)/ ) {
         # Received: by 10.70.22.98 with SMTP id c2mr1838265pdf.3; Fri, 18 Jul 2014
         #   00:31:02 -0700 (PDT)
         $value->{'from'} = $1.$2;
@@ -145,7 +145,7 @@ sub fillet {
         # 3. Append "\n" at the end of test block when the last character is not "\n"
         $b =~ s/\A[\r\n\s]+//m;
         substr($b, index($b, "\n\n") + 1, length($b), '') if index($b, "\n\n") > 0;
-        $b .= "\n" unless $b =~ /\n\z/;
+        $b .= "\n" unless substr($b, -1, 1) eq "\n";
     }
     return [$a, $b];
 }

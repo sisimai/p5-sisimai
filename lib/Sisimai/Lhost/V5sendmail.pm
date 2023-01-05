@@ -73,7 +73,7 @@ sub inquire {
         # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A\d{3}[ \t]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ \t]*(.+)\z/ ) {
+        if( $e =~ /\A\d{3}[ ]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ ]*(.+)\z/ ) {
             # 550 <kijitora@example.org>... User unknown
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -89,7 +89,7 @@ sub inquire {
             }
             $recipients++;
 
-        } elsif( $e =~ /\A[>]{3}[ \t]*([A-Z]{4})[ \t]*/ ) {
+        } elsif( $e =~ /\A[>]{3}[ ]*([A-Z]{4})[ ]*/ ) {
             # >>> RCPT To:<kijitora@example.org>
             $commandset[ $recipients ] = $1;
 
@@ -110,11 +110,11 @@ sub inquire {
             }
 
             # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
-            $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/;
+            $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ ]+.+[.]{3}[ ]*(.+)\z/;
         }
     }
 
-    if( $recipients == 0 && $emailsteak->[1] =~ /^To:[ ]*(.+)/m ) {
+    if( $recipients == 0 && $emailsteak->[1] =~ /^To:[ ](.+)/m ) {
         # Get the recipient address from "To:" header at the original message
         $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
         $recipients = 1;
@@ -181,7 +181,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

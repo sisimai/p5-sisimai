@@ -107,7 +107,7 @@ sub inquire {
         #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ \t]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
+        if( $e =~ /\A[ ]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
             # A message that you have sent could not be delivered to one or more
             # recipients.  This is a permanent error.  The following address failed:
             #
@@ -132,7 +132,7 @@ sub inquire {
     if( scalar $mhead->{'received'}->@* ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ \t]([^ ]+) /;
+        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ ]([^ ]+) /;
     }
 
     for my $e ( @$dscontents ) {
@@ -144,7 +144,7 @@ sub inquire {
         unless( $e->{'rhost'} ) {
             # Get the remote host name
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
+            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ ]+([^ ]+)[ ]\[.+\]:[ ]/;
 
             unless( $e->{'rhost'} ) {
                 if( scalar $mhead->{'received'}->@* ) {
@@ -229,7 +229,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

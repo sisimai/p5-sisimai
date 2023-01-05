@@ -58,7 +58,7 @@ sub inquire {
                 # Fallback code for empty value or invalid formatted value
                 # - Status: (empty)
                 # - Diagnostic-Code: 550 5.1.1 ... (No "diagnostic-type" sub field)
-                $v->{'diagnosis'} = $1 if $e =~ /\ADiagnostic-Code:[ ]*(.+)/;
+                $v->{'diagnosis'} = $1 if $e =~ /\ADiagnostic-Code:[ ](.+)/;
                 next;
             }
 
@@ -122,14 +122,14 @@ sub inquire {
                 # in RCPT TO, in MAIL FROM, end of DATA
                 $commandtxt = $1;
 
-            } elsif( $e =~ /\ADiagnostic-Code:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\ADiagnostic-Code:[ ](.+)\z/ ) {
                 # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown
                 $v->{'diagnosis'} = $e;
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         }
@@ -142,7 +142,7 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Get the value of SMTP status code as a pseudo D.S.N.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'status'} = $1.'.0.0' if $e->{'diagnosis'} =~ /\b([45])\d\d[ \t]*/;
+        $e->{'status'} = $1.'.0.0' if $e->{'diagnosis'} =~ /\b([45])\d\d[ ]*/;
 
         if( $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {
             # Get the value of D.S.N. from the error message or the value of Diagnostic-Code header.
@@ -200,7 +200,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

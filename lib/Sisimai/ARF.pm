@@ -149,12 +149,12 @@ sub inquire {
                 $arfheaders->{'feedbacktype'} = 'abuse';
                 $arfheaders->{'agent'} = 'Microsoft Junk Mail Reporting Program';
 
-            } elsif( $e =~ /\AFrom:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AFrom:[ ](.+)\z/ ) {
                 # Microsoft ARF: original sender.
                 $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
                 $previousfn = 'from';
 
-            } elsif( $e =~ /\A[ \t]+/ ) {
+            } elsif( $e =~ /\A[ ]+/ ) {
                 # Continued line from the previous line
                 if( $previousfn eq 'from' ) {
                     # Multiple lines at From: field
@@ -193,7 +193,7 @@ sub inquire {
             # Source-IP: 192.0.2.1
             $v = $dscontents->[-1];
 
-            if( $e =~ /\AOriginal-Rcpt-To:[ ]+[<]?(.+)[>]?\z/ ||
+            if( $e =~ /\AOriginal-Rcpt-To:[ ][<]?(.+)[>]?\z/ ||
                 $e =~ /\ARedacted-Address:[ ]([^ ].+[@])\z/ ) {
                 # Original-Rcpt-To header field is optional and may appear any
                 # number of times as appropriate:
@@ -207,12 +207,12 @@ sub inquire {
                 $v->{'recipient'} = Sisimai::Address->s3s4($1);
                 $recipients++;
 
-            } elsif( $e =~ /\AFeedback-Type:[ ]*([^ ]+)\z/ ) {
+            } elsif( $e =~ /\AFeedback-Type:[ ]([^ ]+)\z/ ) {
                 # The header field MUST appear exactly once.
                 # Feedback-Type: abuse
                 $arfheaders->{'feedbacktype'} = $1;
 
-            } elsif( $e =~ /\AAuthentication-Results:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AAuthentication-Results:[ ](.+)\z/ ) {
                 # "Authentication-Results" indicates the result of one or more authentication checks
                 # run by the report generator.
                 #
@@ -220,28 +220,28 @@ sub inquire {
                 #   spf=fail smtp.mail=somespammer@example.com
                 $arfheaders->{'authres'} = $1;
 
-            } elsif( $e =~ /\AUser-Agent:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AUser-Agent:[ ](.+)\z/ ) {
                 # The header field MUST appear exactly once.
                 # User-Agent: SomeGenerator/1.0
                 $arfheaders->{'agent'} = $1;
 
-            } elsif( $e =~ /\A(?:Received|Arrival)-Date:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\A(?:Received|Arrival)-Date:[ ](.+)\z/ ) {
                 # Arrival-Date header is optional and MUST NOT appear more than once.
                 # Received-Date: Thu, 29 Apr 2010 00:00:00 JST
                 # Arrival-Date: Thu, 29 Apr 2010 00:00:00 +0000
                 $arfheaders->{'date'} = $1;
 
-            } elsif( $e =~ /\AReporting-MTA:[ ]*dns;[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AReporting-MTA:[ ]dns;[ ](.+)\z/ ) {
                 # The header is optional and MUST NOT appear more than once.
                 # Reporting-MTA: dns; mx.example.jp
                 $commondata->{'rhost'} = $1;
 
-            } elsif( $e =~ /\ASource-I[Pp]:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\ASource-IP:[ ](.+)\z/ ) {
                 # The header is optional and MUST NOT appear more than once.
                 # Source-IP: 192.0.2.45
                 $arfheaders->{'rhost'} = $1;
 
-            } elsif( $e =~ /\AOriginal-Mail-From:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AOriginal-Mail-From:[ ](.+)\z/ ) {
                 # the header is optional and MUST NOT appear more than once.
                 # Original-Mail-From: <somespammer@example.net>
                 $commondata->{'from'} ||= Sisimai::Address->s3s4($1);
@@ -358,7 +358,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -93,18 +93,18 @@ sub inquire {
             # <kijitora@example.jp>: host mx.example.jp[192.0.2.153] said: 550
             #    5.1.1 <kijitora@example.jp>... User Unknown (in reply to RCPT TO
             #    command)
-            if( $e =~ /[ \t][(]in reply to .*([A-Z]{4}).*/ ) {
+            if( $e =~ /[ ][(]in reply to .*([A-Z]{4}).*/ ) {
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                 push @commandset, $1;
 
-            } elsif( $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
+            } elsif( $e =~ /([A-Z]{4})[ ]*.*command[)]\z/ ) {
                 # to MAIL command)
                 push @commandset, $1;
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         }
@@ -117,7 +117,7 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'lhost'} ||= $permessage->{'rhost'};
-        $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
+        $e->{ $_ }    ||= $permessage->{ $_ } || '' for keys %$permessage;
         $e->{'command'}   =  shift @commandset || '';
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
@@ -162,7 +162,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

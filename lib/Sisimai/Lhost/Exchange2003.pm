@@ -124,8 +124,8 @@ sub inquire {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
             $v = $dscontents->[-1];
 
-            if( $e =~ /\A[ \t]*([^ ]+[@][^ ]+) on[ \t]*.*\z/ ||
-                $e =~ /\A[ \t]*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on[ \t]*.*\z/ ) {
+            if( $e =~ /\A[ ]*([^ ]+[@][^ ]+) on[ ]*.*\z/ ||
+                $e =~ /\A[ ]*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on[ ]*.*\z/ ) {
                 # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
                 #   kijitora@example.com on 4/29/99 9:19:59 AM
                 if( $v->{'recipient'} ) {
@@ -137,7 +137,7 @@ sub inquire {
                 $v->{'msexch'} = 0;
                 $recipients++;
 
-            } elsif( $e =~ /\A[ \t]+(MSEXCH:.+)\z/ ) {
+            } elsif( $e =~ /\A[ ]+(MSEXCH:.+)\z/ ) {
                 #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
                 $v->{'diagnosis'} .= $1;
 
@@ -161,20 +161,20 @@ sub inquire {
             #  Subject: ...
             #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
             #
-            if( $e =~ /\A[ \t]+To:[ \t]+(.+)\z/ ) {
+            if( $e =~ /\A[ ]+To:[ ]+(.+)\z/ ) {
                 #  To:      shironeko@example.jp
                 next if $connheader->{'to'};
                 $connheader->{'to'} = $1;
                 $connvalues++;
 
-            } elsif( $e =~ /\A[ \t]+Subject:[ \t]+(.+)\z/ ) {
+            } elsif( $e =~ /\A[ ]+Subject:[ ]+(.+)\z/ ) {
                 #  Subject: ...
                 next if length $connheader->{'subject'};
                 $connheader->{'subject'} = $1;
                 $connvalues++;
 
-            } elsif( $e =~ m|\A[ \t]+Sent:[ \t]+([A-Z][a-z]{2},.+[-+]\d{4})\z| ||
-                     $e =~ m|\A[ \t]+Sent:[ \t]+(\d+[/]\d+[/]\d+[ \t]+\d+:\d+:\d+[ \t].+)|) {
+            } elsif( $e =~ m|\A[ ]+Sent:[ ]+([A-Z][a-z]{2},.+[-+]\d{4})\z| ||
+                     $e =~ m|\A[ ]+Sent:[ ]+(\d+[/]\d+[/]\d+[ ]+\d+:\d+:\d+[ ].+)|) {
                 #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
                 #  Sent:    4/29/99 9:19:59 AM
                 next if $connheader->{'date'};
@@ -189,7 +189,7 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         delete $e->{'msexch'};
 
-        if( $e->{'diagnosis'} =~ /\AMSEXCH:.+[ \t]*[(]([0-9A-F]{8})[)][ \t]*(.*)\z/ ) {
+        if( $e->{'diagnosis'} =~ /\AMSEXCH:.+[ ]*[(]([0-9A-F]{8})[)][ ]*(.*)\z/ ) {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
             my $capturedcode = $1;
             my $errormessage = $2;
@@ -260,7 +260,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

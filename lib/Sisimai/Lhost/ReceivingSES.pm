@@ -22,7 +22,7 @@ sub inquire {
     return undef unless $mhead->{'x-ses-outgoing'};
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^content-type:[ ]text/rfc822-headers|m;
+    state $rebackbone = qr|^Content-Type:[ ]text/rfc822-headers|m;
     state $startingof = { 'message' => ['This message could not be delivered.'] };
     state $messagesof = {
         # The followings are error messages in Rule sets/*/Actions/Template
@@ -92,7 +92,7 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ \t]+(.+)\z/;
+            next unless $e =~ /\A[ ]+(.+)\z/;
             $v->{'diagnosis'} .= ' '.$1;
         }
     } continue {
@@ -164,7 +164,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

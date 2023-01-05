@@ -94,7 +94,7 @@ sub inquire {
     state $hasexpired = 'this message has been in the queue too long.';
     # qmail-remote-fallback.patch
     state $recommands = qr/Sorry,[ ]no[ ]SMTP[ ]connection[ ]got[ ]far[ ]enough;[ ]most[ ]progress[ ]was[ ]([A-Z]{4})[ ]/x;
-    state $reisonhold = qr/\A[^ ]+ does not like recipient[.][ \t]+.+this message has been in the queue too long[.]\z/;
+    state $reisonhold = qr/\A[^ ]+ does not like recipient[.][ ]+.+this message has been in the queue too long[.]\z/;
     state $failonldap = {
         # qmail-ldap-1.03-20040101.patch:19817 - 19866
         'suspend'     => ['Mailaddress is administrative?le?y disabled'],   # 5.2.1
@@ -165,7 +165,7 @@ sub inquire {
         # Giving up on 192.0.2.153.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ \t]*\z/ ) {
+        if( $e =~ /\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ ]*\z/ ) {
             # <kijitora@example.jp>:
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -291,7 +291,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

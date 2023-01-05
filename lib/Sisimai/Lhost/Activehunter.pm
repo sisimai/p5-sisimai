@@ -49,7 +49,7 @@ sub inquire {
         # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[>]{3}[ \t]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
+        if( $e =~ /\A[>]{3}[ ]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
             # >>> kijitora@example.org <kijitora@example.org>
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -111,7 +111,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

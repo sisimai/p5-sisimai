@@ -128,7 +128,7 @@ sub inquire {
                     } elsif( $o->[0] eq 'x-actual-recipient' ) {
                         # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
                         # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
-                        $v->{'alias'} = $o->[2] unless $o->[2] =~ /[ \t]+/;
+                        $v->{'alias'} = $o->[2] unless $o->[2] =~ /[ ]+/;
                     }
                 } elsif( $o->[-1] eq 'code' ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
@@ -153,7 +153,7 @@ sub inquire {
                     # Status: 553 Exceeded maximum inbound message size
                     $v->{'alterrors'} = $1;
 
-                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
+                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ ]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code field
                     $v->{'diagnosis'} .= $e;
                     $e = 'Diagnostic-Code: '.$e;
@@ -162,7 +162,7 @@ sub inquire {
                     # Get error messages which is written in the message body directly
                     next if index($e, ' ') == 0;
                     next if index($e, '	') == 0;
-                    next unless $e =~ /\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/;
+                    next unless $e =~ /\A(?:[45]\d\d[ ]+|[<][^@]+[@][^@]+[>]:?[ ]+)/;
                     $v->{'alterrors'} .= ' '.$e;
                 }
             }

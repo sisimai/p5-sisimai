@@ -191,7 +191,7 @@ sub inquire {
         #
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ \t]+([^ ]+[@][^ ]+)\z/ ) {
+        if( $e =~ /\A[ ]+([^ ]+[@][^ ]+)\z/ ) {
             # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -215,7 +215,7 @@ sub inquire {
 
         unless( $e->{'rhost'} ) {
             # Get the value of remote host
-            if( $e->{'diagnosis'} =~ /[ \t]+by[ \t]+([^ ]+)[.][ \t]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
+            if( $e->{'diagnosis'} =~ /[ ]+by[ ]+([^ ]+)[.][ ]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
                 # Google tried to deliver your message, but it was rejected by # the server
                 # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
                 my $hostname = $1;
@@ -291,7 +291,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

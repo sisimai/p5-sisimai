@@ -23,7 +23,7 @@ sub inquire {
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr<^(?:Content-type:[ \t]*message/rfc822|Return-path:[ \t]*)>m;
+    state $rebackbone = qr<^(?:Content-Type:[ ]message/rfc822|Return-path:[ ])>m;
     state $startingof = { 'message' => ['This report relates to a message you sent with the following header fields:'] };
     state $messagesof = { 'hostunknown' => ['Illegal host/domain name found'] };
 
@@ -64,7 +64,7 @@ sub inquire {
         #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25) (6jo.example.jp ESMTP SENDMAIL-VM)
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ \t]+Recipient address:[ \t]*([^ ]+[@][^ ]+)\z/ ) {
+        if( $e =~ /\A[ ]+Recipient address:[ ]*([^ ]+[@][^ ]+)\z/ ) {
             #   Recipient address: kijitora@example.jp
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -74,24 +74,24 @@ sub inquire {
             $v->{'recipient'} = Sisimai::Address->s3s4($1);
             $recipients++;
 
-        } elsif( $e =~ /\A[ \t]+Original address:[ \t]*([^ ]+[@][^ ]+)\z/ ) {
+        } elsif( $e =~ /\A[ ]+Original address:[ ]*([^ ]+[@][^ ]+)\z/ ) {
             #   Original address: kijitora@example.jp
             $v->{'recipient'} = Sisimai::Address->s3s4($1);
 
-        } elsif( $e =~ /\A[ \t]+Date:[ \t]*(.+)\z/ ) {
+        } elsif( $e =~ /\A[ ]+Date:[ ]*(.+)\z/ ) {
             #   Date: Fri, 21 Nov 2014 23:34:45 +0900
             $v->{'date'} = $1;
 
-        } elsif( $e =~ /\A[ \t]+Reason:[ \t]*(.+)\z/ ) {
+        } elsif( $e =~ /\A[ ]+Reason:[ ]*(.+)\z/ ) {
             #   Reason: Remote SMTP server has rejected address
             $v->{'diagnosis'} = $1;
 
-        } elsif( $e =~ /\A[ \t]+Diagnostic code:[ \t]*([^ ]+);(.+)\z/ ) {
+        } elsif( $e =~ /\A[ ]+Diagnostic code:[ ]*([^ ]+);(.+)\z/ ) {
             #   Diagnostic code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
             $v->{'spec'} = uc $1;
             $v->{'diagnosis'} = $2;
 
-        } elsif( $e =~ /\A[ \t]+Remote system:[ \t]*dns;([^ ]+)[ \t]*([^ ]+)[ \t]*.+\z/ ) {
+        } elsif( $e =~ /\A[ ]+Remote system:[ ]*dns;([^ ]+)[ ]*([^ ]+)[ ]*.+\z/ ) {
             #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25)
             #     (6jo.example.jp ESMTP SENDMAIL-VM)
             my $remotehost = $1; # remote host
@@ -117,16 +117,16 @@ sub inquire {
             #  (6jo.example.jp ESMTP SENDMAIL-VM)
             # Diagnostic-code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
             #
-            if( $e =~ /\AStatus:[ \t]*(\d[.]\d[.]\d)[ \t]*[(](.+)[)]\z/ ) {
+            if( $e =~ /\AStatus:[ ](\d[.]\d[.]\d)[ ]*[(](.+)[)]\z/ ) {
                 # Status: 5.1.1 (Remote SMTP server has rejected address)
                 $v->{'status'} = $1;
                 $v->{'diagnosis'} ||= $2;
 
-            } elsif( $e =~ /\AArrival-Date:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AArrival-Date:[ ](.+)\z/ ) {
                 # Arrival-date: Thu, 29 Apr 2014 23:34:45 +0000 (GMT)
                 $v->{'date'} ||= $1;
 
-            } elsif( $e =~ /\AReporting-MTA:[ ]*(?:DNS|dns);[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\AReporting-MTA:[ ]dns;[ ](.+)\z/ ) {
                 # Reporting-MTA: dns;mr21p30im-asmtp004.me.com (tcp-daemon)
                 my $localhost = $1;
                 $v->{'lhost'} ||= $localhost;
@@ -187,7 +187,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

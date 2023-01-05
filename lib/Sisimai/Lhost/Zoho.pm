@@ -22,7 +22,7 @@ sub inquire {
     return undef unless $mhead->{'x-zohomail'};
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Received:[ ]*from[ ]mail[.]zoho[.]com[ ]by[ ]mx[.]zohomail[.]com|m;
+    state $rebackbone = qr|^Received:[ ]from[ ]mail[.]zoho[.]com[ ]by[ ]mx[.]zohomail[.]com|m;
     state $startingof = { 'message' => ['This message was created automatically by mail delivery'] };
     state $messagesof = { 'expired' => ['Host not reachable'] };
 
@@ -57,7 +57,7 @@ sub inquire {
         # shironeko@example.org Invalid Address, ERROR_CODE :550, ERROR_CODE :Requested action not taken: mailbox unavailable
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+[@][^ ]+)[ \t]+(.+)\z/ ) {
+        if( $e =~ /\A([^ ]+[@][^ ]+)[ ]+(.+)\z/ ) {
             # kijitora@example.co.jp Invalid Address, ERROR_CODE :550, ERROR_CODE :5.1.=
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -145,7 +145,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

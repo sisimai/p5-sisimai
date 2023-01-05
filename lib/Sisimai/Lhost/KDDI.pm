@@ -56,7 +56,7 @@ sub inquire {
         next unless length $e;
 
         $v = $dscontents->[-1];
-        if( $e =~ /\A[ \t]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
+        if( $e =~ /\A[ ]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
             # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900
             #     Could not be delivered to: <******@**.***.**>
             #     As their mailbox is full.
@@ -77,7 +77,7 @@ sub inquire {
 
         } else {
             #     As their mailbox is full.
-            $v->{'diagnosis'} .= $e.' ' if $e =~ /\A[ \t]+/;
+            $v->{'diagnosis'} .= $e.' ' if $e =~ /\A[ ]+/;
         }
     }
     return undef unless $recipients;
@@ -145,7 +145,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

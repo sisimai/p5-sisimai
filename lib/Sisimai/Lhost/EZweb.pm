@@ -35,7 +35,7 @@ sub inquire {
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr<^(?:[-]{50}|Content-Type:[ ]*message/rfc822)>m;
+    state $rebackbone = qr<^(?:[-]{50}|Content-Type:[ ]message/rfc822)>m;
     my    $markingsof = {
         'message' => qr{\A(?:
              The[ ]user[(]s[)][ ]
@@ -103,7 +103,7 @@ sub inquire {
 
         if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
             $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
-            $e =~ /\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
+            $e =~ /\A[ ]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
 
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -124,7 +124,7 @@ sub inquire {
         } else {
             # The line does not begin with a DSN field defined in RFC3464
             next if Sisimai::String->is_8bit(\$e);
-            if( $e =~ /\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
+            if( $e =~ /\A[ ]+[>]{3}[ ]+([A-Z]{4})/ ) {
                 #    >>> RCPT TO:<******@ezweb.ne.jp>
                 $v->{'command'} = $1;
 
@@ -220,7 +220,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

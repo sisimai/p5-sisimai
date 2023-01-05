@@ -41,8 +41,8 @@ sub inquire {
                     |on[ ].+[ ]program\z    # The Postfix on <os name> program
                     )
                 |\w+[ ]Postfix[ ]program\z  # The <name> Postfix program
-                |mail[ \t]system\z             # The mail system
-                |\w+[ \t]program\z             # The <custmized-name> program
+                |mail[ ]system\z             # The mail system
+                |\w+[ ]program\z             # The <custmized-name> program
                 )
             |This[ ]is[ ]the[ ](?:
                  Postfix[ ]program          # This is the Postfix program
@@ -165,7 +165,7 @@ sub inquire {
                 #
                 # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO command)
-                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
+                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ ]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
@@ -176,13 +176,13 @@ sub inquire {
 
                 } else {
                     # Alternative error message and recipient
-                    if( $e =~ /[ \t][(]in reply to (?:end of )?([A-Z]{4}).*/ ||
-                        $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
+                    if( $e =~ /[ ][(]in reply to (?:end of )?([A-Z]{4}).*/ ||
+                        $e =~ /([A-Z]{4})[ ]*.*command[)]\z/ ) {
                         # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
                         push @commandset, $1;
                         $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
-                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ \t]*(.+)\z/ ) {
+                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ ]*(.+)\z/ ) {
                         # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
                         $anotherset->{'recipient'} = $1;
                         $anotherset->{'alias'}     = $2;
@@ -208,7 +208,7 @@ sub inquire {
                     } else {
                         # Get error message continued from the previous line
                         next unless $anotherset->{'diagnosis'};
-                        $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ \t]{4}(.+)\z/;
+                        $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ ]{4}(.+)\z/;
                     }
                 }
             } # End of message/delivery-status
@@ -228,7 +228,7 @@ sub inquire {
         } else {
             # Get a recipient address from message/rfc822 part if the delivery report was unavailable:
             # '--- Delivery report unavailable ---'
-            if( $nomessages && $emailsteak->[1] =~ /^To:[ ]*(.+)/m ) {
+            if( $nomessages && $emailsteak->[1] =~ /^To:[ ](.+)/m ) {
                 # Try to get a recipient address from To: field in the original
                 # message at message/rfc822 part
                 $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
@@ -324,7 +324,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

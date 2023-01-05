@@ -75,7 +75,7 @@ sub inquire {
             # SMTP error from remote server after RCPT command:
             $v->{'command'} = $1;
 
-        } elsif( $e =~ /\Ahost:[ \t]*(.+)\z/ ) {
+        } elsif( $e =~ /\Ahost:[ ]*(.+)\z/ ) {
             # host: mx.example.jp
             $v->{'rhost'} = $1;
 
@@ -150,7 +150,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

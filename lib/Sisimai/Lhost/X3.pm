@@ -57,7 +57,7 @@ sub inquire {
         # ============================================================================
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ \t]+[*][ \t]([^ ]+[@][^ ]+)\z/ ) {
+        if( $e =~ /\A[ ]+[*][ ]([^ ]+[@][^ ]+)\z/ ) {
             #   * kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -69,7 +69,7 @@ sub inquire {
 
         } else {
             # Detect error message
-            if( $e =~ /\ASMTP:([^ ]+)[ \t](.+)\z/ ) {
+            if( $e =~ /\ASMTP:([^ ]+)[ ](.+)\z/ ) {
                 # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
                 $v->{'command'} = uc $1;
                 $v->{'diagnosis'} = $2;
@@ -130,7 +130,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

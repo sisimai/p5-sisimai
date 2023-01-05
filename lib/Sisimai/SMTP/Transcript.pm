@@ -53,8 +53,8 @@ sub rise {
     }
 
     # 3. Remove unused lines, concatenate folded lines
-    $$argv0 =~ s/\n\n.+\z//ms;      # Remove strings from the first blank line to the tail
-    $$argv0 =~ s/\n[\s\t]+/ /g;     # Concatenate folded lines to each previous line
+    $$argv0 =~ s/\n\n.+\z//ms;  # Remove strings from the first blank line to the tail
+    $$argv0 =~ s/\n[ ]+/ /g;    # Concatenate folded lines to each previous line
 
     for my $e ( split("\n", $$argv0) ) {
         # 4. Read each SMTP command and server response
@@ -135,7 +135,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

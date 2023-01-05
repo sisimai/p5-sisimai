@@ -18,7 +18,7 @@ sub inquire {
     my $match = 0;
 
     # X-Mailer: <SMTP32 v8.22>
-    $match ||= 1 if $mhead->{'subject'} =~ /\AUndeliverable Mail[ ]*\z/;
+    $match ||= 1 if index($mhead->{'subject'}, 'Undeliverable Mail ') == 0;
     $match ||= 1 if defined $mhead->{'x-mailer'} && index($mhead->{'x-mailer'}, '<SMTP32 v') == 0;
     return undef unless $match;
 
@@ -54,7 +54,7 @@ sub inquire {
         # Original message follows.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+)[ ](.+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
+        if( $e =~ /\A([^ ]+)[ ](.+)[:][ ]*([^ ]+[@][^ ]+)/ ) {
             # Unknown user: kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -147,7 +147,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -40,8 +40,8 @@ sub inquire {
         next unless length $e;
 
         $v = $dscontents->[-1];
-        if( $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
-            $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/   ||
+        if( $e =~ /\A.+[<>]{3}[ ]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
+            $e =~ /\A.+[<>]{3}[ ]+.+[<]([^ ]+[@][^ ]+)[>]/   ||
             $e =~ /\A(?:Reason:[ ]+)?Unable[ ]to[ ]deliver[ ]message[ ]to[ ][<](.+)[>]/ ) {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
@@ -57,11 +57,11 @@ sub inquire {
             $recipients = scalar @$dscontents;
         }
 
-        if( $e =~ /\ASent[ \t]+[<]{3}[ \t]+([A-Z]{4})[ \t]/ ) {
+        if( $e =~ /\ASent[ ]+[<]{3}[ ]+([A-Z]{4})[ ]/ ) {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
             $v->{'command'} = $1
 
-        } elsif( $e =~ /\AReceived[ \t]+[>]{3}[ \t]+(\d{3}[ \t]+.+)\z/ ) {
+        } elsif( $e =~ /\AReceived[ ]+[>]{3}[ ]+(\d{3}[ ]+.+)\z/ ) {
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
             $v->{'diagnosis'} = $1;
 
@@ -119,7 +119,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

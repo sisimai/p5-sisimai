@@ -18,7 +18,7 @@ sub inquire {
     my $mbody = shift // return undef;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^content-type:[ ]message/rfc822|m;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $startingof = {
         'message' => ['The following message to <', 'An error occurred while trying to deliver the mail '],
     };
@@ -121,7 +121,7 @@ sub inquire {
                     $v->{'action'} = $e->{'action'};
                     $v->{'status'} = $e->{'status'};
 
-                    if( $e->{'diagnosticCode'} =~ /\A(.+?);[ ]*(.+)\z/ ) {
+                    if( $e->{'diagnosticCode'} =~ /\A(.+?);[ ](.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
@@ -280,7 +280,7 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         } continue {
@@ -330,8 +330,8 @@ Sisimai::Lhost::AmazonSES - bounce mail parser class for C<Amazon SES>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::AmazonSES parses a bounce email or a JSON string which created by C<Amazon Simple Email Service>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::AmazonSES parses a bounce email or a JSON string which created by
+C<Amazon Simple Email Service>. Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -343,12 +343,13 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method parses a bounced email and return results as a array reference.
+See C<Sisimai::Message> for more details.
 
 =head2 C<B<json(I<Hash>)>>
 
-C<json()> method adapts Amazon SES bounce object (JSON) for Perl hash object used at Sisimai::Message class.
+C<json()> method adapts Amazon SES bounce object (JSON) for Perl hash object used at
+C<Sisimai::Message> class.
 
 =head1 AUTHOR
 
@@ -356,7 +357,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

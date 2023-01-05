@@ -31,7 +31,7 @@ sub inquire {
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^content-type:[ ]message/rfc822|m;
+    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $startingof = { 'message' => ['Technical report:'] };
 
     require Sisimai::RFC1894;
@@ -159,7 +159,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

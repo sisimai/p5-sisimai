@@ -58,7 +58,7 @@ sub inquire {
         # --- Message non-deliverable.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\AAddressed To:[ \t]*([^ ]+?[@][^ ]+?)\z/ ) {
+        if( $e =~ /\AAddressed To:[ ]*([^ ]+?[@][^ ]+?)\z/ ) {
             # Addressed To: kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -68,11 +68,11 @@ sub inquire {
             $v->{'recipient'} = $1;
             $recipients++;
 
-        } elsif( $e =~ /\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ \t,]/ ) {
+        } elsif( $e =~ /\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ ,]/ ) {
             # Thu 29 Apr 2010 23:34:45 +0900
             $v->{'date'} = $e;
 
-        } elsif( $e =~ /\A[^ ]+[@][^ ]+:[ \t]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ \t]*(.+)\z/ ) {
+        } elsif( $e =~ /\A[^ ]+[@][^ ]+:[ ]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ ]*(.+)\z/ ) {
             # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
             $v->{'rhost'} = $1;
             $v->{'diagnosis'} = $2;
@@ -89,7 +89,7 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         }
@@ -140,7 +140,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -18,7 +18,7 @@ sub inquire {
     return undef unless index($mhead->{'subject'}, 'Undeliverable Mail: "') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr/^[ \t]*[+]+[ \t]*/m;
+    state $rebackbone = qr/^[ ]*[+]+[ ]*/m;
     state $startingof = {
         'message'  => ['Your message:'],
         'error'    => ['Could not be delivered because of'],
@@ -58,7 +58,7 @@ sub inquire {
         #    dummyuser@blabla.xxxxxxxxxxxx.com
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ \t]{4}([^ ]+[@][^ ]+)\z/ ) {
+        if( $e =~ /\A[ ]{4}([^ ]+[@][^ ]+)\z/ ) {
             # The following recipients were affected:
             #    dummyuser@blabla.xxxxxxxxxxxx.com
             if( $v->{'recipient'} ) {
@@ -93,17 +93,17 @@ sub inquire {
                 # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
                 # MessageName:        <B549996730000.000000000001.0003.mml>
                 # Last-Attempt-Date:  <16:21:07 seg, 22 Dezembro 2014>
-                if( $e =~ /\AOriginal Sender:[ \t]+[<](.+)[>]\z/ ) {
+                if( $e =~ /\AOriginal Sender:[ ]+[<](.+)[>]\z/ ) {
                     # Original Sender:    <originalsender@example.com>
                     # Use this line instead of "From" header of the original
                     # message.
                     $emailsteak->[1] .= sprintf("From: %s\n", $1);
 
-                } elsif( $e =~ /\ASender-MTA:[ \t]+[<](.+)[>]\z/ ) {
+                } elsif( $e =~ /\ASender-MTA:[ ]+[<](.+)[>]\z/ ) {
                     # Sender-MTA:         <10.11.12.13>
                     $v->{'lhost'} = $1;
 
-                } elsif( $e =~ /\AReporting-MTA:[ \t]+[<](.+)[>]\z/ ) {
+                } elsif( $e =~ /\AReporting-MTA:[ ][<](.+)[>]\z/ ) {
                     # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
                     $v->{'rhost'} = $1;
 
@@ -158,7 +158,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

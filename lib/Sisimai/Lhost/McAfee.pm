@@ -66,7 +66,7 @@ sub inquire {
         #
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ \t]+[(](.+)[)]\z/ ) {
+        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ ]+[(](.+)[)]\z/ ) {
             # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -83,7 +83,7 @@ sub inquire {
             unless( $o ) {
                 # Fallback code for empty value or invalid formatted value
                 # - Original-Recipient: <kijitora@example.co.jp>
-                $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]*([^ ]+)\z/;
+                $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]([^ ]+)\z/;
                 next;
             }
             next unless exists $fieldtable->{ $o->[0] };
@@ -92,7 +92,7 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ \t]+(.+)\z/;
+            next unless $e =~ /\A[ ]+(.+)\z/;
             $v->{'diagnosis'} .= ' '.$1;
         }
     } continue {
@@ -151,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

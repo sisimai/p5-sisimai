@@ -49,7 +49,7 @@ sub inquire {
         # kijitora@example.co.jp [User unknown]
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+?[@][^ ]+?)[ \t]+\[(.+)\]\z/ ) {
+        if( $e =~ /\A([^ ]+?[@][^ ]+?)[ ]+\[(.+)\]\z/ ) {
             # kijitora@example.co.jp [User unknown]
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -111,7 +111,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
