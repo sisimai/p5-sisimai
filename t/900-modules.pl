@@ -110,6 +110,7 @@ sub list {
         RFC3464.pm
         RFC3834.pm
         RFC5322.pm
+        RFC5965.pm
         Rhost.pm
             Rhost/Cox.pm
             Rhost/ExchangeOnline.pm
