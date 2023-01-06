@@ -70,11 +70,11 @@ sub rise {
         # 4. Rewrite message body for detecting the bounce reason
         $TryOnFirst = Sisimai::Order->make($thing->{'header'}->{'subject'});
         $param = { 'hook' => $argvs->{'hook'} || undef, 'mail' => $thing, 'body' => \$aftersplit->[2] };
-        last if $beforefact = __PACKAGE__->parse(%$param);
+        last if $beforefact = __PACKAGE__->sift(%$param);
         last unless $aftersplit->[2] =~ $ReWrapping;
 
-        # 5. Try to parse again
-        #    There is a bounce message inside of mutipart/*, try to parse the first message/rfc822
+        # 5. Try to sift again
+        #    There is a bounce message inside of mutipart/*, try to sift the first message/rfc822
         #    part as a entire message body again.
         $parseagain++;
         $email =  [split($ReWrapping, $aftersplit->[2], 2)]->[-1];
@@ -338,8 +338,8 @@ sub tidyup {
     return \$tidiedtext;
 }
 
-sub parse {
-    # Parse bounce mail with each MTA module
+sub sift {
+    # Sift a bounce mail with each MTA module
     # @param               [Hash] argvs    Processing message entity.
     # @param options argvs [Hash] mail     Email message entity
     # @param options mail  [String] from   From line of mbox
@@ -401,7 +401,7 @@ sub parse {
     }
 
     my $haveloaded = {};
-    my $parseddata = undef;
+    my $havesifted = undef;
     my $modulename = '';
     PARSER: while(1) {
         # 1. User-Defined Module
@@ -413,53 +413,53 @@ sub parse {
         USER_DEFINED: for my $r ( @$ToBeLoaded ) {
             # Call user defined MTA modules
             next if exists $haveloaded->{ $r };
-            $parseddata = $r->inquire($mailheader, $bodystring);
+            $havesifted = $r->inquire($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;
-            last(PARSER) if $parseddata;
+            last(PARSER) if $havesifted;
         }
 
         TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$defaultset ) {
             # Try MTA module candidates
             next if exists $haveloaded->{ $r };
             require $lhosttable->{ $r };
-            $parseddata = $r->inquire($mailheader, $bodystring);
+            $havesifted = $r->inquire($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;
-            last(PARSER) if $parseddata;
+            last(PARSER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::RFC3464'} ) {
             # When the all of Sisimai::Lhost::* modules did not return bounce data, call Sisimai::RFC3464;
             require Sisimai::RFC3464;
-            $parseddata = Sisimai::RFC3464->inquire($mailheader, $bodystring);
+            $havesifted = Sisimai::RFC3464->inquire($mailheader, $bodystring);
             $modulename = 'RFC3464';
-            last(PARSER) if $parseddata;
+            last(PARSER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::ARF'} ) {
             # Feedback Loop message
             require Sisimai::ARF;
-            $parseddata = Sisimai::ARF->inquire($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
-            last(PARSER) if $parseddata;
+            $havesifted = Sisimai::ARF->inquire($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
+            last(PARSER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::RFC3834'} ) {
-            # Try to parse the message as auto reply message defined in RFC3834
+            # Try to sift the message as auto reply message defined in RFC3834
             require Sisimai::RFC3834;
-            $parseddata = Sisimai::RFC3834->inquire($mailheader, $bodystring);
+            $havesifted = Sisimai::RFC3834->inquire($mailheader, $bodystring);
             $modulename = 'RFC3834';
-            last(PARSER) if $parseddata;
+            last(PARSER) if $havesifted;
         }
         last; # as of now, we have no sample email for coding this block
 
     } # End of while(PARSER)
-    return undef unless $parseddata;
+    return undef unless $havesifted;
 
-    $parseddata->{'catch'} = $havecaught;
+    $havesifted->{'catch'} = $havecaught;
     $modulename =~ s/\A.+:://;
-    $_->{'agent'} ||= $modulename for $parseddata->{'ds'}->@*;
-    return $parseddata;
+    $_->{'agent'} ||= $modulename for $havesifted->{'ds'}->@*;
+    return $havesifted;
 }
 
 1;
