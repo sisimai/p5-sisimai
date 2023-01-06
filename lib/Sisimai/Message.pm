@@ -46,7 +46,7 @@ sub rise {
 
     while($parseagain < 2) {
         # 1. Split email data to headers and a body part.
-        last unless $aftersplit = __PACKAGE__->divideup(\$email);
+        last unless $aftersplit = __PACKAGE__->part(\$email);
 
         # 2. Convert email headers from text to hash reference
         $thing->{'from'}   = $aftersplit->[0];
@@ -133,34 +133,34 @@ sub load {
     return $tobeloaded;
 }
 
-sub divideup {
+sub part {
     # Divide email data up headers and a body part.
     # @param         [String] email  Email data
     # @return        [Array]         Email data after split
     # @since v4.14.0
     my $class = shift;
     my $email = shift // return undef;
-    my $block = ['', '', ''];   # 0:From, 1:Header, 2:Body
+    my $parts = ['', '', ''];   # 0:From, 1:Header, 2:Body
 
     $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
     $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
 
-    ($block->[1], $block->[2]) = split(/\n\n/, $$email, 2);
-    return undef unless $block->[1];
-    return undef unless $block->[2];
+    ($parts->[1], $parts->[2]) = split(/\n\n/, $$email, 2);
+    return undef unless $parts->[1];
+    return undef unless $parts->[2];
 
-    if( substr($block->[1], 0, 5) eq 'From ' ) {
+    if( substr($parts->[1], 0, 5) eq 'From ' ) {
         # From MAILER-DAEMON Tue Feb 11 00:00:00 2014
-        $block->[0] =  [split(/\n/, $block->[1], 2)]->[0];
-        $block->[0] =~ y/\r\n//d;
+        $parts->[0] =  [split(/\n/, $parts->[1], 2)]->[0];
+        $parts->[0] =~ y/\r\n//d;
     } else {
         # Set pseudo UNIX From line
-        $block->[0] =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
+        $parts->[0] =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     }
 
-    $block->[1] .= "\n" unless substr($block->[1], -1, 1) eq "\n";
-    $block->[2] .= "\n";
-    return $block;
+    $parts->[1] .= "\n" unless substr($parts->[1], -1, 1) eq "\n";
+    $parts->[2] .= "\n";
+    return $parts;
 }
 
 sub makemap {
