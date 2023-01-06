@@ -95,12 +95,12 @@ sub true {
 
     # Check the value of Diagnosic-Code: header with patterns
     my $diagnostic = lc $argvs->{'diagnosticcode'};
-    my $commandtxt = $argvs->{'smtpcommand'};
-    if( $commandtxt eq 'MAIL' ) {
+    my $thecommand = $argvs->{'smtpcommand'};
+    if( $thecommand eq 'MAIL' ) {
         # The session was rejected at 'MAIL FROM' command
         return 1 if __PACKAGE__->match($diagnostic);
 
-    } elsif( $commandtxt eq 'DATA' ) {
+    } elsif( $thecommand eq 'DATA' ) {
         # The session was rejected at 'DATA' command
         if( $tempreason ne 'userunknown' ) {
             # Except "userunknown"

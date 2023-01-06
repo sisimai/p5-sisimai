@@ -17,7 +17,7 @@ sub get {
         'syntaxerror' => qr/(?:503 bad sequence of commands|504 command parameter not implemented)/,
     };
     my $statuscode = $argvs->{'deliverystatus'}    || '';
-    my $commandtxt = $argvs->{'smtpcommand'}       || '';
+    my $thecommand = $argvs->{'smtpcommand'}       || '';
     my $esmtperror = lc $argvs->{'diagnosticcode'} || '';
     my $reasontext = '';
 
@@ -62,7 +62,7 @@ sub get {
     # A bounce reason did not decide from a status code, an error message.
     if( $statuscode eq '5.0.0' ) {
         # Status: 5.0.0
-        if( $commandtxt eq 'RCPT' ) {
+        if( $thecommand eq 'RCPT' ) {
             # Your message to the following recipients cannot be delivered:
             #
             # <***@docomo.ne.jp>:
@@ -78,7 +78,7 @@ sub get {
             # Diagnostic-Code: smtp; 550 Unknown user ***@docomo.ne.jp
             $reasontext = 'userunknown';
 
-        } elsif( $commandtxt eq 'DATA' ) {
+        } elsif( $thecommand eq 'DATA' ) {
             # <***@docomo.ne.jp>: host mfsmax.docomo.ne.jp[203.138.181.240] said:
             # 550 Unknown user ***@docomo.ne.jp (in reply to end of DATA
             # command)
@@ -141,7 +141,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2022,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

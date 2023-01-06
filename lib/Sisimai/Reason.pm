@@ -156,8 +156,8 @@ sub anotherone {
 
         } else {
             # Check the value of SMTP command
-            my $commandtxt = $argvs->{'smtpcommand'} // '';
-            if( $commandtxt eq 'EHLO' || $commandtxt eq 'HELO' ) {
+            my $thecommand = $argvs->{'smtpcommand'} // '';
+            if( $thecommand eq 'EHLO' || $thecommand eq 'HELO' ) {
                 # Rejected at connection or after EHLO|HELO
                 $reasontext = 'blocked';
             }
@@ -521,7 +521,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
