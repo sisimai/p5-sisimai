@@ -13,7 +13,7 @@ sub find {
     my $argv0 = shift // return undef;
 
     return undef unless length $argv0 > 3;
-    return undef unless $argv0 =~ /(?:HELO|EHLO|START|AUTH|MAIL|RCPT|DATA)/;
+    return undef unless $argv0 =~ /(?:HELO|EHLO|STARTTLS|AUTH|MAIL|RCPT|DATA)/;
 
     state $detectable = [
         'HELO', 'EHLO', 'STARTTLS', 'AUTH PLAIN', 'AUTH LOGIN', 'AUTH CRAM-', 'AUTH DIGEST-',
