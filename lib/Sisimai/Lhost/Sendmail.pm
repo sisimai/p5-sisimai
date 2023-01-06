@@ -33,6 +33,7 @@ sub inquire {
         'error'   => ['... while talking to '],
     };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
@@ -41,7 +42,7 @@ sub inquire {
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $thecommand = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = [];    # (Array) Reply from remote server on SMTP session
     my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
     my $anotherset = {};    # (Hash) Another error information
@@ -104,9 +105,9 @@ sub inquire {
             # 554 5.0.0 Service unavailable
             if( substr($e, 0, 1) ne ' ') {
                 # Other error messages
-                if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
+                if( index($e, '>>> ') == 0 ) {
                     # >>> DATA
-                    $commandtxt = $1;
+                    $thecommand = Sisimai::SMTP::Command->find($e);
 
                 } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
                     # <<< Response
@@ -163,7 +164,7 @@ sub inquire {
         # Set default values if each value is empty.
         $e->{'lhost'}   ||= $permessage->{'rhost'};
         $e->{ $_ }      ||= $permessage->{ $_ } || '' for keys %$permessage;
-        $e->{'command'} ||= $commandtxt         || '';
+        $e->{'command'} ||= $thecommand || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
         $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {

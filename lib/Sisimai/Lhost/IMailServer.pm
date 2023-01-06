@@ -84,6 +84,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
@@ -92,13 +93,7 @@ sub inquire {
             delete $e->{'alterrors'};
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
-        COMMAND: for my $r ( keys %$recommands ) {
-            # Detect SMTP command from the message
-            next unless $e->{'diagnosis'} =~ $recommands->{ $r };
-            $e->{'command'} = uc $r;
-            last;
-        }
+        $e->{'command'}   = Sisimai::SMTP::Command->find($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$refailures ) {
             # Verify each regular expression of session errors

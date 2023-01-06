@@ -26,6 +26,7 @@ sub inquire {
     state $rebackbone = qr|^--- Below this line is a copy of the message[.]|m;
     state $startingof = { 'message' => ['Sorry, we were unable to deliver your message'] };
 
+    require Sisimai::SMTP::Command;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -65,7 +66,7 @@ sub inquire {
                 $v->{'diagnosis'} = $e;
 
                 # Get SMTP command from the value of "Remote host said:"
-                $v->{'command'} = $1 if $e =~ /\[([A-Z]{4}).*\]\z/;
+                $v->{'command'} = Sisimai::SMTP::Command->find($e);
             } else {
                 # <mailboxfull@example.jp>:
                 # Remote host said:
@@ -74,9 +75,9 @@ sub inquire {
                 if( $v->{'diagnosis'} eq 'Remote host said:' ) {
                     # Remote host said:
                     # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
-                    if( $e =~ /\[([A-Z]{4}).*\]\z/ ) {
+                    if( my $q = Sisimai::SMTP::Command->find($e) ) {
                         # [RCPT_TO]
-                        $v->{'command'} = $1;
+                        $v->{'command'} = $q;
 
                     } else {
                         # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full

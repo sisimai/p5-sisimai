@@ -28,6 +28,7 @@ sub inquire {
     $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
     return undef unless $match;
 
+    require Sisimai::SMTP::Command;
     state $rebackbone = qr|^Content-type:[ ]message/rfc822|m;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
@@ -57,9 +58,9 @@ sub inquire {
             $recipients = scalar @$dscontents;
         }
 
-        if( $e =~ /\ASent[ ]+[<]{3}[ ]+([A-Z]{4})[ ]/ ) {
+        if( index($e, 'Sent <<< ') == 0 ) {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
-            $v->{'command'} = $1
+            $v->{'command'} = Sisimai::SMTP::Command->find($e);
 
         } elsif( $e =~ /\AReceived[ ]+[>]{3}[ ]+(\d{3}[ ]+.+)\z/ ) {
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
@@ -68,7 +69,7 @@ sub inquire {
         } else {
             # Error message in non-English
             next unless $e =~ /[ ][<>]{3}[ ]/;
-            $v->{'command'}   = $1 if $e =~ /[ ][>]{3}[ ]([A-Z]{4})/; # >>> RCPT TO ...
+            $v->{'command'}   = Sisimai::SMTP::Command->find($e) if index($e, ' >>> ') > -1;
             $v->{'diagnosis'} = $1 if $e =~ /[ ][<]{3}[ ](.+)/;       # <<< 550 5.1.1 User unknown
         }
     }

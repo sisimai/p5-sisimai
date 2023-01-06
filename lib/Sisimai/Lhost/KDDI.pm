@@ -82,8 +82,10 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'command'}   = Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
 
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by KDDI)
@@ -91,6 +93,7 @@ sub inquire {
             $e->{'reason'} = 'filtered';
 
         } else {
+            warn 'COMMAND = '.$e->{'command'} if length $e->{'command'};
             if( $e->{'command'} eq 'RCPT' ) {
                 # set "userunknown" when the remote server rejected after RCPT command.
                 $e->{'reason'} = 'userunknown';

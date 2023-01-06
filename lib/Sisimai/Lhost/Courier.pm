@@ -42,6 +42,7 @@ sub inquire {
         'networkerror'=> ['DNS lookup failed.'],
     };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
@@ -50,7 +51,7 @@ sub inquire {
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $thecommand = '';    # (String) SMTP Command name begin with the string '>>>'
     my $v = undef;
     my $p = '';
 
@@ -124,9 +125,9 @@ sub inquire {
             # <<< 550 5.1.1 <kijitora@example.co.jp>... User Unknown
             #
             # ---------------------------------------------------------------------------
-            if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
+            if( index($e, '>>> ') == 0 ) {
                 # >>> DATA
-                $commandtxt ||= $1;
+                $thecommand = Sisimai::SMTP::Command->find($e);
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
@@ -152,7 +153,7 @@ sub inquire {
             $e->{'reason'} = $r;
             last;
         }
-        $e->{'command'} ||= $commandtxt || '';
+        $e->{'command'} ||= $thecommand || '';
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }

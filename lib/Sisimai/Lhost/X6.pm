@@ -58,11 +58,12 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         # Get the last SMTP command from the error message
-        if( $e->{'diagnosis'} =~ /\b(HELO|EHLO|MAIL|RCPT|DATA)\b/ ) {
+        if( my $q = Sisimai::SMTP::Command->find($e->{'diagnosis'}) ) {
             # ...(Error following RCPT command).
-            $e->{'command'} = $1;
+            $e->{'command'} = $q;
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
     }
@@ -106,7 +107,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2020,2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

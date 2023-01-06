@@ -74,7 +74,6 @@ sub inquire {
     # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
     state $hasexpired = 'this message has been in the queue too long.';
     # qmail-remote-fallback.patch
-    state $recommands = qr/Sorry, no SMTP connection got far enough; most progress was ([A-Z]{4}) /;
     state $reisonhold = qr/\A[^ ]+ does not like recipient[.][ ]+.+this message has been in the queue too long[.]\z/;
     state $failonldap = {
         # qmail-ldap-1.03-20040101.patch:19817 - 19866
@@ -123,6 +122,7 @@ sub inquire {
         ],
     };
 
+    require Sisimai::SMTP::Command;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -180,9 +180,9 @@ sub inquire {
                 last;
             }
 
-            unless( $e->{'command'} ) {
-                # Verify each regular expression of patches
-                $e->{'command'} = uc $1 if $e->{'diagnosis'} =~ $recommands;
+            if( index($e->{'diagnosis'}, 'Sorry, no SMTP connection got far enough; most progress was ') > -1 ) {
+                # Get the last SMTP command:from the error message
+                $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'});
             }
         }
 
@@ -230,7 +230,7 @@ sub inquire {
                 }
             }
         }
-        $e->{'command'} ||= '';
+        $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'});
         $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };

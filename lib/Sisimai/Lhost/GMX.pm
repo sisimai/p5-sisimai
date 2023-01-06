@@ -22,6 +22,7 @@ sub inquire {
     # X-UI-Out-Filterresults: unknown:0;
     return undef unless defined $mhead->{'x-gmx-antispam'};
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
     state $startingof = { 'message' => ['This message was created automatically by mail delivery software'] };
@@ -71,9 +72,9 @@ sub inquire {
             $v->{'recipient'} = $1;
             $recipients++;
 
-        } elsif( $e =~ /\ASMTP error .+ ([A-Z]{4}) command:\z/ ) {
+        } elsif( index($e, 'SMTP error ') == 0 ) {
             # SMTP error from remote server after RCPT command:
-            $v->{'command'} = $1;
+            $v->{'command'} = Sisimai::SMTP::Command->find($e);
 
         } elsif( $e =~ /\Ahost:[ ]*(.+)\z/ ) {
             # host: mx.example.jp

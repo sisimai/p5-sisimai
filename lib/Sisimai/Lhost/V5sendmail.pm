@@ -19,6 +19,7 @@ sub inquire {
     # 'from'    => qr/\AMail Delivery Subsystem/,
     return undef unless index($mhead->{'subject'}, 'Returned mail: ') == 0;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;
     state $startingof = { 'message' => ['----- Transcript of session follows -----'] };
@@ -83,21 +84,21 @@ sub inquire {
             $v->{'recipient'} = $1;
             $v->{'diagnosis'} = $2;
 
-            if( $responding[ $recipients ] ) {
+            if( $responding[$recipients] ) {
                 # Concatenate the response of the server and error message
                 $v->{'diagnosis'} .= ': '.$responding[$recipients];
             }
             $recipients++;
 
-        } elsif( $e =~ /\A[>]{3}[ ]*([A-Z]{4})[ ]*/ ) {
+        } elsif( index($e, '>>> ') == 0 ) {
             # >>> RCPT To:<kijitora@example.org>
-            $commandset[ $recipients ] = $1;
+            $commandset[$recipients] = Sisimai::SMTP::Command->find($e);
 
         } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
             # <<< Response
             # <<< 501 <shironeko@example.co.jp>... no access from mail server [192.0.2.55] which is an open relay.
             # <<< 550 Requested User Mailbox not found. No such user here.
-            $responding[ $recipients ] = $1;
+            $responding[$recipients] = $1;
 
         } else {
             # Detect SMTP session error or connection error
@@ -124,7 +125,6 @@ sub inquire {
     for my $e ( @$dscontents ) {
         $errorindex++;
         delete $e->{'sessionerr'};
-        $e->{'command'} = $commandset[$errorindex] || '';
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
@@ -135,6 +135,7 @@ sub inquire {
             $e->{'diagnosis'} ||= $responding[$errorindex];
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'command'} = $commandset[$errorindex] || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
 
         # @example.jp, no local part
         # Get email address from the value of Diagnostic-Code header

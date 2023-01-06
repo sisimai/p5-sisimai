@@ -63,6 +63,7 @@ sub inquire {
         'onhold' => [qr/Each of the following recipients was rejected by a remote mail server/],
     };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -124,9 +125,9 @@ sub inquire {
         } else {
             # The line does not begin with a DSN field defined in RFC3464
             next if Sisimai::String->is_8bit(\$e);
-            if( $e =~ /\A[ ]+[>]{3}[ ]+([A-Z]{4})/ ) {
+            if( index($e, ' >>> ') > -1 ) {
                 #    >>> RCPT TO:<******@ezweb.ne.jp>
-                $v->{'command'} = $1;
+                $v->{'command'} = Sisimai::SMTP::Command->find($e);
 
             } else {
                 # Check error message

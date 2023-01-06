@@ -30,6 +30,7 @@ sub inquire {
     state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $startingof = { 'message' => ['This is the mail system at host yandex.ru.'] };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
@@ -93,13 +94,10 @@ sub inquire {
             # <kijitora@example.jp>: host mx.example.jp[192.0.2.153] said: 550
             #    5.1.1 <kijitora@example.jp>... User Unknown (in reply to RCPT TO
             #    command)
-            if( $e =~ /[ ][(]in reply to .*([A-Z]{4}).*/ ) {
+            if( index($e, ' (in reply to ') > -1 || index($e, 'command)') > -1 ) {
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                push @commandset, $1;
-
-            } elsif( $e =~ /([A-Z]{4})[ ]*.*command[)]\z/ ) {
-                # to MAIL command)
-                push @commandset, $1;
+                my $q = Sisimai::SMTP::Command->find($e);
+                push @commandset, $q if $q;
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
@@ -118,9 +116,9 @@ sub inquire {
         # Set default values if each value is empty.
         $e->{'lhost'} ||= $permessage->{'rhost'};
         $e->{ $_ }    ||= $permessage->{ $_ } || '' for keys %$permessage;
-        $e->{'command'}   =  shift @commandset || '';
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'command'} ||=  shift @commandset || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }

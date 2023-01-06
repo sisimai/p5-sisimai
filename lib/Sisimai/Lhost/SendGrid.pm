@@ -34,7 +34,7 @@ sub inquire {
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $thecommand = '';    # (String) SMTP Command name begin with the string '>>>'
     my $v = undef;
     my $p = '';
 
@@ -118,9 +118,9 @@ sub inquire {
             #
             # X-SendGrid-QueueID: 959479146
             # X-SendGrid-Sender: <bounces+61689-10be-kijitora=example.jp@sendgrid.info>
-            if( $e =~ /.+ in (?:End of )?([A-Z]{4}).*\z/ ) {
+            if( my $q = Sisimai::SMTP::Command->find($e) ) {
                 # in RCPT TO, in MAIL FROM, end of DATA
-                $commandtxt = $1;
+                $thecommand = $q;
 
             } elsif( $e =~ /\ADiagnostic-Code:[ ](.+)\z/ ) {
                 # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown
@@ -158,7 +158,7 @@ sub inquire {
             }
         }
         $e->{'lhost'}   ||= $permessage->{'rhost'};
-        $e->{'command'} ||= $commandtxt;
+        $e->{'command'} ||= $thecommand;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
 }

@@ -57,6 +57,7 @@ sub inquire {
 
     require Sisimai::RFC1894;
     require Sisimai::Address;
+    require Sisimai::SMTP::Command;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
@@ -176,10 +177,10 @@ sub inquire {
 
                 } else {
                     # Alternative error message and recipient
-                    if( $e =~ /[ ][(]in reply to (?:end of )?([A-Z]{4}).*/ ||
-                        $e =~ /([A-Z]{4})[ ]*.*command[)]\z/ ) {
+                    if( index($e, ' (in reply to ') > -1 || index($e, 'command)') > -1 ) {
                         # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                        push @commandset, $1;
+                        my $q = Sisimai::SMTP::Command->find($e);
+                        push @commandset, $q if $q;
                         $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
                     } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ ]*(.+)\z/ ) {
@@ -280,7 +281,7 @@ sub inquire {
             }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'command'}   = shift @commandset || '';
+        $e->{'command'}   = shift @commandset || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
         $e->{'command'} ||= 'HELO' if index($e->{'diagnosis'}, 'refused to talk to me:') > -1;
         $e->{'spec'}    ||= 'SMTP' if $e->{'diagnosis'} =~ /host .+ said:/;
     }

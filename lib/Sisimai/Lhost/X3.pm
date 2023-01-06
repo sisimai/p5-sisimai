@@ -19,6 +19,7 @@ sub inquire {
     return undef unless index($mhead->{'from'}, 'Mail Delivery System') == 0;
     return undef unless index($mhead->{'subject'}, 'Delivery status notification') == 0;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
     state $startingof = { 'message' => ['      This is an automatically generated Delivery Status Notification.'] };
@@ -69,10 +70,10 @@ sub inquire {
 
         } else {
             # Detect error message
-            if( $e =~ /\ASMTP:([^ ]+)[ ](.+)\z/ ) {
+            if( index($e, 'SMTP:') == 0 ) {
                 # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
-                $v->{'command'} = uc $1;
-                $v->{'diagnosis'} = $2;
+                $v->{'command'} = Sisimai::SMTP::Command->find($e);
+                $v->{'diagnosis'} = $e;
 
             } elsif( $e =~ /\ARouting: (.+)/ ) {
                 # Routing: Could not find a gateway for kijitora@example.co.jp

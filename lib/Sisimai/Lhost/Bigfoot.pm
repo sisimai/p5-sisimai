@@ -26,6 +26,7 @@ sub inquire {
     state $rebackbone = qr|^Content-Type:[ ]message/partial|m;
     state $markingsof = { 'message' => qr/\A[ ]+[-]+[ ]*Transcript of session follows/ };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
@@ -34,7 +35,7 @@ sub inquire {
     my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $thecommand = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = '';    # (String) Reply from remote server on SMTP session
     my $v = undef;
     my $p = '';
@@ -91,9 +92,9 @@ sub inquire {
                 #    ----- Transcript of session follows -----
                 # >>> RCPT TO:<destinaion@example.net>
                 # <<< 553 Invalid recipient destinaion@example.net (Mode: normal)
-                if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
+                if( index($e, '>>> ') == 0 ) {
                     # >>> DATA
-                    $commandtxt = $1;
+                    $thecommand = Sisimai::SMTP::Command->find($e);
 
                 } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
                     # <<< Response
@@ -118,7 +119,7 @@ sub inquire {
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
 
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'command'} ||= $commandtxt || '';
+        $e->{'command'} ||= $thecommand || '';
         $e->{'command'} ||= 'EHLO' if $esmtpreply;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
