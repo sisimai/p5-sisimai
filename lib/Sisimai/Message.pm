@@ -220,7 +220,7 @@ sub makemap {
     return $headermaps;
 }
 
-sub tidyup {
+sub tidy {
     # Tidy up each field name and format
     # @param    [String] argv0 Strings inlcuding field and value used at an email
     # @return   [String]       Strings tidied up
@@ -365,7 +365,7 @@ sub sift {
     $mailheader->{'content-type'} //= '';
 
     # Tidy up entire message body
-    $$bodystring =  __PACKAGE__->tidyup($bodystring)->$*;
+    $$bodystring =  __PACKAGE__->tidy($bodystring)->$*;
 
     # Decode BASE64 Encoded message body
     my $mesgformat = lc($mailheader->{'content-type'} || '');
@@ -591,3 +591,4 @@ Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

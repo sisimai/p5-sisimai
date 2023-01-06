@@ -4,7 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Message;
 
 my $Package = 'Sisimai::Message';
-my $Methods = { 'class'  => ['rise', 'load', 'sift', 'part', 'makemap', 'tidyup'] };
+my $Methods = { 'class'  => ['rise', 'load', 'sift', 'part', 'makemap', 'tidy'] };
 my $Mailbox = './set-of-emails/mailbox/mbox-0';
 
 use_ok $Package;
@@ -139,7 +139,7 @@ Nyaaan
 __END_OF_EMAIL_MESSAGE__
 EOB
 
-    my $tidiedtext = $Package->tidyup(\$rfc822body);
+    my $tidiedtext = $Package->tidy(\$rfc822body);
     isa_ok $tidiedtext, 'SCALAR';
     ok length $$tidiedtext;
     like   $$tidiedtext, qr{Content-Type: text/plain};
