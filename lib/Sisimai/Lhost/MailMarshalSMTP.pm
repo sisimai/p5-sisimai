@@ -18,7 +18,6 @@ sub inquire {
     return undef unless index($mhead->{'subject'}, 'Undeliverable Mail: "') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr/^[ ]*[+]+[ ]*/m;
     state $startingof = {
         'message'  => ['Your message:'],
         'error'    => ['Could not be delivered because of'],
@@ -31,13 +30,11 @@ sub inquire {
     my $endoferror = 0;     # (Integer) Flag for the end of error message
     my $v = undef;
 
-    if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1) ) {
-        # Convert to regular expression
-        $rebackbone = qr/^\Q$boundary00\E/m;
-    }
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $boundaries = ['+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'];
+    my $q = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1); push @$boundaries, $q if $q;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -97,7 +94,7 @@ sub inquire {
                     # Original Sender:    <originalsender@example.com>
                     # Use this line instead of "From" header of the original
                     # message.
-                    $emailsteak->[1] .= sprintf("From: %s\n", $1);
+                    $emailparts->[1] .= sprintf("From: %s\n", $1);
 
                 } elsif( $e =~ /\ASender-MTA:[ ]+[<](.+)[>]\z/ ) {
                     # Sender-MTA:         <10.11.12.13>
@@ -110,7 +107,7 @@ sub inquire {
                 } elsif( $e =~ /\A\s+(From|Subject):\s*(.+)\z/ ) {
                     #    From:    originalsender@example.com
                     #    Subject: ...
-                    $emailsteak->[1] .= sprintf("%s: %s\n", $1, $2);
+                    $emailparts->[1] .= sprintf("%s: %s\n", $1, $2);
                 }
             }
         }
@@ -118,7 +115,7 @@ sub inquire {
     return undef unless $recipients;
 
     $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'}) for @$dscontents;
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;

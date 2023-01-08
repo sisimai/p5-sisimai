@@ -35,15 +35,14 @@ sub inquire {
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr{^(?:
+    state $boundaries = [
         # deliver.c:6423|          if (bounce_return_body) fprintf(f,
         # deliver.c:6424|"------ This is a copy of the message, including all the headers. ------\n");
         # deliver.c:6425|          else fprintf(f,
         # deliver.c:6426|"------ This is a copy of the message's headers. ------\n");
-         [-]+[ ]This[ ]is[ ]a[ ]copy[ ]of[ ](?:the|your)[ ]message,[ ]including[ ]all[ ]the[ ]headers[.][ ][-]+
-        |Content-Type:[ ]message/rfc822\n(?:[ ]+.*?\n\n)?
-        )
-    }msx;
+        '------ This is a copy of the message, including all the headers. ------',
+        'Content-Type: message/rfc822',
+    ];
     state $startingof = { 'deliverystatus' => ['Content-Type: message/delivery-status'] };
     state $markingsof = {
         # Error text regular expressions which defined in exim/src/deliver.c
@@ -152,7 +151,7 @@ sub inquire {
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $nextcursor = 0;
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -165,7 +164,7 @@ sub inquire {
         $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'});
     }
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -481,7 +480,7 @@ sub inquire {
         }
         $e->{'command'} ||= '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;

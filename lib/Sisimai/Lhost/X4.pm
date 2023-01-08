@@ -28,7 +28,7 @@ sub inquire {
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr/^---[ ](?:Below this line is a copy of the message|Original message follows)[.]/m;
+    state $boundaries = ['--- Below this line is a copy of the message.', 'Original message follows.'];
     state $startingof = { 'error'  => ['Remote host said:'] };
     state $markingsof = {
         #  qmail-remote.c:248|    if (code >= 500) {
@@ -143,12 +143,12 @@ sub inquire {
 
     require Sisimai::SMTP::Command;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -251,7 +251,7 @@ sub inquire {
         }
         $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'});
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;

@@ -29,9 +29,9 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
 
-    my $rebackbone = qr/__BOUNDARY_STRING_HERE__/m;
+    my $boundaries = [];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = [];
+    my $emailparts = [];
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $senderaddr = '';    # (String) Sender address in the message body
@@ -49,14 +49,10 @@ sub inquire {
             # The attempted recipient address does not exist.
             'userunknown' => ['550 - Requested action not taken: no such user here'],
         };
+        $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1)];
+        $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
 
-        if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1) ) {
-            # Convert to regular expression
-            $rebackbone = qr/^\Q$boundary00\E/m;
-        }
-
-        $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
-        for my $e ( split("\n", $emailsteak->[0]) ) {
+        for my $e ( split("\n", $emailparts->[0]) ) {
             # Read error messages and delivery status lines from the head of the email to the previous
             # line of the beginning of the original message.
             unless( $readcursor ) {
@@ -101,14 +97,9 @@ sub inquire {
         # vzwpix.com
         $startingof = { 'message' => ['Message could not be delivered to mobile'] };
         $messagesof = { 'userunknown' => ['No valid recipients for this MM'] };
-
-        if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}) ) {
-            # Convert to regular expression
-            $rebackbone = qr/^\Q$boundary00\E/m;
-        }
-
-        $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
-        for my $e ( split("\n", $emailsteak->[0]) ) {
+        $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'})];
+        $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+        for my $e ( split("\n", $emailparts->[0]) ) {
             # Read error messages and delivery status lines from the head of the email to the previous
             # line of the beginning of the original message.
             unless( $readcursor ) {
@@ -154,8 +145,8 @@ sub inquire {
     return undef unless $recipients;
 
     # Set the value of "MAIL FROM:" and "From:"
-    $emailsteak->[1] .= sprintf("From: %s\n",    $senderaddr) unless $emailsteak->[1] =~ /^From: /m;
-    $emailsteak->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailsteak->[1] =~ /^Subject: /m;
+    $emailparts->[1] .= sprintf("From: %s\n",    $senderaddr) unless $emailparts->[1] =~ /^From: /m;
+    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailparts->[1] =~ /^Subject: /m;
 
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
@@ -167,7 +158,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;

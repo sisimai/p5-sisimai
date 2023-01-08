@@ -21,7 +21,7 @@ sub inquire {
 
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;
+    state $boundaries = ['   ----- Unsent message follows -----', '  ----- No message was collected -----'];
     state $startingof = { 'message' => ['----- Transcript of session follows -----'] };
     state $markingsof = {
         # Error text regular expressions which defined in src/savemail.c
@@ -43,8 +43,8 @@ sub inquire {
         'error' => qr/\A[.]+ while talking to .+[:]\z/,
     };
 
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
-    return undef unless length $emailsteak->[1];
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+    return undef unless length $emailparts->[1];
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -55,7 +55,7 @@ sub inquire {
     my $errorindex = -1;
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -115,7 +115,7 @@ sub inquire {
         }
     }
 
-    if( $recipients == 0 && $emailsteak->[1] =~ /^To:[ ](.+)/m ) {
+    if( $recipients == 0 && $emailparts->[1] =~ /^To:[ ](.+)/m ) {
         # Get the recipient address from "To:" header at the original message
         $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
         $recipients = 1;
@@ -142,7 +142,7 @@ sub inquire {
         next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
         $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;

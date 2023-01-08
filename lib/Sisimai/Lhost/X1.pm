@@ -20,17 +20,17 @@ sub inquire {
     return undef unless index($mhead->{'from'}, '"Mail Deliver System" ') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr/^Received: from \d+[.]\d+[.]\d+[.]\d/m;
+    state $boundaries = ['Received: from '];
     state $markingsof = { 'message' => qr/\AThe original message was received at (.+)\z/ };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $datestring = '';    # (String) Date string
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -71,7 +71,7 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'date'}      = $datestring || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;

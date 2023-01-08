@@ -29,13 +29,13 @@ sub inquire {
     return undef unless $match;
 
     require Sisimai::SMTP::Command;
-    state $rebackbone = qr|^Content-type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-type: message/rfc822'];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         next unless length $e;
@@ -80,7 +80,7 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'reason'} = 'userunknown' if index($e->{'diagnosis'}, 'Unable to deliver') > -1;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;

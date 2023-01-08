@@ -52,7 +52,7 @@ sub inquire {
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = {
         'message' => ['Your message'],
         'error'   => ['did not reach the following recipient(s):'],
@@ -86,7 +86,7 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $statuspart = 0;     # (Integer) Flag, 1 = have got delivery status part.
@@ -98,7 +98,7 @@ sub inquire {
     };
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -213,13 +213,13 @@ sub inquire {
         delete $e->{'alterrors'};
     }
 
-    unless( length $emailsteak->[1] ) {
+    unless( length $emailparts->[1] ) {
         # When original message does not included in the bounce message
-        $emailsteak->[1] .= sprintf("From: %s\n", $connheader->{'to'});
-        $emailsteak->[1] .= sprintf("Date: %s\n", $connheader->{'date'});
-        $emailsteak->[1] .= sprintf("Subject: %s\n", $connheader->{'subject'});
+        $emailparts->[1] .= sprintf("From: %s\n", $connheader->{'to'});
+        $emailparts->[1] .= sprintf("Date: %s\n", $connheader->{'date'});
+        $emailparts->[1] .= sprintf("Subject: %s\n", $connheader->{'subject'});
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;

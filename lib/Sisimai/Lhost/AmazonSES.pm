@@ -18,14 +18,11 @@ sub inquire {
     my $mbody = shift // return undef;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
-    state $startingof = {
-        'message' => ['The following message to <', 'An error occurred while trying to deliver the mail '],
-    };
+    state $boundaries = ['Content-Type: message/rfc822'];
+    state $startingof = { 'message' => ['The following message to <', 'An error occurred while trying to deliver the mail '] };
     state $messagesof = { 'expired' => ['Delivery expired'] };
-
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $recipients = 0; # (Integer) The number of 'Final-Recipient' header
+    my    $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my    $recipients = 0; # (Integer) The number of 'Final-Recipient' header
 
     if( index($$mbody, '{') == 0 ) {
         # The message body is JSON string
@@ -225,11 +222,11 @@ sub inquire {
         my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
         my $permessage = {};    # (Hash) Store values of each Per-Message field
         my $readcursor = 0;     # (Integer) Points the current cursor position
-        my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+        my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
         my $v = undef;
         my $p = '';
 
-        for my $e ( split("\n", $emailsteak->[0]) ) {
+        for my $e ( split("\n", $emailparts->[0]) ) {
             # Read each line between the start of the message and the start of rfc822 part.
             unless( $readcursor ) {
                 # Beginning of the bounce message or message/delivery-status part
@@ -311,7 +308,7 @@ sub inquire {
                 last;
             }
         }
-        return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+        return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
     }
 }
 

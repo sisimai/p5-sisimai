@@ -20,7 +20,7 @@ sub inquire {
     return undef if $mhead->{'x-aol-ip'};   # X-AOL-IP is a header defined in AOL
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $startingof = {
         #   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
         #   savemail.c:1041|          mci))
@@ -39,7 +39,7 @@ sub inquire {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $thecommand = '';    # (String) SMTP Command name begin with the string '>>>'
@@ -49,7 +49,7 @@ sub inquire {
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -193,7 +193,7 @@ sub inquire {
         next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
         $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -233,7 +233,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

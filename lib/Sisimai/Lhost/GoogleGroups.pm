@@ -16,8 +16,8 @@ sub inquire {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless rindex($mhead->{'from'}, '<mailer-daemon@googlemail.com>') > -1;
-    return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
+    return undef unless rindex($mhead->{'from'}, '<mailer-daemon@googlemail.com>')  > -1;
+    return undef unless  index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     return undef unless exists $mhead->{'x-failed-recipients'};
     return undef unless exists $mhead->{'x-google-smtp-source'};
 
@@ -39,10 +39,10 @@ sub inquire {
     #
     # Google Groups
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr/^-----[ ]Original[ ]message[ ]-----$/m;
+    state $boundaries = ['----- Original message -----'];
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recordwide = { 'rhost' => '', 'reason' => '', 'diagnosis' => '' };
     my $recipients = 0;
     my $v = $dscontents->[-1];
@@ -51,10 +51,10 @@ sub inquire {
     # * The owner of the group may have removed this group.
     # * You may need to join the group before receiving permission to post.
     # * This group may not be open to posting.
-    my $fewdetails = [$emailsteak->[0] =~ /^[ ]?[*][ ]?/gm] || [];
+    my $fewdetails = [$emailparts->[0] =~ /^[ ]?[*][ ]?/gm] || [];
     $recordwide->{'reason'} = scalar @$fewdetails == 4 ? 'rejected' : 'onhold';
 
-    my @entiremesg = split(/\n\n/, $emailsteak->[0], 5); pop @entiremesg;
+    my @entiremesg = split(/\n\n/, $emailparts->[0], 5); pop @entiremesg;
     my $diagnostic = join(' ', @entiremesg); $diagnostic =~ y/\n/ /;
     $recordwide->{'diagnosis'} = Sisimai::String->sweep($diagnostic);
 
@@ -75,7 +75,7 @@ sub inquire {
         $v->{ $_ } = $recordwide->{ $_ } for keys %$recordwide;
     }
     return undef unless $recipients;
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -115,7 +115,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2020-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

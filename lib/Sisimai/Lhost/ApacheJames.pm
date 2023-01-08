@@ -26,7 +26,7 @@ sub inquire {
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = {
         # apache-james-2.3.2/src/java/org/apache/james/transport/mailets/
         #   AbstractNotify.java|124:  out.println("Error message below:");
@@ -36,7 +36,7 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $diagnostic = '';    # (String) Alternative diagnostic message
@@ -44,7 +44,7 @@ sub inquire {
     my $gotmessage = 0;     # (Integer) Flag for error message
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -113,9 +113,9 @@ sub inquire {
 
     # Set the value of $subjecttxt as a Subject if there is no original message
     # in the bounce mail.
-    $emailsteak->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailsteak->[1] =~ /^Subject:/m;
+    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailparts->[1] =~ /^Subject:/m;
     $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'} || $diagnostic) for @$dscontents;
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -155,7 +155,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

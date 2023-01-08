@@ -27,7 +27,7 @@ sub inquire {
     return undef unless $mhead->{'from'} eq 'mailer-daemon@yandex.ru';
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['This is the mail system at host yandex.ru.'] };
 
     require Sisimai::SMTP::Command;
@@ -36,14 +36,14 @@ sub inquire {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my @commandset;         # (Array) ``in reply to * command'' list
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -120,7 +120,7 @@ sub inquire {
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'} ||=  shift @commandset || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
