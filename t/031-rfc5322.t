@@ -5,7 +5,7 @@ use Sisimai::RFC5322;
 
 my $Package = 'Sisimai::RFC5322';
 my $Methods = {
-    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'FIELDINDEX', 'received', 'fillet'],
+    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'FIELDINDEX', 'received', 'part'],
     'object' => [],
 };
 
@@ -139,7 +139,7 @@ Nyaaan
 
 __END_OF_EMAIL_MESSAGE__
 EOB
-    my $emailsteak = $Package->fillet(\$rfc822body, qr|^Content-Type:[ ]message/rfc822|m);
+    my $emailsteak = $Package->part(\$rfc822body, ['Content-Type: message/rfc822']);
     isa_ok $emailsteak, 'ARRAY';
     is scalar(@$emailsteak), 2;
     ok length $emailsteak->[0];

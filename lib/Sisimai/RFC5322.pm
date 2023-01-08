@@ -124,30 +124,53 @@ sub received {
     return $hosts;
 }
 
-sub fillet {
+sub part {
     # Split given entire message body into error message lines and the original message part only
     # include email headers
-    # @param    [String] mbody  Entire message body
-    # @param    [Regexp] regex  Regular expression of the message/rfc822 or the beginning of the
-    #                           original message part
+    # @param    [String] argv0  Entire message body
+    # @param    [Array]  argv1  List of strings which is a boundary of the original message part
     # @return   [Array]         [Error message lines, The original message]
-    # @since    v4.25.5
+    # @since    v5.0.0
     my $class = shift;
-    my $mbody = shift || return undef;
-    my $regex = shift || return undef;
+    my $argv0 = shift || return undef;
+    my $argv1 = shift || return undef;
 
-    my ($a, $b) = split($regex, $$mbody, 2); $b ||= '';
-    if( length $b ) {
+    my $boundaryor = '';    # A boundary string divides the error message part and the original message part
+    my $positionor = -1;    # A Position of the boundary string
+    my $formerpart = '';    # The error message part
+    my $latterpart = '';    # The original message part
+
+    for my $e ( @$argv1 ) {
+        # Find a boundary string(2nd argument) from the 1st argument
+        $positionor = index($$argv0, $e); next if $positionor == -1;
+        $boundaryor = $e;
+        last;
+    }
+
+    if( $positionor > 0 ) {
+        # There is the boundary string in the message body
+        $formerpart = substr($$argv0, 0, $positionor);
+        $latterpart = substr($$argv0, ($positionor + length($boundaryor) + 1), ) || '';
+
+    } else {
+        # Substitute the entire message to the former part when the boundary string is not included
+        # the $$argv0
+        $formerpart = $$argv0;
+        $latterpart = '';
+    } 
+
+    if( length $latterpart ) {
         # Remove blank lines, the message body of the original message, and append "\n" at the end
         # of the original message headers
         # 1. Remove leading blank lines
         # 2. Remove text after the first blank line: \n\n
         # 3. Append "\n" at the end of test block when the last character is not "\n"
-        $b =~ s/\A[\r\n\s]+//m;
-        substr($b, index($b, "\n\n") + 1, length($b), '') if index($b, "\n\n") > 0;
-        $b .= "\n" unless substr($b, -1, 1) eq "\n";
+        $latterpart =~ s/\A[\r\n\s]+//m;
+        my $p = index($latterpart, "\n\n");
+        substr($latterpart, $p + 1, length($latterpart), '') if $p > 0;
+        $latterpart .= "\n" unless substr($latterpart, -1, 1) eq "\n";
     }
-    return [$a, $b];
+    return [$formerpart, $latterpart];
 }
 
 1;
@@ -182,15 +205,15 @@ C<received()> returns array reference which include host names in the Received h
         'mx.example.jp'
     ];
 
-=head2 C<B<fillet(I<String>, I<RegExp>)>>
+=head2 C<B<part(I<String>, I<Array>)>>
 
-C<fillet()> returns array reference which include error message lines of given message body and the
+C<part()> returns array reference which include error message lines of given message body and the
 original message part split by the 2nd argument.
 
     my $v = 'Error message here
     Content-Type: message/rfc822
     Return-Path: <neko@libsisimai.org>';
-    my $r = Sisimai::RFC5322->fillet(\$v, qr|^Content-Type:[ ]message/rfc822|m);
+    my $r = Sisimai::RFC5322->part(\$v, ['Content-Type: message/rfc822']);
 
     warn Dumper $r;
     $VAR1 = [
