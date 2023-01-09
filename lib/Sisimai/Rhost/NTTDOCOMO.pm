@@ -12,9 +12,9 @@ sub get {
     my $argvs = shift // return undef;
 
     my $messagesof = {
-        'mailboxfull' => qr/552 too much mail data/,
-        'toomanyconn' => qr/552 too many recipients/,
-        'syntaxerror' => qr/(?:503 bad sequence of commands|504 command parameter not implemented)/,
+        'mailboxfull' => ['552 too much mail data'],
+        'toomanyconn' => ['552 too many recipients'],
+        'syntaxerror' => ['503 bad sequence of commands', '504 command parameter not implemented'],
     };
     my $statuscode = $argvs->{'deliverystatus'}    || '';
     my $thecommand = $argvs->{'smtpcommand'}       || '';
@@ -52,7 +52,7 @@ sub get {
         # The value of "Diagnostic-Code:" field is not empty
         for my $e ( keys %$messagesof ) {
             # Try to match the value of "diagnosticcode"
-            next unless $esmtperror =~ $messagesof->{ $e };
+            next unless grep { index($esmtperror, $_) > -1 } $messagesof->{ $e }->@*;
             $reasontext = $e;
             last;
         }
