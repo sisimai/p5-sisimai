@@ -13,7 +13,7 @@ use Sisimai::Lhost;
 
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
-my $ReWrapping = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m; 
+my $Boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
 
 sub rise {
     # Constructor of Sisimai::Message
@@ -71,13 +71,13 @@ sub rise {
         $TryOnFirst = Sisimai::Order->make($thing->{'header'}->{'subject'});
         $param = { 'hook' => $argvs->{'hook'} || undef, 'mail' => $thing, 'body' => \$aftersplit->[2] };
         last if $beforefact = __PACKAGE__->sift(%$param);
-        last unless $aftersplit->[2] =~ $ReWrapping;
+        last unless grep { index($aftersplit->[2], $_) > -1 } @$Boundaries;
 
         # 5. Try to sift again
         #    There is a bounce message inside of mutipart/*, try to sift the first message/rfc822
         #    part as a entire message body again.
         $parseagain++;
-        $email =  [split($ReWrapping, $aftersplit->[2], 2)]->[-1];
+        $email =  Sisimai::RFC5322->part(\$aftersplit->[2], $Boundaries, 1)->[1];
         $email =~ s/\A[\r\n\s]+//m;
         last unless length $email > 128;
     }

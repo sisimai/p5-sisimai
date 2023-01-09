@@ -127,35 +127,37 @@ sub received {
 sub part {
     # Split given entire message body into error message lines and the original message part only
     # include email headers
-    # @param    [String] argv0  Entire message body
-    # @param    [Array]  argv1  List of strings which is a boundary of the original message part
+    # @param    [String] email  Entire message body
+    # @param    [Array]  cutby  List of strings which is a boundary of the original message part
+    # @param    [Bool]   keeps  Flag for keeping strings after "\n\n"
     # @return   [Array]         [Error message lines, The original message]
     # @since    v5.0.0
     my $class = shift;
-    my $argv0 = shift || return undef;
-    my $argv1 = shift || return undef;
+    my $email = shift || return undef;
+    my $cutby = shift || return undef;
+    my $keeps = shift // 0;
 
     my $boundaryor = '';    # A boundary string divides the error message part and the original message part
     my $positionor = -1;    # A Position of the boundary string
     my $formerpart = '';    # The error message part
     my $latterpart = '';    # The original message part
 
-    for my $e ( @$argv1 ) {
+    for my $e ( @$cutby ) {
         # Find a boundary string(2nd argument) from the 1st argument
-        $positionor = index($$argv0, $e); next if $positionor == -1;
+        $positionor = index($$email, $e); next if $positionor == -1;
         $boundaryor = $e;
         last;
     }
 
     if( $positionor > 0 ) {
         # There is the boundary string in the message body
-        $formerpart = substr($$argv0, 0, $positionor);
-        $latterpart = substr($$argv0, ($positionor + length($boundaryor) + 1), ) || '';
+        $formerpart = substr($$email, 0, $positionor);
+        $latterpart = substr($$email, ($positionor + length($boundaryor) + 1), ) || '';
 
     } else {
         # Substitute the entire message to the former part when the boundary string is not included
-        # the $$argv0
-        $formerpart = $$argv0;
+        # the $$email
+        $formerpart = $$email;
         $latterpart = '';
     } 
 
@@ -166,8 +168,11 @@ sub part {
         # 2. Remove text after the first blank line: \n\n
         # 3. Append "\n" at the end of test block when the last character is not "\n"
         $latterpart =~ s/\A[\r\n\s]+//m;
-        my $p = index($latterpart, "\n\n");
-        substr($latterpart, $p + 1, length($latterpart), '') if $p > 0;
+        if( $keeps == 0 ) {
+            # Remove text after the first blank line: \n\n when $argv2 is true
+            my $p = index($latterpart, "\n\n");
+            substr($latterpart, $p + 1, length($latterpart), '') if $p > 0;
+        }
         $latterpart .= "\n" unless substr($latterpart, -1, 1) eq "\n";
     }
     return [$formerpart, $latterpart];

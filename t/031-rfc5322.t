@@ -139,17 +139,32 @@ Nyaaan
 
 __END_OF_EMAIL_MESSAGE__
 EOB
-    my $emailsteak = $Package->part(\$rfc822body, ['Content-Type: message/rfc822']);
-    isa_ok $emailsteak, 'ARRAY';
-    is scalar(@$emailsteak), 2;
-    ok length $emailsteak->[0];
-    ok length $emailsteak->[1];
-    like $emailsteak->[0], qr/^Final-Recipient: /m;
-    like $emailsteak->[1], qr/^Subject: /m;
-    unlike $emailsteak->[0], qr/^Return-Path: /m;
-    unlike $emailsteak->[0], qr/binary$/m;
-    unlike $emailsteak->[1], qr/^Remote-MTA: /m;
-    unlike $emailsteak->[1], qr/^Neko-Nyaan/m;
+    my $emailpart1 = $Package->part(\$rfc822body, ['Content-Type: message/rfc822']);
+    isa_ok $emailpart1, 'ARRAY';
+    is scalar(@$emailpart1), 2;
+    ok length $emailpart1->[0];
+    ok length $emailpart1->[1];
+    like $emailpart1->[0], qr/^Final-Recipient: /m;
+    like $emailpart1->[1], qr/^Subject: /m;
+    unlike $emailpart1->[0], qr/^Return-Path: /m;
+    unlike $emailpart1->[0], qr/binary$/m;
+    unlike $emailpart1->[1], qr/^Remote-MTA: /m;
+    unlike $emailpart1->[1], qr/^Neko-Nyaan/m;
+
+    my $emailpart2 = $Package->part(\$rfc822body, ['Content-Type: message/rfc822'], 1);
+    isa_ok $emailpart1, 'ARRAY';
+    is scalar(@$emailpart1), 2;
+    ok length $emailpart1->[0];
+    ok length $emailpart1->[1];
+    like $emailpart1->[0], qr/^Final-Recipient: /m;
+    like $emailpart1->[1], qr/^Subject: /m;
+    unlike $emailpart1->[0], qr/^Return-Path: /m;
+    unlike $emailpart1->[0], qr/binary$/m;
+    unlike $emailpart1->[1], qr/^Remote-MTA: /m;
+    unlike $emailpart1->[1], qr/^Neko-Nyaan/m;
+
+    ok length $emailpart1 < $emailpart2;
+
 }
 
 done_testing;
