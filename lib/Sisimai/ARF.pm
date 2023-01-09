@@ -169,7 +169,7 @@ sub inquire {
 
             } else {
                 # Get required headers only
-                my($lhs, $rhs) = split(/:[ ]*/, $e, 2);
+                my($lhs, $rhs) = split(/:[ ]/, $e, 2);
                 next unless $lhs = lc($lhs || '');
 
                 $previousfn = '';
