@@ -112,7 +112,6 @@ sub match {
         ['veuillez essayer plus tard. service refused, please try later. ', '103'],
         ['veuillez essayer plus tard. service refused, please try later. ', '510'],
         ["your sender's ip address is listed at ", '.abuseat.org'],
-
     ];
     state $regex = qr{(?>
          [(][^ ]+[@][^ ]+:blocked[)]

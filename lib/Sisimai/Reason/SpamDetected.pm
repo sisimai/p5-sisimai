@@ -110,7 +110,6 @@ sub match {
         ['rule imposed as ', ' is blacklisted on'],
         ['spam ', ' exceeded'],
         ['this message scored ', ' spam points'],
-
     ];
     state $regex = qr{(?>
          (?:\d[.]\d[.]\d|\d{3})[ ]spam\z
