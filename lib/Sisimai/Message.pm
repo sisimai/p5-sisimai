@@ -11,9 +11,16 @@ use Sisimai::String;
 use Sisimai::Order;
 use Sisimai::Lhost;
 
+state $Fields1894 = Sisimai::RFC1894->FIELDINDEX;
+state $Fields5322 = Sisimai::RFC5322->FIELDINDEX;
+state $Fields5965 = Sisimai::RFC5965->FIELDINDEX;
+state @FieldIndex = ($Fields1894->@*, $Fields5322->@*, $Fields5965->@*);
+state $FieldTable = { map { lc $_ => $_ } @FieldIndex };
+state $ReplacesAs = { 'Content-Type' => [['message/xdelivery-status', 'message/delivery-status']] };
+state $Boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
+
 my $ToBeLoaded = [];
 my $TryOnFirst = [];
-my $Boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
 
 sub rise {
     # Constructor of Sisimai::Message
@@ -227,19 +234,10 @@ sub tidy {
     # @since v5.0.0
     my $class = shift;
     my $argv0 = shift || return '';
+    my $email = '';
 
     return '' unless $argv0;
     return '' unless length $$argv0;
-
-    state $fields1894 = Sisimai::RFC1894->FIELDINDEX;
-    state $fields5322 = Sisimai::RFC5322->FIELDINDEX;
-    state $fields5965 = Sisimai::RFC5965->FIELDINDEX;
-    state @fieldindex = ($fields1894->@*, $fields5322->@*, $fields5965->@*);
-    state $fieldtable = { map { lc $_ => $_ } @fieldindex };
-    state $replacesas = {
-        'Content-Type' => [['message/xdelivery-status', 'message/delivery-status']],
-    };
-    my $tidiedtext = '';
 
     for my $e ( split("\n", $$argv0) ) {
         # Find and tidy up fields defined in RFC5322, RFC1894, and RFC5965
@@ -247,9 +245,9 @@ sub tidy {
         my $p0 = index($e, ':');
         my $cf = substr(lc $e, 0, $p0);
 
-        unless( $fieldtable->{ $cf } ) {
+        unless( $FieldTable->{ $cf } ) {
             # There is neither ":" character nor a field listed in @fieldindex
-            $tidiedtext .= $e."\n";
+            $email .= $e."\n";
             next;
         }
 
@@ -258,7 +256,7 @@ sub tidy {
         #    the field name does not match with a valid name.
         #    - Before: Message-id: <...>
         #    - After:  Message-Id: <...>
-        my $fieldlabel = $fieldtable->{ $cf };
+        my $fieldlabel = $FieldTable->{ $cf };
         my $substring0 = substr($e, 0, $p0);
         substr($e, 0, $p0, $fieldlabel) if $substring0 ne $fieldlabel;
 
@@ -284,7 +282,7 @@ sub tidy {
             # - Before: Diagnostic-Code: SMTP;550 User unknown
             # - After:  Diagnostic-Code: smtp; 550 User unknown
             last unless $p1 > $p0;
-            last unless grep { $fieldlabel eq $_ } (@$fields1894, 'Content-Type');
+            last unless grep { $fieldlabel eq $_ } (@$Fields1894, 'Content-Type');
 
             $substring0 = substr($e, $p0 + 2, $p1 - $p0 - 1);
             substr($e, $p0 + 2, length($substring0), sprintf("%s ", lc $substring0));
@@ -303,10 +301,10 @@ sub tidy {
         # 7. Tidy up a value, and a parameter of Content-Type: field
         while(1) {
             # Replace the value of "Content-Type" field
-            last unless exists $replacesas->{ $fieldlabel };
+            last unless exists $ReplacesAs->{ $fieldlabel };
             my $p2 = 0;
 
-            for my $f ( $replacesas->{ $fieldlabel }->@* ) {
+            for my $f ( $ReplacesAs->{ $fieldlabel }->@* ) {
                 # Content-Type: message/xdelivery-status
                 $p2 = index($e, $f->[0]);
                 next unless $p2 > 1;
@@ -329,11 +327,11 @@ sub tidy {
 
             last;
         }
-        $tidiedtext .= $e."\n";
+        $email .= $e."\n";
     }
 
-    $tidiedtext .= "\n" if substr($tidiedtext, -2, 2) ne "\n\n";
-    return \$tidiedtext;
+    $email .= "\n" if substr($email, -2, 2) ne "\n\n";
+    return \$email;
 }
 
 sub sift {
