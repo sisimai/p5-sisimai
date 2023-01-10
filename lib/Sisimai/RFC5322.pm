@@ -169,9 +169,8 @@ sub part {
         # 3. Append "\n" at the end of test block when the last character is not "\n"
         $latterpart =~ s/\A[\r\n\s]+//m;
         if( $keeps == 0 ) {
-            # Remove text after the first blank line: \n\n when $argv2 is true
-            my $p = index($latterpart, "\n\n");
-            substr($latterpart, $p + 1, length($latterpart), '') if $p > 0;
+            # Remove text after the first blank line: \n\n when $keeps is 0
+            substr($latterpart, index($latterpart, "\n\n") + 1, length($latterpart), '') if index($latterpart, "\n\n");
         }
         $latterpart .= "\n" unless substr($latterpart, -1, 1) eq "\n";
     }
