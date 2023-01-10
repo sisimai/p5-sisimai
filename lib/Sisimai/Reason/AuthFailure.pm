@@ -23,14 +23,17 @@ sub match {
         'spf (sender policy framework) domain authentication fail',
         'spf check: fail',
     ];
-    state $regex =qr{(?>
-         is[ ]not[ ]allowed[ ]to[ ]send[ ]from[ ][<][^ ]+[>][ ]per[ ]it's[ ]spf[ ]record
-        |spf:[ ][^ ]+[ ]is[ ]not[ ]allowed[ ]to[ ]send[ ]mail[.][ ][a-z0-9]_401
-        )
-    }x;
+    state $pairs = [
+        [' is not allowed to send mail.', '_401'],
+        ['is not allowed to send from <', " per it's spf record"],
+    ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if $argv1 =~ $regex;
+    return 1 if grep {
+        my $p = index($argv1, $_->[0]) + 1;
+        my $q = index($argv1, $_->[1]) + 1;
+        ($p * $q > 0) && ($p < $q);
+    } @$pairs;
     return 0;
 }
 
