@@ -55,7 +55,7 @@ sub received {
     my $value = { 'from' => '', 'by'   => '' };
 
     # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
-    return [] if index($argv1, 'qmail ') > 0 && index($argv1, 'invoked ') > 0;
+    return [] if index($argv1, '(qmail ') > 0 && index($argv1, ' invoked ') > 0;
 
     if( $argv1 =~ /\Afrom[ ]+(.+)[ ]+by[ ]+([^ ]+)/ ) {
         # Received: from localhost (localhost) by nijo.example.jp (V8/cf) id s1QB5ma0018057;
