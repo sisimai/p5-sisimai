@@ -43,7 +43,7 @@ sub inquire {
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $boundaries = ['Content-Type: message/rfc822'];
+    state $boundaries = ['Content-Type: message/rfc822', 'Original message headers:'];
     state $markingsof = {
         'eoe'     => qr{\A(?:
              Original[ ][Mm]essage[ ][Hh]eaders:?
