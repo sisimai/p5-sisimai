@@ -96,8 +96,8 @@ sub inquire {
             #    command)
             if( index($e, ' (in reply to ') > -1 || index($e, 'command)') > -1 ) {
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                my $q = Sisimai::SMTP::Command->find($e);
-                push @commandset, $q if $q;
+                my $cv = Sisimai::SMTP::Command->find($e);
+                push @commandset, $cv if $cv;
 
             } else {
                 # Continued line of the value of Diagnostic-Code field

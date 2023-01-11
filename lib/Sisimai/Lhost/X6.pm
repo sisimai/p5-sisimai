@@ -61,9 +61,9 @@ sub inquire {
     require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         # Get the last SMTP command from the error message
-        if( my $q = Sisimai::SMTP::Command->find($e->{'diagnosis'}) ) {
+        if( my $cv = Sisimai::SMTP::Command->find($e->{'diagnosis'}) ) {
             # ...(Error following RCPT command).
-            $e->{'command'} = $q;
+            $e->{'command'} = $cv;
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
     }

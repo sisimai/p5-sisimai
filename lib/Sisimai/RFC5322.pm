@@ -161,7 +161,7 @@ sub part {
         $latterpart = '';
     } 
 
-    if( length $latterpart ) {
+    if( length $latterpart > 0 ) {
         # Remove blank lines, the message body of the original message, and append "\n" at the end
         # of the original message headers
         # 1. Remove leading blank lines

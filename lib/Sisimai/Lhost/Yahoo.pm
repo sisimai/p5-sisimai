@@ -75,9 +75,9 @@ sub inquire {
                 if( $v->{'diagnosis'} eq 'Remote host said:' ) {
                     # Remote host said:
                     # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
-                    if( my $q = Sisimai::SMTP::Command->find($e) ) {
+                    if( my $cv = Sisimai::SMTP::Command->find($e) ) {
                         # [RCPT_TO]
-                        $v->{'command'} = $q;
+                        $v->{'command'} = $cv;
 
                     } else {
                         # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full

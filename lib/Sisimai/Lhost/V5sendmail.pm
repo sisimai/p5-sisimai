@@ -44,7 +44,7 @@ sub inquire {
     };
 
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
-    return undef unless length $emailparts->[1];
+    return undef unless length $emailparts->[1] > 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $readcursor = 0;     # (Integer) Points the current cursor position
