@@ -164,12 +164,10 @@ sub inquire {
         # Set default values if each value is empty.
         $e->{'lhost'}   ||= $permessage->{'rhost'};
         $e->{ $_ }      ||= $permessage->{ $_ } || '' for keys %$permessage;
-        $e->{'command'} ||= $thecommand || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
-        $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
-            $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A[ ]+\z/;
+            $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if index($e->{'diagnosis'}, ' ') == 0;
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
             $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A\d+\z/;
         }
@@ -179,6 +177,8 @@ sub inquire {
             $e->{'diagnosis'} = $r if length($r) > length($e->{'diagnosis'});
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'command'} ||= $thecommand || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
+        $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
         if( exists $anotherset->{'status'} && $anotherset->{'status'} ) {
             # Check alternative status code
