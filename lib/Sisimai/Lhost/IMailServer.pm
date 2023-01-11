@@ -24,13 +24,6 @@ sub inquire {
 
     state $boundaries = ['Original message follows.'];
     state $startingof = { 'error' => ['Body of message generated response:'] };
-    state $recommands = {
-        'conn' => qr/(?:SMTP connection failed,|Unexpected connection response from server:)/,
-        'ehlo' => qr|Unexpected response to EHLO/HELO:|,
-        'mail' => qr|Server response to MAIL FROM:|,
-        'rcpt' => qr|Additional RCPT TO generated following response:|,
-        'data' => qr|DATA command generated response:|,
-    };
     state $refailures = {
         'hostunknown'   => qr/Unknown host/,
         'userunknown'   => qr/\A(?:Unknown user|Invalid final delivery userid)/,
