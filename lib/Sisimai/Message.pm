@@ -229,7 +229,7 @@ sub makemap {
 
 sub tidy {
     # Tidy up each field name and format
-    # @param    [String] argv0 Strings inlcuding field and value used at an email
+    # @param    [String] argv0 Strings including field and value used at an email
     # @return   [String]       Strings tidied up
     # @since v5.0.0
     my $class = shift;
@@ -360,7 +360,7 @@ sub sift {
     $mailheader->{'subject'}      //= '';
     $mailheader->{'content-type'} //= '';
 
-    # Tidy up entire message body
+    # Tidy up each field name and value in the entire message body
     $$bodystring =  __PACKAGE__->tidy($bodystring)->$*;
 
     # Decode BASE64 Encoded message body
