@@ -163,7 +163,7 @@ EOB
     unlike $emailpart1->[1], qr/^Remote-MTA: /m;
     unlike $emailpart1->[1], qr/^Neko-Nyaan/m;
 
-    ok length $emailpart1 < $emailpart2;
+    ok length($emailpart1->[1]) < length($emailpart2->[1]);
 
 }
 
