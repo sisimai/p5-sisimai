@@ -28,7 +28,7 @@ sub FIELDTABLE {
 
 sub match {
     # Check the argument matches with a field defined in RFC3464
-    # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
+    # @param    [String] argv0 A line including field and value defined in RFC3464
     # @return   [Integer]      0: did not matched, 1,2: matched
     # @since v4.25.0
     my $class = shift;
@@ -82,7 +82,7 @@ sub match {
 
 sub label {
     # Returns a field name as a lqbel from the given string
-    # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
+    # @param    [String] argv0 A line including field and value defined in RFC3464
     # @return   [String]       Field name as a label
     # @since v4.25.15
     my $class = shift;
@@ -92,7 +92,7 @@ sub label {
 
 sub field {
     # Check the argument is including field defined in RFC3464 and return values
-    # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
+    # @param    [String] argv0 A line including field and value defined in RFC3464
     # @return   [Array]        ['field-name', 'value-type', 'Value', 'field-group']
     # @since v4.25.0
     my $class = shift;
