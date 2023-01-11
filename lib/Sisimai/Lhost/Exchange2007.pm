@@ -28,7 +28,7 @@ sub inquire {
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = [
         'Original message headers:',                # en-US
-        "tes de message d'origine :",               # fr-FR/En-t��tes de message d'origine
+        "tes de message d'origine :",               # fr-FR/En-têtes de message d'origine
         'Intestazioni originali del messaggio:',    # it-CH
     ];
     state $markingsof = {
@@ -41,7 +41,7 @@ sub inquire {
         'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
         'rhost'   => qr{\A(?:
              Generating[ ]server            # en-US
-            |Serveur[ ]de[ ]g[^ ]+ration[ ] # fr-FR/Serveur de génération
+            |Serveur[ ]de[ ]g[^ ]+ration[ ] # fr-FR/Serveur de g辿n辿ration
             |Server[ ]di[ ]generazione      # it-CH
             ):[ ]?(.*)
         }x,
