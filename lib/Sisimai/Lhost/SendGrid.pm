@@ -27,6 +27,7 @@ sub inquire {
     state $startingof = { 'message' => ['This is an automatically generated message from SendGrid.'] };
 
     require Sisimai::RFC1894;
+    require Sisimai::SMTP::Command;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
@@ -118,9 +119,9 @@ sub inquire {
             #
             # X-SendGrid-QueueID: 959479146
             # X-SendGrid-Sender: <bounces+61689-10be-kijitora=example.jp@sendgrid.info>
-            if( my $q = Sisimai::SMTP::Command->find($e) ) {
+            if( my $cv = Sisimai::SMTP::Command->find($e) ) {
                 # in RCPT TO, in MAIL FROM, end of DATA
-                $thecommand = $q;
+                $thecommand = $cv;
 
             } elsif( $e =~ /\ADiagnostic-Code:[ ](.+)\z/ ) {
                 # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown
