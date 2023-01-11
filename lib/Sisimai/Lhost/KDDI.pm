@@ -93,7 +93,6 @@ sub inquire {
             $e->{'reason'} = 'filtered';
 
         } else {
-            warn 'COMMAND = '.$e->{'command'} if length $e->{'command'};
             if( $e->{'command'} eq 'RCPT' ) {
                 # set "userunknown" when the remote server rejected after RCPT command.
                 $e->{'reason'} = 'userunknown';
