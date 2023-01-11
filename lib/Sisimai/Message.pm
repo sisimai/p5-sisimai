@@ -149,6 +149,7 @@ sub part {
     my $email = shift // return undef;
     my $parts = ['', '', ''];   # 0:From, 1:Header, 2:Body
 
+    $$email =~ s/\A\s+//m;
     $$email =~ s/\r\n/\n/gm  if rindex($$email, "\r\n") > -1;
     $$email =~ s/[ \t]+$//gm if $$email =~ /[ \t]+$/;
 
