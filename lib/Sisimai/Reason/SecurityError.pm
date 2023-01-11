@@ -39,9 +39,9 @@ sub match {
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep {
-        my $p = index($argv1, $_->[0]) + 1;
-        my $q = index($argv1, $_->[1]) + 1;
-        ($p * $q > 0) && ($p < $q);
+        my $p = index($argv1, $_->[0],  0) + 1;
+        my $q = index($argv1, $_->[1], $p) + 1;
+        $p * $q > 0;
     } @$pairs;
     return 1 if $argv1 =~ $regex;
     return 0;
