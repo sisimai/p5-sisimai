@@ -21,11 +21,11 @@ sub inquire {
     return undef unless $mhead->{'x-gm-message-state'};
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $markingsof = {
         'message' => qr/\A[*][*][ ].+[ ][*][*]\z/,
         'error'   => qr/\AThe[ ]response([ ]from[ ]the[ ]remote[ ]server)?[ ]was:\z/,
-        'html'    => qr{\AContent-Type:[ ]*text/html;[ ]*charset=['"]?(?:UTF|utf)[-]8['"]?\z},
+        'html'    => qr{\AContent-Type:[ ]text/html;[ ]charset=['"]?(?:UTF|utf)[-]8['"]?\z},
     };
     state $messagesof = {
         'userunknown'  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
@@ -38,7 +38,7 @@ sub inquire {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for a blank line after error messages
@@ -48,7 +48,7 @@ sub inquire {
     };
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -117,7 +117,7 @@ sub inquire {
                 #
                 # The response from the remote server was:
                 # 550 #5.1.0 Address rejected.
-                next if $e =~ /\AContent-Type:/;
+                next if index($e, 'Content-Type:') == 0;
                 if( $anotherset->{'diagnosis'} ) {
                     # Continued error messages from the previous line like "550 #5.1.0 Address rejected."
                     next if $emptylines > 5;
@@ -191,7 +191,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -231,7 +231,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -17,10 +17,10 @@ sub inquire {
     my $mbody = shift // return undef;
 
     return undef unless defined $mhead->{'x-mlserver'};
-    return undef unless $mhead->{'from'} =~ /.+[-]admin[@].+/;
+    return undef unless index($mhead->{'from'}, '-admin@') > 0;
     return undef unless $mhead->{'message-id'} =~ /\A[<]\d+[.]FML.+[@].+[>]\z/;
 
-    state $rebackbone = qr|^Original[ ]mail[ ]as[ ]follows:|m;
+    state $boundaries = ['Original mail as follows:'];
     state $errortitle = {
         'rejected' => qr{(?>
              (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
@@ -59,11 +59,11 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         next unless length $e;
@@ -108,7 +108,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -148,7 +148,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -22,7 +22,7 @@ sub inquire {
     return undef unless $mhead->{'subject'} eq 'Delivery Status';
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['--- The following addresses had delivery problems ---'] };
     state $refailures = {
         'userunknown' => qr{(?:
@@ -37,14 +37,14 @@ sub inquire {
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $diagnostic = '';    # (String) Alternative diagnostic message
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -66,7 +66,7 @@ sub inquire {
         #
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ \t]+[(](.+)[)]\z/ ) {
+        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ ]+[(](.+)[)]\z/ ) {
             # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -83,7 +83,7 @@ sub inquire {
             unless( $o ) {
                 # Fallback code for empty value or invalid formatted value
                 # - Original-Recipient: <kijitora@example.co.jp>
-                $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]*([^ ]+)\z/;
+                $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]([^ ]+)\z/;
                 next;
             }
             next unless exists $fieldtable->{ $o->[0] };
@@ -92,7 +92,7 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ \t]+(.+)\z/;
+            next unless $e =~ /\A[ ]+(.+)\z/;
             $v->{'diagnosis'} .= ' '.$1;
         }
     } continue {
@@ -111,7 +111,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -151,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

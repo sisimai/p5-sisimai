@@ -28,20 +28,21 @@ sub inquire {
     $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
     return undef unless $match;
 
-    state $rebackbone = qr|^Content-type:[ ]message/rfc822|m;
+    require Sisimai::SMTP::Command;
+    state $boundaries = ['Content-type: message/rfc822'];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         next unless length $e;
 
         $v = $dscontents->[-1];
-        if( $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
-            $e =~ /\A.+[<>]{3}[ \t]+.+[<]([^ ]+[@][^ ]+)[>]/   ||
+        if( $e =~ /\A.+[<>]{3}[ ]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
+            $e =~ /\A.+[<>]{3}[ ]+.+[<]([^ ]+[@][^ ]+)[>]/   ||
             $e =~ /\A(?:Reason:[ ]+)?Unable[ ]to[ ]deliver[ ]message[ ]to[ ][<](.+)[>]/ ) {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
@@ -53,22 +54,22 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             $v->{'recipient'} = $cr;
-            $v->{'diagnosis'} = $e if $e =~ /Unable[ ]to[ ]deliver[ ]/;
+            $v->{'diagnosis'} = $e if index($e, 'Unable to deliver ') > -1;
             $recipients = scalar @$dscontents;
         }
 
-        if( $e =~ /\ASent[ \t]+[<]{3}[ \t]+([A-Z]{4})[ \t]/ ) {
+        if( index($e, 'Sent <<< ') == 0 ) {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
-            $v->{'command'} = $1
+            $v->{'command'} = Sisimai::SMTP::Command->find($e);
 
-        } elsif( $e =~ /\AReceived[ \t]+[>]{3}[ \t]+(\d{3}[ \t]+.+)\z/ ) {
+        } elsif( $e =~ /\AReceived[ ]+[>]{3}[ ]+(\d{3}[ ]+.+)\z/ ) {
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
             $v->{'diagnosis'} = $1;
 
         } else {
             # Error message in non-English
             next unless $e =~ /[ ][<>]{3}[ ]/;
-            $v->{'command'}   = $1 if $e =~ /[ ][>]{3}[ ]([A-Z]{4})/; # >>> RCPT TO ...
+            $v->{'command'}   = Sisimai::SMTP::Command->find($e) if index($e, ' >>> ') > -1;
             $v->{'diagnosis'} = $1 if $e =~ /[ ][<]{3}[ ](.+)/;       # <<< 550 5.1.1 User unknown
         }
     }
@@ -77,9 +78,9 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'reason'} = 'userunknown' if $e->{'diagnosis'} =~ /Unable[ ]to[ ]deliver/;
+        $e->{'reason'} = 'userunknown' if index($e->{'diagnosis'}, 'Unable to deliver') > -1;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -119,7 +120,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -67,7 +67,7 @@ sub inquire {
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr/^[ ]*-----[ ](?:Original[ ]message|Message[ ]header[ ]follows)[ ]-----/m;
+    state $boundaries = ['----- Original message -----', '----- Message header follows -----'];
     state $startingof = {
         'message' => ['Delivery to the following recipient'],
         'error'   => ['The error that the other server returned was:'],
@@ -159,12 +159,12 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -191,7 +191,7 @@ sub inquire {
         #
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ \t]+([^ ]+[@][^ ]+)\z/ ) {
+        if( $e =~ /\A[ ]+([^ ]+[@][^ ]+)\z/ ) {
             # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -215,7 +215,7 @@ sub inquire {
 
         unless( $e->{'rhost'} ) {
             # Get the value of remote host
-            if( $e->{'diagnosis'} =~ /[ \t]+by[ \t]+([^ ]+)[.][ \t]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
+            if( $e->{'diagnosis'} =~ /[ ]+by[ ]+([^ ]+)[.][ ]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
                 # Google tried to deliver your message, but it was rejected by # the server
                 # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
                 my $hostname = $1;
@@ -251,7 +251,7 @@ sub inquire {
         next unless $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/;
         $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'}) || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -291,7 +291,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

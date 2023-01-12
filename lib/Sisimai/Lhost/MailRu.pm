@@ -31,7 +31,7 @@ sub inquire {
     }x;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^------ This is a copy of the message, including all the headers[.] ------|m;
+    state $boundaries = ['------ This is a copy of the message, including all the headers. ------'];
     state $startingof = { 'message' => ['This message was created automatically by mail delivery software.'] };
     state $recommands = [
         qr/SMTP error from remote (?:mail server|mailer) after ([A-Za-z]{4})/,
@@ -65,13 +65,13 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $localhost0 = '';    # (String) Local MTA
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -101,7 +101,7 @@ sub inquire {
         #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ \t]+([^ \t]+[@][^ \t]+[.][a-zA-Z]+)\z/ ) {
+        if( $e =~ /\A[ ]+([^ ]+[@][^ ]+[.][a-zA-Z]+)\z/ ) {
             #   kijitora@example.jp
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -118,7 +118,7 @@ sub inquire {
 
         } else {
             # Error message when email address above does not include '@' and domain part.
-            next unless $e =~ /\A[ \t]{4}/;
+            next unless index($e, '    ') == 0;
             $v->{'alterrors'} .= $e.' ';
         }
     }
@@ -144,7 +144,7 @@ sub inquire {
     if( scalar $mhead->{'received'}->@* ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ \t]([^ ]+) /;
+        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ ]([^ ]+) /;
     }
 
     for my $e ( @$dscontents ) {
@@ -163,7 +163,7 @@ sub inquire {
         unless( $e->{'rhost'} ) {
             # Get the remote host name
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ \t]+([^ \t]+)[ \t]\[.+\]:[ \t]/;
+            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ ]+([^ ]+)[ ]\[.+\]:[ ]/;
 
             unless( $e->{'rhost'} ) {
                 if( scalar $mhead->{'received'}->@* ) {
@@ -207,7 +207,7 @@ sub inquire {
         }
         $e->{'command'} ||= '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -247,7 +247,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

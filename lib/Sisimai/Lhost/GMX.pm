@@ -22,18 +22,19 @@ sub inquire {
     # X-UI-Out-Filterresults: unknown:0;
     return undef unless defined $mhead->{'x-gmx-antispam'};
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
+    state $boundaries = ['--- The header of the original message is following. ---'];
     state $startingof = { 'message' => ['This message was created automatically by mail delivery software'] };
     state $messagesof = { 'expired' => ['delivery retry timeout exceeded'] };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -71,11 +72,11 @@ sub inquire {
             $v->{'recipient'} = $1;
             $recipients++;
 
-        } elsif( $e =~ /\ASMTP error .+ ([A-Z]{4}) command:\z/ ) {
+        } elsif( index($e, 'SMTP error ') == 0 ) {
             # SMTP error from remote server after RCPT command:
-            $v->{'command'} = $1;
+            $v->{'command'} = Sisimai::SMTP::Command->find($e);
 
-        } elsif( $e =~ /\Ahost:[ \t]*(.+)\z/ ) {
+        } elsif( $e =~ /\Ahost:[ ]*(.+)\z/ ) {
             # host: mx.example.jp
             $v->{'rhost'} = $1;
 
@@ -110,7 +111,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -150,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

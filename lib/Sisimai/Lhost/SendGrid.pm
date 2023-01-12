@@ -23,22 +23,23 @@ sub inquire {
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['This is an automatically generated message from SendGrid.'] };
 
     require Sisimai::RFC1894;
+    require Sisimai::SMTP::Command;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $thecommand = '';    # (String) SMTP Command name begin with the string '>>>'
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -58,7 +59,7 @@ sub inquire {
                 # Fallback code for empty value or invalid formatted value
                 # - Status: (empty)
                 # - Diagnostic-Code: 550 5.1.1 ... (No "diagnostic-type" sub field)
-                $v->{'diagnosis'} = $1 if $e =~ /\ADiagnostic-Code:[ ]*(.+)/;
+                $v->{'diagnosis'} = $1 if $e =~ /\ADiagnostic-Code:[ ](.+)/;
                 next;
             }
 
@@ -118,18 +119,18 @@ sub inquire {
             #
             # X-SendGrid-QueueID: 959479146
             # X-SendGrid-Sender: <bounces+61689-10be-kijitora=example.jp@sendgrid.info>
-            if( $e =~ /.+ in (?:End of )?([A-Z]{4}).*\z/ ) {
+            if( my $cv = Sisimai::SMTP::Command->find($e) ) {
                 # in RCPT TO, in MAIL FROM, end of DATA
-                $commandtxt = $1;
+                $thecommand = $cv;
 
-            } elsif( $e =~ /\ADiagnostic-Code:[ ]*(.+)\z/ ) {
+            } elsif( $e =~ /\ADiagnostic-Code:[ ](.+)\z/ ) {
                 # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown
                 $v->{'diagnosis'} = $e;
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         }
@@ -142,7 +143,7 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Get the value of SMTP status code as a pseudo D.S.N.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'status'} = $1.'.0.0' if $e->{'diagnosis'} =~ /\b([45])\d\d[ \t]*/;
+        $e->{'status'} = $1.'.0.0' if $e->{'diagnosis'} =~ /\b([45])\d\d[ ]*/;
 
         if( $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {
             # Get the value of D.S.N. from the error message or the value of Diagnostic-Code header.
@@ -158,9 +159,9 @@ sub inquire {
             }
         }
         $e->{'lhost'}   ||= $permessage->{'rhost'};
-        $e->{'command'} ||= $commandtxt;
+        $e->{'command'} ||= $thecommand;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -200,7 +201,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

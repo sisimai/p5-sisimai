@@ -17,6 +17,7 @@ sub match {
     state $index = [
         ' is currently suspended',
         ' temporary locked',
+        'archived recipient',
         'boite du destinataire archivee',
         'email account that you tried to reach is disabled',
         'has been suspended',
@@ -98,7 +99,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

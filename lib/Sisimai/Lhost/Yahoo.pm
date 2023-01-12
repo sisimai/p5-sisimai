@@ -23,16 +23,17 @@ sub inquire {
     return undef unless $mhead->{'x-ymailisg'};
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^--- Below this line is a copy of the message[.]|m;
+    state $boundaries = ['--- Below this line is a copy of the message.'];
     state $startingof = { 'message' => ['Sorry, we were unable to deliver your message'] };
 
+    require Sisimai::SMTP::Command;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -49,7 +50,7 @@ sub inquire {
         # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<](.+[@].+)[>]:[ \t]*\z/ ) {
+        if( $e =~ /\A[<](.+[@].+)[>]:[ ]*\z/ ) {
             # <kijitora@example.org>:
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -65,7 +66,7 @@ sub inquire {
                 $v->{'diagnosis'} = $e;
 
                 # Get SMTP command from the value of "Remote host said:"
-                $v->{'command'} = $1 if $e =~ /\[([A-Z]{4}).*\]\z/;
+                $v->{'command'} = Sisimai::SMTP::Command->find($e);
             } else {
                 # <mailboxfull@example.jp>:
                 # Remote host said:
@@ -74,9 +75,9 @@ sub inquire {
                 if( $v->{'diagnosis'} eq 'Remote host said:' ) {
                     # Remote host said:
                     # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
-                    if( $e =~ /\[([A-Z]{4}).*\]\z/ ) {
+                    if( my $cv = Sisimai::SMTP::Command->find($e) ) {
                         # [RCPT_TO]
-                        $v->{'command'} = $1;
+                        $v->{'command'} = $cv;
 
                     } else {
                         # 550 5.2.2 <mailboxfull@example.jp>... Mailbox Full
@@ -96,7 +97,7 @@ sub inquire {
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'} ||=  'RCPT' if $e->{'diagnosis'} =~ /[<].+[@].+[>]/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -136,7 +137,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

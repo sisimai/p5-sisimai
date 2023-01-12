@@ -25,7 +25,7 @@ sub inquire {
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $markingsof = {
         'message' => qr/\AYour[ ]mail[ ](?:
              sent[ ]on:?[ ][A-Z][a-z]{2}[,]
@@ -40,12 +40,12 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -56,7 +56,7 @@ sub inquire {
         next unless length $e;
 
         $v = $dscontents->[-1];
-        if( $e =~ /\A[ \t]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
+        if( $e =~ /\A[ ]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
             # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900
             #     Could not be delivered to: <******@**.***.**>
             #     As their mailbox is full.
@@ -77,13 +77,15 @@ sub inquire {
 
         } else {
             #     As their mailbox is full.
-            $v->{'diagnosis'} .= $e.' ' if $e =~ /\A[ \t]+/;
+            $v->{'diagnosis'} .= $e.' ' if index($e, ' ') == 0;
         }
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'command'}   = Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
 
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by KDDI)
@@ -106,7 +108,7 @@ sub inquire {
             }
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -145,7 +147,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

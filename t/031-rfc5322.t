@@ -5,7 +5,7 @@ use Sisimai::RFC5322;
 
 my $Package = 'Sisimai::RFC5322';
 my $Methods = {
-    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'received', 'fillet'],
+    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'FIELDINDEX', 'received', 'part'],
     'object' => [],
 };
 
@@ -47,6 +47,13 @@ MAKETEST: {
         ok length $e, $e;
         like $e, qr/\A[a-z-]+\z/;
         is $r->{ $e }, 1, $e.' = '.1;
+    }
+
+    $r = $Package->FIELDINDEX;
+    isa_ok $r, 'ARRAY';
+    for my $e ( @$r ) {
+        ok length $e, $e;
+        like $e, qr/\A[A-Z][A-Za-z-]+\z/;
     }
 
     # Check the value of Received header
@@ -122,7 +129,7 @@ Received: (from shironeko@localhost)
 	for kijitora@example.net; Thu, 9 Apr 2014 23:34:45 +0900
 Date: Thu, 9 Apr 2014 23:34:45 +0900
 Message-Id: <0000000011111.fff0000000003@mx.example.co.jp>
-Content-Type: text/plain
+content-type:       text/plain
 MIME-Version: 1.0
 From: Shironeko <shironeko@example.co.jp>
 To: Kijitora <shironeko@example.co.jp>
@@ -132,17 +139,32 @@ Nyaaan
 
 __END_OF_EMAIL_MESSAGE__
 EOB
-    my $emailsteak = $Package->fillet(\$rfc822body, qr|^Content-Type:[ ]message/rfc822|m);
-    isa_ok $emailsteak, 'ARRAY';
-    is scalar(@$emailsteak), 2;
-    ok length $emailsteak->[0];
-    ok length $emailsteak->[1];
-    like $emailsteak->[0], qr/^Final-Recipient: /m;
-    like $emailsteak->[1], qr/^Subject: /m;
-    unlike $emailsteak->[0], qr/^Return-Path: /m;
-    unlike $emailsteak->[0], qr/binary$/m;
-    unlike $emailsteak->[1], qr/^Remote-MTA: /m;
-    unlike $emailsteak->[1], qr/^Neko-Nyaan/m;
+    my $emailpart1 = $Package->part(\$rfc822body, ['Content-Type: message/rfc822']);
+    isa_ok $emailpart1, 'ARRAY';
+    is scalar(@$emailpart1), 2;
+    ok length $emailpart1->[0];
+    ok length $emailpart1->[1];
+    like $emailpart1->[0], qr/^Final-Recipient: /m;
+    like $emailpart1->[1], qr/^Subject: /m;
+    unlike $emailpart1->[0], qr/^Return-Path: /m;
+    unlike $emailpart1->[0], qr/binary$/m;
+    unlike $emailpart1->[1], qr/^Remote-MTA: /m;
+    unlike $emailpart1->[1], qr/^Neko-Nyaan/m;
+
+    my $emailpart2 = $Package->part(\$rfc822body, ['Content-Type: message/rfc822'], 1);
+    isa_ok $emailpart1, 'ARRAY';
+    is scalar(@$emailpart1), 2;
+    ok length $emailpart1->[0];
+    ok length $emailpart1->[1];
+    like $emailpart1->[0], qr/^Final-Recipient: /m;
+    like $emailpart1->[1], qr/^Subject: /m;
+    unlike $emailpart1->[0], qr/^Return-Path: /m;
+    unlike $emailpart1->[0], qr/binary$/m;
+    unlike $emailpart1->[1], qr/^Remote-MTA: /m;
+    unlike $emailpart1->[1], qr/^Neko-Nyaan/m;
+
+    ok length($emailpart1->[1]) < length($emailpart2->[1]);
+
 }
 
 done_testing;

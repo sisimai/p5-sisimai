@@ -21,28 +21,23 @@ sub inquire {
     return undef unless ref $mbody eq 'SCALAR';
 
     state $indicators = Sisimai::Lhost->INDICATORS;
-    state $markingsof = {
-        'command' => qr/[ ](RCPT|MAIL|DATA)[ ]+command\b/,
-        'message' => qr{\A(?>
-             content-type:[ ]*(?:
-                  message/x?delivery-status
-                 |message/disposition-notification
-                 |text/plain;[ ]charset=
-                 )
-            |the[ ]original[ ]message[ ]was[ ]received[ ]at[ ]
-            |this[ ]report[ ]relates[ ]to[ ]your[ ]message
-            |your[ ]message[ ](?:
-                could[ ]not[ ]be[ ]delivered
-               |was[ ]not[ ]delivered[ ]to[ ](?:the[ ]following[ ]recipients)?
-               )
-            )
-        }x,
-        'error'  => qr/\A(?:[45]\d\d[ \t]+|[<][^@]+[@][^@]+[>]:?[ \t]+)/,
-        'rfc822' => qr{\A(?>
-             content-type:[ ]*(?:message/rfc822|text/rfc822-headers)
-            |return-path:[ ]*[<].+[>]
-            )\z
-        }x,
+    state $startingof = {
+        'message' => [
+            'content-type: message/delivery-status',
+            'content-type: message/disposition-notification',
+            'content-type: message/xdelivery-status',
+            'content-type: text/plain; charset=',
+            'the original message was received at ',
+            'this report relates to your message',
+            'your message could not be delivered',
+            'your message was not delivered to ',
+            'your message was not delivered to the following recipients',
+        ],
+        'rfc822'  => [
+            'content-type: message/rfc822',
+            'content-type: text/rfc822-headers',
+            'return-path: <'
+        ],
     };
 
     require Sisimai::Address;
@@ -71,7 +66,7 @@ sub inquire {
         $lowercased = lc $e;
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( $lowercased =~ $markingsof->{'message'} ) {
+            if( grep { index($lowercased, $_) == 0 } $startingof->{'message'}->@* ) {
                 $readcursor |= $indicators->{'deliverystatus'};
                 next;
             }
@@ -79,7 +74,7 @@ sub inquire {
 
         unless( $readcursor & $indicators->{'message-rfc822'} ) {
             # Beginning of the original message part(message/rfc822)
-            if( $lowercased =~ $markingsof->{'rfc822'} ) {
+            if( grep { $lowercased eq $_ } $startingof->{'rfc822'}->@* ) {
                 $readcursor |= $indicators->{'message-rfc822'};
                 next;
             }
@@ -97,7 +92,7 @@ sub inquire {
             # message/delivery-status part
             next unless $readcursor & $indicators->{'deliverystatus'};
             next unless length $e;
-        
+
             $v = $dscontents->[-1];
             if( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
@@ -133,7 +128,7 @@ sub inquire {
                     } elsif( $o->[0] eq 'x-actual-recipient' ) {
                         # X-Actual-Recipient: RFC822; |IFS=' ' && exec procmail -f- || exit 75 ...
                         # X-Actual-Recipient: rfc822; kijitora@neko.example.jp
-                        $v->{'alias'} = $o->[2] unless $o->[2] =~ /[ \t]+/;
+                        $v->{'alias'} = $o->[2] unless index($o->[2], ' ') > -1;
                     }
                 } elsif( $o->[-1] eq 'code' ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
@@ -150,15 +145,15 @@ sub inquire {
                 }
             } else {
                 # The line did not match with any fields defined in RFC3464
-                if( $e =~ /\ADiagnostic-Code:[ ]*([^;]+)\z/ ) {
+                if( $e =~ /\ADiagnostic-Code:[ ]([^;]+)\z/ ) {
                     # There is no value of "diagnostic-type" such as Diagnostic-Code: 554 ...
                     $v->{'diagnosis'} = $1;
 
-                } elsif( $e =~ /\AStatus:[ ]*(\d{3}[ ]+.+)\z/ ) {
+                } elsif( $e =~ /\AStatus:[ ](\d{3}[ ]+.+)\z/ ) {
                     # Status: 553 Exceeded maximum inbound message size
                     $v->{'alterrors'} = $1;
 
-                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
+                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ ]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code field
                     $v->{'diagnosis'} .= $e;
                     $e = 'Diagnostic-Code: '.$e;
@@ -167,7 +162,7 @@ sub inquire {
                     # Get error messages which is written in the message body directly
                     next if index($e, ' ') == 0;
                     next if index($e, '	') == 0;
-                    next unless $e =~ $markingsof->{'error'};
+                    next unless $e =~ /\A(?:[45]\d\d[ ]+|[<][^@]+[@][^@]+[>]:?[ ]+)/;
                     $v->{'alterrors'} .= ' '.$e;
                 }
             }
@@ -285,7 +280,7 @@ sub inquire {
             $lowercased = lc $e;
             push @$readslices, $lowercased;
 
-            last if $lowercased =~ $markingsof->{'rfc822'};
+            last if grep { index($lowercased, $_) == 0 } $startingof->{'rfc822'}->@*;
             last if grep { index($lowercased, $_) == 0 } @$readuntil0;
             last if grep { index($lowercased, $_) > -1 } @$readuntil1;
             next if grep { index($lowercased, $_) == 0 } @$donotread0;
@@ -354,7 +349,7 @@ sub inquire {
     } # END OF BODY_PARSER_FOR_FALLBACK
     return undef unless $itisbounce;
 
-    if( $recipients == 0 && $rfc822text =~ /^To:[ ]*(.+)/m ) {
+    if( $recipients == 0 && $rfc822text =~ /^To:[ ](.+)/m ) {
         # Try to get a recipient address from "To:" header of the original message
         if( my $r = Sisimai::Address->find($1, 1) ) {
             # Found a recipient address
@@ -393,7 +388,6 @@ sub inquire {
         }
         $e->{'date'}    ||= $mhead->{'date'};
         $e->{'status'}  ||= Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
-        $e->{'command'} ||= $1 if $e->{'diagnosis'} =~ $markingsof->{'command'};
         $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'});
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822text };
@@ -435,7 +429,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

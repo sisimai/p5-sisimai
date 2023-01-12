@@ -5,7 +5,7 @@ use Sisimai::RFC1894;
 
 my $Package = 'Sisimai::RFC1894';
 my $Methods = {
-    'class'  => ['FIELDTABLE', 'field', 'match', 'label'],
+    'class'  => ['FIELDINDEX', 'FIELDTABLE', 'field', 'match', 'label'],
     'object' => [],
 };
 
@@ -37,8 +37,12 @@ MAKETEST: {
     my $v = undef;
     my $q = undef;
 
+    $v = $Package->FIELDINDEX;
+    isa_ok $v, 'ARRAY', '->FIELDINDEX() returns ARRAY';
+    ok scalar @$v,      '->FIELDINDEX() returns ARRAY';
+
     $v = $Package->FIELDTABLE;
-    isa_ok $v, 'HASH', '->table returns Hash';
+    isa_ok $v, 'HASH',  '->FIELDTABLE() returns Hash';
     ok scalar keys %$v, '->FIELDTABLE() returns Hash';
 
     for my $e ( @$RFC1894Field1 ) {

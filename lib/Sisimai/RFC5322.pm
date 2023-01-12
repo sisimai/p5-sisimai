@@ -19,6 +19,16 @@ BUILD_FLATTEN_RFC822HEADER_LIST: {
     }
 }
 
+sub FIELDINDEX {
+    return [qw|
+        Resent-Date From Sender Reply-To To Message-ID Subject Return-Path Received Date X-Mailer
+        Content-Type Content-Transfer-Encoding Content-Description Content-Disposition
+    |];
+    # The following fields are not referred in Sisimai
+    #   Resent-From Resent-Sender Resent-Cc Cc Bcc Resent-Bcc In-Reply-To References
+    #   Comments Keywords
+}
+
 sub HEADERFIELDS {
     # Grouped RFC822 headers
     # @param    [String] group  RFC822 Header group name
@@ -45,22 +55,22 @@ sub received {
     my $value = { 'from' => '', 'by'   => '' };
 
     # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
-    return [] if $argv1 =~ /qmail[ \t]+.+invoked[ \t]+/;
+    return [] if index($argv1, '(qmail ') > 0 && index($argv1, ' invoked ') > 0;
 
-    if( $argv1 =~ /\Afrom[ \t]+(.+)[ \t]+by[ \t]+([^ ]+)/ ) {
+    if( $argv1 =~ /\Afrom[ ]+(.+)[ ]+by[ ]+([^ ]+)/ ) {
         # Received: from localhost (localhost) by nijo.example.jp (V8/cf) id s1QB5ma0018057;
         #   Wed, 26 Feb 2014 06:05:48 -0500
         $value->{'from'} = $1;
         $value->{'by'}   = $2;
 
-    } elsif( $argv1 =~ /\bby[ \t]+([^ ]+)(.+)/ ) {
+    } elsif( $argv1 =~ /\bby[ ]+([^ ]+)(.+)/ ) {
         # Received: by 10.70.22.98 with SMTP id c2mr1838265pdf.3; Fri, 18 Jul 2014
         #   00:31:02 -0700 (PDT)
         $value->{'from'} = $1.$2;
         $value->{'by'}   = $1;
     }
 
-    if( $value->{'from'} =~ / / ) {
+    if( index($value->{'from'}, ' ') > -1 ) {
         # Received: from [10.22.22.222] (smtp.kyoto.ocn.ne.jp [192.0.2.222]) (authenticated bits=0)
         #   by nijo.example.jp (V8/cf) with ESMTP id s1QB5ka0018055; Wed, 26 Feb 2014 06:05:47 -0500
         my @received = split(' ', $value->{'from'});
@@ -114,30 +124,57 @@ sub received {
     return $hosts;
 }
 
-sub fillet {
+sub part {
     # Split given entire message body into error message lines and the original message part only
     # include email headers
-    # @param    [String] mbody  Entire message body
-    # @param    [Regexp] regex  Regular expression of the message/rfc822 or the beginning of the
-    #                           original message part
+    # @param    [String] email  Entire message body
+    # @param    [Array]  cutby  List of strings which is a boundary of the original message part
+    # @param    [Bool]   keeps  Flag for keeping strings after "\n\n"
     # @return   [Array]         [Error message lines, The original message]
-    # @since    v4.25.5
+    # @since    v5.0.0
     my $class = shift;
-    my $mbody = shift || return undef;
-    my $regex = shift || return undef;
+    my $email = shift || return undef;
+    my $cutby = shift || return undef;
+    my $keeps = shift // 0;
 
-    my ($a, $b) = split($regex, $$mbody, 2); $b ||= '';
-    if( length $b ) {
+    my $boundaryor = '';    # A boundary string divides the error message part and the original message part
+    my $positionor = -1;    # A Position of the boundary string
+    my $formerpart = '';    # The error message part
+    my $latterpart = '';    # The original message part
+
+    for my $e ( @$cutby ) {
+        # Find a boundary string(2nd argument) from the 1st argument
+        $positionor = index($$email, $e); next if $positionor == -1;
+        $boundaryor = $e;
+        last;
+    }
+
+    if( $positionor > 0 ) {
+        # There is the boundary string in the message body
+        $formerpart = substr($$email, 0, $positionor);
+        $latterpart = substr($$email, ($positionor + length($boundaryor) + 1), ) || '';
+
+    } else {
+        # Substitute the entire message to the former part when the boundary string is not included
+        # the $$email
+        $formerpart = $$email;
+        $latterpart = '';
+    } 
+
+    if( length $latterpart > 0 ) {
         # Remove blank lines, the message body of the original message, and append "\n" at the end
         # of the original message headers
         # 1. Remove leading blank lines
         # 2. Remove text after the first blank line: \n\n
         # 3. Append "\n" at the end of test block when the last character is not "\n"
-        $b =~ s/\A[\r\n\s]+//m;
-        substr($b, index($b, "\n\n") + 1, length($b), '') if index($b, "\n\n") > 0;
-        $b .= "\n" unless $b =~ /\n\z/;
+        $latterpart =~ s/\A[\r\n\s]+//m;
+        if( $keeps == 0 ) {
+            # Remove text after the first blank line: \n\n when $keeps is 0
+            substr($latterpart, index($latterpart, "\n\n") + 1, length($latterpart), '') if index($latterpart, "\n\n");
+        }
+        $latterpart .= "\n" unless substr($latterpart, -1, 1) eq "\n";
     }
-    return [$a, $b];
+    return [$formerpart, $latterpart];
 }
 
 1;
@@ -172,15 +209,15 @@ C<received()> returns array reference which include host names in the Received h
         'mx.example.jp'
     ];
 
-=head2 C<B<fillet(I<String>, I<RegExp>)>>
+=head2 C<B<part(I<String>, I<Array>)>>
 
-C<fillet()> returns array reference which include error message lines of given message body and the
+C<part()> returns array reference which include error message lines of given message body and the
 original message part split by the 2nd argument.
 
     my $v = 'Error message here
     Content-Type: message/rfc822
     Return-Path: <neko@libsisimai.org>';
-    my $r = Sisimai::RFC5322->fillet(\$v, qr|^Content-Type:[ ]message/rfc822|m);
+    my $r = Sisimai::RFC5322->part(\$v, ['Content-Type: message/rfc822']);
 
     warn Dumper $r;
     $VAR1 = [
@@ -194,7 +231,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

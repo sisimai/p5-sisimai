@@ -21,16 +21,16 @@ sub inquire {
     return undef unless defined $mhead->{'x-ahmailid'};
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['  ----- The following addresses had permanent fatal errors -----'] };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -49,7 +49,7 @@ sub inquire {
         # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[>]{3}[ \t]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
+        if( $e =~ /\A[>]{3}[ ]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
             # >>> kijitora@example.org <kijitora@example.org>
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -71,7 +71,7 @@ sub inquire {
 
     require Sisimai::String;
     $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'}) for @$dscontents;
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -111,7 +111,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

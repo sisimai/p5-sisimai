@@ -18,14 +18,11 @@ sub inquire {
     my $mbody = shift // return undef;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^content-type:[ ]message/rfc822|m;
-    state $startingof = {
-        'message' => ['The following message to <', 'An error occurred while trying to deliver the mail '],
-    };
+    state $boundaries = ['Content-Type: message/rfc822'];
+    state $startingof = { 'message' => ['The following message to <', 'An error occurred while trying to deliver the mail '] };
     state $messagesof = { 'expired' => ['Delivery expired'] };
-
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $recipients = 0; # (Integer) The number of 'Final-Recipient' header
+    my    $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my    $recipients = 0; # (Integer) The number of 'Final-Recipient' header
 
     if( index($$mbody, '{') == 0 ) {
         # The message body is JSON string
@@ -121,7 +118,7 @@ sub inquire {
                     $v->{'action'} = $e->{'action'};
                     $v->{'status'} = $e->{'status'};
 
-                    if( $e->{'diagnosticCode'} =~ /\A(.+?);[ ]*(.+)\z/ ) {
+                    if( $e->{'diagnosticCode'} =~ /\A(.+?);[ ](.+)\z/ ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
                         $v->{'spec'} = uc $1;
                         $v->{'diagnosis'} = $2;
@@ -225,11 +222,11 @@ sub inquire {
         my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
         my $permessage = {};    # (Hash) Store values of each Per-Message field
         my $readcursor = 0;     # (Integer) Points the current cursor position
-        my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+        my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
         my $v = undef;
         my $p = '';
 
-        for my $e ( split("\n", $emailsteak->[0]) ) {
+        for my $e ( split("\n", $emailparts->[0]) ) {
             # Read each line between the start of the message and the start of rfc822 part.
             unless( $readcursor ) {
                 # Beginning of the bounce message or message/delivery-status part
@@ -280,7 +277,7 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         } continue {
@@ -311,7 +308,7 @@ sub inquire {
                 last;
             }
         }
-        return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+        return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
     }
 }
 
@@ -330,8 +327,8 @@ Sisimai::Lhost::AmazonSES - bounce mail parser class for C<Amazon SES>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::AmazonSES parses a bounce email or a JSON string which created by C<Amazon Simple Email Service>.
-Methods in the module are called from only Sisimai::Message.
+Sisimai::Lhost::AmazonSES parses a bounce email or a JSON string which created by
+C<Amazon Simple Email Service>. Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -343,12 +340,13 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method parses a bounced email and return results as a array reference.
+See C<Sisimai::Message> for more details.
 
 =head2 C<B<json(I<Hash>)>>
 
-C<json()> method adapts Amazon SES bounce object (JSON) for Perl hash object used at Sisimai::Message class.
+C<json()> method adapts Amazon SES bounce object (JSON) for Perl hash object used at
+C<Sisimai::Message> class.
 
 =head1 AUTHOR
 
@@ -356,7 +354,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

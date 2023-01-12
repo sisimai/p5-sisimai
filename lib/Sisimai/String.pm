@@ -52,7 +52,7 @@ sub sweep {
     my $argv1 = shift // return undef;
 
     chomp $argv1;
-    y/ //s, y/\t//d, s/\A //g, s/ \z//g, s/ [-]{2,}[^ \t].+\z// for $argv1;
+    y/ //s, s/\A //g, s/ \z//g, s/ [-]{2,}[^ ].+\z// for $argv1;
     return $argv1;
 }
 
@@ -213,7 +213,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019,2021,2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019,2021-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

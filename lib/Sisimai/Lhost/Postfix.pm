@@ -31,7 +31,7 @@ sub inquire {
     return undef if $mhead->{'x-aol-ip'};
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $markingsof = {
         # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
         'message' => qr{\A(?>
@@ -41,8 +41,8 @@ sub inquire {
                     |on[ ].+[ ]program\z    # The Postfix on <os name> program
                     )
                 |\w+[ ]Postfix[ ]program\z  # The <name> Postfix program
-                |mail[ \t]system\z             # The mail system
-                |\w+[ \t]program\z             # The <custmized-name> program
+                |mail[ ]system\z             # The mail system
+                |\w+[ ]program\z             # The <custmized-name> program
                 )
             |This[ ]is[ ]the[ ](?:
                  Postfix[ ]program          # This is the Postfix program
@@ -57,9 +57,10 @@ sub inquire {
 
     require Sisimai::RFC1894;
     require Sisimai::Address;
+    require Sisimai::SMTP::Command;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $anotherset = {};    # (Hash) Another error information
     my $nomessages = 0;     # (Integer) Delivery report unavailable
@@ -70,7 +71,7 @@ sub inquire {
     if( $sessx ) {
         # The message body starts with 'Transcript of session follows.'
         require Sisimai::SMTP::Transcript;
-        my $transcript = Sisimai::SMTP::Transcript->rise(\$emailsteak->[0], 'In:', 'Out:');
+        my $transcript = Sisimai::SMTP::Transcript->rise(\$emailparts->[0], 'In:', 'Out:');
 
         return undef unless $transcript;
         return undef unless scalar @$transcript;
@@ -86,7 +87,7 @@ sub inquire {
 
             } elsif( $e->{'command'} eq 'MAIL' ) {
                 # Set the argument of "MAIL" command to pseudo To: header of the original message
-                $emailsteak->[1] .= sprintf("To: %s\n", $e->{'argument'}) unless length $emailsteak->[1];
+                $emailparts->[1] .= sprintf("To: %s\n", $e->{'argument'}) unless length $emailparts->[1];
 
             } elsif( $e->{'command'} eq 'RCPT' ) {
                 # RCPT TO: <...>
@@ -110,7 +111,7 @@ sub inquire {
         my $readcursor = 0;     # (Integer) Points the current cursor position
 
         # The message body is a general bounce mail message of Postfix
-        for my $e ( split("\n", $emailsteak->[0]) ) {
+        for my $e ( split("\n", $emailparts->[0]) ) {
             # Read error messages and delivery status lines from the head of the email to the previous
             # line of the beginning of the original message.
             unless( $readcursor ) {
@@ -165,24 +166,24 @@ sub inquire {
                 #
                 # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO command)
-                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ \t]+(.+)\z/ ) {
+                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ ]+(.+)\z/ ) {
                     # Continued line of the value of Diagnostic-Code header
                     $v->{'diagnosis'} .= ' '.$1;
                     $e = 'Diagnostic-Code: '.$e;
 
                 } elsif( $e =~ /\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
                     # X-Postfix-Sender: rfc822; shironeko@example.org
-                    $emailsteak->[1] .= sprintf("%s: %s\n", $1, $2);
+                    $emailparts->[1] .= sprintf("%s: %s\n", $1, $2);
 
                 } else {
                     # Alternative error message and recipient
-                    if( $e =~ /[ \t][(]in reply to (?:end of )?([A-Z]{4}).*/ ||
-                        $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
+                    if( index($e, ' (in reply to ') > -1 || index($e, 'command)') > -1 ) {
                         # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                        push @commandset, $1;
+                        my $q = Sisimai::SMTP::Command->find($e);
+                        push @commandset, $q if $q;
                         $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
-                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ \t]*(.+)\z/ ) {
+                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ ]*(.+)\z/ ) {
                         # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
                         $anotherset->{'recipient'} = $1;
                         $anotherset->{'alias'}     = $2;
@@ -208,7 +209,7 @@ sub inquire {
                     } else {
                         # Get error message continued from the previous line
                         next unless $anotherset->{'diagnosis'};
-                        $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ \t]{4}(.+)\z/;
+                        $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ ]{4}(.+)\z/;
                     }
                 }
             } # End of message/delivery-status
@@ -228,7 +229,7 @@ sub inquire {
         } else {
             # Get a recipient address from message/rfc822 part if the delivery report was unavailable:
             # '--- Delivery report unavailable ---'
-            if( $nomessages && $emailsteak->[1] =~ /^To:[ ]*(.+)/m ) {
+            if( $nomessages && $emailparts->[1] =~ /^To:[ ](.+)/m ) {
                 # Try to get a recipient address from To: field in the original
                 # message at message/rfc822 part
                 $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
@@ -280,11 +281,11 @@ sub inquire {
             }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'command'}   = shift @commandset || '';
-        $e->{'command'} ||= 'HELO' if $e->{'diagnosis'} =~ /refused to talk to me:/;
+        $e->{'command'}   = shift @commandset || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
+        $e->{'command'} ||= 'HELO' if index($e->{'diagnosis'}, 'refused to talk to me:') > -1;
         $e->{'spec'}    ||= 'SMTP' if $e->{'diagnosis'} =~ /host .+ said:/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -324,7 +325,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

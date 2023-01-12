@@ -20,7 +20,7 @@ sub inquire {
     return undef unless $mhead->{'subject'} eq 'Sorry, your message could not be delivered';
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Disposition:[ ]inline|m;
+    state $boundaries = ['Content-Disposition: inline'];
     state $startingof = { 'message' => ['This message was created automatically by Facebook.'] };
     state $errorcodes = {
         # http://postmaster.facebook.com/response_codes
@@ -91,14 +91,14 @@ sub inquire {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $fbresponse = '';    # (String) Response code from Facebook
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -147,7 +147,7 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ \t]+(.+)\z/;
+            next unless $e =~ /\A[ ]+(.+)\z/;
             $v->{'diagnosis'} .= ' '.$1;
         }
     } continue {
@@ -187,10 +187,10 @@ sub inquire {
         # https://groups.google.com/forum/#!topic/cdmix/eXfi4ddgYLQ
         # This block has not been tested because we have no email sample
         # including "INT-T?" error code.
-        next unless $fbresponse =~ /\AINT-T\d+\z/;
+        next unless index($fbresponse, 'INT-T') == 0;
         $e->{'reason'} = 'systemerror';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -230,7 +230,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

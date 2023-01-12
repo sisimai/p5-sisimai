@@ -17,35 +17,36 @@ sub inquire {
     my $mbody = shift // return undef;
     my $leave = 0;
     my $match = 0;
+    my $lower = {};
 
     return undef unless keys %$mhead;
     return undef unless ref $mbody eq 'SCALAR';
 
-    my    $markingsof = { 'boundary' => qr/\A__SISIMAI_PSEUDO_BOUNDARY__\z/ };
-    state $autoreply1 = {
+    my $markingsof = { 'boundary' => '__SISIMAI_PSEUDO_BOUNDARY__' };
+    my $lowerlabel = ['from', 'to', 'subject', 'auto-submitted', 'precedence', 'x-apple-action', 'x-auto-response-suppress'];
+
+    for my $e ( @$lowerlabel ) {
+        # Set lower-cased value of each header related to auto-response
+        next unless exists  $mhead->{ $e };
+        $lower->{ $e } = lc $mhead->{ $e };
+    }
+
+    state $donotparse = {
+        'from'    => ['root@', 'postmaster@', 'mailer-daemon@'],
+        'to'      => ['root@'],
+        'subject' => [
+            'security information for', # sudo(1)
+            'mail failure -',           # Exim
+        ],
+    };
+    state $autoreply0 = {
         # http://www.iana.org/assignments/auto-submitted-keywords/auto-submitted-keywords.xhtml
-        'auto-submitted' => qr/\Aauto-(?:generated|replied|notified)/,
-        # https://msdn.microsoft.com/en-us/library/ee219609(v=exchg.80).aspx
-        'x-auto-response-suppress' => qr/(?:oof|autoreply)/,
-        'x-apple-action' => qr/\Avacation\z/,
-        'precedence' => qr/\Aauto_reply\z/,
-        'subject' => qr/\A(?>
-             auto:
-            |auto[ ]response:
-            |automatic[ ]reply:
-            |out[ ]of[ ](?:the[ ])*office:
-            )
-        /x,
+        'auto-submitted' => ['auto-generated', 'auto-replied', 'auto-notified'],
+        'precedence'     => ['auto_reply'],
+        'subject'        => ['auto:', 'auto response:', 'automatic reply:', 'out of office:', 'out of the office:'],
+        'x-apple-action' => ['vacation'],
     };
-    state $excludings = {
-        'subject' => qr{(?:
-              security[ ]information[ ]for  # sudo
-             |mail[ ]failure[ ][-]          # Exim
-             )
-        }x,
-        'from'    => qr/(?:root|postmaster|mailer-daemon)[@]/,
-        'to'      => qr/root[@]/,
-    };
+    state $autoreply1 = { 'x-auto-response-suppress' => ['oof', 'autoreply'] };
     state $subjectset = qr{\A(?>
          (?:.+?)?re:
         |auto(?:[ ]response):
@@ -55,21 +56,29 @@ sub inquire {
         [ ]*(.+)\z
     }x;
 
-    DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$excludings ) {
+    DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$donotparse ) {
         # Exclude message from root@
-        next unless exists $mhead->{ $e };
-        next unless defined $mhead->{ $e };
-        next unless lc($mhead->{ $e }) =~ $excludings->{ $e };
+        next unless exists  $lower->{ $e };
+        next unless grep { index($lower->{ $e }, $_) > -1 } $donotparse->{ $e }->@*;
         $leave = 1;
         last;
     }
     return undef if $leave;
 
-    DETECT_AUTO_REPLY_MESSAGE: for my $e ( keys %$autoreply1 ) {
+    DETECT_AUTO_REPLY_MESSAGE0: for my $e ( keys %$autoreply0 ) {
         # RFC3834 Auto-Submitted and other headers
-        next unless exists $mhead->{ $e };
-        next unless defined $mhead->{ $e };
-        next unless lc($mhead->{ $e }) =~ $autoreply1->{ $e };
+        next unless exists  $lower->{ $e };
+        next unless grep { index($lower->{ $e }, $_) == 0 } $autoreply0->{ $e }->@*;
+
+        $match++;
+        last;
+    }
+    DETECT_AUTO_REPLY_MESSAGE1: for my $e ( keys %$autoreply1 ) {
+        # X-Auto-Response-Suppress: header and other headers
+        last if $match;
+        next unless exists  $lower->{ $e };
+        next unless grep { index($lower->{ $e }, $_) > -1 } $autoreply1->{ $e }->@*;
+
         $match++;
         last;
     }
@@ -89,7 +98,6 @@ sub inquire {
         for my $e ('from', 'return-path') {
             # Get the recipient address
             next unless exists  $mhead->{ $e };
-            next unless defined $mhead->{ $e };
 
             $v->{'recipient'} = $mhead->{ $e };
             last;
@@ -105,15 +113,15 @@ sub inquire {
 
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with the boundary string.
-        my $b0 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 0);
-        $markingsof->{'boundary'} = qr/\A\Q$b0\E\z/ if length $b0;
+        my $q = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 0);
+        $markingsof->{'boundary'} = $q if $q;
     }
 
     BODY_PARSER: {
         # Get vacation message
         for my $e ( split("\n", $$mbody) ) {
             # Read the first 5 lines except a blank line
-            $countuntil += 1 if $e =~ $markingsof->{'boundary'};
+            $countuntil += 1 if index($e, $markingsof->{'boundary'}) > -1;
 
             unless( length $e ) {
                 # Check a blank line
@@ -121,8 +129,8 @@ sub inquire {
                 next;
             }
             next unless rindex($e, ' ') > -1;
-            next if index($e, 'Content-Type') == 0;
-            next if index($e, 'Content-Transfer') == 0;
+            next if      index($e, 'Content-Type')     == 0;
+            next if      index($e, 'Content-Transfer') == 0;
 
             $v->{'diagnosis'} .= $e.' ';
             $haveloaded++;
@@ -137,7 +145,7 @@ sub inquire {
     $v->{'status'}    = '';
 
     # Get the Subject header from the original message
-    my $rfc822part = lc($mhead->{'subject'}) =~ $subjectset ? 'Subject: '.$1."\n" : '';
+    my $rfc822part = $lower->{'subject'} =~ $subjectset ? 'Subject: '.$1."\n" : '';
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
 }
 
@@ -177,7 +185,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2022 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

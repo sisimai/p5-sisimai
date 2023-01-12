@@ -19,17 +19,18 @@ sub inquire {
     return undef unless index($mhead->{'from'}, 'Mail Delivery System') == 0;
     return undef unless index($mhead->{'subject'}, 'Delivery status notification') == 0;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['      This is an automatically generated Delivery Status Notification.'] };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -57,7 +58,7 @@ sub inquire {
         # ============================================================================
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ \t]+[*][ \t]([^ ]+[@][^ ]+)\z/ ) {
+        if( $e =~ /\A[ ]+[*][ ]([^ ]+[@][^ ]+)\z/ ) {
             #   * kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -69,10 +70,10 @@ sub inquire {
 
         } else {
             # Detect error message
-            if( $e =~ /\ASMTP:([^ ]+)[ \t](.+)\z/ ) {
+            if( index($e, 'SMTP:') == 0 ) {
                 # SMTP:RCPT host 192.0.2.8: 553 5.3.0 <kijitora@example.com>... No such user here
-                $v->{'command'} = uc $1;
-                $v->{'diagnosis'} = $2;
+                $v->{'command'} = Sisimai::SMTP::Command->find($e);
+                $v->{'diagnosis'} = $e;
 
             } elsif( $e =~ /\ARouting: (.+)/ ) {
                 # Routing: Could not find a gateway for kijitora@example.co.jp
@@ -90,7 +91,7 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -130,7 +131,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

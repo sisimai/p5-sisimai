@@ -20,7 +20,7 @@ sub inquire {
     return undef if $mhead->{'x-aol-ip'};   # X-AOL-IP is a header defined in AOL
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $startingof = {
         #   savemail.c:1040|if (printheader && !putline("   ----- Transcript of session follows -----\n",
         #   savemail.c:1041|          mci))
@@ -33,22 +33,23 @@ sub inquire {
         'error'   => ['... while talking to '],
     };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $thecommand = '';    # (String) SMTP Command name begin with the string '>>>'
     my $esmtpreply = [];    # (Array) Reply from remote server on SMTP session
     my $sessionerr = 0;     # (Integer) Flag, 1 if it is SMTP session error
     my $anotherset = {};    # (Hash) Another error information
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -104,9 +105,9 @@ sub inquire {
             # 554 5.0.0 Service unavailable
             if( substr($e, 0, 1) ne ' ') {
                 # Other error messages
-                if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
+                if( index($e, '>>> ') == 0 ) {
                     # >>> DATA
-                    $commandtxt = $1;
+                    $thecommand = Sisimai::SMTP::Command->find($e);
 
                 } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
                     # <<< Response
@@ -131,7 +132,7 @@ sub inquire {
                         # ----- Transcript of session follows -----
                         # Message could not be delivered for too long
                         # Message will be deleted from queue
-                        if( $e =~ /\A[45]\d\d[ \t]([45][.]\d[.]\d)[ \t].+/ ) {
+                        if( $e =~ /\A[45]\d\d[ ]([45][.]\d[.]\d)[ ].+/ ) {
                             # 550 5.1.2 <kijitora@example.org>... Message
                             #
                             # DBI connect('dbname=...')
@@ -149,7 +150,7 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         }
@@ -163,12 +164,10 @@ sub inquire {
         # Set default values if each value is empty.
         $e->{'lhost'}   ||= $permessage->{'rhost'};
         $e->{ $_ }      ||= $permessage->{ $_ } || '' for keys %$permessage;
-        $e->{'command'} ||= $commandtxt         || '';
-        $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
-            $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A[ \t]+\z/;
+            $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if index($e->{'diagnosis'}, ' ') == 0;
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
             $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A\d+\z/;
         }
@@ -178,6 +177,8 @@ sub inquire {
             $e->{'diagnosis'} = $r if length($r) > length($e->{'diagnosis'});
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'command'} ||= $thecommand || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
+        $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
         if( exists $anotherset->{'status'} && $anotherset->{'status'} ) {
             # Check alternative status code
@@ -192,7 +193,7 @@ sub inquire {
         next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
         $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -232,7 +233,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

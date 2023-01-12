@@ -13,11 +13,11 @@ sub find {
     my $argv0 = shift // return undef;
 
     return undef unless length $argv0 > 3;
-    return undef unless $argv0 =~ /(?:HELO|EHLO|START|AUTH|MAIL|RCPT|DATA)/;
+    return undef unless $argv0 =~ /(?:HELO|EHLO|STARTTLS|AUTH|MAIL|RCPT|DATA)/;
 
     state $detectable = [
         'HELO', 'EHLO', 'STARTTLS', 'AUTH PLAIN', 'AUTH LOGIN', 'AUTH CRAM-', 'AUTH DIGEST-',
-        'MAIL F', 'RCPT T', 'DATA'
+        'MAIL F', 'RCPT', 'RCPT T', 'DATA'
     ];
     my $stringsize = length $argv0;
     my $commandset = [];
@@ -70,7 +70,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

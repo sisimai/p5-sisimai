@@ -26,7 +26,7 @@ sub inquire {
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr<^Content-Type:[ ](?:message/rfc822|text/rfc822-headers)>m;
+    state $boundaries = ['Content-Type: :message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $startingof = {
         # https://www.courier-mta.org/courierdsn.html
         # courier/module.dsn/dsn*.txt
@@ -42,19 +42,20 @@ sub inquire {
         'networkerror'=> ['DNS lookup failed.'],
     };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $commandtxt = '';    # (String) SMTP Command name begin with the string '>>>'
+    my $thecommand = '';    # (String) SMTP Command name begin with the string '>>>'
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -124,14 +125,14 @@ sub inquire {
             # <<< 550 5.1.1 <kijitora@example.co.jp>... User Unknown
             #
             # ---------------------------------------------------------------------------
-            if( $e =~ /\A[>]{3}[ ]+([A-Z]{4})[ ]?/ ) {
+            if( index($e, '>>> ') == 0 ) {
                 # >>> DATA
-                $commandtxt ||= $1;
+                $thecommand = Sisimai::SMTP::Command->find($e);
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         }
@@ -152,9 +153,9 @@ sub inquire {
             $e->{'reason'} = $r;
             last;
         }
-        $e->{'command'} ||= $commandtxt || '';
+        $e->{'command'} ||= $thecommand || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -194,7 +195,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

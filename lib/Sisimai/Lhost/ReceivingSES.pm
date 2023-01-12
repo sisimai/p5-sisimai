@@ -22,7 +22,7 @@ sub inquire {
     return undef unless $mhead->{'x-ses-outgoing'};
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^content-type:[ ]text/rfc822-headers|m;
+    state $boundaries = ['Content-Type: text/rfc822-headers'];
     state $startingof = { 'message' => ['This message could not be delivered.'] };
     state $messagesof = {
         # The followings are error messages in Rule sets/*/Actions/Template
@@ -37,13 +37,13 @@ sub inquire {
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -92,7 +92,7 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ \t]+(.+)\z/;
+            next unless $e =~ /\A[ ]+(.+)\z/;
             $v->{'diagnosis'} .= ' '.$1;
         }
     } continue {
@@ -124,7 +124,7 @@ sub inquire {
         }
         $e->{'reason'} ||= Sisimai::SMTP::Status->name($e->{'status'}) || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -164,7 +164,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

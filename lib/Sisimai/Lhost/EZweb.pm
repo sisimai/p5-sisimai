@@ -22,7 +22,6 @@ sub inquire {
     #   From: <Postmaster@ezweb.ne.jp>
     #   Received: from ezweb.ne.jp (wmflb12na02.ezweb.ne.jp [222.15.69.197])
     #   Received: from nmomta.auone-net.jp ([aaa.bbb.ccc.ddd]) by ...
-    #
     $match++ if rindex($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
     $match++ if rindex($mhead->{'from'}, 'Postmaster@au.com') > -1;
     $match++ if $mhead->{'subject'} eq 'Mail System Error - Returned Mail';
@@ -35,7 +34,7 @@ sub inquire {
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr<^(?:[-]{50}|Content-Type:[ ]*message/rfc822)>m;
+    state $boundaries = ['--------------------------------------------------', 'Content-Type: message/rfc822'];
     my    $markingsof = {
         'message' => qr{\A(?:
              The[ ]user[(]s[)][ ]
@@ -63,10 +62,11 @@ sub inquire {
         'onhold' => [qr/Each of the following recipients was rejected by a remote mail server/],
     };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
@@ -78,7 +78,7 @@ sub inquire {
     }
     my @rxmessages; push @rxmessages, $refailures->{ $_ }->@* for keys %$refailures;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -103,7 +103,7 @@ sub inquire {
 
         if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
             $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
-            $e =~ /\A[ \t]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
+            $e =~ /\A[ ]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
 
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -124,9 +124,9 @@ sub inquire {
         } else {
             # The line does not begin with a DSN field defined in RFC3464
             next if Sisimai::String->is_8bit(\$e);
-            if( $e =~ /\A[ \t]+[>]{3}[ \t]+([A-Z]{4})/ ) {
+            if( index($e, ' >>> ') > -1 ) {
                 #    >>> RCPT TO:<******@ezweb.ne.jp>
-                $v->{'command'} = $1;
+                $v->{'command'} = Sisimai::SMTP::Command->find($e);
 
             } else {
                 # Check error message
@@ -181,7 +181,7 @@ sub inquire {
         next if $e->{'recipient'} =~ /[@](?:ezweb[.]ne[.]jp|au[.]com)\z/;
         $e->{'reason'} = 'userunknown';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -220,7 +220,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

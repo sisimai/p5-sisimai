@@ -27,7 +27,7 @@ sub inquire {
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^--- Below this line is a copy of the message[.]|m;
+    state $boundaries = ['--- Below this line is a copy of the message.'];
     state $startingof = {
         #  qmail-remote.c:248|    if (code >= 500) {
         #  qmail-remote.c:249|      out("h"); outhost(); out(" does not like recipient.\n");
@@ -74,8 +74,7 @@ sub inquire {
     # qmail-send.c:922| ... (&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
     state $hasexpired = 'this message has been in the queue too long.';
     # qmail-remote-fallback.patch
-    state $recommands = qr/Sorry, no SMTP connection got far enough; most progress was ([A-Z]{4}) /;
-    state $reisonhold = qr/\A[^ ]+ does not like recipient[.][ \t]+.+this message has been in the queue too long[.]\z/;
+    state $reisonhold = qr/\A[^ ]+ does not like recipient[.][ ]+.+this message has been in the queue too long[.]\z/;
     state $failonldap = {
         # qmail-ldap-1.03-20040101.patch:19817 - 19866
         'suspend'     => ['Mailaddress is administrative?le?y disabled'],   # 5.2.1
@@ -124,12 +123,12 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -146,7 +145,7 @@ sub inquire {
         # Giving up on 192.0.2.153.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ \t]*\z/ ) {
+        if( $e =~ /\A(?:To[ ]*:)?[<](.+[@].+)[>]:[ ]*\z/ ) {
             # <kijitora@example.jp>:
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -168,6 +167,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -180,9 +180,9 @@ sub inquire {
                 last;
             }
 
-            unless( $e->{'command'} ) {
-                # Verify each regular expression of patches
-                $e->{'command'} = uc $1 if $e->{'diagnosis'} =~ $recommands;
+            if( index($e->{'diagnosis'}, 'Sorry, no SMTP connection got far enough; most progress was ') > -1 ) {
+                # Get the last SMTP command:from the error message
+                $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'});
             }
         }
 
@@ -230,10 +230,10 @@ sub inquire {
                 }
             }
         }
-        $e->{'command'} ||= '';
+        $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'});
         $e->{'status'}    = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -273,7 +273,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

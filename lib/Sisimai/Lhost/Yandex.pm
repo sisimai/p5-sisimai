@@ -27,22 +27,23 @@ sub inquire {
     return undef unless $mhead->{'from'} eq 'mailer-daemon@yandex.ru';
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['This is the mail system at host yandex.ru.'] };
 
+    require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my @commandset;         # (Array) ``in reply to * command'' list
     my $v = undef;
     my $p = '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -93,18 +94,15 @@ sub inquire {
             # <kijitora@example.jp>: host mx.example.jp[192.0.2.153] said: 550
             #    5.1.1 <kijitora@example.jp>... User Unknown (in reply to RCPT TO
             #    command)
-            if( $e =~ /[ \t][(]in reply to .*([A-Z]{4}).*/ ) {
+            if( index($e, ' (in reply to ') > -1 || index($e, 'command)') > -1 ) {
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO
-                push @commandset, $1;
-
-            } elsif( $e =~ /([A-Z]{4})[ \t]*.*command[)]\z/ ) {
-                # to MAIL command)
-                push @commandset, $1;
+                my $cv = Sisimai::SMTP::Command->find($e);
+                push @commandset, $cv if $cv;
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ \t]+(.+)\z/;
+                next unless $e =~ /\A[ ]+(.+)\z/;
                 $v->{'diagnosis'} .= ' '.$1;
             }
         }
@@ -117,12 +115,12 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{'lhost'} ||= $permessage->{'rhost'};
-        $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
-        $e->{'command'}   =  shift @commandset || '';
+        $e->{ $_ }    ||= $permessage->{ $_ } || '' for keys %$permessage;
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'command'} ||=  shift @commandset || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -162,7 +160,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

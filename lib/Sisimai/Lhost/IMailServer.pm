@@ -18,19 +18,12 @@ sub inquire {
     my $match = 0;
 
     # X-Mailer: <SMTP32 v8.22>
-    $match ||= 1 if $mhead->{'subject'} =~ /\AUndeliverable Mail[ ]*\z/;
+    $match ||= 1 if index($mhead->{'subject'}, 'Undeliverable Mail ') == 0;
     $match ||= 1 if defined $mhead->{'x-mailer'} && index($mhead->{'x-mailer'}, '<SMTP32 v') == 0;
     return undef unless $match;
 
-    state $rebackbone = qr|^Original[ ]message[ ]follows[.]|m;
+    state $boundaries = ['Original message follows.'];
     state $startingof = { 'error' => ['Body of message generated response:'] };
-    state $recommands = {
-        'conn' => qr/(?:SMTP connection failed,|Unexpected connection response from server:)/,
-        'ehlo' => qr|Unexpected response to EHLO/HELO:|,
-        'mail' => qr|Server response to MAIL FROM:|,
-        'rcpt' => qr|Additional RCPT TO generated following response:|,
-        'data' => qr|DATA command generated response:|,
-    };
     state $refailures = {
         'hostunknown'   => qr/Unknown host/,
         'userunknown'   => qr/\A(?:Unknown user|Invalid final delivery userid)/,
@@ -41,11 +34,11 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
 
@@ -54,7 +47,7 @@ sub inquire {
         # Original message follows.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+)[ ](.+)[:][ \t]*([^ ]+[@][^ ]+)/ ) {
+        if( $e =~ /\A([^ ]+)[ ](.+)[:][ ]*([^ ]+[@][^ ]+)/ ) {
             # Unknown user: kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -84,6 +77,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
@@ -92,13 +86,7 @@ sub inquire {
             delete $e->{'alterrors'};
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
-        COMMAND: for my $r ( keys %$recommands ) {
-            # Detect SMTP command from the message
-            next unless $e->{'diagnosis'} =~ $recommands->{ $r };
-            $e->{'command'} = uc $r;
-            last;
-        }
+        $e->{'command'}   = Sisimai::SMTP::Command->find($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$refailures ) {
             # Verify each regular expression of session errors
@@ -107,7 +95,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -147,7 +135,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

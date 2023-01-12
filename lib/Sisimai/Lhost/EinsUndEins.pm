@@ -21,7 +21,7 @@ sub inquire {
     return undef unless $mhead->{'subject'} eq 'Mail delivery failed: returning message to sender';
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^---[ ]The[ ]header[ ]of[ ]the[ ]original[ ]message[ ]is[ ]following[.][ ]---|m;
+    state $boundaries = ['--- The header of the original message is following. ---'];
     state $startingof = {
         'message' => ['This message was created automatically by mail delivery software'],
         'error'   => ['For the following reason:'],
@@ -29,12 +29,12 @@ sub inquire {
     state $messagesof = { 'mesgtoobig' => ['Mail size limit exceeded'] };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -92,8 +92,8 @@ sub inquire {
             #   host: smtp-in.orange.fr (193.252.22.65)
             #   reason: 550 5.2.0 Mail rejete. Mail rejected. ofr_506 [506]
             $e->{'rhost'}   = $1;
-            $e->{'command'} = 'DATA' if $e->{'diagnosis'} =~ /for TEXT command/;
-            $e->{'spec'}    = 'SMTP' if $e->{'diagnosis'} =~ /SMTP error/;
+            $e->{'command'} = 'DATA' if index($e->{'diagnosis'}, 'for TEXT command') > -1;
+            $e->{'spec'}    = 'SMTP' if index($e->{'diagnosis'}, 'SMTP error')       > -1;
             $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
         } else {
             # For the following reason:
@@ -108,7 +108,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -148,7 +148,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

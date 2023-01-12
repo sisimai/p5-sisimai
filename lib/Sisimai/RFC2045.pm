@@ -279,17 +279,6 @@ sub makeflat {
     return \'' unless index($argv0, 'multipart/') > -1;
     return \'' unless index($argv0, 'boundary=')  > -1;
 
-    # Some bounce messages include lower-cased "content-type:" field such as the followings:
-    #   - content-type: message/delivery-status        => Content-Type: message/delivery-status
-    #   - content-transfer-encoding: quoted-printable  => Content-Transfer-Encoding: quoted-printable
-    #   - CHARSET=, BOUNDARY=                          => charset-, boundary=
-    #   - message/xdelivery-status                     => message/delivery-status
-    s/[Cc]ontent-[Tt]ype:/Content-Type:/gm,
-    s/[Cc]ontent-[Tt]ransfer-[Ee]ncoding:/Content-Transfer-Encoding:/gm,
-    s/charset=/charset=/igm,
-    s/boundary=/boundary=/igm,
-    s|message/xdelivery-status|message/delivery-status|gm for $$argv1;
-
     my $iso2022set = qr/charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/;
     my $multiparts = __PACKAGE__->levelout($argv0, $argv1);
     my $flattenout = '';
@@ -456,7 +445,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

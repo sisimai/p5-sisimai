@@ -38,7 +38,7 @@ sub inquire {
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^Content-Type:[ ]message/rfc822|m;
+    state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['Content-Type: message/delivery-status'] };
 
     require Sisimai::RFC1894;
@@ -50,11 +50,11 @@ sub inquire {
     my $p = '';
 
     # Pick the second message/rfc822 part because the format of email-x5-*.eml is nested structure
-    my $prefillets = [split($rebackbone, $$mbody, 2)];
-       $prefillets->[1] =~ s/\A.+?\n\n//ms;
-    my $emailsteak = Sisimai::RFC5322->fillet(\$prefillets->[1], $rebackbone);
+    my $cutsbefore = [split($boundaries->[0], $$mbody, 2)];
+       $cutsbefore->[1] =~ s/\A.+?\n\n//ms;
+    my $emailparts = Sisimai::RFC5322->part(\$cutsbefore->[1], $boundaries);
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -101,7 +101,7 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ \t]+(.+)\z/;
+            next unless $e =~ /\A[ ]+(.+)\z/;
             $v->{'diagnosis'} .= ' '.$1;
         }
     } continue {
@@ -111,7 +111,7 @@ sub inquire {
     return undef unless $recipients;
 
     $_->{'diagnosis'} ||= Sisimai::String->sweep($_->{'diagnosis'}) for @$dscontents;
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -151,7 +151,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

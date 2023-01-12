@@ -235,14 +235,14 @@ sub rise {
                     # 550-5.7.1 this message has been blocked. Please visit
                     # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
                     s/$re0/ /g, s/$re1/ /g, s/$re2/ /g, s|<html>.+</html>||i for $p->{'diagnosticcode'};
-                    $p->{'diagnosticcode'} =  Sisimai::String->sweep($p->{'diagnosticcode'});
+                    $p->{'diagnosticcode'} = Sisimai::String->sweep($p->{'diagnosticcode'});
                 }
             }
             $p->{'diagnostictype'} ||= 'X-UNIX'   if $p->{'reason'} eq 'mailererror';
             $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ /\A(?:feedback|vacation)\z/;
 
             # Check the value of SMTP command
-            $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ /\A(?:EHLO|HELO|MAIL|RCPT|DATA|QUIT)\z/;
+            $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ /\A(?:CONN|EHLO|HELO|STARTTLS|AUTH|MAIL|RCPT|DATA|QUIT)\z/;
         }
 
         CONSTRUCTOR: {

@@ -31,9 +31,14 @@ sub match {
         'unroutable address',
         'unrouteable address',
     ];
-    state $regex = qr/553[ ][^ ]+[ ]does[ ]not[ ]exist/;
+    state $pairs = [['553 ', ' does not exist']];
+
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if $argv1 =~ $regex;
+    return 1 if grep {
+        my $p = index($argv1, $_->[0],  0) + 1;
+        my $q = index($argv1, $_->[1], $p) + 1;
+        $p * $q > 0;
+    } @$pairs;
     return 0;
 }
 
@@ -118,7 +123,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

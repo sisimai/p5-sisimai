@@ -26,12 +26,11 @@ sub inquire {
     return undef if $mhead->{'x-ms-exchange-crosstenant-fromentityheader'};
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr{^(?:
-         Original[ ]message[ ]headers:                  # en-US
-        |En-t.tes[ ]de[ ]message[ ]d'origine[ ]:        # fr-FR/En-têtes de message d'origine
-        |Intestazioni[ ]originali[ ]del[ ]messaggio:    # it-CH
-        )
-    }mx;
+    state $boundaries = [
+        'Original message headers:',                # en-US
+        "tes de message d'origine :",               # fr-FR/En-têtes de message d'origine
+        'Intestazioni originali del messaggio:',    # it-CH
+    ];
     state $markingsof = {
         'message' => qr{\A(?:
              Diagnostic[ ]information[ ]for[ ]administrators:               # en-US
@@ -42,7 +41,7 @@ sub inquire {
         'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
         'rhost'   => qr{\A(?:
              Generating[ ]server            # en-US
-            |Serveur[ ]de[ ]g[^ ]+ration[ ] # fr-FR/Serveur de génération
+            |Serveur[ ]de[ ]g[^ ]+ration[ ] # fr-FR/Serveur de g辿n辿ration
             |Server[ ]di[ ]generazione      # it-CH
             ):[ ]?(.*)
         }x,
@@ -63,7 +62,7 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $connvalues = 0;     # (Integer) Flag, 1 if all the value of $connheader have been set
@@ -72,7 +71,7 @@ sub inquire {
     };
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -143,7 +142,7 @@ sub inquire {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -183,7 +182,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

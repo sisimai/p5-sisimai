@@ -3,6 +3,12 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+sub FIELDINDEX {
+    return [qw|
+        Action Arrival-Date Diagnostic-Code Final-Recipient Last-Attempt-Date Original-Recipient
+        Received-From-MTA Remote-MTA Reporting-MTA Status X-Actual-Recipienet X-Original-Message-ID
+    |];
+}
 sub FIELDTABLE {
     # Return pairs that a field name and key name defined in Sisimai::Lhost class
     return {
@@ -22,7 +28,7 @@ sub FIELDTABLE {
 
 sub match {
     # Check the argument matches with a field defined in RFC3464
-    # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
+    # @param    [String] argv0 A line including field and value defined in RFC3464
     # @return   [Integer]      0: did not matched, 1,2: matched
     # @since v4.25.0
     my $class = shift;
@@ -76,7 +82,7 @@ sub match {
 
 sub label {
     # Returns a field name as a lqbel from the given string
-    # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
+    # @param    [String] argv0 A line including field and value defined in RFC3464
     # @return   [String]       Field name as a label
     # @since v4.25.15
     my $class = shift;
@@ -86,7 +92,7 @@ sub label {
 
 sub field {
     # Check the argument is including field defined in RFC3464 and return values
-    # @param    [String] argv0 A line inlcuding field and value defined in RFC3464
+    # @param    [String] argv0 A line including field and value defined in RFC3464
     # @return   [Array]        ['field-name', 'value-type', 'Value', 'field-group']
     # @since v4.25.0
     my $class = shift;
@@ -110,13 +116,13 @@ sub field {
         'x-original-message-id' => 'text',
     };
     state $captureson = {
-        'addr' => qr/\A((?:Original|Final|X-Actual)-[Rr]ecipient):[ ]*(.+?);[ ]*(.+)/,
-        'code' => qr/\A(Diagnostic-Code):[ ]*(.+?);[ ]*(.*)/,
-        'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ]*(.+)/,
-        'host' => qr/\A((?:Received-From|Remote|Reporting)-MTA):[ ]*(.+?);[ ]*(.+)/,
-        'list' => qr/\A(Action):[ ]*(delayed|deliverable|delivered|expanded|expired|failed|failure|relayed)/i,
-        'stat' => qr/\A(Status):[ ]*([245][.]\d+[.]\d+)/,
-        'text' => qr/\A(X-Original-Message-ID):[ ]*(.+)/,
+        'addr' => qr/\A((?:Original|Final|X-Actual)-Recipient):[ ](.+?);[ ](.+)/,
+        'code' => qr/\A(Diagnostic-Code):[ ](.+?);[ ](.*)/,
+        'date' => qr/\A((?:Arrival|Last-Attempt)-Date):[ ](.+)/,
+        'host' => qr/\A((?:Received-From|Remote|Reporting)-MTA):[ ](.+?);[ ](.+)/,
+        'list' => qr/\A(Action):[ ](delayed|deliverable|delivered|expanded|expired|failed|failure|relayed)/i,
+        'stat' => qr/\A(Status):[ ]([245][.]\d+[.]\d+)/,
+        'text' => qr/\A(X-Original-Message-ID):[ ](.+)/,
        #'text' => qr/\A(Final-Log-ID|Original-Envelope-Id):[ ]*(.+)/,
     };
 
@@ -224,7 +230,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

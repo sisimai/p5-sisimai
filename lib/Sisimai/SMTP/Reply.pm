@@ -57,7 +57,7 @@ sub find {
     # @since v4.14.0
     my $class = shift;
     my $argv1 = shift || return undef;
-    return '' if uc($argv1) =~ /X-UNIX;/;
+    return '' if index(uc($argv1), 'X-UNIX;') > -1;
 
     my $value = '';
     state $ip4re = qr{\b
@@ -113,7 +113,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020,2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

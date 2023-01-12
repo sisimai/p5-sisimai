@@ -29,9 +29,9 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
 
-    my $rebackbone = qr/__BOUNDARY_STRING_HERE__/m;
+    my $boundaries = [];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = [];
+    my $emailparts = [];
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $senderaddr = '';    # (String) Sender address in the message body
@@ -44,19 +44,15 @@ sub inquire {
 
     if( $match == 1 ) {
         # vtext.com
-        $markingsof = { 'message' => qr/\AError:[ \t]/ };
+        $markingsof = { 'message' => qr/\AError:[ ]/ };
         $messagesof = {
             # The attempted recipient address does not exist.
             'userunknown' => ['550 - Requested action not taken: no such user here'],
         };
+        $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1)];
+        $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
 
-        if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1) ) {
-            # Convert to regular expression
-            $rebackbone = qr/^\Q$boundary00\E/m;
-        }
-
-        $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
-        for my $e ( split("\n", $emailsteak->[0]) ) {
+        for my $e ( split("\n", $emailparts->[0]) ) {
             # Read error messages and delivery status lines from the head of the email to the previous
             # line of the beginning of the original message.
             unless( $readcursor ) {
@@ -74,7 +70,7 @@ sub inquire {
             #   RCPT TO: *****@vtext.com
             $v = $dscontents->[-1];
 
-            if( $e =~ /\A[ \t]+RCPT TO: (.*)\z/ ) {
+            if( $e =~ /\A[ ]+RCPT TO: (.*)\z/ ) {
                 if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -84,31 +80,26 @@ sub inquire {
                 $recipients++;
                 next;
 
-            } elsif( $e =~ /\A[ \t]+MAIL FROM:[ \t](.+)\z/ ) {
+            } elsif( $e =~ /\A[ ]+MAIL FROM:[ ](.+)\z/ ) {
                 #   MAIL FROM: *******@hg.example.com
                 $senderaddr ||= $1;
 
-            } elsif( $e =~ /\A[ \t]+Subject:[ \t](.+)\z/ ) {
+            } elsif( $e =~ /\A[ ]+Subject:[ ](.+)\z/ ) {
                 #   Subject:
                 $subjecttxt ||= $1;
 
             } else {
                 # 550 - Requested action not taken: no such user here
-                $v->{'diagnosis'} = $e if $e =~ /\A(\d{3})[ \t][-][ \t](.*)\z/;
+                $v->{'diagnosis'} = $e if $e =~ /\A(\d{3})[ ][-][ ](.*)\z/;
             }
         }
     } else {
         # vzwpix.com
         $startingof = { 'message' => ['Message could not be delivered to mobile'] };
         $messagesof = { 'userunknown' => ['No valid recipients for this MM'] };
-
-        if( my $boundary00 = Sisimai::RFC2045->boundary($mhead->{'content-type'}) ) {
-            # Convert to regular expression
-            $rebackbone = qr/^\Q$boundary00\E/m;
-        }
-
-        $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
-        for my $e ( split("\n", $emailsteak->[0]) ) {
+        $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'})];
+        $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+        for my $e ( split("\n", $emailparts->[0]) ) {
             # Read error messages and delivery status lines from the head of the email to the previous
             # line of the beginning of the original message.
             unless( $readcursor ) {
@@ -126,7 +117,7 @@ sub inquire {
             # Date:  Wed, 20 Jun 2013 10:29:52 +0000
             $v = $dscontents->[-1];
 
-            if( $e =~ /\ATo:[ \t]+(.*)\z/ ) {
+            if( $e =~ /\ATo:[ ](.*)\z/ ) {
                 if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -136,26 +127,26 @@ sub inquire {
                 $recipients++;
                 next;
 
-            } elsif( $e =~ /\AFrom:[ \t](.+)\z/ ) {
+            } elsif( $e =~ /\AFrom:[ ](.+)\z/ ) {
                 # From: kijitora <kijitora@example.jp>
                 $senderaddr ||= Sisimai::Address->s3s4($1);
 
-            } elsif( $e =~ /\ASubject:[ \t](.+)\z/ ) {
+            } elsif( $e =~ /\ASubject:[ ](.+)\z/ ) {
                 #   Subject:
                 $subjecttxt ||= $1;
 
             } else {
                 # Message could not be delivered to mobile.
                 # Error: No valid recipients for this MM
-                $v->{'diagnosis'} = $e if $e =~ /\AError:[ \t]+(.+)\z/;
+                $v->{'diagnosis'} = $e if $e =~ /\AError:[ ]+(.+)\z/;
             }
         }
     }
     return undef unless $recipients;
 
     # Set the value of "MAIL FROM:" and "From:"
-    $emailsteak->[1] .= sprintf("From: %s\n", $senderaddr) unless $emailsteak->[1] =~ /^From: /m;
-    $emailsteak->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailsteak->[1] =~ /^Subject: /m;
+    $emailparts->[1] .= sprintf("From: %s\n",    $senderaddr) unless $emailparts->[1] =~ /^From: /m;
+    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailparts->[1] =~ /^Subject: /m;
 
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
@@ -167,7 +158,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -207,7 +198,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

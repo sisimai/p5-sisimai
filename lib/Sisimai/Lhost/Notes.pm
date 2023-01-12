@@ -19,7 +19,7 @@ sub inquire {
     return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr|^-------[ ]Returned[ ]Message[ ]--------|m;
+    state $boundaries = ['------- Returned Message --------'];
     state $startingof = { 'message' => ['------- Failure Reasons '] };
     state $messagesof = {
         'userunknown' => [
@@ -30,7 +30,7 @@ sub inquire {
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $removedmsg = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';
@@ -40,7 +40,7 @@ sub inquire {
     # Get character set name, Content-Type: text/plain; charset=ISO-2022-JP
     my $characters = $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/ ? lc $1 : '';
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -94,7 +94,7 @@ sub inquire {
 
     unless( $recipients ) {
         # Fallback: Get the recpient address from RFC822 part
-        if( $emailsteak->[1] =~ /^To:[ ]*(.+)$/m ) {
+        if( $emailparts->[1] =~ /^To:[ ]*(.+)$/m ) {
             $v->{'recipient'} = Sisimai::Address->s3s4($1);
             $recipients++ if $v->{'recipient'};
         }
@@ -113,7 +113,7 @@ sub inquire {
             last;
         }
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -153,7 +153,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

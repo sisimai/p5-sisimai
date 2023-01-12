@@ -17,10 +17,11 @@ sub inquire {
     my $mbody = shift // return undef;
 
     # 'from'    => qr/\AMail Delivery Subsystem/,
-    return undef unless $mhead->{'subject'} =~ /\AReturned mail: [A-Z]/;
+    return undef unless index($mhead->{'subject'}, 'Returned mail: ') == 0;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
-    state $rebackbone = qr/^[ ]+-----[ ](?:Unsent[ ]message[ ]follows|No[ ]message[ ]was[ ]collected)[ ]-----/m;
+    state $boundaries = ['   ----- Unsent message follows -----', '  ----- No message was collected -----'];
     state $startingof = { 'message' => ['----- Transcript of session follows -----'] };
     state $markingsof = {
         # Error text regular expressions which defined in src/savemail.c
@@ -42,8 +43,8 @@ sub inquire {
         'error' => qr/\A[.]+ while talking to .+[:]\z/,
     };
 
-    my $emailsteak = Sisimai::RFC5322->fillet($mbody, $rebackbone);
-    return undef unless length $emailsteak->[1];
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+    return undef unless length $emailparts->[1] > 0;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -54,7 +55,7 @@ sub inquire {
     my $errorindex = -1;
     my $v = undef;
 
-    for my $e ( split("\n", $emailsteak->[0]) ) {
+    for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
@@ -73,7 +74,7 @@ sub inquire {
         # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A\d{3}[ \t]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ \t]*(.+)\z/ ) {
+        if( $e =~ /\A\d{3}[ ]+[<]([^ ]+[@][^ ]+)[>][.]{3}[ ]*(.+)\z/ ) {
             # 550 <kijitora@example.org>... User unknown
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -83,21 +84,21 @@ sub inquire {
             $v->{'recipient'} = $1;
             $v->{'diagnosis'} = $2;
 
-            if( $responding[ $recipients ] ) {
+            if( $responding[$recipients] ) {
                 # Concatenate the response of the server and error message
                 $v->{'diagnosis'} .= ': '.$responding[$recipients];
             }
             $recipients++;
 
-        } elsif( $e =~ /\A[>]{3}[ \t]*([A-Z]{4})[ \t]*/ ) {
+        } elsif( index($e, '>>> ') == 0 ) {
             # >>> RCPT To:<kijitora@example.org>
-            $commandset[ $recipients ] = $1;
+            $commandset[$recipients] = Sisimai::SMTP::Command->find($e);
 
         } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
             # <<< Response
             # <<< 501 <shironeko@example.co.jp>... no access from mail server [192.0.2.55] which is an open relay.
             # <<< 550 Requested User Mailbox not found. No such user here.
-            $responding[ $recipients ] = $1;
+            $responding[$recipients] = $1;
 
         } else {
             # Detect SMTP session error or connection error
@@ -110,11 +111,11 @@ sub inquire {
             }
 
             # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
-            $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ \t]+.+[.]{3}[ \t]*(.+)\z/;
+            $anotherset->{'diagnosis'} = $1 if $e =~ /\A\d{3}[ ]+.+[.]{3}[ ]*(.+)\z/;
         }
     }
 
-    if( $recipients == 0 && $emailsteak->[1] =~ /^To:[ ]*(.+)/m ) {
+    if( $recipients == 0 && $emailparts->[1] =~ /^To:[ ](.+)/m ) {
         # Get the recipient address from "To:" header at the original message
         $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
         $recipients = 1;
@@ -124,7 +125,6 @@ sub inquire {
     for my $e ( @$dscontents ) {
         $errorindex++;
         delete $e->{'sessionerr'};
-        $e->{'command'} = $commandset[$errorindex] || '';
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
@@ -135,13 +135,14 @@ sub inquire {
             $e->{'diagnosis'} ||= $responding[$errorindex];
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $e->{'command'} = $commandset[$errorindex] || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
 
         # @example.jp, no local part
         # Get email address from the value of Diagnostic-Code header
         next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
         $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailsteak->[1] };
+    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 
 1;
@@ -181,7 +182,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
