@@ -373,7 +373,6 @@ sub find {
         $e->{'address'} =~ s/[^A-Za-z]\z//g unless index($e->{'address'}, '@[') > 1;
 
         if( index($e->{'address'}, '"@') < 0 ) {
-            #unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
             # Remove double-quotations
             substr($e->{'address'},  0, 1, '') if substr($e->{'address'},  0, 1) eq '"';
             substr($e->{'address'}, -1, 1, '') if substr($e->{'address'}, -1, 1) eq '"';
