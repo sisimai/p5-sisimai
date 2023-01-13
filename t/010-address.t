@@ -322,9 +322,9 @@ MAKETEST: {
     UNDISCLOSED: {
         my $r = 'undisclosed-recipient-in-headers@libsisimai.org.invalid';
         my $s = 'undisclosed-sender-in-headers@libsisimai.org.invalid';
-        is $p->undisclosed('r'), $r,    sprintf("%s->undisclosed(r) = %s", $p, $r);
-        is $p->undisclosed('s'), $s,    sprintf("%s->undisclosed(s) = %s", $p, $s);
-        is $p->undisclosed(''),  undef, sprintf("%s->undisclosed() = undef", $p);
+        is $p->undisclosed(1), $r, sprintf("%s->undisclosed(r) = %s", $p, $r);
+        is $p->undisclosed(0), $s, sprintf("%s->undisclosed(s) = %s", $p, $s);
+        is $p->undisclosed(2), $r, sprintf("%s->undisclosed() = %s", $p, $r);
     }
 }
 

@@ -44,14 +44,12 @@ BUILD_REGULAR_EXPRESSIONS: {
 
 sub undisclosed {
     # Return pseudo recipient or sender address
-    # @param    [String] atype  Address type: 'r' or 's'
+    # @param    [String] argv0  Address type: true = recipient, false = sender
     # @return   [String, undef] Pseudo recipient address or sender address or undef when the $atype
     #                           is neither 'r' nor 's'
     my $class = shift;
-    my $atype = shift || return undef;
-
-    return undef unless $atype =~ /\A(?:r|s)\z/;
-    my $local = $atype eq 'r' ? 'recipient' : 'sender';
+    my $argv0 = shift // 0;
+    my $local = $argv0 ? 'recipient' : 'sender';
     return sprintf("undisclosed-%s-in-headers%slibsisimai.org.invalid", $local, '@');
 }
 

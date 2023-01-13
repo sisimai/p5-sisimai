@@ -262,7 +262,7 @@ sub inquire {
 
         } else {
             # Insert pseudo recipient address when there is no valid recipient address in the message.
-            $dscontents->[-1]->{'recipient'} = Sisimai::Address->undisclosed('r');
+            $dscontents->[-1]->{'recipient'} = Sisimai::Address->undisclosed(1);
         }
         $recipients = 1;
     }
