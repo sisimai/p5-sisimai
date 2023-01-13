@@ -12,29 +12,28 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $mfrom = lc $mhead->{'from'};
+    my $match = 0;
 
-    return undef unless ref($mhead) eq 'HASH';
-    return undef unless lc($mhead->{'from'}) =~ /\A(?:mail delivery subsystem|mailer-daemon|postmaster)/;
-    return undef unless ref($mbody) eq 'SCALAR';
-    return undef unless $$mbody;
+    while(1) {
+        $match ||= 1 if index($mfrom, 'mail delivery subsystem') == 0;
+        $match ||= 1 if index($mfrom, 'mailer-daemon') == 0;
+        $match ||= 1 if index($mfrom, 'postmaster') == 0;
+        last;
+    }
+    return undef unless $match > 0;
+    return undef unless length $$mbody;
 
     state $agentnames = {
         # dovecot/src/deliver/deliver.c
         # 11: #define DEFAULT_MAIL_REJECTION_HUMAN_REASON \
         # 12: "Your message to <%t> was automatically rejected:%n%r"
-        'dovecot'    => qr/\AYour message to [^ ]+ was automatically rejected:\z/,
-        'mail.local' => qr/\Amail[.]local: /,
-        'procmail'   => qr/\Aprocmail: /,
-        'maildrop'   => qr/\Amaildrop: /,
-        'vpopmail'   => qr/\Avdelivermail: /,
-        'vmailmgr'   => qr/\Avdeliver: /,
-    };
-    state $markingsof = {
-        'message' => qr{\A(?>
-                         Your[ ]message[ ]to[ ][^ ]+[ ]was[ ]automatically[ ]rejected:\z
-                        |(?:mail[.]local|procmail|maildrop|vdelivermail|vdeliver):[ ]
-                        )
-                     }x,
+        'dovecot'    => ['Your message to ', ' was automatically rejected:'],
+        'mail.local' => ['mail.local: '],
+        'procmail'   => ['procmail: '],
+        'maildrop'   => ['maildrop: '],
+        'vpopmail'   => ['vdelivermail: '],
+        'vmailmgr'   => ['vdeliver: '],
     };
 
     # dovecot/src/deliver/mail-send.c:94
@@ -92,38 +91,32 @@ sub inquire {
         },
     };
 
-    my $agentname0 = '';    # [String] MDA name
+    my $deliversby = '';    # [String] Mail Delivery Agent name
     my $reasonname = '';    # [String] Error reason
     my $bouncemesg = '';    # [String] Error message
-    my @linebuffer;
+    my @linebuffer = split(/\n/, $$mbody);
 
-    for my $e ( split("\n", $$mbody) ) {
-        # Check each line with each MDA's symbol regular expression.
-        if( $agentname0 eq '' ) {
-            # Try to match with each regular expression
-            next unless $e;
-            next unless $e =~ $markingsof->{'message'};
+    for my $e ( keys %$agentnames ) {
+        # Find a mail delivery agent name from the entire message body
+        my $p = index($$mbody, $agentnames->{ $e }->[0]); next if $p == -1;
 
-            for my $f ( keys %$agentnames ) {
-                # Detect the agent name from the line
-                next unless $e =~ $agentnames->{ $f };
-                $agentname0 = $f;
-                last;
-            }
+        if( scalar $agentnames->{ $e }->@* > 1 ) {
+            # Try to find the 2nd element
+            my $q = index($$mbody, $agentnames->{ $e }->[1]);
+            next if $q == -1;
+            next if $p > $q;
         }
 
-        # Append error message lines to @linebuffer
-        push @linebuffer, $e;
-        last unless length $e;
+        $deliversby = $e;
+        last;
     }
-    return undef unless $agentname0;
-    return undef unless scalar @linebuffer;
+    return undef unless $deliversby;
 
-    for my $e ( keys $messagesof->{ $agentname0 }->%* ) {
+    for my $e ( keys $messagesof->{ $deliversby }->%* ) {
         # Detect an error reason from message patterns of the MDA.
         for my $f ( @linebuffer ) {
             # Whether the error message include each message defined in $messagesof
-            next unless grep { index(lc($f), $_) > -1 } $messagesof->{ $agentname0 }->{ $e }->@*;
+            next unless grep { index(lc($f), $_) > -1 } $messagesof->{ $deliversby }->{ $e }->@*;
             $reasonname = $e;
             $bouncemesg = $f;
             last;
@@ -132,7 +125,7 @@ sub inquire {
     }
 
     return {
-        'mda'     => $agentname0,
+        'mda'     => $deliversby,
         'reason'  => $reasonname // '',
         'message' => $bouncemesg // '',
     };
@@ -181,7 +174,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
