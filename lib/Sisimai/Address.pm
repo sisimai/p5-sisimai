@@ -321,7 +321,7 @@ sub find {
                     # Display name like "Neko, Nyaan"
                     $v->{'name'} .= $e;
                     next unless $readcursor & $indicators->{'quoted-string'};
-                    next if $v->{'name'} =~ /\x5c["]\z/;    # "Neko, Nyaan \"...
+                    next if substr($v->{'name'}, -2, 2) eq qq|\x5c"|;   # "Neko, Nyaan \"...
                     $readcursor &= ~$indicators->{'quoted-string'};
                     $p = '';
                 }
@@ -364,7 +364,7 @@ sub find {
     for my $e ( @readbuffer ) {
         # The element must not include any character except from 0x20 to 0x7e.
         next if $e->{'address'} =~ /[^\x20-\x7e]/;
-        unless( $e->{'address'} =~ /\A.+[@].+\z/ ) {
+        unless( index($e->{'address'}, '@') > 0 ) {
             # Allow if the argument is MAILER-DAEMON
             next unless __PACKAGE__->is_mailerdaemon($e->{'address'});
         }
@@ -374,7 +374,8 @@ sub find {
         s/\A[\[<{('`]//g, s/[.,'`>});]\z//g for $e->{'address'};
         $e->{'address'} =~ s/[^A-Za-z]\z//g unless index($e->{'address'}, '@[') > 1;
 
-        unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
+        if( index($e->{'address'}, '"@') < 0 ) {
+            #unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
             # Remove double-quotations
             substr($e->{'address'},  0, 1, '') if substr($e->{'address'},  0, 1) eq '"';
             substr($e->{'address'}, -1, 1, '') if substr($e->{'address'}, -1, 1) eq '"';
@@ -609,7 +610,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
