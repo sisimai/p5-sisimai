@@ -170,7 +170,7 @@ sub inquire {
                 if( $v->{'diagnosis'} ) {
                     # Do not capture "Diagnostic-Code:" field because error message have already
                     # been captured
-                    next if $o->[0] =~ /\A(?:diagnostic-code|final-recipient)\z/;
+                    next if $o->[0] eq 'diagnostic-code' || $o->[0] eq 'final-recipient';
                     $v->{ $fieldtable->{ $o->[0] } } = $o->[2];
 
                     next unless $f == 1;

@@ -15,9 +15,14 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
     # Content-Language: en-US, fr-FR
-    return undef unless $mhead->{'subject'} =~ /\A(?:Undeliverable|Non_remis_|Non[ ]recapitabile):/;
+    $match ||= 1 if index($mhead->{'subject'}, 'Undeliverable')    == 0;
+    $match ||= 1 if index($mhead->{'subject'}, 'Non_remis_')       == 0;
+    $match ||= 1 if index($mhead->{'subject'}, 'Non recapitabile') == 0;
+    return undef unless $match > 0;
+
     return undef unless defined $mhead->{'content-language'};
     return undef unless $mhead->{'content-language'} =~ /\A[a-z]{2}(?:[-][A-Z]{2})?\z/;
 

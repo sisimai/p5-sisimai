@@ -81,7 +81,7 @@ sub inquire {
             $v ||= $dscontents->[-1];
             $p   = $e->{'response'};
 
-            if( $e->{'command'} =~ /\A(?:EHLO|HELO)/ ) {
+            if( $e->{'command'} eq 'EHLO' || $e->{'command'} eq 'HELO' ) {
                 # Use the argument of EHLO/HELO command as a value of "lhost"
                 $v->{'lhost'} = $e->{'argument'};
 
