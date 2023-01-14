@@ -50,6 +50,7 @@ sub true {
 
     require Sisimai::Reason::UserUnknown;
     my $diagnostic = lc $argvs->{'diagnosticcode'};
+    my $thecommand = $argvs->{'smtpcommand'} || '';
     if( $tempreason eq 'filtered' ) {
         # Delivery status code points "filtered".
         return 1 if Sisimai::Reason::UserUnknown->match($diagnostic);
@@ -59,7 +60,8 @@ sub true {
         # The value of "reason" isn't "filtered" when the value of "smtpcommand" is an SMTP command
         # to be sent before the SMTP DATA command because all the MTAs read the headers and the
         # entire message body after the DATA command.
-        return 0 if $argvs->{'smtpcommand'} =~ /\A(?:CONN|EHLO|HELO|MAIL|RCPT)\z/;
+        return 0 if $thecommand eq 'CONN' || $thecommand eq 'EHLO' || $thecommand eq 'HELO'
+                 || $thecommand eq 'MAIL' || $thecommand eq 'RCPT';
         return 1 if __PACKAGE__->match($diagnostic);
         return 1 if Sisimai::Reason::UserUnknown->match($diagnostic);
     }
@@ -122,7 +124,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

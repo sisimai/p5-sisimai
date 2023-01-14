@@ -15,9 +15,11 @@ sub true {
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
+    my $reply = int($argvs->{'replycode'} || 0);
 
     return 1 if $argvs->{'reason'} eq 'syntaxerror';
-    return 1 if $argvs->{'replycode'} =~ /\A[45]0[1-7]\z/;
+    return 1 if $reply > 400 && $reply < 408;
+    return 1 if $reply > 500 && $reply < 508;
     return 0;
 }
 

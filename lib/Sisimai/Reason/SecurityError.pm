@@ -34,8 +34,8 @@ sub match {
         ['authentification requise', '402'],
         ['domain ', ' is a dead domain'],
         ['user ', ' is not authorized to perform ses:sendrawemail on resource'],
+        ['authentification invalide', '305'],
     ];
-    state $regex = qr/codes?[ ]d'?[ ]*authentification[ ]invalide.+[0-9a-z_]+305/;
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep {
@@ -43,7 +43,6 @@ sub match {
         my $q = index($argv1, $_->[1], $p) + 1;
         $p * $q > 0;
     } @$pairs;
-    return 1 if $argv1 =~ $regex;
     return 0;
 }
 

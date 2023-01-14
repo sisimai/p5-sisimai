@@ -95,7 +95,7 @@ sub true {
 
     # Check the value of Diagnosic-Code: header with patterns
     my $diagnostic = lc $argvs->{'diagnosticcode'};
-    my $thecommand = $argvs->{'smtpcommand'};
+    my $thecommand = $argvs->{'smtpcommand'} || '';
     if( $thecommand eq 'MAIL' ) {
         # The session was rejected at 'MAIL FROM' command
         return 1 if __PACKAGE__->match($diagnostic);
@@ -106,7 +106,8 @@ sub true {
             # Except "userunknown"
             return 1 if __PACKAGE__->match($diagnostic);
         }
-    } elsif( $tempreason =~ /\A(?:onhold|undefined|securityerror|systemerror)\z/ ) {
+    } elsif( $tempreason eq 'onhold' || $tempreason eq 'undefined' ||
+             $tempreason eq 'securityerror' || $tempreason eq 'systemerror' ) {
         # Try to match with message patterns when the temporary reason is "onhold", "undefined",
         # "securityerror", or "systemerror"
         return 1 if __PACKAGE__->match($diagnostic);

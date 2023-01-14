@@ -49,8 +49,12 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return 0 if $argvs->{'reason'}      =~ /\A(?:securityerror|systemerror|undefined)\z/;
-    return 0 if $argvs->{'smtpcommand'} =~ /\A(?:CONN|EHLO|HELO)\z/;
+    return 0 if $argvs->{'reason'} eq 'securityerror'
+             || $argvs->{'reason'} eq 'systemerror'
+             || $argvs->{'reason'} eq 'undefined';
+    return 0 if $argvs->{'smtpcommand'} eq 'CONN'
+             || $argvs->{'smtpcommand'} eq 'EHLO'
+             || $argvs->{'smtpcommand'} eq 'HELO';
     return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0;
 }
@@ -105,7 +109,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
