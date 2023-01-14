@@ -3,6 +3,20 @@ use feature ':5.10';
 use strict;
 use warnings;
 
+sub test {
+    # Check that an SMTP command in the argument is valid or not
+    # @param    [String] argv0  An SMTP command
+    # @return   [Boolean]       0: Is not a valid SMTP command, 1: Is a valid SMTP command
+    # @since v5.0.0
+    my $class = shift;
+    my $argv0 = shift // return undef;
+
+    return undef unless length $argv0 > 3;
+    return 1 if grep { index($argv0, $_) > -1 } (qw|HELO EHLO MAIL RCPT DATA QUIT AUTH STARTTLS|);
+    return 1 if index($argv0, 'CONN') > -1; # CONN is a pseudo SMTP command used only in Sisimai
+    return 0;
+}
+
 sub find {
     # Pick an SMTP command from the given string
     # @param    [String] argv0  A transcript text MTA returned
@@ -11,9 +25,7 @@ sub find {
     # @since v5.0.0
     my $class = shift;
     my $argv0 = shift // return undef;
-
-    return undef unless length $argv0 > 3;
-    return undef unless $argv0 =~ /(?:HELO|EHLO|STARTTLS|AUTH|MAIL|RCPT|DATA)/;
+    return undef unless __PACKAGE__->test($argv0);
 
     state $detectable = [
         'HELO', 'EHLO', 'STARTTLS', 'AUTH PLAIN', 'AUTH LOGIN', 'AUTH CRAM-', 'AUTH DIGEST-',
@@ -57,6 +69,13 @@ Sisimai::SMTP::Command - SMTP Command related utilities
 Sisimai::SMTP::Command is a class for finding the last SMTP command from given error message.
 
 =head1 CLASS METHODS
+
+=head2 C<B<test(I<String>)>>
+
+C<test()> checks whether an SMTP command is a valid command or not
+
+    print Sisimai::SMTP::Command->test('STARTTLS'); # 1
+    print Sisimai::SMTP::Command->test('NEKO');     # 0
 
 =head2 C<B<find(I<String>)>>
 

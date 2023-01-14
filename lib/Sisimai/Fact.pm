@@ -9,6 +9,7 @@ use Sisimai::Reason;
 use Sisimai::Address;
 use Sisimai::DateTime;
 use Sisimai::Time;
+use Sisimai::SMTP::Command;
 use Sisimai::SMTP::Error;
 use Sisimai::String;
 use Sisimai::Rhost;
@@ -242,7 +243,7 @@ sub rise {
             $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ /\A(?:feedback|vacation)\z/;
 
             # Check the value of SMTP command
-            $p->{'smtpcommand'} = '' unless $p->{'smtpcommand'} =~ /\A(?:CONN|EHLO|HELO|STARTTLS|AUTH|MAIL|RCPT|DATA|QUIT)\z/;
+            $p->{'smtpcommand'} = '' unless Sisimai::SMTP::Command->test($p->{'smtpcommand'});
         }
 
         CONSTRUCTOR: {
