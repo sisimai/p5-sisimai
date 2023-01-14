@@ -69,7 +69,7 @@ sub rise {
                 $cursession = $esmtp->[-1];
                 $cursession->{'command'} = uc $thecommand;
 
-                if( $thecommand =~ /\A(?:MAIL|RCPT|XFORWARD)/ ) {
+                if( $thecommand eq 'MAIL' || $thecommand eq 'RCPT' || $thecommand eq 'XFORWARD' ) {
                     # MAIL or RCPT
                     if( $commandarg =~ /\A(?:FROM|TO):[ ]*<(.+[@].+)>[ ]*(.*)\z/ ) {
                         # >>> MAIL FROM: <neko@example.com> SIZE=65535
@@ -97,9 +97,8 @@ sub rise {
             }
         } else {
             # SMTP server sent a response "<<< response text"
-            next unless index($e, '<<< ') == 0;
+            my $p = index($e, '<<< '); next unless $p == 0; substr($e, $p, 4, '');
 
-            $e =~ s/\A<<<[ ]//;
             $cursession->{'response'}->{'reply'}  = $1 if $e =~ /\A([2-5]\d\d)[ ]/;
             $cursession->{'response'}->{'status'} = $1 if $e =~ /\A[245]\d\d[ ]([245][.]\d{1,3}[.]\d{1,3})[ ]/;
             push $cursession->{'response'}->{'text'}->@*, $e;
