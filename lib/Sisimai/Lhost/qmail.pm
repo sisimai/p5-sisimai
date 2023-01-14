@@ -182,7 +182,7 @@ sub inquire {
 
             if( index($e->{'diagnosis'}, 'Sorry, no SMTP connection got far enough; most progress was ') > -1 ) {
                 # Get the last SMTP command:from the error message
-                $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'});
+                $e->{'command'} ||= Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
             }
         }
 

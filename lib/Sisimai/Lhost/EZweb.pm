@@ -126,7 +126,7 @@ sub inquire {
             next if Sisimai::String->is_8bit(\$e);
             if( index($e, ' >>> ') > -1 ) {
                 #    >>> RCPT TO:<******@ezweb.ne.jp>
-                $v->{'command'} = Sisimai::SMTP::Command->find($e);
+                $v->{'command'} = Sisimai::SMTP::Command->find($e) || '';
 
             } else {
                 # Check error message
