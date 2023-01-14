@@ -67,7 +67,9 @@ sub get {
     return 'delivered' if substr($argvs->{'deliverystatus'}, 0, 2) eq '2.';
 
     my $reasontext = '';
-    if( $argvs->{'diagnostictype'} eq 'SMTP' || $argvs->{'diagnostictype'} eq '' ) {
+    my $issuedcode = $argvs->{'diagnosticcode'} || '';
+    my $codeformat = $argvs->{'diagnostictype'} || '';
+    if( $codeformat eq 'SMTP' || $codeformat eq '' ) {
         # Diagnostic-Code: SMTP; ... or empty value
         for my $e ( $ClassOrder->[0]->@* ) {
             # Check the values of Diagnostic-Code: and Status: fields using true() method of each
@@ -90,8 +92,8 @@ sub get {
 
         # Try to match with message patterns in Sisimai::Reason::Vacation
         require Sisimai::Reason::Vacation;
-        $reasontext   = 'vacation' if Sisimai::Reason::Vacation->match(lc $argvs->{'diagnosticcode'});
-        $reasontext ||= 'onhold'   if $argvs->{'diagnosticcode'};
+        $reasontext   = 'vacation' if Sisimai::Reason::Vacation->match(lc $issuedcode);
+        $reasontext ||= 'onhold'   if $issuedcode;
         $reasontext ||= 'undefined';
     }
     return $reasontext;
@@ -107,14 +109,16 @@ sub anotherone {
     return $argvs->{'reason'} if $argvs->{'reason'};
 
     require Sisimai::SMTP::Status;
-    my $statuscode = $argvs->{'deliverystatus'} // '';
+    my $issuedcode = lc $argvs->{'diagnosticcode'} // '';
+    my $codeformat = $argvs->{'diagnostictype'}    // '';
+    my $actiontext = $argvs->{'action'}            // '';
+    my $statuscode = $argvs->{'deliverystatus'}    // '';
     my $reasontext = Sisimai::SMTP::Status->name($statuscode) || '';
 
     TRY_TO_MATCH: while(1) {
-        my $diagnostic   = lc $argvs->{'diagnosticcode'} // '';
         my $trytomatch   = $reasontext eq '' ? 1 : 0;
            $trytomatch ||= 1 if exists $GetRetried->{ $reasontext };
-           $trytomatch ||= 1 if $argvs->{'diagnostictype'} ne 'SMTP';
+           $trytomatch ||= 1 if $codeformat ne 'SMTP';
         last unless $trytomatch;
 
         # Could not decide the reason by the value of Status:
@@ -123,7 +127,7 @@ sub anotherone {
             my $p = 'Sisimai::Reason::'.$e;
             require $ModulePath->{ $p };
 
-            next unless $p->match($diagnostic);
+            next unless $p->match($issuedcode);
             $reasontext = lc $e;
             last;
         }
@@ -138,8 +142,8 @@ sub anotherone {
             #  X.7.0   Other or undefined security status
             $reasontext = 'securityerror';
 
-        } elsif( $argvs->{'diagnostictype'} =~ /\AX[-](?:UNIX|POSTFIX)\z/ ) {
-            # Diagnostic-Code: X-UNIX; ...
+        } elsif( CORE::index($codeformat, 'X-UNIX') == 0 ) {
+            # Diagnostic-Code: X-UNIX; ..., X-Postfix, or other X-*
             $reasontext = 'mailererror';
 
         } else {
@@ -150,7 +154,7 @@ sub anotherone {
         last(TRY_TO_MATCH) if $reasontext;
 
         # Check the value of Action: field, first
-        if( $argvs->{'action'} =~ /\A(?:delayed|expired)/ ) {
+        if( CORE::index($actiontext, 'delayed') == 0 || CORE::index($actiontext, 'expired') == 0 ) {
             # Action: delayed, expired
             $reasontext = 'expired';
 
@@ -175,7 +179,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     my $reasontext = '';
-    my $diagnostic = lc $argv1;
+    my $issuedcode = lc $argv1;
 
     # Diagnostic-Code: SMTP; ... or empty value
     for my $e ( $ClassOrder->[2]->@* ) {
@@ -184,23 +188,21 @@ sub match {
         my $p = 'Sisimai::Reason::'.$e;
         require $ModulePath->{ $p };
 
-        next unless $p->match($diagnostic);
+        next unless $p->match($issuedcode);
         $reasontext = $p->text;
         last;
     }
     return $reasontext if $reasontext;
 
-    # Check the value of $typestring
-    my $typestring = uc($argv1) =~ /\A(SMTP|X-.+);/ ? uc($1) : '';
-    if( $typestring eq 'X-UNIX' ) {
+    if( uc $issuedcode eq 'X-UNIX' ) {
         # X-Unix; ...
         $reasontext = 'mailererror';
 
     } else {
         # Detect the bounce reason from "Status:" code
         require Sisimai::SMTP::Status;
-        my $statuscode = Sisimai::SMTP::Status->find($argv1) || '';
-        $reasontext = Sisimai::SMTP::Status->name($statuscode) || 'undefined';
+        my $cv = Sisimai::SMTP::Status->find($argv1)   || '';
+        $reasontext = Sisimai::SMTP::Status->name($cv) || 'undefined';
     }
     return $reasontext;
 }

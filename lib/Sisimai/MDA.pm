@@ -12,6 +12,10 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+
+    return undef unless defined $mhead;
+    return undef unless length $$mbody;
+
     my $mfrom = lc $mhead->{'from'};
     my $match = 0;
 
@@ -22,7 +26,6 @@ sub inquire {
         last;
     }
     return undef unless $match > 0;
-    return undef unless length $$mbody;
 
     state $agentnames = {
         # dovecot/src/deliver/deliver.c
