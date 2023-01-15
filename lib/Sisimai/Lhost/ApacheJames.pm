@@ -66,23 +66,23 @@ sub inquire {
         #   Number of lines: 64
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ ][ ]RCPT[ ]TO:[ ]([^ ]+[@][^ ]+)\z/ ) {
+        if( index($e, '  RCPT TO: ') == 0 ) {
             #   RCPT TO: kijitora@example.org
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = substr($e, 12,);
             $recipients++;
 
-        } elsif( $e =~ /\A[ ][ ]Sent[ ]date:[ ](.+)\z/ ) {
+        } elsif( index($e, '  Sent date: ') == 0 ) {
             #   Sent date: Thu Apr 29 01:20:50 JST 2015
-            $v->{'date'} = $1;
+            $v->{'date'} = substr($e, 13,);
 
-        } elsif( $e =~ /\A[ ][ ]Subject:[ ](.+)\z/ ) {
+        } elsif( index($e, '  Subject: ') == 0 ) {
             #   Subject: Nyaaan
-            $subjecttxt = $1;
+            $subjecttxt = substr($e, 11,)
 
         } else {
             next if $gotmessage == 1;

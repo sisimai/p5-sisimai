@@ -16,22 +16,18 @@ sub inquire {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
-    return undef if $mhead->{'from'} =~/[@].+[.]mail[.]ru[>]?/;
+    return undef if index($mhead->{'from'}, '.mail.ru') > 0;
 
     # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
     # X-Failed-Recipients: kijitora@example.ed.jp
     $match++ if index($mhead->{'from'}, 'Mail Delivery System') == 0;
-    $match++ if defined $mhead->{'message-id'} &&
-                $mhead->{'message-id'} =~ /\A[<]\w{7}[-]\w{6}[-]\w{2}[@]/;
-    $match++ if $mhead->{'subject'} =~ qr{(?:
-         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
-        |Warning:[ ]message[ ][^ ]+[ ]delayed[ ]+
-        |Delivery[ ]Status[ ]Notification
-        |Mail[ ]failure
-        |Message[ ]frozen
-        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
-        )
-    }x;
+    $match++ if defined $mhead->{'message-id'} && $mhead->{'message-id'} =~ /\A[<]\w{7}[-]\w{6}[-]\w{2}[@]/;
+    $match++ if grep { index($mhead->{'subject'}, $_) > -1 } ( 'Delivery Status Notification',
+                                                               'Mail delivery failed',
+                                                               'Mail failure',
+                                                               'Message frozen',
+                                                               'Warning: message ',
+                                                               'error(s) in forwarding or filtering');
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
@@ -43,9 +39,8 @@ sub inquire {
         '------ This is a copy of the message, including all the headers. ------',
         'Content-Type: message/rfc822',
     ];
-    state $startingof = { 'deliverystatus' => ['Content-Type: message/delivery-status'] };
-    state $markingsof = {
-        # Error text regular expressions which defined in exim/src/deliver.c
+    state $startingof = {
+        # Error text strings which defined in exim/src/deliver.c
         #
         # deliver.c:6292| fprintf(f,
         # deliver.c:6293|"This message was created automatically by mail delivery software.\n");
@@ -62,18 +57,19 @@ sub inquire {
         # deliver.c:6304|"could not be delivered to one or more of its recipients. The following\n"
         # deliver.c:6305|"address(es) failed:\n", sender_address);
         # deliver.c:6306|          }
-        'alias'   => qr/\A([ ]+an undisclosed address)\z/,
-        'message' => qr{\A(?>
-             This[ ]message[ ]was[ ]created[ ]automatically[ ]by[ ]mail[ ]delivery[ ]software[.]
-            |A[ ]message[ ]that[ ]you[ ]sent[ ]was[ ]rejected[ ]by[ ]the[ ]local[ ]scannning[ ]code
-            |A[ ]message[ ]that[ ]you[ ]sent[ ]contained[ ]one[ ]or[ ]more[ ]recipient[ ]addresses[ ]
-            |A[ ]message[ ]that[ ]you[ ]sent[ ]could[ ]not[ ]be[ ]delivered[ ]to[ ]all[ ]of[ ]its[ ]recipients
-            |Message[ ][^ ]+[ ](?:has[ ]been[ ]frozen|was[ ]frozen[ ]on[ ]arrival)
-            |The[ ][^ ]+[ ]router[ ]encountered[ ]the[ ]following[ ]error[(]s[)]:
-            )
-        }x,
-        'frozen'  => qr/\AMessage [^ ]+ (?:has been frozen|was frozen on arrival)/,
+        'deliverystatus' => ['Content-Type: message/delivery-status'],
+        'frozen'         => [' has been frozen', ' was frozen on arrival'],
+        'message'        => [
+            'This message was created automatically by mail delivery software.',
+            'A message that you sent was rejected by the local scannning code',
+            'A message that you sent contained one or more recipient addresses ',
+            'A message that you sent could not be delivered to all of its recipients',
+            ' has been frozen',
+            ' was frozen on arrival',
+            ' router encountered the following error(s):',
+        ],
     };
+    state $markingsof = { 'alias' => qr/\A([ ]+an undisclosed address)\z/ };
     state $recommands = [
         # transports/smtp.c:564|  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
         # transports/smtp.c:837|  string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
@@ -169,9 +165,9 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( $e =~ $markingsof->{'message'} ) {
+            if( grep { index($e, $_) > -1 } $startingof->{'message'}->@* ) {
                 $readcursor |= $indicators->{'deliverystatus'};
-                next unless $e =~ $markingsof->{'frozen'};
+                next unless grep { index($e, $_) > -1 } $startingof->{'frozen'}->@*;
             }
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
@@ -230,7 +226,7 @@ sub inquire {
         } else {
             next unless length $e;
 
-            if( $e =~ $markingsof->{'frozen'} ) {
+            if( grep { index($e, $_) > -1 } $startingof->{'frozen'}->@* ) {
                 # Message *** has been frozen by the system filter.
                 # Message *** was frozen on arrival by ACL.
                 $v->{'alterrors'} .= $e.' ';

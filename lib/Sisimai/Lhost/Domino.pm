@@ -18,7 +18,14 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    return undef unless $mhead->{'subject'} =~ /\ADELIVERY(?:[ ]|_)FAILURE:/;
+    my $match = 0;
+
+    while(1) {
+        $match ||= 1 if index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
+        $match ||= 1 if index($mhead->{'subject'}, 'DELIVERY_FAILURE:') == 0;
+        last;
+    }
+    return undef unless $match > 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
@@ -80,10 +87,10 @@ sub inquire {
             $v->{'recipient'} ||= $e;
             $recipients++;
 
-        } elsif( $e =~ /\A[ ][ ]([^ ]+[@][^ ]+)\z/ ) {
+        } elsif( index($e, '  ') == 0 && index($e, '@') > -1 && index($e, ' ', 3) < 0 ) {
             # Continued from the line "was not delivered to:"
             #   kijitora@example.net
-            $v->{'recipient'} = Sisimai::Address->s3s4($1);
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, 2,));
 
         } elsif( $e eq 'because:' ) {
             # because:
@@ -94,9 +101,9 @@ sub inquire {
                 # Error message, continued from the line "because:"
                 $v->{'diagnosis'} = $e;
 
-            } elsif( $e =~ /\A[ ][ ]Subject: (.+)\z/ ) {
+            } elsif( index($e, '  Subject: ') == 0 ) {
                 #   Subject: Nyaa
-                $subjecttxt = $1;
+                $subjecttxt = substr($e, 11,); 
 
             } elsif( my $f = Sisimai::RFC1894->match($e) ) {
                 # There are some fields defined in RFC3464, try to match

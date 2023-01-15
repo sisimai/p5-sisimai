@@ -62,7 +62,8 @@ sub inquire {
         } else {
             #  ----- Transcript of session follows -----
             # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
-            next unless $e =~ /\A[0-9A-Za-z]+/;
+            my $p = ord(substr($e, 0, 1));
+            next if $p < 48 || $p > 122;
             next if length $v->{'diagnosis'};
             $v->{'diagnosis'} ||= $e;
         }

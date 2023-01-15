@@ -24,7 +24,8 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/partial'];
-    state $markingsof = { 'message' => qr/\A[ ]+[-]+[ ]*Transcript of session follows/ };
+    state $markingsof = { 'message' => '   ----- Transcript of session follows -----' };
+
 
     require Sisimai::SMTP::Command;
     require Sisimai::RFC1894;
@@ -45,7 +46,7 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $markingsof->{'message'}) == 0;
             next;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
@@ -96,9 +97,9 @@ sub inquire {
                     # >>> DATA
                     $thecommand = Sisimai::SMTP::Command->find($e);
 
-                } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
+                } elsif( index($e, '<<< ') == 0 ) {
                     # <<< Response
-                    $esmtpreply = $1;
+                    $esmtpreply = substr($e, 4,);
                 }
             } else {
                 # Continued line of the value of Diagnostic-Code field
