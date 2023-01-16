@@ -191,7 +191,7 @@ sub inquire {
         #
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ ]+([^ ]+[@][^ ]+)\z/ ) {
+        if( index($e, ' ') == 0 && index($e, '@') > 0 ) {
             # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -199,7 +199,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
 
-            my $r = Sisimai::Address->s3s4($1);
+            my $r = Sisimai::Address->s3s4(substr($e, rindex($e, ' ') + 1,));
             next unless Sisimai::Address->is_emailaddress($r);
             $v->{'recipient'} = $r;
             $recipients++;
@@ -230,7 +230,9 @@ sub inquire {
             }
         }
 
-        my $statecode0 = $e->{'diagnosis'} =~ /[(]state[ ](\d+)[)][.]/ ? $1 : 0;
+        my $p1 = rindex($e->{'diagnosis'}, ' ');
+        my $p2 = rindex($e->{'diagnosis'}, ')');
+        my $statecode0 = substr($e->{'diagnosis'}, $p1 + 1, $p2 - $p1 - 1) || 0;
         if( exists $statetable->{ $statecode0 } ) {
             # (state *)
             $e->{'reason'}  = $statetable->{ $statecode0 }->{'reason'};

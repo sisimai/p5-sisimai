@@ -22,6 +22,7 @@ sub inquire {
     # X-UI-Out-Filterresults: unknown:0;
     return undef unless defined $mhead->{'x-gmx-antispam'};
 
+    require Sisimai::Address;
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- The header of the original message is following. ---'];
@@ -57,7 +58,7 @@ sub inquire {
         # 5.1.1 <shironeko@example.jp>... User Unknown
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A["]([^ ]+[@][^ ]+)["]:\z/ || $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ) {
+        if( index($e, '@') > 1 && (index($e, '"') == 0 || index($e, '<') == 0) ) {
             # "shironeko@example.jp":
             # ---- OR ----
             # <kijitora@6jo.example.co.jp>
@@ -69,16 +70,16 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = Sisimai::Address->s3s4($e);
             $recipients++;
 
         } elsif( index($e, 'SMTP error ') == 0 ) {
             # SMTP error from remote server after RCPT command:
             $v->{'command'} = Sisimai::SMTP::Command->find($e);
 
-        } elsif( $e =~ /\Ahost:[ ]*(.+)\z/ ) {
+        } elsif( index($e, 'host: ') == 0 ) {
             # host: mx.example.jp
-            $v->{'rhost'} = $1;
+            $v->{'rhost'} = substr($e, 6, );
 
         } else {
             # Get error message

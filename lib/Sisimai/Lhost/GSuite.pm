@@ -23,9 +23,8 @@ sub inquire {
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $markingsof = {
-        'message' => qr/\A[*][*][ ].+[ ][*][*]\z/,
-        'error'   => qr/\AThe[ ]response([ ]from[ ]the[ ]remote[ ]server)?[ ]was:\z/,
-        'html'    => qr{\AContent-Type:[ ]text/html;[ ]charset=['"]?(?:UTF|utf)[-]8['"]?\z},
+        'message' => ['** '],
+        'error'   => ['The response was:', 'The response from the remote server was:'],
     };
     state $messagesof = {
         'userunknown'  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
@@ -53,7 +52,7 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if grep { index($e, $_) == 0 } $markingsof->{'message'}->@*;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
 
@@ -105,7 +104,7 @@ sub inquire {
                 next if $endoferror;
                 $v->{'diagnosis'} .= $e;
 
-            } elsif( $e =~ $markingsof->{'error'} ) {
+            } elsif( grep { index($e, $_) == 0 } $markingsof->{'error'}->@* ) {
                 # The response from the remote server was:
                 $anotherset->{'diagnosis'} .= $e;
 
@@ -133,7 +132,7 @@ sub inquire {
                     #
                     # Your message wasn't delivered to * because the address couldn't be found.
                     # Check for typos or unnecessary spaces and try again.
-                    next unless $e =~ $markingsof->{'message'};
+                    next unless grep { index($e, $_) == 0 } $markingsof->{'message'}->@*;
                     $anotherset->{'diagnosis'} = $e;
                 }
             }
@@ -149,7 +148,7 @@ sub inquire {
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
-            if( $e->{'diagnosis'} =~ /\A\d+\z/ ) {
+            if( index($e->{'diagnosis'}, ' ') < 0 && int($e->{'diagnosis'}) > 0 ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $anotherset->{'diagnosis'};
 
