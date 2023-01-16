@@ -668,7 +668,7 @@ sub code {
 
 sub name {
     # Convert from the status code to the reason string
-    # @param    [String] state  Status code(DSN)
+    # @param    [String] argv1  Status code(DSN)
     # @return   [String]        Reason name or empty if the first argument did
     #                           not match with values in Sisimai's reason list
     # @see      code
@@ -676,8 +676,29 @@ sub name {
     my $class = shift;
     my $argv1 = shift || return undef;
 
-    return '' unless $argv1 =~ /\A[245][.]\d[.]\d+\z/;
+    return '' unless __PACKAGE__->test($argv1);
     return StandardCode->{ $argv1 } // '';
+}
+
+sub test {
+    # Check whether a status code is a valid code or not
+    # @param    [String] argv1  Status code(DSN)
+    # @return   [Boolean]       0 = Invalid status code, 1 = Valid status code
+    # @see      code
+    # @since v5.0.0
+    my $class = shift;
+    my $argv1 = shift || return undef;
+    my $token = [];
+
+    push @$token, int $_ for split(/[.]/, $argv1);
+    return 0 unless scalar @$token == 3;
+    return 0 if $token->[0] <  2;
+    return 0 if $token->[0] == 3;
+    return 0 if $token->[0] >  5;
+    return 0 if $token->[1] <  0;
+    return 0 if $token->[1] >  7;
+    return 0 if $token->[2] <  0;
+    return 1;
 }
 
 sub find {
@@ -750,6 +771,13 @@ C<name()> returns a reason string from the specified DSN value.
     print Sisimai::SMTP::Status->name('5.1.6');         # 'hasmoved'
     print Sisimai::SMTP::Status->name('4.2.3');         # 'exceedlimit'
 
+=head2 C<B<test(I<D.S.N.>)>>
+
+C<test()> checks whether a status code is a valid code or not.
+
+    print Sisimai::SMTP::Status->test('5.1.6'); # 1
+    print Sisimai::SMTP::Status->test('3.14');  # 0
+
 =head2 C<B<find(I<String>)>>
 
 C<find()> returns a DSN value only from the text including DSN
@@ -764,7 +792,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018,2020-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -66,10 +66,14 @@ MAKETEST: {
         }
     }
 
+    is $Package->test(''), undef, '->test("") = undef';
+    is $Package->test('3.14'), 0, '->test("3.14") = 0';
+
     is $Package->find(''), undef, '->find("") = undef';
     for my $e ( @$smtperrors ) {
         $v = $Package->find($e);
         like $v, qr/\A[245][.]\d[.]\d\z/, '->find() returns '.$v;
+        is $Package->test($v), 1, '->test() returns 1';
     }
 }
 
