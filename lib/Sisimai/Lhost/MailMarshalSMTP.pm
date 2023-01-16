@@ -55,7 +55,7 @@ sub inquire {
         #    dummyuser@blabla.xxxxxxxxxxxx.com
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ ]{4}([^ ]+[@][^ ]+)\z/ ) {
+        if( index($e, '    ') == 0 && index($e, '@') > 1 ) {
             # The following recipients were affected:
             #    dummyuser@blabla.xxxxxxxxxxxx.com
             if( $v->{'recipient'} ) {
@@ -63,7 +63,7 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = substr($e, 4,);
             $recipients++;
 
         } else {
@@ -90,24 +90,31 @@ sub inquire {
                 # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
                 # MessageName:        <B549996730000.000000000001.0003.mml>
                 # Last-Attempt-Date:  <16:21:07 seg, 22 Dezembro 2014>
-                if( $e =~ /\AOriginal Sender:[ ]+[<](.+)[>]\z/ ) {
+                my $p1 = index($e, '<');
+                my $p2 = index($e, '>');
+                if( index($e, 'Original Sender: ') == 0 ) {
                     # Original Sender:    <originalsender@example.com>
-                    # Use this line instead of "From" header of the original
-                    # message.
-                    $emailparts->[1] .= sprintf("From: %s\n", $1);
+                    # Use this line instead of "From" header of the original message.
+                    $emailparts->[1] .= sprintf("From: %s\n", substr($e, $p1 + 1, $p2 - $p1 - 1));
 
-                } elsif( $e =~ /\ASender-MTA:[ ]+[<](.+)[>]\z/ ) {
+                } elsif( index($e, 'Sender-MTA: ') == 0 ) {;
                     # Sender-MTA:         <10.11.12.13>
-                    $v->{'lhost'} = $1;
+                    $v->{'lhost'} = substr($e, $p1 + 1, $p2 - $p1 - 1);
 
-                } elsif( $e =~ /\AReporting-MTA:[ ][<](.+)[>]\z/ ) {
+                } elsif( index($e , 'Reporting-MTA: ') == 0 ) {
                     # Reporting-MTA:      <relay.xxxxxxxxxxxx.com>
-                    $v->{'rhost'} = $1;
+                    $v->{'rhost'} = substr($e, $p1 + 1, $p2 - $p1 - 1);
 
-                } elsif( $e =~ /\A\s+(From|Subject):\s*(.+)\z/ ) {
+                } elsif( index($e, ' From:') > 0 || index($e, ' Subject:') > 0 ) {
                     #    From:    originalsender@example.com
                     #    Subject: ...
-                    $emailparts->[1] .= sprintf("%s: %s\n", $1, $2);
+                    $p1 = index($e, ' From:');
+                    $p1 = index($e, ' Subject:') if $p1 < 0;
+                    $p2 = index($e, ':');
+
+                    my $cf = substr($e, $p1 + 1, $p2 - $p1 - 1);
+                    my $cv = Sisimai::String->sweep(substr($e, $p2 + 1,));
+                    $emailparts->[1] .= sprintf("%s: %s\n", $cf, $cv);
                 }
             }
         }

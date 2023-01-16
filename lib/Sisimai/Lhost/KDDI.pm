@@ -26,13 +26,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
-    state $markingsof = {
-        'message' => qr/\AYour[ ]mail[ ](?:
-             sent[ ]on:?[ ][A-Z][a-z]{2}[,]
-            |attempted[ ]to[ ]be[ ]delivered[ ]on:?[ ][A-Z][a-z]{2}[,]
-            )
-        /x,
-    };
+    state $markingsof = { 'message' => ['Your mail sent on:', 'Your mail attempted to be delivered on:'] };
     state $messagesof = {
         'mailboxfull' => ['As their mailbox is full'],
         'norelaying'  => ['Due to the following SMTP relay error'],
@@ -50,13 +44,13 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if grep { index($e, $_) == 0 } $markingsof->{'message'}->@*;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
         $v = $dscontents->[-1];
-        if( $e =~ /\A[ ]+Could not be delivered to: [<]([^ ]+[@][^ ]+)[>]/ ) {
+        if( index($e, ' Could not be delivered to: <') > -1 ) {
             # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900
             #     Could not be delivered to: <******@**.***.**>
             #     As their mailbox is full.
@@ -66,14 +60,14 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
 
-            my $r = Sisimai::Address->s3s4($1);
+            my $r = Sisimai::Address->s3s4(substr($e, index($e, '<') +1, ));
             next unless Sisimai::Address->is_emailaddress($r);
             $v->{'recipient'} = $r;
             $recipients++;
 
-        } elsif( $e =~ /Your mail sent on: (.+)\z/ ) {
+        } elsif( index($e, 'Your mail sent on: ') > -1 ) {
             # Your mail sent on: Thu, 29 Apr 2010 11:04:47 +0900
-            $v->{'date'} = $1;
+            $v->{'date'} = substr($e, 19, );
 
         } else {
             #     As their mailbox is full.

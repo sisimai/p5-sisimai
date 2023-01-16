@@ -82,8 +82,10 @@ sub inquire {
             my $o = Sisimai::RFC1894->field($e);
             unless( $o ) {
                 # Fallback code for empty value or invalid formatted value
-                # - Original-Recipient: <kijitora@example.co.jp>
-                $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]([^ ]+)\z/;
+                if( index($e, 'Original-Recipient: ') == 0 ) {
+                    # - Original-Recipient: <kijitora@example.co.jp>
+                    $v->{'alias'} = Sisimai::Address->s3s4(substr($e, index($e, ':') + 1,));
+                }
                 next;
             }
             next unless exists $fieldtable->{ $o->[0] };
