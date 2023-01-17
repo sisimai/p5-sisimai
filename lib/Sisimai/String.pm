@@ -56,6 +56,30 @@ sub sweep {
     return $argv1;
 }
 
+sub aligned {
+    # Check if each element of the 2nd argument is aligned in the 1st argument or not
+    # @param    [String] argv1  String to be checked
+    # @param    [Arrazy] argv2  List including the ordered strings
+    # @return   [Bool]          0, 1
+    # @since v5.0.0
+    my $class = shift;
+    my $argv1 = shift || return undef;
+    my $argv2 = shift || return undef; return undef unless scalar @$argv2;
+    my $align = -1;
+    my $right =  0;
+
+    for my $e ( @$argv2 ) {
+        # Get the position of each element in the 1st argument using index()
+        my $p = index($argv1, $e, $align + 1);
+
+        last if $p < 0;             # Break this loop when there is no string in the 1st argument
+        $align = length($e) + $p;   # There is an aligned string in the 1st argument
+        $right += 1;
+    }
+    return 1 if $right == scalar @$argv2;
+    return 0;
+}
+
 sub to_plain {
     # Convert given HTML text to plain text
     # @param    [Scalar]  argv1 HTML text(reference to string)
@@ -193,6 +217,13 @@ C<sweep()> clean the argument string up: remove trailing spaces, squeeze spaces.
     print Sisimai::String->sweep(' cat neko ');  # 'cat neko';
     print Sisimai::String->sweep(' nyaa   !!');  # 'nyaa !!';
 
+C<aligned> checks if each element of the 2nd argument is aligned in the 1st argument or not.
+
+    my $v = 'Final-Recipient: rfc822; <nekochan@example.jp>';
+    print Sisimai::String->aligned($v, ['rfc822', '<', '@', '>']);  # 1
+    print Sisimai::String->aligned($v, [' <', '@', 'rfc822']);      # 0
+    print Sisimai::String->aligned($v, ['example', '@', 'neko']);   # 0
+
 =head2 C<B<to_utf8(I<Reference to String>, [I<Encoding>])>>
 
 C<to_utf8> converts given string to UTF-8.
@@ -206,6 +237,8 @@ C<to_plain> converts given string as HTML to plain text.
 
     my $v = '<html>neko</html>';
     print Sisimai::String->to_plain($v);    # neko
+
+=head2 C<B<to_plain(I<Reference to String>, [I<Loose Check>])>>
 
 =head1 AUTHOR
 

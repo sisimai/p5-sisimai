@@ -5,7 +5,7 @@ use Sisimai::String;
 
 my $Package = 'Sisimai::String';
 my $Methods = {
-    'class'  => ['token', 'is_8bit', 'sweep', 'to_plain', 'to_utf8'],
+    'class'  => ['token', 'is_8bit', 'sweep', 'aligned', 'to_plain', 'to_utf8'],
     'object' => [],
 };
 
@@ -16,6 +16,7 @@ MAKETEST: {
     my $s = 'envelope-sender@example.jp';
     my $r = 'envelope-recipient@example.org';
     my $t = '239aa35547613b2fa94f40c7f35f4394e99fdd88';
+    my $v = 'Final-Recipient: rfc822; <neko@example.jp>';
 
     ok(Sisimai::String->token($s, $r, 1), '->token');
     is(Sisimai::String->token($s, $r, 1), $t, '->token = '.$t);
@@ -30,6 +31,9 @@ MAKETEST: {
     is(Sisimai::String->sweep(undef), undef, '->sweep = ""');
     is(Sisimai::String->sweep(' neko cat '), 'neko cat', '->sweep = "neko cat"');
     is(Sisimai::String->sweep(' nyaa   !!'), 'nyaa !!', '->sweep = "nyaa !!"');
+
+    is(Sisimai::String->aligned($v, ['rfc822', ' <', '@', '>']), 1, '->aligned(rfc822, <, @, >)');
+    is(Sisimai::String->aligned($v, ['rfc822', '<<', ' ', '>']), 0, '->aligned(rfc822, <, @, >)');
 
     my $h = '
         <html>
