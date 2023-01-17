@@ -2,6 +2,7 @@ package Sisimai::Reason::SecurityError;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'securityerror' }
 sub description { 'Email rejected due to security violation was detected on a destination host' }
@@ -38,11 +39,7 @@ sub match {
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep {
-        my $p = index($argv1, $_->[0],  0) + 1;
-        my $q = index($argv1, $_->[1], $p) + 1;
-        $p * $q > 0;
-    } @$pairs;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 

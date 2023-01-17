@@ -2,6 +2,7 @@ package Sisimai::Reason::SpamDetected;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'spamdetected' }
 sub description { 'Email rejected by spam filter running on the remote host' }
@@ -108,8 +109,8 @@ sub match {
         ['mail rejete. mail rejected. ', '506'],
         ['our filters rate at and above ', ' percent probability of being spam'],
         ['rejected by ', ' (spam)'],
-        ['rejected due to spam ', ' classification'],
-        ['rejected due to spam ', ' content'],
+        ['rejected due to spam ', 'classification'],
+        ['rejected due to spam ', 'content'],
         ['rule imposed as ', ' is blacklisted on'],
         ['spam ', ' exceeded'],
         ['this message scored ', ' spam points'],
@@ -117,11 +118,7 @@ sub match {
     state $regex = qr/(?:\d[.]\d[.]\d|\d{3})[ ]spam\z/;
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep {
-        my $p = index($argv1, $_->[0],  0) + 1;
-        my $q = index($argv1, $_->[1], $p) + 1;
-        $p * $q > 0;
-    } @$pairs;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 1 if $argv1 =~ $regex;
     return 0;
 }

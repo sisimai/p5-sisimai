@@ -2,6 +2,7 @@ package Sisimai::Reason::HostUnknown;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'hostunknown' }
 sub description { "Delivery failed due to a domain part of a recipient's email address does not exist" }
@@ -34,11 +35,7 @@ sub match {
     state $pairs = [['553 ', ' does not exist']];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep {
-        my $p = index($argv1, $_->[0],  0) + 1;
-        my $q = index($argv1, $_->[1], $p) + 1;
-        $p * $q > 0;
-    } @$pairs;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 

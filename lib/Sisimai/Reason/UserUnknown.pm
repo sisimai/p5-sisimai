@@ -2,6 +2,7 @@ package Sisimai::Reason::UserUnknown;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'userunknown' }
 sub description { "Email rejected due to a local part of a recipient's email address does not exist" }
@@ -108,8 +109,8 @@ sub match {
         ['adresse d au moins un destinataire invalide. invalid recipient.', '416'],
         ['adresse d au moins un destinataire invalide. invalid recipient.', '418'],
         ['bad', 'recipient'],
-        ['mailbox ', ' does not exist'],
-        ['mailbox ', ' unavailable'],
+        ['mailbox ', 'does not exist'],
+        ['mailbox ', 'unavailable or access denied'],
         ['no ', ' in name directory'],
         ['non', 'existent user'],
         ['rcpt <', ' does not exist'],
@@ -126,11 +127,7 @@ sub match {
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep {
-        my $p = index($argv1, $_->[0],  0) + 1;
-        my $q = index($argv1, $_->[1], $p) + 1;
-        $p * $q > 0;
-    } @$pairs;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
