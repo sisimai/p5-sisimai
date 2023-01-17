@@ -70,10 +70,10 @@ sub aligned {
 
     for my $e ( @$argv2 ) {
         # Get the position of each element in the 1st argument using index()
-        my $p = index($argv1, $e, $align + 1);
+        my $p = index($$argv1, $e, $align + 1);
 
-        last if $p < 0;             # Break this loop when there is no string in the 1st argument
-        $align = length($e) + $p;   # There is an aligned string in the 1st argument
+        last if $p < 0;                 # Break this loop when there is no string in the 1st argument
+        $align = length($e) + $p - 1;   # There is an aligned string in the 1st argument
         $right += 1;
     }
     return 1 if $right == scalar @$argv2;
@@ -220,9 +220,9 @@ C<sweep()> clean the argument string up: remove trailing spaces, squeeze spaces.
 C<aligned> checks if each element of the 2nd argument is aligned in the 1st argument or not.
 
     my $v = 'Final-Recipient: rfc822; <nekochan@example.jp>';
-    print Sisimai::String->aligned($v, ['rfc822', '<', '@', '>']);  # 1
-    print Sisimai::String->aligned($v, [' <', '@', 'rfc822']);      # 0
-    print Sisimai::String->aligned($v, ['example', '@', 'neko']);   # 0
+    print Sisimai::String->aligned(\$v, ['rfc822', '<', '@', '>']);  # 1
+    print Sisimai::String->aligned(\$v, [' <', '@', 'rfc822']);      # 0
+    print Sisimai::String->aligned(\$v, ['example', '@', 'neko']);   # 0
 
 =head2 C<B<to_utf8(I<Reference to String>, [I<Encoding>])>>
 

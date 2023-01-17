@@ -32,8 +32,8 @@ MAKETEST: {
     is(Sisimai::String->sweep(' neko cat '), 'neko cat', '->sweep = "neko cat"');
     is(Sisimai::String->sweep(' nyaa   !!'), 'nyaa !!', '->sweep = "nyaa !!"');
 
-    is(Sisimai::String->aligned($v, ['rfc822', ' <', '@', '>']), 1, '->aligned(rfc822, <, @, >)');
-    is(Sisimai::String->aligned($v, ['rfc822', '<<', ' ', '>']), 0, '->aligned(rfc822, <, @, >)');
+    is(Sisimai::String->aligned(\$v, ['rfc822', ' <', '@', '>']), 1, '->aligned(rfc822, <, @, >)');
+    is(Sisimai::String->aligned(\$v, ['rfc822', '<<', ' ', '>']), 0, '->aligned(rfc822, <, @, >)');
 
     my $h = '
         <html>
