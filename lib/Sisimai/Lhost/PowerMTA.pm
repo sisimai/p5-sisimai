@@ -32,7 +32,6 @@ sub inquire {
         'spam-related'        => 'spamdetected',
     };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 
@@ -100,10 +99,9 @@ sub inquire {
             # message.
             #
             #  <kijitora@example.jp>  delivery failed; will not continue trying
-            #
-            if( $e =~ /\AX-PowerMTA-BounceCategory:[ ]*(.+)\z/ ) {
+            if( index($e, 'X-PowerMTA-BounceCategory: ') == 0 ) {
                 # X-PowerMTA-BounceCategory: bad-mailbox
-                $v->{'category'} = $1;
+                $v->{'category'} = substr($e, index($e, ': ') + 2,);
             }
         }
     }

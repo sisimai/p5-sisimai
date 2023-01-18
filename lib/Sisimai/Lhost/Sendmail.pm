@@ -15,9 +15,12 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
-    return undef unless $mhead->{'subject'} =~ /(?:see transcript for details\z|\AWarning: )/;
     return undef if $mhead->{'x-aol-ip'};   # X-AOL-IP is a header defined in AOL
+    $match ||= 1 if index($mhead->{'subject'}, 'see transcript for details') > -1;
+    $match ||= 1 if index($mhead->{'subject'}, 'Warning: ')                  == 0;
+    return undef unless $match > 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
@@ -109,9 +112,10 @@ sub inquire {
                     # >>> DATA
                     $thecommand = Sisimai::SMTP::Command->find($e);
 
-                } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
+                } elsif( index($e, '<<< ') == 0 ) {
                     # <<< Response
-                    push @$esmtpreply, $1 unless grep { $1 eq $_ } @$esmtpreply;
+                    my $cv = substr($e, 4,);
+                    push @$esmtpreply, $cv unless grep { $cv eq $_ } @$esmtpreply;
 
                 } else {
                     # Detect SMTP session error or connection error
@@ -123,10 +127,10 @@ sub inquire {
                         next;
                     }
 
-                    if( $e =~ /\A[<](.+)[>][.]+ (.+)\z/ ) {
+                    if( index($e, '<') == 0 && Sisimai::String->aligned(\$e, ['@', '>.', ' ']) ) {
                         # <kijitora@example.co.jp>... Deferred: Name server: example.co.jp.: host name lookup failure
-                        $anotherset->{'recipient'} = $1;
-                        $anotherset->{'diagnosis'} = $2;
+                        $anotherset->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, index($e, '>')));
+                        $anotherset->{'diagnosis'} = substr($e, index($e, ' ') + 1,);
 
                     } else {
                         # ----- Transcript of session follows -----
@@ -150,8 +154,8 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ ]+(.+)\z/;
-                $v->{'diagnosis'} .= ' '.$1;
+                next unless index($e, ' ') == 0;
+                $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
             }
         }
     } continue {
@@ -189,8 +193,8 @@ sub inquire {
         }
 
         # @example.jp, no local part
-        # Get email address from the value of Diagnostic-Code header
-        next if $e->{'recipient'} =~ /\A[^ ]+[@][^ ]+\z/;
+        # Get email address from the value of Diagnostic-Code field
+        next if index($e->{'recipient'}, '@') > 0;
         $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };

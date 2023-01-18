@@ -51,16 +51,15 @@ sub inquire {
         # This user doesn't have a example.com account (kijitora@example.com) [0]
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:\z/ ) {
+        if( index($e, '<') == 0 && Sisimai::String->aligned(\$e, ['<', '@', '>', ':']) ) {
             # <kijitora@example.com>:
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = substr($e, 1, length($e) - 3 );
             $recipients++;
-
         } else {
             # This user doesn't have a example.com account (kijitora@example.com) [0]
             $v->{'diagnosis'} .= ' '.$e;

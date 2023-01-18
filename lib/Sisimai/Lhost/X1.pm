@@ -21,7 +21,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Received: from '];
-    state $markingsof = { 'message' => qr/\AThe original message was received at (.+)\z/ };
+    state $markingsof = { 'message' => ['The original message was received at '] };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -35,7 +35,7 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $markingsof->{'message'}->[0]) == 0;
             next;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
@@ -49,20 +49,22 @@ sub inquire {
         # kijitora@example.co.jp [User unknown]
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+?[@][^ ]+?)[ ]+\[(.+)\]\z/ ) {
+        if( Sisimai::String->aligned(\$e, ['@', ' [', ']']) ) {
             # kijitora@example.co.jp [User unknown]
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
-            $v->{'diagnosis'} = $2;
+            my $p1 = index($e, ' ');
+            my $p2 = index($e, ']');
+            $v->{'recipient'} = substr($e, 0, $p1);
+            $v->{'diagnosis'} = substr($e, $p1 + 2, $p2 - $p1 - 2);
             $recipients++;
 
-        } elsif( $e =~ $markingsof->{'message'} ) {
+        } elsif( index($e, $markingsof->{'message'}->[0]) == 0 ) {
             # The original message was received at Thu, 29 Apr 2010 23:34:45 +0900 (JST)
-            $datestring = $1;
+            $datestring = substr($e, length $markingsof->{'message'}->[0],);
         }
     }
     return undef unless $recipients;

@@ -92,8 +92,8 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ ]+(.+)\z/;
-            $v->{'diagnosis'} .= ' '.$1;
+            next unless index($e, ' ') == 0;
+            $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
         }
     } continue {
         # Save the current line for the next loop
@@ -108,7 +108,7 @@ sub inquire {
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
+        if( index($e->{'status'}, '.0.0') > 0 || index($e->{'status'}, '.1.0') > 0 ) {
             # Get other D.S.N. value from the error message
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
             my $errormessage = $e->{'diagnosis'};

@@ -16,7 +16,7 @@ sub inquire {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
-    my $tryto = qr/.+[.](?:outbound[.]protection|prod)[.]outlook[.]com\b/;
+    my $tryto = ['.outbound.protection.outlook.com', '.prod.outlook.com'];
 
     # X-MS-Exchange-Message-Is-Ndr:
     # X-Microsoft-Antispam-PRVS: <....@...outlook.com>
@@ -35,45 +35,42 @@ sub inquire {
     $match++ if $mhead->{'x-ms-exchange-crosstenant-originalarrivaltime'};
     $match++ if $mhead->{'x-ms-exchange-crosstenant-fromentityheader'};
     $match++ if $mhead->{'x-ms-exchange-transport-crosstenantheadersstamped'};
-    $match++ if grep { $_ =~ $tryto } $mhead->{'received'}->@*;
+    $match++ if grep { index($_, $tryto->[0]) > 0 || index($_, $tryto->[1]) > 0 } $mhead->{'received'}->@*;
     if( defined $mhead->{'message-id'} ) {
         # Message-ID: <00000000-0000-0000-0000-000000000000@*.*.prod.outlook.com>
-        $match++ if $mhead->{'message-id'} =~ $tryto;
+        $match++ if grep { index($mhead->{'message-id'}, $_) > 0 } @$tryto;
     }
     return undef if $match < 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Original message headers:'];
-    state $markingsof = {
-        'eoe'     => qr{\A(?:
-             Original[ ][Mm]essage[ ][Hh]eaders:?
-            |Message[ ]Hops
-            |Cabe.+alhos[ ]originais[ ]da[ ]mensagem:
-            |Oorspronkelijke[ ]berichtkoppen:
-            )
-        }x,
-        'rfc3464' => qr|\AContent-Type:[ ]message/delivery-status|,
-        'lhost'   => qr{\A(?:
-             Generating[ ]server
-            |Bronserver
-            |Servidor[ ]de[ ]origem
-            ):[ ](.+)\z
-        }x,
-        'error'   => qr{\A(?:
-             Diagnostic[ ]information[ ]for[ ]administrators:
-            |Error[ ]Details
-            |Diagnostische[ ]gegevens[ ]voor[ ]beheerders:
-            |Informa.+es[ ]de[ ]diagn.+stico[ ]para[ ]administradores:
-            )
-        }x,
-        'message' => qr{\A(?:
-             Delivery[ ]has[ ]failed[ ]to[ ]these[ ]recipients[ ]or[ ]groups:
-            |Original[ ]Message[ ]Details
-            |.+[ ]rejected[ ]your[ ]message[ ]to[ ]the[ ]following[ ]e[-]?mail[ ]addresses:
-            |Falha[ ]na[ ]entrega[ ]a[ ]estes[ ]destinat.+rios[ ]ou[ ]grupos:
-            |Uw[ ]bericht[ ]kan[ ]niet[ ]worden[ ]bezorgd[ ]bij[ ]de[ ]volgende[ ]geadresseerden[ ]of[ ]groepen:
-            )
-        }x,
+    state $commandset = { 'RCPT' => ['unknown recipient or mailbox unavailable ->', '@'] };
+    state $startingof = {
+        'eoe'     => [
+            'Original message headers:', 'Original Message Headers:',
+            'Message Hops',
+            'alhos originais da mensagem:',
+            'Oorspronkelijke berichtkoppen:',
+        ],
+        'error'   => [
+            'Diagnostic information for administrators:',
+            'Diagnostische gegevens voor beheerders:',
+            'Error Details',
+            'stico para administradores:',
+        ],
+        'lhost'   => [
+            'Generating server: ',
+            'Bronserver: ',
+            'Servidor de origem: ',
+        ],
+        'message' => [
+            ' rejected your message to the following e',
+            'Delivery has failed to these recipients or groups:',
+            'Falha na entrega a estes destinat',
+            'Original Message Details',
+            'Uw bericht kan niet worden bezorgd bij de volgende geadresseerden of groepen:',
+        ],
+        'rfc3464' => ['Content-Type: message/delivery-status'],
     };
     state $statuslist = {
         # https://support.office.com/en-us/article/Email-non-delivery-reports-in-Office-365-51daa6b9-2e35-49c4-a0c9-df85bf8533c3
@@ -109,11 +106,7 @@ sub inquire {
         qr/\A5[.]7[.]6[1-4]\d\z/ => 'blocked',
         qr/\A5[.]7[.]7[0-4]\d\z/ => 'toomanyconn',
     };
-    state $recommands = {
-        'RCPT' => qr/unknown recipient or mailbox unavailable ->.+[<]?.+[@].+[.][a-zA-Z]+[>]?/,
-    };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -128,7 +121,7 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if grep { index($e, $_) > -1 } $startingof->{'message'}->@*;
             next;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
@@ -145,20 +138,24 @@ sub inquire {
         # Recipient Address:      kijitora@example.org
         # Subject:        Nyaan
         $v = $dscontents->[-1];
-        if( $e =~ /\A.+[@].+[<]mailto:(.+[@].+)[>]\z/ ||
-            $e =~ /\ARecipient[ ]Address:[ ]+(.+)\z/ ) {
+
+        my $p1 = index($e, '<mailto:');
+        my $p2 = index($e, 'Recipient Address: ');
+        if( $p1 > 1 || $p2 == 0 ) {
             # kijitora@example.com<mailto:kijitora@example.com>
+            # Recipient Address:      kijitora-nyaan@neko.kyoto.example.jp
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, index($e, ':') + 1,)); 
             $recipients++;
 
-        } elsif( $e =~ $markingsof->{'lhost'} ) {
+        } elsif( grep { index($e, $_) == 0 } $startingof->{'lhost'}->@* ) {
             # Generating server: FFFFFFFFFFFF.e0.prod.outlook.com
-            $permessage->{'lhost'} = lc $1;
+            $permessage->{'lhost'} = substr($e, index($e, ': ') + 2,);
 
         } else {
             if( $endoferror ) {
@@ -182,7 +179,7 @@ sub inquire {
                     $permessage->{ $fieldtable->{ $o->[0] } } = $o->[2];
                 }
             } else {
-                if( $e =~ $markingsof->{'error'} ) {
+                if( grep { index($e, $_) > -1 } $startingof->{'error'}->@* ) {
                     # Diagnostic information for administrators:
                     $v->{'diagnosis'} = $e;
 
@@ -192,7 +189,7 @@ sub inquire {
                     # t not found by SMTP address lookup'
                     if( $v->{'diagnosis'} ) {
                         # The error message text have already captured
-                        if( $e =~ $markingsof->{'eoe'} ) {
+                        if( grep { index($e, $_) > -1 } $startingof->{'eoe'}->@* ) {
                             # Original message headers:
                             $endoferror = 1;
                             next;
@@ -201,7 +198,7 @@ sub inquire {
 
                     } else {
                         # The error message text has not been captured yet
-                        $endoferror = 1 if $e =~ $markingsof->{'rfc3464'};
+                        $endoferror = 1 if index($e, $startingof->{'rfc3464'}->[0]) == 0;
                     }
                 }
             }
@@ -219,9 +216,9 @@ sub inquire {
             $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || $e->{'status'};
         }
 
-        for my $p ( keys %$recommands ) {
-            # Try to match with regular expressions defined in recommands
-            next unless $e->{'diagnosis'} =~ $recommands->{ $p };
+        for my $p ( keys %$commandset ) {
+            # Try to match with regular expressions defined in commandset
+            next unless Sisimai::String->aligned(\$e->{'diagnosis'}, $commandset->{ $p });
             $e->{'command'} = $p;
             last;
         }

@@ -37,8 +37,11 @@ sub inquire {
     my $encodedmsg = '';
     my $v = undef;
 
-    # Get character set name, Content-Type: text/plain; charset=ISO-2022-JP
-    my $characters = $mhead->{'content-type'} =~ /\A.+;[ ]*charset=(.+)\z/ ? lc $1 : '';
+    my $characters = '';
+    if( index($mhead->{'content-type'}, 'charset=') > 0 ) {
+        # Get character set name, Content-Type: text/plain; charset=ISO-2022-JP
+       $characters = lc substr($mhead->{'content-type'}, index($mhead->{'content-type'}, 'charset=') + 8,);
+    }
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -57,7 +60,7 @@ sub inquire {
         #
         # ------- Returned Message --------
         $v = $dscontents->[-1];
-        if( $e =~ /\A[^ ]+[@][^ ]+/ ) {
+        if( index($e, '@') > 1 && index($e, ' ') < 0 ) {
             # kijitora@notes.example.jp
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.

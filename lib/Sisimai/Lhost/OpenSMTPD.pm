@@ -108,15 +108,15 @@ sub inquire {
         #    Below is a copy of the original message:
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+?[@][^ ]+?):?[ ](.+)\z/ ) {
-            # kijitora@example.jp: 550 5.2.2 <kijitora@example>... Mailbox Full
+        if( index($e, '@') > 1 && Sisimai::String->aligned(\$e, ['@', ' ']) ) {
+            # kijitora@example.jp: 550 5.2.2 <kijitora@example.jp>... Mailbox Full
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
-            $v->{'diagnosis'} = $2;
+            $v->{'recipient'} = substr($e, 0, index($e, ':'));
+            $v->{'diagnosis'} = substr($e, index($e, ':') + 1, );
             $recipients++;
         }
     }

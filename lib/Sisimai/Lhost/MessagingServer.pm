@@ -124,20 +124,22 @@ sub inquire {
             #  (6jo.example.jp ESMTP SENDMAIL-VM)
             # Diagnostic-code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
             #
-            if( $e =~ /\AStatus:[ ](\d[.]\d[.]\d)[ ]*[(](.+)[)]\z/ ) {
+            if( index($e, 'Status: ') == 0 ) {
                 # Status: 5.1.1 (Remote SMTP server has rejected address)
-                $v->{'status'} = $1;
-                $v->{'diagnosis'} ||= $2;
+                $p1 = index($e, ':');
+                $p2 = index($e, '(');
+                $v->{'status'}      = substr($e, $p1 + 2, $p2 - $p1 - 3);
+                $v->{'diagnosis'} ||= substr($e, $p2 + 1, index($e, ')') - $p2 - 1);
 
-            } elsif( $e =~ /\AArrival-Date:[ ](.+)\z/ ) {
+            } elsif( index($e, 'Arrival-Date: ') == 0 ) {
                 # Arrival-date: Thu, 29 Apr 2014 23:34:45 +0000 (GMT)
-                $v->{'date'} ||= $1;
+                $v->{'date'} ||= substr($e, index($e, ':') + 2,);
 
-            } elsif( $e =~ /\AReporting-MTA:[ ]dns;[ ](.+)\z/ ) {
+            } elsif( index($e, 'Reporting-MTA: ') == 0 ) {
                 # Reporting-MTA: dns;mr21p30im-asmtp004.me.com (tcp-daemon)
-                my $localhost = $1;
+                my $localhost = substr($e, index($e, ';') + 1,);
                 $v->{'lhost'} ||= $localhost;
-                $v->{'lhost'}   = $localhost unless $v->{'lhost'} =~ /[^.]+[.][^ ]+/;
+                $v->{'lhost'}   = $localhost unless index($v->{'lhost'}, '.') > 0;
             }
         } # End of error message part
     }

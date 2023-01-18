@@ -22,13 +22,12 @@ sub inquire {
         # 'subject' => qr/Undeliverable Message/,
         last unless grep { rindex($_, '.vtext.com (') > -1 } $mhead->{'received'}->@*;
         $match = 1 if $mhead->{'from'} eq 'post_master@vtext.com';
-        $match = 0 if $mhead->{'from'} =~ /[<]?sysadmin[@].+[.]vzwpix[.]com[>]?\z/;
+        $match = 0 if Sisimai::String->aligned(\$mhead->{'from'}, ['sysadmin@', '.vzwpix.com']);
         last;
     }
     return undef if $match < 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
-
     my $boundaries = [];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = [];
@@ -44,7 +43,7 @@ sub inquire {
 
     if( $match == 1 ) {
         # vtext.com
-        $markingsof = { 'message' => qr/\AError:[ ]/ };
+        $markingsof = { 'message' => ['Error: '] };
         $messagesof = {
             # The attempted recipient address does not exist.
             'userunknown' => ['550 - Requested action not taken: no such user here'],
@@ -57,7 +56,7 @@ sub inquire {
             # line of the beginning of the original message.
             unless( $readcursor ) {
                 # Beginning of the bounce message or delivery status part
-                $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+                $readcursor |= $indicators->{'deliverystatus'} if index($e, $markingsof->{'message'}->[0]) == 0;
                 next;
             }
             next unless $readcursor & $indicators->{'deliverystatus'};
@@ -70,27 +69,27 @@ sub inquire {
             #   RCPT TO: *****@vtext.com
             $v = $dscontents->[-1];
 
-            if( $e =~ /\A[ ]+RCPT TO: (.*)\z/ ) {
+            if( index($e, '  RCPT TO: ') == 0 ) {
                 if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
                 }
-                $v->{'recipient'} = $1;
+                $v->{'recipient'} = substr($e, 11,);
                 $recipients++;
                 next;
 
-            } elsif( $e =~ /\A[ ]+MAIL FROM:[ ](.+)\z/ ) {
+            } elsif( index($e, '  MAIL FROM: ') == 0 ) {
                 #   MAIL FROM: *******@hg.example.com
-                $senderaddr ||= $1;
+                $senderaddr ||= substr($e, 13,);
 
-            } elsif( $e =~ /\A[ ]+Subject:[ ](.+)\z/ ) {
+            } elsif( index($e, '  Subject: ') == 0 ) {
                 #   Subject:
-                $subjecttxt ||= $1;
+                $subjecttxt ||= substr($e, 11,);
 
             } else {
                 # 550 - Requested action not taken: no such user here
-                $v->{'diagnosis'} = $e if $e =~ /\A(\d{3})[ ][-][ ](.*)\z/;
+                $v->{'diagnosis'} = $e if index($e, ' - ') > 2;
             }
         }
     } else {
@@ -117,28 +116,28 @@ sub inquire {
             # Date:  Wed, 20 Jun 2013 10:29:52 +0000
             $v = $dscontents->[-1];
 
-            if( $e =~ /\ATo:[ ](.*)\z/ ) {
+            if( index($e, 'To: ') == 0 ) {
                 if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
                 }
-                $v->{'recipient'} = Sisimai::Address->s3s4($1);
+                $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, 4,));
                 $recipients++;
                 next;
 
-            } elsif( $e =~ /\AFrom:[ ](.+)\z/ ) {
+            } elsif( index($e, 'From: ') == 0 ) {
                 # From: kijitora <kijitora@example.jp>
-                $senderaddr ||= Sisimai::Address->s3s4($1);
+                $senderaddr ||= Sisimai::Address->s3s4(substr($e, 6,));
 
-            } elsif( $e =~ /\ASubject:[ ](.+)\z/ ) {
+            } elsif( index($e, 'Subject: ') == 0 ) {
                 #   Subject:
-                $subjecttxt ||= $1;
+                $subjecttxt ||= substr($e, 9,);
 
             } else {
                 # Message could not be delivered to mobile.
                 # Error: No valid recipients for this MM
-                $v->{'diagnosis'} = $e if $e =~ /\AError:[ ]+(.+)\z/;
+                $v->{'diagnosis'} = Sisimai::String->sweep(substr($e, 7,)) if index($e, 'Error: ') == 0;
             }
         }
     }

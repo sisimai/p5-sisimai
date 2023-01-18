@@ -58,17 +58,17 @@ sub inquire {
         # --- Message non-deliverable.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\AAddressed To:[ ]*([^ ]+?[@][^ ]+?)\z/ ) {
+        if( index($e, 'Addressed To:') == 0 && index($e, '@') > 1 ) {
             # Addressed To: kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, index($e, ':') + 2,));
             $recipients++;
 
-        } elsif( $e =~ /\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ ,]/ ) {
+        } elsif( grep { index($e, $_) == 0 } (qw|Sun Mon Tue Wed Thu Fri Sat|) ) {
             # Thu 29 Apr 2010 23:34:45 +0900
             $v->{'date'} = $e;
 
@@ -89,8 +89,8 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ ]+(.+)\z/;
-                $v->{'diagnosis'} .= ' '.$1;
+                next unless index($e, ' ') == 0;
+                $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
             }
         }
     } continue {

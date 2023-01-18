@@ -32,32 +32,17 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
-    state $markingsof = {
+    state $startingof = {
         # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
-        'message' => qr{\A(?>
-             [ ]+The[ ](?:
-                 Postfix[ ](?:
-                     program\z              # The Postfix program
-                    |on[ ].+[ ]program\z    # The Postfix on <os name> program
-                    )
-                |\w+[ ]Postfix[ ]program\z  # The <name> Postfix program
-                |mail[ ]system\z             # The mail system
-                |\w+[ ]program\z             # The <custmized-name> program
-                )
-            |This[ ]is[ ]the[ ](?:
-                 Postfix[ ]program          # This is the Postfix program
-                |\w+[ ]Postfix[ ]program    # This is the <name> Postfix program
-                |\w+[ ]program              # This is the <customized-name> Postfix program
-                |mail[ ]system[ ]at[ ]host  # This is the mail system at host <hostname>.
-                )
-            )
-        }x,
-        # 'from'=> qr/ [(]Mail Delivery System[)]\z/,
+        'message' => [
+            ['The ', 'Postfix '],           # The Postfix program, The Postfix on <os> program
+            ['The ', 'mail system'],        # The mail system
+            ['The ', 'program'],            # The <name> pogram
+            ['This is the', 'Postfix'],     # This is the Postfix program
+            ['This is the', 'mail system'], # This is the mail system at host <hostname>
+        ],
     };
 
-    require Sisimai::RFC1894;
-    require Sisimai::Address;
-    require Sisimai::SMTP::Command;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -116,7 +101,7 @@ sub inquire {
             # line of the beginning of the original message.
             unless( $readcursor ) {
                 # Beginning of the bounce message or message/delivery-status part
-                $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+                $readcursor |= $indicators->{'deliverystatus'} if grep { Sisimai::String->aligned(\$e, $_) } $startingof->{'message'}->@*;
                 next;
             }
             next unless $readcursor & $indicators->{'deliverystatus'};

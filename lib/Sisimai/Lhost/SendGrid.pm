@@ -59,7 +59,7 @@ sub inquire {
                 # Fallback code for empty value or invalid formatted value
                 # - Status: (empty)
                 # - Diagnostic-Code: 550 5.1.1 ... (No "diagnostic-type" sub field)
-                $v->{'diagnosis'} = $1 if $e =~ /\ADiagnostic-Code:[ ](.+)/;
+                $v->{'diagnosis'} = substr($e, index($e, ':') + 2,) if index($e, 'Diagnostic-Code: ') == 0;
                 next;
             }
 
@@ -123,15 +123,15 @@ sub inquire {
                 # in RCPT TO, in MAIL FROM, end of DATA
                 $thecommand = $cv;
 
-            } elsif( $e =~ /\ADiagnostic-Code:[ ](.+)\z/ ) {
+            } elsif( index($e, 'Diagnostic-Code: ') == 0 ) {
                 # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown
-                $v->{'diagnosis'} = $e;
+                $v->{'diagnosis'} = substr($e, index($e, ':') + 2,);
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ ]+(.+)\z/;
-                $v->{'diagnosis'} .= ' '.$1;
+                next unless index($e, ' ') == 0;
+                $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
             }
         }
     } continue {
