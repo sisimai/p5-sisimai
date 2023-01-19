@@ -43,7 +43,6 @@ sub inquire {
         'error'   => ['Remote host said:'],
         'message' => ['Hi. This is the qmail'],
         'rhost'   => ['Giving up on ', 'Connected to ', 'remote host '],
-
     };
     state $commandset = {
         # Error text regular expressions which defined in qmail-remote.c
@@ -169,7 +168,6 @@ sub inquire {
     }
     return undef unless $recipients;
 
-    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 

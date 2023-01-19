@@ -145,15 +145,15 @@ sub inquire {
                 }
             } else {
                 # The line did not match with any fields defined in RFC3464
-                if( $e =~ /\ADiagnostic-Code:[ ]([^;]+)\z/ ) {
+                if( index($e, 'Diagnostic-Code: ') == 0 && index($e, ';') < 0 ) {
                     # There is no value of "diagnostic-type" such as Diagnostic-Code: 554 ...
-                    $v->{'diagnosis'} = $1;
+                    $v->{'diagnosis'} = substr($e, index($e, ' ') + 1,);
 
-                } elsif( $e =~ /\AStatus:[ ](\d{3}[ ]+.+)\z/ ) {
+                } elsif( index($e, 'Status: ') == 0 && Sisimai::SMTP::Reply->find(substr($e, 8, 3)) ) {
                     # Status: 553 Exceeded maximum inbound message size
-                    $v->{'alterrors'} = $1;
+                    $v->{'alterrors'} = substr($e, 8,);
 
-                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ ]+(.+)\z/ ) {
+                } elsif( index($p, 'Diagnostic-Code:') == 0 && index($e, ' ') == 0 ) {
                     # Continued line of the value of Diagnostic-Code field
                     $v->{'diagnosis'} .= $e;
                     $e = 'Diagnostic-Code: '.$e;
@@ -340,9 +340,9 @@ sub inquire {
                 $recipients++;
                 $itisbounce ||= 1;
 
-            } elsif( $e =~ /[(](?:expanded|generated)[ ]from:?[ ]([^@]+[@][^@]+)[)]/ ) {
+            } elsif( index($e, '(expanded from') > -1 || index($e, '(generated from') > -1 ) {
                 # (expanded from: neko@example.jp)
-                $b->{'alias'} = Sisimai::Address->s3s4($1);
+                $b->{'alias'} = Sisimai::Address->s3s4(substr($e, rindex($e, ' ') + 1,));
             }
             $b->{'diagnosis'} .= ' '.$e;
         }

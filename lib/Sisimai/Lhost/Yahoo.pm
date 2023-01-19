@@ -50,14 +50,14 @@ sub inquire {
         # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<](.+[@].+)[>]:[ ]*\z/ ) {
+        if( index($e, '<') == 0 && Sisimai::String->aligned(\$e, ['<', '@', '>:']) ) {
             # <kijitora@example.org>:
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, index($e, '>:'),));
             $recipients++;
 
         } else {
@@ -95,7 +95,7 @@ sub inquire {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'command'} ||=  'RCPT' if $e->{'diagnosis'} =~ /[<].+[@].+[>]/;
+        $e->{'command'} ||=  'RCPT' if Sisimai::String->aligned(\$e->{'diagnosis'}, ['<', '@', '>']);
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
