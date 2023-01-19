@@ -30,6 +30,7 @@ sub inquire {
     return undef if $match == 0;
     return undef if $mhead->{'x-aol-ip'};
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $startingof = {

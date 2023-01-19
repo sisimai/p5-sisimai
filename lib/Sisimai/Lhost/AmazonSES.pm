@@ -218,7 +218,6 @@ sub inquire {
         $match ||= 1 if $mhead->{'x-ses-outgoing'};
         return undef unless $match;
 
-        require Sisimai::RFC1894;
         my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
         my $permessage = {};    # (Hash) Store values of each Per-Message field
         my $readcursor = 0;     # (Integer) Points the current cursor position

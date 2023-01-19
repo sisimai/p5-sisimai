@@ -26,6 +26,7 @@ sub inquire {
     }
     return undef unless $match;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: :message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $startingof = {
@@ -43,11 +44,8 @@ sub inquire {
         'networkerror'=> ['DNS lookup failed.'],
     };
 
-    require Sisimai::SMTP::Command;
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position

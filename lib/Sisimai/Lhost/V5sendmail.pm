@@ -43,6 +43,7 @@ sub inquire {
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     return undef unless length $emailparts->[1] > 0;
 
+    require Sisimai::SMTP::Command;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header

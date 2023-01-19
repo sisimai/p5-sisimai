@@ -22,6 +22,7 @@ sub inquire {
     $match ||= 1 if index($mhead->{'subject'}, 'Warning: ')                  == 0;
     return undef unless $match > 0;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $startingof = {
@@ -36,11 +37,8 @@ sub inquire {
         'error'   => ['... while talking to '],
     };
 
-    require Sisimai::SMTP::Command;
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position

@@ -22,7 +22,6 @@ sub inquire {
     # X-UI-Out-Filterresults: unknown:0;
     return undef unless defined $mhead->{'x-gmx-antispam'};
 
-    require Sisimai::Address;
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- The header of the original message is following. ---'];

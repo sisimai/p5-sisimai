@@ -22,11 +22,11 @@ sub inquire {
     # X-Originating-IP: [192.0.2.9]
     return undef unless $mhead->{'x-ymailisg'};
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- Below this line is a copy of the message.'];
     state $startingof = { 'message' => ['Sorry, we were unable to deliver your message'] };
 
-    require Sisimai::SMTP::Command;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position

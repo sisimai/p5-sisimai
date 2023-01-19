@@ -33,6 +33,7 @@ sub inquire {
     }
     return undef if $match < 2;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--------------------------------------------------', 'Content-Type: message/rfc822'];
     state $markingsof = { 'message' => ['The user(s) ', 'Your message ', 'Each of the following', '<'] };
@@ -53,8 +54,6 @@ sub inquire {
         'onhold' => ['Each of the following recipients was rejected by a remote mail server'],
     };
 
-    require Sisimai::SMTP::Command;
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

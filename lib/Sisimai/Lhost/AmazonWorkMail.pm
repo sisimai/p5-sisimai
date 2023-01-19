@@ -34,10 +34,8 @@ sub inquire {
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['Technical report:'] };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position

@@ -42,7 +42,6 @@ sub inquire {
         'systemerror' => ['Several matches found in Domino Directory'],
     };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

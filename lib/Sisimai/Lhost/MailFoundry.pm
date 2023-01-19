@@ -19,7 +19,6 @@ sub inquire {
     return undef unless $mhead->{'subject'} eq 'Message delivery has failed';
     return undef unless grep { rindex($_, '(MAILFOUNDRY) id') > -1 } $mhead->{'received'}->@*;
 
-    require Sisimai::Address;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = {

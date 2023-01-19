@@ -23,7 +23,6 @@ sub inquire {
     state $boundaries = ['Content-Type: text/rfc822-headers'];
     state $startingof = { 'message' => ['Your message to:'] };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
 

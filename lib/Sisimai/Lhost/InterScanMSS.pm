@@ -30,6 +30,7 @@ sub inquire {
 
     require Sisimai::SMTP::Command;
     state $boundaries = ['Content-type: message/rfc822'];
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -70,7 +71,7 @@ sub inquire {
 
         } elsif( $p1 > 0 || $p2 > 0 ) {
             # Error message in non-English
-            $v->{'command'}   = Sisimai::SMTP::Command->find($e) if index($e, ' >>> ') > -1;
+            $v->{'command'} = Sisimai::SMTP::Command->find($e) if index($e, ' >>> ') > -1;
             my $p3 = index($e, ' <<< '); next if $p3 == -1;
             $v->{'diagnosis'} = substr($e, $p3 + 4,);
         }

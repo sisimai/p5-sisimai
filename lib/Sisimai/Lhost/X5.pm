@@ -41,7 +41,6 @@ sub inquire {
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['Content-Type: message/delivery-status'] };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $readcursor = 0;     # (Integer) Points the current cursor position

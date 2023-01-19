@@ -30,6 +30,7 @@ sub inquire {
     }
     return undef unless $match;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- Below this line is a copy of the message.'];
     state $startingof = {

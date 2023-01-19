@@ -22,15 +22,13 @@ sub inquire {
     return undef unless $mhead->{'return-path'} eq '<apps@sendgrid.net>';
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['This is an automatically generated message from SendGrid.'] };
 
-    require Sisimai::RFC1894;
-    require Sisimai::SMTP::Command;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position

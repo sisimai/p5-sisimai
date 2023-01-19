@@ -79,6 +79,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         # Get the last SMTP command from the error message
         if( my $cv = Sisimai::SMTP::Command->find($e->{'diagnosis'}) ) {
