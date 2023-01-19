@@ -105,7 +105,7 @@ sub make {
 
     if( rindex($words[0], ':') > 0 ) {
         # Undeliverable: ..., notify: ...
-        $first = lc $1 if $argv0 =~ /\A(.+?):/;
+        $first = lc substr($argv0, 0, index($argv0, ':'));
 
     } else {
         # Postmaster notify, returned mail, ...
@@ -235,7 +235,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017,2019-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017,2019-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

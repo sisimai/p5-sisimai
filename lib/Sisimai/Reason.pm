@@ -134,11 +134,12 @@ sub anotherone {
         last(TRY_TO_MATCH) if $reasontext;
 
         # Check the value of Status:
-        if( (my $v = substr($statuscode, 0, 3)) =~ /\A[45][.]6\z/ ) {
+        my $code2digit = substr($statuscode, 0, 3) || '';
+        if( $code2digit eq '5.6' || $code2digit eq '4.6' ) {
             #  X.6.0   Other or undefined media error
             $reasontext = 'contenterror';
 
-        } elsif( $v eq '5.7' || $v eq '4.7' ) {
+        } elsif( $code2digit eq '5.7' || $code2digit eq '4.7' ) {
             #  X.7.0   Other or undefined security status
             $reasontext = 'securityerror';
 

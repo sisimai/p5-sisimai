@@ -67,7 +67,7 @@ sub rise {
 
     state $retryindex = Sisimai::Reason->retry;
     state $rfc822head = Sisimai::RFC5322->HEADERFIELDS('all');
-    state $actionlist = qr/\A(?:delayed|delivered|expanded|failed|relayed)\z/;
+    state $actionlist = [qw|delayed delivered expanded failed relayed|];
 
     my $deliveries = $mesg1->{'ds'};
     my $rfc822data = $mesg1->{'rfc822'};
@@ -239,8 +239,8 @@ sub rise {
                     $p->{'diagnosticcode'} = Sisimai::String->sweep($p->{'diagnosticcode'});
                 }
             }
-            $p->{'diagnostictype'} ||= 'X-UNIX'   if $p->{'reason'} eq 'mailererror';
-            $p->{'diagnostictype'} ||= 'SMTP' unless $p->{'reason'} =~ /\A(?:feedback|vacation)\z/;
+            $p->{'diagnostictype'} ||= 'X-UNIX' if $p->{'reason'} eq 'mailererror';
+            $p->{'diagnostictype'} ||= 'SMTP' unless grep { $p->{'reason'} eq $_ } ('feedback', 'vacation');
 
             # Check the value of SMTP command
             $p->{'smtpcommand'} = '' unless Sisimai::SMTP::Command->test($p->{'smtpcommand'});
@@ -288,7 +288,7 @@ sub rise {
 
         HARD_BOUNCE: {
             # Set the value of "hardbounce", default value of "bouncebounce" is 0
-            if( $o->{'reason'} =~ /\A(?:delivered|feedback|vacation)\z/ ) {
+            if( $o->{'reason'} eq 'delivered' || $o->{'reason'} eq 'feedback' || $o->{'reason'} eq 'vacation' ) {
                 # The value of "reason" is "delivered", "vacation" or "feedback".
                 $o->{'replycode'} = '' unless $o->{'reason'} eq 'delivered';
 
@@ -316,7 +316,7 @@ sub rise {
             my $r1 = substr($o->{'replycode'}, 0, 1);
             $o->{'replycode'} = '' unless $d1 eq $r1;
 
-            unless( $o->{'action'} =~ $actionlist ) {
+            unless( grep { $o->{'action'} eq $_ } @$actionlist ) {
                 if( my $ox = Sisimai::RFC1894->field('Action: '.$o->{'action'}) ) {
                     # Rewrite the value of "Action:" field to the valid value
                     #
@@ -341,9 +341,9 @@ sub softbounce {
     # @return   [Integer]
     warn ' ***warning: Sisimai::Fact->softbounce will be removed at v5.1.0. Use Sisimai::Fact->hardbounce instead';
     my $self = shift;
-    return 0  if $self->hardbounce == 1;
-    return -1 if $self->reason =~ /\A(?:delivered|feedback|vacation)\z/;
-    return 1;
+    return  0 if $self->hardbounce == 1;
+    return -1 if $self->reason eq 'delivered' || $self->reason eq 'feedback' || $self->reason eq 'vacation';
+    return  1;
 }
 
 sub damn {

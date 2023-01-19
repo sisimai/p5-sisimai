@@ -69,19 +69,20 @@ sub is_emailaddress {
 
 sub is_mailerdaemon {
     # Check that the argument is mailer-daemon or not
-    # @param    [String] email  Email address
+    # @param    [String] argv0  Email address
     # @return   [Integer]       0: Not mailer-daemon
     #                           1: Mailer-daemon
     my $class = shift;
-    my $email = shift // return 0;
-    state $match = qr{(?>
-         (?:mailer-daemon|postmaster)[@]
-        |[<(](?:mailer-daemon|postmaster)[)>]
-        |\A(?:mailer-daemon|postmaster)\z
-        |[ ]?mailer-daemon[ ]
-        )
-    }x;
-    return 1 if lc($email) =~ $match;
+    my $argv0 = shift // return 0;
+    my $email = lc $argv0;
+
+    state $postmaster = [
+        'mailer-daemon@', '<mailer-daemon>', '(mailer-daemon)', ' mailer-daemon ',
+        'postmaster@', '<postmaster>', '(postmaster)'
+    ];
+    return 1 if grep { index($email, $_) > -1 } @$postmaster;
+    return 1 if $email eq 'mailer-daemon';
+    return 1 if $email eq 'postmaster';
     return 0;
 }
 
@@ -123,7 +124,7 @@ sub new {
             $alias = 1 if $email;
         }
 
-        if( $email =~ /\A.+[@].+?\z/ ) {
+        if( index($email, '@') > 0 ) {
             # The address is a VERP or an alias
             if( $alias ) {
                 # The address is an alias: neko+nyaan@example.jp
