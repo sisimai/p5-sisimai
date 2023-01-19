@@ -1,4 +1,4 @@
-package Sisimai::Rhost::ExchangeOnline;
+package Sisimai::Rhost::Microsoft;
 use feature ':5.10';
 use strict;
 use warnings;
@@ -747,8 +747,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Rhost::ExchangeOnline - Detect the bounce reason returned from on-premises Exchange 2019
-or older and Office 365.
+Sisimai::Rhost::Microsoft - Detect the bounce reason returned from on-premises Exchange 2019 or
+older and Office 365.
 
 =head1 SYNOPSIS
 
@@ -772,7 +772,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

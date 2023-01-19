@@ -3,18 +3,18 @@ use feature ':5.10';
 use strict;
 use warnings;
 
-use constant RhostClass => {
-    qr/cox[.]net/                                     => 'Cox',
-    qr/[.](?:prod|protection)[.]outlook[.]com\z/      => 'ExchangeOnline',
-    qr/\b(?>laposte[.]net|(?:orange|wanadoo)[.]fr)\z/ => 'FrancePTT',
-    qr/\A(?:smtp|mailstore1)[.]secureserver[.]net\z/  => 'GoDaddy',
-    qr/(?:aspmx|gmail-smtp-in)[.]l[.]google[.]com\z/  => 'GoogleApps',
-    qr/[.]email[.]ua\z/                               => 'IUA',
-    qr/[.](?:ezweb[.]ne[.]jp|au[.]com)\z/             => 'KDDI',
-    qr/[.]mimecast[.]com\z/                           => 'Mimecast',
-    qr/mfsmax[.]docomo[.]ne[.]jp\z/                   => 'NTTDOCOMO',
-    qr/charter[.]net/                                 => 'Spectrum',
-    qr/mx[0-9]+[.]qq[.]com\z/                         => 'TencentQQ',
+state $RhostClass = {
+    'Cox'       => ['cox.net'],
+    'FrancePTT' => ['.laposte.net', '.orange.fr', '.wanadoo.fr'],
+    'GoDaddy'   => ['smtp.secureserver.net', 'mailstore1.secureserver.net'],
+    'Google'    => ['aspmx.l.google.com', 'gmail-smtp-in.l.google.com'],
+    'IUA'       => ['.email.ua'],
+    'KDDI'      => ['.ezweb.ne.jp', 'msmx.au.com'],
+    'Microsoft' => ['.prod.outlook.com', '.protection.outlook.com'],
+    'Mimecast'  => ['.mimecast.com'],
+    'NTTDOCOMO' => ['mfsmax.docomo.ne.jp'],
+    'Spectrum'  => ['charter.net'],
+    'Tencent'   => ['.qq.com'],
 };
 
 sub match {
@@ -27,9 +27,9 @@ sub match {
     my $host0 = lc($rhost) || return 0;
     my $match = 0;
 
-    for my $e ( keys RhostClass()->%* ) {
+    for my $e ( keys %$RhostClass ) {
         # Try to match with each key of RhostClass
-        next unless $host0 =~ $e;
+        next unless grep { index($host0, $_) > -1 } $RhostClass->{ $e }->@*;
         $match = 1;
         last;
     }
@@ -48,10 +48,10 @@ sub get {
     my $remotehost = $proxy || lc $argvs->{'rhost'};
     my $rhostclass = '';
 
-    for my $e ( keys RhostClass()->%* ) {
+    for my $e ( keys %$RhostClass ) {
         # Try to match with each key of RhostClass
-        next unless $remotehost =~ $e;
-        $rhostclass = __PACKAGE__.'::'.RhostClass->{ $e };
+        next unless grep { index($remotehost, $_) > -1 } $RhostClass->{ $e }->@*;
+        $rhostclass = __PACKAGE__.'::'.$e;
         last;
     }
     return undef unless $rhostclass;
@@ -76,17 +76,15 @@ Sisimai::Rhost - Detect the bounce reason returned from certain remote hosts.
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact
-object as an argument of get() method when the value of C<rhost> of the object
-is listed in the results of Sisimai::Rhost->list() method.
-This class is called only Sisimai::Fact class.
+Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument of
+get() method when the value of C<rhost> of the object is listed in $RhostClass variable. This class
+is called only Sisimai::Fact class.
 
 =head1 CLASS METHODS
 
 =head2 C<B<match(I<remote host>)>>
 
-Returns 1 if the remote host is listed in the results of Sisimai::Rhost->list()
-method.
+Returns 1 if the remote host is listed in $RhostClass variable.
 
 =head2 C<B<get(I<Sisimai::Fact Object>)>>
 
@@ -98,7 +96,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020,2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020,2022,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

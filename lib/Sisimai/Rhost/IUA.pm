@@ -25,7 +25,8 @@ sub get {
         '10' => 'filtered',    # Not in the list Mail address management.
     };
     my $statusmesg = lc $argvs->{'diagnosticcode'};
-    my $codenumber = $statusmesg =~ m|[.]i[.]ua/err/(\d+)| ? $1 : 0;
+    my $codenumber = index($statusmesg, '.i.ua/err/') > 0 ? substr($statusmesg, index($statusmesg, '/err/') + 5, 2) : 0;
+       $codenumber = substr($codenumber, 0, 1) if index($codenumber, '/') == 1;
     return $errorcodes->{ $codenumber } || '';
 }
 
@@ -60,7 +61,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2019-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

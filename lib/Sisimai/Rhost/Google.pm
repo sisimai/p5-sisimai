@@ -1,4 +1,4 @@
-package Sisimai::Rhost::GoogleApps;
+package Sisimai::Rhost::Google;
 use feature ':5.10';
 use strict;
 use warnings;
@@ -265,7 +265,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Rhost::GoogleApps - Detect the bounce reason returned from Google Workspace.
+Sisimai::Rhost::Google - Detect the bounce reason returned from Google Workspace.
 
 =head1 SYNOPSIS
 
