@@ -34,6 +34,7 @@ MAKETEST: {
 
     is(Sisimai::String->aligned(\$v, ['rfc822', ' <', '@', '>']), 1, '->aligned(rfc822, <, @, >)');
     is(Sisimai::String->aligned(\$v, ['rfc822', '<<', ' ', '>']), 0, '->aligned(rfc822, <, @, >)');
+    is(Sisimai::String->aligned(\$v, ['rfc822']), 1, '->aligned(rfc822)');
 
     my $h = '
         <html>
