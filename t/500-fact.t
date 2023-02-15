@@ -29,7 +29,7 @@ my $Results = {
         ['5.1.1',   '550', 'userunknown',     1],
         ['5.1.1',   '550', 'userunknown',     1],
         ['5.1.1',   '550', 'userunknown',     1],
-        ['5.0.0',   '550', 'filtered',        0],
+        ['5.1.0',   '550', 'userunknown',     1],
         ['5.1.1',   '550', 'userunknown',     1],
         ['5.0.0',   '554', 'filtered',        0],
         ['5.1.1',   '550', 'userunknown',     1],
