@@ -262,15 +262,14 @@ sub inquire {
     }
 
     unless( Sisimai::String->aligned(\$rfc822part, ['From: ', '@']) ) {
-        #unless( $rfc822part =~ /\bFrom: [^ ]+[@][^ ]+\b/ ) {
         # There is no "From:" header in the original message Append the value of "Original-Mail-From"
         # value as a sender address.
         $rfc822part .= 'From: '.$commondata->{'from'}."\n" if $commondata->{'from'};
     }
 
-    if( $mhead->{'subject'} =~ /complaint about message from (\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3})/ ) {
+    if( index($mhead->{'subject'}, 'complaint about message from ') > -1 ) {
         # Microsoft ARF: remote host address.
-        $arfheaders->{'rhost'} = $1;
+        $arfheaders->{'rhost'} = substr($mhead->{'subject'}, rindex($mhead->{'subject'}, ' ') + 1,);
         $commondata->{'diagnosis'} = sprintf(
             "This is a Microsoft email abuse report for an email message received from IP %s on %s",
             $arfheaders->{'rhost'}, $mhead->{'date'});
@@ -278,7 +277,7 @@ sub inquire {
 
     for my $e ( @$dscontents ) {
         # AOL = http://forums.cpanel.net/f43/aol-brutal-work-71473.html
-        $e->{'recipient'} = Sisimai::Address->s3s4($rcptintext) if $e->{'recipient'} =~ /\A[^ ]+[@]\z/;
+        $e->{'recipient'} = Sisimai::Address->s3s4($rcptintext) if substr($e->{'recipient'}, -1, 1) eq '@';
         $e->{ $_ } ||= $arfheaders->{ $_ } for keys %$arfheaders;
         delete $e->{'authres'};
 
@@ -296,10 +295,12 @@ sub inquire {
             # The value of "Reporting-MTA" header
             $e->{'rhost'} = $commondata->{'rhost'};
 
-        } elsif( $e->{'diagnosis'} =~ /\breceived from IP address ([^ ]+)/ ) {
+        } else {
+            # Try to get an IP address from the error message
             # This is an email abuse report for an email message received from IP address 24.64.1.1
             # on Thu, 29 Apr 2010 00:00:00 +0000
-            $e->{'rhost'} = $1;
+            my $ip = Sisimai::String->ipv4($e->{'diagnosis'}) || [];
+            $e->{'rhost'} = $ip->[0] if scalar @$ip;
         }
     }
     return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
