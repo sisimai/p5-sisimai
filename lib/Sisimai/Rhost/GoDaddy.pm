@@ -46,12 +46,12 @@ sub get {
     };
 
     my $statusmesg = $argvs->{'diagnosticcode'};
+    my $positionib = index($statusmesg, ' IB');
     my $reasontext = '';
 
-    if( $statusmesg =~ /\s(IB\d{3})\b/ ) {
-        # 192.0.2.22 has sent to too many recipients this hour. IB607 ...
-        $reasontext = $errorcodes->{ $1 };
-    } else {
+    # 192.0.2.22 has sent to too many recipients this hour. IB607 ...
+    $reasontext = $errorcodes->{ substr($statusmesg, $positionib + 1, 5) } || '' if $positionib > 1;
+    if( length $reasontext == 0 ) {
         # 553 http://www.spamhaus.org/query/bl?ip=192.0.0.222
         for my $e ( keys %$messagesof ) {
             for my $f ( $messagesof->{ $e }->@* ) {
@@ -96,7 +96,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2018,2020-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2018,2020-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

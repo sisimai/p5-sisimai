@@ -2,6 +2,7 @@ package Sisimai::Rhost::Microsoft;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::SMTP::Status;
 
 # https://technet.microsoft.com/en-us/library/bb232118
 # https://learn.microsoft.com/en-us/Exchange/mail-flow-best-practices/non-delivery-reports-in-exchange-online/non-delivery-reports-in-exchange-online
@@ -17,7 +18,7 @@ sub get {
     return $argvs->{'reason'} if $argvs->{'reason'};
     return '' unless $argvs->{'diagnosticcode'};
     return '' unless $argvs->{'deliverystatus'};
-    return '' unless $argvs->{'deliverystatus'} =~ /\A[245][.]\d[.]\d+\z/;
+    return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 
     state $messagesof = {
         'authfailure' => [
