@@ -109,12 +109,12 @@ sub new {
 
     my $heads = ['<'];
     my $tails = ['>', ',', '.', ';'];
+    my $point = rindex($argvs->{'address'}, '@');
 
-    if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
-        $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
+    if( $point > 0 ) {
         # Get the local part and the domain part from the email address
-        my $lpart = $1; for my $e ( @$heads ) { $lpart =~ s/\A$e//g if substr($lpart, 0,  1) eq $e }
-        my $dpart = $2; for my $e ( @$tails ) { $dpart =~ s/$e\z//g if substr($dpart, -1, 1) eq $e }
+        my $lpart = substr($argvs->{'address'}, 0, $point);
+        my $dpart = substr($argvs->{'address'}, $point+1,);
         my $email = __PACKAGE__->expand_verp($argvs->{'address'}) || '';
         my $alias = 0;
 
@@ -135,8 +135,11 @@ sub new {
                 $thing->{'verp'}  = $argvs->{'address'};
             }
         }
-        $thing->{'user'} = $lpart;
-        $thing->{'host'} = $dpart;
+
+        do { while( substr($lpart,  0, 1) eq $_ ) { substr($lpart,  0, 1, '') }} for @$heads;
+        do { while( substr($dpart, -1, 1) eq $_ ) { substr($dpart, -1, 1, '') }} for @$tails;
+        $thing->{'user'}    = $lpart;
+        $thing->{'host'}    = $dpart;
         $thing->{'address'} = $lpart.'@'.$dpart;
 
     } else {
@@ -166,6 +169,7 @@ sub find {
     my $argv1 = shift // return undef; y/\r//d, y/\n//d for $argv1; # Remove CR, NL
     my $addrs = shift // undef;
 
+    require Sisimai::String;
     state $indicators = {
         'email-address' => (1 << 0),    # <neko@example.org>
         'quoted-string' => (1 << 1),    # "Neko, Nyaan"
@@ -350,11 +354,13 @@ sub find {
 
         if( $v->{'address'} ) {
             # Remove the comment from the address
-            if( $v->{'address'} =~ /(.*)([(].+[)])(.*)/ ) {
+            if( Sisimai::String->aligned(\$v->{'address'}, ['(', ')']) ) {
                 # (nyaan)nekochan@example.org, nekochan(nyaan)cat@example.org or
                 # nekochan(nyaan)@example.org
-                $v->{'address'} = $1.$3;
-                $v->{'comment'} = $2;
+                my $p1 = index($v->{'address'}, '(');
+                my $p2 = index($v->{'address'}, ')');
+                $v->{'address'} = substr($v->{'address'}, 0, $p1).substr($v->{'address'}, $p2 + 1,);
+                $v->{'comment'} = substr($v->{'address'}, $p1, $p2 - $p1 -1);
             }
             push @readbuffer, $v;
         }
