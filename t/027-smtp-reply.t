@@ -37,7 +37,7 @@ MAKETEST: {
         'SMTP; 550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown',
         q|smtp;  550 'arathib@vnet.IBM.COM' is not a|,
         'smtp; 550 user unknown',
-        'smtp; 426 connection timed out',
+        'smtp; 421 connection timed out',
         'smtp;550 5.2.1 <kijitora@example.jp>... User Unknown',
         'smtp; 550 5.7.1 Message content rejected, UBE, id=00000-00-000',
         '550 5.1.1 sid=i01K1n00l0kn1Em01 Address rejected foobar@foobar.com. [code=28] ',
