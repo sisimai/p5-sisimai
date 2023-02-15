@@ -2,6 +2,7 @@ package Sisimai::Reason::PolicyViolation;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'policyviolation' }
 sub description { 'Email rejected due to policy violation on a destination host' }
@@ -37,11 +38,13 @@ sub match {
         'the message was rejected by organization policy',
         'this message was blocked because its content presents a potential',
         'we do not accept messages containing images or other attachments',
-        'you have exceeded the allowable number of posts without solving a captcha',
-        'you have exceeded the the allowable number of posts without solving a captcha',
         "you're using a mass mailer",
     ];
+    state $pairs = [
+        ['you have exceeded the', 'allowable number of posts without solving a captcha'],
+    ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 

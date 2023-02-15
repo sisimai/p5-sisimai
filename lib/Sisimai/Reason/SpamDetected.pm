@@ -27,7 +27,6 @@ sub match {
         'blocked by policy: no spam please',
         'blocked by spamassassin',                      # rejected by SpamAssassin
         'blocked for abuse. see http://att.net/blocks', # AT&T
-        'bulk email',
         'cannot be forwarded because it was detected as spam',
         'considered unsolicited bulk e-mail (spam) by our mail filters',
         'content filter rejection',
@@ -61,6 +60,7 @@ sub match {
         'probable spam',
         'reject bulk.advertising',
         'rejected: spamassassin score ',
+        'rejected - bulk email',
         'rejecting banned content',
         'rejecting mail content',
         'related to content with spam-like characteristics',
