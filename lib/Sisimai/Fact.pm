@@ -67,7 +67,7 @@ sub rise {
 
     state $retryindex = Sisimai::Reason->retry;
     state $rfc822head = Sisimai::RFC5322->HEADERFIELDS('all');
-    state $actionlist = [qw|delayed delivered expanded failed relayed|];
+    state $actionlist = { 'delayed' => 1, 'delivered' => 1, 'expanded' => 1, 'failed' => 1, 'relayed' => 1 };
 
     my $deliveries = $mesg1->{'ds'};
     my $rfc822data = $mesg1->{'rfc822'};
@@ -208,36 +208,71 @@ sub rise {
 
             if( $p->{'diagnosticcode'} ) {
                 # Count the number of D.S.N. and SMTP Reply Code
-                my $vm = 0;
-                my $vs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'});
-                my $vr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'});
+                my $cs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'})     || '';
+                my $cr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}, $cs) || '';
 
-                if( $vs ) {
-                    # How many times does the D.S.N. appeared
-                    $vm += 1 while $p->{'diagnosticcode'} =~ /\b\Q$vs\E\b/g;
-                    $p->{'deliverystatus'} = $vs if $vs =~ /\A[45][.][1-9][.][1-9]+\z/;
+                if( length $cs > 4) {
+                    # There is an SMTP status code in the error message
+                    while(1) {
+                        last if $cs eq '4.4.7';
+                        last if index($cs, '.0.0') == 1;
+                        last if index($cs,   '.0') == 3 && index($p->{'deliverystatus'}, '.0') < 0;
+
+                        $p->{'deliverystatus'} = $cs;
+                        last;
+                    }
+                    $p->{'deliverystatus'} ||= $cs;
                 }
 
-                if( $vr ) {
-                    # How many times does the SMTP reply code appeared
-                    $vm += 1 while $p->{'diagnosticcode'} =~ /\b$vr\b/g;
-                    $p->{'replycode'} ||= $vr;
+                if( length $cr == 3 ) {
+                    # There is an SMTP reply code in the error message
+                    $p->{'replycode'} ||= $cr;
+
+                    if( index($p->{'diagnosticcode'}, $cr.'-') > -1 ) {
+                        # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
+                        # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
+                        # 550-5.7.1 this message has been blocked. Please visit
+                        # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
+                        #
+                        # kijitora@example.co.uk
+                        #   host c.eu.example.com [192.0.2.3]
+                        #   SMTP error from remote mail server after end of data:
+                        #   553-SPF (Sender Policy Framework) domain authentication
+                        #   553-fail. Refer to the Troubleshooting page at
+                        #   553-http://www.symanteccloud.com/troubleshooting for more
+                        #   553 information. (#5.7.1)
+                        for my $q ( '-', ' ' ) {
+                            # Remove strings: "550-5.7.1", and "550 5.7.1" from the error message
+                            my $cx = sprintf("%s%s%s", $cr, $q, $cs);
+                            my $p0 = index($p->{'diagnosticcode'}, $cx);
+                            while( $p0 > -1 ) {
+                                # Remove strings like "550-5.7.1"
+                                substr($p->{'diagnosticcode'}, $p0, length $cx, '');
+                                $p0 = index($p->{'diagnosticcode'}, $cx);
+                            }
+
+                            # Remove "553-" and "553 " (SMTP reply code only) from the error message
+                            $cx = sprintf("%s%s", $cr, $q);
+                            $p0 = index($p->{'diagnosticcode'}, $cx);
+                            while( $p0 > -1 ) {
+                                # Remove strings like "553-"
+                                substr($p->{'diagnosticcode'}, $p0, length $cx, '');
+                                $p0 = index($p->{'diagnosticcode'}, $cx);
+                            }
+                        }
+
+                        if( index($p->{'diagnosticcode'}, $cr) > 1 ) {
+                            # Add "550 5.1.1" into the head of the error message when the error
+                            # message does not begin with "550"
+                            $p->{'diagnosticcode'} = sprintf("%s %s %s", $cr, $cs, $p->{'diagnosticcode'});
+                        }
+                    }
                 }
 
-                if( $vm > 2 ) {
-                    # Build regular expression for removing string like '550-5.1.1' from the value
-                    # of "diagnosticcode"
-                    my $re0 = qr/;?[ ]$vr[- ](?:\Q$vs\E)?/;
-                    my $re1 = qr/;?[ ][45]\d\d[- ](?:\Q$vs\E)?/;
-                    my $re2 = qr/;?[ ]$vr[- ](?:[45][.]\d[.]\d+)?/;
-
-                    # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
-                    # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
-                    # 550-5.7.1 this message has been blocked. Please visit
-                    # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
-                    s/$re0/ /g, s/$re1/ /g, s/$re2/ /g, s|<html>.+</html>||i for $p->{'diagnosticcode'};
-                    $p->{'diagnosticcode'} = Sisimai::String->sweep($p->{'diagnosticcode'});
-                }
+                my $p1 = index(lc $p->{'diagnosticcode'}, '<html>');
+                my $p2 = index(lc $p->{'diagnosticcode'}, '</html>');
+                substr($p->{'diagnosticcode'}, $p1, $p2 + 7 - $p1, '') if $p1 > 0 && $p2 > 0;
+                $p->{'diagnosticcode'} = Sisimai::String->sweep($p->{'diagnosticcode'});
             }
             $p->{'diagnostictype'} ||= 'X-UNIX' if $p->{'reason'} eq 'mailererror';
             $p->{'diagnostictype'} ||= 'SMTP' unless grep { $p->{'reason'} eq $_ } ('feedback', 'vacation');
@@ -277,12 +312,12 @@ sub rise {
             # Decide the reason of email bounce
             if( $o->{'reason'} eq '' || exists $retryindex->{ $o->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
-                my $r; my $de = $o->{'destination'};
-                $r   = Sisimai::Rhost->get($o)      if Sisimai::Rhost->match($o->{'rhost'});
-                $r ||= Sisimai::Rhost->get($o, $de) if Sisimai::Rhost->match($de);
-                $r ||= Sisimai::Reason->get($o);
-                $r ||= 'undefined';
-                $o->{'reason'} = $r;
+                my $re; my $de = $o->{'destination'};
+                   $re   = Sisimai::Rhost->get($o)      if Sisimai::Rhost->match($o->{'rhost'});
+                   $re ||= Sisimai::Rhost->get($o, $de) if Sisimai::Rhost->match($de);
+                   $re ||= Sisimai::Reason->get($o);
+                   $re ||= 'undefined';
+                $o->{'reason'} = $re;
             }
         }
 
@@ -294,7 +329,7 @@ sub rise {
 
             } else {
                 my $smtperrors = $p->{'deliverystatus'}.' '.$p->{'diagnosticcode'};
-                   $smtperrors = '' if $smtperrors =~ /\A\s+\z/;
+                   $smtperrors = '' if length $smtperrors < 4;
                 my $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->{'reason'}, $smtperrors);
                 $o->{'hardbounce'} = 1 if $softorhard eq 'hard';
             }
@@ -305,18 +340,23 @@ sub rise {
             last DELIVERYSTATUS if $o->{'deliverystatus'};
 
             my $smtperrors = $o->{'replycode'}.' '.$p->{'diagnosticcode'};
-               $smtperrors = '' if $smtperrors =~ /\A\s+\z/;
+               $smtperrors = '' if length $smtperrors < 4;
             my $permanent1 = Sisimai::SMTP::Error->is_permanent($smtperrors) // 1;
             $o->{'deliverystatus'} = Sisimai::SMTP::Status->code($o->{'reason'}, $permanent1 ? 0 : 1);
         }
 
         REPLYCODE: {
             # Check both of the first digit of "deliverystatus" and "replycode"
-            my $d1 = substr($o->{'deliverystatus'}, 0, 1);
-            my $r1 = substr($o->{'replycode'}, 0, 1);
-            $o->{'replycode'} = '' unless $d1 eq $r1;
+            my $cx = [substr($o->{'deliverystatus'}, 0, 1), substr($o->{'replycode'}, 0, 1)];
+            if( $cx->[0] ne $cx->[1] ) {
+                # The class of the "Status:" is defer with the first digit of the reply code
+                $cx->[1] = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}, $cx->[0]) || '';
+                $o->{'replycode'} = '' unless $cx->[0] eq $cx->[1];
+                $o->{'replycode'} = $cx->[1];
+            }
 
-            unless( grep { $o->{'action'} eq $_ } @$actionlist ) {
+            unless( exists $actionlist->{ $o->{'action'} } ) {
+                # There is an action value which is not described at RFC1894
                 if( my $ox = Sisimai::RFC1894->field('Action: '.$o->{'action'}) ) {
                     # Rewrite the value of "Action:" field to the valid value
                     #
@@ -327,7 +367,7 @@ sub rise {
                 }
             }
             $o->{'action'}   = 'delayed' if $o->{'reason'} eq 'expired';
-            $o->{'action'} ||= 'failed'  if $d1 =~ /\A[45]/;
+            $o->{'action'} ||= 'failed'  if $cx->[0] eq '4' || $cx->[0] eq '5';
         }
 
         push @$listoffact, bless($o, __PACKAGE__);
