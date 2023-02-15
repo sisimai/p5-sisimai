@@ -174,7 +174,6 @@ sub inquire {
                 $v->{'lhost'}     = $o->{'reportingMTA'} || '';
                 $v->{'diagnosis'} = $o->{'smtpResponse'} || '';
                 $v->{'status'}    = Sisimai::SMTP::Status->find($v->{'diagnosis'}) || '';
-                $v->{'replycode'} = Sisimai::SMTP::Reply->find($v->{'diagnosis'})  || '';
                 $v->{'reason'}    = 'delivered';
                 $v->{'action'}    = 'delivered';
                 ($v->{'date'} = $o->{'timestamp'} || $p->{'mail'}->{'timestamp'}) =~ s/[.]\d+Z\z//;
@@ -299,6 +298,7 @@ sub inquire {
                    $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
                 $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
             }
+            $e->{'replycode'} ||= Sisimai::SMTP::Reply->find($e->{'diagnosis'}, $e->{'status'});
 
             SESSION: for my $r ( keys %$messagesof ) {
                 # Verify each regular expression of session errors
