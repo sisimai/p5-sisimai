@@ -18,7 +18,7 @@ sub inquire {
     my $match = 0;
 
     # 'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    $match ||= 1 if $mhead->{'from'} =~ /no-reply[@].+[.]dion[.]ne[.]jp/;
+    $match ||= 1 if Sisimai::String->aligned(\$mhead->{'from'}, ['no-reply@.', '.dion.ne.jp']);
     $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} eq 'no-reply@app.auone-net.jp';
     $match ||= 1 if grep { rindex($_, 'ezweb.ne.jp (') > -1 } $mhead->{'received'}->@*;
     $match ||= 1 if grep { rindex($_, '.au.com (') > -1 } $mhead->{'received'}->@*;
