@@ -104,18 +104,16 @@ sub inquire {
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
+        if( index($e->{'status'}, '.0.0') > 0 || index($e->{'status'}, '.1.0') > 0 ) {
             # Get other D.S.N. value from the error message
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
-            my $errormessage = $e->{'diagnosis'};
-               $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-            $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
+            $e->{'status'}   = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || $e->{'status'};
         }
 
         # 554 4.4.7 Message expired: unable to deliver in 840 minutes.
         # <421 4.4.2 Connection timed out>
-        $e->{'replycode'} = $1 if $e->{'diagnosis'} =~ /[<]([245]\d\d)[ ].+[>]/;
-        $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'}) || '';
+        $e->{'replycode'} = Sisimai::SMTP::Reply->find($e->{'diagnosis'}) || '';
+        $e->{'reason'}  ||= Sisimai::SMTP::Status->name($e->{'status'})   || '';
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
