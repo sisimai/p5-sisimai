@@ -195,7 +195,7 @@ sub inquire {
                     } else {
                         # Get error message continued from the previous line
                         next unless $anotherset->{'diagnosis'};
-                        $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ ]{4}(.+)\z/;
+                        $anotherset->{'diagnosis'} .= ' '.substr($e, 4,) if index($e, '    ') == 0;
                     }
                 }
             } # End of message/delivery-status
@@ -269,7 +269,7 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'}   = shift @commandset || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
         $e->{'command'} ||= 'HELO' if index($e->{'diagnosis'}, 'refused to talk to me:') > -1;
-        $e->{'spec'}    ||= 'SMTP' if $e->{'diagnosis'} =~ /host .+ said:/;
+        $e->{'spec'}    ||= 'SMTP' if Sisimai::String->aligned(\$e->{'diagnosis'}, ['host ', ' said:']);
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
