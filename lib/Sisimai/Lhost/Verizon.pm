@@ -144,8 +144,8 @@ sub inquire {
     return undef unless $recipients;
 
     # Set the value of "MAIL FROM:" and "From:"
-    $emailparts->[1] .= sprintf("From: %s\n",    $senderaddr) unless $emailparts->[1] =~ /^From: /m;
-    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailparts->[1] =~ /^Subject: /m;
+    $emailparts->[1] .= sprintf("From: %s\n",    $senderaddr) if index($emailparts->[1], "\nFrom: ")    < 0;
+    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) if index($emailparts->[1], "\nSubject: ") < 0;
 
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
