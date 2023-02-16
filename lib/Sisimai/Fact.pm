@@ -187,24 +187,28 @@ sub rise {
             $p->{'subject'} = $rfc822data->{'subject'} // '';
             chop $p->{'subject'} if substr($p->{'subject'}, -1, 1) eq "\r";
 
-            if( $p->{'listid'} = $rfc822data->{'list-id'} // '' ) {
+            if( Sisimai::String->aligned(\$rfc822data->{'list-id'}, ['<', '.', '>']) ) {
+                # https://www.rfc-editor.org/rfc/rfc2919
                 # Get the value of List-Id header: "List name <list-id@example.org>"
-                if( Sisimai::String->aligned(\$p->{'listid'}, ['<', '.', '>']) ) {
-                    # https://www.rfc-editor.org/rfc/rfc2919
-                    my $p0 = index($p->{'listid'}, '<') + 1;
-                    my $p1 = index($p->{'listid'}, '>') - 1;
-                    $p->{'listid'} = substr($p->{'listid'}, $p0, $p1 - $p0 - 1);
+                my $p0 = index($rfc822data->{'list-id'}, '<') + 1;
+                my $p1 = index($rfc822data->{'list-id'}, '>') - 1;
+                $p->{'listid'} = substr($rfc822data->{'list-id'}, $p0, $p1 - $p0 - 1);
 
-                } else {
-                    # Invalid value of the List-Id: field
-                    $p->{'listid'} = '';
-                }
+            } else {
+                # Invalid value of the List-Id: field
+                $p->{'listid'} = '';
             }
 
-            if( $p->{'messageid'} = $rfc822data->{'message-id'} // '' ) {
+            if( Sisimai::String->aligned(\$rfc822data->{'message-id'}, ['<', '@', '>']) ) {
+                # https://www.rfc-editor.org/rfc/rfc5322#section-3.6.4
                 # Leave only string inside of angle brackets(<>)
-                $p->{'messageid'} = $1 if $p->{'messageid'} =~ /\A([^ ]+)[ ].*/;
-                $p->{'messageid'} = $1 if $p->{'messageid'} =~ /[<]([^ ]+?)[>]/;
+                my $p0 = index($rfc822data->{'message-id'}, '<') + 1;
+                my $p1 = index($rfc822data->{'message-id'}, '>') - 1;
+                $p->{'messageid'} = substr($rfc822data->{'message-id'}, $p0, $p1 - $p0 - 1);
+
+            } else {
+                # Invalid value of the Message-Id: field
+                $p->{'messageid'} = '';
             }
         }
 
