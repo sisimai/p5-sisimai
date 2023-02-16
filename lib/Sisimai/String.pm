@@ -63,7 +63,7 @@ sub aligned {
     # @return   [Bool]          0, 1
     # @since v5.0.0
     my $class = shift;
-    my $argv1 = shift || return undef;
+    my $argv1 = shift || return undef; return undef unless length $$argv1;
     my $argv2 = shift || return undef; return undef unless scalar @$argv2;
     my $align = -1;
     my $right =  0;
