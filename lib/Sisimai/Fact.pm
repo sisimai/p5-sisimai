@@ -189,10 +189,16 @@ sub rise {
 
             if( $p->{'listid'} = $rfc822data->{'list-id'} // '' ) {
                 # Get the value of List-Id header: "List name <list-id@example.org>"
-                $p->{'listid'} =  $1 if $p->{'listid'} =~ /\A.*([<].+[>]).*\z/;
-                $p->{'listid'} =~ y/<>//d;
-                chop $p->{'listid'} if substr($p->{'listid'}, -1, 1) eq "\r";
-                $p->{'listid'} = '' if rindex($p->{'listid'}, ' ') > -1;
+                if( Sisimai::String->aligned(\$p->{'listid'}, ['<', '.', '>']) ) {
+                    # https://www.rfc-editor.org/rfc/rfc2919
+                    my $p0 = index($p->{'listid'}, '<') + 1;
+                    my $p1 = index($p->{'listid'}, '>') - 1;
+                    $p->{'listid'} = substr($p->{'listid'}, $p0, $p1 - $p0 - 1);
+
+                } else {
+                    # Invalid value of the List-Id: field
+                    $p->{'listid'} = '';
+                }
             }
 
             if( $p->{'messageid'} = $rfc822data->{'message-id'} // '' ) {
