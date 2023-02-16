@@ -2,6 +2,8 @@ package Sisimai::SMTP::Transcript;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::SMTP::Reply;
+use Sisimai::SMTP::Status;
 
 sub rise {
     # Parse a transcript of an SMTP session and makes structured data
@@ -99,8 +101,8 @@ sub rise {
             # SMTP server sent a response "<<< response text"
             my $p = index($e, '<<< '); next unless $p == 0; substr($e, $p, 4, '');
 
-            $cursession->{'response'}->{'reply'}  = $1 if $e =~ /\A([2-5]\d\d)[ ]/;
-            $cursession->{'response'}->{'status'} = $1 if $e =~ /\A[245]\d\d[ ]([245][.]\d{1,3}[.]\d{1,3})[ ]/;
+            $cursession->{'response'}->{'reply'}  = Sisimai::SMTP::Reply->find($e)  || '';
+            $cursession->{'response'}->{'status'} = Sisimai::SMTP::Status->find($e) || '';
             push $cursession->{'response'}->{'text'}->@*, $e;
         }
     }
