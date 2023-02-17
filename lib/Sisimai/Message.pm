@@ -189,7 +189,7 @@ sub makemap {
     $headermaps->{ lc $_ } = $firstpairs->{ $_ } for keys %$firstpairs;
     for my $e ( values %$headermaps ) { s/\n\s+/ /, y/\t / /s for $e }
 
-    if( $$argv0 =~ /^Received:/m ) {
+    if( index($$argv0, "\nReceived:") > 0 || index($$argv0, "Received:") == 0 ) {
         # Capture values of each Received: header
         $recvheader = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms];
         for my $e ( @$recvheader ) { s/\n\s+/ /, y/\n\t / /s for $e }
