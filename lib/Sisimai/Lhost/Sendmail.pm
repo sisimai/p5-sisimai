@@ -22,6 +22,8 @@ sub inquire {
     $match ||= 1 if index($mhead->{'subject'}, 'Warning: ')                  == 0;
     return undef unless $match > 0;
 
+    require Sisimai::SMTP::Reply;
+    require Sisimai::SMTP::Status;
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
@@ -134,12 +136,14 @@ sub inquire {
                         # ----- Transcript of session follows -----
                         # Message could not be delivered for too long
                         # Message will be deleted from queue
-                        if( $e =~ /\A[45]\d\d[ ]([45][.]\d[.]\d)[ ].+/ ) {
+                        my $cr = Sisimai::SMTP::Reply->find($e)  || '';
+                        my $cs = Sisimai::SMTP::Status->find($e) || '';
+                        if( length($cr.$cs) > 7 ) {
                             # 550 5.1.2 <kijitora@example.org>... Message
                             #
                             # DBI connect('dbname=...')
                             # 554 5.3.0 unknown mailer error 255
-                            $anotherset->{'status'} = $1;
+                            $anotherset->{'status'}     = $cs;
                             $anotherset->{'diagnosis'} .= ' '.$e;
 
                         } elsif( index($e, 'Message: ') == 0 || index($e, 'Warning: ') == 0 ) {
@@ -183,11 +187,8 @@ sub inquire {
         $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
         if( exists $anotherset->{'status'} && $anotherset->{'status'} ) {
-            # Check alternative status code
-            if( ! $e->{'status'} || $e->{'status'} !~ /\A[45][.]\d[.]\d{1,3}\z/ ) {
-                # Override alternative status code
-                $e->{'status'} = $anotherset->{'status'};
-            }
+            # Check alternative status code and override it
+            $e->{'status'} = $anotherset->{'status'} unless Sisimai::SMTP::Status->test($e->{'status'});
         }
 
         # @example.jp, no local part
