@@ -291,7 +291,8 @@ sub inquire {
 
             $e->{'diagnosis'} =~ y/\n/ /;
             $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-            if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
+
+            if( index($e->{'status'}, '.0.0') > 0 || index($e->{'status'}, '.1.0') > 0 ) {
                 # Get other D.S.N. value from the error message
                 # 5.1.0 - Unknown address error 550-'5.7.1 ...
                 my $errormessage = $e->{'diagnosis'};
