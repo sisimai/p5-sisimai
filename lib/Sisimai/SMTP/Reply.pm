@@ -141,7 +141,7 @@ sub test {
 sub find {
     # Get an SMTP reply code from the given string
     # @param    [String] argv1  String including SMTP reply code like 550
-    # @param    [Integer] argv2 Status code like 5.1.1 or 2 or 4 or 5
+    # @param    [String] argv2  Status code like 5.1.1 or 2 or 4 or 5
     # @return   [String]        SMTP reply code or empty if the first argument
     #                           did not include SMTP Reply Code value
     # @since v4.14.0
