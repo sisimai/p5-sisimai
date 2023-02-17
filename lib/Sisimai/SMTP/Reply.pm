@@ -2,7 +2,6 @@ package Sisimai::SMTP::Reply;
 use feature ':5.10';
 use strict;
 use warnings;
-
 # http://www.ietf.org/rfc/rfc5321.txt
 #   4.2.1.  Reply Code Severities and Theory
 #
@@ -124,13 +123,17 @@ sub test {
     return 0 if $reply % 100 > 59;
 
     if( $first == 2 ) {
+        # 2yz
         return 0 if $reply < 211;
         return 0 if $reply > 252;
         return 0 if $reply > 221 && $reply < 250;
+        return 1;
     }
 
     if( $first == 3 ) {
+        # 3yz
         return 0 unless $reply == 354;
+        return 1;
     }
     return 1;
 }
