@@ -250,7 +250,7 @@ sub inquire {
 
         # Set pseudo status code and override bounce reason
         $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
-        next unless $e->{'status'} =~ /\A[45][.][1-7][.][1-9]\z/;
+        next if length($e->{'status'}) == 0 || index($e->{'status'}, '.0') > 0;
         $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'}) || '';
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };

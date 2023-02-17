@@ -159,7 +159,7 @@ sub inquire {
     }
 
     # Set the value of $subjecttxt as a Subject if there is no original message in the bounce mail.
-    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailparts->[1] =~ /^Subject:/m;
+    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) if index($emailparts->[1], "\nSubject:") < 0;
 
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
