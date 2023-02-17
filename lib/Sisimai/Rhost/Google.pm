@@ -12,10 +12,9 @@ sub get {
     my $argvs = shift // return undef;
 
     return $argvs->{'reason'} if $argvs->{'reason'};
-    return '' unless $argvs->{'replycode'};
     return '' unless $argvs->{'diagnosticcode'};
-    return '' unless $argvs->{'deliverystatus'};
-    return '' unless $argvs->{'deliverystatus'} =~ /\A[245][.]\d[.]\d+\z/;
+    return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
+    return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 
     state $messagesof = {
         'authfailure' => [
@@ -289,7 +288,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
