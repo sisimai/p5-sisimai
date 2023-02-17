@@ -141,7 +141,8 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Get the value of SMTP status code as a pseudo D.S.N.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'status'} = $1.'.0.0' if $e->{'diagnosis'} =~ /\b([45])\d\d[ ]*/;
+        $e->{'replycode'} = Sisimai::SMTP::Reply->find($e->{'diagnosis'}) || '';
+        $e->{'status'}    = substr($e->{'replycode'}, 0, 1).'.0.0' if length $e->{'replycode'} == 3;
 
         if( $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {
             # Get the value of D.S.N. from the error message or the value of Diagnostic-Code header.
