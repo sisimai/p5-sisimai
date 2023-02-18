@@ -5,7 +5,7 @@ use Sisimai::SMTP::Status;
 
 my $Package = 'Sisimai::SMTP::Status';
 my $Methods = {
-    'class'  => ['code', 'name', 'find'],
+    'class'  => ['code', 'name', 'test', 'find'],
     'object' => [],
 };
 
@@ -13,11 +13,11 @@ use_ok $Package;
 can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
-    my $reasonlist = [
-        'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered', 'hasmoved',
-        'hostunknown', 'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
-        'norelaying', 'notaccept', 'onhold', 'rejected', 'securityerror', 'spamdetected',
-        'suspend', 'systemerror', 'systemfull', 'toomanyconn', 'userunknown', 'syntaxerror',
+    my $reasonlist = [qw/
+      authfailure badreputation blocked contenterror exceedlimit expired filtered hasmoved
+      hostunknown mailboxfull mailererror mesgtoobig networkerror notaccept onhold rejected
+      norelaying spamdetected virusdetected policyviolation securityerror speeding suspend
+      systemerror systemfull toomanyconn userunknown syntaxerror/
     ];
     my $statuslist = [ qw/
         2.1.5
