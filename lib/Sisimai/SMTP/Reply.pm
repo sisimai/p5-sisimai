@@ -150,8 +150,8 @@ sub find {
     my $argv2 = shift || 0;
     return '' if index(uc($argv1), 'X-UNIX;') > -1;
 
-    my $statuscode = int(substr($argv2, 0, 1) || 0);
-    my $replycodes = $statuscode == 5 || $statuscode == 4 || $statuscode == 2
+    my $statuscode = substr($argv2, 0, 1) || '';
+    my $replycodes = $statuscode eq '5' || $statuscode eq '4' || $statuscode eq '2'
                      ? $CodeOfSMTP->{ $statuscode }
                      : [$CodeOfSMTP->{'5'}->@*, $CodeOfSMTP->{'4'}->@*, $CodeOfSMTP->{'2'}->@*];
     my $esmtperror = ' '.$argv1;
