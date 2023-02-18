@@ -710,15 +710,15 @@ sub test {
 sub find {
     # Get a DSN code value from given string including DSN
     # @param    [String] argv1  String including DSN
-    # @param    [String] argv2  An SMTP Reply code or 2 or 4 or 5
-    # @return   [String]        An SMTP Status code
+    # @param    [String] argv2  An SMTP Reply Code or 2 or 4 or 5
+    # @return   [String]        An SMTP Status Code
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return undef;
-    my $argv2 = shift || 0;
+    my $argv1 = shift || return undef; return undef if length $argv1 < 7;
+    my $argv2 = shift || '';
 
-    my $givenclass = int(substr($argv2, 0, 1) || 0);
-    my $eestatuses = $givenclass == 2 || $givenclass == 4 || $givenclass == 5 ? [$givenclass.'.'] : ['5.', '4.', '2.'];
+    my $givenclass = substr($argv2, 0, 1);
+    my $eestatuses = $givenclass eq '2' || $givenclass eq '4' || $givenclass eq '5' ? [$givenclass.'.'] : ['5.', '4.', '2.'];
     my $esmtperror = ' '.$argv1.' ';
     my $lookingfor = {};
 
