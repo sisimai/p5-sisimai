@@ -692,10 +692,11 @@ sub test {
     # @see      code
     # @since v5.0.0
     my $class = shift;
-    my $argv1 = shift || return undef;
-    my $token = [];
+    my $argv1 = shift || return undef; 
+    return 0 if length $argv1 < 5;
+    return 0 if length $argv1 > 7;
 
-    push @$token, int $_ for split(/[.]/, $argv1);
+    my $token = []; push @$token, int $_ for split(/[.]/, $argv1);
     return 0 unless scalar @$token == 3;
     return 0 if $token->[0] <  2;
     return 0 if $token->[0] == 3;
