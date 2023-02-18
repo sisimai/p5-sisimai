@@ -74,7 +74,7 @@ sub aligned {
 
         last if $p < 0;                 # Break this loop when there is no string in the 1st argument
         $align = length($e) + $p - 1;   # There is an aligned string in the 1st argument
-        $right += 1;
+        $right++;
     }
     return 1 if $right == scalar @$argv2;
     return 0;
@@ -86,7 +86,7 @@ sub ipv4 {
     # @return   [Array]         List of IPv4 addresses
     # @since v5.0.0
     my $class = shift;
-    my $argv0 = shift || return undef;
+    my $argv0 = shift || return undef; return [] if length $argv0 < 7;
     my $ipv4a = [];
 
     for my $e ( '(', ')', '[', ']' ) {
@@ -106,12 +106,12 @@ sub ipv4 {
 
         while( $cu < $lx ) {
             # Check whether each character is a number or "." or not
-            $as = ord substr($e, $cu, 1); $cu++;
+            $as = ord substr($e, $cu++, 1);
             if( $as < 48 || $as > 57 ) {
                 # The character is not a number(0-9)
                 next IP4A if     $as != 46; # The character is not "."
-                next      if     $eo eq '';
-                next IP4A if int $eo > 255; # The value of the current buffer is greater than 255
+                next      if     $eo eq ''; # The current buffer is empty
+                next IP4A if int $eo > 255; # The current buffer is greater than 255
                 $eo = '';
                 next;
             }
