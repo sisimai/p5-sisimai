@@ -728,7 +728,7 @@ sub find {
         substr($esmtperror, $p0, length $e, '***.***.***.***');
     }
 
-    LOOKFOR: for my $e ( @$eestatuses ) {
+    for my $e ( @$eestatuses ) {
         # Count the number of "5.", "4.", and "2." in the error message
         my $p0 = 0;
         my $p1 = 0;
