@@ -739,11 +739,12 @@ sub find {
             $p1 = $p0 + 2;
         }
     }
+    return '' unless scalar keys %$lookingfor;
 
     my $statuscode = [];    # List of SMTP Status Code, Keep the order of appearances
     my $anotherone = '';    # Alternative code
     my $readbuffer = '';
-    my $characters = undef; # Characters around the status code found by index()
+    my $characters = [];    # Characters around the status code found by index()
     my $indexofees = -1;    # A position of SMTP status code found by the index()
 
     for my $e ( sort keys %$lookingfor ) {
