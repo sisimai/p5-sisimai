@@ -361,8 +361,7 @@ sub rise {
             if( $cx->[0] ne $cx->[1] ) {
                 # The class of the "Status:" is defer with the first digit of the reply code
                 $cx->[1] = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}, $cx->[0]) || '';
-                $o->{'replycode'} = '' unless $cx->[0] eq $cx->[1];
-                $o->{'replycode'} = $cx->[1];
+                $o->{'replycode'} = index($cx->[1], $cx->[0]) == 0 ? $cx->[1] : '';
             }
 
             unless( exists $actionlist->{ $o->{'action'} } ) {
