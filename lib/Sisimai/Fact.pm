@@ -191,8 +191,8 @@ sub rise {
                 # https://www.rfc-editor.org/rfc/rfc2919
                 # Get the value of List-Id header: "List name <list-id@example.org>"
                 my $p0 = index($rfc822data->{'list-id'}, '<') + 1;
-                my $p1 = index($rfc822data->{'list-id'}, '>') - 1;
-                $p->{'listid'} = substr($rfc822data->{'list-id'}, $p0, $p1 - $p0 - 1);
+                my $p1 = index($rfc822data->{'list-id'}, '>');
+                $p->{'listid'} = substr($rfc822data->{'list-id'}, $p0, $p1 - $p0);
 
             } else {
                 # Invalid value of the List-Id: field
@@ -203,9 +203,8 @@ sub rise {
                 # https://www.rfc-editor.org/rfc/rfc5322#section-3.6.4
                 # Leave only string inside of angle brackets(<>)
                 my $p0 = index($rfc822data->{'message-id'}, '<') + 1;
-                my $p1 = index($rfc822data->{'message-id'}, '>') - 1;
-                $p->{'messageid'} = substr($rfc822data->{'message-id'}, $p0, $p1 - $p0 - 1);
-
+                my $p1 = index($rfc822data->{'message-id'}, '>');
+                $p->{'messageid'} = substr($rfc822data->{'message-id'}, $p0, $p1 - $p0);
             } else {
                 # Invalid value of the Message-Id: field
                 $p->{'messageid'} = '';
