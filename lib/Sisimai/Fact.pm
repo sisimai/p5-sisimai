@@ -205,6 +205,7 @@ sub rise {
                 my $p0 = index($rfc822data->{'message-id'}, '<') + 1;
                 my $p1 = index($rfc822data->{'message-id'}, '>');
                 $p->{'messageid'} = substr($rfc822data->{'message-id'}, $p0, $p1 - $p0);
+
             } else {
                 # Invalid value of the Message-Id: field
                 $p->{'messageid'} = '';
