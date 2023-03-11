@@ -83,7 +83,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             my $p1 = index($e, '<');
-            my $p2 = index($e, '>', $p1);
+            my $p2 = index($e, '>', $p1 + 2);
             $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p1, $p2 - $p1));
             $v->{'diagnosis'} = $e;
             $recipients++;
