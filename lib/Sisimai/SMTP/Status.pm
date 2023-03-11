@@ -736,7 +736,7 @@ sub find {
             # Find all of the "5." and "4." string and store its postion
             $p0 = index($esmtperror, $e, $p1); last if $p0 == -1;
             $lookingfor->{ sprintf("%04d", $p0) } = $e;
-            $p1 = $p0 + 2;
+            $p1 = $p0 + 5;
         }
     }
     return '' unless scalar keys %$lookingfor;
