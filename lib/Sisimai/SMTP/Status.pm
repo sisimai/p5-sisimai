@@ -722,7 +722,7 @@ sub find {
     my $esmtperror = ' '.$argv1.' ';
     my $lookingfor = {};
 
-    for my $e ( Sisimai::String->ipv4($argv1)->@* ) {
+    for my $e ( Sisimai::String->ipv4($esmtperror)->@* ) {
         # Rewrite an IPv4 address in the given string(argv1) with '***.***.***.***'
         my $p0 = index($esmtperror, $e); next if $p0 == -1;
         substr($esmtperror, $p0, length $e, '***.***.***.***');
