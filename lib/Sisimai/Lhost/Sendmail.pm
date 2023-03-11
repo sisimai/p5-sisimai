@@ -193,8 +193,9 @@ sub inquire {
 
         # @example.jp, no local part
         # Get email address from the value of Diagnostic-Code field
-        next if index($e->{'recipient'}, '@') > 0;
-        $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
+        next unless index($e->{'recipient'}, '@') == 0;
+        my $cv = Sisimai::Address->find($e->{'diagnosis'}, 1) || [];
+        $e->{'recipient'} = $cv->[0]->{'address'} if scalar @$cv;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
