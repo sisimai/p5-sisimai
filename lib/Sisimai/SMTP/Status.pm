@@ -799,6 +799,66 @@ sub find {
     return shift @$statuscode;
 }
 
+sub prefer {
+    # Return the preferred value selected from the arguments
+    # @param    [String] argv0  The value of Status:
+    # @param    [String] argv1  The delivery status picked from the error message
+    # @param    [String] argv2  The value of An SMTP Reply Code
+    # @return   [String]        The preferred value
+    # @since v5.0.0
+    my $class = shift;
+    my $argv0 = shift || '';
+    my $argv1 = shift || '';
+    my $argv2 = shift || '';
+    my $argv3 = shift || '';
+
+    my $statuscode = $argv0 || return $argv1;
+    my $codeinmesg = $argv1 || return $argv0; return $argv0 unless length $codeinmesg > 4;
+    my $esmtpreply = $argv2 || 0;
+    my $the1stchar = {
+        'field' => int substr($statuscode, 0, 1),
+        'error' => int substr($codeinmesg, 0, 1),
+        'reply' => int substr($esmtpreply, 0, 1),
+    };
+
+    if( $the1stchar->{'reply'} > 0 && $the1stchar->{'field'} != $the1stchar->{'error'} ) {
+        # There is the 3rd argument (an SMTP Reply Code)
+        # Returns the value of $argv0 or $argv1 which begins with the 1st character of $argv2
+        return $statuscode if $the1stchar->{'reply'} == $the1stchar->{'field'};
+        return $codeinmesg if $the1stchar->{'reply'} == $the1stchar->{'error'};
+    }
+    return $statuscode if $statuscode eq $codeinmesg;
+
+    my $zeroindex1 = { 'field' => index($statuscode, '.0'),   'error' => index($codeinmesg, '.0')   };
+    my $zeroindex2 = { 'field' => index($statuscode, '.0.0'), 'error' => index($codeinmesg, '.0.0') };
+
+    if( $zeroindex2->{'field'} > 0 ) {
+        # "Status:" field is "X.0.0"
+        return $codeinmesg if $zeroindex2->{'error'} < 0;
+        return $statuscode;
+    }
+
+    if( $zeroindex1->{'field'} > 0 ) {
+        # "Status:" field is "X.Y.0" or "X.0.Z"
+        return $codeinmesg if $zeroindex1->{'error'} < 0;
+    }
+
+    return $statuscode if $zeroindex2->{'error'} > 0;       # An SMTP status code is "X.0.0"
+    return $codeinmesg if $statuscode eq '4.4.7';           # "4.4.7" is an ambiguous code
+    return $codeinmesg if index($statuscode, '5.3.') == 0;  # "5.3.Z" is an error of a system
+
+    if( $statuscode eq '5.1.1' ) {
+        # "5.1.1" is a code of "userunknown"
+        return $statuscode if $zeroindex1->{'error'} > 0;
+        return $codeinmesg;
+
+    } elsif( $statuscode eq '5.1.3' ) {
+        # "5.1.3"
+        return $codeinmesg if index($codeinmesg, '5.7.') == 0;
+    }
+    return $statuscode;
+}
+
 1;
 __END__
 
@@ -851,6 +911,13 @@ C<find()> returns a DSN value only from the text including DSN
     print Sisimai::SMTP::Status->find('5.0.0');                  # '5.0.0'
     print Sisimai::SMTP::Status->find('550 5.1.1 User unknown'); # '5.1.1'
     print Sisimai::SMTP::Status->find('447 delivery expired');   # ''
+
+=head2 C<B<prefer(I<Code in Status: field>, I<Code in an error message>, [I<Reply code>])>>
+
+C<prefer()> returns the preferred value selected from the arguments.
+
+    print Sisimai::SMTP::Status->prefer("5.2.1", "5.0.0");      # "5.2.1"
+    print Sisimai::SMTP::Status->prefer("4.4.7", "5.1.1", 421); # "4.4.7"
 
 =head1 AUTHOR
 
