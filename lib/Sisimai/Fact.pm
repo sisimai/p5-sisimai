@@ -214,25 +214,13 @@ sub rise {
 
         CHECK_DELIVERYSTATUS_VALUE: {
             # Cleanup the value of "Diagnostic-Code:" header
-            chop $p->{'diagnosticcode'} if substr($p->{'diagnosticcode'}, -1, 1) eq "\r";
+            if( length $p->{'diagnosticcode'} ) {
+                # Get an SMTP Reply Code and an SMTP Enhanced Status Code
+                chop $p->{'diagnosticcode'} if substr($p->{'diagnosticcode'}, -1, 1) eq "\r";
 
-            if( $p->{'diagnosticcode'} ) {
-                # Count the number of D.S.N. and SMTP Reply Code
                 my $cs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'})     || '';
                 my $cr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}, $cs) || '';
-
-                if( length $cs > 4) {
-                    # There is an SMTP status code in the error message
-                    while(1) {
-                        last if $cs eq '4.4.7';
-                        last if index($cs, '.0.0') == 1;
-                        last if index($cs,   '.0') == 3 && index($p->{'deliverystatus'}, '.0') < 0;
-
-                        $p->{'deliverystatus'} = $cs;
-                        last;
-                    }
-                    $p->{'deliverystatus'} ||= $cs;
-                }
+                $p->{'deliverystatus'} = Sisimai::SMTP::Status->prefer($p->{'deliverystatus'}, $cs, $cr);
 
                 if( length $cr == 3 ) {
                     # There is an SMTP reply code in the error message
@@ -284,6 +272,7 @@ sub rise {
                 substr($p->{'diagnosticcode'}, $p1, $p2 + 7 - $p1, '') if $p1 > 0 && $p2 > 0;
                 $p->{'diagnosticcode'} = Sisimai::String->sweep($p->{'diagnosticcode'});
             }
+
             $p->{'diagnostictype'} ||= 'X-UNIX' if $p->{'reason'} eq 'mailererror';
             $p->{'diagnostictype'} ||= 'SMTP' unless grep { $p->{'reason'} eq $_ } ('feedback', 'vacation');
 
