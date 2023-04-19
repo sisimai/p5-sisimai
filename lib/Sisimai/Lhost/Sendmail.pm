@@ -174,21 +174,31 @@ sub inquire {
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
             $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if index($e->{'diagnosis'}, ' ') == 0;
-            $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
             $e->{'diagnosis'}   = $anotherset->{'diagnosis'} if $e->{'diagnosis'} =~ /\A\d+\z/;
+            $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
         }
-        if( scalar @$esmtpreply ) {
-            # Replace the error message in "diagnosis" with the ESMTP Reply
-            my $r = join(' ', @$esmtpreply);
-            $e->{'diagnosis'} = $r if length($r) > length($e->{'diagnosis'});
+
+        while(1) {
+            # Replace or append the error message in "diagnosis" with the ESMTP Reply Code when the
+            # following conditions have matched
+            last unless scalar @$esmtpreply;
+            last unless $recipients == 1;
+
+            $e->{'diagnosis'} = sprintf("%s %s", join(' ', @$esmtpreply), $e->{'diagnosis'});
+            last;
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'} ||= $thecommand || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
         $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
-        if( exists $anotherset->{'status'} && $anotherset->{'status'} ) {
+        while(1) {
             # Check alternative status code and override it
-            $e->{'status'} = $anotherset->{'status'} unless Sisimai::SMTP::Status->test($e->{'status'});
+            last unless exists $anotherset->{'status'};
+            last unless length $anotherset->{'status'};
+            last if     Sisimai::SMTP::Status->test($e->{'status'});
+
+            $e->{'status'} = $anotherset->{'status'};
+            last;
         }
 
         # @example.jp, no local part

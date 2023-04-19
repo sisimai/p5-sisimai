@@ -232,15 +232,17 @@ sub inquire {
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
-            $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
+            $anotherset->{'diagnosis'} = Sisimai::String->sweep($anotherset->{'diagnosis'});
+            $e->{'diagnosis'}        ||= $anotherset->{'diagnosis'};
+
             if( $e->{'diagnosis'} =~ /\A\d+\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $anotherset->{'diagnosis'};
 
             } else {
                 # More detailed error message is in "$anotherset"
-                my $as = undef; # status
-                my $ar = undef; # replycode
+                my $as = ''; # status
+                my $ar = ''; # replycode
 
                 if( $e->{'status'} eq '' || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
                     # Check the value of D.S.N. in $anotherset
@@ -260,9 +262,15 @@ sub inquire {
                     }
                 }
 
-                if( $as || $ar && ( length($anotherset->{'diagnosis'}) > length($e->{'diagnosis'}) ) ) {
-                    # Update the error message in $e->{'diagnosis'}
+                while(1) {
+                    # Replace $e->{'diagnosis'} with the value of $anotherset->{'diagnosis'} when
+                    # all the following conditions have not matched.
+                    last if length($as.$ar) == 0;
+                    last if length($anotherset->{'diagnosis'}) < length($e->{'diagnosis'});
+                    last if index($anotherset->{'diagnosis'}, $e->{'diagnosis'}) < 0;
+
                     $e->{'diagnosis'} = $anotherset->{'diagnosis'};
+                    last;
                 }
             }
         }
