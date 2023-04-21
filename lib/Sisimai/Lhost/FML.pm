@@ -51,7 +51,7 @@ sub inquire {
         ],
         'securityerror' => ['Security alert:'],
     };
-    
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header

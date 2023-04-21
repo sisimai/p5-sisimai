@@ -38,7 +38,7 @@ sub inquire {
     state $boundaries = ['--------------------------------------------------', 'Content-Type: message/rfc822'];
     state $markingsof = { 'message' => ['The user(s) ', 'Your message ', 'Each of the following', '<'] };
     state $refailures = {
-        #'notaccept'  => [qr/The following recipients did not receive this message:/],
+        #'notaccept'  => ['The following recipients did not receive this message:'],
         'mailboxfull' => ['The user(s) account is temporarily over quota'],
         'suspend'     => [
             # http://www.naruhodo-au.kddi.com/qa3429203.html
@@ -151,9 +151,9 @@ sub inquire {
             } else {
                 # SMTP command is not RCPT
                 SESSION: for my $r ( keys %$refailures ) {
-                    # Verify each regular expression of session errors
+                    # Try to match with each session error message
                     PATTERN: for my $rr ( $refailures->{ $r }->@* ) {
-                        # Check each regular expression
+                        # Check each error message pattern
                         next(PATTERN) unless index($e->{'diagnosis'}, $rr) > -1;
                         $e->{'reason'} = $r;
                         last(SESSION);
