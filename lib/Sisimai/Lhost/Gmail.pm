@@ -72,7 +72,6 @@ sub inquire {
         'message' => ['Delivery to the following recipient'],
         'error'   => ['The error that the other server returned was:'],
     };
-    state $markingsof = { 'start' => qr/Technical details of (?:permanent|temporary) failure:/ };
     state $messagesof = {
         'expired' => [
             'DNS Error: Could not contact DNS servers',
