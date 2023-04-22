@@ -126,11 +126,10 @@ sub inquire {
     }
     return undef unless $recipients;
 
-    my $p1 = -1; my $p2 = -1;
     if( scalar $mhead->{'received'}->@* ) {
         # Get the name of local MTA
-        $p1 = index(lc $mhead->{'received'}->[-1], 'from ');
-        $p2 = index(   $mhead->{'received'}->[-1], ' ', $p1 + 5);
+        my $p1 = index(lc $mhead->{'received'}->[-1], 'from ');
+        my $p2 = index(   $mhead->{'received'}->[-1], ' ', $p1 + 5);
 
         if( ($p1 + 1) * ($p2 + 1) > 0 ) {
             # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
@@ -146,8 +145,8 @@ sub inquire {
 
         unless( length $e->{'rhost'} ) {
             # Get the remote host name
-            $p1 = index($e->{'diagnosis'}, 'host ');
-            $p2 = index($e->{'diagnosis'}, ' ', $p1 + 5);
+            my $p1 = index($e->{'diagnosis'}, 'host ');
+            my $p2 = index($e->{'diagnosis'}, ' ', $p1 + 5);
 
             if( index($e->{'diagnosis'}, 'host ') > -1 ) {
                 # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown

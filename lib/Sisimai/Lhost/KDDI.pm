@@ -60,7 +60,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
 
-            my $r = Sisimai::Address->s3s4(substr($e, index($e, '<') +1, ));
+            my $r = Sisimai::Address->s3s4(substr($e, index($e, '<') + 1, ));
             next unless Sisimai::Address->is_emailaddress($r);
             $v->{'recipient'} = $r;
             $recipients++;
