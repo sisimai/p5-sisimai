@@ -148,16 +148,12 @@ sub inquire {
             my $p1 = index($e->{'diagnosis'}, 'host ');
             my $p2 = index($e->{'diagnosis'}, ' ', $p1 + 5);
 
-            if( index($e->{'diagnosis'}, 'host ') > -1 ) {
-                # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-                $e->{'rhost'} = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5); 
-            }
+            # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
+            $e->{'rhost'} = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
 
             unless( $e->{'rhost'} ) {
-                if( scalar $mhead->{'received'}->@* ) {
-                    # Get localhost and remote host name from Received header.
-                    $e->{'rhost'} = pop Sisimai::RFC5322->received($mhead->{'received'}->[-1])->@*;
-                }
+                # Get localhost and remote host name from Received header.
+                $e->{'rhost'} = pop Sisimai::RFC5322->received($mhead->{'received'}->[-1])->@* if scalar $mhead->{'received'}->@*;
             }
         }
 

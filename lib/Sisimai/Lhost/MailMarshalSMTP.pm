@@ -108,8 +108,7 @@ sub inquire {
                 } elsif( index($e, ' From:') > 0 || index($e, ' Subject:') > 0 ) {
                     #    From:    originalsender@example.com
                     #    Subject: ...
-                    $p1 = index($e, ' From:');
-                    $p1 = index($e, ' Subject:') if $p1 < 0;
+                    $p1 = index($e, ' From:'); $p1 = index($e, ' Subject:') if $p1 < 0;
                     $p2 = index($e, ':');
 
                     my $cf = substr($e, $p1 + 1, $p2 - $p1 - 1);
