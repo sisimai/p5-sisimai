@@ -24,15 +24,7 @@ sub inquire {
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['--- The following addresses had delivery problems ---'] };
-    state $refailures = {
-        'userunknown' => qr{(?:
-             [ ]User[ ][(].+[@].+[)][ ]unknown[.][ ]
-            |550[ ]Unknown[ ]user[ ][^ ]+[@][^ ]+
-            |550[ ][<].+?[@].+?[>][.]+[ ]User[ ]not[ ]exist
-            |No[ ]such[ ]user
-            )
-        }x,
-    };
+    state $messagesof = { 'userunknown' => [' User not exist', ' unknown.', '550 Unknown user ', 'No such user'] };
 
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -93,8 +85,8 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ ]+(.+)\z/;
-            $v->{'diagnosis'} .= ' '.$1;
+            next unless index($e, ' ');
+            $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
         }
     } continue {
         # Save the current line for the next loop
@@ -105,9 +97,9 @@ sub inquire {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);
 
-        SESSION: for my $r ( keys %$refailures ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $refailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
             $e->{'reason'} = $r;
             last;
         }
