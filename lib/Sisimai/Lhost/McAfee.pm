@@ -65,15 +65,15 @@ sub inquire {
         #
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ ]+[(](.+)[)]\z/ ) {
+        if( Sisimai::String->aligned(\$e, ['<', '@', '>', '(', ')']) ) {
             # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
-            $diagnostic = $2;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, index($e, '<'), index($e, '>')));
+            $diagnostic = substr($e, index($e, '(') + 1,);
             $recipients++;
 
         } elsif( my $f = Sisimai::RFC1894->match($e) ) {
