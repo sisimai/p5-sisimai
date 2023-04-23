@@ -17,7 +17,6 @@ sub inquire {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    # 'received' => qr/[ ][(]MessagingServer[)][ ]with[ ]/,
     $match ||= 1 if rindex($mhead->{'content-type'}, 'Boundary_(ID_') > -1;
     $match ||= 1 if index($mhead->{'subject'}, 'Delivery Notification: ') == 0;
     return undef unless $match;
@@ -64,8 +63,6 @@ sub inquire {
         #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25) (6jo.example.jp ESMTP SENDMAIL-VM)
         $v = $dscontents->[-1];
 
-        my $p1 = -1;
-        my $p2 = -1;
         if( index($e, '  Recipient address: ') == 0 && index($e, '@') > 1 ) {
             #   Recipient address: kijitora@example.jp
             if( $v->{'recipient'} ) {
@@ -90,16 +87,16 @@ sub inquire {
 
         } elsif( index($e, '  Diagnostic code: ') == 0 ) {
             #   Diagnostic code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
-            $p1 = index($e, ':');
-            $p2 = index($e, ';');
+            my $p1 = index($e, ':');
+            my $p2 = index($e, ';');
             $v->{'spec'} = uc substr($e, $p1 + 2, $p2 - $p1 - 2);
             $v->{'diagnosis'} = substr($e, $p2 + 1,);
 
         } elsif( index($e, '  Remote system: ') == 0 ) {
             #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25)
             #     (6jo.example.jp ESMTP SENDMAIL-VM)
-            $p1 = index($e, ';');
-            $p2 = index($e, '(');
+            my $p1 = index($e, ';');
+            my $p2 = index($e, '(');
 
             my $remotehost = substr($e, $p1 + 1, $p2 - $p1 - 2);
             my $sessionlog = [split('|', substr($e, $p2,))];
@@ -126,8 +123,8 @@ sub inquire {
             #
             if( index($e, 'Status: ') == 0 ) {
                 # Status: 5.1.1 (Remote SMTP server has rejected address)
-                $p1 = index($e, ':');
-                $p2 = index($e, '(');
+                my $p1 = index($e, ':');
+                my $p2 = index($e, '(');
                 $v->{'status'}      = substr($e, $p1 + 2, $p2 - $p1 - 3);
                 $v->{'diagnosis'} ||= substr($e, $p2 + 1, index($e, ')') - $p2 - 1);
 
