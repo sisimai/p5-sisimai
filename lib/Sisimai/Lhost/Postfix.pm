@@ -152,14 +152,14 @@ sub inquire {
                 #
                 # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO command)
-                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ ]+(.+)\z/ ) {
+                if( index($p, 'Diagnostic-Code:') == 0 && index($e, ' ') > -1 ) {
                     # Continued line of the value of Diagnostic-Code header
-                    $v->{'diagnosis'} .= ' '.$1;
+                    $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
                     $e = 'Diagnostic-Code: '.$e;
 
-                } elsif( $e =~ /\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
+                } elsif( Sisimai::String->aligned(\$e, ['X-Postfix-Sender:', 'rfc822;', '@']) ) {
                     # X-Postfix-Sender: rfc822; shironeko@example.org
-                    $emailparts->[1] .= sprintf("%s: %s\n", $1, $2);
+                    $emailparts->[1] .= sprintf("X-Postfix-Sender: %s\n", substr($e, index($e, ';') + 1,));
 
                 } else {
                     # Alternative error message and recipient
@@ -169,16 +169,19 @@ sub inquire {
                         push @commandset, $q if $q;
                         $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
-                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ ]*(.+)\z/ ) {
+                    } elsif( Sisimai::String->aligned(\$e, ['<', '@', '>', '(expanded from <', '):']) ) {
                         # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
-                        $anotherset->{'recipient'} = $1;
-                        $anotherset->{'alias'}     = $2;
-                        $anotherset->{'diagnosis'} = $3;
+                        my $p1 = index($e, '> ');
+                        my $p2 = index($e, '(expanded from ', $p1);
+                        my $p3 = index($e, '>): ', $p2 + 14);
+                        $anotherset->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, $p1));
+                        $anotherset->{'alias'}     = Sisimai::Address->s3s4(substr($e, $p2 + 15, $p3 - $p2 - 15));
+                        $anotherset->{'diagnosis'} = substr($e, $p3 + 3,);
 
-                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:(.*)\z/ ) {
+                    } elsif( index($e, '<') == 0 && Sisimai::String->aligned(\$e, ['<', '@', '>:']) ) {
                         # <kijitora@exmaple.jp>: ...
-                        $anotherset->{'recipient'} = $1;
-                        $anotherset->{'diagnosis'} = $2;
+                        $anotherset->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, index($e, '>')));
+                        $anotherset->{'diagnosis'} = substr($e, index($e, '>:') + 2,);
 
                     } elsif( index($e, '--- Delivery report unavailable ---') > -1 ) {
                         # postfix-3.1.4/src/bounce/bounce_notify_util.c
@@ -193,7 +196,7 @@ sub inquire {
                         $nomessages = 1;
 
                     } else {
-                        # Get error message continued from the previous line
+                        # Get an error message continued from the previous line
                         next unless $anotherset->{'diagnosis'};
                         $anotherset->{'diagnosis'} .= ' '.substr($e, 4,) if index($e, '    ') == 0;
                     }
@@ -215,10 +218,12 @@ sub inquire {
         } else {
             # Get a recipient address from message/rfc822 part if the delivery report was unavailable:
             # '--- Delivery report unavailable ---'
-            if( $nomessages && $emailparts->[1] =~ /^To:[ ](.+)/m ) {
+            my $p1 = index($emailparts->[1], "\nTo: ");
+            my $p2 = index($emailparts->[1], "\n", $p1);
+            if( $nomessages && $p1 > 0 ) {
                 # Try to get a recipient address from To: field in the original
                 # message at message/rfc822 part
-                $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
+                $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4(substr($emailparts->[1], $p1 + 5, $p2 - $p1 - 5));
                 $recipients++;
             }
         }

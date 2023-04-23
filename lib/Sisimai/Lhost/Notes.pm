@@ -40,7 +40,7 @@ sub inquire {
     my $characters = '';
     if( index($mhead->{'content-type'}, 'charset=') > 0 ) {
         # Get character set name, Content-Type: text/plain; charset=ISO-2022-JP
-       $characters = lc substr($mhead->{'content-type'}, index($mhead->{'content-type'}, 'charset=') + 8,);
+        $characters = lc substr($mhead->{'content-type'}, index($mhead->{'content-type'}, 'charset=') + 8,);
     }
 
     for my $e ( split("\n", $emailparts->[0]) ) {
@@ -97,8 +97,10 @@ sub inquire {
 
     unless( $recipients ) {
         # Fallback: Get the recpient address from RFC822 part
-        if( $emailparts->[1] =~ /^To:[ ]*(.+)$/m ) {
-            $v->{'recipient'} = Sisimai::Address->s3s4($1);
+        my $p1 = index($emailparts->[1], "\nTo: ");
+        my $p2 = index($emailparts->[1], "\n", $p1);
+        if( $p1 > 0 ) {
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($emailparts->[1], $p1 + 5, $p2 - $p1 - 5));
             $recipients++ if $v->{'recipient'};
         }
     }
