@@ -85,11 +85,16 @@ sub inquire {
 
             } elsif( $o->[-1] eq 'date' ) {
                 # Arrival-Date: 2012-12-31 23-59-59
-                next unless $e =~ /\AArrival-Date: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/;
-                $o->[1] .= 'Thu, '.$3.' ';
-                $o->[1] .= Sisimai::DateTime->monthname(0)->[int($2) - 1];
-                $o->[1] .= ' '.$1.' '.join(':', $4, $5, $6);
+                next unless index($e, 'Arrival-Date: ') == 0;
+                my @cf = split(' ', substr($e, index($e, ': ') + 2,)); next unless scalar @cf == 2;
+                my @cw = split('-', $cf[0]);                           next unless scalar @cw == 3;
+                my @ce = split('-', $cf[1]);                           next unless scalar @ce == 3;
+
+                $o->[1] .= 'Thu, '.$cw[2].' ';
+                $o->[1] .= Sisimai::DateTime->monthname(0)->[int($cw[1]) - 1];
+                $o->[1] .= ' '.$cw[0].' '.join(':', @ce);
                 $o->[1] .= ' '.Sisimai::DateTime->abbr2tz('CDT');
+
             } else {
                 # Other DSN fields defined in RFC3464
                 next unless exists $fieldtable->{ $o->[0] };
