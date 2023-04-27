@@ -65,7 +65,7 @@ sub inquire {
                 $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p1 + 8, $p2 - $p1 - 8));
 
             } elsif( $p2 == 0 ) {
-                # SMTP Server <mta2.example.jp> rejected recipient <kijitora@examplejp> 
+                # SMTP Server <mta2.example.jp> rejected recipient <kijitora@example.jp>
                 $p1 = rindex($e, '<');
                 $p2 = rindex($e, '>');
                 $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p1, $p2 - $p1));

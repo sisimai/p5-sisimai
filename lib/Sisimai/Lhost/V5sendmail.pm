@@ -36,7 +36,7 @@ sub inquire {
         #   savemail.c:497|   while (fgets(buf, sizeof buf, xfile) != NULL)
         #   savemail.c:498|       putline(buf, fp, m);
         #   savemail.c:499|   (void) fclose(xfile);
-        'error'   => [' while taking to '],
+        'error'   => [' while talking to '],
         'message' => ['----- Transcript of session follows -----'],
     };
 
@@ -47,7 +47,6 @@ sub inquire {
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $esmtpreply = 0;     # (Integer) Alternative ESMTP Reply Code
     my $anotherset = {};    # (Ref->Hash) Another error information
     my @responding;         # (Array) Responses from remote server
     my @commandset;         # (Array) SMTP command which is sent to remote server
@@ -73,7 +72,6 @@ sub inquire {
         # 421 example.org (smtp)... Deferred: Connection timed out during user open with example.org
         $v = $dscontents->[-1];
 
-        my $p1 = -1; my $p2 = -1;
         if( (index($e, '5') == 0 || index($e, '4') == 0) && Sisimai::String->aligned(\$e, [' <', '@', '>...']) ) {
             # 550 <kijitora@example.org>... User unknown
             if( $v->{'recipient'} ) {
@@ -81,8 +79,8 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $p1 = index($e, '<', 0);
-            $p2 = index($e, '>...');
+            my $p1 = index($e, '<', 0);
+            my $p2 = index($e, '>...');
             $v->{'recipient'} = substr($e, $p1 + 1, $p2 - $p1 - 1);
             $v->{'diagnosis'} = substr($e, $p2 + 5,);
 
@@ -120,9 +118,11 @@ sub inquire {
         }
     }
 
-    if( $recipients == 0 && $emailparts->[1] =~ /^To:[ ](.+)/m ) {
+    my $p1 = index($emailparts->[1], "\nTo: ");
+    my $p2 = index($emailparts->[1], "\n", $p1 + 5);
+    if( $recipients == 0 && $p1 > 0 ) {
         # Get the recipient address from "To:" header at the original message
-        $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4($1);
+        $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4(substr($emailparts->[1], $p1, $p2 - $p1 - 5));
         $recipients = 1;
     }
     return undef unless $recipients;
@@ -146,7 +146,9 @@ sub inquire {
         # @example.jp, no local part
         # Get email address from the value of Diagnostic-Code header
         next if index($e->{'recipient'}, '@') > 0;
-        $e->{'recipient'} = $1 if $e->{'diagnosis'} =~ /[<]([^ ]+[@][^ ]+)[>]/;
+        $p1 = index($e->{'diagnosis'}, '<'); next if $p1 == -1;
+        $p2 = index($e->{'diagnosis'}, '>'); next if $p2 == -1;
+        $e->{'recipient'} = Sisimai::Address->s3s4(substr($p1, $p2 - $p1));
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }

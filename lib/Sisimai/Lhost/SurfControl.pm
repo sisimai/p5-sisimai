@@ -71,10 +71,12 @@ sub inquire {
             # Thu 29 Apr 2010 23:34:45 +0900
             $v->{'date'} = $e;
 
-        } elsif( $e =~ /\A[^ ]+[@][^ ]+:[ ]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ ]*(.+)\z/ ) {
+        } elsif( Sisimai::String->aligned(\$e, ['@', ':', ' ', '[', '],', '...']) ) {
             # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
-            $v->{'rhost'} = $1;
-            $v->{'diagnosis'} = $2;
+            my $p1 = index($e, '[');
+            my $p2 = index($e, '],', $p1);
+            $v->{'rhost'} = substr($e, $p1 + 1, $p2 - $p1 - 1);
+            $v->{'diagnosis'} = Sisimai::String->sweep(substr($e, $p2 + 2,));
 
         } else {
             # Fallback, parse RFC3464 headers.

@@ -16,7 +16,7 @@ sub inquire {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
-    my $tryto = [ ['(qmail ', 'invoked for bounce)'], ['(qmail ', 'invoked from ', 'network)']];
+    my $tryto = [['(qmail ', 'invoked for bounce)'], ['(qmail ', 'invoked from ', 'network)']];
 
     # Pre process email headers and the body part of the message which generated
     # by qmail, see https://cr.yp.to/qmail.html

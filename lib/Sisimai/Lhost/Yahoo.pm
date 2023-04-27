@@ -57,7 +57,7 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, index($e, '>:'),));
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, index($e, '>:')));
             $recipients++;
 
         } else {

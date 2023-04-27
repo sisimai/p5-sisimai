@@ -162,8 +162,13 @@ sub inquire {
                     # Get error messages which is written in the message body directly
                     next if index($e, ' ') == 0;
                     next if index($e, '	') == 0;
-                    next unless $e =~ /\A(?:[45]\d\d[ ]+|[<][^@]+[@][^@]+[>]:?[ ]+)/;
-                    $v->{'alterrors'} .= ' '.$e;
+                    next if index($e, 'X') == 0;
+
+                    my $cr = Sisimai::SMTP::Reply->find($e);
+                    my $ca = Sisimai::Address->find($e) || [];
+                    my $co = Sisimai::String->aligned(\$e, ['<', '@', '>']);
+
+                    $v->{'alterrors'} .= ' '.$e if length $cr || (scalar @$ca && $co);
                 }
             }
         } # End of message/delivery-status
@@ -349,9 +354,11 @@ sub inquire {
     } # END OF BODY_PARSER_FOR_FALLBACK
     return undef unless $itisbounce;
 
-    if( $recipients == 0 && $rfc822text =~ /^To:[ ](.+)/m ) {
+    my $p1 = index($rfc822text, "\nTo: ");
+    my $p2 = index($rfc822text, "\n", $p1);
+    if( $recipients == 0 && $p1 > 0 ) {
         # Try to get a recipient address from "To:" header of the original message
-        if( my $r = Sisimai::Address->find($1, 1) ) {
+        if( my $r = Sisimai::Address->find(substr($rfc822text, $p1 + 5, $p2 - $p1 - 5), 1) ) {
             # Found a recipient address
             push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
             my $b = $dscontents->[-1];

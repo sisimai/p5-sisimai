@@ -49,9 +49,9 @@ sub inquire {
     my $p = '';
 
     # Pick the second message/rfc822 part because the format of email-x5-*.eml is nested structure
-    my $cutsbefore = [split($boundaries->[0], $$mbody, 2)];
-       $cutsbefore->[1] =~ s/\A.+?\n\n//ms;
-    my $emailparts = Sisimai::RFC5322->part(\$cutsbefore->[1], $boundaries);
+    my $cutsbefore      = [split($boundaries->[0], $$mbody, 2)];
+       $cutsbefore->[1] = substr($cutsbefore->[1], index($cutsbefore->[1], "\n\n") + 2,);
+    my $emailparts      = Sisimai::RFC5322->part(\$cutsbefore->[1], $boundaries);
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
