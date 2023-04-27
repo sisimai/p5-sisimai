@@ -31,7 +31,7 @@ sub inquire {
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $diagnostic = '';    # (String) Alternative diagnostic message
+    my $issuedcode = '';    # (String) Alternative diagnostic message
     my $v = undef;
     my $p = '';
 
@@ -65,7 +65,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, index($e, '<'), index($e, '>')));
-            $diagnostic = substr($e, index($e, '(') + 1,);
+            $issuedcode = substr($e, index($e, '(') + 1,);
             $recipients++;
 
         } elsif( my $f = Sisimai::RFC1894->match($e) ) {
@@ -95,7 +95,7 @@ sub inquire {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $issuedcode );
 
         SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors

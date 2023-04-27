@@ -94,23 +94,23 @@ sub true {
     return 1 if $tempreason eq 'rejected';  # Delivery status code points "rejected".
 
     # Check the value of Diagnosic-Code: header with patterns
-    my $diagnostic = lc $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $thecommand = $argvs->{'smtpcommand'} || '';
     if( $thecommand eq 'MAIL' ) {
         # The session was rejected at 'MAIL FROM' command
-        return 1 if __PACKAGE__->match($diagnostic);
+        return 1 if __PACKAGE__->match($issuedcode);
 
     } elsif( $thecommand eq 'DATA' ) {
         # The session was rejected at 'DATA' command
         if( $tempreason ne 'userunknown' ) {
             # Except "userunknown"
-            return 1 if __PACKAGE__->match($diagnostic);
+            return 1 if __PACKAGE__->match($issuedcode);
         }
     } elsif( $tempreason eq 'onhold' || $tempreason eq 'undefined' ||
              $tempreason eq 'securityerror' || $tempreason eq 'systemerror' ) {
         # Try to match with message patterns when the temporary reason is "onhold", "undefined",
         # "securityerror", or "systemerror"
-        return 1 if __PACKAGE__->match($diagnostic);
+        return 1 if __PACKAGE__->match($issuedcode);
     }
     return 0;
 }

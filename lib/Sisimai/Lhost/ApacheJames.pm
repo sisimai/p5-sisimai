@@ -39,7 +39,7 @@ sub inquire {
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $diagnostic = '';    # (String) Alternative diagnostic message
+    my $issuedcode = '';    # (String) Alternative diagnostic message
     my $subjecttxt = undef; # (String) Alternative Subject text
     my $gotmessage = 0;     # (Integer) Flag for error message
     my $v = undef;
@@ -114,7 +114,7 @@ sub inquire {
     # Set the value of $subjecttxt as a Subject if there is no original message
     # in the bounce mail.
     $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) if index($emailparts->[1], "\nSubject:") < 0;
-    $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'} || $diagnostic) for @$dscontents;
+    $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'} || $issuedcode) for @$dscontents;
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 

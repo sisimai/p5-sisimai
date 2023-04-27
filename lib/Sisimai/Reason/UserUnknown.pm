@@ -145,7 +145,7 @@ sub true {
     my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
     return 0 if $tempreason eq 'suspend';
 
-    my $diagnostic = lc $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     if( $tempreason eq 'userunknown' ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
@@ -167,7 +167,7 @@ sub true {
             my $p = 'Sisimai::Reason::'.$e;
             require $ModulePath->{ $p };
 
-            next unless $p->match($diagnostic);
+            next unless $p->match($issuedcode);
             # Match with reason defined in Sisimai::Reason::* except UserUnknown.
             $matchother = 1;
             last;
@@ -176,7 +176,7 @@ sub true {
 
     } elsif( $argvs->{'smtpcommand'} eq 'RCPT' ) {
         # When the SMTP command is not "RCPT", the session rejected by other reason, maybe.
-        return 1 if __PACKAGE__->match($diagnostic);
+        return 1 if __PACKAGE__->match($issuedcode);
     }
     return 0;
 }
