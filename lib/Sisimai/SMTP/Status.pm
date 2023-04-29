@@ -810,7 +810,6 @@ sub prefer {
     my $argv0 = shift || '';
     my $argv1 = shift || '';
     my $argv2 = shift || '';
-    my $argv3 = shift || '';
 
     my $statuscode = $argv0 || return $argv1;
     my $codeinmesg = $argv1 || return $argv0; return $argv0 unless length $codeinmesg > 4;
