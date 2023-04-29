@@ -32,10 +32,10 @@ sub match {
     ];
     state $pairs = [
         ['authentication failed; server ', ' said: '],  # Postfix
+        ['authentification invalide', '305'],
         ['authentification requise', '402'],
         ['domain ', ' is a dead domain'],
         ['user ', ' is not authorized to perform ses:sendrawemail on resource'],
-        ['authentification invalide', '305'],
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
