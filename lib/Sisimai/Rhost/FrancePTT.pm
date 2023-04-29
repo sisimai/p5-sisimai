@@ -136,10 +136,10 @@ sub get {
         '999' => 'blocked',
     };
 
-    my $statusmesg = $argvs->{'diagnosticcode'};
+    my $issuedcode = $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
-    if( $statusmesg =~ /\b(LPN|LPNAAA|OFR|OUK)(_[0-9]{3}|[0-9]{3}[-_][0-9]{3})\b/i ) {
+    if( $issuedcode =~ /\b(LPN|LPNAAA|OFR|OUK)(_[0-9]{3}|[0-9]{3}[-_][0-9]{3})\b/i ) {
         # OUK_513, LPN105-104, OFR102-104, ofr_506
         my $v = sprintf("%03d", substr($1.$2, -3, 3));
         $reasontext = $errorcodes->{ $v } || 'undefined';
@@ -178,7 +178,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

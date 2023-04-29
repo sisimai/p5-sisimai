@@ -240,14 +240,14 @@ sub get {
 
     my $statuscode = substr($argvs->{'deliverystatus'}, 2); # 421   => 21
     my $esmtpreply = substr($argvs->{'replycode'}, 1, 2);   # 5.7.1 => 7.1
-    my $esmtperror = lc  $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     REASON: for my $e ( keys %$messagesof ) {
         # Each key is a reason name
         for my $f ( $messagesof->{ $e }->@* ) {
             # Try to match an SMTP reply code, a D.S.N., and an error message
-            next unless index($esmtperror, $f->[2]) > -1;
+            next unless index($issuedcode, $f->[2]) > -1;
             next unless index($f->[0], $esmtpreply) >  0;
             next unless index($f->[1], $statuscode) >  1;
             $reasontext = $e;

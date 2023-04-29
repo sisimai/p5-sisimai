@@ -715,7 +715,7 @@ sub get {
 
     my $statuscode = $argvs->{'deliverystatus'};
     my $thirddigit = int [split /[.]/, $statuscode]->[-1];
-    my $esmtperror = lc  $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     REASON: for my $e ( keys %$messagesof ) {
@@ -733,7 +733,7 @@ sub get {
                 next if $thirddigit > $f->[2]; 
             }
 
-            next unless index($esmtperror, $f->[3]) > -1;
+            next unless index($issuedcode, $f->[3]) > -1;
             $reasontext = $e;
             last REASON;
         }

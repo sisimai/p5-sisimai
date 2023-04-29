@@ -24,8 +24,8 @@ sub get {
         '9'  => 'blocked',     # IP-address of the sender is blacklisted.
         '10' => 'filtered',    # Not in the list Mail address management.
     };
-    my $statusmesg = lc $argvs->{'diagnosticcode'};
-    my $codenumber = index($statusmesg, '.i.ua/err/') > 0 ? substr($statusmesg, index($statusmesg, '/err/') + 5, 2) : 0;
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
+    my $codenumber = index($issuedcode, '.i.ua/err/') > 0 ? substr($issuedcode, index($issuedcode, '/err/') + 5, 2) : 0;
        $codenumber = substr($codenumber, 0, 1) if index($codenumber, '/') == 1;
     return $errorcodes->{ $codenumber } || '';
 }

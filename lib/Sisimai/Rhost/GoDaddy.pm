@@ -45,17 +45,17 @@ sub get {
         'userunknown' => ['Account does not exist', '550 Recipient not found.'],
     };
 
-    my $statusmesg = $argvs->{'diagnosticcode'};
-    my $positionib = index($statusmesg, ' IB');
+    my $issuedcode = $argvs->{'diagnosticcode'};
+    my $positionib = index($issuedcode, ' IB');
     my $reasontext = '';
 
     # 192.0.2.22 has sent to too many recipients this hour. IB607 ...
-    $reasontext = $errorcodes->{ substr($statusmesg, $positionib + 1, 5) } || '' if $positionib > 1;
+    $reasontext = $errorcodes->{ substr($issuedcode, $positionib + 1, 5) } || '' if $positionib > 1;
     if( length $reasontext == 0 ) {
         # 553 http://www.spamhaus.org/query/bl?ip=192.0.0.222
         for my $e ( keys %$messagesof ) {
             for my $f ( $messagesof->{ $e }->@* ) {
-                next if index($statusmesg, $f) == -1;
+                next if index($issuedcode, $f) == -1;
                 $reasontext = $e;
                 last
             }

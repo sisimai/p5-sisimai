@@ -269,8 +269,8 @@ sub get {
         ],
     };
 
-    my $esmtperror = lc  $argvs->{'diagnosticcode'} // 0;
-    my $esmtpreply = int $argvs->{'replycode'}      // 0;
+    my $issuedcode = lc $argvs->{'diagnosticcode'} // 0;
+    my $esmtpreply = int $argvs->{'replycode'}     // 0;
     my $reasontext = '';
 
     REASON: for my $e ( keys %$messagesof ) {
@@ -278,7 +278,7 @@ sub get {
         for my $f ( $messagesof->{ $e }->@* ) {
             # Find an error reason
             next unless $esmtpreply == $f->[0];
-            next unless index($esmtperror, $f->[1]) > -1;
+            next unless index($issuedcode, $f->[1]) > -1;
             $reasontext = $e;
             last REASON;
         }

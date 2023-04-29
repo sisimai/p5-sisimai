@@ -30,12 +30,12 @@ sub get {
         'mailbox unavailable or access denied'  => 'toomanyconn',
         'mailbox not found'                     => 'userunknown',
     };
-    my $statusmesg = lc $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     for my $e ( keys %$messagesof ) {
         # Try to match the error message with message patterns defined in $MessagesOf
-        next unless index($statusmesg, $e) > -1;
+        next unless index($issuedcode, $e) > -1;
         $reasontext = $messagesof->{ $e };
         last;
     }
