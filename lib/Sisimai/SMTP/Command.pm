@@ -10,9 +10,12 @@ sub test {
     # @since v5.0.0
     my $class = shift;
     my $argv0 = shift // return undef;
+    my $comm0 = [qw|HELO EHLO MAIL RCPT DATA QUIT RSET NOOP VRFY ETRN EXPN HELP|];
+    my $comm1 = [qw|AUTH STARTTLS XFORWARD|];
 
     return undef unless length $argv0 > 3;
-    return 1 if grep { index($argv0, $_) > -1 } (qw|HELO EHLO MAIL RCPT DATA QUIT AUTH STARTTLS|);
+    return 1 if grep { index($argv0, $_) > -1 } @$comm0;
+    return 1 if grep { index($argv0, $_) > -1 } @$comm1;
     return 1 if index($argv0, 'CONN') > -1; # CONN is a pseudo SMTP command used only in Sisimai
     return 0;
 }
@@ -29,22 +32,23 @@ sub find {
 
     state $detectable = [
         'HELO', 'EHLO', 'STARTTLS', 'AUTH PLAIN', 'AUTH LOGIN', 'AUTH CRAM-', 'AUTH DIGEST-',
-        'MAIL F', 'RCPT', 'RCPT T', 'DATA'
+        'MAIL F', 'RCPT', 'RCPT T', 'DATA', 'QUIT', 'XFORWARD',
     ];
     my $stringsize = length $argv0;
+    my $commandmap = { 'STAR' => 'STARTTLS', 'XFOR' => 'XFORWARD' };
     my $commandset = [];
     my $previouspp = 0;
 
     for my $e ( @$detectable ) {
         # Find an SMTP command from the given string
-        my $p = index $argv0, $e, $previouspp;
-        next if $p < 0;
-        last if $p + 4 > $stringsize;
-        $previouspp = $p;
+        my $p0 = index($argv0, $e, $previouspp);
+        next if $p0 < 0;
+        last if $p0 + 4 > $stringsize;
+        $previouspp = $p0;
 
-        my $v = substr($argv0, $p, 4); next if grep { $v eq $_ } @$commandset;
-           $v = 'STARTTLS' if $v eq 'STAR';
-        push @$commandset, $v;
+        my $cv = substr($argv0, $p0, 4); next if grep { $cv eq $_ } @$commandset;
+           $cv = $commandmap->{ $cv } if exists $commandmap->{ $cv };
+        push @$commandset, $cv;
     }
     return undef unless scalar @$commandset;
     return pop @$commandset;
