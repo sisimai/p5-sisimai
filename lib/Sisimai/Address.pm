@@ -369,7 +369,7 @@ sub find {
     for my $e ( @readbuffer ) {
         # The element must not include any character except from 0x20 to 0x7e.
         next if $e->{'address'} =~ /[^\x20-\x7e]/;
-        unless( index($e->{'address'}, '@') > 0 ) {
+        if( index($e->{'address'}, '@') == -1 ) {
             # Allow if the argument is MAILER-DAEMON
             next unless __PACKAGE__->is_mailerdaemon($e->{'address'});
         }
