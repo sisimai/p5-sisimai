@@ -23,12 +23,12 @@ sub is_arf {
     } elsif( index($heads->{'content-type'}, 'multipart/mixed') > -1 ) {
         # Microsoft (Hotmail, MSN, Live, Outlook) uses its own report format.
         # Amazon SES Complaints bounces
-        my $p = Sisimai::Address->s3s4($heads->{'from'});
         if( index($heads->{'subject'}, 'complaint about message from ') > -1 ) {
             # From: staff@hotmail.com
             # From: complaints@email-abuse.amazonses.com
             # Subject: complaint about message from 192.0.2.1
-            $match = 1 if grep { index($p, $_) > -1 } @$reportfrom;
+            my $cv = Sisimai::Address->s3s4($heads->{'from'});
+            $match = 1 if grep { index($cv, $_) > -1 } @$reportfrom;
         }
     }
     return $match;

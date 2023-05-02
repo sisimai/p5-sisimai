@@ -360,7 +360,7 @@ sub find {
                 my $p1 = index($v->{'address'}, '(');
                 my $p2 = index($v->{'address'}, ')');
                 $v->{'address'} = substr($v->{'address'}, 0, $p1).substr($v->{'address'}, $p2 + 1,);
-                $v->{'comment'} = substr($v->{'address'}, $p1, $p2 - $p1 -1);
+                $v->{'comment'} = substr($v->{'address'}, $p1, $p2 - $p1 - 1);
             }
             push @readbuffer, $v;
         }
