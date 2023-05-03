@@ -254,20 +254,23 @@ sub inquire {
             # pick the address from To: header in message/rfc822 part.
             my $p1 = index($rfc822part, "\nTo: ") + 5;
             my $p2 = index($rfc822part, "\n", $p1 + 1);
-            my $lx = $p2 > 0 ? $p2 - $p1 : 255;
-            $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4(substr($rfc822part, $p1, $lx));
+            my $cm = $p2 > 0 ? $p2 - $p1 : 255;
+            $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4(substr($rfc822part, $p1, $cm));
+            $recipients = 1;
         }
 
-        if( index($dscontents->[-1]->{'recipient'}, '@') == -1 ) {
+        while(1) {
             # Insert pseudo recipient address when there is no valid recipient address in the message
             # for example,
             #   Date: Thu, 29 Apr 2015 23:34:45 +0000
             #   To: "undisclosed"
             #   Subject: Nyaan
             #   Message-ID: <ffffffffffffffffffffffff00000000@example.net>
+            last if index($dscontents->[-1]->{'recipient'}, '@') > 0;
             $dscontents->[-1]->{'recipient'} = Sisimai::Address->undisclosed(1);
+            $recipients = 1;
+            last;
         }
-        $recipients = 1;
     }
 
     unless( Sisimai::String->aligned(\$rfc822part, ['From: ', '@']) ) {
