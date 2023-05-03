@@ -811,7 +811,7 @@ sub prefer {
     my $argv1 = shift || '';
     my $argv2 = shift || '';
 
-    my $statuscode = $argv0 || return $argv1;
+    my $statuscode = $argv0 || return $argv1; return $argv1 unless length $statuscode > 4;
     my $codeinmesg = $argv1 || return $argv0; return $argv0 unless length $codeinmesg > 4;
     my $esmtpreply = $argv2 || 0;
     my $the1stchar = {
