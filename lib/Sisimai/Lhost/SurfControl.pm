@@ -74,7 +74,7 @@ sub inquire {
         } elsif( Sisimai::String->aligned(\$e, ['@', ':', ' ', '[', '],', '...']) ) {
             # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
             my $p1 = index($e, '[');
-            my $p2 = index($e, '],', $p1);
+            my $p2 = index($e, '],', $p1 + 1);
             $v->{'rhost'} = substr($e, $p1 + 1, $p2 - $p1 - 1);
             $v->{'diagnosis'} = Sisimai::String->sweep(substr($e, $p2 + 2,));
 

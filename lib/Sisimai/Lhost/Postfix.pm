@@ -219,7 +219,7 @@ sub inquire {
             # Get a recipient address from message/rfc822 part if the delivery report was unavailable:
             # '--- Delivery report unavailable ---'
             my $p1 = index($emailparts->[1], "\nTo: ");
-            my $p2 = index($emailparts->[1], "\n", $p1);
+            my $p2 = index($emailparts->[1], "\n", $p1 + 6);
             if( $nomessages && $p1 > 0 ) {
                 # Try to get a recipient address from To: field in the original
                 # message at message/rfc822 part
@@ -235,7 +235,7 @@ sub inquire {
         $e->{'lhost'} ||= $permessage->{'rhost'};
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
 
-        if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
+        if( $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
             $anotherset->{'diagnosis'} = Sisimai::String->sweep($anotherset->{'diagnosis'});
             $e->{'diagnosis'}        ||= $anotherset->{'diagnosis'};
@@ -272,7 +272,7 @@ sub inquire {
                     # all the following conditions have not matched.
                     last if length($as.$ar) == 0;
                     last if length($anotherset->{'diagnosis'}) < length($e->{'diagnosis'});
-                    last if index($anotherset->{'diagnosis'}, $e->{'diagnosis'}) < 0;
+                    last if index($anotherset->{'diagnosis'}, $e->{'diagnosis'}) == -1;
 
                     $e->{'diagnosis'} = $anotherset->{'diagnosis'};
                     last;

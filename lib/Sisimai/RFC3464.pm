@@ -355,7 +355,7 @@ sub inquire {
     return undef unless $itisbounce;
 
     my $p1 = index($rfc822text, "\nTo: ");
-    my $p2 = index($rfc822text, "\n", $p1);
+    my $p2 = index($rfc822text, "\n", $p1 + 6);
     if( $recipients == 0 && $p1 > 0 ) {
         # Try to get a recipient address from "To:" header of the original message
         if( my $r = Sisimai::Address->find(substr($rfc822text, $p1 + 5, $p2 - $p1 - 5), 1) ) {

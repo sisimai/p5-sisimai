@@ -119,7 +119,7 @@ sub inquire {
     }
 
     my $p1 = index($emailparts->[1], "\nTo: ");
-    my $p2 = index($emailparts->[1], "\n", $p1 + 5);
+    my $p2 = index($emailparts->[1], "\n", $p1 + 6);
     if( $recipients == 0 && $p1 > 0 ) {
         # Get the recipient address from "To:" header at the original message
         $dscontents->[0]->{'recipient'} = Sisimai::Address->s3s4(substr($emailparts->[1], $p1, $p2 - $p1 - 5));

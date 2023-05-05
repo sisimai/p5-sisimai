@@ -98,7 +98,7 @@ sub inquire {
     unless( $recipients ) {
         # Fallback: Get the recpient address from RFC822 part
         my $p1 = index($emailparts->[1], "\nTo: ");
-        my $p2 = index($emailparts->[1], "\n", $p1);
+        my $p2 = index($emailparts->[1], "\n", $p1 + 6);
         if( $p1 > 0 ) {
             $v->{'recipient'} = Sisimai::Address->s3s4(substr($emailparts->[1], $p1 + 5, $p2 - $p1 - 5));
             $recipients++ if $v->{'recipient'};
