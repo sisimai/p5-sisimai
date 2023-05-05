@@ -81,6 +81,7 @@ MAKETEST: {
     is $Package->prefer('', '5.3.5'), '5.3.5';
     is $Package->prefer('5.0.0', '5.1.1'), '5.1.1';
     is $Package->prefer('5.2.0', '5.2.1'), '5.2.1';
+    is $Package->prefer('5.2.1', '5.2.0'), '5.2.1';
     is $Package->prefer('4.4.7', '4.2.2'), '4.2.2';
     is $Package->prefer('5.7.8', '4.4.0', 550), '5.7.8';
     is $Package->prefer('4.2.1', '5.7.0', 421), '4.2.1';
