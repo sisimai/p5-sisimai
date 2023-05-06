@@ -148,13 +148,14 @@ sub find {
     my $class = shift;
     my $argv1 = shift || return undef;
     my $argv2 = shift || 0;
+    return '' if length $argv1 < 3;
     return '' if index(uc($argv1), 'X-UNIX;') > -1;
 
     my $statuscode = substr($argv2, 0, 1) || '';
     my $replycodes = $statuscode eq '5' || $statuscode eq '4' || $statuscode eq '2'
                      ? $CodeOfSMTP->{ $statuscode }
                      : [$CodeOfSMTP->{'5'}->@*, $CodeOfSMTP->{'4'}->@*, $CodeOfSMTP->{'2'}->@*];
-    my $esmtperror = ' '.$argv1;
+    my $esmtperror = ' '.$argv1.' ';
     my $esmtpreply = '';    # SMTP Reply Code
     my $replyindex = -1;    # A position of SMTP reply code found by the index()
     my $formerchar =  0;    # a character that is one character before the SMTP reply code
