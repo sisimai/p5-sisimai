@@ -104,7 +104,7 @@ sub inquire {
 
             } elsif( grep { index($e, $_) == 0 } $markingsof->{'error'}->@* ) {
                 # The response from the remote server was:
-                $anotherset->{'diagnosis'} .= $e;
+                $anotherset->{'diagnosis'} .= ' '.$e;
 
             } else {
                 # ** Address not found **
