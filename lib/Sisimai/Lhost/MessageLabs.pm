@@ -28,15 +28,13 @@ sub inquire {
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: text/rfc822-headers'];
     state $startingof = { 'message' => ['Content-Type: message/delivery-status'] };
-    state $refailures = {
-        'userunknown'   => qr/(?:542 .+ Rejected|No such user)/,
-        'securityerror' => qr/Please turn on SMTP Authentication in your mail client/,
+    state $messagesof = {
+        'userunknown'   => ['542 ', ' Rejected', 'No such user'],
+        'securityerror' => ['Please turn on SMTP Authentication in your mail client'],
     };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -93,8 +91,8 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ ]+(.+)\z/;
-            $v->{'diagnosis'} .= ' '.$1;
+            next unless index($e, ' ');
+            $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
         } # End of message/delivery-status
     } continue {
         # Save the current line for the next loop
@@ -108,9 +106,9 @@ sub inquire {
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$refailures ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $refailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
             $e->{'reason'} = $r;
             last;
         }

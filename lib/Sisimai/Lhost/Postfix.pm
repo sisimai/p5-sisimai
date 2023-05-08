@@ -30,34 +30,20 @@ sub inquire {
     return undef if $match == 0;
     return undef if $mhead->{'x-aol-ip'};
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
-    state $markingsof = {
+    state $startingof = {
         # Postfix manual - bounce(5) - http://www.postfix.org/bounce.5.html
-        'message' => qr{\A(?>
-             [ ]+The[ ](?:
-                 Postfix[ ](?:
-                     program\z              # The Postfix program
-                    |on[ ].+[ ]program\z    # The Postfix on <os name> program
-                    )
-                |\w+[ ]Postfix[ ]program\z  # The <name> Postfix program
-                |mail[ ]system\z             # The mail system
-                |\w+[ ]program\z             # The <custmized-name> program
-                )
-            |This[ ]is[ ]the[ ](?:
-                 Postfix[ ]program          # This is the Postfix program
-                |\w+[ ]Postfix[ ]program    # This is the <name> Postfix program
-                |\w+[ ]program              # This is the <customized-name> Postfix program
-                |mail[ ]system[ ]at[ ]host  # This is the mail system at host <hostname>.
-                )
-            )
-        }x,
-        # 'from'=> qr/ [(]Mail Delivery System[)]\z/,
+        'message' => [
+            ['The ', 'Postfix '],           # The Postfix program, The Postfix on <os> program
+            ['The ', 'mail system'],        # The mail system
+            ['The ', 'program'],            # The <name> pogram
+            ['This is the', 'Postfix'],     # This is the Postfix program
+            ['This is the', 'mail system'], # This is the mail system at host <hostname>
+        ],
     };
 
-    require Sisimai::RFC1894;
-    require Sisimai::Address;
-    require Sisimai::SMTP::Command;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -81,7 +67,7 @@ sub inquire {
             $v ||= $dscontents->[-1];
             $p   = $e->{'response'};
 
-            if( $e->{'command'} =~ /\A(?:EHLO|HELO)/ ) {
+            if( $e->{'command'} eq 'EHLO' || $e->{'command'} eq 'HELO' ) {
                 # Use the argument of EHLO/HELO command as a value of "lhost"
                 $v->{'lhost'} = $e->{'argument'};
 
@@ -116,7 +102,7 @@ sub inquire {
             # line of the beginning of the original message.
             unless( $readcursor ) {
                 # Beginning of the bounce message or message/delivery-status part
-                $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+                $readcursor |= $indicators->{'deliverystatus'} if grep { Sisimai::String->aligned(\$e, $_) } $startingof->{'message'}->@*;
                 next;
             }
             next unless $readcursor & $indicators->{'deliverystatus'};
@@ -166,14 +152,14 @@ sub inquire {
                 #
                 # <userunknown@example.co.jp>: host mx.example.co.jp[192.0.2.153] said: 550
                 # 5.1.1 <userunknown@example.co.jp>... User Unknown (in reply to RCPT TO command)
-                if( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ ]+(.+)\z/ ) {
+                if( index($p, 'Diagnostic-Code:') == 0 && index($e, ' ') > -1 ) {
                     # Continued line of the value of Diagnostic-Code header
-                    $v->{'diagnosis'} .= ' '.$1;
+                    $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
                     $e = 'Diagnostic-Code: '.$e;
 
-                } elsif( $e =~ /\A(X-Postfix-Sender):[ ]*rfc822;[ ]*(.+)\z/ ) {
+                } elsif( Sisimai::String->aligned(\$e, ['X-Postfix-Sender:', 'rfc822;', '@']) ) {
                     # X-Postfix-Sender: rfc822; shironeko@example.org
-                    $emailparts->[1] .= sprintf("%s: %s\n", $1, $2);
+                    $emailparts->[1] .= sprintf("X-Postfix-Sender: %s\n", substr($e, index($e, ';') + 1,));
 
                 } else {
                     # Alternative error message and recipient
@@ -183,16 +169,19 @@ sub inquire {
                         push @commandset, $q if $q;
                         $anotherset->{'diagnosis'} .= ' '.$e if $anotherset->{'diagnosis'};
 
-                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>] [(]expanded from [<](.+)[>][)]:[ ]*(.+)\z/ ) {
+                    } elsif( Sisimai::String->aligned(\$e, ['<', '@', '>', '(expanded from <', '):']) ) {
                         # <r@example.ne.jp> (expanded from <kijitora@example.org>): user ...
-                        $anotherset->{'recipient'} = $1;
-                        $anotherset->{'alias'}     = $2;
-                        $anotherset->{'diagnosis'} = $3;
+                        my $p1 = index($e, '> ');
+                        my $p2 = index($e, '(expanded from ', $p1);
+                        my $p3 = index($e, '>): ', $p2 + 14);
+                        $anotherset->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, $p1));
+                        $anotherset->{'alias'}     = Sisimai::Address->s3s4(substr($e, $p2 + 15, $p3 - $p2 - 15));
+                        $anotherset->{'diagnosis'} = substr($e, $p3 + 3,);
 
-                    } elsif( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:(.*)\z/ ) {
+                    } elsif( index($e, '<') == 0 && Sisimai::String->aligned(\$e, ['<', '@', '>:']) ) {
                         # <kijitora@exmaple.jp>: ...
-                        $anotherset->{'recipient'} = $1;
-                        $anotherset->{'diagnosis'} = $2;
+                        $anotherset->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, index($e, '>')));
+                        $anotherset->{'diagnosis'} = substr($e, index($e, '>:') + 2,);
 
                     } elsif( index($e, '--- Delivery report unavailable ---') > -1 ) {
                         # postfix-3.1.4/src/bounce/bounce_notify_util.c
@@ -207,9 +196,9 @@ sub inquire {
                         $nomessages = 1;
 
                     } else {
-                        # Get error message continued from the previous line
+                        # Get an error message continued from the previous line
                         next unless $anotherset->{'diagnosis'};
-                        $anotherset->{'diagnosis'} .= ' '.$e if $e =~ /\A[ ]{4}(.+)\z/;
+                        $anotherset->{'diagnosis'} .= ' '.substr($e, 4,) if index($e, '    ') == 0;
                     }
                 }
             } # End of message/delivery-status
@@ -229,10 +218,12 @@ sub inquire {
         } else {
             # Get a recipient address from message/rfc822 part if the delivery report was unavailable:
             # '--- Delivery report unavailable ---'
-            if( $nomessages && $emailparts->[1] =~ /^To:[ ](.+)/m ) {
+            my $p1 = index($emailparts->[1], "\nTo: ");
+            my $p2 = index($emailparts->[1], "\n", $p1 + 6);
+            if( $nomessages && $p1 > 0 ) {
                 # Try to get a recipient address from To: field in the original
                 # message at message/rfc822 part
-                $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($1);
+                $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4(substr($emailparts->[1], $p1 + 5, $p2 - $p1 - 5));
                 $recipients++;
             }
         }
@@ -244,17 +235,19 @@ sub inquire {
         $e->{'lhost'} ||= $permessage->{'rhost'};
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
 
-        if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
+        if( $anotherset->{'diagnosis'} ) {
             # Copy alternative error message
-            $e->{'diagnosis'} ||= $anotherset->{'diagnosis'};
+            $anotherset->{'diagnosis'} = Sisimai::String->sweep($anotherset->{'diagnosis'});
+            $e->{'diagnosis'}        ||= $anotherset->{'diagnosis'};
+
             if( $e->{'diagnosis'} =~ /\A\d+\z/ ) {
                 # Override the value of diagnostic code message
                 $e->{'diagnosis'} = $anotherset->{'diagnosis'};
 
             } else {
                 # More detailed error message is in "$anotherset"
-                my $as = undef; # status
-                my $ar = undef; # replycode
+                my $as = ''; # status
+                my $ar = ''; # replycode
 
                 if( $e->{'status'} eq '' || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
                     # Check the value of D.S.N. in $anotherset
@@ -274,16 +267,22 @@ sub inquire {
                     }
                 }
 
-                if( $as || $ar && ( length($anotherset->{'diagnosis'}) > length($e->{'diagnosis'}) ) ) {
-                    # Update the error message in $e->{'diagnosis'}
+                while(1) {
+                    # Replace $e->{'diagnosis'} with the value of $anotherset->{'diagnosis'} when
+                    # all the following conditions have not matched.
+                    last if length($as.$ar) == 0;
+                    last if length($anotherset->{'diagnosis'}) < length($e->{'diagnosis'});
+                    last if index($anotherset->{'diagnosis'}, $e->{'diagnosis'}) == -1;
+
                     $e->{'diagnosis'} = $anotherset->{'diagnosis'};
+                    last;
                 }
             }
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'}   = shift @commandset || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
         $e->{'command'} ||= 'HELO' if index($e->{'diagnosis'}, 'refused to talk to me:') > -1;
-        $e->{'spec'}    ||= 'SMTP' if $e->{'diagnosis'} =~ /host .+ said:/;
+        $e->{'spec'}    ||= 'SMTP' if Sisimai::String->aligned(\$e->{'diagnosis'}, ['host ', ' said:']);
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }

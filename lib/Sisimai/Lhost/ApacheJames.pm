@@ -39,7 +39,7 @@ sub inquire {
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $diagnostic = '';    # (String) Alternative diagnostic message
+    my $issuedcode = '';    # (String) Alternative diagnostic message
     my $subjecttxt = undef; # (String) Alternative Subject text
     my $gotmessage = 0;     # (Integer) Flag for error message
     my $v = undef;
@@ -66,23 +66,23 @@ sub inquire {
         #   Number of lines: 64
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ ][ ]RCPT[ ]TO:[ ]([^ ]+[@][^ ]+)\z/ ) {
+        if( index($e, '  RCPT TO: ') == 0 ) {
             #   RCPT TO: kijitora@example.org
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = substr($e, 12,);
             $recipients++;
 
-        } elsif( $e =~ /\A[ ][ ]Sent[ ]date:[ ](.+)\z/ ) {
+        } elsif( index($e, '  Sent date: ') == 0 ) {
             #   Sent date: Thu Apr 29 01:20:50 JST 2015
-            $v->{'date'} = $1;
+            $v->{'date'} = substr($e, 13,);
 
-        } elsif( $e =~ /\A[ ][ ]Subject:[ ](.+)\z/ ) {
+        } elsif( index($e, '  Subject: ') == 0 ) {
             #   Subject: Nyaaan
-            $subjecttxt = $1;
+            $subjecttxt = substr($e, 11,)
 
         } else {
             next if $gotmessage == 1;
@@ -113,8 +113,8 @@ sub inquire {
 
     # Set the value of $subjecttxt as a Subject if there is no original message
     # in the bounce mail.
-    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) unless $emailparts->[1] =~ /^Subject:/m;
-    $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'} || $diagnostic) for @$dscontents;
+    $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) if index($emailparts->[1], "\nSubject:") < 0;
+    $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'} || $issuedcode) for @$dscontents;
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
 

@@ -15,9 +15,13 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
-    return undef unless index($mhead->{'from'}, 'MAILER-DAEMON@') > -1;
-    return undef unless $mhead->{'subject'} =~ /\A(?>Delivery[ ]failure|fail(?:ure|ed)[ ]delivery)/;
+    $match ||= 1 if index($mhead->{'from'},    'MAILER-DAEMON@')   > -1;
+    $match ||= 1 if index($mhead->{'subject'}, 'Delivery failure') == 0;
+    $match ||= 1 if index($mhead->{'subject'}, 'failure delivery') == 0;
+    $match ||= 1 if index($mhead->{'subject'}, 'failed delivery')  == 0;
+    return undef unless $match > 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- Original message follows.'];
@@ -47,16 +51,15 @@ sub inquire {
         # This user doesn't have a example.com account (kijitora@example.com) [0]
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:\z/ ) {
+        if( index($e, '<') == 0 && Sisimai::String->aligned(\$e, ['<', '@', '>', ':']) ) {
             # <kijitora@example.com>:
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = substr($e, 1, length($e) - 3 );
             $recipients++;
-
         } else {
             # This user doesn't have a example.com account (kijitora@example.com) [0]
             $v->{'diagnosis'} .= ' '.$e;

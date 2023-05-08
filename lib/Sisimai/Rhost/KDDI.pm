@@ -14,12 +14,12 @@ sub get {
         'filtered'    => '550 : User unknown',  # The response was: 550 : User unknown
         'userunknown' => '>: User unknown',     # The response was: 550 <...>: User unknown
     };
-    my $statusmesg = $argvs->{'diagnosticcode'};
+    my $issuedcode = $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     for my $e ( keys %$messagesof ) {
         # Try to match the error message with message patterns defined in $MessagesOf
-        next unless rindex($statusmesg, $messagesof->{ $e }) > -1;
+        next unless rindex($issuedcode, $messagesof->{ $e }) > -1;
         $reasontext = $e;
         last;
     }
@@ -57,7 +57,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2018,2020,2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

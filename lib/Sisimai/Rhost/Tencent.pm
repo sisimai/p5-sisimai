@@ -1,12 +1,12 @@
-package Sisimai::Rhost::TencentQQ;
+package Sisimai::Rhost::Tencent;
 use feature ':5.10';
 use strict;
 use warnings;
 
 sub get {
-    # Detect bounce reason from Tencent QQ
+    # Detect bounce reason from Tencent 
     # @param    [Sisimai::Fact] argvs   Parsed email object
-    # @return   [String]                The bounce reason at Tencent QQ
+    # @return   [String]                The bounce reason at Tencent 
     # @since v4.25.0
     my $class = shift;
     my $argvs = shift // return undef;
@@ -30,12 +30,12 @@ sub get {
         'mailbox unavailable or access denied'  => 'toomanyconn',
         'mailbox not found'                     => 'userunknown',
     };
-    my $statusmesg = lc $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     for my $e ( keys %$messagesof ) {
         # Try to match the error message with message patterns defined in $MessagesOf
-        next unless index($statusmesg, $e) > -1;
+        next unless index($issuedcode, $e) > -1;
         $reasontext = $messagesof->{ $e };
         last;
     }
@@ -49,7 +49,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Rhost::TencentQQ - Detect the bounce reason returned from Tencent QQ.
+Sisimai::Rhost::Tencent - Detect the bounce reason returned from Tencent .
 
 =head1 SYNOPSIS
 
@@ -73,7 +73,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2019,2020,2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

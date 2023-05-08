@@ -2,6 +2,7 @@ package Sisimai::Reason::Blocked;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text { 'blocked' }
 sub description { 'Email rejected due to client IP address or a hostname' }
@@ -122,11 +123,7 @@ sub match {
     }x;
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep {
-        my $p = index($argv1, $_->[0],  0) + 1;
-        my $q = index($argv1, $_->[1], $p) + 1;
-        $p * $q > 0;
-    } @$pairs;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 1 if $argv1 =~ $regex;
     return 0;
 }

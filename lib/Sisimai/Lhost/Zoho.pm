@@ -57,15 +57,15 @@ sub inquire {
         # shironeko@example.org Invalid Address, ERROR_CODE :550, ERROR_CODE :Requested action not taken: mailbox unavailable
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+[@][^ ]+)[ ]+(.+)\z/ ) {
+        if( Sisimai::String->aligned(\$e, ['@', ' ', 'ERROR_CODE :']) ) {
             # kijitora@example.co.jp Invalid Address, ERROR_CODE :550, ERROR_CODE :5.1.=
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
-            $v->{'diagnosis'} = $2;
+            $v->{'recipient'} = substr($e, 0, index($e, ' '));
+            $v->{'diagnosis'} = substr($e, index($e, ' ') + 1,);
 
             if( substr($v->{'diagnosis'}, -1, 1) eq '=' ) {
                 # Quoted printable
@@ -74,7 +74,7 @@ sub inquire {
             }
             $recipients++;
 
-        } elsif( $e =~ /\A\[Status: .+[<]([^ ]+[@][^ ]+)[>],/ ) {
+        } elsif( index($e, '[Status: ') == 0 ) {
             # Expired
             # [Status: Error, Address: <kijitora@6kaku.example.co.jp>, ResponseCode 421, , Host not reachable.]
             if( $v->{'recipient'} ) {
@@ -82,7 +82,9 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            my $p1 = index($e, '<');
+            my $p2 = index($e, '>', $p1 + 2);
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p1, $p2 - $p1));
             $v->{'diagnosis'} = $e;
             $recipients++;
 

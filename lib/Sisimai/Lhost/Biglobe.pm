@@ -16,7 +16,8 @@ sub inquire {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless $mhead->{'from'} =~ /postmaster[@](?:biglobe|inacatv|tmtv|ttv)[.]ne[.]jp/;
+    return undef unless index($mhead->{'from'}, 'postmaster@') > -1;
+    return undef unless grep { index($mhead->{'from'}, '@'.$_.'.ne.jp') > -1 } (qw|biglobe inacatv tmtv ttv|);
     return undef unless index($mhead->{'subject'}, 'Returned mail:') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;

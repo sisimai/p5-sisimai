@@ -49,14 +49,14 @@ sub inquire {
         # This has been a permanent failure.  No further delivery attempts will be made.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\AUnable to deliver message to: [<]([^ ]+[@][^ ]+)[>]\z/ ) {
+        if( index($e, 'Unable to deliver message to: <') == 0 && index($e, '@') > 1 ) {
             # Unable to deliver message to: <kijitora@example.org>
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, index($e, '<'), ));
             $recipients++;
 
         } else {

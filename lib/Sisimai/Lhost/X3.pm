@@ -58,14 +58,14 @@ sub inquire {
         # ============================================================================
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ ]+[*][ ]([^ ]+[@][^ ]+)\z/ ) {
+        if( index($e, '  * ') > -1 && index($e, '@') > 1 ) {
             #   * kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = substr($e, index($e, ' * ') + 3,);
             $recipients++;
 
         } else {
@@ -75,13 +75,13 @@ sub inquire {
                 $v->{'command'} = Sisimai::SMTP::Command->find($e);
                 $v->{'diagnosis'} = $e;
 
-            } elsif( $e =~ /\ARouting: (.+)/ ) {
+            } elsif( index($e, 'Routing: ') == 0 ) {
                 # Routing: Could not find a gateway for kijitora@example.co.jp
-                $v->{'diagnosis'} = $1;
+                $v->{'diagnosis'} = substr($e, 9,);
 
-            } elsif( $e =~ /\ADiagnostic-Code: smtp; (.+)/ ) {
+            } elsif( index($e, 'Diagnostic-Code: smtp; ') == 0 ) {
                 # Diagnostic-Code: smtp; 552 5.2.2 Over quota
-                $v->{'diagnosis'} = $1;
+                $v->{'diagnosis'} = substr($e, index($e, ';') + 2,);
             }
         }
     }

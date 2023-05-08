@@ -2,6 +2,7 @@ package Sisimai::Reason::HostUnknown;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'hostunknown' }
 sub description { "Delivery failed due to a domain part of a recipient's email address does not exist" }
@@ -34,11 +35,7 @@ sub match {
     state $pairs = [['553 ', ' does not exist']];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep {
-        my $p = index($argv1, $_->[0],  0) + 1;
-        my $q = index($argv1, $_->[1], $p) + 1;
-        $p * $q > 0;
-    } @$pairs;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -54,17 +51,17 @@ sub true {
     return 1 if $argvs->{'reason'} eq 'hostunknown';
 
     my $statuscode = $argvs->{'deliverystatus'}    // '';
-    my $diagnostic = lc $argvs->{'diagnosticcode'} // '';
+    my $issuedcode = lc $argvs->{'diagnosticcode'} // '';
 
     if( (Sisimai::SMTP::Status->name($statuscode) || '') eq 'hostunknown' ) {
         # Status: 5.1.2
         # Diagnostic-Code: SMTP; 550 Host unknown
         require Sisimai::Reason::NetworkError;
-        return 1 unless Sisimai::Reason::NetworkError->match($diagnostic);
+        return 1 unless Sisimai::Reason::NetworkError->match($issuedcode);
 
     } else {
         # Check the value of Diagnosic-Code: header with patterns
-        return 1 if __PACKAGE__->match($diagnostic);
+        return 1 if __PACKAGE__->match($issuedcode);
     }
     return 0;
 }

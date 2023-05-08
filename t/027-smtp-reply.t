@@ -4,7 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP::Reply;
 
 my $Package = 'Sisimai::SMTP::Reply';
-my $Methods = { 'class' => ['find'], 'object' => [] };
+my $Methods = { 'class' => ['test', 'find'], 'object' => [] };
 
 use_ok $Package;
 can_ok $Package, @{ $Methods->{'class'} };
@@ -37,7 +37,7 @@ MAKETEST: {
         'SMTP; 550 5.1.1 <userunknown@bouncehammer.jp>... User Unknown',
         q|smtp;  550 'arathib@vnet.IBM.COM' is not a|,
         'smtp; 550 user unknown',
-        'smtp; 426 connection timed out',
+        'smtp; 421 connection timed out',
         'smtp;550 5.2.1 <kijitora@example.jp>... User Unknown',
         'smtp; 550 5.7.1 Message content rejected, UBE, id=00000-00-000',
         '550 5.1.1 sid=i01K1n00l0kn1Em01 Address rejected foobar@foobar.com. [code=28] ',
@@ -90,11 +90,18 @@ MAKETEST: {
     ];
 
     my $v = '';
+    is $Package->test(''), undef, '->test() returns undef';
     is $Package->find(''), undef, '->find() returns undef';
+
     for my $e ( @$smtperrors ) {
         $v = $Package->find($e);
         ok $e, 'Error message text = '.$e;
         like $v, qr/\A[2345][0-5][0-9]\z/, 'SMTP Reply Code = '.$v;
+        ok $Package->test($v), '->test('.$v.') returns 1';
+    }
+
+    for my $e ( qw|101 192 270 386 499 567 640 727| ) {
+        is $Package->test($e), 0, '->test('.$e.') returns 0';
     }
 }
 

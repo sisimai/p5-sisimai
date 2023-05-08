@@ -145,15 +145,15 @@ sub inquire {
                 }
             } else {
                 # The line did not match with any fields defined in RFC3464
-                if( $e =~ /\ADiagnostic-Code:[ ]([^;]+)\z/ ) {
+                if( index($e, 'Diagnostic-Code: ') == 0 && index($e, ';') < 0 ) {
                     # There is no value of "diagnostic-type" such as Diagnostic-Code: 554 ...
-                    $v->{'diagnosis'} = $1;
+                    $v->{'diagnosis'} = substr($e, index($e, ' ') + 1,);
 
-                } elsif( $e =~ /\AStatus:[ ](\d{3}[ ]+.+)\z/ ) {
+                } elsif( index($e, 'Status: ') == 0 && Sisimai::SMTP::Reply->find(substr($e, 8, 3)) ) {
                     # Status: 553 Exceeded maximum inbound message size
-                    $v->{'alterrors'} = $1;
+                    $v->{'alterrors'} = substr($e, 8,);
 
-                } elsif( index($p, 'Diagnostic-Code:') == 0 && $e =~ /\A[ ]+(.+)\z/ ) {
+                } elsif( index($p, 'Diagnostic-Code:') == 0 && index($e, ' ') == 0 ) {
                     # Continued line of the value of Diagnostic-Code field
                     $v->{'diagnosis'} .= $e;
                     $e = 'Diagnostic-Code: '.$e;
@@ -162,8 +162,13 @@ sub inquire {
                     # Get error messages which is written in the message body directly
                     next if index($e, ' ') == 0;
                     next if index($e, '	') == 0;
-                    next unless $e =~ /\A(?:[45]\d\d[ ]+|[<][^@]+[@][^@]+[>]:?[ ]+)/;
-                    $v->{'alterrors'} .= ' '.$e;
+                    next if index($e, 'X') == 0;
+
+                    my $cr = Sisimai::SMTP::Reply->find($e);
+                    my $ca = Sisimai::Address->find($e) || [];
+                    my $co = Sisimai::String->aligned(\$e, ['<', '@', '>']);
+
+                    $v->{'alterrors'} .= ' '.$e if length $cr || (scalar @$ca && $co);
                 }
             }
         } # End of message/delivery-status
@@ -340,18 +345,20 @@ sub inquire {
                 $recipients++;
                 $itisbounce ||= 1;
 
-            } elsif( $e =~ /[(](?:expanded|generated)[ ]from:?[ ]([^@]+[@][^@]+)[)]/ ) {
+            } elsif( index($e, '(expanded from') > -1 || index($e, '(generated from') > -1 ) {
                 # (expanded from: neko@example.jp)
-                $b->{'alias'} = Sisimai::Address->s3s4($1);
+                $b->{'alias'} = Sisimai::Address->s3s4(substr($e, rindex($e, ' ') + 1,));
             }
             $b->{'diagnosis'} .= ' '.$e;
         }
     } # END OF BODY_PARSER_FOR_FALLBACK
     return undef unless $itisbounce;
 
-    if( $recipients == 0 && $rfc822text =~ /^To:[ ](.+)/m ) {
+    my $p1 = index($rfc822text, "\nTo: ");
+    my $p2 = index($rfc822text, "\n", $p1 + 6);
+    if( $recipients == 0 && $p1 > 0 ) {
         # Try to get a recipient address from "To:" header of the original message
-        if( my $r = Sisimai::Address->find($1, 1) ) {
+        if( my $r = Sisimai::Address->find(substr($rfc822text, $p1 + 5, $p2 - $p1 - 5), 1) ) {
             # Found a recipient address
             push @$dscontents, Sisimai::Lhost->DELIVERYSTATUS if scalar(@$dscontents) == $recipients;
             my $b = $dscontents->[-1];

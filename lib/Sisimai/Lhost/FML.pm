@@ -18,44 +18,38 @@ sub inquire {
 
     return undef unless defined $mhead->{'x-mlserver'};
     return undef unless index($mhead->{'from'}, '-admin@') > 0;
-    return undef unless $mhead->{'message-id'} =~ /\A[<]\d+[.]FML.+[@].+[>]\z/;
+    return undef unless index($mhead->{'message-id'}, '.FML') > 1;
 
     state $boundaries = ['Original mail as follows:'];
     state $errortitle = {
-        'rejected' => qr{(?>
-             (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
-            |reject[ ]mail[ ](?:.+:|from)[ ],
-            |Spam[ ]mail[ ]from[ ]a[ ]spammer[ ]is[ ]rejected
-            |You[ ].+[ ]are[ ]not[ ]member
-            )
-        }x,
-        'systemerror' => qr{(?:
-             fml[ ]system[ ]error[ ]message
-            |Loop[ ]Alert:[ ]
-            |Loop[ ]Back[ ]Warning:[ ]
-            |WARNING:[ ]UNIX[ ]FROM[ ]Loop
-            )
-        }x,
-        'securityerror' => qr/Security Alert/,
+        'rejected' => [
+            ' are not member',
+            'NOT MEMBER article from ',
+            'reject mail ',
+            'Spam mail from a spammer is rejected',
+        ],
+        'systemerror' => [
+            'fml system error message',
+            'Loop Alert: ',
+            'Loop Back Warning: ',
+            'WARNING: UNIX FROM Loop',
+        ],
+        'securityerror' => ['Security Alert'],
     };
     state $errortable = {
-        'rejected' => qr{(?>
-            (?:Ignored[ ])*NOT[ ]MEMBER[ ]article[ ]from[ ]
-            |reject[ ](?:
-                 mail[ ]from[ ].+[@].+
-                |since[ ].+[ ]header[ ]may[ ]cause[ ]mail[ ]loop
-                |spammers:
-                )
-            |You[ ]are[ ]not[ ]a[ ]member[ ]of[ ]this[ ]mailing[ ]list
-            )
-        }x,
-        'systemerror' => qr{(?:
-             Duplicated[ ]Message-ID
-            |fml[ ].+[ ]has[ ]detected[ ]a[ ]loop[ ]condition[ ]so[ ]that
-            |Loop[ ]Back[ ]Warning:
-            )
-        }x,
-        'securityerror' => qr/Security alert:/,
+        'rejected' => [
+            ' header may cause mail loop',
+            'NOT MEMBER article from ',
+            'reject mail from ',
+            'reject spammers:',
+            'You are not a member of this mailing list',
+        ],
+        'systemerror' => [
+            ' has detected a loop condition so that',
+            'Duplicated Message-ID',
+            'Loop Back Warning:',
+        ],
+        'securityerror' => ['Security alert:'],
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -71,14 +65,16 @@ sub inquire {
         # Duplicated Message-ID in <2ndml@example.com>. Original mail as follows:
         $v = $dscontents->[-1];
 
-        if( $e =~ /[<]([^ ]+?[@][^ ]+?)[>][.]\z/ ) {
-            # Duplicated Message-ID in <2ndml@example.com>.
+        my $p1 =  index($e, '<');
+        my $p2 = rindex($e, '>');
+        if( $p1 > 0 && $p2 > 0 ) {
+            # You are not a member of this mailing list <neko-nyaan@example.org>.
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = substr($e, $p1 + 1, $p2 - $p1 - 1);
             $v->{'diagnosis'} = $e;
             $recipients++;
 
@@ -94,7 +90,7 @@ sub inquire {
 
         for my $f ( keys %$errortable ) {
             # Try to match with error messages defined in $errortable
-            next unless $e->{'diagnosis'} =~ $errortable->{ $f };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $errortable->{ $f }->@*;
             $e->{'reason'} = $f;
             last;
         }
@@ -103,7 +99,7 @@ sub inquire {
         # Error messages in the message body did not matched
         for my $f ( keys %$errortitle ) {
             # Try to match with the Subject string
-            next unless $mhead->{'subject'} =~ $errortitle->{ $f };
+            next unless grep { index($mhead->{'subject'}, $_) > -1 } $errortitle->{ $f }->@*;
             $e->{'reason'} = $f;
             last;
         }

@@ -44,14 +44,12 @@ BUILD_REGULAR_EXPRESSIONS: {
 
 sub undisclosed {
     # Return pseudo recipient or sender address
-    # @param    [String] atype  Address type: 'r' or 's'
+    # @param    [String] argv0  Address type: true = recipient, false = sender
     # @return   [String, undef] Pseudo recipient address or sender address or undef when the $atype
     #                           is neither 'r' nor 's'
     my $class = shift;
-    my $atype = shift || return undef;
-
-    return undef unless $atype =~ /\A(?:r|s)\z/;
-    my $local = $atype eq 'r' ? 'recipient' : 'sender';
+    my $argv0 = shift // 0;
+    my $local = $argv0 ? 'recipient' : 'sender';
     return sprintf("undisclosed-%s-in-headers%slibsisimai.org.invalid", $local, '@');
 }
 
@@ -71,19 +69,20 @@ sub is_emailaddress {
 
 sub is_mailerdaemon {
     # Check that the argument is mailer-daemon or not
-    # @param    [String] email  Email address
+    # @param    [String] argv0  Email address
     # @return   [Integer]       0: Not mailer-daemon
     #                           1: Mailer-daemon
     my $class = shift;
-    my $email = shift // return 0;
-    state $match = qr{(?>
-         (?:mailer-daemon|postmaster)[@]
-        |[<(](?:mailer-daemon|postmaster)[)>]
-        |\A(?:mailer-daemon|postmaster)\z
-        |[ ]?mailer-daemon[ ]
-        )
-    }x;
-    return 1 if lc($email) =~ $match;
+    my $argv0 = shift // return 0;
+    my $email = lc $argv0;
+
+    state $postmaster = [
+        'mailer-daemon@', '<mailer-daemon>', '(mailer-daemon)', ' mailer-daemon ',
+        'postmaster@', '<postmaster>', '(postmaster)'
+    ];
+    return 1 if grep { index($email, $_) > -1 } @$postmaster;
+    return 1 if $email eq 'mailer-daemon';
+    return 1 if $email eq 'postmaster';
     return 0;
 }
 
@@ -110,12 +109,12 @@ sub new {
 
     my $heads = ['<'];
     my $tails = ['>', ',', '.', ';'];
+    my $point = rindex($argvs->{'address'}, '@');
 
-    if( $argvs->{'address'} =~ /\A([^\s]+)[@]([^@]+)\z/ ||
-        $argvs->{'address'} =~ /\A(["].+?["])[@]([^@]+)\z/ ) {
+    if( $point > 0 ) {
         # Get the local part and the domain part from the email address
-        my $lpart = $1; for my $e ( @$heads ) { $lpart =~ s/\A$e//g if substr($lpart, 0,  1) eq $e }
-        my $dpart = $2; for my $e ( @$tails ) { $dpart =~ s/$e\z//g if substr($dpart, -1, 1) eq $e }
+        my $lpart = substr($argvs->{'address'}, 0, $point);
+        my $dpart = substr($argvs->{'address'}, $point+1,);
         my $email = __PACKAGE__->expand_verp($argvs->{'address'}) || '';
         my $alias = 0;
 
@@ -125,7 +124,7 @@ sub new {
             $alias = 1 if $email;
         }
 
-        if( $email =~ /\A.+[@].+?\z/ ) {
+        if( index($email, '@') > 0 ) {
             # The address is a VERP or an alias
             if( $alias ) {
                 # The address is an alias: neko+nyaan@example.jp
@@ -136,8 +135,11 @@ sub new {
                 $thing->{'verp'}  = $argvs->{'address'};
             }
         }
-        $thing->{'user'} = $lpart;
-        $thing->{'host'} = $dpart;
+
+        do { while( substr($lpart,  0, 1) eq $_ ) { substr($lpart,  0, 1, '') }} for @$heads;
+        do { while( substr($dpart, -1, 1) eq $_ ) { substr($dpart, -1, 1, '') }} for @$tails;
+        $thing->{'user'}    = $lpart;
+        $thing->{'host'}    = $dpart;
         $thing->{'address'} = $lpart.'@'.$dpart;
 
     } else {
@@ -167,6 +169,7 @@ sub find {
     my $argv1 = shift // return undef; y/\r//d, y/\n//d for $argv1; # Remove CR, NL
     my $addrs = shift // undef;
 
+    require Sisimai::String;
     state $indicators = {
         'email-address' => (1 << 0),    # <neko@example.org>
         'quoted-string' => (1 << 1),    # "Neko, Nyaan"
@@ -321,7 +324,7 @@ sub find {
                     # Display name like "Neko, Nyaan"
                     $v->{'name'} .= $e;
                     next unless $readcursor & $indicators->{'quoted-string'};
-                    next if $v->{'name'} =~ /\x5c["]\z/;    # "Neko, Nyaan \"...
+                    next if substr($v->{'name'}, -2, 2) eq qq|\x5c"|;   # "Neko, Nyaan \"...
                     $readcursor &= ~$indicators->{'quoted-string'};
                     $p = '';
                 }
@@ -351,11 +354,13 @@ sub find {
 
         if( $v->{'address'} ) {
             # Remove the comment from the address
-            if( $v->{'address'} =~ /(.*)([(].+[)])(.*)/ ) {
+            if( Sisimai::String->aligned(\$v->{'address'}, ['(', ')']) ) {
                 # (nyaan)nekochan@example.org, nekochan(nyaan)cat@example.org or
                 # nekochan(nyaan)@example.org
-                $v->{'address'} = $1.$3;
-                $v->{'comment'} = $2;
+                my $p1 = index($v->{'address'}, '(');
+                my $p2 = index($v->{'address'}, ')');
+                $v->{'address'} = substr($v->{'address'}, 0, $p1).substr($v->{'address'}, $p2 + 1,);
+                $v->{'comment'} = substr($v->{'address'}, $p1, $p2 - $p1 - 1);
             }
             push @readbuffer, $v;
         }
@@ -364,7 +369,7 @@ sub find {
     for my $e ( @readbuffer ) {
         # The element must not include any character except from 0x20 to 0x7e.
         next if $e->{'address'} =~ /[^\x20-\x7e]/;
-        unless( $e->{'address'} =~ /\A.+[@].+\z/ ) {
+        if( index($e->{'address'}, '@') == -1 ) {
             # Allow if the argument is MAILER-DAEMON
             next unless __PACKAGE__->is_mailerdaemon($e->{'address'});
         }
@@ -374,7 +379,7 @@ sub find {
         s/\A[\[<{('`]//g, s/[.,'`>});]\z//g for $e->{'address'};
         $e->{'address'} =~ s/[^A-Za-z]\z//g unless index($e->{'address'}, '@[') > 1;
 
-        unless( $e->{'address'} =~ /\A["].+["][@]/ ) {
+        if( index($e->{'address'}, '"@') < 0 ) {
             # Remove double-quotations
             substr($e->{'address'},  0, 1, '') if substr($e->{'address'},  0, 1) eq '"';
             substr($e->{'address'}, -1, 1, '') if substr($e->{'address'}, -1, 1) eq '"';
@@ -609,7 +614,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

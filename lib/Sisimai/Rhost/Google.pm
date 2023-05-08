@@ -1,4 +1,4 @@
-package Sisimai::Rhost::GoogleApps;
+package Sisimai::Rhost::Google;
 use feature ':5.10';
 use strict;
 use warnings;
@@ -12,10 +12,9 @@ sub get {
     my $argvs = shift // return undef;
 
     return $argvs->{'reason'} if $argvs->{'reason'};
-    return '' unless $argvs->{'replycode'};
     return '' unless $argvs->{'diagnosticcode'};
-    return '' unless $argvs->{'deliverystatus'};
-    return '' unless $argvs->{'deliverystatus'} =~ /\A[245][.]\d[.]\d+\z/;
+    return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
+    return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 
     state $messagesof = {
         'authfailure' => [
@@ -241,14 +240,14 @@ sub get {
 
     my $statuscode = substr($argvs->{'deliverystatus'}, 2); # 421   => 21
     my $esmtpreply = substr($argvs->{'replycode'}, 1, 2);   # 5.7.1 => 7.1
-    my $esmtperror = lc  $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     REASON: for my $e ( keys %$messagesof ) {
         # Each key is a reason name
         for my $f ( $messagesof->{ $e }->@* ) {
             # Try to match an SMTP reply code, a D.S.N., and an error message
-            next unless index($esmtperror, $f->[2]) > -1;
+            next unless index($issuedcode, $f->[2]) > -1;
             next unless index($f->[0], $esmtpreply) >  0;
             next unless index($f->[1], $statuscode) >  1;
             $reasontext = $e;
@@ -265,7 +264,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Rhost::GoogleApps - Detect the bounce reason returned from Google Workspace.
+Sisimai::Rhost::Google - Detect the bounce reason returned from Google Workspace.
 
 =head1 SYNOPSIS
 
@@ -289,7 +288,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

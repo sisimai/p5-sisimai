@@ -25,12 +25,12 @@ sub inquire {
     state $boundaries = ['Original message follows.'];
     state $startingof = { 'error' => ['Body of message generated response:'] };
     state $refailures = {
-        'hostunknown'   => qr/Unknown host/,
-        'userunknown'   => qr/\A(?:Unknown user|Invalid final delivery userid)/,
-        'mailboxfull'   => qr/\AUser mailbox exceeds allowed size/,
-        'virusdetected' => qr/\ARequested action not taken: virus detected/,
-        'undefined'     => qr/\Aundeliverable to/,
-        'expired'       => qr/\ADelivery failed \d+ attempts/,
+        'hostunknown'   => ['Unknown host'],
+        'userunknown'   => ['Unknown user', 'Invalid final delivery userid'],
+        'mailboxfull'   => ['User mailbox exceeds allowed size'],
+        'virusdetected' => ['Requested action not taken: virus detected'],
+        'undefined'     => ['undeliverable to'],
+        'expired'       => ['Delivery failed '],
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -58,14 +58,14 @@ sub inquire {
             $v->{'recipient'} = $3;
             $recipients++;
 
-        } elsif( $e =~ /\Aundeliverable[ ]+to[ ]+(.+)\z/ ) {
+        } elsif( index($e, 'undeliverable ') == 0 ) {
             # undeliverable to kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = Sisimai::Address->s3s4($1);
+            $v->{'recipient'} = Sisimai::Address->s3s4($e);
             $recipients++;
 
         } else {
@@ -90,7 +90,7 @@ sub inquire {
 
         SESSION: for my $r ( keys %$refailures ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $refailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $refailures->{ $r }->@*;
             $e->{'reason'} = $r;
             last;
         }

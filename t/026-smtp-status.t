@@ -5,7 +5,7 @@ use Sisimai::SMTP::Status;
 
 my $Package = 'Sisimai::SMTP::Status';
 my $Methods = {
-    'class'  => ['code', 'name', 'find'],
+    'class'  => ['code', 'name', 'test', 'find', 'prefer'],
     'object' => [],
 };
 
@@ -13,11 +13,11 @@ use_ok $Package;
 can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
-    my $reasonlist = [
-        'blocked', 'contenterror', 'exceedlimit', 'expired', 'filtered', 'hasmoved',
-        'hostunknown', 'mailboxfull', 'mailererror', 'mesgtoobig', 'networkerror',
-        'norelaying', 'notaccept', 'onhold', 'rejected', 'securityerror', 'spamdetected',
-        'suspend', 'systemerror', 'systemfull', 'toomanyconn', 'userunknown', 'syntaxerror',
+    my $reasonlist = [qw/
+      authfailure badreputation blocked contenterror exceedlimit expired filtered hasmoved
+      hostunknown mailboxfull mailererror mesgtoobig networkerror notaccept onhold rejected
+      norelaying spamdetected virusdetected policyviolation securityerror speeding suspend
+      systemerror systemfull toomanyconn userunknown syntaxerror/
     ];
     my $statuslist = [ qw/
         2.1.5
@@ -66,11 +66,25 @@ MAKETEST: {
         }
     }
 
+    is $Package->test(''), undef, '->test("") = undef';
+    is $Package->test('3.14'), 0, '->test("3.14") = 0';
+
     is $Package->find(''), undef, '->find("") = undef';
     for my $e ( @$smtperrors ) {
         $v = $Package->find($e);
         like $v, qr/\A[245][.]\d[.]\d\z/, '->find() returns '.$v;
+        is $Package->test($v), 1, '->test() returns 1';
     }
+
+    is $Package->prefer(''), "", '->prefer("") = ""';
+    is $Package->prefer('5.2.2', ''), '5.2.2';
+    is $Package->prefer('', '5.3.5'), '5.3.5';
+    is $Package->prefer('5.0.0', '5.1.1'), '5.1.1';
+    is $Package->prefer('5.2.0', '5.2.1'), '5.2.1';
+    is $Package->prefer('5.2.1', '5.2.0'), '5.2.1';
+    is $Package->prefer('4.4.7', '4.2.2'), '4.2.2';
+    is $Package->prefer('5.7.8', '4.4.0', 550), '5.7.8';
+    is $Package->prefer('4.2.1', '5.7.0', 421), '4.2.1';
 }
 
 done_testing;

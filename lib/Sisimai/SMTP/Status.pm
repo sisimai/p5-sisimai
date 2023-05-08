@@ -2,9 +2,9 @@ package Sisimai::SMTP::Status;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 # http://www.iana.org/assignments/smtp-enhanced-status-codes/smtp-enhanced-status-codes.xhtml
-#
 # -------------------------------------------------------------------------------------------------
 # [Class Sub-Codes]
 # 2.X.Y Success
@@ -13,7 +13,6 @@ use warnings;
 #
 # -------------------------------------------------------------------------------------------------
 # [Subject Sub-Codes]
-#
 # X.0.X --- Other or Undefined Status
 #           There is no additional subject information available.
 #
@@ -58,7 +57,6 @@ use warnings;
 #
 # -------------------------------------------------------------------------------------------------
 # [Enumerated Status Codes]
-#
 # X.0.0  Any    Other undefined Status:(RFC 3463)
 #                 Other undefined status is the only undefined error code. It should be used for all
 #                 errors for which only the class of the error is known.
@@ -206,6 +204,13 @@ use warnings;
 #                 remained on that host too long or because the time-to-live value specified by the
 #                 sender of the message was exceeded. If possible, the code for the actual problem
 #                 found when delivery was attempted should be returned rather than this code.
+#
+# X.4.8  421    Retry on IPv4
+#        451      the mail system will not accept this message over IPv6 because it lacks some re-
+#        456      quirments described in the full text of the rejection, however the sending mail
+#                 system can retry immediately to submit the message over IPv4 only.
+#                 https://datatracker.ietf.org/doc/html/draft-martin-smtp-ipv6-to-ipv4-fallback-00
+#
 # -------------------------------------------------------------------------------------------------
 # X.5.0  220    Other or undefined protocol status:(RFC 3463)
 #        250-253  Something was wrong with the protocol necessary to deliver the message to the next
@@ -451,7 +456,6 @@ use warnings;
 #                 (e.g., because it could not return a DSN).
 # -------------------------------------------------------------------------------------------------
 # SAMPLES
-#
 #   554 5.5.0   No recipients have been specified
 #   503 5.5.0   Valid RCPT TO required before BURL
 #   554 5.6.3   Conversion required but not supported
@@ -499,7 +503,8 @@ use constant StandardCode => {
     '4.4.5'  => 'systemfull',   # Mail system congestion
     '4.4.6'  => 'networkerror', # Routing loop detected
     '4.4.7'  => 'expired',      # Delivery time expired
-    #'4.5.0' => 'networkerror', # Other or undefined protocol status
+    '4.4.8'  => 'networkerror', # Retry on IPv4
+#   '4.5.0'  => 'networkerror', # Other or undefined protocol status
     '4.5.3'  => 'systemerror',  # Too many recipients
     '4.5.5'  => 'systemerror',  # Wrong protocol version
     '4.6.0'  => 'contenterror', # Other or undefined media error
@@ -668,7 +673,7 @@ sub code {
 
 sub name {
     # Convert from the status code to the reason string
-    # @param    [String] state  Status code(DSN)
+    # @param    [String] argv1  Status code(DSN)
     # @return   [String]        Reason name or empty if the first argument did
     #                           not match with values in Sisimai's reason list
     # @see      code
@@ -676,40 +681,181 @@ sub name {
     my $class = shift;
     my $argv1 = shift || return undef;
 
-    return '' unless $argv1 =~ /\A[245][.]\d[.]\d+\z/;
+    return '' unless __PACKAGE__->test($argv1);
     return StandardCode->{ $argv1 } // '';
+}
+
+sub test {
+    # Check whether a status code is a valid code or not
+    # @param    [String] argv1  Status code(DSN)
+    # @return   [Boolean]       0 = Invalid status code, 1 = Valid status code
+    # @see      code
+    # @since v5.0.0
+    my $class = shift;
+    my $argv1 = shift || return undef; 
+    return 0 if length $argv1 < 5;
+    return 0 if length $argv1 > 7;
+
+    my $token = []; push @$token, int $_ for split(/[.]/, $argv1);
+    return 0 unless scalar @$token == 3;
+    return 0 if $token->[0] <  2;
+    return 0 if $token->[0] == 3;
+    return 0 if $token->[0] >  5;
+    return 0 if $token->[1] <  0;
+    return 0 if $token->[1] >  7;
+    return 0 if $token->[2] <  0;
+    return 1;
 }
 
 sub find {
     # Get a DSN code value from given string including DSN
     # @param    [String] argv1  String including DSN
-    # @return   [String]        DSN or empty string if the first agument did
-    #                           not include DSN
+    # @param    [String] argv2  An SMTP Reply Code or 2 or 4 or 5
+    # @return   [String]        An SMTP Status Code
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return undef;
-    my $found = '';
+    my $argv1 = shift || return undef; return undef if length $argv1 < 7;
+    my $argv2 = shift || '';
 
-    state $regularexp = [
-        qr/[ ]?[(][#]([45][.]\d[.]\d+)[)]?[ ]?/,    # #5.5.1
-        qr/\b\d{3}[ -][#]?([45][.]\d[.]\d+)\b/,     # 550-5.1.1 OR 550 5.5.1
-        qr/\b([45][.]\d[.]\d+)\b/,                  # 5.5.1
-        qr/\b(2[.][0-7][.][0-7])\b/,                # 2.1.5
-    ];
+    my $givenclass = substr($argv2, 0, 1);
+    my $eestatuses = $givenclass eq '2' || $givenclass eq '4' || $givenclass eq '5' ? [$givenclass.'.'] : ['5.', '4.', '2.'];
+    my $esmtperror = ' '.$argv1.' ';
+    my $lookingfor = {};
 
-    for my $e ( @$regularexp ) {
-        # Get the value of DSN in the text
-        next unless $argv1 =~ $e;
-        $found = $1;
+    for my $e ( Sisimai::String->ipv4($esmtperror)->@* ) {
+        # Rewrite an IPv4 address in the given string(argv1) with '***.***.***.***'
+        my $p0 = index($esmtperror, $e); next if $p0 == -1;
+        substr($esmtperror, $p0, length $e, '***.***.***.***');
+    }
 
-        if( $argv1 =~ /\b(?:${found}[.]\d{1,3}|\d{1,3}[.]${found})\b/ ) {
-            # Clear and skip if the value is an IPv4 address
-            $found = '';
+    for my $e ( @$eestatuses ) {
+        # Count the number of "5.", "4.", and "2." in the error message
+        my $p0 = 0;
+        my $p1 = 0;
+        while($p0 > -1) {
+            # Find all of the "5." and "4." string and store its postion
+            $p0 = index($esmtperror, $e, $p1); last if $p0 == -1;
+            $lookingfor->{ sprintf("%04d", $p0) } = $e;
+            $p1 = $p0 + 5;
+        }
+    }
+    return '' unless scalar keys %$lookingfor;
+
+    my $statuscode = [];    # List of SMTP Status Code, Keep the order of appearances
+    my $anotherone = '';    # Alternative code
+    my $readbuffer = '';
+    my $characters = [];    # Characters around the status code found by index()
+    my $indexofees = -1;    # A position of SMTP status code found by the index()
+
+    for my $e ( sort keys %$lookingfor ) {
+        # Try to find an SMTP Status Code from the given string
+        $indexofees = index($esmtperror, $lookingfor->{ $e }, int $e); next if $indexofees == -1;
+        $characters = [
+            ord(substr($esmtperror, $indexofees - 1, 1)) || 0,  # [0] The previous character of the status
+            ord(substr($esmtperror, $indexofees + 2, 1)) || 0,  # [1] The value of the "Subject", "5.[7].261"
+            ord(substr($esmtperror, $indexofees + 3, 1)) || 0,  # [2] "." chacater, a separator of the Subject and the Detail
+        ];
+
+        next if $characters->[0]  > 45 && $characters->[0]  <  58;  # Previous character is a number
+        next if $characters->[0] == 86 || $characters->[0] == 118;  # Avoid a version number("V" or "v")
+        next if $characters->[1]  < 48 || $characters->[1]   > 55;  # The value of the subject is not a number(0-7)
+        next if $characters->[2] != 46;                             # It is not a "." character: a separator
+
+        $readbuffer = $lookingfor->{ $e }.chr($characters->[1]).'.';
+        push @$characters, ord(substr($esmtperror, $indexofees + 4, 1)) || 0, # [3] The 1st digit of the detail
+                           ord(substr($esmtperror, $indexofees + 5, 1)) || 0, # [4] The 2nd digit of the detail
+                           ord(substr($esmtperror, $indexofees + 6, 1)) || 0, # [5] The 3rd digit of the detail
+                           ord(substr($esmtperror, $indexofees + 7, 1)) || 0; # [6] The next character
+
+        next if $characters->[3] < 48 || $characters->[3] > 57; # The 1st digit of the detail is not a number
+        $readbuffer .= chr $characters->[3];
+
+        if( index($readbuffer, '.0.0') == 1 || $readbuffer eq '4.4.7' ) {
+            # Find another status code except *.0.0, 4.4.7
+            $anotherone = $readbuffer;
             next;
         }
-        last;
+
+        if( $characters->[4] < 48 || $characters->[4] > 57 ) {
+            # The 2nd digit of the detail is not a number
+            push @$statuscode, $readbuffer;
+            next;
+        }
+        $readbuffer .= chr $characters->[4];    # The 2nd digit of the detail is a number
+
+        if( $characters->[5] < 48 || $characters->[5] > 57 ) {
+            # The 3rd digit of the detail is not a number
+            push @$statuscode, $readbuffer;
+            next;
+        }
+        $readbuffer .= chr $characters->[5];    # The 3rd digit of the detail is a number
+
+        next if $characters->[6] > 47 && $characters->[6] < 58;
+        push @$statuscode, $readbuffer;
     }
-    return $found;
+    push @$statuscode, $anotherone if length $anotherone;
+
+    return '' if scalar @$statuscode == 0;
+    return shift @$statuscode;
+}
+
+sub prefer {
+    # Return the preferred value selected from the arguments
+    # @param    [String] argv0  The value of Status:
+    # @param    [String] argv1  The delivery status picked from the error message
+    # @param    [String] argv2  The value of An SMTP Reply Code
+    # @return   [String]        The preferred value
+    # @since v5.0.0
+    my $class = shift;
+    my $argv0 = shift || '';
+    my $argv1 = shift || '';
+    my $argv2 = shift || '';
+
+    my $statuscode = $argv0 || return $argv1; return $argv1 unless length $statuscode > 4;
+    my $codeinmesg = $argv1 || return $argv0; return $argv0 unless length $codeinmesg > 4;
+    my $esmtpreply = $argv2 || 0;
+    my $the1stchar = {
+        'field' => int substr($statuscode, 0, 1),
+        'error' => int substr($codeinmesg, 0, 1),
+        'reply' => int substr($esmtpreply, 0, 1),
+    };
+
+    if( $the1stchar->{'reply'} > 0 && $the1stchar->{'field'} != $the1stchar->{'error'} ) {
+        # There is the 3rd argument (an SMTP Reply Code)
+        # Returns the value of $argv0 or $argv1 which begins with the 1st character of $argv2
+        return $statuscode if $the1stchar->{'reply'} == $the1stchar->{'field'};
+        return $codeinmesg if $the1stchar->{'reply'} == $the1stchar->{'error'};
+    }
+    return $statuscode if $statuscode eq $codeinmesg;
+
+    my $zeroindex1 = { 'field' => index($statuscode, '.0'),   'error' => index($codeinmesg, '.0')   };
+    my $zeroindex2 = { 'field' => index($statuscode, '.0.0'), 'error' => index($codeinmesg, '.0.0') };
+
+    if( $zeroindex2->{'field'} > 0 ) {
+        # "Status:" field is "X.0.0"
+        return $codeinmesg if $zeroindex2->{'error'} < 0;
+        return $statuscode;
+    }
+
+    if( $zeroindex1->{'field'} > 0 ) {
+        # "Status:" field is "X.Y.0" or "X.0.Z"
+        return $codeinmesg if $zeroindex1->{'error'} < 0;
+    }
+
+    return $statuscode if $zeroindex2->{'error'} > 0;       # An SMTP status code is "X.0.0"
+    return $codeinmesg if $statuscode eq '4.4.7';           # "4.4.7" is an ambiguous code
+    return $codeinmesg if index($statuscode, '5.3.') == 0;  # "5.3.Z" is an error of a system
+
+    if( $statuscode eq '5.1.1' ) {
+        # "5.1.1" is a code of "userunknown"
+        return $statuscode if $zeroindex1->{'error'} > 0;
+        return $codeinmesg;
+
+    } elsif( $statuscode eq '5.1.3' ) {
+        # "5.1.3"
+        return $codeinmesg if index($codeinmesg, '5.7.') == 0;
+    }
+    return $statuscode;
 }
 
 1;
@@ -750,7 +896,14 @@ C<name()> returns a reason string from the specified DSN value.
     print Sisimai::SMTP::Status->name('5.1.6');         # 'hasmoved'
     print Sisimai::SMTP::Status->name('4.2.3');         # 'exceedlimit'
 
-=head2 C<B<find(I<String>)>>
+=head2 C<B<test(I<D.S.N.>)>>
+
+C<test()> checks whether a status code is a valid code or not.
+
+    print Sisimai::SMTP::Status->test('5.1.6'); # 1
+    print Sisimai::SMTP::Status->test('3.14');  # 0
+
+=head2 C<B<find(I<String>, I<String>)>>
 
 C<find()> returns a DSN value only from the text including DSN
 
@@ -758,13 +911,20 @@ C<find()> returns a DSN value only from the text including DSN
     print Sisimai::SMTP::Status->find('550 5.1.1 User unknown'); # '5.1.1'
     print Sisimai::SMTP::Status->find('447 delivery expired');   # ''
 
+=head2 C<B<prefer(I<Code in Status: field>, I<Code in an error message>, [I<Reply code>])>>
+
+C<prefer()> returns the preferred value selected from the arguments.
+
+    print Sisimai::SMTP::Status->prefer("5.2.1", "5.0.0");      # "5.2.1"
+    print Sisimai::SMTP::Status->prefer("4.4.7", "5.1.1", 421); # "4.4.7"
+
 =head1 AUTHOR
 
 azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018,2020-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

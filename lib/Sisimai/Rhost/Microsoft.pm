@@ -1,7 +1,8 @@
-package Sisimai::Rhost::ExchangeOnline;
+package Sisimai::Rhost::Microsoft;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::SMTP::Status;
 
 # https://technet.microsoft.com/en-us/library/bb232118
 # https://learn.microsoft.com/en-us/Exchange/mail-flow-best-practices/non-delivery-reports-in-exchange-online/non-delivery-reports-in-exchange-online
@@ -17,7 +18,7 @@ sub get {
     return $argvs->{'reason'} if $argvs->{'reason'};
     return '' unless $argvs->{'diagnosticcode'};
     return '' unless $argvs->{'deliverystatus'};
-    return '' unless $argvs->{'deliverystatus'} =~ /\A[245][.]\d[.]\d+\z/;
+    return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 
     state $messagesof = {
         'authfailure' => [
@@ -714,7 +715,7 @@ sub get {
 
     my $statuscode = $argvs->{'deliverystatus'};
     my $thirddigit = int [split /[.]/, $statuscode]->[-1];
-    my $esmtperror = lc  $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     REASON: for my $e ( keys %$messagesof ) {
@@ -732,7 +733,7 @@ sub get {
                 next if $thirddigit > $f->[2]; 
             }
 
-            next unless index($esmtperror, $f->[3]) > -1;
+            next unless index($issuedcode, $f->[3]) > -1;
             $reasontext = $e;
             last REASON;
         }
@@ -747,8 +748,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Rhost::ExchangeOnline - Detect the bounce reason returned from on-premises Exchange 2019
-or older and Office 365.
+Sisimai::Rhost::Microsoft - Detect the bounce reason returned from on-premises Exchange 2019 or
+older and Office 365.
 
 =head1 SYNOPSIS
 
@@ -772,7 +773,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

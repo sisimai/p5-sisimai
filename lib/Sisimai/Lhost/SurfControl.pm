@@ -27,7 +27,6 @@ sub inquire {
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['Your message could not be sent.'] };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -58,24 +57,26 @@ sub inquire {
         # --- Message non-deliverable.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\AAddressed To:[ ]*([^ ]+?[@][^ ]+?)\z/ ) {
+        if( index($e, 'Addressed To:') == 0 && index($e, '@') > 1 ) {
             # Addressed To: kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, index($e, ':') + 2,));
             $recipients++;
 
-        } elsif( $e =~ /\A(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[ ,]/ ) {
+        } elsif( grep { index($e, $_) == 0 } (qw|Sun Mon Tue Wed Thu Fri Sat|) ) {
             # Thu 29 Apr 2010 23:34:45 +0900
             $v->{'date'} = $e;
 
-        } elsif( $e =~ /\A[^ ]+[@][^ ]+:[ ]*\[(\d+[.]\d+[.]\d+[.]\d)\],[ ]*(.+)\z/ ) {
+        } elsif( Sisimai::String->aligned(\$e, ['@', ':', ' ', '[', '],', '...']) ) {
             # kijitora@example.com: [192.0.2.5], 550 kijitora@example.com... No such user
-            $v->{'rhost'} = $1;
-            $v->{'diagnosis'} = $2;
+            my $p1 = index($e, '[');
+            my $p2 = index($e, '],', $p1 + 1);
+            $v->{'rhost'} = substr($e, $p1 + 1, $p2 - $p1 - 1);
+            $v->{'diagnosis'} = Sisimai::String->sweep(substr($e, $p2 + 2,));
 
         } else {
             # Fallback, parse RFC3464 headers.
@@ -89,8 +90,8 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ ]+(.+)\z/;
-                $v->{'diagnosis'} .= ' '.$1;
+                next unless index($e, ' ') == 0;
+                $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
             }
         }
     } continue {

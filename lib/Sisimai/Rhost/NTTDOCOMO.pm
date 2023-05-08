@@ -18,7 +18,7 @@ sub get {
     };
     my $statuscode = $argvs->{'deliverystatus'}    || '';
     my $thecommand = $argvs->{'smtpcommand'}       || '';
-    my $esmtperror = lc $argvs->{'diagnosticcode'} || '';
+    my $issuedcode = lc $argvs->{'diagnosticcode'} || '';
     my $reasontext = '';
 
     # Check the value of Status: field, an SMTP Reply Code, and the SMTP Command
@@ -52,7 +52,7 @@ sub get {
         # The value of "Diagnostic-Code:" field is not empty
         for my $e ( keys %$messagesof ) {
             # Try to match the value of "diagnosticcode"
-            next unless grep { index($esmtperror, $_) > -1 } $messagesof->{ $e }->@*;
+            next unless grep { index($issuedcode, $_) > -1 } $messagesof->{ $e }->@*;
             $reasontext = $e;
             last;
         }

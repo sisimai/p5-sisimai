@@ -24,23 +24,14 @@ sub inquire {
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['--- The following addresses had delivery problems ---'] };
-    state $refailures = {
-        'userunknown' => qr{(?:
-             [ ]User[ ][(].+[@].+[)][ ]unknown[.][ ]
-            |550[ ]Unknown[ ]user[ ][^ ]+[@][^ ]+
-            |550[ ][<].+?[@].+?[>][.]+[ ]User[ ]not[ ]exist
-            |No[ ]such[ ]user
-            )
-        }x,
-    };
+    state $messagesof = { 'userunknown' => [' User not exist', ' unknown.', '550 Unknown user ', 'No such user'] };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $diagnostic = '';    # (String) Alternative diagnostic message
+    my $issuedcode = '';    # (String) Alternative diagnostic message
     my $v = undef;
     my $p = '';
 
@@ -66,15 +57,15 @@ sub inquire {
         #
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>][ ]+[(](.+)[)]\z/ ) {
+        if( Sisimai::String->aligned(\$e, ['<', '@', '>', '(', ')']) ) {
             # <kijitora@example.co.jp>   (Unknown user kijitora@example.co.jp)
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
-            $diagnostic = $2;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, index($e, '<'), index($e, '>')));
+            $issuedcode = substr($e, index($e, '(') + 1,);
             $recipients++;
 
         } elsif( my $f = Sisimai::RFC1894->match($e) ) {
@@ -82,8 +73,10 @@ sub inquire {
             my $o = Sisimai::RFC1894->field($e);
             unless( $o ) {
                 # Fallback code for empty value or invalid formatted value
-                # - Original-Recipient: <kijitora@example.co.jp>
-                $v->{'alias'} = Sisimai::Address->s3s4($1) if $e =~ /\AOriginal-Recipient:[ ]([^ ]+)\z/;
+                if( index($e, 'Original-Recipient: ') == 0 ) {
+                    # - Original-Recipient: <kijitora@example.co.jp>
+                    $v->{'alias'} = Sisimai::Address->s3s4(substr($e, index($e, ':') + 1,));
+                }
                 next;
             }
             next unless exists $fieldtable->{ $o->[0] };
@@ -92,8 +85,8 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ ]+(.+)\z/;
-            $v->{'diagnosis'} .= ' '.$1;
+            next unless index($e, ' ');
+            $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
         }
     } continue {
         # Save the current line for the next loop
@@ -102,11 +95,11 @@ sub inquire {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $diagnostic);
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'} || $issuedcode );
 
-        SESSION: for my $r ( keys %$refailures ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless $e->{'diagnosis'} =~ $refailures->{ $r };
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
             $e->{'reason'} = $r;
             last;
         }

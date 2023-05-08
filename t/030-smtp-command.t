@@ -4,7 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP::Command;
 
 my $Package = 'Sisimai::SMTP::Command';
-my $Methods = { 'class' => ['find'], 'object' => [] };
+my $Methods = { 'class' => ['test', 'find'], 'object' => [] };
 
 use_ok $Package;
 can_ok $Package, @{ $Methods->{'class'} };
@@ -38,8 +38,12 @@ MAKETEST: {
     };
 
     my $v = '';
-    is $Package->find(''), undef, '->find() returns undef';
+    is $Package->test(''), undef, '->test("") returns undef';
+    is $Package->test('NEKO'), 0, '->test("NEKO") returns 0';
+    is $Package->find(''), undef, '->find("") returns undef';
+
     for my $e ( keys %$smtperrors ) {
+        ok $Package->test($e);
         for my $f ( $smtperrors->{ $e }->@* ) {
             $v = $Package->find($f);
             ok $f, 'Error message text = '.$f;

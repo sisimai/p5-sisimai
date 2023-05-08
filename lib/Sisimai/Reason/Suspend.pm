@@ -50,6 +50,7 @@ sub true {
     return undef unless $argvs->{'deliverystatus'};
 
     return 1 if $argvs->{'reason'} eq 'suspend';
+    return 1 if length $argvs->{'replycode'} && $argvs->{'replycode'} == 525;
     return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0
 }

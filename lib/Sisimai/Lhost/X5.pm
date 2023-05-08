@@ -41,7 +41,6 @@ sub inquire {
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['Content-Type: message/delivery-status'] };
 
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -50,9 +49,9 @@ sub inquire {
     my $p = '';
 
     # Pick the second message/rfc822 part because the format of email-x5-*.eml is nested structure
-    my $cutsbefore = [split($boundaries->[0], $$mbody, 2)];
-       $cutsbefore->[1] =~ s/\A.+?\n\n//ms;
-    my $emailparts = Sisimai::RFC5322->part(\$cutsbefore->[1], $boundaries);
+    my $cutsbefore      = [split($boundaries->[0], $$mbody, 2)];
+       $cutsbefore->[1] = substr($cutsbefore->[1], index($cutsbefore->[1], "\n\n") + 2,);
+    my $emailparts      = Sisimai::RFC5322->part(\$cutsbefore->[1], $boundaries);
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -101,8 +100,8 @@ sub inquire {
         } else {
             # Continued line of the value of Diagnostic-Code field
             next unless index($p, 'Diagnostic-Code:') == 0;
-            next unless $e =~ /\A[ ]+(.+)\z/;
-            $v->{'diagnosis'} .= ' '.$1;
+            next unless index($e, ' ') == 0;
+            $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
         }
     } continue {
         # Save the current line for the next loop

@@ -55,8 +55,8 @@ sub inquire {
     $recordwide->{'reason'} = scalar @$fewdetails == 4 ? 'rejected' : 'onhold';
 
     my @entiremesg = split(/\n\n/, $emailparts->[0], 5); pop @entiremesg;
-    my $diagnostic = join(' ', @entiremesg); $diagnostic =~ y/\n/ /;
-    $recordwide->{'diagnosis'} = Sisimai::String->sweep($diagnostic);
+    my $issuedcode = join(' ', @entiremesg); $issuedcode =~ y/\n/ /;
+    $recordwide->{'diagnosis'} = Sisimai::String->sweep($issuedcode);
 
     my $serverlist = Sisimai::RFC5322->received($mhead->{'received'}->[0]);
     $recordwide->{'rhost'} = shift @$serverlist;

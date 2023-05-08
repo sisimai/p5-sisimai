@@ -22,15 +22,13 @@ sub inquire {
     $match ||= 1 if grep { rindex($_, '.bigfoot.com ') > -1 } $mhead->{'received'}->@*;
     return undef unless $match;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/partial'];
-    state $markingsof = { 'message' => qr/\A[ ]+[-]+[ ]*Transcript of session follows/ };
+    state $markingsof = { 'message' => '   ----- Transcript of session follows -----' };
 
-    require Sisimai::SMTP::Command;
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -45,7 +43,7 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $markingsof->{'message'}) == 0;
             next;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
@@ -96,15 +94,15 @@ sub inquire {
                     # >>> DATA
                     $thecommand = Sisimai::SMTP::Command->find($e);
 
-                } elsif( $e =~ /\A[<]{3}[ ]+(.+)\z/ ) {
+                } elsif( index($e, '<<< ') == 0 ) {
                     # <<< Response
-                    $esmtpreply = $1;
+                    $esmtpreply = substr($e, 4,);
                 }
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ ]+(.+)\z/;
-                $v->{'diagnosis'} .= ' '.$1;
+                next unless index($e, ' ') == 0;
+                $v->{'diagnosis'} .= Sisimai::String->sweep(substr($e, 1,));
             }
         }
     } continue {

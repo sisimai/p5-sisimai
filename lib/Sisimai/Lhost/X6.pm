@@ -19,7 +19,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['The attachment contains the original mail headers'];
-    state $markingsof = { 'message' => qr/\A\d+[ ]*error[(]s[)]:/ };
+    state $startingof = { 'message' => ['We had trouble delivering your message. Full details follow:'] };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -32,18 +32,25 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
 
+        # We had trouble delivering your message. Full details follow:
+        #
+        # Subject: 'Nyaan'
+        # Date: 'Thu, 29 Apr 2012 23:34:45 +0000'
+        #
         # 1 error(s):
         #
         # SMTP Server <mta2.example.jp> rejected recipient <kijitora@examplejp> 
         #   (Error following RCPT command). It responded as follows: [550 5.1.1 User unknown]
         $v = $dscontents->[-1];
-        if( $e =~ /<([^ @]+[@][^ @]+)>/ || $e =~ /errors:[ ]*([^ ]+[@][^ ]+)/ ) {
+        my $p1 = index($e, 'The following recipients returned permanent errors: ');
+        my $p2 = index($e, 'SMTP Server <');
+        if( $p1 == 0 || $p2 == 0 ) {
             # SMTP Server <mta2.example.jp> rejected recipient <kijitora@examplejp> 
             # The following recipients returned permanent errors: neko@example.jp.
             if( $v->{'recipient'} ) {
@@ -51,7 +58,21 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = Sisimai::Address->s3s4($1);
+            if( $p1 == 0 ) {
+                # The following recipients returned permanent errors: neko@example.jp.
+                $p1 = index($e, 'errors: ');
+                $p2 = index($e, ' ', $p1 + 8);
+                $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p1 + 8, $p2 - $p1 - 8));
+
+            } elsif( $p2 == 0 ) {
+                # SMTP Server <mta2.example.jp> rejected recipient <kijitora@example.jp>
+                $p1 = rindex($e, '<');
+                $p2 = rindex($e, '>');
+                $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p1, $p2 - $p1));
+
+            } else {
+                next;
+            }
             $v->{'diagnosis'} = $e;
             $recipients++;
         }

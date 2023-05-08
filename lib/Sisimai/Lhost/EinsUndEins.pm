@@ -55,14 +55,14 @@ sub inquire {
         # http://postmaster.1and1.com/en/error-messages?ip=%1s
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+[@][^ ]+?)[:]?\z/ ) {
+        if( index($e, ' ') < 0 && index($e, '@') > 1 ) {
             # general@example.eu
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = Sisimai::Address->s3s4($e);
             $recipients++;
 
         } elsif( index($e, $startingof->{'error'}->[0]) == 0 ) {
@@ -97,7 +97,7 @@ sub inquire {
             $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
         } else {
             # For the following reason:
-            $e->{'diagnosis'} =~ s/\A$startingof->{'error'}->[0]//g;
+            substr($e->{'diagnosis'}, 0, length $startingof->{'error'}->[0], '');
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 

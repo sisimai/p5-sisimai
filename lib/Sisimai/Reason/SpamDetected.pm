@@ -2,6 +2,7 @@ package Sisimai::Reason::SpamDetected;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'spamdetected' }
 sub description { 'Email rejected by spam filter running on the remote host' }
@@ -26,7 +27,6 @@ sub match {
         'blocked by policy: no spam please',
         'blocked by spamassassin',                      # rejected by SpamAssassin
         'blocked for abuse. see http://att.net/blocks', # AT&T
-        'bulk email',
         'cannot be forwarded because it was detected as spam',
         'considered unsolicited bulk e-mail (spam) by our mail filters',
         'content filter rejection',
@@ -60,9 +60,11 @@ sub match {
         'probable spam',
         'reject bulk.advertising',
         'rejected: spamassassin score ',
+        'rejected - bulk email',
         'rejecting banned content',
         'rejecting mail content',
         'related to content with spam-like characteristics',
+        'sender domain listed at ',
         'sending address not accepted due to spam filter',
         'spam blocked',
         'spam check',
@@ -107,23 +109,16 @@ sub match {
         ['mail rejete. mail rejected. ', '506'],
         ['our filters rate at and above ', ' percent probability of being spam'],
         ['rejected by ', ' (spam)'],
+        ['rejected due to spam ', 'classification'],
+        ['rejected due to spam ', 'content'],
         ['rule imposed as ', ' is blacklisted on'],
         ['spam ', ' exceeded'],
         ['this message scored ', ' spam points'],
     ];
-    state $regex = qr{(?>
-         (?:\d[.]\d[.]\d|\d{3})[ ]spam\z
-        |rejected[ ]due[ ]to[ ]spam[ ](?:url[ ]in[ ])?(?:classification|content)
-        |sender[ ]domain[ ]listed[ ]at[ ][^ ]+
-        )
-    }x;
+    state $regex = qr/(?:\d[.]\d[.]\d|\d{3})[ ]spam\z/;
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep {
-        my $p = index($argv1, $_->[0],  0) + 1;
-        my $q = index($argv1, $_->[1], $p) + 1;
-        $p * $q > 0;
-    } @$pairs;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 1 if $argv1 =~ $regex;
     return 0;
 }
@@ -145,7 +140,9 @@ sub true {
     # The value of "reason" isn't "spamdetected" when the value of "smtpcommand" is an SMTP command
     # to be sent before the SMTP DATA command because all the MTAs read the headers and the entire
     # message body after the DATA command.
-    return 0 if $argvs->{'smtpcommand'} =~ /\A(?:CONN|EHLO|HELO|MAIL|RCPT)\z/;
+    my $thecommand = $argvs->{'smtpcommand'} || '';
+    return 0 if $thecommand eq 'CONN' || $thecommand eq 'EHLO' || $thecommand eq 'HELO'
+             || $thecommand eq 'MAIL' || $thecommand eq 'RCPT';
     return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0;
 }

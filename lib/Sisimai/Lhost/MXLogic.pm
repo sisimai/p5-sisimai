@@ -25,12 +25,9 @@ sub inquire {
     $match ||= 1 if defined $mhead->{'x-mxl-hash'};
     $match ||= 1 if defined $mhead->{'x-mxl-notehash'};
     $match ||= 1 if index($mhead->{'from'}, 'Mail Delivery System') == 0;
-    $match ||= 1 if $mhead->{'subject'} =~ qr{(?:
-         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
-        |Warning:[ ]message[ ][^ ]+[ ]delayed[ ]+
-        |Delivery[ ]Status[ ]Notification
-        )
-    }x;
+    $match ||= 1 if grep { index($mhead->{'subject'}, $_) > -1 } ( 'Delivery Status Notification',
+                                                                   'Mail delivery failed',
+                                                                   'Warning: message ');
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
@@ -107,7 +104,7 @@ sub inquire {
         #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ ]*[<]([^ ]+[@][^ ]+)[>]:(.+)\z/ ) {
+        if( index($e, '  <') == 0 && index($e, '@') > 1 && index($e, '>:') > 1 ) {
             # A message that you have sent could not be delivered to one or more
             # recipients.  This is a permanent error.  The following address failed:
             #
@@ -117,8 +114,8 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
-            $v->{'diagnosis'} = $2;
+            $v->{'recipient'} = substr($e, 3, index($e, '>:') - 3);
+            $v->{'diagnosis'} = substr($e, index($e, '>:') + 3,);
             $recipients++;
 
         } elsif( scalar @$dscontents == $recipients ) {
@@ -131,8 +128,13 @@ sub inquire {
 
     if( scalar $mhead->{'received'}->@* ) {
         # Get the name of local MTA
-        # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ ]([^ ]+) /;
+        my $p1 = index(lc $mhead->{'received'}->[-1], 'from ');
+        my $p2 = index(   $mhead->{'received'}->[-1], ' ', $p1 + 5);
+
+        if( ($p1 + 1) * ($p2 + 1) > 0 ) {
+            # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
+            $localhost0 = substr($mhead->{'received'}->[-1], $p1 + 5, $p2 - $p1 - 5);
+        }
     }
 
     for my $e ( @$dscontents ) {
@@ -141,16 +143,17 @@ sub inquire {
         $e->{'diagnosis'} =~ s/[-]{2}.*\z//g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
-        unless( $e->{'rhost'} ) {
+        unless( length $e->{'rhost'} ) {
             # Get the remote host name
+            my $p1 = index($e->{'diagnosis'}, 'host ');
+            my $p2 = index($e->{'diagnosis'}, ' ', $p1 + 5);
+
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ ]+([^ ]+)[ ]\[.+\]:[ ]/;
+            $e->{'rhost'} = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
 
             unless( $e->{'rhost'} ) {
-                if( scalar $mhead->{'received'}->@* ) {
-                    # Get localhost and remote host name from Received header.
-                    $e->{'rhost'} = pop Sisimai::RFC5322->received($mhead->{'received'}->[-1])->@*;
-                }
+                # Get localhost and remote host name from Received header.
+                $e->{'rhost'} = pop Sisimai::RFC5322->received($mhead->{'received'}->[-1])->@* if scalar $mhead->{'received'}->@*;
             }
         }
 

@@ -42,8 +42,8 @@ sub get {
         [1300, 1340, 'toomanyconn'],     # Spectrum limits the number of concurrent connections from a sender
         [1350, 1490, 'toomanyconn'],     # Spectrum limits emails by the number of messages sent, amount of recipients,...
     ];
-    my $statusmesg = $argvs->{'diagnosticcode'};
-    my $codenumber = $statusmesg =~ m/AUP#[-A-Za-z]*(\d{4})/ ? int $1 : 0;
+    my $issuedcode = $argvs->{'diagnosticcode'};
+    my $codenumber = $issuedcode =~ m/AUP#[-A-Za-z]*(\d{4})/ ? int $1 : 0;
     my $reasontext = $errorcodes->{ $codenumber } || '';
 
     unless( $reasontext ) {
@@ -90,7 +90,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2020,2021,2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

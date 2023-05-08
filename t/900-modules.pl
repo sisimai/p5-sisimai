@@ -113,16 +113,16 @@ sub list {
         RFC5965.pm
         Rhost.pm
             Rhost/Cox.pm
-            Rhost/ExchangeOnline.pm
             Rhost/FrancePTT.pm
             Rhost/GoDaddy.pm
-            Rhost/GoogleApps.pm
+            Rhost/Google.pm
             Rhost/IUA.pm
             Rhost/KDDI.pm
+            Rhost/Microsoft.pm
             Rhost/Mimecast.pm
             Rhost/NTTDOCOMO.pm
             Rhost/Spectrum.pm
-            Rhost/TencentQQ.pm
+            Rhost/Tencent.pm
         SMTP.pm
             SMTP/Command.pm
             SMTP/Error.pm

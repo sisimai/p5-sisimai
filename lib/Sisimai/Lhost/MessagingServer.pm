@@ -17,7 +17,6 @@ sub inquire {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    # 'received' => qr/[ ][(]MessagingServer[)][ ]with[ ]/,
     $match ||= 1 if rindex($mhead->{'content-type'}, 'Boundary_(ID_') > -1;
     $match ||= 1 if index($mhead->{'subject'}, 'Delivery Notification: ') == 0;
     return undef unless $match;
@@ -64,45 +63,50 @@ sub inquire {
         #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25) (6jo.example.jp ESMTP SENDMAIL-VM)
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ ]+Recipient address:[ ]*([^ ]+[@][^ ]+)\z/ ) {
+        if( index($e, '  Recipient address: ') == 0 && index($e, '@') > 1 ) {
             #   Recipient address: kijitora@example.jp
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = Sisimai::Address->s3s4($1);
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, rindex($e, ' ') + 1),);
             $recipients++;
 
-        } elsif( $e =~ /\A[ ]+Original address:[ ]*([^ ]+[@][^ ]+)\z/ ) {
+        } elsif( index($e, '  Original address: ') == 0 && index($e, '@') > 1 ) {
             #   Original address: kijitora@example.jp
-            $v->{'recipient'} = Sisimai::Address->s3s4($1);
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, rindex($e, ' ') + 1),);
 
-        } elsif( $e =~ /\A[ ]+Date:[ ]*(.+)\z/ ) {
+        } elsif( index($e, '  Date: ') == 0 ) {
             #   Date: Fri, 21 Nov 2014 23:34:45 +0900
-            $v->{'date'} = $1;
+            $v->{'date'} = substr($e, index($e, ':') + 2,);
 
-        } elsif( $e =~ /\A[ ]+Reason:[ ]*(.+)\z/ ) {
+        } elsif( index($e, '  Reason: ') == 0 ) {
             #   Reason: Remote SMTP server has rejected address
-            $v->{'diagnosis'} = $1;
+            $v->{'diagnosis'} = substr($e, index($e, ':') + 2,);
 
-        } elsif( $e =~ /\A[ ]+Diagnostic code:[ ]*([^ ]+);(.+)\z/ ) {
+        } elsif( index($e, '  Diagnostic code: ') == 0 ) {
             #   Diagnostic code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
-            $v->{'spec'} = uc $1;
-            $v->{'diagnosis'} = $2;
+            my $p1 = index($e, ':');
+            my $p2 = index($e, ';');
+            $v->{'spec'} = uc substr($e, $p1 + 2, $p2 - $p1 - 2);
+            $v->{'diagnosis'} = substr($e, $p2 + 1,);
 
-        } elsif( $e =~ /\A[ ]+Remote system:[ ]*dns;([^ ]+)[ ]*([^ ]+)[ ]*.+\z/ ) {
+        } elsif( index($e, '  Remote system: ') == 0 ) {
             #   Remote system: dns;mx.example.jp (TCP|17.111.174.67|47323|192.0.2.225|25)
             #     (6jo.example.jp ESMTP SENDMAIL-VM)
-            my $remotehost = $1; # remote host
-            my $sessionlog = $2; # smtp session
+            my $p1 = index($e, ';');
+            my $p2 = index($e, '(');
+
+            my $remotehost = substr($e, $p1 + 1, $p2 - $p1 - 2);
+            my $sessionlog = [split('|', substr($e, $p2,))];
             $v->{'rhost'} = $remotehost;
 
             # The value does not include ".", use IP address instead.
             # (TCP|17.111.174.67|47323|192.0.2.225|25)
-            next unless $sessionlog =~ /\A[(]TCP|(.+)|\d+|(.+)|\d+[)]/;
-            $v->{'lhost'} = $1;
-            $v->{'rhost'} = $2 unless $remotehost =~ /[^.]+[.][^.]+/;
+            next unless $sessionlog->[0] eq '(TCP';
+            $v->{'lhost'} = $sessionlog->[1];
+            $v->{'rhost'} = $sessionlog->[3] unless index($remotehost, '.') > 1;
 
         } else {
             # Original-envelope-id: 0NFC009FLKOUVMA0@mr21p30im-asmtp004.me.com
@@ -117,20 +121,22 @@ sub inquire {
             #  (6jo.example.jp ESMTP SENDMAIL-VM)
             # Diagnostic-code: smtp;550 5.1.1 <kijitora@example.jp>... User Unknown
             #
-            if( $e =~ /\AStatus:[ ](\d[.]\d[.]\d)[ ]*[(](.+)[)]\z/ ) {
+            if( index($e, 'Status: ') == 0 ) {
                 # Status: 5.1.1 (Remote SMTP server has rejected address)
-                $v->{'status'} = $1;
-                $v->{'diagnosis'} ||= $2;
+                my $p1 = index($e, ':');
+                my $p2 = index($e, '(');
+                $v->{'status'}      = substr($e, $p1 + 2, $p2 - $p1 - 3);
+                $v->{'diagnosis'} ||= substr($e, $p2 + 1, index($e, ')') - $p2 - 1);
 
-            } elsif( $e =~ /\AArrival-Date:[ ](.+)\z/ ) {
+            } elsif( index($e, 'Arrival-Date: ') == 0 ) {
                 # Arrival-date: Thu, 29 Apr 2014 23:34:45 +0000 (GMT)
-                $v->{'date'} ||= $1;
+                $v->{'date'} ||= substr($e, index($e, ':') + 2,);
 
-            } elsif( $e =~ /\AReporting-MTA:[ ]dns;[ ](.+)\z/ ) {
+            } elsif( index($e, 'Reporting-MTA: ') == 0 ) {
                 # Reporting-MTA: dns;mr21p30im-asmtp004.me.com (tcp-daemon)
-                my $localhost = $1;
+                my $localhost = substr($e, index($e, ';') + 1,);
                 $v->{'lhost'} ||= $localhost;
-                $v->{'lhost'}   = $localhost unless $v->{'lhost'} =~ /[^.]+[.][^ ]+/;
+                $v->{'lhost'}   = $localhost unless index($v->{'lhost'}, '.') > 0;
             }
         } # End of error message part
     }

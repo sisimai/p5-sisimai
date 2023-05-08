@@ -27,7 +27,6 @@ sub inquire {
         'command'  => ['-------SMTP command'],
         'error'    => ['-------server message'],
     };
-    state $markingsof = { 'message' => qr/\A[^ ]+[@][^ ]+[.][a-zA-Z]+\z/ };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -41,7 +40,9 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            if( index($e, '@') > 1 && index($e, ' ') < 0 && Sisimai::Address->is_emailaddress($e) ) {
+                $readcursor |= $indicators->{'deliverystatus'};
+            }
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
         next unless length $e;
@@ -63,7 +64,7 @@ sub inquire {
         # -------original message
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
+        if( index($e, '@') > 0 && index($e, ' ') < 0 ) {
             # 以下のメールアドレスへの送信に失敗しました。
             # kijitora@example.jp
             if( $v->{'recipient'} ) {
@@ -71,10 +72,10 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = $e;
             $recipients++;
 
-        } elsif( $e =~ /\A[A-Z]{4}/ ) {
+        } elsif( length $e == 4 && index($e, ' ') < 0 ) {
             # -------SMTP command
             # DATA
             next if $v->{'command'};

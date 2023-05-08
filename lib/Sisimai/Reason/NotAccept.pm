@@ -38,10 +38,11 @@ sub true {
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return undef;
+    my $reply = int $argvs->{'replycode'} || 0;
     return 1 if $argvs->{'reason'} eq 'notaccept';
 
     # SMTP Reply Code is 521, 554 or 556
-    return 1 if $argvs->{'replycode'} =~ /\A(?:521|554|556)\z/;
+    return 1 if $reply == 521 || $reply == 554 || $reply == 556;
     return 0 if $argvs->{'smtpcommand'} ne 'MAIL';
     return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
     return 0;
@@ -96,7 +97,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

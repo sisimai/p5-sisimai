@@ -174,7 +174,6 @@ sub inquire {
                 $v->{'lhost'}     = $o->{'reportingMTA'} || '';
                 $v->{'diagnosis'} = $o->{'smtpResponse'} || '';
                 $v->{'status'}    = Sisimai::SMTP::Status->find($v->{'diagnosis'}) || '';
-                $v->{'replycode'} = Sisimai::SMTP::Reply->find($v->{'diagnosis'})  || '';
                 $v->{'reason'}    = 'delivered';
                 $v->{'action'}    = 'delivered';
                 ($v->{'date'} = $o->{'timestamp'} || $p->{'mail'}->{'timestamp'}) =~ s/[.]\d+Z\z//;
@@ -218,7 +217,6 @@ sub inquire {
         $match ||= 1 if $mhead->{'x-ses-outgoing'};
         return undef unless $match;
 
-        require Sisimai::RFC1894;
         my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
         my $permessage = {};    # (Hash) Store values of each Per-Message field
         my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -293,13 +291,15 @@ sub inquire {
 
             $e->{'diagnosis'} =~ y/\n/ /;
             $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-            if( $e->{'status'} =~ /\A[45][.][01][.]0\z/ ) {
+
+            if( index($e->{'status'}, '.0.0') > 0 || index($e->{'status'}, '.1.0') > 0 ) {
                 # Get other D.S.N. value from the error message
                 # 5.1.0 - Unknown address error 550-'5.7.1 ...
                 my $errormessage = $e->{'diagnosis'};
                    $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
                 $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
             }
+            $e->{'replycode'} ||= Sisimai::SMTP::Reply->find($e->{'diagnosis'}, $e->{'status'});
 
             SESSION: for my $r ( keys %$messagesof ) {
                 # Verify each regular expression of session errors

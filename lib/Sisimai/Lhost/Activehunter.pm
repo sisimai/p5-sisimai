@@ -49,27 +49,27 @@ sub inquire {
         # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[>]{3}[ ]+.+[<]([^ ]+?[@][^ ]+?)[>]\z/ ) {
+        if( index($e, '>>> ') == 0 && index($e, '@') > 1 ) {
             # >>> kijitora@example.org <kijitora@example.org>
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, index($e, '<'),));
             $recipients++;
 
         } else {
             #  ----- Transcript of session follows -----
             # 550 sorry, no mailbox here by that name (#5.1.1 - chkusr)
-            next unless $e =~ /\A[0-9A-Za-z]+/;
+            my $p = ord(substr($e, 0, 1));
+            next if $p < 48 || $p > 122;
             next if length $v->{'diagnosis'};
             $v->{'diagnosis'} ||= $e;
         }
     }
     return undef unless $recipients;
 
-    require Sisimai::String;
     $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'}) for @$dscontents;
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }

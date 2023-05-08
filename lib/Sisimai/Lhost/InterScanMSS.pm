@@ -30,6 +30,7 @@ sub inquire {
 
     require Sisimai::SMTP::Command;
     state $boundaries = ['Content-type: message/rfc822'];
+
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -41,13 +42,15 @@ sub inquire {
         next unless length $e;
 
         $v = $dscontents->[-1];
-        if( $e =~ /\A.+[<>]{3}[ ]+.+[<]([^ ]+[@][^ ]+)[>]\z/ ||
-            $e =~ /\A.+[<>]{3}[ ]+.+[<]([^ ]+[@][^ ]+)[>]/   ||
-            $e =~ /\A(?:Reason:[ ]+)?Unable[ ]to[ ]deliver[ ]message[ ]to[ ][<](.+)[>]/ ) {
+        my $p1 = index($e, ' <<< ');    # Sent <<< ...
+        my $p2 = index($e, ' >>> ');    # Received >>> ...
+        if( index($e, '@') > 1 && index($e, ' <') > 1 && ($p1 > 1 || $p2 > 1 || index($e, 'Unable to deliver ') > -1) ) {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
+            # Received >>> 550 5.1.1 unknown user.
             # Unable to deliver message to <kijitora@neko.example.jp>
-            my $cr = $1;
+            # Unable to deliver message to <neko@example.jp> (and other recipients in the same domain).
+            my $cr = substr($e, rindex($e, '<') + 1, rindex($e, '>') - rindex($e, '<') - 1);
             if( $v->{'recipient'} && $cr ne $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -62,15 +65,15 @@ sub inquire {
             # Sent <<< RCPT TO:<kijitora@example.co.jp>
             $v->{'command'} = Sisimai::SMTP::Command->find($e);
 
-        } elsif( $e =~ /\AReceived[ ]+[>]{3}[ ]+(\d{3}[ ]+.+)\z/ ) {
+        } elsif( index($e, 'Received >>> ') == 0 ) {
             # Received >>> 550 5.1.1 <kijitora@example.co.jp>... user unknown
-            $v->{'diagnosis'} = $1;
+            $v->{'diagnosis'} = substr($e, index($e, ' >>> ') + 4, );
 
-        } else {
+        } elsif( $p1 > 0 || $p2 > 0 ) {
             # Error message in non-English
-            next unless $e =~ /[ ][<>]{3}[ ]/;
-            $v->{'command'}   = Sisimai::SMTP::Command->find($e) if index($e, ' >>> ') > -1;
-            $v->{'diagnosis'} = $1 if $e =~ /[ ][<]{3}[ ](.+)/;       # <<< 550 5.1.1 User unknown
+            $v->{'command'} = Sisimai::SMTP::Command->find($e) if index($e, ' >>> ') > -1;
+            my $p3 = index($e, ' <<< '); next if $p3 == -1;
+            $v->{'diagnosis'} = substr($e, $p3 + 4,);
         }
     }
     return undef unless $recipients;

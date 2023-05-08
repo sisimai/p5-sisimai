@@ -16,19 +16,20 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $msgid = $mhead->{'message-id'} || return undef;
+    my $mfrom = lc $mhead->{'from'};
+    my $match = 0;
 
     # Message-Id: <E1P1YNN-0003AD-Ga@*.mail.ru>
-    return undef unless lc($mhead->{'from'}) =~ /[<]?mailer-daemon[@].*mail[.]ru[>]?/;
-    return undef unless $mhead->{'message-id'} =~ /[.](?:mail[.]ru|smailru[.]net)[>]\z/;
-    return undef unless $mhead->{'subject'} =~ qr{(?:
-         Mail[ ]delivery[ ]failed(:[ ]returning[ ]message[ ]to[ ]sender)?
-        |Warning:[ ]message[ ].+[ ]delayed[ ]+
-        |Delivery[ ]Status[ ]Notification
-        |Mail[ ]failure
-        |Message[ ]frozen
-        |error[(]s[)][ ]in[ ]forwarding[ ]or[ ]filtering
-        )
-    }x;
+    $match++ if index($mfrom, 'mailer-daemon@') > -1 && index($mfrom, 'mail.ru') > -1;
+    $match++ if index($msgid, '.mail.ru>')      >  0 || index($msgid, 'smailru.net>') >  0;
+    $match++ if grep { index($mhead->{'subject'}, $_) > -1 } ( 'Delivery Status Notification',
+                                                               'Mail delivery failed',
+                                                               'Mail failure',
+                                                               'Message frozen',
+                                                               'Warning: message ',
+                                                               'error(s) in forwarding or filtering');
+    return undef unless $match > 2;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['------ This is a copy of the message, including all the headers. ------'];
@@ -101,14 +102,14 @@ sub inquire {
         #    host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[ ]+([^ ]+[@][^ ]+[.][a-zA-Z]+)\z/ ) {
+        if( index($e, '  ') == 0 && index($e, '    ') < 0 && index($e, '@') > 1 ) {
             #   kijitora@example.jp
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = substr($e, 2,);
             $recipients++;
 
         } elsif( scalar @$dscontents == $recipients ) {

@@ -17,14 +17,16 @@ sub inquire {
     my $mbody = shift // return undef;
     my $match = 0;
 
-    $match ||= 1 if index($mhead->{'from'}, 'Courier mail server at ') > -1;
-    $match ||= 1 if $mhead->{'subject'} =~ /(?:NOTICE: mail delivery status[.]|WARNING: delayed mail[.])/;
+    $match ||= 1 if index($mhead->{'from'},    'Courier mail server at ')       > -1;
+    $match ||= 1 if index($mhead->{'subject'}, 'NOTICE: mail delivery status.') > -1;
+    $match ||= 1 if index($mhead->{'subject'}, 'WARNING: delayed mail.')        > -1;
     if( defined $mhead->{'message-id'} ) {
         # Message-ID: <courier.4D025E3A.00001792@5jo.example.org>
-        $match ||= 1 if $mhead->{'message-id'} =~ /\A[<]courier[.][0-9A-F]+[.]/;
+        $match ||= 1 if index($mhead->{'message-id'}, '<courier.') == 0;
     }
     return undef unless $match;
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: :message/rfc822', 'Content-Type: text/rfc822-headers'];
     state $startingof = {
@@ -42,11 +44,8 @@ sub inquire {
         'networkerror'=> ['DNS lookup failed.'],
     };
 
-    require Sisimai::SMTP::Command;
-    require Sisimai::RFC1894;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position

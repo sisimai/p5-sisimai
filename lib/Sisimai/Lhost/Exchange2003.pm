@@ -137,9 +137,9 @@ sub inquire {
                 $v->{'msexch'} = 0;
                 $recipients++;
 
-            } elsif( $e =~ /\A[ ]+(MSEXCH:.+)\z/ ) {
+            } elsif( index($e, ' ') == 0 && index($e, 'MSEXCH:') > 0 ) {
                 #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
-                $v->{'diagnosis'} .= $1;
+                $v->{'diagnosis'} .= substr($e, index($e, 'MSEXCH:'),);
 
             } else {
                 next if $v->{'msexch'};
@@ -161,24 +161,23 @@ sub inquire {
             #  Subject: ...
             #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
             #
-            if( $e =~ /\A[ ]+To:[ ]+(.+)\z/ ) {
+            if( index($e, '  To:  ') == 0 || index($e, '      To: ') == 0 ) {
                 #  To:      shironeko@example.jp
                 next if $connheader->{'to'};
-                $connheader->{'to'} = $1;
+                $connheader->{'to'} = substr($e, rindex($e, ' ') + 1,);
                 $connvalues++;
 
-            } elsif( $e =~ /\A[ ]+Subject:[ ]+(.+)\z/ ) {
+            } elsif( index($e, '      Subject: ') == 0  || index($e, '  Subject: ') == 0 ) {
                 #  Subject: ...
                 next if length $connheader->{'subject'};
-                $connheader->{'subject'} = $1;
+                $connheader->{'subject'} = substr($e, rindex($e, ' ') + 1,);
                 $connvalues++;
 
-            } elsif( $e =~ m|\A[ ]+Sent:[ ]+([A-Z][a-z]{2},.+[-+]\d{4})\z| ||
-                     $e =~ m|\A[ ]+Sent:[ ]+(\d+[/]\d+[/]\d+[ ]+\d+:\d+:\d+[ ].+)|) {
+            } elsif( index($e, '  Sent: ') == 0 || index($e, '      Sent: ') == 0 ) {
                 #  Sent:    Thu, 29 Apr 2010 18:14:35 +0000
                 #  Sent:    4/29/99 9:19:59 AM
                 next if $connheader->{'date'};
-                $connheader->{'date'} = $1;
+                $connheader->{'date'} = substr($e, index($e, ':') + 2,);
                 $connvalues++;
             }
         } # End of error message part
@@ -189,10 +188,10 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         delete $e->{'msexch'};
 
-        if( $e->{'diagnosis'} =~ /\AMSEXCH:.+[ ]*[(]([0-9A-F]{8})[)][ ]*(.*)\z/ ) {
+        if( index($e->{'diagnosis'}, 'MSEXCH:') == 0 ) {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
-            my $capturedcode = $1;
-            my $errormessage = $2;
+            my $capturedcode = substr($e->{'diagnosis'}, index($e->{'diagnosis'}, '(') + 1, 8);
+            my $errormessage = substr($e->{'diagnosis'}, index($e->{'diagnosis'}, ')') + 1,  );
 
             for my $r ( keys %$errorcodes ) {
                 # Find captured code from the error code table

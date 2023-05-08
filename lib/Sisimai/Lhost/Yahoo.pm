@@ -22,11 +22,11 @@ sub inquire {
     # X-Originating-IP: [192.0.2.9]
     return undef unless $mhead->{'x-ymailisg'};
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- Below this line is a copy of the message.'];
     state $startingof = { 'message' => ['Sorry, we were unable to deliver your message'] };
 
-    require Sisimai::SMTP::Command;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -50,14 +50,14 @@ sub inquire {
         # Remote host said: 550 5.1.1 <kijitora@example.org>... User Unknown [RCPT_TO]
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<](.+[@].+)[>]:[ ]*\z/ ) {
+        if( index($e, '<') == 0 && Sisimai::String->aligned(\$e, ['<', '@', '>:']) ) {
             # <kijitora@example.org>:
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = $1;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, 0, index($e, '>:')));
             $recipients++;
 
         } else {
@@ -95,7 +95,7 @@ sub inquire {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} =~ y/\n/ /;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'command'} ||=  'RCPT' if $e->{'diagnosis'} =~ /[<].+[@].+[>]/;
+        $e->{'command'} ||=  'RCPT' if Sisimai::String->aligned(\$e->{'diagnosis'}, ['<', '@', '>']);
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }

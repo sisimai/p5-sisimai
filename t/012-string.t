@@ -5,7 +5,7 @@ use Sisimai::String;
 
 my $Package = 'Sisimai::String';
 my $Methods = {
-    'class'  => ['token', 'is_8bit', 'sweep', 'to_plain', 'to_utf8'],
+    'class'  => ['token', 'is_8bit', 'sweep', 'aligned', 'ipv4', 'to_plain', 'to_utf8'],
     'object' => [],
 };
 
@@ -16,6 +16,7 @@ MAKETEST: {
     my $s = 'envelope-sender@example.jp';
     my $r = 'envelope-recipient@example.org';
     my $t = '239aa35547613b2fa94f40c7f35f4394e99fdd88';
+    my $v = 'Final-Recipient: rfc822; <neko@example.jp>';
 
     ok(Sisimai::String->token($s, $r, 1), '->token');
     is(Sisimai::String->token($s, $r, 1), $t, '->token = '.$t);
@@ -30,6 +31,17 @@ MAKETEST: {
     is(Sisimai::String->sweep(undef), undef, '->sweep = ""');
     is(Sisimai::String->sweep(' neko cat '), 'neko cat', '->sweep = "neko cat"');
     is(Sisimai::String->sweep(' nyaa   !!'), 'nyaa !!', '->sweep = "nyaa !!"');
+
+    is(Sisimai::String->aligned(\$v, ['rfc822', ' <', '@', '>']), 1, '->aligned(rfc822, <, @, >)');
+    is(Sisimai::String->aligned(\$v, ['rfc822', '<<', ' ', '>']), 0, '->aligned(rfc822, <, @, >)');
+    is(Sisimai::String->aligned(\$v, ['rfc822']), 1, '->aligned(rfc822)');
+
+    is(Sisimai::String->ipv4('host smtp.example.jp 127.0.0.4 SMTP error from remote mail server')->[0], '127.0.0.4', '->ipv4 returns 127.0.0.4');
+    is(Sisimai::String->ipv4('mx.example.jp (192.0.2.2) reason: 550 5.2.0 Mail rejete.')->[0], '192.0.2.2', '->ipv4 returns 192.0.2.2');
+    is(Sisimai::String->ipv4('Client host [192.0.2.49] blocked using cbl.abuseat.org (state 13).')->[0], '192.0.2.49', '->ipv4 returns 192.0.2.49');
+    is(Sisimai::String->ipv4('127.0.0.1')->[0], '127.0.0.1', '->ipv4 returns 127.0.0.1');
+    is(Sisimai::String->ipv4('365.31.7.1')->[0], undef, '->ipv4(365.31.7.1) returns undef');
+    is(Sisimai::String->ipv4('a.b.c.d')->[0], undef, '->ipv4(a.b.c.d) returns undef');
 
     my $h = '
         <html>

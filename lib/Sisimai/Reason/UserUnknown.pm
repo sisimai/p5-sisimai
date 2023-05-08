@@ -2,6 +2,7 @@ package Sisimai::Reason::UserUnknown;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'userunknown' }
 sub description { "Email rejected due to a local part of a recipient's email address does not exist" }
@@ -108,8 +109,8 @@ sub match {
         ['adresse d au moins un destinataire invalide. invalid recipient.', '416'],
         ['adresse d au moins un destinataire invalide. invalid recipient.', '418'],
         ['bad', 'recipient'],
-        ['mailbox ', ' does not exist'],
-        ['mailbox ', ' unavailable'],
+        ['mailbox ', 'does not exist'],
+        ['mailbox ', 'unavailable or access denied'],
         ['no ', ' in name directory'],
         ['non', 'existent user'],
         ['rcpt <', ' does not exist'],
@@ -126,11 +127,7 @@ sub match {
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep {
-        my $p = index($argv1, $_->[0],  0) + 1;
-        my $q = index($argv1, $_->[1], $p) + 1;
-        $p * $q > 0;
-    } @$pairs;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -148,7 +145,7 @@ sub true {
     my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
     return 0 if $tempreason eq 'suspend';
 
-    my $diagnostic = lc $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     if( $tempreason eq 'userunknown' ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
@@ -170,7 +167,7 @@ sub true {
             my $p = 'Sisimai::Reason::'.$e;
             require $ModulePath->{ $p };
 
-            next unless $p->match($diagnostic);
+            next unless $p->match($issuedcode);
             # Match with reason defined in Sisimai::Reason::* except UserUnknown.
             $matchother = 1;
             last;
@@ -179,7 +176,7 @@ sub true {
 
     } elsif( $argvs->{'smtpcommand'} eq 'RCPT' ) {
         # When the SMTP command is not "RCPT", the session rejected by other reason, maybe.
-        return 1 if __PACKAGE__->match($diagnostic);
+        return 1 if __PACKAGE__->match($issuedcode);
     }
     return 0;
 }

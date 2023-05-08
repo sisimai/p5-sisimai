@@ -22,15 +22,13 @@ sub inquire {
     return undef unless $mhead->{'return-path'} eq '<apps@sendgrid.net>';
     return undef unless $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
 
+    require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = { 'message' => ['This is an automatically generated message from SendGrid.'] };
 
-    require Sisimai::RFC1894;
-    require Sisimai::SMTP::Command;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -59,7 +57,7 @@ sub inquire {
                 # Fallback code for empty value or invalid formatted value
                 # - Status: (empty)
                 # - Diagnostic-Code: 550 5.1.1 ... (No "diagnostic-type" sub field)
-                $v->{'diagnosis'} = $1 if $e =~ /\ADiagnostic-Code:[ ](.+)/;
+                $v->{'diagnosis'} = substr($e, index($e, ':') + 2,) if index($e, 'Diagnostic-Code: ') == 0;
                 next;
             }
 
@@ -87,11 +85,16 @@ sub inquire {
 
             } elsif( $o->[-1] eq 'date' ) {
                 # Arrival-Date: 2012-12-31 23-59-59
-                next unless $e =~ /\AArrival-Date: (\d{4})[-](\d{2})[-](\d{2}) (\d{2})[-](\d{2})[-](\d{2})\z/;
-                $o->[1] .= 'Thu, '.$3.' ';
-                $o->[1] .= Sisimai::DateTime->monthname(0)->[int($2) - 1];
-                $o->[1] .= ' '.$1.' '.join(':', $4, $5, $6);
+                next unless index($e, 'Arrival-Date: ') == 0;
+                my @cf = split(' ', substr($e, index($e, ': ') + 2,)); next unless scalar @cf == 2;
+                my @cw = split('-', $cf[0]);                           next unless scalar @cw == 3;
+                my @ce = split('-', $cf[1]);                           next unless scalar @ce == 3;
+
+                $o->[1] .= 'Thu, '.$cw[2].' ';
+                $o->[1] .= Sisimai::DateTime->monthname(0)->[int($cw[1]) - 1];
+                $o->[1] .= ' '.$cw[0].' '.join(':', @ce);
                 $o->[1] .= ' '.Sisimai::DateTime->abbr2tz('CDT');
+
             } else {
                 # Other DSN fields defined in RFC3464
                 next unless exists $fieldtable->{ $o->[0] };
@@ -123,15 +126,15 @@ sub inquire {
                 # in RCPT TO, in MAIL FROM, end of DATA
                 $thecommand = $cv;
 
-            } elsif( $e =~ /\ADiagnostic-Code:[ ](.+)\z/ ) {
+            } elsif( index($e, 'Diagnostic-Code: ') == 0 ) {
                 # Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>... User Unknown
-                $v->{'diagnosis'} = $e;
+                $v->{'diagnosis'} = substr($e, index($e, ':') + 2,);
 
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ ]+(.+)\z/;
-                $v->{'diagnosis'} .= ' '.$1;
+                next unless index($e, ' ') == 0;
+                $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
             }
         }
     } continue {
@@ -143,7 +146,8 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Get the value of SMTP status code as a pseudo D.S.N.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'status'} = $1.'.0.0' if $e->{'diagnosis'} =~ /\b([45])\d\d[ ]*/;
+        $e->{'replycode'} = Sisimai::SMTP::Reply->find($e->{'diagnosis'}) || '';
+        $e->{'status'}    = substr($e->{'replycode'}, 0, 1).'.0.0' if length $e->{'replycode'} == 3;
 
         if( $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {
             # Get the value of D.S.N. from the error message or the value of Diagnostic-Code header.

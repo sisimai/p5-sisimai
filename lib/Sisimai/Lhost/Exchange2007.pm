@@ -15,11 +15,18 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    my $match = 0;
 
     # Content-Language: en-US, fr-FR
-    return undef unless $mhead->{'subject'} =~ /\A(?:Undeliverable|Non_remis_|Non[ ]recapitabile):/;
+    $match ||= 1 if index($mhead->{'subject'}, 'Undeliverable')    == 0;
+    $match ||= 1 if index($mhead->{'subject'}, 'Non_remis_')       == 0;
+    $match ||= 1 if index($mhead->{'subject'}, 'Non recapitabile') == 0;
+    return undef unless $match > 0;
+
     return undef unless defined $mhead->{'content-language'};
-    return undef unless $mhead->{'content-language'} =~ /\A[a-z]{2}(?:[-][A-Z]{2})?\z/;
+    $match += 1 if length $mhead->{'content-language'} == 2; # JP
+    $match += 1 if length $mhead->{'content-language'} == 5; # ja-JP
+    return undef unless $match > 1;
 
     # These headers exist only a bounce mail from Office365
     return undef if $mhead->{'x-ms-exchange-crosstenant-originalarrivaltime'};
@@ -32,19 +39,17 @@ sub inquire {
         'Intestazioni originali del messaggio:',    # it-CH
     ];
     state $markingsof = {
-        'message' => qr{\A(?:
-             Diagnostic[ ]information[ ]for[ ]administrators:               # en-US
-            |Informations[ ]de[ ]diagnostic[ ]pour[ ]les[ ]administrateurs  # fr-FR
-            |Informazioni[ ]di[ ]diagnostica[ ]per[ ]gli[ ]amministratori   # it-CH
-            )
-        }x,
-        'error'   => qr/[ ]((?:RESOLVER|QUEUE)[.][A-Za-z]+(?:[.]\w+)?);/,
-        'rhost'   => qr{\A(?:
-             Generating[ ]server            # en-US
-            |Serveur[ ]de[ ]g[^ ]+ration[ ] # fr-FR/Serveur de g辿n辿ration
-            |Server[ ]di[ ]generazione      # it-CH
-            ):[ ]?(.*)
-        }x,
+        'message' => [
+            'Diagnostic information for administrators:',           # en-US
+            'Informations de diagnostic pour les administrateurs',  # fr-FR
+            'Informazioni di diagnostica per gli amministratori',   # it-CH
+        ],
+        'error'   => [' RESOLVER.', ' QUEUE.'],
+        'rhost'   => [
+            'Generating server',        # en-US
+            'Serveur de g',             # fr-FR/Serveur de g辿n辿ration
+            'Server di generazione',    # it-CH
+        ],
     };
     state $ndrsubject = {
         'SMTPSEND.DNS.NonExistentDomain'=> 'hostunknown',   # 554 5.4.4 SMTPSEND.DNS.NonExistentDomain
@@ -76,7 +81,7 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if $e =~ $markingsof->{'message'};
+            $readcursor |= $indicators->{'deliverystatus'} if grep { index($e, $_) == 0 } $markingsof->{'message'}->@*;
             next;
         }
         next unless $readcursor & $indicators->{'deliverystatus'};
@@ -92,14 +97,14 @@ sub inquire {
             # Original message headers:
             $v = $dscontents->[-1];
 
-            if( $e =~ /\A([^ @]+[@][^ @]+)\z/ ) {
+            if( index($e, ' ') < 0 && index($e, '@') > 1 ) {
                 # kijitora@example.jp
                 if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the message body.
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
                 }
-                $v->{'recipient'} = $1;
+                $v->{'recipient'} = Sisimai::Address->s3s4($e);
                 $recipients++;
 
             } elsif( $e =~ /([45]\d{2})[ ]([45][.]\d[.]\d+)?[ ]?.+\z/ ) {
@@ -121,26 +126,33 @@ sub inquire {
             # Diagnostic information for administrators:
             #
             # Generating server: mta22.neko.example.org
-            next unless $e =~ $markingsof->{'rhost'};
+            next unless grep { index($e, $_) == 0 } $markingsof->{'rhost'}->@*;
             next if $connheader->{'rhost'};
-            $connheader->{'rhost'} = $1;
+            $connheader->{'rhost'} = substr($e, index($e, ':') + 1,);
             $connvalues++;
         }
     }
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        if( $e->{'diagnosis'} =~ $markingsof->{'error'} ) {
-            # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
-            my $f = $1;
-            for my $r ( keys %$ndrsubject ) {
-                # Try to match with error subject strings
-                next unless $f eq $r;
-                $e->{'reason'} = $ndrsubject->{ $r };
-                last;
-            }
-        }
+        my $p = -1;
+
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        for my $q ( $markingsof->{'error'}->@* ) {
+        # Find an error message, get an error code
+            $p = index($e->{'diagnosis'}, $q);
+            last if $p > -1;
+        }
+        next unless $p > 0;
+
+        # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
+        my $f = substr($e->{'diagnosis'}, $p + 1, index($e->{'diagnosis'}, ';') - $p - 1);
+        for my $r ( keys %$ndrsubject ) {
+            # Try to match with error subject strings
+            next unless $f eq $r;
+            $e->{'reason'} = $ndrsubject->{ $r };
+            last;
+        }
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
