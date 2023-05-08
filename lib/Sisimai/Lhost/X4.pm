@@ -193,17 +193,16 @@ sub inquire {
             for my $r ( $startingof->{'rhost'}->@* ) {
                 # Find a remote host name
                 my $p1 = index($e, $r); next if $p1 == -1;
-                my $rl = length $r;
-                my $p2 = index($e, ' ', $p1 + $rl + 1);
+                my $cm = length $r;
+                my $p2 = index($e, ' ', $p1 + $cm + 1); $p2 = rindex($e, '.') if $p2 == -1;
 
-                $v->{'rhost'} = substr($e, $p1 + $rl, $p2 - $p1 - $rl);
+                $v->{'rhost'} = Sisimai::String->sweep(substr($e, $p1 + $cm, $p2 - $p1 - $cm));
                 last;
             }
         }
     }
     return undef unless $recipients;
 
-    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 

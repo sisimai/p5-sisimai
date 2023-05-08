@@ -160,9 +160,9 @@ sub inquire {
                 # Find a remote host name
                 my $p1 = index($e, $r); next if $p1 == -1;
                 my $cm = length $r;
-                my $p2 = index($e, ' ', $p1 + $cm - 1);
+                my $p2 = index($e, ' ', $p1 + $cm + 1); $p2 = rindex($e, '.') if $p2 == -1;
 
-                $v->{'rhost'} = substr($e, $p1 + $cm, $p2 - $p1 - $cm);
+                $v->{'rhost'} = Sisimai::String->sweep(substr($e, $p1 + $cm, $p2 - $p1 - $cm));
                 last;
             }
         }
