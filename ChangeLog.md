@@ -4,6 +4,14 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.15p3
+--------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Fix issue #492, Reduce an email size by removing `image/*`, `application/*`,
+    and `text/html` parts. Thanks to @gody01
+
 v4.25.15
 --------------------------------------------------------------------------------
 - release: "Thu, 22 Dec 2022 13:00:22 +0900 (JST)"
