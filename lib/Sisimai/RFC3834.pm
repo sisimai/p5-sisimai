@@ -23,7 +23,7 @@ sub inquire {
     return undef unless ref $mbody eq 'SCALAR';
 
     my $markingsof = { 'boundary' => '__SISIMAI_PSEUDO_BOUNDARY__' };
-    my $lowerlabel = ['from', 'to', 'subject', 'auto-submitted', 'precedence', 'x-apple-action', 'x-auto-response-suppress'];
+    my $lowerlabel = ['from', 'to', 'subject', 'auto-submitted', 'precedence', 'x-apple-action'];
 
     for my $e ( @$lowerlabel ) {
         # Set lower-cased value of each header related to auto-response
@@ -46,7 +46,6 @@ sub inquire {
         'subject'        => ['auto:', 'auto response:', 'automatic reply:', 'out of office:', 'out of the office:'],
         'x-apple-action' => ['vacation'],
     };
-    state $autoreply1 = { 'x-auto-response-suppress' => ['oof', 'autoreply'] };
     state $subjectset = qr{\A(?>
          (?:.+?)?re:
         |auto(?:[ ]response):
@@ -69,15 +68,6 @@ sub inquire {
         # RFC3834 Auto-Submitted and other headers
         next unless exists  $lower->{ $e };
         next unless grep { index($lower->{ $e }, $_) == 0 } $autoreply0->{ $e }->@*;
-
-        $match++;
-        last;
-    }
-    DETECT_AUTO_REPLY_MESSAGE1: for my $e ( keys %$autoreply1 ) {
-        # X-Auto-Response-Suppress: header and other headers
-        last if $match;
-        next unless exists  $lower->{ $e };
-        next unless grep { index($lower->{ $e }, $_) > -1 } $autoreply1->{ $e }->@*;
 
         $match++;
         last;
@@ -185,7 +175,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
