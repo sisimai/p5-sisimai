@@ -164,8 +164,18 @@ sub part {
         # Set pseudo UNIX From line
         $parts->[0] =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
     }
-
     $parts->[1] .= "\n" unless substr($parts->[1], -1, 1) eq "\n";
+
+    for my $e ('image/', 'application/', 'text/html') {
+        # https://github.com/sisimai/p5-sisimai/issues/492, Reduce email size
+        my $p0 = 0; my $p1 = 0; my $ep = $e eq 'text/html' ? '</html>' : "--\n";
+        while(1) {
+            # Remove each part from "Content-Type: image/..." to "--\n" (the end of each boundary)
+            $p0 = index($parts->[2], 'Content-Type: '.$e, $p0); last if $p0 < 0;
+            $p1 = index($parts->[2], $ep, $p0 + 32);            last if $p1 < 0;
+            substr($parts->[2], $p0, $p1 - $p0, '');
+        }
+    }
     $parts->[2] .= "\n";
     return $parts;
 }
