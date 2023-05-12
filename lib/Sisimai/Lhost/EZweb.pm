@@ -85,18 +85,17 @@ sub inquire {
         #    <<< 550 <******@ezweb.ne.jp>: User unknown
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A[<]([^ ]+[@][^ ]+)[>]\z/ ||
-            $e =~ /\A[<]([^ ]+[@][^ ]+)[>]:?(.*)\z/ ||
-            $e =~ /\A[ ]+Recipient: [<]([^ ]+[@][^ ]+)[>]/ ) {
+        if( Sisimai::String->aligned(\$e, ['<', '@', '>']) && (index($e, 'Recipient: <') > 1 || index($e, '<') == 0) ) {
+            #    Recipient: <******@ezweb.ne.jp> OR <***@ezweb.ne.jp>: 550 user unknown ...
+            my $p1 = index($e, '<');
+            my $p2 = index($e, '>');
 
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-
-            my $r = Sisimai::Address->s3s4($1);
-            $v->{'recipient'} = $r;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p1, $p2 - $p1));
             $recipients++;
 
         } elsif( my $f = Sisimai::RFC1894->match($e) ) {
