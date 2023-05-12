@@ -64,7 +64,8 @@ sub inquire {
         #
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
+        if( index($e, '@') > 1 && index($e, ' ') == -1 ) {
+            #if( $e =~ /\A([^ ]+[@][^ ]+)\z/ ) {
             #    ----- The following addresses had delivery problems -----
             # ********@***.biglobe.ne.jp
             if( $v->{'recipient'} ) {
@@ -73,13 +74,13 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
 
-            my $r = Sisimai::Address->s3s4($1);
-            next unless Sisimai::Address->is_emailaddress($r);
-            $v->{'recipient'} = $r;
+            #my $r = Sisimai::Address->s3s4($1);
+            next unless Sisimai::Address->is_emailaddress($e);
+            $v->{'recipient'} = $e;
             $recipients++;
 
         } else {
-            next if $e =~ /\A[^\w]/;
+            next if index($e, '--') > -1;
             $v->{'diagnosis'} .= $e.' ';
         }
     }
