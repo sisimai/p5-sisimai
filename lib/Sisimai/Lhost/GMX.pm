@@ -82,7 +82,8 @@ sub inquire {
 
         } else {
             # Get error message
-            if( $e =~ /\b[45][.]\d[.]\d\b/ || $e =~ /[<][^ ]+[@][^ ]+[>]/ || $e =~ /\b[45]\d{2}\b/ ) {
+            if( Sisimai::SMTP::Status->find($e) || Sisimai::String->aligned(\$e, ['<', '@', '>']) ) {
+                # 5.1.1 <shironeko@example.jp>... User Unknown
                 $v->{'diagnosis'} ||= $e;
 
             } else {

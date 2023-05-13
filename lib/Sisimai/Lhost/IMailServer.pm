@@ -47,15 +47,15 @@ sub inquire {
         # Original message follows.
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+)[ ](.+)[:][ ]*([^ ]+[@][^ ]+)/ ) {
+        if( index($e, ': ') > 8 && Sisimai::String->aligned(\$e, [': ', '@']) ) {
             # Unknown user: kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'diagnosis'} = $1.' '.$2;
-            $v->{'recipient'} = $3;
+            $v->{'diagnosis'} = $e;
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, rindex($e, ': ') + 2));
             $recipients++;
 
         } elsif( index($e, 'undeliverable ') == 0 ) {

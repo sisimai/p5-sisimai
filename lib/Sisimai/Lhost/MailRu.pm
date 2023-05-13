@@ -142,10 +142,13 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    my $p1 = -1; my $p2 = -1;
     if( scalar $mhead->{'received'}->@* ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $localhost0 = $1 if $mhead->{'received'}->[-1] =~ /from[ ]([^ ]+) /;
+        $p1 = index($mhead->{'received'}->[-1], 'from ');
+        $p2 = index($mhead->{'received'}->[-1], ' ', $p1 + 5);
+        $localhost0 = substr($mhead->{'received'}->[-1], $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
     }
 
     for my $e ( @$dscontents ) {
@@ -158,13 +161,16 @@ sub inquire {
             }
             delete $e->{'alterrors'};
         }
-        $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'diagnosis'} =~ s/\b__.+\z//;
+        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
+        $p1 = rindex($e->{'diagnosis'}, '__');
+        $e->{'diagnosis'} = substr($e->{'diagnosis'}, 0, $p1 - 1) if $p1 > 2;
 
         unless( $e->{'rhost'} ) {
             # Get the remote host name
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $e->{'rhost'} = $1 if $e->{'diagnosis'} =~ /host[ ]+([^ ]+)[ ]\[.+\]:[ ]/;
+            $p1 = index($e->{'diagnosis'}, 'host ');
+            $p2 = index($e->{'diagnosis'}, ' ', $p1 + 5);
+            $e->{'rhost'} = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
 
             unless( $e->{'rhost'} ) {
                 if( scalar $mhead->{'received'}->@* ) {
