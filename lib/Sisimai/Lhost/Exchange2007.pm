@@ -107,20 +107,24 @@ sub inquire {
                 $v->{'recipient'} = Sisimai::Address->s3s4($e);
                 $recipients++;
 
-            } elsif( $e =~ /([45]\d{2})[ ]([45][.]\d[.]\d+)?[ ]?.+\z/ ) {
-                # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
-                # #550 5.2.3 RESOLVER.RST.RecipSizeLimit; message too large for this recipient ##
-                # Remote Server returned '550 5.1.1 RESOLVER.ADR.RecipNotFound; not found'
-                # 3/09/2016 8:05:56 PM - Remote Server at mydomain.com (10.1.1.3) returned '550 4.4.7 QUEUE.Expired; message expired'
-                $v->{'replycode'} = int $1;
-                $v->{'status'}    = $2;
-                $v->{'diagnosis'} = $e;
-
             } else {
-                # Continued line of error messages
-                next unless $v->{'diagnosis'};
-                next unless substr($v->{'diagnosis'}, -1, 1) eq '=';
-                substr($v->{'diagnosis'}, -1, 1, $e);
+                my $cr = Sisimai::SMTP::Reply->find($e)  || '';
+                my $cs = Sisimai::SMTP::Status->find($e) || '';
+                if( $cr || $cs ) {
+                    # #550 5.1.1 RESOLVER.ADR.RecipNotFound; not found ##
+                    # #550 5.2.3 RESOLVER.RST.RecipSizeLimit; message too large for this recipient ##
+                    # Remote Server returned '550 5.1.1 RESOLVER.ADR.RecipNotFound; not found'
+                    # 3/09/2016 8:05:56 PM - Remote Server at mydomain.com (10.1.1.3) returned '550 4.4.7 QUEUE.Expired; message expired'
+                    $v->{'replycode'} = $cr;
+                    $v->{'status'}    = $cs;
+                    $v->{'diagnosis'} = $e;
+
+                } else {
+                    # Continued line of error messages
+                    next unless $v->{'diagnosis'};
+                    next unless substr($v->{'diagnosis'}, -1, 1) eq '=';
+                    substr($v->{'diagnosis'}, -1, 1, $e);
+                }
             }
         } else {
             # Diagnostic information for administrators:
