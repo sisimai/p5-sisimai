@@ -124,8 +124,7 @@ sub inquire {
             #     MSEXCH:IMS:KIJITORA CAT:EXAMPLE:EXCHANGE 0 (000C05A6) Unknown Recipient
             $v = $dscontents->[-1];
 
-            if( $e =~ /\A[ ]*([^ ]+[@][^ ]+) on[ ]*.*\z/ ||
-                $e =~ /\A[ ]*.+(?:SMTP|smtp)=([^ ]+[@][^ ]+) on[ ]*.*\z/ ) {
+            if( Sisimai::String->aligned(\$e, ['@', ' on ']) ) {
                 # kijitora@example.co.jp on Thu, 29 Apr 2007 16:51:51 -0500
                 #   kijitora@example.com on 4/29/99 9:19:59 AM
                 if( $v->{'recipient'} ) {
@@ -133,7 +132,10 @@ sub inquire {
                     push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                     $v = $dscontents->[-1];
                 }
-                $v->{'recipient'} = $1;
+
+                my $p1 = index(lc $e, 'smtp='); $p1 = $p1 == -1 ? 0 : $p1 + 5;
+                my $p2 = index($e, ' on ') + 1;
+                $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p1, $p2));
                 $v->{'msexch'} = 0;
                 $recipients++;
 
