@@ -8,7 +8,7 @@ require './t/999-values.pl';
 
 my $Package = 'Sisimai::DateTime';
 my $Methods = {
-    'class'  => ['monthname', 'dayofweek', 'parse', 'abbr2tz', 'tz2second', 'second2tz'],
+    'class'  => ['monthname', 'parse', 'abbr2tz', 'tz2second', 'second2tz'],
     'object' => [],
 };
 
@@ -37,20 +37,6 @@ MAKETEST: {
         isa_ok $month, 'ARRAY', $v.'->monthname(1)';
         is $month->[1], 'February', $v.'->monthname(1)->[1]';
         is $month->[8], 'September', $v.'->monthname(1)->[8]';
-    }
-
-    DAY_OF_WEEK: {
-        my $dayofweek = undef;
-
-        $dayofweek = $v->dayofweek(0);
-        isa_ok $dayofweek, 'ARRAY', $v.'->dayofweek(0)';
-        is $dayofweek->[1], 'Mon', $v.'->dayofweek(0)->[1]';
-        is $dayofweek->[5], 'Fri', $v.'->dayofweek(0)->[5]';
-
-        $dayofweek = $v->dayofweek(1);
-        isa_ok $dayofweek, 'ARRAY', $v.'->dayofweek(1)';
-        is $dayofweek->[0], 'Sunday', $v.'->dayofweek(1)->[0]';
-        is $dayofweek->[6], 'Saturday', $v.'->dayofweek(1)->[6]';
     }
 
     PARSE: {

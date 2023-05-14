@@ -163,21 +163,6 @@ sub monthname {
     return MonthName->{ $value };
 }
 
-sub dayofweek {
-    # List of day of week
-    # @param    [Integer] argv1 Require full name
-    # @return   [Array, String] List of day of week or day of week
-    # @example  Get the names of each day of week
-    #   dayofweek()  #=> ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    #   dayofweek(1) #=> ['Sunday', 'Monday', 'Tuesday', ...]
-    my $class = shift;
-    my $argv1 = shift // 0;
-    my $value = $argv1 ? 'full' : 'abbr';
-
-    return DayOfWeek->{ $value }->@* if wantarray;
-    return DayOfWeek->{ $value };
-}
-
 sub parse {
     # Parse date string; strptime() wrapper
     # @param    [String] argv1  Date string
