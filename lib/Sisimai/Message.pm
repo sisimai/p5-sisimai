@@ -62,16 +62,18 @@ sub rise {
         # 3. Decode and rewrite the "Subject:" header
         if( $thing->{'header'}->{'subject'} ) {
             # Decode MIME-Encoded "Subject:" header
-            my $s = $thing->{'header'}->{'subject'};
-            my $q = Sisimai::RFC2045->is_encoded(\$s) ? Sisimai::RFC2045->decodeH([split(/[ ]/, $s)]) : $s;
+            my $cv = $thing->{'header'}->{'subject'};
+            my $cq = Sisimai::RFC2045->is_encoded(\$cv) ? Sisimai::RFC2045->decodeH([split(/[ ]/, $cv)]) : $cv;
+            my $cl = lc $cq;
+            my $p1 = index($cl, 'fwd:'); $p1 = index($cl, 'fw:') if $p1 < 0;
 
             # Remove "Fwd:" string from the "Subject:" header
-            if( lc($q) =~ /\A[ \t]*fwd?:[ ]*(.*)\z/ ) {
+            if( $p1 > -1 ) {
                 # Delete quoted strings, quote symbols(>)
-                $q = $1;
+                $cq = Sisimai::String->sweep(substr($cq, index($cq, ':') + 1,));
                 s/^[>]+[ ]//gm, s/^[>]$//gm for $aftersplit->[2];
             }
-            $thing->{'header'}->{'subject'} = $q;
+            $thing->{'header'}->{'subject'} = $cq;
         }
 
         # 4. Rewrite message body for detecting the bounce reason
