@@ -70,7 +70,7 @@ sub inquire {
             ' router encountered the following error(s):',
         ],
     };
-    state $markingsof = { 'alias' => qr/\A([ ]+an undisclosed address)\z/ };
+    state $markingsof = { 'alias' => ' an undisclosed address' };
     state $recommands = [
         # transports/smtp.c:564|  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
         # transports/smtp.c:837|  string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
@@ -200,14 +200,14 @@ sub inquire {
             $ce = 1; last;
         }
 
-        if( $ce == 1 || index($e, ' an undisclosed address') > 0 ) {
+        if( $ce == 1 || index($e, $markingsof->{'alias'}) > 0 ) {
             # The line is including an email address
             if( $v->{'recipient'} ) {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
 
-            if( index($e, ' an undisclosed address') > 0 ) {
+            if( index($e, $markingsof->{'alias'}) > 0 ) {
                 # The line does not include an email address
                 # deliver.c:4549|  printed = US"an undisclosed address";
                 #   an undisclosed address
