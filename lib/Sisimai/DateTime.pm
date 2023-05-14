@@ -309,7 +309,7 @@ sub parse {
             # Time: 1:4 => 01:04:00
             $v->{'T'} = sprintf("%02d:%02d:00", $1, $2);
 
-        } elsif( $p =~ /\A[APap][Mm]\z/ ) {
+        } elsif( lc $p eq 'am' || lc $p eq 'pm' ) {
             # AM or PM
             $afternoon1 = 1;
 
@@ -521,7 +521,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

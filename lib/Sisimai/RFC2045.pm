@@ -289,7 +289,7 @@ sub makeflat {
         # - message/delivery-status, message/rfc822, message/partial, message/feedback-report
         my $istexthtml = 0;
         my $mediatypev = __PACKAGE__->parameter($e->[0]) || 'text/plain';
-        next unless $mediatypev =~ m<\A(?:text|message)/>;
+        next if index($mediatypev, 'text/') != 0 && index($mediatypev, 'message/') != 0;
 
         if( $mediatypev eq 'text/html' ) {
             # Skip text/html part when the value of Content-Type: header in an internal part of
