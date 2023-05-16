@@ -87,11 +87,14 @@ sub inquire {
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} ||= $e->{'alterrors'} || '';
 
-        if( $e->{'diagnosis'} =~ /host:[ ]+(.+?)[ ]+.+[ ]+reason:.+/ ) {
+        if( Sisimai::String->aligned(\$e->{'diagnosis'}, ['host: ', ' reason:']) ) {
             # SMTP error from remote server for TEXT command,
             #   host: smtp-in.orange.fr (193.252.22.65)
             #   reason: 550 5.2.0 Mail rejete. Mail rejected. ofr_506 [506]
-            $e->{'rhost'}   = $1;
+            my $p1 = index($e->{'diagnosis'}, 'host: ');
+            my $p2 = index($e->{'diagnosis'}, ' reason:');
+
+            $e->{'rhost'}   = Sisimai::String->sweep(substr($e->{'diagnosis'}, $p1 + 6, $p2 - $p1 - 6));
             $e->{'command'} = 'DATA' if index($e->{'diagnosis'}, 'for TEXT command') > -1;
             $e->{'spec'}    = 'SMTP' if index($e->{'diagnosis'}, 'SMTP error')       > -1;
             $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});

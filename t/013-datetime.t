@@ -8,7 +8,7 @@ require './t/999-values.pl';
 
 my $Package = 'Sisimai::DateTime';
 my $Methods = {
-    'class'  => ['to_second', 'monthname', 'dayofweek', 'parse', 'abbr2tz', 'tz2second', 'second2tz'],
+    'class'  => ['monthname', 'parse', 'abbr2tz', 'tz2second', 'second2tz'],
     'object' => [],
 };
 
@@ -25,32 +25,6 @@ MAKETEST: {
         'esc'   => $Sisimai::Test::Values::ESCChars,
     };
 
-    TO_SECOND: {
-        is $v->to_second('1d'), 86400, $v.' 1 Day';
-        is $v->to_second('2w'), (86400 * 7 * 2), $v.' 2 Weeks';
-        is $v->to_second('3f'), (86400 * 14 * 3), $v.' 3 Fortnights';
-        is int $v->to_second('4l'), 10205771, $v.' 4 Lunar months';
-        is int $v->to_second('5q'), 39446190, $v.' 5 Quarters';
-        is int $v->to_second('6y'), 189341712, $v.' 6 Years';
-        is int $v->to_second('7o'), 883594656, $v.' 7 Olympiads';
-        is int $v->to_second('gs'), 23, $v.' 23.14(e^p) seconds';
-        is int $v->to_second('pm'), 188, $v.' 3.14(PI) minutes';
-        is int $v->to_second('eh'), 9785, $v.' 2.718(e) hours';
-        is $v->to_second(-1), 0, 'The value: -1';
-        is $v->to_second(-4294967296), 0, ' The value: -4294967296';
-    }
-
-    IRREGULAR_CASE: {
-        for my $e ( @{ $L->{'false'} }, @{ $L->{'zero'} }, @{ $L->{'esc'} }, @{ $L->{'ctrl'} } ) {
-            my $r = defined $e ? sprintf("%#x", ord $e) : 'undef';
-            is $v->to_second($e), 0, '->to_second The value: '.$r; 
-        }
-
-        for my $e ( @{ $L->{'minus'} } ) {
-            is $v->to_second($e), 0, '->to_second() The value: '.$e;
-        }
-    }
-
     MONTH_NAME: {
         my $month = undef;
 
@@ -63,20 +37,6 @@ MAKETEST: {
         isa_ok $month, 'ARRAY', $v.'->monthname(1)';
         is $month->[1], 'February', $v.'->monthname(1)->[1]';
         is $month->[8], 'September', $v.'->monthname(1)->[8]';
-    }
-
-    DAY_OF_WEEK: {
-        my $dayofweek = undef;
-
-        $dayofweek = $v->dayofweek(0);
-        isa_ok $dayofweek, 'ARRAY', $v.'->dayofweek(0)';
-        is $dayofweek->[1], 'Mon', $v.'->dayofweek(0)->[1]';
-        is $dayofweek->[5], 'Fri', $v.'->dayofweek(0)->[5]';
-
-        $dayofweek = $v->dayofweek(1);
-        isa_ok $dayofweek, 'ARRAY', $v.'->dayofweek(1)';
-        is $dayofweek->[0], 'Sunday', $v.'->dayofweek(1)->[0]';
-        is $dayofweek->[6], 'Saturday', $v.'->dayofweek(1)->[6]';
     }
 
     PARSE: {

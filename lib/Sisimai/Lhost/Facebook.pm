@@ -158,10 +158,8 @@ sub inquire {
         $e->{'lhost'}   ||= $permessage->{'lhost'};
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        if( $e->{'diagnosis'} =~ /\b([A-Z]{3})[-]([A-Z])(\d)\b/ ) {
-            # Diagnostic-Code: smtp; 550 5.1.1 RCP-P2
-            $fbresponse = sprintf("%s-%s%d", $1, $2, $3);
-        }
+        my $p0 = index($e->{'diagnosis'}, '-');
+        $fbresponse = substr($e->{'diagnosis'}, $p0 - 3, 6) if $p0 > 0;
 
         SESSION: for my $r ( keys %$errorcodes ) {
             # Verify each regular expression of session errors

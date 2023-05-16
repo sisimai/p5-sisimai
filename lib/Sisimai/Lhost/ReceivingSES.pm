@@ -110,8 +110,10 @@ sub inquire {
             # Get other D.S.N. value from the error message
             # 5.1.0 - Unknown address error 550-'5.7.1 ...
             my $errormessage = $e->{'diagnosis'};
-               $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-            $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
+            my $p1 =  index($e->{'diagnosis'}, "-'"); $p1 =  index($e->{'diagnosis'}, '-"') if $p1 < 0;
+            my $p2 = rindex($e->{'diagnosis'}, "' "); $p2 = rindex($e->{'diagnosis'}, '" ') if $p2 < 0;
+            $errormessage  = substr($e->{'diagnosis'}, $p1 + 2, $p2 - $p1 - 2) if $p1 > -1 && $p2 > -1;
+            $e->{'status'} = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
         }
 
         SESSION: for my $r ( keys %$messagesof ) {

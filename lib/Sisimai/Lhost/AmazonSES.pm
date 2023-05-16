@@ -118,17 +118,19 @@ sub inquire {
                     $v->{'action'} = $e->{'action'};
                     $v->{'status'} = $e->{'status'};
 
-                    if( $e->{'diagnosticCode'} =~ /\A(.+?);[ ](.+)\z/ ) {
+                    my $p0 = index($e->{'diagnosticCode'}, '; ');
+                    if( $p0 > 3 ) {
                         # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
-                        $v->{'spec'} = uc $1;
-                        $v->{'diagnosis'} = $2;
+                        $v->{'spec'}   = uc substr($e->{'diagnosticCode'}, 0, $p0);
+                        $v->{'diagnosis'} = substr($e->{'diagnosticCode'}, $p0 + 2,);
 
                     } else {
                         $v->{'diagnosis'} = $e->{'diagnosticCode'};
                     }
 
                     # 'reportingMTA' => 'dsn; a27-23.smtp-out.us-west-2.amazonses.com',
-                    $v->{'lhost'} = $1 if $o->{'reportingMTA'} =~ /\Adsn;[ ](.+)\z/;
+                    $p0 = index($o->{'reportingMTA'}, 'dsn; ');
+                    $v->{'lhost'} = Sisimai::String->sweep(substr($o->{'reportingMTA'}, $p0 + 5,)) if $p0 == 0;
 
                     if( exists $bouncetype->{ $o->{'bounceType'} } &&
                         exists $bouncetype->{ $o->{'bounceType'} }->{ $o->{'bounceSubType'} } ) {
@@ -189,7 +191,7 @@ sub inquire {
             # "headers":[ { ...
             for my $e ( $p->{'mail'}->{'headers'}->@* ) {
                 # 'headers' => [ { 'name' => 'From', 'value' => 'neko@nyaan.jp' }, ... ],
-                next unless $e->{'name'} =~ /\A(?:From|To|Subject|Message-ID|Date)\z/;
+                next unless grep { $e->{'name'} eq $_ } ('From', 'To', 'Subject', 'Message-ID', 'Date');
                 $rfc822head->{ lc $e->{'name'} } = $e->{'value'};
             }
         }
@@ -275,8 +277,8 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
-                next unless $e =~ /\A[ ]+(.+)\z/;
-                $v->{'diagnosis'} .= ' '.$1;
+                next unless index($e, ' ') == 0;
+                $v->{'diagnosis'} .= ' '.$e;
             }
         } continue {
             # Save the current line for the next loop
@@ -287,7 +289,7 @@ sub inquire {
         for my $e ( @$dscontents ) {
             # Set default values if each value is empty.
             $e->{'lhost'} ||= $permessage->{'rhost'};
-            $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
+            $e->{ $_ }    ||= $permessage->{ $_ } || '' for keys %$permessage;
 
             $e->{'diagnosis'} =~ y/\n/ /;
             $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
@@ -296,8 +298,10 @@ sub inquire {
                 # Get other D.S.N. value from the error message
                 # 5.1.0 - Unknown address error 550-'5.7.1 ...
                 my $errormessage = $e->{'diagnosis'};
-                   $errormessage = $1 if $e->{'diagnosis'} =~ /["'](\d[.]\d[.]\d.+)['"]/;
-                $e->{'status'}   = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
+                my $p1 =  index($e->{'diagnosis'}, "-'"); $p1 =  index($e->{'diagnosis'}, '-"') if $p1 < 0;
+                my $p2 = rindex($e->{'diagnosis'}, "' "); $p2 = rindex($e->{'diagnosis'}, '" ') if $p2 < 0;
+                $errormessage  = substr($e->{'diagnosis'}, $p1 + 2, $p2 - $p1 - 2) if $p1 > -1 && $p2 > -1;
+                $e->{'status'} = Sisimai::SMTP::Status->find($errormessage) || $e->{'status'};
             }
             $e->{'replycode'} ||= Sisimai::SMTP::Reply->find($e->{'diagnosis'}, $e->{'status'});
 

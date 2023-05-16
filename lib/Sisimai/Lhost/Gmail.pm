@@ -209,28 +209,28 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    my $p1 = -1; my $p2 = -1;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         unless( $e->{'rhost'} ) {
             # Get the value of remote host
-            if( $e->{'diagnosis'} =~ /[ ]+by[ ]+([^ ]+)[.][ ]+\[(\d+[.]\d+[.]\d+[.]\d+)\][.]/ ) {
+            if( Sisimai::String->aligned(\$e->{'diagnosis'}, [' by ', '. [', ']. ']) ) {
                 # Google tried to deliver your message, but it was rejected by # the server
                 # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
-                my $hostname = $1;
-                my $ipv4addr = $2;
-                if( $hostname =~ /[-0-9a-zA-Z]+[.][a-zA-Z]+\z/ ) {
-                    # Maybe valid hostname
-                    $e->{'rhost'} = $hostname;
-                } else {
-                    # Use IP address instead
-                    $e->{'rhost'} = $ipv4addr;
-                }
+                $p1 = rindex($e->{'diagnosis'}, ' by ');
+                $p2 = rindex($e->{'diagnosis'}, '. [' );
+                my $hostname = substr($e->{'diagnosis'}, $p1 + 4, $p2 - $p1 - 4);
+                my $ipv4addr = substr($e->{'diagnosis'}, $p2 + 3, rindex($e->{'diagnosis'}, ']. ') - $p2 - 3);
+                my $lastchar = ord(uc substr($hostname, -1, 1));
+
+                $e->{'rhost'}   = $hostname if $lastchar > 64 && $lastchar < 91;
+                $e->{'rhost'} ||= $ipv4addr;
             }
         }
 
-        my $p1 = rindex($e->{'diagnosis'}, ' ');
-        my $p2 = rindex($e->{'diagnosis'}, ')');
+        $p1 = rindex($e->{'diagnosis'}, ' ');
+        $p2 = rindex($e->{'diagnosis'}, ')');
         my $statecode0 = substr($e->{'diagnosis'}, $p1 + 1, $p2 - $p1 - 1) || 0;
         if( exists $statetable->{ $statecode0 } ) {
             # (state *)

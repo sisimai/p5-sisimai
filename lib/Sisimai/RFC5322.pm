@@ -2,6 +2,7 @@ package Sisimai::RFC5322;
 use feature ':5.10';
 use strict;
 use warnings;
+use Sisimai::String;
 use constant HEADERTABLE => {
     'messageid' => ['message-id'],
     'subject'   => ['subject'],
@@ -57,17 +58,21 @@ sub received {
     # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
     return [] if index($argv1, '(qmail ') > 0 && index($argv1, ' invoked ') > 0;
 
-    if( $argv1 =~ /\Afrom[ ]+(.+)[ ]+by[ ]+([^ ]+)/ ) {
+    my $p1 = index($argv1, 'from ');
+    my $p2 = index($argv1, 'by ');
+    my $p3 = index($argv1, ' ', $p2 + 3);
+
+    if( $p1 == 0 && $p2 > 1 && $p2 < $p3 ) {
         # Received: from localhost (localhost) by nijo.example.jp (V8/cf) id s1QB5ma0018057;
         #   Wed, 26 Feb 2014 06:05:48 -0500
-        $value->{'from'} = $1;
-        $value->{'by'}   = $2;
+        $value->{'from'} = Sisimai::String->sweep(substr($argv1, $p1 + 5, $p2 - $p1 - 5));
+        $value->{'by'}   = Sisimai::String->sweep(substr($argv1, $p2 + 3, $p3 - $p2 - 3)); 
 
-    } elsif( $argv1 =~ /\bby[ ]+([^ ]+)(.+)/ ) {
+    } elsif( $p1 != 0 && $p2 > -1 ) {
         # Received: by 10.70.22.98 with SMTP id c2mr1838265pdf.3; Fri, 18 Jul 2014
         #   00:31:02 -0700 (PDT)
-        $value->{'from'} = $1.$2;
-        $value->{'by'}   = $1;
+        $value->{'from'} = Sisimai::String->sweep(substr($argv1, $p2 + 3,));
+        $value->{'by'}   = Sisimai::String->sweep(substr($argv1, $p2 + 3, $p3 - $p2 - 3));
     }
 
     if( index($value->{'from'}, ' ') > -1 ) {
@@ -81,10 +86,10 @@ sub received {
 
         for my $e ( @received ) {
             # Received: from [10.22.22.222] (smtp-gateway.kyoto.ocn.ne.jp [192.0.2.222])
-            if( $e =~ /\A[(\[]\d+[.]\d+[.]\d+[.]\d+[)\]]\z/ ) {
+            my $cv = Sisimai::String->ipv4($e) || [];
+            if( scalar @$cv > 0 ) {
                 # [192.0.2.1] or (192.0.2.1)
-                $e =~ y/[]()//d;
-                push @addrlist, $e;
+                push @addrlist, @$cv;
 
             } else {
                 # hostname

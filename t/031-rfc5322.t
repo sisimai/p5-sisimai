@@ -84,7 +84,7 @@ MAKETEST: {
         ok scalar @$v, 'scalar = '.scalar @$v;
         for my $f ( @$v ) {
             ok length $f, 'received = '.$f;
-            ok $f =~ qr/\A[-.0-9A-Za-z]+\z/, 'Regular expression';
+            ok $f =~ qr{\A[-/:.0-9A-Za-z]+\z}, 'Regular expression';
         }
     }
 
