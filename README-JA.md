@@ -298,7 +298,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2022 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2023 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================
