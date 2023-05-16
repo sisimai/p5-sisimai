@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
-[![Perl](https://img.shields.io/badge/perl-v5.10--v5.34-blue.svg)](https://www.perl.org)
+[![Perl](https://img.shields.io/badge/perl-v5.26--v5.34-blue.svg)](https://www.perl.org)
 [![CPAN](https://img.shields.io/badge/cpan-v5.0.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README-JA(日本語)**](README-JA.md)
@@ -52,7 +52,7 @@ Key features
   * 2 times higher than bounceHammer
   * Support 68 MTAs/MDAs/ESPs
   * Support Feedback Loop Message(ARF)
-  * Can detect 29 error reasons
+  * Can detect 32 error reasons
 * __Faster than bounceHammer 2.7.13p3__
   * About 2.0 times faster
 
@@ -69,7 +69,7 @@ System requirements
 More details about system requirements are available at
 [Sisimai | Getting Started](https://libsisimai.org/en/start/) page.
 
-* [Perl 5.10.1 or later](http://www.perl.org/)
+* [Perl 5.26.0 or later](http://www.perl.org/)
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
 * [__JSON__](https://metacpan.org/pod/JSON)
 

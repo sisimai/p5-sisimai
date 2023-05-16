@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
-[![Perl](https://img.shields.io/badge/perl-v5.10--v5.34-blue.svg)](https://www.perl.org)
+[![Perl](https://img.shields.io/badge/perl-v5.26--v5.34-blue.svg)](https://www.perl.org)
 [![CPAN](https://img.shields.io/badge/cpan-v5.0.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 - [**README(English)**](README.md)
@@ -52,7 +52,7 @@ Key features
   * 解析精度はbounceHammerの2倍
   * 68種類のMTA/MDA/ESPに対応
   * Feedback Loopにも対応
-  * 29種類のエラー理由を検出
+  * 32種類のエラー理由を検出
 * __bounceHammer 2.7.13p3よりも高速に解析__
   * 2.0倍程高速
 
@@ -69,7 +69,7 @@ System requirements
 シシマイの動作環境についての詳細は[Sisimai | シシマイを使ってみる](https://libsisimai.org/ja/start/)
 をご覧ください。
 
-* [Perl 5.10.1 or later](http://www.perl.org/)
+* [Perl 5.26.0 or later](http://www.perl.org/)
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
 * [__JSON__](https://metacpan.org/pod/JSON)
 
