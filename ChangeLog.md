@@ -43,7 +43,7 @@ v5.0.0(beta5)
   - #431 Add error messages in some European languages into Office365 and Domino
   - #445 Implement `Sisimai::STMP::Transcript` for parsing a transcript of session log
   - #451 Reduce substitution code by using `for`
-  - #490 Reduce 67% of regular expressions
+  - #490, #495 Reduce 82% of regular expressions
     - Implement the following methods:
       - `Sisimai::SMTP::Command->test`
       - `Sisimai::SMTP::Reply->test`
