@@ -47,7 +47,8 @@ sub inquire {
         # Original message follows.
         $v = $dscontents->[-1];
 
-        if( index($e, ': ') > 8 && Sisimai::String->aligned(\$e, [': ', '@']) ) {
+        my $p0 = index($e, ': ');
+        if( $p0 > 8 && Sisimai::String->aligned(\$e, [': ', '@']) ) {
             # Unknown user: kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
@@ -55,7 +56,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             $v->{'diagnosis'} = $e;
-            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, rindex($e, ': ') + 2));
+            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p0 + 2));
             $recipients++;
 
         } elsif( index($e, 'undeliverable ') == 0 ) {
