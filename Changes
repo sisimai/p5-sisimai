@@ -4,6 +4,18 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.16
+--------------------------------------------------------------------------------
+- release: "Tue, 16 May 2023 15:03:56 +0900 (JST)"
+- version: "4.25.16"
+- changes:
+  - Fix issue #491, Remove X-Auto-Response-Suppress: header from the inspection
+    targets of Sisimai::RFC3834 as it does not indicate an auto-response email.
+    Thanks to @whity
+  - Fix issue #492, To avoid slowing down the parsing speed, reduce the size of
+    the email by removing unnecessary parts (`text/html`, `application/*`, and
+    `image/*`). Thanks to @gody01
+
 v4.25.15
 --------------------------------------------------------------------------------
 - release: "Thu, 22 Dec 2022 13:00:22 +0900 (JST)"
