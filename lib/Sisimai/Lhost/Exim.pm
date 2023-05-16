@@ -341,9 +341,9 @@ sub inquire {
     if( scalar $mhead->{'received'}->@* ) {
         # Get the name of local MTA
         # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $p1 = index($mhead->{'received'}, 'from ');
-        $p2 = index($mhead->{'received'}, ' ', $p1 + 5);
-        $localhost0 = substr($mhead->{'received'}, $p1 + 5, $p2 - $1 - 5) if $p1 > -1 && $p2 > $p1;
+        $p1 = index($mhead->{'received'}->[-1], 'from ');
+        $p2 = index($mhead->{'received'}->[-1], ' ', $p1 + 5);
+        $localhost0 = substr($mhead->{'received'}->[-1], $p1 + 5, $p2 - $p1 - 5) if $p1 > -1 && $p2 > $p1;
     }
 
     for my $e ( @$dscontents ) {
