@@ -12,6 +12,16 @@ my $isexpected = {
     '01001' => [['5.0.922', '',    'mailboxfull',     0]],
     '01002' => [['5.0.922', '',    'mailboxfull',     0]],
     '01003' => [['5.0.934', '',    'mesgtoobig',      0]],
+    '01004' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01005' => [['5.4.1',   '550', 'userunknown',     1]],
+    '01006' => [['5.4.1',   '550', 'userunknown',     1]],
+    '01007' => [['5.4.1',   '550', 'userunknown',     1]],
+    '01008' => [['5.4.1',   '550', 'userunknown',     1]],
+    '01009' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01010' => [['5.1.1',   '550', 'userunknown',     1]],
+    '01011' => [['5.4.1',   '550', 'userunknown',     1]],
+    '01012' => [['5.4.1',   '550', 'userunknown',     1]],
+    '01013' => [['5.4.1',   '550', 'userunknown',     1]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

@@ -55,8 +55,9 @@ sub inquire {
         # http://postmaster.1and1.com/en/error-messages?ip=%1s
         $v = $dscontents->[-1];
 
-        if( index($e, ' ') < 0 && index($e, '@') > 1 ) {
-            # general@example.eu
+        if( $e =~ /\A\s*([^ ]+[@][^ ]+?)[:]?\z/ ) {
+            # general@example.eu OR
+            # the line begin with 4 space characters, end with ":" like "    neko@example.eu:"
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -84,8 +85,10 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} ||= $e->{'alterrors'} || '';
+        $e->{'command'}     = Sisimai::SMTP::Command->find($e->{'diagnosis'});
 
         if( Sisimai::String->aligned(\$e->{'diagnosis'}, ['host: ', ' reason:']) ) {
             # SMTP error from remote server for TEXT command,
@@ -151,7 +154,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
