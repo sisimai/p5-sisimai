@@ -6,8 +6,8 @@ RELEASE NOTES for Perl version of Sisimai
 
 v4.25.16p1
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Thu,  1 Feb 2024 12:25:22 +0900 (JST)"
+- version: "4.25.16p1"
 - changes:
   - #497 Tiny code improvement on `Sisimai::Lhost::EinsUndEins` to parse bounce
     emails in slightly different formats.
