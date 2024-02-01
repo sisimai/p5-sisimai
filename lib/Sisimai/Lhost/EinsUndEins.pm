@@ -55,8 +55,9 @@ sub make {
         # http://postmaster.1and1.com/en/error-messages?ip=%1s
         $v = $dscontents->[-1];
 
-        if( $e =~ /\A([^ ]+[@][^ ]+?)[:]?\z/ ) {
-            # general@example.eu
+        if( $e =~ /\A\s*([^ ]+[@][^ ]+?)[:]?\z/ ) {
+            # general@example.eu OR
+            # the line begin with 4 space characters, end with ":" like "    neko@example.eu:"
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
@@ -148,7 +149,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
