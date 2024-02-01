@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.0.0(beta5)
+v5.0.0
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -60,6 +60,14 @@ v5.0.0(beta5)
   - Add sample emails bounced from Amazon SES
     - `lhost-postfix-77.eml` (norelaying)
     - `lhost-postfix-78.eml` (contenterror)
+
+v4.25.16p1
+--------------------------------------------------------------------------------
+- release: "Thu,  1 Feb 2024 12:25:22 +0900 (JST)"
+- version: "4.25.16p1"
+- changes:
+  - #497 Tiny code improvement on `Sisimai::Lhost::EinsUndEins` to parse bounce
+    emails in slightly different formats.
 
 v4.25.16
 ---------------------------------------------------------------------------------------------------
