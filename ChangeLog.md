@@ -6,8 +6,8 @@ RELEASE NOTES for Perl version of Sisimai
 
 v5.0.0
 ---------------------------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Fri,  2 Feb 2024 23:22:22 +0900 (JST)"
+- version: "5.0.0"
 - changes:
   - **INCOMPATIBLE CHANGES SINCE SISIMAI VERSION 4**
     - Sisimai version 5 requires Perl 5.26 or later
@@ -62,14 +62,15 @@ v5.0.0
   - Add sample emails bounced from Amazon SES
     - `lhost-postfix-77.eml` (norelaying)
     - `lhost-postfix-78.eml` (contenterror)
+  - Happy Birthday to Suzu a.k.a. "Neko-dono" Michitsuna
 
 v4.25.16p1
---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 - release: "Thu,  1 Feb 2024 12:25:22 +0900 (JST)"
 - version: "4.25.16p1"
 - changes:
-  - #497 Tiny code improvement on `Sisimai::Lhost::EinsUndEins` to parse bounce
-    emails in slightly different formats.
+  - #497 Tiny code improvement on `Sisimai::Lhost::EinsUndEins` to parse bounce emails in slightly
+    different formats.
 
 v4.25.16
 ---------------------------------------------------------------------------------------------------
