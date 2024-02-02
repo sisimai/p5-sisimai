@@ -188,8 +188,8 @@ sub get {
             ['550', '5.7.1', 'daily smtp relay limit exceeded for customer'],
         ],
         'suspend' => [
-            [550, '5.2.1', 'the email account that you tried to reach is disabled'],
-            [550, '5.2.1', 'the email account that you tried to reach is inactive'],
+            ['550', '5.2.1', 'the email account that you tried to reach is disabled'],
+            ['550', '5.2.1', 'the email account that you tried to reach is inactive'],
         ],
         'syntaxerror' => [
             ['451', '4.5.0', 'smtp protocol violation, visit rfc 2821'],
