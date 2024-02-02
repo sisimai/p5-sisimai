@@ -17,7 +17,7 @@ MAKETEST: {
       authfailure badreputation blocked contenterror exceedlimit expired filtered hasmoved
       hostunknown mailboxfull mailererror mesgtoobig networkerror notaccept onhold rejected
       norelaying spamdetected virusdetected policyviolation securityerror speeding suspend
-      requireptr systemerror systemfull toomanyconn userunknown syntaxerror/
+      requireptr notcompliantrfc systemerror systemfull toomanyconn userunknown syntaxerror/
     ];
     my $statuslist = [ qw/
         2.1.5
@@ -44,6 +44,7 @@ MAKETEST: {
         'SMTP; 550 5.1.1 Requested action not taken: mailbox unavailable',
         'SMTP; 550 5.7.1 IP address blacklisted by recipient',
         'SMTP; 550 5.7.25 The ip address sending this message does not have a ptr record setup',
+        'smtp; 550-5.7.1 This message is not RFC 5322 compliant. There are multiple Subject 550-5.7.1 headers',
     ];
     my $v = '';
 

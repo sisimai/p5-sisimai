@@ -89,6 +89,7 @@ sub list {
             Reason/MesgTooBig.pm
             Reason/NoRelaying.pm
             Reason/NotAccept.pm
+            Reason/NotCompliantRFC.pm
             Reason/NetworkError.pm
             Reason/OnHold.pm
             Reason/PolicyViolation.pm
