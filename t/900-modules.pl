@@ -93,6 +93,7 @@ sub list {
             Reason/OnHold.pm
             Reason/PolicyViolation.pm
             Reason/Rejected.pm
+            Reason/RequirePTR.pm
             Reason/SecurityError.pm
             Reason/SpamDetected.pm
             Reason/Speeding.pm
