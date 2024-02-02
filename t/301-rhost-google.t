@@ -15,6 +15,7 @@ my $isexpected = {
     '05' => [['5.2.2',   '552', 'mailboxfull',     0]],
     '06' => [['5.7.25',  '550', 'requireptr',      0]],
     '07' => [['5.2.1',   '550', 'suspend',         0]],
+    '08' => [['5.7.1',   '550', 'notcompliantrfc', 0]],
 };
 
 $enginetest->($enginename, $isexpected);

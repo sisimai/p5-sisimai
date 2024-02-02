@@ -7,7 +7,8 @@ my $ModulePath = __PACKAGE__->path;
 my $GetRetried = __PACKAGE__->retry;
 my $ClassOrder = [
     [qw/MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying AuthFailure UserUnknown
-        Filtered RequirePTR Rejected HostUnknown SpamDetected Speeding TooManyConn Blocked/
+        Filtered RequirePTR NotCompliantRFC Rejected HostUnknown SpamDetected Speeding TooManyConn
+        Blocked/
     ],
     [qw/MailboxFull SpamDetected PolicyViolation VirusDetected NoRelaying AuthFailure BadReputation
         SecurityError SystemError NetworkError Speeding Suspend Expired ContentError SystemFull
@@ -34,9 +35,9 @@ sub index {
     # @return   [Array] Reason list
     return [qw/
         AuthFailure BadReputation Blocked ContentError ExceedLimit Expired Filtered HasMoved
-        HostUnknown MailboxFull MailerError MesgTooBig NetworkError NotAccept OnHold Rejected
-        NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError Speeding Suspend
-        RequirePTR SystemError SystemFull TooManyConn UserUnknown SyntaxError/
+        HostUnknown MailboxFull MailerError MesgTooBig NetworkError NotAccept NotCompliantRFC
+        OnHold Rejected NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError
+        Speeding Suspend RequirePTR SystemError SystemFull TooManyConn UserUnknown SyntaxError/
     ];
 }
 

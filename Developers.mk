@@ -32,9 +32,9 @@ INDEX_LENGTH := 24
 DESCR_LENGTH := 50
 REASON_TABLE := AuthFailure BadReputation Blocked ContentError Delivered ExceedLimit Expired \
 				Feedback Filtered HasMoved HostUnknown MailboxFull MailerError MesgTooBig \
-				NetworkError NoRelaying NotAccept OnHold PolicyViolation RequirePTR Rejected \
-				SecurityError SpamDetected Speeding Suspend SyntaxError SystemError SystemFull \
-				TooManyConn Undefined UserUnknown Vacation VirusDetected
+				NetworkError NoRelaying NotAccept NotCompliantRFC OnHold PolicyViolation \
+				RequirePTR Rejected SecurityError SpamDetected Speeding Suspend SyntaxError \
+				SystemError SystemFull TooManyConn Undefined UserUnknown Vacation VirusDetected
 # -------------------------------------------------------------------------------------------------
 .PHONY: clean
 

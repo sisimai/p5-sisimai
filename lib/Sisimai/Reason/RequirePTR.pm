@@ -99,6 +99,10 @@ C<text()> returns string: "requireptr".
 
     print Sisimai::Reason::RequirePTR->text;  # "requireptr"
 
+C<match()> returns 1 if the argument matched with patterns defined in this class.
+
+    print Sisimai::Reason::RequirePTR->match('Reverse DNS failed');   # 1
+
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
 C<true()> returns 1 if the bounce reason is "requireptr". The argument must be Sisimai::Fact object
