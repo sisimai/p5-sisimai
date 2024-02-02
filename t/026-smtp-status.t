@@ -17,7 +17,7 @@ MAKETEST: {
       authfailure badreputation blocked contenterror exceedlimit expired filtered hasmoved
       hostunknown mailboxfull mailererror mesgtoobig networkerror notaccept onhold rejected
       norelaying spamdetected virusdetected policyviolation securityerror speeding suspend
-      systemerror systemfull toomanyconn userunknown syntaxerror/
+      requireptr systemerror systemfull toomanyconn userunknown syntaxerror/
     ];
     my $statuslist = [ qw/
         2.1.5
@@ -43,6 +43,7 @@ MAKETEST: {
         'SMTP; 552-5.7.0 This message was blocked because its content presents a potential',
         'SMTP; 550 5.1.1 Requested action not taken: mailbox unavailable',
         'SMTP; 550 5.7.1 IP address blacklisted by recipient',
+        'SMTP; 550 5.7.25 The ip address sending this message does not have a ptr record setup',
     ];
     my $v = '';
 
@@ -72,7 +73,7 @@ MAKETEST: {
     is $Package->find(''), undef, '->find("") = undef';
     for my $e ( @$smtperrors ) {
         $v = $Package->find($e);
-        like $v, qr/\A[245][.]\d[.]\d\z/, '->find() returns '.$v;
+        like $v, qr/\A[245][.]\d[.]\d{1,3}\z/, '->find() returns '.$v;
         is $Package->test($v), 1, '->test() returns 1';
     }
 
