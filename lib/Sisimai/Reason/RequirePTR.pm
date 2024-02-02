@@ -80,7 +80,7 @@ Sisimai::Reason::RequirePTR - Bounce reason is "requireptr" or not.
 =head1 DESCRIPTION
 
 Sisimai::Reason::RequirePTR checks the bounce reason is "requireptr" or not. This class is called
-only Sisimai::Reason class.
+only from Sisimai::Reason class.
 
 This is the error that SMTP connection was rejected due to missing PTR record or having invalid PTR
 record at the source IP address used for the SMTP connection.
