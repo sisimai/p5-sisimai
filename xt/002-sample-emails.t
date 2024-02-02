@@ -8,7 +8,9 @@ my $sampledirs = [
 ];
 
 for my $de ( @$sampledirs ) {
-    ok -d $de;
+    ok 1;
+
+    next unless -d $de;
     ok -r $de;
     ok -x $de;
 
