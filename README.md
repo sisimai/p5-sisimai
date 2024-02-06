@@ -7,8 +7,9 @@
 > [!IMPORTANT]
 > **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
 > (Sisimai 5) since 2nd February 2024.**
-> If you want to clone the old version, see the [4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)
+> If you want to clone the old version, see the [4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)[^1]
 > branch instead. We have moved away from using both the `main` and `master` branches in our development process.
+[^1]: Specify `-b 4-stable` when you clone Sisimai 4 for example, `git clone -b 4-stable https://github.com/sisimai/p5-sisimai.git`
 
 > [!WARNING]
 > Sisimai 5 requires Perl 5.26 or later. Check the version of Perl in your system before installing/upgrading
@@ -21,7 +22,7 @@
 
 - [**README-JA(日本語)**](README-JA.md)
 - [What is Sisimai](#what-is-sisimai)
-    - [The key features of Sisimai](#key-features-of-sisimai)
+    - [The key features of Sisimai](#the-key-features-of-sisimai)
     - [Command line demo](#command-line-demo)
 - [Setting Up Sisimai](#setting-up-sisimai)
     - [System requirements](#system-requirements)
@@ -61,7 +62,7 @@ data. It is also possible to output in JSON format.
 The key features of Sisimai
 ---------------------------------------------------------------------------------------------------
 * __Decode email bounces to structured data__
-  * Sisimai provides detailed insights into bounce emails by extracting 24 key data points.
+  * Sisimai provides detailed insights into bounce emails by extracting 24 key data points.[^2]
     * __Essential information__: `timestamp`, `origin`
     * __Sender information__: `addresser`, `senderdomain`, 
     * __Recipient information__: `recipient`, `destination`, `alias`
@@ -81,6 +82,8 @@ The key features of Sisimai
   * Support [70 MTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)
   * Support Feedback Loop Message(ARF)
   * Can detect [34 bounce reasons](https://libsisimai.org/en/reason/)
+
+[^2]: The callback function allows you to add your own data under the `catch` accessor.
 
 Command line demo
 ---------------------------------------------------------------------------------------------------
@@ -130,8 +133,10 @@ This is perl 5, version 30, subversion 0 (v5.30.0) built for darwin-2level
 Copyright 1987-2019, Larry Wall
 ...
 
+$ cd /usr/local/src
 $ git clone https://github.com/sisimai/p5-sisimai.git
 $ cd ./p5-sisimai
+
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
@@ -158,21 +163,22 @@ the path to email file as a data source is available.
 use Sisimai;
 my $v = Sisimai->rise('/path/to/mbox'); # or path to Maildir/
 
-# Beginning with v4.23.0, both rise() and dump() method of Sisimai class can read bounce messages
-# from variable instead of a path to mailbox
+
+# In v4.23.0, the rise() and dump() methods of the Sisimai class can now read the entire bounce
+# email as a string, in addition to the PATH to the email file or mailbox.
 use IO::File;
 my $r = '';
 my $f = IO::File->new('/path/to/mbox'); # or path to Maildir/
 { local $/ = undef; $r = <$f>; $f->close }
 my $v = Sisimai->rise(\$r);
 
-# If you want to get bounce records which reason is "delivered", set "delivered" option to rise()
-# method like the following:
+# If you also need analysis results that are "delivered" (successfully delivered), please specify
+# the "delivered" option to the rise() method as shown below.
 my $v = Sisimai->rise('/path/to/mbox', 'delivered' => 1);
 
-# Beginning with v5.0.0, sisimai does not return the reulst which "reason" is "vaction" by default.
-# If you want to get bounce records which reason is "vacation", set "vacation" option to rise()
-# method like the following:
+# From v5.0.0, Sisimai no longer returns analysis results with a bounce reason of "vacation" by
+# default. If you also need analysis results that show a "vacation" reason, please specify the
+# "vacation" option to the rise() method as shown in the following code.
 my $v = Sisimai->rise('/path/to/mbox', 'vacation' => 1);
 
 if( defined $v ) {
@@ -211,17 +217,17 @@ my $j = Sisimai->dump('/path/to/mbox'); # or path to Maildir/
                                         # dump() is added in v4.1.27
 print $j;                               # decoded data as JSON
 
-# dump() method also accepts "delivered" option like the following code:
-my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1);
+# dump() method also accepts "delivered" and "vacation" option like the following code:
+my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1, 'vacation' => 1);
 ```
 
 Callback feature
 ---------------------------------------------------------------------------------------------------
-`c___` (`c` and three `_`s) argument of `Sisimai->rise` and `Sisimai->dump` is an array reference
-and is a parameter to receive code references for callback feature. The first element of `c___`
-argument is called at `Sisimai::Message->sift` for dealing email headers and entire message body.
-The second element of `c___` argument is called at the end of each email file parsing. The result
-generated by the callback method is accessible via `Sisimai::Fact->catch`.
+`c___` (`c` and three `_`s, looks like a fishhook) argument of `Sisimai->rise` and `Sisimai->dump`
+is an array reference and is a parameter to receive code references for callback feature. The first
+element of `c___` argument is called at `Sisimai::Message->sift` for dealing email headers and 
+entire message body. The second element of `c___` argument is called at the end of each email file
+parsing. The result generated by the callback method is accessible via `Sisimai::Fact->catch`.
 
 ### [0] For email headers and the body
 Callback method set in the first element of `c___` is called at `Sisimai::Message->sift()`.
@@ -263,7 +269,7 @@ my $code = sub {
     my $sisi = $args->{'sisi'}; # (*Array)  List of Sisimai::Fact
 
     for my $e ( @$sisi ) {
-        # Insert custom fields into the decoded results
+        # Store custom information in the "catch" accessor.
         $e->{'catch'} ||= {};
         $e->{'catch'}->{'size'} = length $$mail;
         $e->{'catch'}->{'kind'} = ucfirst $kind;
@@ -273,7 +279,7 @@ my $code = sub {
             $e->{'catch'}->{'return-path'} = $1;
         }
 
-        # Append X-Sisimai-Parsed: header and save into other path
+        # Save the original email with an additional "X-Sisimai-Parsed:" header to a different PATH.
         my $a = sprintf("X-Sisimai-Parsed: %d\n", scalar @$sisi);
         my $p = sprintf("/path/to/another/directory/sisimai-%s.eml", $e->token);
         my $f = IO::File->new($p, 'w');
@@ -315,24 +321,29 @@ Output example
 
 Differences between Sisimai 4 and Sisimai 5
 ===================================================================================================
-The following table show the differences between Sisimai 4.25.16p1 and Sisimai 5. More information
-about differences are available at [Sisimai | Differences](https://libsisimai.org/en/diff/) page.
+The following table show the differences between [Sisimai 4.25.16p1](https://github.com/sisimai/p5-sisimai/releases/tag/v4.25.16p1)
+and [Sisimai 5](https://github.com/sisimai/p5-sisimai/releases/tag/v5.0.0). More information about
+differences are available at [Sisimai | Differences](https://libsisimai.org/en/diff/) page.
 
 Features
 ---------------------------------------------------------------------------------------------------
-Beginning with v5.0.0, Sisimai requires Perl 5.26.0 or later.
+Beginning with v5.0.0, Sisimai requires **Perl 5.26.0 or later.**
 
 | Features                                             | Sisimai 4          | Sisimai 5           |
 |------------------------------------------------------|--------------------|---------------------|
 | System requirements (Perl)                           | 5.10 - 5.38        | **5.26** - 5.38     |
+| Callback feature for the original email file         | N/A                | Available[^3]       |
 | The number of MTA/ESP modules                        | 68                 | 70                  |
 | The number of detectable bounce reasons              | 29                 | 34                  |
 | Dependencies (Except core modules of Perl)           | 2 modules          | 2 modules           |
 | Source lines of code                                 | 10,800 lines       | 11,400 lines        |
 | The number of tests in t/, xt/ directory             | 270,000 tests      | 323,000 tests       | 
-| The number of bounce emails decoded per second[^1]   | 541 emails         | 660 emails          |
+| The number of bounce emails decoded per second[^4]   | 541 emails         | 660 emails          |
 | License                                              | 2 Clause BSD       | 2 Caluse BSD        |
 | Commercial support                                   | Available          | Available           |
+
+[^3]: The 2nd argument of `c___` parameter at `Sisimai->rise` method
+[^4]: macOS Monterey/1.6GHz Dual-Core Intel Core i5/16GB-RAM/Perl 5.30
 
 Decoding Method
 ---------------------------------------------------------------------------------------------------
@@ -344,17 +355,20 @@ The details of the decoded data are available at [LIBSISIMAI.ORG/EN/DATA](https:
 | Decoding method name                                 | `Sisimai->make`    | `Sisimai->rise`     |
 | Dumping method name                                  | `Sisimai->dump`    | `Sisimai->dump`     |
 | Class name of decoded object                         | `Sisimai::Data`    | `Sisimai::Fact`     |
-| Parameter name of the callback                       | `hook`             | `c___`              |
+| Parameter name of the callback                       | `hook`             | `c___`[^5]          |
 | Method name for checking the hard/soft bounce        | `softbounce`       | `hardbounce`        |
 | Decode a vacation message by default                 | Yes                | No                  |
 | Sisimai::Message returns an object                   | Yes                | No                  |
 | MIME decoding class                                  | `Sisimai::MIME`    | `Sisimai::RFC2045`  |
-| Decoding transcript of SMTP session                  | No                 | Yes                 |
+| Decoding transcript of SMTP session                  | No                 | Yes[^6]             |
+
+[^5]: `c___` looks like a fishhook
+[^6]: `Sisimai::SMTP::Transcript->rise` Method provides the feature
 
 
 MTA/ESP Module Names
 ---------------------------------------------------------------------------------------------------
-Three ESP module names have been changed at Sisimai 5. The list of the all MTA/MSP modules is
+Three ESP module names have been changed at Sisimai 5. The list of the all MTA/ESP modules is
 available at [LIBSISIMAI.ORG/EN/ENGINE](https://libsisimai.org/en/engine/)
 
 | `Sisimai::Rhost::`                                   | Sisimai 4          | Sisimai 5           |
@@ -371,13 +385,13 @@ detect is available at [LIBSISIMAI.ORG/EN/REASON](https://libsisimai.org/en/reas
 
 | Rejected due to                                      | Sisimai 4          | Sisimai 5           |
 |------------------------------------------------------|--------------------|---------------------|
-| sender domain authentication                         | `SecurityError`    | `AuthFailure`       |
-| low/bad reputation of the sender                     | `Blocked`          | `BadReputation`     |
+| sender domain authentication(SPF,DKIM,DMARC)         | `SecurityError`    | `AuthFailure`       |
+| low/bad reputation of the sender hostname/IP addr.   | `Blocked`          | `BadReputation`     |
 | missing PTR/having invalid PTR                       | `Blocked`          | `RequirePTR`        |
-| non-compliance with RFC                              | `SecurityError`    | `NotCompliantRFC`   |
+| non-compliance with RFC[^7]                          | `SecurityError`    | `NotCompliantRFC`   |
 | exceeding a rate limit or sending too fast           | `SecurityError`    | `Speeding`          |
 
-[^1]: macOS Monterey/1.6GHz Dual-Core Intel Core i5/16GB-RAM/Perl 5.30
+[^7]: RFC5322 and related RFCs
 
 
 Contributing
