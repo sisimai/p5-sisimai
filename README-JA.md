@@ -25,7 +25,7 @@
     - [コマンドラインでのデモ | command line demo](#command-line-demo)
 - [シシマイを使う準備 | Setting Up Sisimai](#setting-up-sisimai)
     - [動作環境 | System requirements](#system-requirements)
-    - [インストール | Installation](#installation)
+    - [インストール | Install](#install)
         - [CPANから | From CPAN](#from-cpan)
         - [GitHubから | From GitHub](#from-github)
 - [使い方 | Usage](#usage)
@@ -99,7 +99,7 @@ System requirements
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
 * [__JSON__](https://metacpan.org/pod/JSON)
 
-Installation
+Install
 ---------------------------------------------------------------------------------------------------
 ### From CPAN
 > [!CAUTION]

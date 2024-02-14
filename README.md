@@ -26,7 +26,7 @@
     - [Command line demo](#command-line-demo)
 - [Setting Up Sisimai](#setting-up-sisimai)
     - [System requirements](#system-requirements)
-    - [Installation](#installation)
+    - [Install](#install)
         - [From CPAN](#from-cpan)
         - [From GitHub](#from-github)
 - [Usage](#usage)
@@ -102,7 +102,7 @@ More details about system requirements are available at
 * [__Class::Accessor::Lite__](https://metacpan.org/pod/Class::Accessor::Lite)
 * [__JSON__](https://metacpan.org/pod/JSON)
 
-Installation
+Install
 ---------------------------------------------------------------------------------------------------
 ### From CPAN
 > [!CAUTION]
