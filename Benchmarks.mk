@@ -21,8 +21,8 @@ PRIVATEMAILS := $(EMAILROOTDIR)/private
 SPEEDTESTDIR := tmp/emails-for-speed-test
 
 COMMANDARGVS := -I./lib -MSisimai
-TOBEEXECUTED := 'Sisimai->make(shift, delivered => 1)' $(PUBLICMAILS)
-HOWMANYMAILS := $(PERL) $(COMMANDARGVS) -le 'print scalar @{ Sisimai->make(shift, delivered => 1) }' 
+TOBEEXECUTED := 'Sisimai->rise(shift, delivered => 1, vacation => 1)' $(PUBLICMAILS)
+HOWMANYMAILS := $(PERL) $(COMMANDARGVS) -le 'print scalar @{ Sisimai->rise(shift, delivered => 1, vacation => 1) }'
 
 # -------------------------------------------------------------------------------------------------
 .PHONY: clean
