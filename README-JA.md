@@ -12,7 +12,7 @@
 
 > [!WARNING]
 > Sisimai 5はPerl 5.26以上が必要です。インストール/アップグレードを実行する前に`perl -v`コマンドで
-> システムに入っているPerlバージョンを確認してください。
+> システムに入っているPerlのバージョンを確認してください。
 
 > [!CAUTION]
 > 2024年2月2日の時点で[Sisimai 5](https://github.com/sisimai/p5-sisimai/releases/tag/v5.0.0)は
@@ -21,7 +21,7 @@
 
 - [**README(English)**](README.md)
 - [シシマイ? | What is Sisimai](#what-is-sisimai)
-    - [主な特徴的機能 | Key features of Sisimai](#the-key-features-of-sisimai)
+    - [主な特徴的機能 | The key features of Sisimai](#the-key-features-of-sisimai)
     - [コマンドラインでのデモ | command line demo](#command-line-demo)
 - [シシマイを使う準備 | Setting Up Sisimai](#setting-up-sisimai)
     - [動作環境 | System requirements](#system-requirements)
@@ -164,7 +164,7 @@ my $v = Sisimai->rise('/path/to/mbox'); # またはMaildir/へのPATH
 # として読めるようになりました
 use IO::File;
 my $r = '';
-my $f = IO::File->new('/path/to/mbox'); # or path to Maildir/
+my $f = IO::File->new('/path/to/mbox'); # またはMaildir/へのPATH
 { local $/ = undef; $r = <$f>; $f->close }
 my $v = Sisimai->rise(\$r);
 
@@ -192,9 +192,9 @@ if( defined $v ) {
         print $e->origin;               # "/var/spool/bounce/new/1740074341.eml"
         print $e->hardbounce;           # 0
 
-        my $h = $e->damn();             # Convert to HASH reference
-        my $j = $e->dump('json');       # Convert to JSON string
-        print $e->dump('json');         # JSON formatted bounce data
+        my $h = $e->damn();             # Hashリファレンスに変換
+        my $j = $e->dump('json');       # JSON(文字列)に変換
+        print $e->dump('json');         # JSON化したバウンスメールの解析結果を表示
     }
 }
 ```
@@ -206,9 +206,9 @@ Convert to JSON
 
 ```perl
 # メールボックスまたはMaildir/から解析した結果をJSONにする
-my $j = Sisimai->dump('/path/to/mbox'); # or path to Maildir/
-                                        # dump() is added in v4.1.27
-print $j;                               # decoded data as JSON
+my $j = Sisimai->dump('/path/to/mbox'); # またはMaildir/へのPATH
+                                        # dump()メソッドはv4.1.27で追加されました
+print $j;                               # JSON化した解析結果を表示
 
 # dump()メソッドは"delivered"オプションや"vacation"オプションも指定可能
 my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1, 'vacation' => 1);
@@ -232,8 +232,8 @@ Callback feature
 use Sisimai;
 my $code = sub {
     my $args = shift;               # (*Hash)
-    my $head = $args->{'headers'};  # (*Hash)  Email headers
-    my $body = $args->{'message'};  # (String) Message body
+    my $head = $args->{'headers'};  # (*Hash)  メールヘッダー
+    my $body = $args->{'message'};  # (String) メールの本文
     my $adds = { 'x-mailer' => '', 'queue-id' => '' };
 
     if( $body =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
