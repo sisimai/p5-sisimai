@@ -2,8 +2,18 @@
 
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
-[![Perl](https://img.shields.io/badge/perl-v5.10--v5.34-blue.svg)](https://www.perl.org)
+[![Perl](https://img.shields.io/badge/perl-v5.10--v5.38-blue.svg)](https://www.perl.org)
 [![CPAN](https://img.shields.io/badge/cpan-v4.25.16-blue.svg)](https://metacpan.org/pod/Sisimai)
+
+> [!IMPORTANT]
+> **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
+> (Sisimai 5) since 2nd February 2024.**
+> If you want to clone the old version, see the [4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)
+> branch instead. We have moved away from using both the `main` and `master` branches in our development process.
+
+> [!WARNING]
+> Sisimai 5 requires Perl 5.26 or later. Check the version of Perl in your system before installing/upgrading
+> by `perl -v` command.
 
 - [**README-JA(日本語)**](README-JA.md)
 - [What is Sisimai](#what-is-sisimai)
@@ -84,7 +94,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.5.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.16.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -99,7 +109,7 @@ $ git clone https://github.com/sisimai/p5-sisimai.git
 $ cd ./p5-sisimai
 $ make install-from-local
 --> Working on .
-Configuring Sisimai-4.25.5 ... OK
+Configuring Sisimai-4.25.16 ... OK
 1 distribution installed
 ```
 
@@ -227,7 +237,7 @@ and Sisimai. More information about differences are available at
 
 | Features                                       | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
-| System requirements(Perl)                      | 5.10 - 5.14   | 5.10 - 5.32 |
+| System requirements(Perl)                      | 5.10 - 5.14   | 5.10 - 5.38 |
 | Command line tools                             | Available     | N/A         |
 | Modules for Commercial MTAs and MPSs           | N/A           | Included    |
 | WebUI/API                                      | Included      | N/A         |
@@ -280,7 +290,7 @@ Other Information
 Related sites
 -------------------------------------------------------------------------------
 * __@libsisimai__ | [Sisimai on Twitter (@libsisimai)](https://twitter.com/libsisimai)
-* __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](https://libsisimai.org/)
+* __LIBSISIMAI.ORG__ | [SISIMAI | MAIL ANALYZING INTERFACE | DECODING BOUNCES, BETTER AND FASTER.](https://libsisimai.org/)
 * __Sisimai Blog__ | [blog.libsisimai.org](http://blog.libsisimai.org/)
 * __Facebook Page__ | [facebook.com/libsisimai](https://www.facebook.com/libsisimai/)
 * __GitHub__ | [github.com/sisimai/p5-sisimai](https://github.com/sisimai/p5-sisimai)
@@ -305,7 +315,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2023 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================

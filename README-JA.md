@@ -5,6 +5,15 @@
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.34-blue.svg)](https://www.perl.org)
 [![CPAN](https://img.shields.io/badge/cpan-v4.25.16-blue.svg)](https://metacpan.org/pod/Sisimai)
 
+> [!IMPORTANT]
+> **2024年2月2日の時点でこのリポジトリのデフォルトブランチは[5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
+> (Sisimai 5)になりました。** もし古いバージョンを使いたい場合は[4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)
+> ブランチを見てください。また`main`や`master`ブランチはもうこのリポジトリでは使用していません。
+
+> [!WARNING]
+> Sisimai 5はPerl 5.26以上が必要です。インストール/アップグレードを実行する前に`perl -v`コマンドで
+> システムに入っているPerlのバージョンを確認してください。
+
 - [**README(English)**](README.md)
 - [シシマイ? | What is Sisimai](#what-is-sisimai)
     - [主な特徴的機能 | Key features](#key-features)
@@ -83,7 +92,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.5.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.16.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -97,7 +106,7 @@ $ git clone https://github.com/sisimai/p5-sisimai.git
 $ cd ./p5-sisimai
 $ sudo make install-from-local
 --> Working on .
-Configuring Sisimai-4.25.5 ... OK
+Configuring Sisimai-4.25.16 ... OK
 1 distribution installed
 ```
 
@@ -222,7 +231,7 @@ bounceHammer 2.7.13p3とSisimai(シシマイ)は下記のような違いがあ�
 
 | 機能                                           | bounceHammer  | Sisimai     |
 |------------------------------------------------|---------------|-------------|
-| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.32 |
+| 動作環境(Perl)                                 | 5.10 - 5.14   | 5.10 - 5.38 |
 | コマンドラインツール                           | あり          | 無し        |
 | 商用MTAとMSP対応解析モジュール                 | 無し          | あり(同梱)  |
 | WebUIとAPI                                     | あり          | 無し        |
@@ -273,7 +282,7 @@ Other Information
 Related sites
 -------------------------------------------------------------------------------
 * __@libsisimai__ | [Sisimai on Twitter (@libsisimai)](https://twitter.com/libsisimai)
-* __libSISIMAI.ORG__ | [Sisimai | The Successor To bounceHammer, Library to parse bounce mails](https://libsisimai.org/)
+* __LIBSISIMAI.ORG__ | [SISIMAI | MAIL ANALYZING INTERFACE | DECODING BOUNCES, BETTER AND FASTER.](https://libsisimai.org/)
 * __Sisimai Blog__ | [blog.libsisimai.org](http://blog.libsisimai.org/)
 * __Facebook Page__ | [facebook.com/libsisimai](https://www.facebook.com/libsisimai/)
 * __GitHub__ | [github.com/sisimai/p5-sisimai](https://github.com/sisimai/p5-sisimai)
@@ -298,7 +307,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2023 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================
