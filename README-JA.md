@@ -250,7 +250,7 @@ print $data->[0]->catch->{'x-mailer'};    # "Apple Mail (2.1283)"
 print $data->[0]->catch->{'queue-id'};    # "43f4KX6WR7z1xcMG"
 ```
 
-### 各メールのファイルに対して
+### [1] 各メールのファイルに対して
 `Sisimai->rise()`と`Sisimai->dump()`の両メソッドに渡せる引数`c___`(配列リファレンス)の2番目に入れた
 コードリファレンスは解析したメールのファイルごとに呼び出されます。
 
