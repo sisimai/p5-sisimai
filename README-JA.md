@@ -261,9 +261,9 @@ my $code = sub {
     my $kind = $args->{'kind'}; # (String)  Sisimai::Mail->kind
     my $mail = $args->{'mail'}; # (*String) Entire email message
     my $path = $args->{'path'}; # (String)  Sisimai::Mail->path
-    my $sisi = $args->{'sisi'}; # (*Array)  List of Sisimai::Fact
+    my $fact = $args->{'fact'}; # (*Array)  List of Sisimai::Fact
 
-    for my $e ( @$sisi ) {
+    for my $e ( @$fact ) {
         # "catch"アクセサの中に独自の情報を保存する
         $e->{'catch'} ||= {};
         $e->{'catch'}->{'size'} = length $$mail;
@@ -275,7 +275,7 @@ my $code = sub {
         }
 
         # "X-Sisimai-Parsed:"ヘッダーを追加して別のPATHに元メールを保存する
-        my $a = sprintf("X-Sisimai-Parsed: %d\n", scalar @$sisi);
+        my $a = sprintf("X-Sisimai-Parsed: %d\n", scalar @$fact);
         my $p = sprintf("/path/to/another/directory/sisimai-%s.eml", $e->token);
         my $f = IO::File->new($p, 'w');
         my $v = $$mail; $v =~ s/^(From:.+)$/$a$1/m;
