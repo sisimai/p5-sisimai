@@ -57,7 +57,7 @@ Sisimai is a library that decodes complex and diverse bounce emails and outputs 
 delivery failure, such as the reason for the bounce and the recipient email address, in structured
 data. It is also possible to output in JSON format.
 
-![](https://libsisimai.org/static/images/figure/sisimai-overview-1.png)
+![](https://libsisimai.org/static/images/figure/sisimai-overview-2.png)
 
 The key features of Sisimai
 ---------------------------------------------------------------------------------------------------

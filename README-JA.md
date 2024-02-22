@@ -54,7 +54,7 @@ What is sisimai
 Sisimai(シシマイ)は複雑で多種多様なバウンスメールを解析してバウンスした理由や宛先メールアドレスなど
 配信が失敗した結果を構造化データで出力するライブラリでJSONでの出力も可能です
 
-![](https://libsisimai.org/static/images/figure/sisimai-overview-1.png)
+![](https://libsisimai.org/static/images/figure/sisimai-overview-2.png)
 
 The key features of Sisimai
 ---------------------------------------------------------------------------------------------------
