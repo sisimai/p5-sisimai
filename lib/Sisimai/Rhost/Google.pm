@@ -53,7 +53,7 @@ sub get {
             #   from your IP address. To protect our users from spam, mail sent from your IP ad-
             #   dress has been temporarily blocked.
             #   For more information, visit https://support.google.com/mail/answer/81126
-            ['421', '4.7.0', 'our system has detected an unusual rate of unsolicited mail originating from your ip address'],
+            ['421', '4.7.0', 'has detected an unusual rate of unsolicited mail originating from your ip address'],
 
             # - 421 4.7.0 Try again later, closing connection. This usually indicates a Denial of
             #   Service (DoS) for the SMTP relay at the HELO stage.
@@ -66,7 +66,7 @@ sub get {
             # - 550 5.7.1 Our system has detected an unusual rate of unsolicited mail originating
             #   from your IP address. To protect our users from spam, mail sent from your IP ad-
             #   dress has been blocked. Review https://support.google.com/mail/answer/81126
-            ['550', '5.7.1', 'our system has detected an unusual rate of unsolicited mail originating from your ip address'],
+            ['550', '5.7.1', 'has detected an unusual rate of unsolicited mail originating from your ip address'],
 
             # - 550 5.7.1 The IP you're using to send mail is not authorized to send email directly
             #   to our servers. Please use the SMTP relay at your service provider instead. For
@@ -112,7 +112,7 @@ sub get {
             # - 552 5.7.0 Our system detected an illegal attachment on your message. Please visit
             #   http://mail.google.com/support/bin/answer.py?answer=6590 to review our attachment
             #   guidelines.
-            ['552', '5.7.0', 'our system detected an illegal attachment on your message'],
+            ['552', '5.7.0', 'detected an illegal attachment on your message'],
 
             # - 552 5.7.0 This message was blocked because its content presents a potential securi-
             #   ty issue. Please visit https://support.google.com/mail/?p=BlockedMessage to review
@@ -158,7 +158,7 @@ sub get {
             # - 550 5.7.1 Our system has detected that this message is likely unsolicited mail. To
             #   reduce the amount of spam sent to Gmail, this message has been blocked.
             #   For more information, visit https://support.google.com/mail/answer/188131
-            ['550', '5.7.1', 'our system has detected that this message is likely unsolicited mail'],
+            ['550', '5.7.1', 'has detected that this message is likely unsolicited mail'],
         ],
         'speeding' => [
             # - 450 4.2.1 The user you are trying to contact is receiving mail too quickly. Please
