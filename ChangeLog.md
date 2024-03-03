@@ -4,6 +4,19 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.0.0p1
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #464 Import the commit 78465c79970474602be796232bea345909078b9a at `t/023-mail-stdin.t`
+  - #501 Implement three SMTP status codes as follows: `5.7.28`, `5.7.29` and `5.7.30` described in
+    https://www.iana.org/assignments/smtp-enhanced-status-codes/smtp-enhanced-status-codes.xhtml
+  - #502 The values of `reason` of `postfix-28.eml` and `postfix-29.eml` in decoded results have
+    been fixed to `notcompliantrfc`.
+  - #504 Implement and update SMTP error codes, reply codes, and error messages described at Google
+    https://support.google.com/a/answer/3726730?hl=en in `Sisimai::Rhost::Google`.
+
 v5.0.0
 ---------------------------------------------------------------------------------------------------
 - release: "Fri,  2 Feb 2024 23:22:22 +0900 (JST)"
