@@ -16,15 +16,15 @@ sub make {
 }
 
 sub rise {
-    # Wrapper method for parsing mailbox or Maildir/
+    # Wrapper method for decoding mailbox or Maildir/
     # @param         [String]  argv0      Path to mbox or Maildir/
     # @param         [Hash]    argv0      or Hash (decoded JSON)
     # @param         [Handle]  argv0      or STDIN
-    # @param         [Hash]    argv1      Parser options
+    # @param         [Hash]    argv1      Options for decoding
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Integer] vacation   1 = Including "vacation" reason
     # @options argv1 [Array]   c___       Code references to a callback method for the message and each file
-    # @return        [Array]              Parsed objects
+    # @return        [Array]              Decoded objects
     # @return        [undef]              undef if the argument was wrong or an empty array
     my $class = shift;
     my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
@@ -39,7 +39,7 @@ sub rise {
     my $sisi = [];
 
     while( my $r = $mail->data->read ) {
-        # Read and parse each email file
+        # Read and decode each email file
         my $path = $mail->data->path;
         my $args = {
             'data' => $r, 'hook' => $c___->[0], 'origin' => $path,
@@ -61,15 +61,15 @@ sub rise {
 }
 
 sub dump {
-    # Wrapper method to parse mailbox/Maildir and dump as JSON
+    # Wrapper method to decode mailbox/Maildir and dump as JSON
     # @param         [String]  argv0      Path to mbox or Maildir/
     # @param         [Hash]    argv0      or Hash (decoded JSON)
     # @param         [Handle]  argv0      or STDIN
-    # @param         [Hash]    argv1      Parser options
+    # @param         [Hash]    argv1      Options for decoding
     # @options argv1 [Integer] delivered  1 = Including "delivered" reason
     # @options argv1 [Integer] vacation   1 = Including "vacation" reason
     # @options argv1 [Code]    hook       Code reference to a callback method
-    # @return        [String]             Parsed data as JSON text
+    # @return        [String]             Decoded data as JSON text
     my $class = shift;
     my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
@@ -91,8 +91,8 @@ sub dump {
 }
 
 sub engine {
-    # Parser engine list (MTA modules)
-    # @return   [Hash]     Parser engine table
+    # Decoding engine list (MTA modules)
+    # @return   [Hash]     Decoding engine table
     my $class = shift;
     my $table = {};
 
@@ -164,18 +164,37 @@ Sisimai - Mail Analyzing Interface for bounce mails.
 
 =head1 DESCRIPTION
 
-C<Sisimai> is a Mail Analyzing Interface for email bounce, is a Perl module to parse RFC5322 bounce
-mails and generating structured data as JSON from parsed results. 
+C<Sisimai> is a library that decodes complex and diverse bounce emails and outputs the results of
+the delivery failure, such as the reason for the bounce and the recipient email address, in
+structured data. It is also possible to output in JSON format.
 
 =head1 BASIC USAGE
 
 =head2 C<B<rise(I<'/path/to/mbox'>)>>
 
-C<rise> method provides feature for getting parsed data from bounced email messages like following.
+C<rise()> method provides the feature for getting decoded data as Perl Hash reference from bounced
+email messages as the following. Beginning with v4.25.6, new accessor origin which keeps the path
+to email file as a data source is available.
 
     use Sisimai;
-    my $v = Sisimai->rise('/path/to/mbox'); # or Path to Maildir/
-    #  $v = Sisimai->rise(\'From Mailer-Daemon ...');
+    my $v = Sisimai->rise('/path/to/mbox'); # or path to Maildir/
+
+    # In v4.23.0, the rise() and dump() methods of the Sisimai class can now read the entire bounce
+    # email as a string, in addition to the PATH to the email file or mailbox.
+    use IO::File;
+    my $r = '';
+    my $f = IO::File->new('/path/to/mbox'); # or path to Maildir/
+    { local $/ = undef; $r = <$f>; $f->close }
+    my $v = Sisimai->rise(\$r);
+
+    # If you also need analysis results that are "delivered" (successfully delivered), please
+    # specify the "delivered" option to the rise() method as shown below.
+    my $v = Sisimai->rise('/path/to/mbox', 'delivered' => 1);
+
+    # From v5.0.0, Sisimai no longer returns analysis results with a bounce reason of "vacation" by
+    # default. If you also need analysis results that show a "vacation" reason, please specify the
+    # "vacation" option to the rise() method as shown in the following code.
+    my $v = Sisimai->rise('/path/to/mbox', 'vacation' => 1);
 
     if( defined $v ) {
         for my $e ( @$v ) {
@@ -183,99 +202,82 @@ C<rise> method provides feature for getting parsed data from bounced email messa
             print ref $e->recipient;        # Sisimai::Address
             print ref $e->timestamp;        # Sisimai::Time
 
-            print $e->addresser->address;   # shironeko@example.org # From
-            print $e->recipient->address;   # kijitora@example.jp   # To
-            print $e->recipient->host;      # example.jp
-            print $e->deliverystatus;       # 5.1.1
-            print $e->replycode;            # 550
-            print $e->reason;               # userunknown
-            print $e->origin;               # /var/spool/bounce/2022-2222.eml
+            print $e->addresser->address;   # "michitsuna@example.org" # From
+            print $e->recipient->address;   # "kijitora@example.jp"    # To
+            print $e->recipient->host;      # "example.jp"
+            print $e->deliverystatus;       # "5.1.1"
+            print $e->replycode;            # "550"
+            print $e->reason;               # "userunknown"
+            print $e->origin;               # "/var/spool/bounce/new/1740074341.eml"
+            print $e->hardbounce;           # 1
 
-            my $h = $e->damn;               # Convert to HASH reference
+            my $h = $e->damn();             # Convert to HASH reference
             my $j = $e->dump('json');       # Convert to JSON string
-            my $y = $e->dump('yaml');       # Convert to YAML string
+            print $e->dump('json');         # JSON formatted bounce data
         }
-
-        # Dump entire list as a JSON
-        use JSON '-convert_blessed_universally';
-        my $json = JSON->new->allow_blessed->convert_blessed;
-
-        printf "%s\n", $json->encode($v);
     }
-
-If you want to get bounce records which reason is "delivered" or "vacation", set "delivered" or 
-"vacation" option to rise() method like the following:
-
-    my $v = Sisimai->rise('/path/to/mbox', 'delivered' => 1, 'vacation' => 1);
-
-Beginning with v5.0.0, sisimai does not return the reulst which "reason" is "vaction" by default.
-If you want to get bounce records which reason is "vacation", set "vacation" option to rise()
-method like the following:
-
-    my $v = Sisimai->rise('/path/to/mbox', 'vacation' => 1);
 
 =head2 C<B<dump(I<'/path/to/mbox'>)>>
 
-C<dump> method provides feature to get parsed data from bounced email as JSON.
+C<dump()> method provides the feature for getting decoded data as JSON string from bounced email
+messages like the following code:
 
     use Sisimai;
-    my $v = Sisimai->dump('/path/to/mbox'); # or Path to Maildir
-    print $v;                               # JSON string
+
+    # Get JSON string from path of a mailbox or a Maildir/
+    my $j = Sisimai->dump('/path/to/mbox'); # or path to Maildir/
+                                            # dump() is added in v4.1.27
+    print $j;                               # decoded data as JSON
+
+    # dump() method also accepts "delivered" and "vacation" option like the following code:
+    my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1, 'vacation' => 1);
 
 =head1 OTHER WAYS TO PARSE
 
 =head2 Read email data from STDIN
 
-If you want to pass email data from STDIN, specify B<STDIN> at the first argument of dump() and
-rise() method like following command:
+If you want to pass email data from STDIN, specify B<STDIN> at the first argument of C<dump()> and
+C<rise()> method like following command:
 
     % cat ./path/to/bounce.eml | perl -MSisimai -lE 'print Sisimai->dump(STDIN)'
 
 =head2 Callback Feature
 
-=head3 For email headers and the body
+C<c___> (c and three _s, looks like a fishhook) argument of Sisimai->rise and C<Sisimai->dump()> is
+an array reference and is a parameter to receive code references for callback feature. The first
+element of C<c___> argument is called at C<Sisimai::Message->sift()> for dealing email headers and
+entire message body. The second element of C<c___> argument is called at the end of each email file
+processing. The result generated by the callback method is accessible via C<Sisimai::Fact->catch>.
 
-C<hook> argument has been removed at Sisimai 5.0.0. The first element of C<c___> argument is the
-successor of C<hook> argument, and is called as a callback method for entire email message like the
-following codes:
+=head3 [0] For email headers and the body
 
+Callback method set in the first element of C<c___> is called at C<Sisimai::Message->sift()>.
+
+    use Sisimai;
     my $code = sub {
-        my $argv = shift;           # (*Hash)
-        my $head = $argv->{'head'}; # (*Hash)  Email headers
-        my $body = $argv->{'body'}; # (String) Message body
-        my $data = {
-            'queue-id'   => '',
-            'x-mailer'   => '',
-            'precedence' => '',
-        };
+        my $args = shift;               # (*Hash)
+        my $head = $args->{'headers'};  # (*Hash)  Email headers
+        my $body = $args->{'message'};  # (String) Message body
+        my $adds = { 'x-mailer' => '', 'queue-id' => '' };
 
-        for my $e ( 'x-mailer', 'precedence' ) {
-            # Read some headers of the bounced mail
-            next unless exists $head->{ $e };
-            $data->{ $e } = $head->{ $e };
+        if( $body =~ m/^X-Postfix-Queue-ID:\s*(.+)$/m ) {
+            $adds->{'queue-id'} = $1;
         }
 
-        if( $body =~ /^X-Postfix-Queue-ID:\s*(.+)$/m ) {
-            # Message body of the bounced email
-            $data->{'queue-id'} = $1;
-        }
-
-        return $data;
+        $adds->{'x-mailer'} = $head->{'x-mailer'} || '';
+        return $adds;
     };
+    my $data = Sisimai->rise('/path/to/mbox', 'c___' => [$code, undef]);
+    my $json = Sisimai->dump('/path/to/mbox', 'c___' => [$code, undef]);
 
-    my $methods = [$code, undef];
-    my $sisimai = Sisimai->rise($path, 'c___' => $methods);
-    print $sisimai->[0]->{'catch'}->{'x-mailer'};    # "Apple Mail (2.1283)"
-    print $sisimai->[0]->{'catch'}->{'queue-id'};    # "2DAEB222022E"
-    print $sisimai->[0]->{'catch'}->{'precedence'};  # "bulk"
+    print $data->[0]->catch->{'x-mailer'};    # "Apple Mail (2.1283)"
+    print $data->[0]->catch->{'queue-id'};    # "43f4KX6WR7z1xcMG"
 
-=head3 For each email file
 
-Beginning from v5.0.0, C<c___> argument is available at C<Sisimai->rise()> and C<Sisimai->dump()>
-method for callback feature. The argument C<c___> is an array reference to holding two code
-references for a callback method. The first element of the C<c___> is called at C<Sisimai::Message>
-for dealing the entire message body. The second element of the C<c___> is called at the end of each
-email file parsing.
+=head3 [1] For each email file
+
+Callback method set in the second element of C<c___> is called at C<Sisimai->rise()> method for
+dealing each email file.
 
     my $path = '/path/to/maildir';
     my $code = sub {
@@ -283,10 +285,10 @@ email file parsing.
         my $kind = $args->{'kind'}; # (String)  Sisimai::Mail->kind
         my $mail = $args->{'mail'}; # (*String) Entire email message
         my $path = $args->{'path'}; # (String)  Sisimai::Mail->path
-        my $sisi = $args->{'sisi'}; # (*Array)  List of Sisimai::Fact
+        my $fact = $args->{'fact'}; # (*Array)  List of Sisimai::Fact
 
-        for my $e ( @$sisi ) {
-            # Insert custom fields into the parsed results
+        for my $e ( @$fact ) {
+            # Store custom information in the "catch" accessor.
             $e->{'catch'} ||= {};
             $e->{'catch'}->{'size'} = length $$mail;
             $e->{'catch'}->{'kind'} = ucfirst $kind;
@@ -296,29 +298,33 @@ email file parsing.
                 $e->{'catch'}->{'return-path'} = $1;
             }
 
-            # Append X-Sisimai-Parsed: header and save into other path
-            my $a = sprintf("X-Sisimai-Parsed: %d\n", scalar @$sisi);
+            # Save the original email with an additional "X-Sisimai-Parsed:" header to a different PATH.
+            my $a = sprintf("X-Sisimai-Parsed: %d\n", scalar @$fact);
             my $p = sprintf("/path/to/another/directory/sisimai-%s.eml", $e->token);
             my $f = IO::File->new($p, 'w');
             my $v = $$mail; $v =~ s/^(From:.+)$/$a$1/m;
             print $f $v; $f->close;
         }
 
-        # Remove the email file in Maildir/ after parsed
+        # Remove the email file in Maildir/ after decoding
         unlink $path if $kind eq 'maildir';
 
         # Need to not return a value
     };
+
     my $list = Sisimai->rise($path, 'c___' => [undef, $code]);
     print $list->[0]->{'catch'}->{'size'};          # 2202
     print $list->[0]->{'catch'}->{'kind'};          # "Maildir"
     print $list->[0]->{'catch'}->{'return-path'};   # "<MAILER-DAEMON>"
 
+More information about the callback feature is available at L<https://libsisimai.org/en/usage/#callback>
+
+
 =head1 OTHER METHODS
 
 =head2 C<B<engine()>>
 
-C<engine> method provides table including parser engine list and it's description.
+C<engine> method provides table including decoding engine list and it's description.
 
     use Sisimai;
     my $v = Sisimai->engine();
@@ -352,7 +358,7 @@ C<match> method receives an error message as a string and returns a reason name 
 C<version> method returns the version number of Sisimai.
 
     use Sisimai;
-    print Sisimai->version; # 4.25.0p5
+    print Sisimai->version; # 5.0.1
 
 =head1 SEE ALSO
 
@@ -360,7 +366,7 @@ C<version> method returns the version number of Sisimai.
 
 =item L<Sisimai::Mail> - Mailbox or Maildir object
 
-=item L<Sisimai::Fact> - Parsed data object
+=item L<Sisimai::Fact> - Decoded data object
 
 =item L<https://libsisimai.org/> - Sisimai — Mail Analyzing Interface Library
 
@@ -390,7 +396,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
