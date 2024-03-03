@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.38-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.16-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.0.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 > [!IMPORTANT]
 > **2024年2月2日の時点でこのリポジトリのデフォルトブランチは[5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
@@ -14,10 +14,9 @@
 > Sisimai 5はPerl 5.26以上が必要です。インストール/アップグレードを実行する前に`perl -v`コマンドで
 > システムに入っているPerlのバージョンを確認してください。
 
-> [!CAUTION]
-> 2024年2月2日の時点で[Sisimai 5](https://github.com/sisimai/p5-sisimai/releases/tag/v5.0.0)は
-> [CPAN](https://metacpan.org/pod/Sisimai)にアップロードしていません。数ヶ月以内にはアップロードを
-> する予定ですが、それまではこのリポジトリではから`git clone`してください。
+> [!NOTE]
+> SisimaiはPerlモジュールまたはRuby Gemですが、PHPやPython、GoやRustなどJSONを読める言語であれば
+> どのような環境においても解析結果を得ることでバウンスの発生状況を捉えるのにとても有用です。
 
 - [**README(English)**](README.md)
 - [シシマイ? | What is Sisimai](#what-is-sisimai)
@@ -102,11 +101,6 @@ System requirements
 Install
 ---------------------------------------------------------------------------------------------------
 ### From CPAN
-> [!CAUTION]
-> 2024年2月2日の時点で[Sisimai 5](https://github.com/sisimai/p5-sisimai/releases/tag/v5.0.0)は
-> [CPAN](https://metacpan.org/pod/Sisimai)にアップロードしていません。数ヶ月以内にはアップロードを
-> する予定ですが、それまではこのリポジトリではから`git clone`してください。
-
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
