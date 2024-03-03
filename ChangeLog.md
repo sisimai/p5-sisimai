@@ -16,6 +16,8 @@ v5.0.0p1
     been fixed to `notcompliantrfc`.
   - #504 Implement and update SMTP error codes, reply codes, and error messages described at Google
     https://support.google.com/a/answer/3726730?hl=en in `Sisimai::Rhost::Google`.
+  - #505 Fix bugs in `t/500-fact.t` and `t/600-lhost-code.t` at the code `use YAML;`. In Sisimai,
+    The YAML module is an optional and not required. Thanks to @eserte
 
 v5.0.0
 ---------------------------------------------------------------------------------------------------
