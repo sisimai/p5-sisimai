@@ -3,7 +3,6 @@ use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai;
 use JSON;
-use YAML;
 
 my $Package = 'Sisimai::Fact';
 my $Methods = { 'class' => ['rise'], 'object' => ['softbounce', 'dump', 'damn'] };
@@ -130,25 +129,26 @@ MAKETEST: {
             isa_ok $cj->{'catch'}, 'HASH';
             is $cj->{'catch'}->{'from'}, $e->catch->{'from'}, sprintf("%s ->catch->from = %s", $ct, $e->catch->{'from'});
 
-            # YAML
-            $cv = $e->dump('yaml'); ok length $cv, sprintf("%s ->dump(yaml) = %s", $ct, substr($cv, 0, 3));
-            $cj = YAML::Load($cv);  isa_ok $cj, 'HASH';
-            is $cj->{'action'}, $e->action, sprintf("%s ->action = %s", $ct, $e->action);
-            is $cj->{'listid'}, $e->listid, sprintf("%s ->listid = %s", $ct, $e->listid);
+            eval {
+                # YAML; this module is an optional
+                require YAML;
+                $cv = $e->dump('yaml'); ok length $cv, sprintf("%s ->dump(yaml) = %s", $ct, substr($cv, 0, 3));
+                $cj = YAML::Load($cv);  isa_ok $cj, 'HASH';
+                is $cj->{'action'}, $e->action, sprintf("%s ->action = %s", $ct, $e->action);
+                is $cj->{'listid'}, $e->listid, sprintf("%s ->listid = %s", $ct, $e->listid);
 
-            is $cj->{'timestamp'},    $e->timestamp->epoch, sprintf("%s ->timestamp = %d", $ct, $cj->{'timestamp'});
-            is $cj->{'destination'},  $e->recipient->host,  sprintf("%s ->destination = %s", $ct, $cj->{'destination'});
-            is $cj->{'senderdomain'}, $e->addresser->host,  sprintf("%s ->senderdomain = %s", $ct, $cj->{'senderdomain'});
+                is $cj->{'timestamp'},    $e->timestamp->epoch, sprintf("%s ->timestamp = %d", $ct, $cj->{'timestamp'});
+                is $cj->{'destination'},  $e->recipient->host,  sprintf("%s ->destination = %s", $ct, $cj->{'destination'});
+                is $cj->{'senderdomain'}, $e->addresser->host,  sprintf("%s ->senderdomain = %s", $ct, $cj->{'senderdomain'});
 
-            isa_ok $cj->{'catch'}, 'HASH';
-            is $cj->{'catch'}->{'from'}, $e->catch->{'from'}, sprintf("%s ->catch->from = %s", $ct, $e->catch->{'from'});
+                isa_ok $cj->{'catch'}, 'HASH';
+                is $cj->{'catch'}->{'from'}, $e->catch->{'from'}, sprintf("%s ->catch->from = %s", $ct, $e->catch->{'from'});
+            };
 
             $ce += 1;
         }
 
         $ci += 1;
-
-
     }
 }
 

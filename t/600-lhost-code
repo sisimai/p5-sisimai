@@ -16,7 +16,6 @@ my $moduletest = sub {
 
     use Test::More;
     use JSON;
-    use YAML;
     use Module::Load;
     use Sisimai::Mail;
     use Sisimai::Fact;
@@ -478,17 +477,20 @@ my $moduletest = sub {
                     is $rr->recipient->address, $cj->{'recipient'}, sprintf("%s %s", $ct, $cj->{'recipient'});
                     is $rr->timestamp->epoch,   $cj->{'timestamp'}, sprintf("%s %s", $ct, $cj->{'timestamp'});
 
-                    # YAML
-                    $cv = $rr->dump('yaml');
-                    $ct = sprintf("[%s-%02d] ->dump(yaml) =", $e, $errorindex);
-                    $cj = YAML::Load($cv);
+                    eval {
+                        # YAML; this module is an optional
+                        require YAML;
+                        $cv = $rr->dump('yaml');
+                        $ct = sprintf("[%s-%02d] ->dump(yaml) =", $e, $errorindex);
+                        $cj = YAML::Load($cv);
 
-                    isa_ok $cj, 'HASH';
-                    ok length $cv,         sprintf("%s %s", $ct, substr($cv, 0, 3));
-                    is $cj->{'catch'}, '', sprintf("%s ''", $ct);
-                    is $rr->addresser->address, $cj->{'addresser'}, sprintf("%s %s", $ct, $cj->{'addresser'});
-                    is $rr->recipient->address, $cj->{'recipient'}, sprintf("%s %s", $ct, $cj->{'recipient'});
-                    is $rr->timestamp->epoch,   $cj->{'timestamp'}, sprintf("%s %s", $ct, $cj->{'timestamp'});
+                        isa_ok $cj, 'HASH';
+                        ok length $cv,         sprintf("%s %s", $ct, substr($cv, 0, 3));
+                        is $cj->{'catch'}, '', sprintf("%s ''", $ct);
+                        is $rr->addresser->address, $cj->{'addresser'}, sprintf("%s %s", $ct, $cj->{'addresser'});
+                        is $rr->recipient->address, $cj->{'recipient'}, sprintf("%s %s", $ct, $cj->{'recipient'});
+                        is $rr->timestamp->epoch,   $cj->{'timestamp'}, sprintf("%s %s", $ct, $cj->{'timestamp'});
+                    };
                 }
 
                 SOFTBOUNCE: {
