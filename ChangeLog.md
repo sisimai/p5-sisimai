@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.0.0p1
+v5.0.1
 ---------------------------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Sun,  3 Mar 2024 17:17:17 +0900 (JST)"
+- version: "5.0.1"
 - changes:
   - #464 Import the commit 78465c79970474602be796232bea345909078b9a at `t/023-mail-stdin.t`
   - #501 Implement three SMTP status codes as follows: `5.7.28`, `5.7.29` and `5.7.30` described in

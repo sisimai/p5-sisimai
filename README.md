@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.38-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.0.0-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.0.1-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 > [!IMPORTANT]
 > **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)

@@ -2,7 +2,7 @@ package Sisimai;
 use feature ':5.10';
 use strict;
 use warnings;
-use version; our $VERSION = version->declare('v5.0.0'); our $PATCHLV = 0;
+use version; our $VERSION = version->declare('v5.0.1'); our $PATCHLV = 0;
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub libname { 'Sisimai' }
 
