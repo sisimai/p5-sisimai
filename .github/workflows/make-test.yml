@@ -24,5 +24,6 @@ jobs:
         with:
           path: ./cache
           key: ${{ runner.os }}-perl-${{ matrix.perl }}-${{ hashFiles('./cpanfile.snapshot') }}
+      - run: perl -v
       - run: make test
 
