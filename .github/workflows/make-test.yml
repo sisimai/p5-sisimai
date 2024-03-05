@@ -18,6 +18,7 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
+      - run: cpanm --installdeps .
       - name: Cache the dependent modules
         uses: actions/cache@v2
         with:
