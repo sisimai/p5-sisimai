@@ -17,6 +17,7 @@ sub get {
 
     state $messagesof = {
         # https://community.mimecast.com/s/article/Mimecast-SMTP-Error-Codes-842605754
+        # https://community.mimecast.com/s/article/email-security-cloud-gateway-mimecast-smtp-error-codes
         'authfailure' => [
             # - The inbound message has been rejected because the originated IP address isn't list-
             #   ed in the published SPF records for the sending domain.
@@ -86,6 +87,12 @@ sub get {
             [554, 'maximum email size exceeded'],
         ],
         'networkerror' => [
+            # - The recipients' domains have MX records configured incorrectly
+            # - Check and remove any MX records that point to hostnames with outbound references.
+            #   Only Inbound smart hosts are supported on MX records.
+            [451, 'the incorrect hostname used for inbounds'],
+            [550, 'the incorrect hostname used for inbounds'],
+
             # - The message has too many "received headers" as it has been forwarded across multi-
             #   ple hops. Once 25 hops have been reached, the email is rejected.
             # - Investigate the email addresses in the communication pairs, to see what forwarders
@@ -145,8 +152,8 @@ sub get {
 
             # - A personal block policy is in place for the email address/domain.
             # - Remove the email address/domain from the Managed Senders list.
-            [550, 'envelope blocked – user entry'],
-            [550, 'envelope blocked – user domain entry'],
+            [550, 'envelope blocked - user entry'],
+            [550, 'envelope blocked - user domain entry'],
             [550, 'rejected by header-based manually blocked senders - block for manual block'],
 
             # - A Block Sender Policy has been applied to reject emails based on the Header From or
@@ -317,7 +324,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
