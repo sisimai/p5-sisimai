@@ -79,6 +79,7 @@ sub match {
         'spam score ',
         'spambouncer identified spam',  # SpamBouncer identified SPAM
         'spamming not allowed',
+        'too many spam complaints',
         'too much spam.',               # Earthlink
         'the email message was detected as spam',
         'the message has been rejected by spam filtering engine',
@@ -200,7 +201,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018,2020-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

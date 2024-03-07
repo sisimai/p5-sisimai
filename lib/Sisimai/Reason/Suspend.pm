@@ -30,6 +30,7 @@ sub match {
         'recipient rejected: temporarily inactive',
         'recipient suspend the service',
         'this account has been disabled or discontinued',
+        'this address no longer accepts mail',
         'this mailbox is disabled',
         'user suspended',   # http://mail.163.com/help/help_spam_16.htm
         'vdelivermail: account is locked email bounced',
@@ -100,7 +101,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023,2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -22,6 +22,7 @@ sub match {
         'boite du destinataire pleine',
         'delivery failed: over quota',
         'disc quota exceeded',
+        'diskspace quota',
         'does not have enough space',
         'exceeded storage allocation',
         'exceeding its mailbox quota',
@@ -138,7 +139,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021,2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

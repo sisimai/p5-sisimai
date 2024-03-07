@@ -25,6 +25,7 @@ sub match {
         'has been delayed',
         'it has not been collected after',
         'message expired after sitting in queue for',
+        'message expired, cannot connect to remote server',
         'message expired, connection refulsed',
         'message timed out',
         'retry time not reached for any host after a long failure period',
@@ -94,7 +95,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020,2021 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
