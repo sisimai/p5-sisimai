@@ -1,0 +1,29 @@
+name: make test
+on:
+  push:
+    branches: ["5-stable"]
+  pull_request:
+    branches: ["5-stable"]
+jobs:
+  test:
+    name: Make Test with Perl ${{ matrix.perl }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        perl: ["5.26", "5.38"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+      - run: cpanm --installdeps .
+      - name: Cache the dependent modules
+        uses: actions/cache@v2
+        with:
+          path: ./cache
+          key: ${{ runner.os }}-perl-${{ matrix.perl }}-${{ hashFiles('./cpanfile.snapshot') }}
+      - run: perl -v
+      - run: make test
+

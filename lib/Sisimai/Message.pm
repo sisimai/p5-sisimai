@@ -14,8 +14,7 @@ use Sisimai::Lhost;
 state $Fields1894 = Sisimai::RFC1894->FIELDINDEX;
 state $Fields5322 = Sisimai::RFC5322->FIELDINDEX;
 state $Fields5965 = Sisimai::RFC5965->FIELDINDEX;
-state @FieldIndex = ($Fields1894->@*, $Fields5322->@*, $Fields5965->@*);
-state $FieldTable = { map { lc $_ => $_ } @FieldIndex };
+state $FieldTable = { map { lc $_ => $_ } ($Fields1894->@*, $Fields5322->@*, $Fields5965->@*) };
 state $ReplacesAs = { 'Content-Type' => [['message/xdelivery-status', 'message/delivery-status']] };
 state $Boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
 
@@ -592,7 +591,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
