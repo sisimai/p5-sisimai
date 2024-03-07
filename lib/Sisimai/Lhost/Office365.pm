@@ -91,7 +91,7 @@ sub inquire {
         qr/\A5[.]7[.]1[23]\z/    => 'rejected',
         qr/\A5[.]7[.]124\z/      => 'rejected',
         qr/\A5[.]7[.]13[3-6]\z/  => 'rejected',
-        qr/\A5[.]7[.]23\z/       => 'blocked',
+        qr/\A5[.]7[.]23\z/       => 'authfailure',
         qr/\A5[.]7[.]25\z/       => 'networkerror',
         qr/\A5[.]7[.]50[1-3]\z/  => 'spamdetected',
         qr/\A5[.]7[.]50[4-5]\z/  => 'filtered',
@@ -272,7 +272,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
