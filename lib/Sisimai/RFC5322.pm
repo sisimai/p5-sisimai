@@ -110,6 +110,7 @@ sub received {
 
             } else {
                 # The 2nd element after the current element is a continuation of the current element.
+                last unless $index + 3 < $range;
                 push @$other, substr($recvd->[$index + 3], 0, -1);
             }
         }
