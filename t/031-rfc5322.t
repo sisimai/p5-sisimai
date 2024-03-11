@@ -78,14 +78,23 @@ MAKETEST: {
     ];
 
     for my $e ( @$received00 ) {
+        # Check each value returned from Sisimai::RFC5322->received
+        # 0: (from)   "hostname"
+        # 1: (by)     "hostname"
+        # 2: (via)    "protocol/tcp"
+        # 3: (with)   "protocol/smtp"
+        # 4: (id)     "queue-id"
+        # 5: (for)    "envelope-to address"
         my $v = $Package->received($e);
-        ok length $e, $e;
         isa_ok $v, 'ARRAY';
         ok scalar @$v, 'scalar = '.scalar @$v;
-        for my $f ( @$v ) {
-            ok length $f, 'received = '.$f;
-            ok $f =~ qr{\A[-/:.0-9A-Za-z]+\z}, 'Regular expression';
-        }
+        is scalar @$v, 6;
+        like $v->[0], qr/\A[^\s\(\)\[\];]+\z/, '->received(from) = '.$v->[0] if length $v->[0];
+        like $v->[1], qr/\A[^\s\(\)\[\];]+\z/, '->received(by) = '.$v->[1]   if length $v->[1];
+        is   $v->[2], '',                      '->received(via) = ""';
+        like $v->[3], qr/\A[^\s;]+\z/,         '->received(with) = '.$v->[3] if length $v->[3];
+        like $v->[4], qr/\A[^\s;]+\z/,         '->received(id) = '.$v->[4]   if length $v->[4];
+        like $v->[5], qr/[^\s;]+[@][^\s;]+/,   '->received(for) = '.$v->[5]  if length $v->[5];
     }
 
     my $rfc822body = <<'EOB';
