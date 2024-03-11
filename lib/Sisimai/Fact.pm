@@ -165,11 +165,12 @@ sub rise {
 
         OTHER_TEXT_HEADERS: {
             # Scan "Received:" header of the original message
-            my $recvheader = $mesg1->{'header'}->{'received'} || [];
-            if( scalar @$recvheader ) {
+            my $rr = $mesg1->{'header'}->{'received'} || [];
+            if( scalar @$rr ) {
                 # Get a local host name and a remote host name from the Received header.
-                $e->{'lhost'} ||= Sisimai::RFC5322->received($recvheader->[0])->[0];
-                $e->{'rhost'} ||= Sisimai::RFC5322->received($recvheader->[-1])->[1];
+                $p->{'rhost'} ||= Sisimai::RFC5322->received($rr->[-1])->[1] || '';
+                $p->{'lhost'}   = '' if $p->{'lhost'} eq $p->{'rhost'};
+                $p->{'lhost'} ||= Sisimai::RFC5322->received($rr->[ 0])->[0];
             }
 
             for my $v ('rhost', 'lhost') {
