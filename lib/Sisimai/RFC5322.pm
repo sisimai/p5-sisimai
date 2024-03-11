@@ -169,10 +169,15 @@ sub received {
         }
         last;
     }
+
     delete $token->{'by'}   unless defined $token->{'by'};
     delete $token->{'from'} unless defined $token->{'from'};
-    $token->{'from'} =~ y/[]//d;
-    $token->{'for'}  = Sisimai::Address->s3s4($token->{'for'}) if exists $token->{'for'};
+    $token->{'for'} = Sisimai::Address->s3s4($token->{'for'}) if exists $token->{'for'};
+    for my $e ( keys %$token ) {
+        # Delee an invalid value
+        $token->{ $e } =  '' if index($token->{ $e }, ' ') > -1;
+        $token->{ $e } =~ y/[]//d;
+    }
 
     return [
         $token->{'from'} || '',
