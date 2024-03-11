@@ -167,9 +167,9 @@ sub rise {
             # Scan "Received:" header of the original message
             my $recvheader = $mesg1->{'header'}->{'received'} || [];
             if( scalar @$recvheader ) {
-                # Get localhost and remote host name from Received header.
-                $e->{'lhost'} ||= shift Sisimai::RFC5322->received($recvheader->[0])->@*;
-                $e->{'rhost'} ||= pop   Sisimai::RFC5322->received($recvheader->[-1])->@*;
+                # Get a local host name and a remote host name from the Received header.
+                $e->{'lhost'} ||= Sisimai::RFC5322->received($recvheader->[0])->[0];
+                $e->{'rhost'} ||= Sisimai::RFC5322->received($recvheader->[-1])->[1];
             }
 
             for my $v ('rhost', 'lhost') {
@@ -305,6 +305,30 @@ sub rise {
             $o->{'replycode'}    ||= Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}) || '';
             $o->{'timestamp'}      = Sisimai::Time->new($p->{'timestamp'});
             $o->{'timezoneoffset'} = $p->{'timezoneoffset'} // '+0000';
+        }
+
+        ALIAS: while(1) {
+            # Look up the Envelope-To address from the Received: header in the original message
+            # when the recipient address is same with the value of $o->{'alias'}.
+            last if length $o->{'alias'} == 0;
+            last if $o->{'recipient'}->address ne $o->{'alias'};
+            last unless exists $rfc822data->{'received'};
+            last unless scalar $rfc822data->{'received'}->@*;
+
+            for my $er ( reverse $rfc822data->{'received'}->@* ) {
+                # Search for the string " for " from the Received: header
+                next unless index($er, ' for ') > 1;
+                my $or = Sisimai::RFC5322->received($er);
+
+                next unless scalar @$or;
+                next unless length $or->[5];
+                next unless Sisimai::Address->is_emailaddress($or->[5]);
+                next if $o->{'recipient'}->address eq $or->[5];
+
+                $o->{'alias'} = $or->[5];
+                last;
+            }
+            last;
         }
 
         REASON: {
@@ -729,7 +753,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
