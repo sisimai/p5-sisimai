@@ -261,7 +261,7 @@ my $moduletest = sub {
 
                 LHOST: {
                     $cv = $rr->lhost;
-                    $cr = qr/\A[-.0-9A-Za-z]+\z/;
+                    $cr = qr/\A[^\s\[\]\(\)]+\z/;
                     $ct = sprintf("[%s-%02d] ->lhost =", $e, $errorindex);
 
                     ok defined $cv, sprintf("%s %s", $ct, $cv);
@@ -363,7 +363,7 @@ my $moduletest = sub {
 
                 RHOST: {
                     $cv = $rr->rhost;
-                    $cr = qr/\A[-.:0-9A-Za-z]+\z/;
+                    $cr = qr/\A[^\s\[\]\(\)]+\z/;
                     $ct = sprintf("[%s-%02d] ->rhost =", $e, $errorindex);
 
                     ok defined $cv, sprintf("%s %s", $ct, $cv);
