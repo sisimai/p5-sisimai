@@ -4,6 +4,26 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.0.1p1
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #507 Migrate the CI from TravisCI to GitHub Actions
+  - Fixed an issue where constant initialization would fail on Perl 5.26
+  - `5.7.23` returned from Office365 is an error related to SPF vilation (authfailure)
+  - #508 Fixed an issue that Sisimai could not get the value of `alias` address correctly when an
+    email forwarded and bounced
+  - Update the error message patterns in `Sisimai::Rhost::Mimecast`
+  - Update the error message patterns in the followings:
+    - `AuthFailure`
+    - `Blocked`
+    - `Expired`
+    - `MailboxFull`
+    - `SecurityError`
+    - `SpamDetected`
+    - `Suspend`
+
 v5.0.1
 ---------------------------------------------------------------------------------------------------
 - release: "Sun,  3 Mar 2024 17:17:17 +0900 (JST)"
