@@ -110,7 +110,7 @@ sub inquire {
         my $rhosts = Sisimai::RFC5322->received($rheads->[-1]);
 
         $e->{'lhost'} ||= shift Sisimai::RFC5322->received($rheads->[0])->@*;
-        for my $ee ( @$rhosts ) {
+        for my $ee ( $rhosts->[0], $rhosts->[1] ) {
             # Avoid "... by m-FILTER"
             next unless rindex($ee, '.') > -1;
             $e->{'rhost'} = $ee;
@@ -156,7 +156,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

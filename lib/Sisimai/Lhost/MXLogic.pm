@@ -80,7 +80,6 @@ sub inquire {
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $localhost0 = '';    # (String) Local MTA
     my $v = undef;
 
     for my $e ( split("\n", $emailparts->[0]) ) {
@@ -126,20 +125,14 @@ sub inquire {
     }
     return undef unless $recipients;
 
-    if( scalar $mhead->{'received'}->@* ) {
-        # Get the name of local MTA
-        my $p1 = index(lc $mhead->{'received'}->[-1], 'from ');
-        my $p2 = index(   $mhead->{'received'}->[-1], ' ', $p1 + 5);
-
-        if( ($p1 + 1) * ($p2 + 1) > 0 ) {
-            # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-            $localhost0 = substr($mhead->{'received'}->[-1], $p1 + 5, $p2 - $p1 - 5);
-        }
-    }
+    # Get the name of the local MTA
+    # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
+    my $receivedby = $mhead->{'received'} || [];
+    my $recvdtoken = Sisimai::RFC5322->received($receivedby->[-1]);
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'}   ||=  $localhost0;
+        $e->{'lhost'}   ||=  $recvdtoken->[0];
         $e->{'diagnosis'} =~ s/[-]{2}.*\z//g;
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -149,12 +142,9 @@ sub inquire {
             my $p2 = index($e->{'diagnosis'}, ' ', $p1 + 5);
 
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
-            $e->{'rhost'} = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
-
-            unless( $e->{'rhost'} ) {
-                # Get localhost and remote host name from Received header.
-                $e->{'rhost'} = pop Sisimai::RFC5322->received($mhead->{'received'}->[-1])->@* if scalar $mhead->{'received'}->@*;
-            }
+            # Get the remote host name from the error message or the Received header.
+            $e->{'rhost'}   = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
+            $e->{'rhost'} ||= $recvdtoken->[1];
         }
 
         unless( $e->{'command'} ) {
@@ -232,7 +222,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
