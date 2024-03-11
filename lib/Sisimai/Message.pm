@@ -195,17 +195,26 @@ sub makemap {
     # https://gist.github.com/xtetsuji/b080e1f5551d17242f6415aba8a00239
     my $firstpairs = { $$argv0 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms };
     my $headermaps = { 'subject' => '' };
-    my $recvheader = [];
+       $headermaps->{ lc $_ } = $firstpairs->{ $_ } for keys %$firstpairs;
+    my $receivedby = [];
 
-    $headermaps->{ lc $_ } = $firstpairs->{ $_ } for keys %$firstpairs;
     for my $e ( values %$headermaps ) { s/\n\s+/ /, y/\t / /s for $e }
 
     if( index($$argv0, "\nReceived:") > 0 || index($$argv0, "Received:") == 0 ) {
         # Capture values of each Received: header
-        $recvheader = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms];
-        for my $e ( @$recvheader ) { s/\n\s+/ /, y/\n\t / /s for $e }
+        my $re = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms];
+        for my $e ( @$re ) {
+            # 1. Exclude the Received header including "(qmail ** invoked from network)".
+            # 2. Convert all consecutive spaces and line breaks into a single space character.
+            next if index($e, ' invoked by uid')       > 0;
+            next if index($e, ' invoked from network') > 0;
+
+            $e =~ s/\n\s+/ /;
+            $e =~ y/\n\t / /s;
+            push @$receivedby, $e;
+        }
     }
-    $headermaps->{'received'} = $recvheader;
+    $headermaps->{'received'} = $receivedby;
 
     return $headermaps unless $argv1;
     return $headermaps unless length $headermaps->{'subject'};
