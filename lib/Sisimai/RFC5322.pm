@@ -129,12 +129,12 @@ sub received {
         push @$alter, $e;
     }
 
-    for my $e ($token->{'from'}, $token->{'by'}) {
+    for my $e ('from', 'by') {
         # Remove square brackets from the IP address such as "[192.0.2.25]"
-        next unless defined $e;
-        next unless length  $e;
-        next unless index($e, '[') == 0;
-        $e = shift Sisimai::String->ipv4($e)->@* || '';
+        next unless defined $token->{ $e };
+        next unless length  $token->{ $e };
+        next unless index($token->{ $e }, '[') == 0;
+        $token->{ $e } = shift Sisimai::String->ipv4($token->{ $e })->@* || '';
     }
 
     $token->{'from'} ||= '';
