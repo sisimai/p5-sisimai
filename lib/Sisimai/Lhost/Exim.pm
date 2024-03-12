@@ -343,9 +343,7 @@ sub inquire {
     my $recvdtoken = Sisimai::RFC5322->received($receivedby->[-1]);
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        $e->{'lhost'} ||= $recvdtoken->[0];
-
+        # Check the error message, the rhost, the lhost, and the smtp command.
         if( ! $e->{'diagnosis'} && length($boundary00) > 0 ) {
             # Empty Diagnostic-Code: or error message
             # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -395,6 +393,7 @@ sub inquire {
             $e->{'rhost'}   = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
             $e->{'rhost'} ||= $recvdtoken->[1];
         }
+        $e->{'lhost'} ||= $recvdtoken->[0];
 
         unless( $e->{'command'} ) {
             # Get the SMTP command name for the session

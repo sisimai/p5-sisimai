@@ -148,6 +148,7 @@ sub inquire {
     my $p1 = -1; my $p2 = -1;
 
     for my $e ( @$dscontents ) {
+        # Check the error message, the rhost, the lhost, and the smtp command.
         if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} ||= $e->{'alterrors'};
