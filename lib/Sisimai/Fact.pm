@@ -176,10 +176,10 @@ sub rise {
             for my $v ('rhost', 'lhost') {
                 # Check and rewrite each host name
                 $p->{ $v } =  [split('@', $p->{ $v })]->[-1] if index($p->{ $v }, '@') > -1;
-                y/[]()//d, s/\A.+=// for $p->{ $v };    # Remove [] and (), and strings before "="
+                y/[]()//d, s/\A.+=// for $p->{ $v };                    # Remove [], (), and strings before "="
                 chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq "\r";   # Remove CR at the end of the value
 
-                # Check space character in each value and get the first element
+                # Check a space character in each value and get the first element
                 $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if rindex($p->{ $v }, ' ') > -1;
                 chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq '.';    # Remove "." at the end of the value
             }
