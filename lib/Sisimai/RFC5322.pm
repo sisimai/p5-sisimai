@@ -175,7 +175,7 @@ sub received {
     delete $token->{'from'} unless defined $token->{'from'};
     $token->{'for'} = Sisimai::Address->s3s4($token->{'for'}) if exists $token->{'for'};
     for my $e ( keys %$token ) {
-        # Delee an invalid value
+        # Delete an invalid value
         $token->{ $e } =  '' if index($token->{ $e }, ' ') > -1;
         $token->{ $e } =~ y/[]//d;
     }
