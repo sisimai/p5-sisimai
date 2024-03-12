@@ -93,6 +93,7 @@ sub received {
         my $f = lc $e;
 
         $token->{ $f } = $recvd->[$index + 1] || next;
+        $token->{ $f } = lc $token->{ $f };
         chop $token->{ $f } if index($token->{ $f }, ';') > 1;
 
         next unless $f eq 'from';
