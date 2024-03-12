@@ -148,6 +148,7 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'replycode'} = Sisimai::SMTP::Reply->find($e->{'diagnosis'}) || '';
         $e->{'status'}    = substr($e->{'replycode'}, 0, 1).'.0.0' if length $e->{'replycode'} == 3;
+        $e->{'command'} ||= $thecommand;
 
         if( $e->{'status'} eq '5.0.0' || $e->{'status'} eq '4.0.0' ) {
             # Get the value of D.S.N. from the error message or the value of Diagnostic-Code header.
@@ -162,8 +163,6 @@ sub inquire {
                 $e->{'status'} = Sisimai::SMTP::Status->code('expired') || $e->{'status'};
             }
         }
-        $e->{'lhost'}   ||= $permessage->{'rhost'};
-        $e->{'command'} ||= $thecommand;
     }
     return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
 }
@@ -205,7 +204,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

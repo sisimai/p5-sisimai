@@ -113,7 +113,6 @@ sub inquire {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'} ||= $permessage->{'rhost'};
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
 
         $e->{'diagnosis'} =  Sisimai::String->sweep($e->{'diagnosis'});
@@ -160,7 +159,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

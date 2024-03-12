@@ -155,7 +155,6 @@ sub inquire {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'lhost'}   ||= $permessage->{'lhost'};
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
         my $p0 = index($e->{'diagnosis'}, '-');
@@ -226,7 +225,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

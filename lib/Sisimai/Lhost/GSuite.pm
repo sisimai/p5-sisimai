@@ -140,7 +140,6 @@ sub inquire {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'lhost'} ||= $permessage->{'rhost'};
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
 
         if( exists $anotherset->{'diagnosis'} && $anotherset->{'diagnosis'} ) {
@@ -228,7 +227,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
