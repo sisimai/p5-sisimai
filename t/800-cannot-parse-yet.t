@@ -8,8 +8,8 @@ plan 'skip_all', sprintf("%s does not exist", $CannotParse) unless -d $CannotPar
 MAKETEST: {
     SISIMAI: {
         use Sisimai;
-        my $v = Sisimai->make($CannotParse);
-        is $v, undef, 'Sisimai->make() returns undef';
+        my $v = Sisimai->rise($CannotParse);
+        is $v, undef, 'Sisimai->rise() returns undef';
     }
 
     MAILDIR: {

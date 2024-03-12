@@ -152,7 +152,7 @@ MAKETEST: {
     }
 
     # Forwarded and bounced
-    my $fw = Sisimai->make('set-of-emails/maildir/bsd/lhost-sendmail-60.eml');
+    my $fw = Sisimai->rise('set-of-emails/maildir/bsd/lhost-sendmail-60.eml');
     isa_ok $fw, 'ARRAY';
     isa_ok $fw->[0], 'Sisimai::Fact';
     is $fw->[0]->alias, 'neko@libsisimai.org', '->alias = neko@libsisimai.org';
