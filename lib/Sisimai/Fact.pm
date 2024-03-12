@@ -331,6 +331,7 @@ sub rise {
             }
             last;
         }
+        $o->{'alias'} = '' if $o->{'alias'} eq $o->{'recipient'}->{'address'};
 
         REASON: {
             # Decide the reason of email bounce
