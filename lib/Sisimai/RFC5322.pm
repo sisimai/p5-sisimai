@@ -185,7 +185,7 @@ sub received {
     for my $e ( keys %$token ) {
         # Delete an invalid value
         $token->{ $e } =  '' if index($token->{ $e }, ' ') > -1;
-        $token->{ $e } =~ y/[]//d;
+        $token->{ $e } =~ y/[]//d;  # Remove "[]" from the IP address
     }
 
     return [
