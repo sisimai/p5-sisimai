@@ -3,6 +3,7 @@ use feature ':5.10';
 use strict;
 use warnings;
 use Sisimai::String;
+use Sisimai::Address;
 use constant HEADERTABLE => {
     'messageid' => ['message-id'],
     'subject'   => ['subject'],
@@ -49,84 +50,148 @@ sub LONGFIELDS {
 sub received {
     # Convert Received headers to a structured data
     # @param    [String] argv1  Received header
-    # @return   [Array]         Received header as a structured data
+    # @return   [Array]         Each item in the Received header order by the following:
+    #                           0: (from)   "hostname"
+    #                           1: (by)     "hostname"
+    #                           2: (via)    "protocol/tcp"
+    #                           3: (with)   "protocol/smtp"
+    #                           4: (id)     "queue-id"
+    #                           5: (for)    "envelope-to address"
     my $class = shift;
     my $argv1 = shift || return [];
-    my $hosts = [];
-    my $value = { 'from' => '', 'by'   => '' };
 
     # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
-    return [] if index($argv1, '(qmail ') > 0 && index($argv1, ' invoked ') > 0;
+    return [] if ref $argv1;
+    return [] if index($argv1, ' invoked by uid')       > 0;
+    return [] if index($argv1, ' invoked from network') > 0;
 
-    my $p1 = index($argv1, 'from ');
-    my $p2 = index($argv1, 'by ');
-    my $p3 = index($argv1, ' ', $p2 + 3);
+    # - https://datatracker.ietf.org/doc/html/rfc5322
+    #   received        =   "Received:" *received-token ";" date-time CRLF
+    #   received-token  =   word / angle-addr / addr-spec / domain
+    #
+    # - Appendix A.4. Message with Trace Fields
+    #   Received:
+    #       from x.y.test
+    #       by example.net
+    #       via TCP
+    #       with ESMTP
+    #       id ABC12345
+    #       for <mary@example.net>;  21 Nov 1997 10:05:43 -0600
+    my $recvd = [split(' ', $argv1)];
+    my $label = [qw|from by via with id for|];
+    my $token = {};
+    my $other = [];
+    my $alter = [];
+    my $right = 0;
+    my $range = scalar @$recvd;
+    my $index = -1;
 
-    if( $p1 == 0 && $p2 > 1 && $p2 < $p3 ) {
-        # Received: from localhost (localhost) by nijo.example.jp (V8/cf) id s1QB5ma0018057;
-        #   Wed, 26 Feb 2014 06:05:48 -0500
-        $value->{'from'} = Sisimai::String->sweep(substr($argv1, $p1 + 5, $p2 - $p1 - 5));
-        $value->{'by'}   = Sisimai::String->sweep(substr($argv1, $p2 + 3, $p3 - $p2 - 3)); 
+    for my $e ( @$recvd ) {
+        # Look up each label defined in $label from Received header
+        last unless ++$index < $range; my $f = lc $e;
+        next unless grep { $f eq $_ } @$label;
 
-    } elsif( $p1 != 0 && $p2 > -1 ) {
-        # Received: by 10.70.22.98 with SMTP id c2mr1838265pdf.3; Fri, 18 Jul 2014
-        #   00:31:02 -0700 (PDT)
-        $value->{'from'} = Sisimai::String->sweep(substr($argv1, $p2 + 3,));
-        $value->{'by'}   = Sisimai::String->sweep(substr($argv1, $p2 + 3, $p3 - $p2 - 3));
+        $token->{ $f } =  lc $recvd->[$index + 1] || next;
+        $token->{ $f } =~ y/();//d;
+
+        next unless $f eq 'from';
+        last unless $index + 2 < $range;
+        next unless index($recvd->[$index + 2], '(') == 0;
+
+        # Get and keep a hostname in the comment as follows:
+        # from mx1.example.com (c213502.kyoto.example.ne.jp [192.0.2.135]) by mx.example.jp (V8/cf)
+        # [
+        #   "from",                         # index + 0
+        #   "mx1.example.com",              # index + 1
+        #   "(c213502.kyoto.example.ne.jp", # index + 2
+        #   "[192.0.2.135])",               # index + 3
+        #   "by",
+        #   "mx.example.jp",
+        #   "(V8/cf)",
+        #   ...
+        # ]
+        # The 2nd element after the current element is NOT a continuation of the current element
+        # such as "(c213502.kyoto.example.ne.jp)"
+        push @$other, $recvd->[$index + 2]; $other->[0] =~ y/();//d;
+
+        # The 2nd element after the current element is a continuation of the current element.
+        # such as "(c213502.kyoto.example.ne.jp", "[192.0.2.135])"
+        last unless $index + 3 < $range;
+        push @$other, $recvd->[$index + 3];
+        $other->[1] =~ y/();//d;
     }
 
-    if( index($value->{'from'}, ' ') > -1 ) {
-        # Received: from [10.22.22.222] (smtp.kyoto.ocn.ne.jp [192.0.2.222]) (authenticated bits=0)
-        #   by nijo.example.jp (V8/cf) with ESMTP id s1QB5ka0018055; Wed, 26 Feb 2014 06:05:47 -0500
-        my @received = split(' ', $value->{'from'});
-        my @namelist;
-        my @addrlist;
-        my $hostname = '';
-        my $hostaddr = '';
-
-        for my $e ( @received ) {
-            # Received: from [10.22.22.222] (smtp-gateway.kyoto.ocn.ne.jp [192.0.2.222])
-            my $cv = Sisimai::String->ipv4($e) || [];
-            if( scalar @$cv > 0 ) {
-                # [192.0.2.1] or (192.0.2.1)
-                push @addrlist, @$cv;
-
-            } else {
-                # hostname
-                $e =~ y/()//d;
-                push @namelist, $e;
-            }
-        }
-
-        for my $e ( @namelist ) {
-            # 1. Hostname takes priority over all other IP addresses
-            next unless rindex($e, '.') > -1;
-            $hostname = $e;
-            last;
-        }
-
-        unless( $hostname ) {
-            # 2. Use IP address as a remote host name
-            for my $e ( @addrlist ) {
-                # Skip if the address is a private address
-                next if index($e, '10.') == 0;
-                next if index($e, '127.') == 0;
-                next if index($e, '192.168.') == 0;
-                next if $e =~ /\A172[.](?:1[6-9]|2[0-9]|3[0-1])[.]/;
-                $hostaddr = $e;
-                last;
-            }
-        }
-        $value->{'from'} = $hostname || $hostaddr || $addrlist[-1];
+    for my $e ( @$other ) {
+        # Check alternatives in $other, and then delete uninformative values.
+        next unless $e;
+        next if length $e < 4;
+        next if $e eq 'unknown';
+        next if $e eq 'localhost';
+        next if $e eq '[127.0.0.1]';
+        next if $e eq '[IPv6:::1]';
+        next if index($e, '.') == -1;
+        next if index($e, '=') >   1;
+        push @$alter, $e;
     }
 
     for my $e ('from', 'by') {
-        # Copy entries into $hosts
-        next unless defined $value->{ $e };
-        $value->{ $e } =~ y/()[];?//d;
-        push @$hosts, $value->{ $e };
+        # Remove square brackets from the IP address such as "[192.0.2.25]"
+        next unless defined $token->{ $e };
+        next unless length  $token->{ $e };
+        next unless index($token->{ $e }, '[') == 0;
+        $token->{ $e } = shift Sisimai::String->ipv4($token->{ $e })->@* || '';
     }
-    return $hosts;
+
+    $token->{'from'} ||= '';
+    while(1) {
+        # Prefer hostnames over IP addresses, except for localhost.localdomain and similar.
+        last if $token->{'from'} eq 'localhost';
+        last if $token->{'from'} eq 'localhost.localdomain';
+        last if index($token->{'from'}, '.') < 0;   # A hostname without a domain name
+        last if scalar Sisimai::String->ipv4($token->{'from'})->@*;
+
+        # No need to rewrite $token->{'from'}
+        $right = 1;
+        last;
+    }
+    while(1) {
+        # Try to rewrite uninformative hostnames and IP addresses in $token->{'from'}
+        last if $right;                 # There is no need to rewrite
+        last if scalar @$alter == 0;    # There is no alternative to rewriting
+        last if index($alter->[0], $token->{'from'}) > -1;
+
+        if( index($token->{'from'}, 'localhost') == 0 ) {
+            # localhost or localhost.localdomain
+            $token->{'from'} = $alter->[0];
+
+        } elsif( index($token->{'from'}, '.') == -1 ) {
+            # A hostname without a domain name such as "mail", "mx", or "mbox"
+            $token->{'from'} = $alter->[0] if index($alter->[0], '.') > 0;
+
+        } else {
+            # An IPv4 address
+            $token->{'from'} = $alter->[0];
+        }
+        last;
+    }
+
+    delete $token->{'by'}   unless defined $token->{'by'};
+    delete $token->{'from'} unless defined $token->{'from'};
+    $token->{'for'} = Sisimai::Address->s3s4($token->{'for'}) if exists $token->{'for'};
+    for my $e ( keys %$token ) {
+        # Delete an invalid value
+        $token->{ $e } =  '' if index($token->{ $e }, ' ') > -1;
+        $token->{ $e } =~ y/[]//d;  # Remove "[]" from the IP address
+    }
+
+    return [
+        $token->{'from'} || '',
+        $token->{'by'}   || '',
+        $token->{'via'}  || '',
+        $token->{'with'} || '',
+        $token->{'id'}   || '',
+        $token->{'for'}  || '',
+    ];
 }
 
 sub part {
@@ -203,16 +268,21 @@ Sisimai::RFC5322 provide methods for checking email address.
 
 =head2 C<B<received(I<String>)>>
 
-C<received()> returns array reference which include host names in the Received header.
+C<received()> returns array reference including elements in the Received header.
 
-    my $v = 'from mx.example.org (c1.example.net [192.0.2.1]) by mx.example.jp';
+    my $v = 'from mx.example.org (c1.example.org [192.0.2.1]) by neko.libsisimai.org
+             with ESMTP id neko20180202nyaan for <michitsuna@nyaan.jp>; ...';
     my $r = Sisimai::RFC5322->received($v);
 
     warn Dumper $r;
     $VAR1 = [
-        'mx.example.org',
-        'mx.example.jp'
-    ];
+          'mx.example.org',
+          'neko.libsisimai.org',
+          '',
+          'ESMTP',
+          'neko20180202nyaan',
+          'michitsuna@nyaan.jp'
+        ];
 
 =head2 C<B<part(I<String>, I<Array>)>>
 
@@ -236,7 +306,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

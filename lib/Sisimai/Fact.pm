@@ -165,20 +165,21 @@ sub rise {
 
         OTHER_TEXT_HEADERS: {
             # Scan "Received:" header of the original message
-            my $recvheader = $mesg1->{'header'}->{'received'} || [];
-            if( scalar @$recvheader ) {
-                # Get localhost and remote host name from Received header.
-                $e->{'lhost'} ||= shift Sisimai::RFC5322->received($recvheader->[0])->@*;
-                $e->{'rhost'} ||= pop   Sisimai::RFC5322->received($recvheader->[-1])->@*;
+            my $rr = $mesg1->{'header'}->{'received'} || [];
+            if( scalar @$rr ) {
+                # Get a local host name and a remote host name from the Received header.
+                $p->{'rhost'} ||= Sisimai::RFC5322->received($rr->[-1])->[1] || '';
+                $p->{'lhost'}   = '' if $p->{'lhost'} eq $p->{'rhost'};
+                $p->{'lhost'} ||= Sisimai::RFC5322->received($rr->[ 0])->[0];
             }
 
             for my $v ('rhost', 'lhost') {
                 # Check and rewrite each host name
                 $p->{ $v } =  [split('@', $p->{ $v })]->[-1] if index($p->{ $v }, '@') > -1;
-                y/[]()//d, s/\A.+=// for $p->{ $v };    # Remove [] and (), and strings before "="
+                y/[]()//d, s/\A.+=// for $p->{ $v };                    # Remove [], (), and strings before "="
                 chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq "\r";   # Remove CR at the end of the value
 
-                # Check space character in each value and get the first element
+                # Check a space character in each value and get the first element
                 $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if rindex($p->{ $v }, ' ') > -1;
                 chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq '.';    # Remove "." at the end of the value
             }
@@ -306,6 +307,31 @@ sub rise {
             $o->{'timestamp'}      = Sisimai::Time->new($p->{'timestamp'});
             $o->{'timezoneoffset'} = $p->{'timezoneoffset'} // '+0000';
         }
+
+        ALIAS: while(1) {
+            # Look up the Envelope-To address from the Received: header in the original message
+            # when the recipient address is same with the value of $o->{'alias'}.
+            last if length $o->{'alias'} == 0;
+            last if $o->{'recipient'}->address ne $o->{'alias'};
+            last unless exists $rfc822data->{'received'};
+            last unless scalar $rfc822data->{'received'}->@*;
+
+            for my $er ( reverse $rfc822data->{'received'}->@* ) {
+                # Search for the string " for " from the Received: header
+                next unless index($er, ' for ') > 1;
+                my $or = Sisimai::RFC5322->received($er);
+
+                next unless scalar @$or;
+                next unless length $or->[5];
+                next unless Sisimai::Address->is_emailaddress($or->[5]);
+                next if $o->{'recipient'}->address eq $or->[5];
+
+                $o->{'alias'} = $or->[5];
+                last;
+            }
+            last;
+        }
+        $o->{'alias'} = '' if $o->{'alias'} eq $o->{'recipient'}->{'address'};
 
         REASON: {
             # Decide the reason of email bounce
@@ -729,7 +755,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

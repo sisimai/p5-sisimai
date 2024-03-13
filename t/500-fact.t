@@ -150,6 +150,13 @@ MAKETEST: {
 
         $ci += 1;
     }
+
+    # Forwarded and bounced
+    my $fw = Sisimai->rise('set-of-emails/maildir/bsd/lhost-sendmail-60.eml');
+    isa_ok $fw, 'ARRAY';
+    isa_ok $fw->[0], 'Sisimai::Fact';
+    is $fw->[0]->alias, 'neko@libsisimai.org', '->alias = neko@libsisimai.org';
+    is $fw->[0]->recipient->address, 'kijitora-cat@google.example.com', '->recipient = kijitora-cat@google.example.com';
 }
 
 done_testing;

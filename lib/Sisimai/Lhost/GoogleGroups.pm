@@ -56,10 +56,9 @@ sub inquire {
 
     my @entiremesg = split(/\n\n/, $emailparts->[0], 5); pop @entiremesg;
     my $issuedcode = join(' ', @entiremesg); $issuedcode =~ y/\n/ /;
+    my $receivedby = $mhead->{'received'} || [];
     $recordwide->{'diagnosis'} = Sisimai::String->sweep($issuedcode);
-
-    my $serverlist = Sisimai::RFC5322->received($mhead->{'received'}->[0]);
-    $recordwide->{'rhost'} = shift @$serverlist;
+    $recordwide->{'rhost'}     = Sisimai::RFC5322->received($receivedby->[0])->[1];
 
     for my $e ( split(',', $mhead->{'x-failed-recipients'}) ) {
         # X-Failed-Recipients: neko@example.jp, nyaan@example.org, ...
@@ -115,7 +114,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2020-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

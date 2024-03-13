@@ -146,7 +146,6 @@ sub inquire {
 
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'recipient'} = Sisimai::Address->s3s4($e->{'recipient'});
-        $e->{'lhost'}   ||= $permessage->{'rhost'};
         $e->{ $_ }      ||= $permessage->{ $_ } || '' for keys %$permessage;
 
         for my $r ( keys %$messagesof ) {
@@ -201,7 +200,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

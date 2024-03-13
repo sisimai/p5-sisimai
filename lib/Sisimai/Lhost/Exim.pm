@@ -151,7 +151,6 @@ sub inquire {
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $nextcursor = 0;
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $localhost0 = '';    # (String) Local MTA
     my $boundary00 = '';    # (String) Boundary string
     my $v = undef;
 
@@ -338,18 +337,13 @@ sub inquire {
     }
     return undef unless $recipients;
 
-    if( scalar $mhead->{'received'}->@* ) {
-        # Get the name of local MTA
-        # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
-        $p1 = index($mhead->{'received'}->[-1], 'from ');
-        $p2 = index($mhead->{'received'}->[-1], ' ', $p1 + 5);
-        $localhost0 = substr($mhead->{'received'}->[-1], $p1 + 5, $p2 - $p1 - 5) if $p1 > -1 && $p2 > $p1;
-    }
+    # Get the name of the local MTA
+    # Received: from marutamachi.example.org (c192128.example.net [192.0.2.128])
+    my $receivedby = $mhead->{'received'} || [];
+    my $recvdtoken = Sisimai::RFC5322->received($receivedby->[-1]);
 
     for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        $e->{'lhost'} ||= $localhost0;
-
+        # Check the error message, the rhost, the lhost, and the smtp command.
         if( ! $e->{'diagnosis'} && length($boundary00) > 0 ) {
             # Empty Diagnostic-Code: or error message
             # --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -396,14 +390,10 @@ sub inquire {
             # host neko.example.jp [192.0.2.222]: 550 5.1.1 <kijitora@example.jp>... User Unknown
             $p1 = index($e->{'diagnosis'}, 'host ');
             $p2 = index($e->{'diagnosis'}, ' ', $p1 + 5);
-            $e->{'rhost'} = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
-
-            if( ! $e->{'rhost'} && scalar $mhead->{'received'}->@* ) {
-                # Get localhost and remote host name from Received header.
-                my $r0 = $mhead->{'received'};
-                $e->{'rhost'} = pop Sisimai::RFC5322->received($r0->[-1])->@*;
-            }
+            $e->{'rhost'}   = substr($e->{'diagnosis'}, $p1 + 5, $p2 - $p1 - 5) if $p1 > -1;
+            $e->{'rhost'} ||= $recvdtoken->[1];
         }
+        $e->{'lhost'} ||= $recvdtoken->[0];
 
         unless( $e->{'command'} ) {
             # Get the SMTP command name for the session
@@ -539,7 +529,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
