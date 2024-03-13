@@ -92,29 +92,37 @@ sub received {
         next unless grep { lc $e eq $_ } @$label;
         my $f = lc $e;
 
-        $token->{ $f } = $recvd->[$index + 1] || next;
-        $token->{ $f } = lc $token->{ $f };
-        chop $token->{ $f } if index($token->{ $f }, ';') > 1;
+        $token->{ $f } =  $recvd->[$index + 1] || next;
+        $token->{ $f } =  lc $token->{ $f };
+        $token->{ $f } =~ y/();//d;
 
         next unless $f eq 'from';
         last unless $index + 2 < $range;
+        next unless index($recvd->[$index + 2], '(') == 0;
 
-        if( index($recvd->[$index + 2], '(') == 0 ) {
-            # Get and keep a hostname in the comment as follows:
-            # from mx1.example.com (c213502.kyoto.example.ne.jp [192.0.2.135]) by mx.example.jp (V8/cf)
-            push @$other, substr($recvd->[$index + 2], 1,);
+        # Get and keep a hostname in the comment as follows:
+        # from mx1.example.com (c213502.kyoto.example.ne.jp [192.0.2.135]) by mx.example.jp (V8/cf)
+        # [
+        #   "from",                         # index + 0
+        #   "mx1.example.com",              # index + 1
+        #   "(c213502.kyoto.example.ne.jp", # index + 2
+        #   "[192.0.2.135])",               # index + 3
+        #   "by",
+        #   "mx.example.jp",
+        #   "(V8/cf)",
+        #   ...
+        # ]
+        push @$other, $recvd->[$index + 2];
 
-            if( index($other->[0], ')') > 1 ) {
-                # The 2nd element after the current element is NOT a continuation of the current element.
-                chop $other->[0];
-                next;
+        # The 2nd element after the current element is NOT a continuation of the current element
+        # such as "(c213502.kyoto.example.ne.jp)"
+        $other->[0] =~ y/();//d;
 
-            } else {
-                # The 2nd element after the current element is a continuation of the current element.
-                last unless $index + 3 < $range;
-                push @$other, substr($recvd->[$index + 3], 0, -1);
-            }
-        }
+        # The 2nd element after the current element is a continuation of the current element.
+        # such as "(c213502.kyoto.example.ne.jp", "[192.0.2.135])"
+        last unless $index + 3 < $range;
+        push @$other, $recvd->[$index + 3];
+        $other->[1] =~ y/();//d;
     }
 
     for my $e ( @$other ) {
