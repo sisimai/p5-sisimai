@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.38-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.0.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.0.2-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 > [!IMPORTANT]
 > **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
@@ -135,14 +135,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.0.0 ... OK
-Building and testing Sisimai-v5.0.0 ... Password: <sudo password here>
+Configuring Sisimai-v5.0.2 ... OK
+Building and testing Sisimai-v5.0.2 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.0.0
+Successfully installed Sisimai-v5.0.2
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.0.0
+5.0.2
 ```
 
 Usage
@@ -359,8 +359,8 @@ Beginning with v5.0.0, Sisimai requires **Perl 5.26.0 or later.**
 | The number of MTA/ESP modules                        | 68                 | 70                  |
 | The number of detectable bounce reasons              | 29                 | 34                  |
 | Dependencies (Except core modules of Perl)           | 2 modules          | 2 modules           |
-| Source lines of code                                 | 10,800 lines       | 11,400 lines        |
-| The number of tests in t/, xt/ directory             | 270,000 tests      | 323,000 tests       | 
+| Source lines of code                                 | 10,800 lines       | 11,500 lines        |
+| The number of tests in t/, xt/ directory             | 270,000 tests      | 328,000 tests       | 
 | The number of bounce emails decoded per second[^4]   | 541 emails         | 660 emails          |
 | License                                              | 2 Clause BSD       | 2 Caluse BSD        |
 | Commercial support                                   | Available          | Available           |

@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.38-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.0.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.0.2-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 > [!IMPORTANT]
 > **2024年2月2日の時点でこのリポジトリのデフォルトブランチは[5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
@@ -131,14 +131,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.0.0 ... OK
-Building and testing Sisimai-v5.0.0 ... Password: <sudo password here>
+Configuring Sisimai-v5.0.2 ... OK
+Building and testing Sisimai-v5.0.2 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.0.0
+Successfully installed Sisimai-v5.0.2
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.0.0
+5.0.2
 ```
 
 Usage
@@ -353,8 +353,8 @@ Sisimai 5.0.0から**Perl 5.26.0以上**が必要になります。
 | 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 70                  |
 | 検出可能なバウンス理由の数                           | 29                 | 34                  |
 | 依存もジュール数(Perlのコアモジュールを除く)         | 2 モジュール       | 2 モジュール        |
-| ソースコードの行数                                   | 10,800 行          | 11,400 行           |
-| テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 323,000 件          |
+| ソースコードの行数                                   | 10,800 行          | 11,500 行           |
+| テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 328,000 件          |
 | 1秒間に解析できるバウンスメール数[^4]                | 541 通             | 660 通              |
 | ライセンス                                           | 2条項BSD           | 2条項BSD            |
 | 開発会社による商用サポート                           | 提供中             | 提供中              |

@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.0.1p1
+v5.0.2
 ---------------------------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Wed, 13 Mar 2024 13:00:00 +0900 (JST)"
+- version: "5.0.2"
 - changes:
   - #507 Migrate the CI from TravisCI to GitHub Actions
   - Fixed an issue where constant initialization would fail on Perl 5.26
