@@ -91,7 +91,8 @@ sub received {
         last unless ++$index < $range; my $f = lc $e;
         next unless grep { $f eq $_ } @$label;
 
-        $token->{ $f } =  lc $recvd->[$index + 1] || next;
+        $token->{ $f } =  $recvd->[$index + 1] || next;
+        $token->{ $f } =  lc $token->{ $f };
         $token->{ $f } =~ y/();//d;
 
         next unless $f eq 'from';
