@@ -88,12 +88,10 @@ sub received {
 
     for my $e ( @$recvd ) {
         # Look up each label defined in $label from Received header
-        last unless ++$index < $range;
-        next unless grep { lc $e eq $_ } @$label;
-        my $f = lc $e;
+        last unless ++$index < $range; my $f = lc $e;
+        next unless grep { $f eq $_ } @$label;
 
-        $token->{ $f } =  $recvd->[$index + 1] || next;
-        $token->{ $f } =  lc $token->{ $f };
+        $token->{ $f } =  lc $recvd->[$index + 1] || next;
         $token->{ $f } =~ y/();//d;
 
         next unless $f eq 'from';
