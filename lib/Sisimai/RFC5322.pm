@@ -110,11 +110,9 @@ sub received {
         #   "(V8/cf)",
         #   ...
         # ]
-        push @$other, $recvd->[$index + 2];
-
         # The 2nd element after the current element is NOT a continuation of the current element
         # such as "(c213502.kyoto.example.ne.jp)"
-        $other->[0] =~ y/();//d;
+        push @$other, $recvd->[$index + 2]; $other->[0] =~ y/();//d;
 
         # The 2nd element after the current element is a continuation of the current element.
         # such as "(c213502.kyoto.example.ne.jp", "[192.0.2.135])"
