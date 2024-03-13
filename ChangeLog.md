@@ -14,6 +14,8 @@ v5.0.1p1
   - `5.7.23` returned from Office365 is an error related to SPF vilation (authfailure)
   - #508 Fixed an issue that Sisimai could not get the value of `alias` address correctly when an
     email forwarded and bounced
+  - `Sisimai::RFC5322->received` now returns a list including all the elements except date time and
+    (comments) found in the `Received` header
   - Update the error message patterns in `Sisimai::Rhost::Mimecast`
   - Update the error message patterns in the followings:
     - `AuthFailure`
