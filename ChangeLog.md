@@ -4,6 +4,14 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.0.2p1
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Declare `use v5.26;` at each file using the postfix dereference #511
+  - Replace `use feature ":5.10";` with `use v5.26;`
+
 v5.0.2
 ---------------------------------------------------------------------------------------------------
 - release: "Wed, 13 Mar 2024 13:00:00 +0900 (JST)"
