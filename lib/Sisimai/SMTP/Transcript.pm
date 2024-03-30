@@ -1,5 +1,5 @@
 package Sisimai::SMTP::Transcript;
-use feature ':5.10';
+use v5.26;
 use strict;
 use warnings;
 use Sisimai::SMTP::Reply;
@@ -148,7 +148,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

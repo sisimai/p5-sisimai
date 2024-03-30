@@ -1,5 +1,5 @@
 package Sisimai;
-use feature ':5.10';
+use v5.26;
 use strict;
 use warnings;
 use version; our $VERSION = version->declare('v5.0.2'); our $PATCHLV = 0;
