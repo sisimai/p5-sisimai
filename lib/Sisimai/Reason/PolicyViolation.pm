@@ -1,5 +1,5 @@
 package Sisimai::Reason::PolicyViolation;
-use feature ':5.10';
+use v5.26;
 use strict;
 use warnings;
 use Sisimai::String;
@@ -112,7 +112,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
