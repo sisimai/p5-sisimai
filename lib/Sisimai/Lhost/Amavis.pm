@@ -1,6 +1,6 @@
 package Sisimai::Lhost::Amavis;
 use parent 'Sisimai::Lhost';
-use feature ':5.10';
+use v5.26;
 use strict;
 use warnings;
 
@@ -197,7 +197,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019-2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2019-2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

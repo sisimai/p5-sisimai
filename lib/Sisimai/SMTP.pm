@@ -1,5 +1,5 @@
 package Sisimai::SMTP;
-use feature ':5.10';
+use v5.26;
 use strict;
 use warnings;
 1;
@@ -25,7 +25,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2020,2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2020,2022,2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

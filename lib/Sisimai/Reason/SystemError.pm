@@ -1,5 +1,5 @@
 package Sisimai::Reason::SystemError;
-use feature ':5.10';
+use v5.26;
 use strict;
 use warnings;
 
@@ -100,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022,2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -1,5 +1,5 @@
 package Sisimai::SMTP::Status;
-use feature ':5.10';
+use v5.26;
 use strict;
 use warnings;
 use Sisimai::String;

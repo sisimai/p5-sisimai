@@ -1,5 +1,5 @@
 package Sisimai::SMTP::Reply;
-use feature ':5.10';
+use v5.26;
 use strict;
 use warnings;
 # http://www.ietf.org/rfc/rfc5321.txt
@@ -218,7 +218,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018,2020,2021,2023 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020,2021,2023,2024 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
