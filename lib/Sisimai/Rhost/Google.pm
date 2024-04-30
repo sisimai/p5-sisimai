@@ -155,7 +155,7 @@ sub get {
             ['552', '5.3.4', "exceeds google's limit of limit attachments."],
             ['552', '5.3.4', "your message exceeded google's message header size limits"],
             ['552', '5.3.4', 'bytes per individual header size'],
-            ['552', '5.3.4', "exceeds google’s header name limit of"],
+            ['552', '5.3.4', "exceeds google's header name limit of"],
             ['552', '5.3.4', "your message has a subject: header that exceeds google's message header size limit"]
         ],
         'expired' => [
