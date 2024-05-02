@@ -86,6 +86,11 @@ sub get {
             #   on DKIM for your domain. https://support.google.com/a/answer/180504
             ['421', '4.7.28', 'gmail requires all large senders to authenticate with dkim'],
             ['550', '5.7.28', 'gmail requires all large senders to authenticate with dkim'],
+
+            # - 421 4.7.30 Your email has been rate limited because DKIM authentication didn't pass
+            #   for this message. Gmail requires all email bulk senders to authenticate their email
+            #   with DKIM. Authentication results: DKIM = Did not pass.
+            ['421', '4.7.30', 'gmail requires all email bulk senders to authenticate their email with dkim'],
         ],
         'badreputation' => [
             # - 421 4.7.0 This message is suspicious due to the very low reputation of the sending
