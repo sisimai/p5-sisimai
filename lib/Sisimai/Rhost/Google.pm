@@ -304,7 +304,13 @@ sub get {
             #   corresponding forward DNS entry does not point to the sending IP. To protect our
             #   users from spam, mail sent from your IP address has been temporarily rate limited.
             #   For more information, go to Email sender guidelines.
-            #
+            ['421', '4.7.0',  'the ip address sending this message does not have a ptr record'],
+
+            # - 421 4.7.23 The sending IP address for this message doesnÅft have a PTR record, or
+            #   the PTR record's forward DNS entry doesnÅft match the sending IP address. To protect
+            #   users from spam, your email has been temporarily rate limited.
+            ['421', '4.7.23', ' have a ptr record, or the ptr record'],
+
             # - 550 5.7.25 The IP address sending this message does not have a PTR record setup, or
             #   the corresponding forward DNS entry does not point to the sending IP. As a policy,
             #   Gmail does not accept messages from IPs with missing PTR records.
@@ -314,7 +320,6 @@ sub get {
             # - 550 5.7.25 The sending IP does not match the IP address of the hostname specified
             #   in the pointer (PTR) record. For more information, go to Email sender guidelines.
             # - https://support.google.com/mail/answer/81126#ip-practices
-            ['421', '4.7.0',  'the ip address sending this message does not have a ptr record'],
             ['550', '5.7.25', 'the ip address sending this message does not have a ptr record'],
             ['550', '5.7.25', 'the sending ip does not match the ip address of the hostname'],
         ],
