@@ -91,6 +91,11 @@ sub get {
             #   for this message. Gmail requires all email bulk senders to authenticate their email
             #   with DKIM. Authentication results: DKIM = Did not pass.
             ['421', '4.7.30', 'gmail requires all email bulk senders to authenticate their email with dkim'],
+
+            # - 421 4.7.32 Your email has been rate limited because the From: header (RFC5322) in
+            #   this message isn't aligned with either the authenticated SPF or DKIM organizational
+            #   domain.
+            ['421', '4.7.32', 'aligned with either the authenticated spf or dkim organizational domain'],
         ],
         'badreputation' => [
             # - 421 4.7.0 This message is suspicious due to the very low reputation of the sending
