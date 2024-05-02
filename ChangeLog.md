@@ -4,13 +4,18 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.0.2p1
+v5.0.2p2
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
 - changes:
   - Declare `use v5.26;` at each file using the postfix dereference #511
   - Replace `use feature ":5.10";` with `use v5.26;`
+  - Remove `.travis.yml` from this repository
+  - Follow updates in Gmail SMTP error codes on April 2024 at `Sisimai::Rhost::Google` #513 #515
+    - https://support.google.com/a/answer/3726730?hl=en
+    - Implement SMTP error codes as follows: `4.7.23`, `4.7.30`, and `4.7.32`
+    - Shortened error message patterns to make them more adaptable to minor sentence changes.
 
 v5.0.2
 ---------------------------------------------------------------------------------------------------
