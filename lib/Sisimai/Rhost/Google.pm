@@ -365,10 +365,10 @@ sub get {
             ['535', '5.7.1', 'username and password not accepted'],
             ['535', '5.7.8', 'username and password not accepted'],
 
-            # - 421 4.7.29 This mail has been rate limited because TLS wasn't used. Gmail requires
-            #   all large senders to use TLS/SSL during SMTP. For instructions on using TLS, go to
-            #   TLS & SSL connections. https://support.google.com/a/answer/100181
-            ['421', '4.7.29', 'gmail requires all large senders to use tls/ssl during smtp'],
+            # - 421 4.7.29 Your email has been rate limited because this message wasn’t sent over a
+            #   TLS connection. Gmail requires all bulk email senders to use TLS/SSL for SMTP conn-
+            #   ections.
+            ['421', '4.7.29', 'senders to use tls/ssl for smtp'],
         ],
         'spamdetected' => [
             # - 421 4.7.0 This message is suspicious due to the nature of the content or the links
