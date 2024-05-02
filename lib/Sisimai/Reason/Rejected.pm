@@ -39,7 +39,7 @@ sub match {
         'email address is on senderfilterconfig list',
         'emetteur invalide',
         'empty envelope senders not allowed',
-        'envelope blocked – ',
+        'envelope blocked - ',
         'error: no third-party dsns',   # SpamWall - block empty sender
         'from: domain is invalid. please provide a valid from:',
         'fully qualified email address required',   # McAfee

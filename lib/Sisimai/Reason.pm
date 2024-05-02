@@ -270,7 +270,7 @@ is C<5.6.*>.
 
 =item - 8 bit data in message header
 
-=item - Too many “Received” headers
+=item - Too many "Received" headers
 
 =item - Invalid MIME headers
 

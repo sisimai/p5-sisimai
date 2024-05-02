@@ -368,7 +368,7 @@ C<version> method returns the version number of Sisimai.
 
 =item L<Sisimai::Fact> - Decoded data object
 
-=item L<https://libsisimai.org/> - Sisimai — Mail Analyzing Interface Library
+=item L<https://libsisimai.org/> - Sisimai - Mail Analyzing Interface Library
 
 =item L<https://tools.ietf.org/html/rfc3463> - RFC3463: Enhanced Mail System Status Codes
 
