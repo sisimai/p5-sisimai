@@ -154,7 +154,7 @@ sub get {
         'exceedlimit' => [
             # - 552 5.2.3 Your message exceeded Google's message size limits. For more information,
             #   visit https://support.google.com/mail/answer/6584
-            ['552', '5.2.3', "your message exceeded google's message size limits"],
+            ['552', '5.2.3', "exceeded google's message size limits"],
 
             # - 552 5.3.4 The number of attachments (num-attachments) exceeds Google's limit of
             #   limit attachments. To view our attachment size guidelines, go to Gmail receiving
