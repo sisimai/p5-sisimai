@@ -72,11 +72,12 @@ sub get {
             ['550', '5.7.1',  'fails to pass authentication checks'],
             ['550', '5.7.26', 'fails to pass authentication checks'],
 
-            # - 421 4.7.27 This mail has been rate limited because SPF does not pass.
-            #   Gmail requires all large senders to authenticate with SPF. Authentication results:
-            #   SPF domain-name with ip: ip-address = did not pass. To resolve this issue, go to
-            #   Define your SPF record-Basic setup. https://support.google.com/a/answer/10685031
+            # - 421 4.7.27 Your email has been rate limited because SPF authentication didn't pass
+            #   for this message. Gmail requires all bulk email senders to authenticate their emaili
+            #   with SPF. Authentication results: SPF domain-name with IP address: ip-address = Did
+            #   not pass.
             ['421', '4.7.27', 'gmail requires all large senders to authenticate with spf'],
+            ['421', '4.7.27', 'gmail requires all bulk email senders to authenticate their email with spf'],
             ['550', '5.7.27', 'gmail requires all large senders to authenticate with spf'],
 
             # - 421 4.7.28 This mail has been rate limited because DKIM does not pass.
