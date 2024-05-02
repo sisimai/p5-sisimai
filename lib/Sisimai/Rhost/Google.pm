@@ -75,7 +75,7 @@ sub get {
             # - 421 4.7.27 This mail has been rate limited because SPF does not pass.
             #   Gmail requires all large senders to authenticate with SPF. Authentication results:
             #   SPF domain-name with ip: ip-address = did not pass. To resolve this issue, go to
-            #   Define your SPF record‚ÄîBasic setup. https://support.google.com/a/answer/10685031
+            #   Define your SPF record-Basic setup. https://support.google.com/a/answer/10685031
             ['421', '4.7.27', 'gmail requires all large senders to authenticate with spf'],
             ['550', '5.7.27', 'gmail requires all large senders to authenticate with spf'],
 
@@ -306,8 +306,8 @@ sub get {
             #   For more information, go to Email sender guidelines.
             ['421', '4.7.0',  'the ip address sending this message does not have a ptr record'],
 
-            # - 421 4.7.23 The sending IP address for this message doesnÅft have a PTR record, or
-            #   the PTR record's forward DNS entry doesnÅft match the sending IP address. To protect
+            # - 421 4.7.23 The sending IP address for this message doesn't have a PTR record, or
+            #   the PTR record's forward DNS entry doesn't match the sending IP address. To protect
             #   users from spam, your email has been temporarily rate limited.
             ['421', '4.7.23', ' have a ptr record, or the ptr record'],
 
