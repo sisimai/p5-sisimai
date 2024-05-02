@@ -306,11 +306,6 @@ sub get {
             ['550', '5.7.1', 'unauthenticated email is not accepted'],
         ],
         'requireptr' => [
-            # - 550 5.7.1 This message does not meet IPv6 sending guidelines regarding PTR records
-            #   and authentication. For more information, go to Email sender guidelines.
-            #   https://support.google.com/mail/?p=IPv6AuthError
-            ['550', '5.7.1', 'does not meet ipv6 sending guidelines regarding ptr records and authentication'],
-
             # - 421 4.7.0 The IP address sending this message does not have a PTR record, or the
             #   corresponding forward DNS entry does not point to the sending IP. To protect our
             #   users from spam, mail sent from your IP address has been temporarily rate limited.
@@ -322,6 +317,10 @@ sub get {
             #   users from spam, your email has been temporarily rate limited.
             ['421', '4.7.23', ' have a ptr record, or the ptr record'],
 
+            # - 550 5.7.1 This message does not meet IPv6 sending guidelines regarding PTR records
+            #   and authentication. For more information, go to Email sender guidelines.
+            #   https://support.google.com/mail/?p=IPv6AuthError
+            #
             # - 550 5.7.25 The IP address sending this message does not have a PTR record setup, or
             #   the corresponding forward DNS entry does not point to the sending IP. As a policy,
             #   Gmail does not accept messages from IPs with missing PTR records.
@@ -331,6 +330,7 @@ sub get {
             # - 550 5.7.25 The sending IP does not match the IP address of the hostname specified
             #   in the pointer (PTR) record. For more information, go to Email sender guidelines.
             # - https://support.google.com/mail/answer/81126#ip-practices
+            ['550', '5.7.1',  'does not meet ipv6 sending guidelines regarding ptr records and authentication'],
             ['550', '5.7.25', 'does not have a ptr record'],
             ['550', '5.7.25', 'does not match the ip address of the hostname'],
         ],
