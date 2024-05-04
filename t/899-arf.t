@@ -31,6 +31,7 @@ my $isexpected = {
     '23' => [['', '', 'feedback', 0, 'abuse'       ]],
     '24' => [['', '', 'feedback', 0, 'abuse'       ]],
     '25' => [['', '', 'feedback', 0, 'abuse'       ]],
+    '26' => [['', '', 'feedback', 0, 'opt-out'     ]],
 };
 
 $enginetest->($enginename, $isexpected);
