@@ -18,6 +18,9 @@ v5.0.2p2
     - Shortened error message patterns to make them more adaptable to minor sentence changes.
   - Multibyte characters in the code and comments have been replaced with ASCII characters. #514
   - Import sisimai/rb-sisimai#280 Deal the Apple unsubscribe notification as an ARF message #516
+  - Add the following error message patterns returned from Exchange Online #517
+    - 4.4.317, 5.4.317: STARTTLS is required to send mail
+    - 4.4.318, 5.4.318: Connection was closed abruptly (SuspiciousRemoteServerError)
 
 v5.0.2
 ---------------------------------------------------------------------------------------------------
