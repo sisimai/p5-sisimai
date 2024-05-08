@@ -466,6 +466,9 @@ sub get {
             # - This message usually indicates an issue on the destination email server. Check the
             #   validity of the recipient address. Determine if the destination server is configur-
             #   ed correctly to receive the messages.
+            ['4.4.317', 0, 0, 'starttls is required to send mail'],
+            ['5.4.317', 0, 0, 'starttls is required to send mail'],
+
             ['4.7.321', 0, 0, 'starttls-not-supported: destination mail server must support tls to receive mail'],
             ['5.7.321', 0, 0, 'starttls-not-supported: destination mail server must support tls to receive mail'],
 
