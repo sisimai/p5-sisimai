@@ -114,6 +114,7 @@ sub match {
         ['no ', ' in name directory'],
         ['non', 'existent user'],
         ['rcpt <', ' does not exist'],
+        ['rcpt (', 't exist '],
         ['recipient ', ' was not found in'],
         ['recipient address rejected: user ', '  does not exist'],
         ['recipient address rejected: user unknown in ', '  table'],
@@ -124,6 +125,7 @@ sub match {
         ['unknown local', 'part'],
         ['user ', ' was not found'],
         ['user ', ' does not exist'],
+        ['user (', ') unknown'],
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
