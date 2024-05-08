@@ -15,22 +15,23 @@ sub is_arf {
     my $heads = shift || return 0;
     my $match = 0;
 
-    state $reportfrom = ['staff@hotmail.com', 'complaints@email-abuse.amazonses.com'];
-    if( Sisimai::String->aligned(\$heads->{'content-type'}, ['report-type=', 'feedback-report']) ) {
-        # Content-Type: multipart/report; report-type=feedback-report; ...
-        $match = 1;
+    # Content-Type: multipart/report; report-type=feedback-report; ...
+    return 1 if Sisimai::String->aligned(\$heads->{'content-type'}, ['report-type=', 'feedback-report']);
 
-    } elsif( index($heads->{'content-type'}, 'multipart/mixed') > -1 ) {
+    if( index($heads->{'content-type'}, 'multipart/mixed') > -1 ) {
         # Microsoft (Hotmail, MSN, Live, Outlook) uses its own report format.
         # Amazon SES Complaints bounces
         if( index($heads->{'subject'}, 'complaint about message from ') > -1 ) {
             # From: staff@hotmail.com
             # From: complaints@email-abuse.amazonses.com
             # Subject: complaint about message from 192.0.2.1
+            my $rf = ['staff@hotmail.com', 'complaints@email-abuse.amazonses.com'];
             my $cv = Sisimai::Address->s3s4($heads->{'from'});
-            $match = 1 if grep { index($cv, $_) > -1 } @$reportfrom;
+            $match = 1 if grep { index($cv, $_) > -1 } @$rf;
         }
     }
+    $match = 1 if ($heads->{'x-apple-unsubscribe'} // '') eq 'true'; # X-Apple-Unsubscribe: true
+
     return $match;
 }
 
@@ -285,6 +286,24 @@ sub inquire {
         $commondata->{'diagnosis'} = sprintf(
             "This is a Microsoft email abuse report for an email message received from IP %s on %s",
             $arfheaders->{'rhost'}, $mhead->{'date'});
+
+    } elsif( index($mhead->{'subject'}, 'unsubscribe') > -1 ) {
+        # Apple Mail sent this email to unsubscribe from the message
+        while(1) {
+            # Subject: unsubscribe
+            # Content-Type: text/plain; charset=UTF-8
+            # Auto-Submitted: auto-replied
+            # X-Apple-Unsubscribe: true
+            #
+            # Apple Mail sent this email to unsubscribe from the message
+            last unless $mhead->{'x-apple-unsubscribe'};
+            last unless $mhead->{'x-apple-unsubscribe'} eq 'true';
+            last unless index($$mbody, 'Apple Mail sent this email to unsubscribe from the message') > -1;
+
+            $dscontents->[-1]->{'recipient'} = Sisimai::Address->s3s4($mhead->{'from'});
+            $dscontents->[-1]->{'feedbacktype'} = 'opt-out';
+            last;
+        }
     }
 
     for my $e ( @$dscontents ) {

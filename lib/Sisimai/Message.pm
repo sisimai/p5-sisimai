@@ -456,7 +456,7 @@ sub sift {
         unless( $haveloaded->{'Sisimai::ARF'} ) {
             # Feedback Loop message
             require Sisimai::ARF;
-            $havesifted = Sisimai::ARF->inquire($mailheader, $bodystring) if Sisimai::ARF->is_arf($mailheader);
+            $havesifted = Sisimai::ARF->inquire($mailheader, $bodystring);
             last(PARSER) if $havesifted;
         }
 
