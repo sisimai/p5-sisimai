@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $index = [
+        '452 insufficient disk space',
         'account disabled temporarly for exceeding receiving limits',
         'account is exceeding their quota',
         'account is over quota',
@@ -27,7 +28,6 @@ sub match {
         'exceeded storage allocation',
         'exceeding its mailbox quota',
         'full mailbox',
-        'insufficient disk space',
         'is over disk quota',
         'is over quota temporarily',
         'mail file size exceeds the maximum size allowed for mail delivery',
