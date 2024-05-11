@@ -127,7 +127,7 @@ sub get {
             ['501', '5.5.4', 'empty helo/ehlo argument not allowed'],
             ['501', '5.5.4', 'helo/ehlo argument is invalid'],
 
-            # - 421 4.7.28 Gmail has detected an unusual rate of unsolicited mail.
+            # - 421 4.7.28 Gmail has detected an unusual rate of mail
             #   (originating from)
             #       - your IP address 192.0.2.25
             #       - your IP Netblock 192.0.2.0/24 (?)
@@ -139,7 +139,7 @@ sub get {
             #   our bulk email senders guidelines, go to Email sender guidelines.
             #   https://support.google.com/mail/?p=UnsolicitedRateLimitError
             ['421', '4.7.0',  'an unusual rate of unsolicited mail'],
-            ['421', '4.7.28', 'an unusual rate of unsolicited mail'],
+            ['421', '4.7.28', 'an unusual rate of mail'],
 
             # - 550 5.7.1 Our system has detected an unusual rate of unsolicited mail originating
             #   from your IP address. To protect our users from spam, mail sent from your IP ad-
