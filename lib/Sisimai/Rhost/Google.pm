@@ -80,17 +80,15 @@ sub get {
             ['421', '4.7.27', 'senders to authenticate their email with spf'],
             ['550', '5.7.27', 'senders to authenticate with spf'],
 
-            # - 421 4.7.28 This mail has been rate limited because DKIM does not pass.
-            #   Gmail requires all large senders to authenticate with DKIM. Authentication results:
-            #   DKIM = did not pass. For instructions on setting up DKIM authentication, go to Turn
-            #   on DKIM for your domain. https://support.google.com/a/answer/180504
-            ['421', '4.7.28', 'senders to authenticate with dkim'],
-            ['550', '5.7.28', 'senders to authenticate with dkim'],
-
             # - 421 4.7.30 Your email has been rate limited because DKIM authentication didn't pass
             #   for this message. Gmail requires all email bulk senders to authenticate their email
             #   with DKIM. Authentication results: DKIM = Did not pass.
             ['421', '4.7.30', 'senders to authenticate their email with dkim'],
+
+            # - 550 5.7.30 This mail has been blocked because DKIM does not pass. Gmail requires all
+            #   large senders to authenticate with DKIM. Authentication results: DKIM = did not pass.
+            #   For instructions on setting up DKIM authentication, go to Turn on DKIM for your domain.   
+            ['550', '5.7.30', 'senders to authenticate with dkim'],
 
             # - 421 4.7.32 Your email has been rate limited because the From: header (RFC5322) in
             #   this message isn't aligned with either the authenticated SPF or DKIM organizational
