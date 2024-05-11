@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.0.2p2
+v5.0.2p3
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -12,9 +12,12 @@ v5.0.2p2
   - Declare `use v5.26;` at each file using the postfix dereference #511
   - Replace `use feature ":5.10";` with `use v5.26;`
   - Remove `.travis.yml` from this repository
-  - Follow updates in Gmail SMTP error codes on April 2024 at `Sisimai::Rhost::Google` #513 #515
+  - Follow updates in Gmail SMTP errors and codes on Apr 29 and May 10 at `Sisimai::Rhost::Google`
+    #513 #515 #519
     - https://support.google.com/a/answer/3726730?hl=en
-    - Implement SMTP error codes as follows: `4.7.23`, `4.7.30`, and `4.7.32`
+    - https://github.com/azumakuniyuki/feb-2024-no-auth-no-entry/commit/1d6adede
+    - https://github.com/azumakuniyuki/feb-2024-no-auth-no-entry/commit/d477b178
+    - Implement SMTP error codes as follows: `4.7.23`, `4.7.30`, `4.7.32`, `5.7.29`, and `5.7.30`
     - Shortened error message patterns to make them more adaptable to minor sentence changes.
   - Multibyte characters in the code and comments have been replaced with ASCII characters. #514
   - Import sisimai/rb-sisimai#280 Deal the Apple unsubscribe notification as an ARF message #516
