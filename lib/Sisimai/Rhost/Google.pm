@@ -372,6 +372,7 @@ sub get {
             #   TLS connection. Gmail requires all bulk email senders to use TLS/SSL for SMTP conn-
             #   ections.
             ['421', '4.7.29', 'senders to use tls/ssl for smtp'],
+            ['550', '5.7.29', 'senders to use tls/ssl for smtp'],
         ],
         'spamdetected' => [
             # - 421 4.7.0 This message is suspicious due to the nature of the content or the links
