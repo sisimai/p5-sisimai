@@ -35,6 +35,7 @@ sub match {
         'this account has been temporarily suspended',
         'this address no longer accepts mail',
         'this mailbox is disabled',
+        'user or domain is disabled',
         'user suspended',   # http://mail.163.com/help/help_spam_16.htm
         'vdelivermail: account is locked email bounced',
     ];
