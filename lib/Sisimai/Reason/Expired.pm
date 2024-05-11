@@ -2,6 +2,7 @@ package Sisimai::Reason::Expired;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::String;
 
 sub text  { 'expired' }
 sub description { 'Delivery time has expired due to a connection failure' }
@@ -18,6 +19,7 @@ sub match {
         'connection timed out',
         'could not find a gateway for',
         'delivery attempts will continue to be',
+        'delivery expired',
         'delivery time expired',
         'failed to deliver to domain ',
         'giving up on',
@@ -35,7 +37,12 @@ sub match {
         'was not reachable within the allowed queue period',
         'your message could not be delivered for more than',
     ];
+    state $pairs = [
+        ['could not be delivered for', ' days'],
+    ];
+
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
