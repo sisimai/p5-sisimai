@@ -43,6 +43,7 @@ sub match {
         'maildir delivery failed: userdisk quota ',
         'maildir delivery failed: domaindisk quota ',
         'mailfolder is full',
+        'no space left on device',
         'not enough storage space in',
         'not sufficient disk space',
         'over the allowed quota',
