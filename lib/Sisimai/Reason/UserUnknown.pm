@@ -67,6 +67,7 @@ sub match {
         'recipient address rejected: unknown user',
         'recipient address rejected: userunknown',
         'recipient does not exist',
+        'recipient is not accepted',
         'recipient is not local',
         'recipient not exist',
         'recipient not found',
