@@ -10,7 +10,11 @@ v5.0.2p3
 - version: ""
 - changes:
   - Declare `use v5.26;` at each file using the postfix dereference #511
-  - Replace `use feature ":5.10";` with `use v5.26;`
+    - Replace `use feature ":5.10";` with `use v5.26;`
+    - https://www.cpantesters.org/cpan/report/4a49b2fa-e101-11ee-9c91-c03a6e8775ea (Slaven Rezić)
+    - https://www.cpantesters.org/cpan/report/8345bf54-e192-11ee-bcdd-1845aa8c77b5 (David Cantrell)
+    - https://www.cpantesters.org/cpan/report/3170e9aa-e526-11ee-98b0-b3c3213a625c (Chris Williams)
+    - https://www.cpantesters.org/cpan/report/e51d7d7a-e58e-11ee-922b-530cbea18e0e (Andreas J. König)
   - Remove `.travis.yml` from this repository
   - Follow updates in Gmail SMTP errors and codes on Apr 29 and May 10 at `Sisimai::Rhost::Google`
     #513 #515 #519
