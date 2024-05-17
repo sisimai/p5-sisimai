@@ -1,5 +1,31 @@
-- name: Upload coverage reports to Codecov
-    uses: codecov/codecov-action@v4.0.1
-    with:
-      token: ${{ secrets.CODECOV_TOKEN }}
+name: Upload coverage reports to Codecov
+on:
+  push:
+    branches: ["5-stable"]
+  pull_request:
+    branches: ["5-stable"]
+jobs:
+  codecov:
+    runs-on: ubuntu-latest
+    container: perl:latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Install modules
+        run: cpanm --installdeps .
+      - name: Install modules for the coverage
+        run: |
+          cpanm --quiet --notest Module::Build Module::Build::Tiny Devel::Cover Devel::Cover::Report::Codecovbash
+          perl Build.PL 
+          ./Build build
+      - name: Run Codecov on GitHub Actions
+        run: |
+          cover -test -report codecovbash
+          echo $CODECOV_TOKEN > ./codecov-token
+          /usr/bin/curl -o codecov-script -sSO https://codecov.io/bash
+          head ./codecov-script
+          chmod a+x ./codecov-script
+          ./codecov-script -t ./codecov-token -f ./cover_db/codecov.json
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
