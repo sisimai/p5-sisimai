@@ -25,4 +25,3 @@ jobs:
         with:
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
-
