@@ -21,11 +21,6 @@ jobs:
           perl-version: ${{ matrix.perl }}
       - name: Install modules
         run: cpanm --installdeps .
-      - name: Cache the dependent modules
-        uses: actions/cache@v2
-        with:
-          path: ./cache
-          key: ${{ runner.os }}-perl-${{ matrix.perl }}-${{ hashFiles('./cpanfile.snapshot') }}
       - name: Check the Perl version
         run: perl -v
       - name: Execute tests
