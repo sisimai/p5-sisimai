@@ -8,7 +8,7 @@
 SHELL := /bin/sh
 TIME  := $(shell date '+%F')
 NAME  := Sisimai
-PERL  ?= perl
+PERL  ?= $(shell which perl)
 CPANM := http://cpanmin.us/
 CPM   := https://git.io/cpm
 WGET  := wget -c
@@ -53,6 +53,7 @@ check:
 	find lib -type f -exec grep --color -E '[)][{]' {} /dev/null \;
 
 cover-test:
+	$(shell dirname $(PERL))/perldoc -l Devel::Cover || sudo cpanm Devel::Cover
 	cover -test
 
 backup-readme:
