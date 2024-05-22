@@ -4,6 +4,40 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.0.3
+---------------------------------------------------------------------------------------------------
+- release: "5.0.3"
+- version: "Wed, 22 May 2024 14:00:22 +0900 (JST)"
+- changes:
+  - Declare `use v5.26;` at each file using the postfix dereference #511
+    - Replace `use feature ":5.10";` with `use v5.26;`
+    - https://www.cpantesters.org/cpan/report/4a49b2fa-e101-11ee-9c91-c03a6e8775ea (Slaven Rezić)
+    - https://www.cpantesters.org/cpan/report/8345bf54-e192-11ee-bcdd-1845aa8c77b5 (David Cantrell)
+    - https://www.cpantesters.org/cpan/report/3170e9aa-e526-11ee-98b0-b3c3213a625c (Chris Williams)
+    - https://www.cpantesters.org/cpan/report/e51d7d7a-e58e-11ee-922b-530cbea18e0e (Andreas J. König)
+  - Remove `.travis.yml` from this repository
+  - Follow updates in Gmail SMTP errors and codes on Apr 29 and May 10 at `Sisimai::Rhost::Google`
+    #513 #515 #519
+    - https://support.google.com/a/answer/3726730?hl=en
+    - https://github.com/azumakuniyuki/feb-2024-no-auth-no-entry/commit/1d6adede
+    - https://github.com/azumakuniyuki/feb-2024-no-auth-no-entry/commit/d477b178
+    - Implement SMTP error codes as follows: `4.7.23`, `4.7.30`, `4.7.32`, `5.7.29`, and `5.7.30`
+    - Shortened error message patterns to make them more adaptable to minor sentence changes.
+  - Multibyte characters in the code and comments have been replaced with ASCII characters. #514
+  - Import sisimai/rb-sisimai#280 Deal the Apple unsubscribe notification as an ARF message #516
+  - Add the following error message patterns returned from Exchange Online #517
+    - 4.4.317, 5.4.317: STARTTLS is required to send mail
+    - 4.4.318, 5.4.318: Connection was closed abruptly (SuspiciousRemoteServerError)
+  - #518 Added 16 error message patterns into the following reasons:
+    - `Blocked`
+    - `Expired`
+    - `Filtered`
+    - `MailboxFull`
+    - `NoRelaying`
+    - `Suspend` 
+    - `UserUnknown`
+  - #320 #520 use Codecov for the coverage
+
 v5.0.2
 ---------------------------------------------------------------------------------------------------
 - release: "Wed, 13 Mar 2024 13:00:00 +0900 (JST)"
