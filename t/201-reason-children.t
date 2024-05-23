@@ -54,6 +54,7 @@ for my $e ( keys %$reasonchildren ) {
     for my $v ( @{ $reasonchildren->{ $e } } ) {
         is $r->match(lc $v), 1, $r.'->match('.$v.') = 1';
     }
+    is $r->match(), undef;
 } 
 
 for my $e ( 'Delivered', 'Feedback', 'Undefined', 'Vacation', 'SyntaxError' ) {
