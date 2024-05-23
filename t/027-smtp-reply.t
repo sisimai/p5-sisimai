@@ -99,6 +99,7 @@ MAKETEST: {
         like $v, qr/\A[2345][0-5][0-9]\z/, 'SMTP Reply Code = '.$v;
         ok $Package->test($v), '->test('.$v.') returns 1';
     }
+    is $Package->find('x-unix; Quota exceeded message delivery failed to'), '';
 
     for my $e ( 215, 250, 235, 354 ) {
         is $Package->test($e), 1;
