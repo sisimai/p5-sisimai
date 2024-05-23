@@ -100,6 +100,10 @@ MAKETEST: {
         ok $Package->test($v), '->test('.$v.') returns 1';
     }
 
+    for my $e ( 215, 250, 235, 354 ) {
+        is $Package->test($e), 1;
+    }
+
     for my $e ( qw|101 192 270 386 499 567 640 727| ) {
         is $Package->test($e), 0, '->test('.$e.') returns 0';
     }
