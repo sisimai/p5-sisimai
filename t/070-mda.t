@@ -27,6 +27,9 @@ MAKETEST: {
     my $message = undef;
     my $headers = {};
 
+    is $Package->inquire(undef), undef;
+    is $Package->inquire({}, undef), undef;
+
     while( my $r = $mailbox->data->read ) {
         $message = Sisimai::Message->rise({ 'data' => $r });
         $headers->{'from'} = $message->{'from'};
