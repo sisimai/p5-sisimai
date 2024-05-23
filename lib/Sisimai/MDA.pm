@@ -12,10 +12,6 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
-    return undef unless defined $mhead;
-    return undef unless length $$mbody;
-
     my $mfrom = lc $mhead->{'from'};
     my $match = 0;
 
