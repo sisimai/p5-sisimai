@@ -58,6 +58,8 @@ my $moduletest = sub {
     use_ok $M;
     can_ok $M, @$methodlist    if $M =~ /Sisimai::Lhost/;
     can_ok $M, ('inquire') unless $M =~ /Sisimai::Rhost/;
+    is $M->inquire(undef),       undef unless $M =~ /Sisimai::Rhost/;
+    is $M->inquire(undef,undef), undef unless $M =~ /Sisimai::Rhost/;
 
     PARSE_EACH_EMAIL: for my $e ( sort keys %$isexpected ) {
         # Open each email in set-of-emails/ directory
