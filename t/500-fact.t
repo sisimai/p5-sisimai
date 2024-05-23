@@ -55,6 +55,9 @@ can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
     is $Package->rise, undef;
+    is $Package->rise({'data' => ''}), undef;
+    is $Package->rise({'data' => 'test', 'load' => ''}), undef;
+    is $Package->rise({'data' => 'test', 'load' => [], 'order' => ''}), undef;
 
     my $json = JSON->new;
     my $call = sub {
@@ -117,6 +120,7 @@ MAKETEST: {
 
             # JSON
             $cv = $e->dump('json');     ok length $cv, sprintf("%s ->dump(json) = %s", $ct, substr($cv, 0, 32));
+            $cv = $e->dump();           ok length $cv, sprintf("%s ->dump() = %s",     $ct, substr($cv, 0, 32));
             $cj = $json->decode($cv);   isa_ok $cj, 'HASH';
 
             is $cj->{'action'}, $e->action, sprintf("%s ->action = %s", $ct, $e->action);
