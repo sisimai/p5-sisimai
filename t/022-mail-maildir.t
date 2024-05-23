@@ -38,6 +38,8 @@ MAKETEST: {
             $emindex++;
         }
         ok $emindex > 1;
+
+        is $Package->new(undef), undef;
     }
 }
 
