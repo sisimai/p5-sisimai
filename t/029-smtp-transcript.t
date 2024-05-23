@@ -17,6 +17,7 @@ MAKETEST: {
     my $transcript = Sisimai::SMTP::Transcript->rise(\$entiremesg, 'In:', 'Out:');
     my $resmtpcomm = qr/(?:CONN|HELO|EHLO|AUTH|MAIL|RCPT|DATA|QUIT|RSET|X[A-Z]+)/;
 
+    is $Package->rise([]), undef;
     isa_ok $transcript, 'ARRAY';
     ok scalar @$transcript;
 
