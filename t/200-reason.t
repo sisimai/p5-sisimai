@@ -153,6 +153,8 @@ MAKETEST: {
             ok grep { $b eq lc $_ } ( keys %$cv );
             is $a, $b;
         }
+        is(Sisimai::Reason->match(undef), undef);
+        is(Sisimai::Reason->match('X-Unix; 77'), 'mailererror');
     }
 }
 
