@@ -158,8 +158,6 @@ sub monthname {
     my $class = shift;
     my $argv1 = shift // 0;
     my $value = $argv1 ? 'full' : 'abbr';
-
-    return MonthName->{ $value }->@* if wantarray;
     return MonthName->{ $value };
 }
 
