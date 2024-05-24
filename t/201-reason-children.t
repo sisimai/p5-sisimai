@@ -5,7 +5,7 @@ use Test::More;
 use Module::Load;
 use Sisimai;
 
-my $reasonchildren = {
+my $ReasonChildren = {
     'AuthFailure'     => ["550 5.1.0 192.0.2.222 is not allowed to send from <example.net> per it's SPF Record"],
     'BadReputation'   => ['451 4.7.650 The mail server [192.0.2.2] has been temporarily rate limited due to IP reputation.'],
     'Blocked'         => ['550 Access from ip address 192.0.2.1 blocked.'],
@@ -40,7 +40,7 @@ my $reasonchildren = {
 my $ss = shift @{ Sisimai->rise('./set-of-emails/maildir/bsd/lhost-sendmail-01.eml') };
 isa_ok $ss, 'Sisimai::Fact';
 
-for my $e ( keys %$reasonchildren ) {
+for my $e ( keys %$ReasonChildren ) {
     my $r = 'Sisimai::Reason::'.$e;
     Module::Load::load $r;
     is $r->text, lc $e, $r.'->text = '.lc($e);
@@ -50,8 +50,18 @@ for my $e ( keys %$reasonchildren ) {
     my $q = $r->true($ss) // 0;
     like $q, qr/\A[01]\z/, $r.'->true($ss) = 0 or 1';
 
+    unless( $e =~ /\A(?:Content|Expire|Mailer|Network|Policy|Security|System|User|NoRelay)/ ) {
+        # Skip a class its true() method always return undef
+        $ss->reason(lc $e);
+        is $r->true($ss), 1;
+
+        $ss->reason('undefined');
+        $ss->diagnosticcode($ReasonChildren->{ $e });
+        is $r->true($ss), 0;
+    }
+
     next if $e eq 'OnHold';
-    for my $v ( @{ $reasonchildren->{ $e } } ) {
+    for my $v ( @{ $ReasonChildren->{ $e } } ) {
         is $r->match(lc $v), 1, $r.'->match('.$v.') = 1';
     }
     is $r->match(), undef;
