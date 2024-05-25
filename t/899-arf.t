@@ -35,5 +35,6 @@ my $isexpected = {
 };
 
 $enginetest->($enginename, $isexpected);
+is Sisimai::ARF->is_arf(), 0, 'Sisimai::ARF->is_arf() returns 0';
 done_testing;
 
