@@ -229,6 +229,10 @@ MAKETEST: {
         NEW: {
             # ->new()
             $v = $p->new(shift @{ $p->find($e->{'v'}) });
+            is $v->new(''), undef;
+            is $v->new([]), undef;
+            is $v->new({}), undef;
+
             if( $e->{'a'} =~ /\A(.+)[@]([^@]+)\z/ ){ $a->[0] = $1; $a->[1] = $2; }
             if( $Package->is_mailerdaemon($e->{'v'}) ){ $a->[0] = $e->{'a'}; $a->[1] = ''; }
 
@@ -289,7 +293,9 @@ MAKETEST: {
         $a = 'nyaa+neko=example.jp@example.org';
         $v = $p->new({ 'address' => $a });
         is $p->expand_verp($a), 'neko@example.jp', sprintf("%s->expand_verp(%s) = %s", $p, $a, $v);
+        is $p->expand_verp(undef), undef;
         is $v->verp, $a, sprintf("%s->new(v)->verp = %s", $p, $a);
+
     }
 
     ALIAS: {
@@ -297,6 +303,7 @@ MAKETEST: {
         $v = $p->new({ 'address' => $a });
 
         is $p->expand_alias($a), 'neko@example.jp', sprintf("%s->expand_alias(%s) = %s", $p, $a, $v);
+        is $p->expand_alias(undef), undef;
         is $v->alias, $a, sprintf("%s->new(v)->alias = %s", $p, $a);
     }
 
@@ -310,21 +317,26 @@ MAKETEST: {
         for my $e ( @$postmaster ) {
             ok $p->is_mailerdaemon($e), sprintf("%s->is_mailerdaemon = %s", $p, $e);
         }
+        is $p->is_mailerdaemon(undef), 0;
     }
 
-    for my $e ( @$isnotemail ) {
-        $v = $p->s3s4($e);                 is $v, $e,    sprintf("%s->s3s4(v) = %s", $p, $e);
-        $v = $p->new({ 'address' => $e }); is $v, undef, sprintf("%s->new(v) = undef", $p);
-        $v = $p->find($e);                 is $v, undef, sprintf("%s->find(v) = undef", $p);
-        $v = $p->is_emailaddress($e);      is $v, 0,     sprintf("%s->is_emailaddress = 0", $p);
+    IS_NOT_EMAIL: {
+        for my $e ( @$isnotemail ) {
+            $v = $p->s3s4($e);                 is $v, $e,    sprintf("%s->s3s4(v) = %s", $p, $e);
+            $v = $p->new({ 'address' => $e }); is $v, undef, sprintf("%s->new(v) = undef", $p);
+            $v = $p->find($e);                 is $v, undef, sprintf("%s->find(v) = undef", $p);
+            $v = $p->is_emailaddress($e);      is $v, 0,     sprintf("%s->is_emailaddress = 0", $p);
+        }
+        is $p->is_emailaddress(('neko-nyaan' x 25).'@example.jp'), 0;
     }
 
     UNDISCLOSED: {
         my $r = 'undisclosed-recipient-in-headers@libsisimai.org.invalid';
         my $s = 'undisclosed-sender-in-headers@libsisimai.org.invalid';
-        is $p->undisclosed(1), $r, sprintf("%s->undisclosed(r) = %s", $p, $r);
-        is $p->undisclosed(0), $s, sprintf("%s->undisclosed(s) = %s", $p, $s);
-        is $p->undisclosed(2), $r, sprintf("%s->undisclosed() = %s", $p, $r);
+        is $p->undisclosed(1), $r, sprintf("%s->undisclosed(1) = %s", $p, $r);
+        is $p->undisclosed(0), $s, sprintf("%s->undisclosed(0) = %s", $p, $s);
+        is $p->undisclosed(2), $r, sprintf("%s->undisclosed(2) = %s", $p, $r);
+        is $p->undisclosed(),  $s, sprintf("%s->undisclosed( ) = %s", $p, $s);
     }
 }
 
