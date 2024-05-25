@@ -231,7 +231,7 @@ MAKETEST: {
             $v = $p->new(shift @{ $p->find($e->{'v'}) });
             is $v->new(''), undef;
             is $v->new([]), undef;
-            is $v->new({}), undef;
+            is $v->new({'address' => ''}), undef;
 
             if( $e->{'a'} =~ /\A(.+)[@]([^@]+)\z/ ){ $a->[0] = $1; $a->[1] = $2; }
             if( $Package->is_mailerdaemon($e->{'v'}) ){ $a->[0] = $e->{'a'}; $a->[1] = ''; }
