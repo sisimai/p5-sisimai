@@ -45,6 +45,9 @@ MAKETEST: {
     isa_ok $v, 'HASH',  '->FIELDTABLE() returns Hash';
     ok scalar keys %$v, '->FIELDTABLE() returns Hash';
 
+    is $Package->field(), undef;
+    is $Package->field(1), undef;
+
     for my $e ( @$RFC1894Field1 ) {
         is $Package->match($e), 1, '->match('.$e.') returns 1';
 
