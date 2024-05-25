@@ -32,7 +32,10 @@ my $isexpected = {
     '42' => [['5.0.0',   '',    'filtered',        0]],
     '43' => [['4.3.0',   '451', 'onhold',          0]],
 };
- 
 $enginetest->($enginename, $isexpected);
+
+is Sisimai::RFC3464->inquire({}), undef;
+is Sisimai::RFC3464->inquire({'neko' => 2}, []), undef;
+
 done_testing;
 
