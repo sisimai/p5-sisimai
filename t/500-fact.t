@@ -58,6 +58,7 @@ MAKETEST: {
     is $Package->rise({'data' => ''}), undef;
     is $Package->rise({'data' => 'test', 'load' => ''}), undef;
     is $Package->rise({'data' => 'test', 'load' => [], 'order' => ''}), undef;
+    is $Package->rise({'data' => 'test', 'load' => [], 'order' => []}), undef;
 
     my $json = JSON->new;
     my $call = sub {
@@ -148,6 +149,7 @@ MAKETEST: {
                 isa_ok $cj->{'catch'}, 'HASH';
                 is $cj->{'catch'}->{'from'}, $e->catch->{'from'}, sprintf("%s ->catch->from = %s", $ct, $e->catch->{'from'});
             };
+            is $e->dump('neko'), undef;
 
             $ce += 1;
         }
