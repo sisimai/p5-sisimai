@@ -124,9 +124,9 @@ sub test {
 
     if( $first == 2 ) {
         # 2yz
+        return 1 if $reply == 235;
         return 0 if $reply <  211;
         return 0 if $reply >  252;
-        return 1 if $reply == 235;
         return 0 if $reply >  221 && $reply < 250;
         return 1;
     }
