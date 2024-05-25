@@ -26,6 +26,7 @@ MAKETEST: {
         is $Package->is_encoded(\$p2), 0, '->is_encoded = 0';
         is $Package->is_encoded(\$b2), 1, '->is_encoded = 1';
         is $Package->is_encoded(\$q3), 1, '->is_encoded = 1';
+        is $Package->is_encoded(''), undef;
 
         for my $e ( $p1, $p2 ) {
             $v0 = $Package->decodeH([$e]);
@@ -33,6 +34,7 @@ MAKETEST: {
             is $v0, $e, '->decodeH = '.$e;
         }
 
+        is $Package->decodeH(''), '';
         $v0 = $Package->decodeH([$b2]);
         $v0 = Encode::encode_utf8 $v0 if utf8::is_utf8 $v0;
         is $v0, $p2, '->decodeH = '.$p2;
@@ -70,6 +72,9 @@ MAKETEST: {
         # Base64, Quoted-Printable
         my $b6 = '44Gr44KD44O844KT';
         my $p6 = 'にゃーん';
+
+        is $Package->decodeB(undef), undef;
+        is $Package->decodeQ(undef), undef;
         is ${ $Package->decodeB(\$b6) }, $p6, '->decodeB = '.$p6;
         is ${ $Package->decodeQ(\'=4e=65=6b=6f') }, 'Neko', '->decodeQ = Neko';
     }
@@ -139,6 +144,8 @@ Reason: 550 maria@dest.example.net... No such user';
         is scalar @$v2, 2;
         is $v2->[0], 'text/plain; charset="utf-8"', '->haircut->[0] = text/plain; charset=utf-8';
         is $v2->[1], 'quoted-printable', '->haircut->[1] = quoted-printable';
+
+        is $Package->haircut(undef), undef;
     }
 
     LEVELOUT: {
@@ -184,6 +191,8 @@ Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
             ok length $e->[0];
             ok length $e->[2];
         }
+        isa_ok $Package->levelout('', 'neko'), 'ARRAY';
+        isa_ok $Package->levelout('neko', ''), 'ARRAY';
     }
 
     MAKEFLAT: {
@@ -246,7 +255,8 @@ Received: ...
         unlike $v9, qr/4AAQSkZJRgABAQEBLAEsAAD/m, '->makeflat() does not contain base64';
         like $v9, qr/kijitora[@]/m, '->makeflat() contains message/delivery-status part';
         like $v9, qr/Received:/m, '->makeflat() contains message/rfc822 part';
-        is $Package->makeflat(), undef;
+        is $Package->makeflat(undef, undef), undef;
+        is $Package->makeflat('neko', undef), undef;
     }
 
     IRREGULAR_CASE: {
