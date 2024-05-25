@@ -96,6 +96,9 @@ MAKETEST: {
         like $v->[4], qr/\A[^\s;]+\z/,         '->received(id) = '.$v->[4]   if length $v->[4];
         like $v->[5], qr/[^\s;]+[@][^\s;]+/,   '->received(for) = '.$v->[5]  if length $v->[5];
     }
+    isa_ok $Package->received({}), 'ARRAY';
+    isa_ok $Package->received('Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900'), 'ARRAY';
+    isa_ok $Package->received('Received: (qmail 222 invoked from network); 29 Apr 2010 23:34:45 +0900'), 'ARRAY';
 
     my $rfc822body = <<'EOB';
 This is a MIME-encapsulated message
@@ -173,6 +176,9 @@ EOB
     unlike $emailpart1->[1], qr/^Neko-Nyaan/m;
 
     ok length($emailpart1->[1]) < length($emailpart2->[1]);
+
+    is $Package->part('', 'neko'), undef;
+    is $Package->part('neko', ''), undef;
 
 }
 
