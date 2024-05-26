@@ -4,9 +4,11 @@ use lib qw(./lib ./blib/lib);
 use Sisimai;
 use Sisimai::Rhost;
 use Sisimai::Reason;
+use Module::Load;
 
 my $Package = 'Sisimai::Rhost';
 my $Methods = { 'class' => ['match', 'get'], 'object' => [] };
+my $Classes = [qw|Cox FrancePTT GoDaddy Google IUA KDDI Microsoft Mimecast NTTDOCOMO Spectrum Tencent|];
 
 MAKETEST: {
     use_ok $Package;
@@ -35,6 +37,15 @@ MAKETEST: {
                 is $Package->get($cx, $cx->{'destination'}), $f->reason, sprintf("->damn->reason = %s", $f->reason);
             }
         }
+    }
+
+    for my $e ( @$Classes ) {
+        my $r = sprintf("%s::%s", $Package, $e);
+        Module::Load::load $r;
+        is $r->get(undef), undef;
+        is $r->get({'diagnosticcode' => '', 'replycode' => 10, 'deliverystatus' => ''}), '';
+        is $r->get({'diagnosticcode' => 22, 'replycode' => 10, 'deliverystatus' => ''}), '';
+        is $r->get({'diagnosticcode' => 22, 'replycode' => 10, 'deliverystatus' => 33}), '';
     }
 }
 

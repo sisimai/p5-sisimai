@@ -25,6 +25,7 @@ MAKETEST: {
     is(Sisimai::String->token($s, $r), '', '->token = ""');
     ok(Sisimai::String->token($s, $r, 0), '->token');
 
+    is(Sisimai::String->is_8bit(), undef, '->is_8bit = undef');
     is(Sisimai::String->is_8bit(\$s), 0, '->is_8bit = 0');
     is(Sisimai::String->is_8bit(\'日本語'), 1, '->is_8bit = 1');
 
@@ -35,6 +36,10 @@ MAKETEST: {
     is(Sisimai::String->aligned(\$v, ['rfc822', ' <', '@', '>']), 1, '->aligned(rfc822, <, @, >)');
     is(Sisimai::String->aligned(\$v, ['rfc822', '<<', ' ', '>']), 0, '->aligned(rfc822, <, @, >)');
     is(Sisimai::String->aligned(\$v, ['rfc822']), 1, '->aligned(rfc822)');
+    is(Sisimai::String->aligned(undef, ['rfc822']), undef, '->aligned(undef)');
+    is(Sisimai::String->aligned(\'', ['rfc822']), undef, '->aligned("")');
+    is(Sisimai::String->aligned(\$v, undef), undef, '->aligned(undef)');
+    is(Sisimai::String->aligned(\$v, []), undef, '->aligned([])');
 
     is(Sisimai::String->ipv4('host smtp.example.jp 127.0.0.4 SMTP error from remote mail server')->[0], '127.0.0.4', '->ipv4 returns 127.0.0.4');
     is(Sisimai::String->ipv4('mx.example.jp (192.0.2.2) reason: 550 5.2.0 Mail rejete.')->[0], '192.0.2.2', '->ipv4 returns 192.0.2.2');
@@ -42,6 +47,8 @@ MAKETEST: {
     is(Sisimai::String->ipv4('127.0.0.1')->[0], '127.0.0.1', '->ipv4 returns 127.0.0.1');
     is(Sisimai::String->ipv4('365.31.7.1')->[0], undef, '->ipv4(365.31.7.1) returns undef');
     is(Sisimai::String->ipv4('a.b.c.d')->[0], undef, '->ipv4(a.b.c.d) returns undef');
+    is(Sisimai::String->ipv4(''), undef, '->ipv4("") returns undef');
+    is(Sisimai::String->ipv4('3.14')->@*, []->@*, '->ipv4("3.15") returns []');
 
     my $h = '
         <html>
@@ -78,6 +85,12 @@ MAKETEST: {
     ok length $$p;
     like $$p, qr/<body>/, '->to_plain(<body>)';
     like $$p, qr/Nyaan/, '->to_plain("<body>Nyaan</body>")';
+
+    $p = Sisimai::String->to_plain(undef);
+    is length $$p, 0;
+
+    $p = Sisimai::String->to_plain([]);
+    is length $$p, 0;
 }
 
 done_testing;

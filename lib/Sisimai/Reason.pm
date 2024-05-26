@@ -196,7 +196,7 @@ sub match {
     }
     return $reasontext if $reasontext;
 
-    if( uc $issuedcode eq 'X-UNIX' ) {
+    if( CORE::index(uc $issuedcode, 'X-UNIX; ') > -1 ) {
         # X-Unix; ...
         $reasontext = 'mailererror';
 

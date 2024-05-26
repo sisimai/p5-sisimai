@@ -26,7 +26,10 @@ MAKETEST: {
     };
 
     MONTH_NAME: {
-        my $month = undef;
+        my $month = $v->monthname();
+        isa_ok $month, 'ARRAY', $v.'->monthname()';
+        is $month->[0], 'Jan', $v.'->monthname()->[0]';
+        is $month->[6], 'Jul', $v.'->monthname()->[6]';
 
         $month = $v->monthname(0);
         isa_ok $month, 'ARRAY', $v.'->monthname(0)';
@@ -71,6 +74,7 @@ MAKETEST: {
             'Sun, 29 May 2014 1:2 +0900',
             '4/29/01 11:34:45 PM',
             '2014-03-26 00-01-19',
+            '29-04-2017 22:22',
         ];
 
         my $invaliddates = [
@@ -98,6 +102,9 @@ MAKETEST: {
             my $text = $v->parse($e);
             ok length($text || '') == 0, '->parse('.$e.') = '.($text || '');
         }
+
+        my $e = $v->parse();
+        is $e, undef, '->parse() = undef';
     }
 
     ABBR2TZ: {
@@ -110,6 +117,7 @@ MAKETEST: {
         is $v->abbr2tz('EDT'), '-0400', 'EDT = -0400';
         is $v->abbr2tz('HST'), '-1000', 'HST = -1000';
         is $v->abbr2tz('UT'),  '-0000', 'UT  = -0000';
+        is $v->abbr2tz(),      undef,   '""  = undef';
     }
 
     TIMEZONE_TO_SECOND: {

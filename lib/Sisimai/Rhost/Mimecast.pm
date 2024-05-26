@@ -12,8 +12,8 @@ sub get {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    return undef unless length $argvs->{'diagnosticcode'};
-    return undef unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
+    return '' unless length $argvs->{'diagnosticcode'};
+    return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
 
     state $messagesof = {
         # https://community.mimecast.com/s/article/Mimecast-SMTP-Error-Codes-842605754

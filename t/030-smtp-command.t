@@ -38,9 +38,14 @@ MAKETEST: {
     };
 
     my $v = '';
+    is $Package->test(),   undef, '->test() returns undef';
     is $Package->test(''), undef, '->test("") returns undef';
     is $Package->test('NEKO'), 0, '->test("NEKO") returns 0';
-    is $Package->find(''), undef, '->find("") returns undef';
+    is $Package->test('CONN'), 1, '->test("CONN") returns 1';
+
+    is $Package->find(),       undef, '->find("") returns undef';
+    is $Package->find(''),     undef, '->find() returns undef';
+    is $Package->find('NEKO'), undef, '->find("NEKO") returns undef';
 
     for my $e ( keys %$smtperrors ) {
         ok $Package->test($e);

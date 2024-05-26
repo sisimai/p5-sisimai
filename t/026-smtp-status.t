@@ -70,6 +70,15 @@ MAKETEST: {
 
     is $Package->test(''), undef, '->test("") = undef';
     is $Package->test('3.14'), 0, '->test("3.14") = 0';
+    is $Package->test('9.99'), 0, '->test("9.99") = 0';
+    is $Package->test('5.0.3.2'), 0, '->test("5.0.3.2") = 0';
+    is $Package->test('1.0.0'), 0, '->test("1.0.0") = 0';
+    is $Package->test('3.1.4'), 0, '->test("3.1.4") = 0';
+    is $Package->test('6.7.8'), 0, '->test("6.7.8") = 0';
+    is $Package->test('5.-1.0'), 0, '->test("5.-1.0") = 0';
+    is $Package->test('5.12.0'), 0, '->test("5.12.0") = 0';
+    is $Package->test('5.2.-2'), 0, '->test("5.2.-2") = 0';
+    is $Package->test('5.2.2220'), 0, '->test("5.2.2220") = 0';
 
     is $Package->find(''), undef, '->find("") = undef';
     for my $e ( @$smtperrors ) {
@@ -87,6 +96,8 @@ MAKETEST: {
     is $Package->prefer('4.4.7', '4.2.2'), '4.2.2';
     is $Package->prefer('5.7.8', '4.4.0', 550), '5.7.8';
     is $Package->prefer('4.2.1', '5.7.0', 421), '4.2.1';
+    is $Package->prefer('5.7', '5.7.26', 421), '5.7.26';
+    is $Package->prefer('5.7.26', '5.7', 421), '5.7.26';
 }
 
 done_testing;

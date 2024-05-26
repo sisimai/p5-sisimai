@@ -14,7 +14,7 @@ MAKETEST: {
     use IO::File;
     my $filehandle = IO::File->new($Mailbox, 'r');
     my $mailastext = '';
-    my $tobeloaded = $Package->load;
+    my $tobeloaded = $Package->load('load' => ['Sisimai::Lhost::Postfix'], 'order' => ['Sisimai::Lhost::Postfix']) ;
     my $callbackto = sub {
         my $argvs = shift;
         my $catch = { 
@@ -34,16 +34,20 @@ MAKETEST: {
 
     isa_ok $tobeloaded, 'ARRAY';
     ok length $mailastext;
+    isa_ok $Package->load('load' => {}, 'order' => []), 'ARRAY';
+    isa_ok $Package->load('load' => [], 'order' => {}), 'ARRAY';
 
-    my $p = Sisimai::Message->rise({ 'data' => $mailastext });
+    is $Package->rise(), undef;
+    is $Package->rise({}), undef;
 
+    my $p = $Package->rise({ 'data' => $mailastext });
     isa_ok $p, 'HASH';
     isa_ok $p->{'header'}, 'HASH', '->header';
     isa_ok $p->{'ds'}, 'ARRAY', '->ds';
     isa_ok $p->{'rfc822'}, 'HASH', '->rfc822';
     ok length $p->{'from'}, $p->{'from'};
 
-    $p = Sisimai::Message->rise({
+    $p = $Package->rise({
             'data' => $mailastext, 
             'hook' => $callbackto,
             'order' => [
@@ -139,11 +143,28 @@ Nyaaan
 __END_OF_EMAIL_MESSAGE__
 EOB
 
-    my $tidiedtext = $Package->tidy(\$rfc822body);
-    isa_ok $tidiedtext, 'SCALAR';
-    ok length $$tidiedtext;
-    like   $$tidiedtext, qr{Content-Type: text/plain};
-    unlike $$tidiedtext, qr{content-type:   };
+    TIDY: {
+        my $tidiedtext = $Package->tidy(\$rfc822body);
+        isa_ok $tidiedtext, 'SCALAR';
+        ok length $$tidiedtext;
+        like   $$tidiedtext, qr{Content-Type: text/plain};
+        unlike $$tidiedtext, qr{content-type:   };
+        is $Package->tidy(''), '';
+    }
+
+    PART: {
+        is $Package->part(), undef;
+        is $Package->part(undef), undef;
+    }
+
+    MAKEMAP: {
+        isa_ok $Package->makemap(''), 'HASH';
+    }
+
+    SIFT: {
+        is $Package->sift('mail' => {}), undef;
+        is $Package->sift('mail' => {'header' => {}}), undef;
+    }
 }
 
 done_testing;

@@ -14,7 +14,10 @@ my $isexpected = {
     '04' => [['', '', 'vacation', 0]],
     '05' => [['', '', 'vacation', 0]],
 };
-
 $enginetest->($enginename, $isexpected);
+
+is Sisimai::RFC3834->inquire({}), undef;
+is Sisimai::RFC3834->inquire({'neko' => 2}, []), undef;
+
 done_testing;
 

@@ -37,6 +37,8 @@ MAKETEST: {
         }
         is $mailbox->offset, -s $SampleEmail;
         is $emindex, 37;
+
+        is $Package->new(undef), undef;
     }
 }
 

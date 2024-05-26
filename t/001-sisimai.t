@@ -191,6 +191,11 @@ MAKETEST: {
             ok length $reasonlist->{ $e }, '->reason->{'.$e.'} = '.$reasonlist->{ $e };
         }
     }
+
+    MATCH: {
+        is(Sisimai->match('550 5.1.1 User unknown'), 'userunknown');
+        is(Sisimai->match(''), undef);
+    }
 }
 done_testing;
 
