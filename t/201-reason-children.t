@@ -38,6 +38,7 @@ my $ReasonChildren = {
 };
 
 my $ss = shift @{ Sisimai->rise('./set-of-emails/maildir/bsd/lhost-sendmail-01.eml') };
+my $cv = $ss->damn;
 isa_ok $ss, 'Sisimai::Fact';
 
 for my $e ( keys %$ReasonChildren ) {
@@ -50,14 +51,15 @@ for my $e ( keys %$ReasonChildren ) {
     my $q = $r->true($ss) // 0;
     like $q, qr/\A[01]\z/, $r.'->true($ss) = 0 or 1';
 
-    unless( $e =~ /\A(?:Content|Expire|Mailer|Network|Policy|Security|System|User|NoRelay)/ ) {
+    unless( $e =~ /\A(?:Content|Expire|Mailer|Network|Policy|Security|System|User|NoRelay|OnHold)/ ) {
         # Skip a class its true() method always return undef
-        $ss->reason(lc $e);
-        is $r->true($ss), 1;
+        $cv->{'reason'} = lc $e;
+        is $r->true($cv), 1;
 
-        $ss->reason('undefined');
-        $ss->diagnosticcode($ReasonChildren->{ $e });
-        is $r->true($ss), 0;
+        $cv->{'reason'} = 'undefined';
+        $cv->{'diagnosticcode'} = $ReasonChildren->{ $e }->[0];
+        $cv->{'smtpcommand'} = $e =~ /\A(?:Rejected|NotAccept)/ ? 'MAIL' : $ss->smtpcommand;
+        is $r->true($cv), 1, $e.'->true('.$cv->{'diagnosticcode'}.') = 1';
     }
 
     next if $e eq 'OnHold';
