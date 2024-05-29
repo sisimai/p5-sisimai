@@ -15,6 +15,7 @@ state $RhostClass = {
     'NTTDOCOMO' => ['mfsmax.docomo.ne.jp'],
     'Spectrum'  => ['charter.net'],
     'Tencent'   => ['.qq.com'],
+    'YahooInc'  => ['.yahoodns.net'],
 };
 
 sub match {
