@@ -125,6 +125,7 @@ sub list {
             Rhost/NTTDOCOMO.pm
             Rhost/Spectrum.pm
             Rhost/Tencent.pm
+            Rhost/YahooInc.pm
         SMTP.pm
             SMTP/Command.pm
             SMTP/Error.pm
