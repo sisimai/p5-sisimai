@@ -14,6 +14,11 @@ sub get {
     my $argvs = shift // return undef;
 
     state $messagesof = {
+        'authfailure' => [
+            # - 550 5.7.9 This mail has been blocked because the sender is unauthenticated. Yahoo
+            #   requires all senders to authenticate with either SPF or DKIM.
+            'Yahoo requires all senders to authenticate with either SPF or DKIM',
+        ],
         'badreputation' => [
             # - 421 4.7.0 [TSS04] Messages from 192.0.2.25 temporarily deferred due to unexpected
             #   volume or user complaints - 4.16.55.1;
