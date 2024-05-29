@@ -63,7 +63,7 @@ sub get {
             'Syntax error in parameters or arguments',
         ],
         'toomanyconn' => [
-            # - 421 Max message per connection reached, closing transmission channel"
+            # - 421 Max message per connection reached, closing transmission channel
             'Max message per connection reached',
         ],
         'userunknown' => [
