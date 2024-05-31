@@ -17,7 +17,7 @@ sub get {
         'authfailure' => [
             # - 550 5.7.9 This mail has been blocked because the sender is unauthenticated. Yahoo
             #   requires all senders to authenticate with either SPF or DKIM.
-            'Yahoo requires all senders to authenticate with either SPF or DKIM',
+            'yahoo requires all senders to authenticate with either spf or dkim',
         ],
         'badreputation' => [
             # - 421 4.7.0 [TSS04] Messages from 192.0.2.25 temporarily deferred due to unexpected
@@ -30,14 +30,14 @@ sub get {
             #   because the ip is in Spamhaus's list; see http://postmaster.yahoo.com/550-bl23.html
             # - 553 5.7.1 [BL23] Connections not accepted from IP addresses on Spamhaus XBL;
             #   see http://postmaster.yahoo.com/errors/550-bl23.html [550]",
-            " because the ip is in Spamhaus's list;",
-            'not accepted from IP addresses on Spamhaus XBL',
+            " because the ip is in spamhaus's list;",
+            'not accepted from ip addresses on spamhaus xbl',
         ],
         'norelaying' => [
             # - 550 relaying denied for <***@yahoo.com>
             'relaying denied for ',
         ],
-        'notcomplaintrfc' => ['Headers are not RFC compliant'],
+        'notcomplaintrfc' => ['headers are not rfc compliant'],
         'policyviolation' => [
             # - 554 Message not allowed - [PH01] Email not accepted for policy reasons.
             #   Please visit https://postmaster.yahooinc.com/error-codes
@@ -65,21 +65,21 @@ sub get {
         ],
         'syntaxerror' => [
             # - 501 Syntax error in parameters or arguments
-            'Syntax error in parameters or arguments',
+            'syntax error in parameters or arguments',
         ],
         'toomanyconn' => [
             # - 421 Max message per connection reached, closing transmission channel
-            'Max message per connection reached',
+            'max message per connection reached',
         ],
         'userunknown' => [
             # - 554 delivery error: dd This user doesn't have a yahoo.com account (***@yahoo.com)
             # - 552 1 Requested mail action aborted, mailbox not found (in reply to end of DATA command)
-            "dd This user doesn't have a ",
+            "dd this user doesn't have a ",
             'mailbox not found',
         ],
     };
 
-    my $issuedcode = $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     for my $e ( keys %$messagesof ) {
