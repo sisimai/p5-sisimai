@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 state $RhostClass = {
+    'Apple'     => ['.mail.icloud.com', '.apple.com', '.me.com'],
     'Cox'       => ['cox.net'],
     'FrancePTT' => ['.laposte.net', '.orange.fr', '.wanadoo.fr'],
     'GoDaddy'   => ['smtp.secureserver.net', 'mailstore1.secureserver.net'],
