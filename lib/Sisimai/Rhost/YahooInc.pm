@@ -12,6 +12,7 @@ sub get {
     #           https://www.postmastery.com/yahoo-postmaster/
     my $class = shift;
     my $argvs = shift // return undef;
+    return $argvs->{'reason'} if $argvs->{'reason'};
 
     state $messagesof = {
         'authfailure' => [
