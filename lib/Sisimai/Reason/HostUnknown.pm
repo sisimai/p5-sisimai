@@ -24,6 +24,7 @@ sub match {
         'host unreachable',
         'mail domain mentioned in email address is unknown',
         'name or service not known',
+        'no mx record found for domain=',
         'no such domain',
         'recipient address rejected: unknown domain name',
         'recipient domain must exist',
