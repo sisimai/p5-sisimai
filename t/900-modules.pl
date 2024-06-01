@@ -114,6 +114,7 @@ sub list {
         RFC5322.pm
         RFC5965.pm
         Rhost.pm
+            Rhost/Apple.pm
             Rhost/Cox.pm
             Rhost/FrancePTT.pm
             Rhost/GoDaddy.pm
