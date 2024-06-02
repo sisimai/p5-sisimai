@@ -7,21 +7,60 @@ sub get {
     # Detect bounce reason from https://cox.com/
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason at Cox
+    # @see      https://www.cox.com/residential/support/email-error-codes.html
     # @since v4.25.8
     my $class = shift;
     my $argvs = shift // return undef;
 
     state $errorcodes = {
-        # https://www.cox.com/residential/support/email-error-codes.html
-        'CXBL'      => 'blocked',       # The sending IP address has been blocked by Cox due to exhibiting spam-like behavior.
+        # CXBL
+        # - The sending IP address has been blocked by Cox due to exhibiting spam-like behavior.
+        # - Send an email request to Cox to ask for a sending IP address be unblocked.
+        #   Note: Cox has sole discretion whether to unblock the sending IP address.
+        'CXBL'   => 'blocked',
+
+        # CXDNS
+        # - There was an issue with the connecting IP address Domain Name System (DNS).
+        # - The Reverse DNS (rDNS) lookup for your IP address is failing. 
+        #   - Confirm the IP address that sends your email.
+        #   - Check the rDNS of that IP address. If it passes, then wait 24 hours and try resending
+        #     your email.
+        'CXDNS' => 'requireptr',
+
+        # CXSNDR
+        # - There was a problem with the sender's domain.
+        # - Your email failed authentication checks against your sending domain's SPF, DomainKeys,
+        #   or DKIM policy.
+        'CXSNDR' => 'authfailure',
+
+        # CXSMTP
+        # - There was a violation of SMTP protocol.
+        # - Your email wasn't delivered because Cox was unable to verify that it came from a
+        #   legitimate email sender.
+        'CXSMTP' => 'rejected',
+
+        # CXCNCT
+        # - There was a connection issue from the IP address.
+        # - There is a limit to the number of concurrent SMTP connections per IP address to
+        #   protect the systems against attack. Ensure that the sending email server is not
+        #   opening more than 10 concurrent connections to avoid reaching this limit.
+        'CXCNCT' => 'toomanyconn',
+
+        # CXMXRT
+        #   - The sender has sent email to too many recipients and needs to wait before sending
+        #     more email.
+        #   - The email sender has exceeded the maximum number of sent email allowed.
+        'CXMXRT' => 'toomanyconn', 
+
+        # CDRBL
+        # - The sending IP address has been temporarily blocked by Cox due to exhibiting spam-like
+        #   behavior.
+        # - The block duration varies depending on reputation and other factors, but will not exceed
+        #   24 hours. Inspect email traffic for potential spam, and retry email delivery.
+        'CDRBL' => 'blocked',
+
         'CXTHRT'    => 'securityerror', # Email sending limited due to suspicious account activity.
         'CXMJ'      => 'securityerror', # Email sending blocked due to suspicious account activity on primary Cox account.
-        'CXDNS'     => 'blocked',       # There was an issue with the connecting IP address Domain Name System (DNS).
-        'CXSNDR'    => 'rejected',      # There was a problem with the sender's domain.
-        'CXSMTP'    => 'rejected',      # Your email wasn't delivered because Cox was unable to verify that it came from a legitimate email sender.
-        'CXCNCT'    => 'toomanyconn',   # There is a limit to the number of concurrent SMTP connections per IP address
-        'CXMXRT'    => 'toomanyconn',   # The email sender has exceeded the maximum number of sent email allowed.
-        'CDRBL'     => 'blocked',       # The sending IP address has been temporarily blocked by Cox due to exhibiting spam-like behavior.
         'IPBL0001'  => 'blocked',       # The sending IP address is listed in the Spamhaus Zen DNSBL.
         'IPBL0010'  => 'blocked',       # The sending IP is listed in the Return Path DNSBL.
         'IPBL0100'  => 'blocked',       # The sending IP is listed in the Invaluement ivmSIP DNSBL.
@@ -38,6 +77,7 @@ sub get {
         'IPBL1110'  => 'blocked',       # The sending IP is in the Cloudmark CSI, Return Path and Invaluement ivmSIP DNSBLs.
         'IPBL1111'  => 'blocked',       # The sending IP is in the Cloudmark CSI, Spamhaus Zen, Return Path and Invaluement ivmSIP DNSBLs.
         'IPBL00001' => 'blocked',       # The sending IP address is listed on a Spamhaus blacklist. Check your status at Spamhaus.
+
         'URLBL011'  => 'spamdetected',  # A URL within the body of the message was found on blocklists SURBL and Spamhaus DBL.
         'URLBL101'  => 'spamdetected',  # A URL within the body of the message was found on blocklists SURBL and ivmURI.
         'URLBL110'  => 'spamdetected',  # A URL within the body of the message was found on blocklists Spamhaus DBL and ivmURI.
@@ -58,11 +98,6 @@ sub get {
             'dns check failure - try again later',
             'rejected - no rdns',
         ],
-        'notaccept' => [
-            # - Our systems are experiencing an issue which is causing a temporary inability to
-            #   accept new email.
-            'esmtp server temporarily not available',
-        ],
         'policyviolation' => [
             # - The sending server has attempted to communicate too soon within the SMTP transaction
             # - The message has been rejected because it contains an attachment with one of the
@@ -76,10 +111,16 @@ sub get {
             # Cox requires that all sender domains resolve to a valid MX or A-record within DNS.
             'sender rejected',
         ],
+        'systemerror' => [
+            # - Our systems are experiencing an issue which is causing a temporary inability to
+            #   accept new email.
+            'esmtp server temporarily not available',
+        ],
         'toomanyconn' => [
             # - The sending IP address has exceeded the five maximum concurrent connection limit.
             # - The SMTP connection has exceeded the 100 email message threshold and was disconnected.
-            # - The sending IP address has exceeded one of these rate limits and has been temporarily blocked.
+            # - The sending IP address has exceeded one of these rate limits and has been temporarily
+            #   blocked.
             'too many sessions from',
             'requested action aborted: try again later',
             'message threshold exceeded',
