@@ -45,25 +45,29 @@ sub get {
     };
     state $messagesof = {
         'blocked' => [
-            # Cox requires that all connecting email servers contain valid reverse DNS PTR records.
-            'rejected - no rDNS',
-            # An email client has repeatedly sent bad commands or invalid passwords resulting in a three-hour block of the client's IP address.
+            # - Cox requires that all connecting email servers contain valid reverse DNS PTR records.
+            # - An email client has repeatedly sent bad commands or invalid passwords resulting in
+            #   a three-hour block of the client's IP address.
+            # - The reverse DNS check of the sending server IP address has failed.
+            # - The sending IP address has exceeded the threshold of invalid recipients and has
+            #   been blocked.
+            'rejected - no rdns',
             'cox too many bad commands from',
-            # The reverse DNS check of the sending server IP address has failed.
-            'DNS check failure - try again later',
-            # The sending IP address has exceeded the threshold of invalid recipients and has been blocked.
-            'Too many invalid recipients',
+            'dns check failure - try again later',
+            'too many invalid recipients',
         ],
         'notaccept' => [
-            # Our systems are experiencing an issue which is causing a temporary inability to accept new email.
-            'ESMTP server temporarily not available',
+            # - Our systems are experiencing an issue which is causing a temporary inability to
+            #   accept new email.
+            'esmtp server temporarily not available',
         ],
         'policyviolation' => [
-            # The sending server has attempted to communicate too soon within the SMTP transaction
-            'ESMTP no data before greeting',
-            # The message has been rejected because it contains an attachment with one of the following prohibited
-            # file types, which commonly contain viruses: .shb, .shs, .vbe, .vbs, .wsc, .wsf, .wsh, .pif, .msc,
-            # .msi, .msp, .reg, .sct, .bat, .chm, .isp, .cpl, .js, .jse, .scr, .exe.
+            # - The sending server has attempted to communicate too soon within the SMTP transaction
+            # - The message has been rejected because it contains an attachment with one of the
+            #   following prohibited file types, which commonly contain viruses: .shb, .shs, .vbe,
+            #   .vbs, .wsc, .wsf, .wsh, .pif, .msc, .msi, .msp, .reg, .sct, .bat, .chm, .isp, .cpl,
+            #   .js, .jse, .scr, .exe.
+            'esmtp no data before greeting',
             'attachment extension is forbidden',
         ],
         'rejected' => [
@@ -71,15 +75,16 @@ sub get {
             'sender rejected',
         ],
         'toomanyconn' => [
-            # The sending IP address has exceeded the five maximum concurrent connection limit.
+            # - The sending IP address has exceeded the five maximum concurrent connection limit.
+            # - The SMTP connection has exceeded the 100 email message threshold and was disconnected.
+            # - The sending IP address has exceeded one of these rate limits and has been temporarily blocked.
             'too many sessions from',
-            # The SMTP connection has exceeded the 100 email message threshold and was disconnected.
             'requested action aborted: try again later',
-            # The sending IP address has exceeded one of these rate limits and has been temporarily blocked.
-            'Message threshold exceeded',
+            'message threshold exceeded',
         ],
         'userunknown' => [
-            'recipient rejected', # The intended recipient is not a valid Cox Email account.
+            # - The intended recipient is not a valid Cox Email account.
+            'recipient rejected',
         ],
     };
     my $issuedcode = $argvs->{'diagnosticcode'};
@@ -88,6 +93,7 @@ sub get {
 
     unless( $reasontext ) {
         # The error code was not found in $errorcodes
+        $issuedcode = lc $issuedcode;
         REASON: for my $e ( keys %$messagesof ) {
             # Try to find with each error message defined in $messagesof
             for my $f ( $messagesof->{ $e }->@* ) {
