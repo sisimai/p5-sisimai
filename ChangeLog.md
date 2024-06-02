@@ -4,6 +4,24 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.0.3p1
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #523 Consolidate error messages scattered under `Sisimai::Reason::*` into `Sisimai::Rhost::*`
+    classes for each email service
+    - `Sisimai::Rhost::YahooInc` for https://senders.yahooinc.com/smtp-error-codes/
+    - `Sisimai::Rhost::Apple` for iCloud Mail
+    - The following sample emails in `set-of-emails/maildir/bsd`:
+    - `rhost-yahooinc-01.eml`
+    - `rhost-yahooinc-02.eml`
+    - `rhost-yaoooinc-03.eml`
+    - `rhost-apple-01.eml`
+    - `rhost-apple-02.eml`
+    - `rhost-apple-03.eml`
+    - `rhost-apple-04.eml`
+
 v5.0.3
 ---------------------------------------------------------------------------------------------------
 - release: "5.0.3"
