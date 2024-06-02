@@ -8,7 +8,9 @@ use Module::Load;
 
 my $Package = 'Sisimai::Rhost';
 my $Methods = { 'class' => ['match', 'get'], 'object' => [] };
-my $Classes = [qw|Cox FrancePTT GoDaddy Google IUA KDDI Microsoft Mimecast NTTDOCOMO Spectrum Tencent|];
+my $Classes = [qw|
+    Apple Cox FrancePTT GoDaddy Google IUA KDDI Microsoft Mimecast NTTDOCOMO Spectrum Tencent YahooInc
+|];
 
 MAKETEST: {
     use_ok $Package;
