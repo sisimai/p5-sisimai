@@ -45,16 +45,18 @@ sub get {
     };
     state $messagesof = {
         'blocked' => [
-            # - Cox requires that all connecting email servers contain valid reverse DNS PTR records.
             # - An email client has repeatedly sent bad commands or invalid passwords resulting in
             #   a three-hour block of the client's IP address.
-            # - The reverse DNS check of the sending server IP address has failed.
             # - The sending IP address has exceeded the threshold of invalid recipients and has
             #   been blocked.
-            'rejected - no rdns',
             'cox too many bad commands from',
-            'dns check failure - try again later',
             'too many invalid recipients',
+        ],
+        'requireptr' => [
+            # - The reverse DNS check of the sending server IP address has failed.
+            # - Cox requires that all connecting email servers contain valid reverse DNS PTR records.
+            'dns check failure - try again later',
+            'rejected - no rdns',
         ],
         'notaccept' => [
             # - Our systems are experiencing an issue which is causing a temporary inability to
