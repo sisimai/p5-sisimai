@@ -7,8 +7,8 @@ sub get {
     # Detect bounce reason from Tencent 
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason at Tencent 
-    # @since v4.25.0
     # @see      https://service.mail.qq.com/detail/122
+    # @since v4.25.0
     my $class = shift;
     my $argvs = shift // return undef;
 

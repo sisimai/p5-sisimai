@@ -7,6 +7,7 @@ sub get {
     # Detect bounce reason from au(KDDI)
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason au.com and ezweb.ne.jp
+    # @since v4.22.6
     my $class = shift;
     my $argvs = shift // return undef;
 

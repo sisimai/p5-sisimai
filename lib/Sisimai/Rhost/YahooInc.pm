@@ -10,6 +10,7 @@ sub get {
     # @see      https://senders.yahooinc.com/smtp-error-codes
     #           https://smtpfieldmanual.com/provider/yahoo
     #           https://www.postmastery.com/yahoo-postmaster/
+    # @since v5.0.4
     my $class = shift;
     my $argvs = shift // return undef;
     return $argvs->{'reason'} if $argvs->{'reason'};

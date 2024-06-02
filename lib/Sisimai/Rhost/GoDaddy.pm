@@ -9,6 +9,7 @@ sub get {
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason for GoDaddy
     # @see      https://www.godaddy.com/help/what-does-my-email-bounceback-mean-3568
+    # @since v4.22.2
     my $class = shift;
     my $argvs = shift // return undef;
     return $argvs->{'reason'} if $argvs->{'reason'};

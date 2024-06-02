@@ -7,6 +7,7 @@ sub get {
     # Detect bounce reason from Orange and La Poste
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason for Orange, La Poste
+    # @since v4.22.3
     my $class = shift;
     my $argvs = shift // return undef;
     return $argvs->{'reason'} if $argvs->{'reason'};
