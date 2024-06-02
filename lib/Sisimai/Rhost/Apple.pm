@@ -71,7 +71,6 @@ sub get {
             'unknown or illegal alias',
         ],
     };
-
     my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
