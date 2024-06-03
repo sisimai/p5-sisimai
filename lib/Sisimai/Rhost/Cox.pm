@@ -11,14 +11,13 @@ sub get {
     # @since v4.25.8
     my $class = shift;
     my $argvs = shift // return undef;
-    return '' unless length $argvs->{'diagnosticcode'};
 
     state $errorcodes = {
         # CXBL
         # - The sending IP address has been blocked by Cox due to exhibiting spam-like behavior.
         # - Send an email request to Cox to ask for a sending IP address be unblocked.
         #   Note: Cox has sole discretion whether to unblock the sending IP address.
-        'CXBL'   => 'blocked',
+        'CXBL' => 'blocked',
 
         # CXDNS
         # - There was an issue with the connecting IP address Domain Name System (DNS).
