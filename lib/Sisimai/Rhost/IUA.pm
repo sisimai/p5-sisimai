@@ -12,7 +12,7 @@ sub get {
     my $argvs = shift // return undef;
 
     state $errorcodes = {
-        # http://mail.i.ua/err/$(CODE)
+        # https://mail.i.ua/err/$(CODE)
         '1'  => 'norelaying',  # The use of SMTP as mail gate is forbidden.
         '2'  => 'userunknown', # User is not found.
         '3'  => 'suspend',     # Mailbox was not used for more than 3 months
