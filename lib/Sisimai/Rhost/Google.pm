@@ -11,9 +11,6 @@ sub get {
     # @since v4.0.0
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return $argvs->{'reason'} if $argvs->{'reason'};
-    return '' unless $argvs->{'diagnosticcode'};
     return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
     return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 

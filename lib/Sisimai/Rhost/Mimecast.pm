@@ -11,8 +11,6 @@ sub get {
     # @since v4.25.15
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return '' unless length $argvs->{'diagnosticcode'};
     return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
 
     state $messagesof = {

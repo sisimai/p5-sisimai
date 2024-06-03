@@ -13,7 +13,6 @@ sub get {
     # @since v5.0.4
     my $class = shift;
     my $argvs = shift // return undef;
-    return $argvs->{'reason'} if $argvs->{'reason'};
 
     state $messagesof = {
         'authfailure' => [

@@ -12,7 +12,6 @@ sub get {
     # @since v4.22.2
     my $class = shift;
     my $argvs = shift // return undef;
-    return $argvs->{'reason'} if $argvs->{'reason'};
 
     state $errorcodes = {
         # Sender bounces
@@ -215,17 +214,16 @@ sub get {
 
     # 192.0.2.22 has sent to too many recipients this hour. IB607 ...
     $reasontext = $errorcodes->{ substr($issuedcode, $positionib + 1, 5) } || '' if $positionib > 1;
-    if( length $reasontext == 0 ) {
-        # 553 http://www.spamhaus.org/query/bl?ip=192.0.0.222
-        $issuedcode = lc $issuedcode;
-        for my $e ( keys %$messagesof ) {
-            for my $f ( $messagesof->{ $e }->@* ) {
-                next if index($issuedcode, $f) == -1;
-                $reasontext = $e;
-                last
-            }
-            last if $reasontext;
+    return $reasontext if length $reasontext;
+
+    $issuedcode = lc $issuedcode;
+    for my $e ( keys %$messagesof ) {
+        for my $f ( $messagesof->{ $e }->@* ) {
+            next if index($issuedcode, $f) == -1;
+            $reasontext = $e;
+            last
         }
+        last if $reasontext;
     }
     return $reasontext;
 }

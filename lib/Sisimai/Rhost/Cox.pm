@@ -11,6 +11,7 @@ sub get {
     # @since v4.25.8
     my $class = shift;
     my $argvs = shift // return undef;
+    return '' unless length $argvs->{'diagnosticcode'};
 
     state $errorcodes = {
         # CXBL
