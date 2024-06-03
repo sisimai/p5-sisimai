@@ -22,35 +22,35 @@ sub get {
         #      to an outgoing recipient, you may get an error code beginning with
         #      AUP#O, also followed by four numbers.
         #
-        # 1000 Your IP address has been blocked due to suspicious activity. If you’re a Spectrum
-        #      customer using a Spectrum-issued IP, contact us. If you’re using an IP address other
+        # 1000 Your IP address has been blocked due to suspicious activity. If you're a Spectrum
+        #      customer using a Spectrum-issued IP, contact us. If you're using an IP address other
         #      than one provided by Spectrum, blocks will remain in place until they expire.
         [1000, 0, 'blocked'],
 
         # 1010 This email account has been blocked from sending emails due to suspicious activity.
-        #      Blocks will expire based on the nature of the activity. If you’re a Spectrum customer,
+        #      Blocks will expire based on the nature of the activity. If you're a Spectrum customer,
         #      change all of your Spectrum passwords to secure your account and then contact us.
         [1010, 0, 'rejected'],
 
         # 1020 This email account has limited access to send emails based on suspicious activity.
         # 1080 Blocks will expire based on the nature of the activity.
-        #      If you’re a Spectrum customer, contact us to remove the block.
+        #      If you're a Spectrum customer, contact us to remove the block.
         [1020, 1080, 'rejected'],
 
-        # 1090 The email you’re trying to send can’t be processed. Try sending again at a later time.
+        # 1090 The email you're trying to send can't be processed. Try sending again at a later time.
         [1090, 0, 'systemerror'],
 
-        # 1100 The IP address you’re trying to connect from has an issue with the Domain Name System.
+        # 1100 The IP address you're trying to connect from has an issue with the Domain Name System.
         # 1150 Spectrum requires a full circle DNS for emails to be allowed through. Verify the IP
-        #      you’re connecting from, and check the IP address to ensure a reverse DNS entry exists
+        #      you're connecting from, and check the IP address to ensure a reverse DNS entry exists
         #      for the IP. If the IP address is a Spectrum-provided email address, contact us.
         [1100, 1150, 'requireptr'],
 
-        # 1160 The email you tried to send goes against your domain’s security policies. 
+        # 1160 The email you tried to send goes against your domain's security policies. 
         # 1190 Please contact the email administrators of your domain.
         [1160, 1190, 'policyviolation'],
 
-        # 1200 The IP address you’re trying to send from has been flagged by Cloudmark CSI as
+        # 1200 The IP address you're trying to send from has been flagged by Cloudmark CSI as
         # 1210 potential spam. Have your IP administrator request a reset. 
         #      Note: Cloudmark has sole discretion whether to remove the sending IP address from
         #            their lists.
@@ -62,7 +62,7 @@ sub get {
         #            their lists.
         [1220, 1250, 'blokced'],
 
-        # 1260 Spectrum doesn’t process IPV6 addresses. Connect with an IPv4 address and try again.
+        # 1260 Spectrum doesn't process IPV6 addresses. Connect with an IPv4 address and try again.
         [1260, 0, 'networkerror'],
 
         # 1300 Spectrum limits the number of concurrent connections from a sender, as well as the
@@ -75,14 +75,14 @@ sub get {
         [1350, 1490, 'speeding'],
 
         # 1500 Your email was rejected for attempting to send as a different email address than you
-        #      signed in under. Check that you’re sending emails from the address you signed in with.
+        #      signed in under. Check that you're sending emails from the address you signed in with.
         [1500, 0, 'rejected'],
 
         # 1520 Your email was rejected for attempting to send as a different email address than a
         #      domain that we host. Check the outgoing email address and try again.
         [1520, 0, 'rejected'],
 
-        # 1530 Your email was rejected because it’s larger than the maximum size of 20MB.
+        # 1530 Your email was rejected because it's larger than the maximum size of 20MB.
         [1530, 0, 'mesgtoobig'],
 
         # 1540 Your emails were deferred for attempting to send too many in a single session.

@@ -158,7 +158,7 @@ sub get {
             'www.spamhaus.org/query/bl?ip='
         ],
         'expired' => [
-            # - 451 Sorry, I wasn’t able to establish an SMTP connection. I’m not going to try again;
+            # - 451 Sorry, I wasn't able to establish an SMTP connection. I'm not going to try again;
             #   this message has been in the queue too long.
             # - The recipient's email address has been misspelled or the recipient's email provider
             #   has blocked sending from your address.
