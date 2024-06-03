@@ -12,10 +12,10 @@ sub get {
     my $argvs = shift // return undef;
 
     state $messagesof = {
-        'filtered'    => '550 : User unknown',  # The response was: 550 : User unknown
-        'userunknown' => '>: User unknown',     # The response was: 550 <...>: User unknown
+        'filtered'    => '550 : user unknown',  # The response was: 550 : User unknown
+        'userunknown' => '>: user unknown',     # The response was: 550 <...>: User unknown
     };
-    my $issuedcode = $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     for my $e ( keys %$messagesof ) {
