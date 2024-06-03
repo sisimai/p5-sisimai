@@ -7,14 +7,15 @@ sub get {
     # Detect bounce reason from au(KDDI)
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason au.com and ezweb.ne.jp
+    # @since v4.22.6
     my $class = shift;
     my $argvs = shift // return undef;
 
     state $messagesof = {
-        'filtered'    => '550 : User unknown',  # The response was: 550 : User unknown
-        'userunknown' => '>: User unknown',     # The response was: 550 <...>: User unknown
+        'filtered'    => '550 : user unknown',  # The response was: 550 : User unknown
+        'userunknown' => '>: user unknown',     # The response was: 550 <...>: User unknown
     };
-    my $issuedcode = $argvs->{'diagnosticcode'};
+    my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
     for my $e ( keys %$messagesof ) {

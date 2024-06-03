@@ -9,7 +9,7 @@ my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
     '02' => [['5.1.3',   '553', 'blocked',         0]],
-    '03' => [['5.1.1',   '550', 'toomanyconn',     0]],
+    '03' => [['5.1.1',   '550', 'speeding',        0]],
 };
 
 $enginetest->($enginename, $isexpected);

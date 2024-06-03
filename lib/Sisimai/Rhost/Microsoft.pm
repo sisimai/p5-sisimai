@@ -12,11 +12,9 @@ sub get {
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason for Exchange Online
     # @see      https://technet.microsoft.com/en-us/library/bb232118
+    # @since v4.17.2
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return $argvs->{'reason'} if $argvs->{'reason'};
-    return '' unless $argvs->{'diagnosticcode'};
     return '' unless $argvs->{'deliverystatus'};
     return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 

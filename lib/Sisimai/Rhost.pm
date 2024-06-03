@@ -46,6 +46,7 @@ sub get {
     my $class = shift;
     my $argvs = shift || return undef;
     my $proxy = shift || undef;
+    return '' unless length $argvs->{'diagnosticcode'};
 
     my $remotehost = $proxy || lc $argvs->{'rhost'};
     my $rhostclass = '';

@@ -8,11 +8,9 @@ sub get {
     # @param    [Sisimai::Fact] argvs   Parsed email object
     # @return   [String]                The bounce reason for Google Workspace
     # @see      https://support.google.com/a/answer/3726730?hl=en
+    # @since v4.0.0
     my $class = shift;
     my $argvs = shift // return undef;
-
-    return $argvs->{'reason'} if $argvs->{'reason'};
-    return '' unless $argvs->{'diagnosticcode'};
     return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
     return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 
