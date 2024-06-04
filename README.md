@@ -79,7 +79,7 @@ The key features of Sisimai
   * `cpan`, `cpanm`, or `cpm`
   * `git clone & make`
 * __High Precision of Analysis__
-  * Support [70 MTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)
+  * Support [72 MTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)
   * Support Feedback Loop Message(ARF)
   * Can detect [34 bounce reasons](https://libsisimai.org/en/reason/)
 
@@ -356,11 +356,11 @@ Beginning with v5.0.0, Sisimai requires **Perl 5.26.0 or later.**
 |------------------------------------------------------|--------------------|---------------------|
 | System requirements (Perl)                           | 5.10 - 5.38        | **5.26** - 5.38     |
 | Callback feature for the original email file         | N/A                | Available[^3]       |
-| The number of MTA/ESP modules                        | 68                 | 70                  |
+| The number of MTA/ESP modules                        | 68                 | 72                  |
 | The number of detectable bounce reasons              | 29                 | 34                  |
 | Dependencies (Except core modules of Perl)           | 2 modules          | 2 modules           |
-| Source lines of code                                 | 10,800 lines       | 11,500 lines        |
-| The number of tests in t/, xt/ directory             | 270,000 tests      | 328,000 tests       | 
+| Source lines of code                                 | 10,800 lines       | 11,700 lines        |
+| The number of tests in t/, xt/ directory             | 270,000 tests      | 330,500 tests       | 
 | The number of bounce emails decoded per second[^4]   | 541 emails         | 660 emails          |
 | License                                              | 2 Clause BSD       | 2 Caluse BSD        |
 | Commercial support                                   | Available          | Available           |
@@ -396,9 +396,11 @@ available at [LIBSISIMAI.ORG/EN/ENGINE](https://libsisimai.org/en/engine/)
 
 | `Sisimai::Rhost::`                                   | Sisimai 4          | Sisimai 5           |
 |------------------------------------------------------|--------------------|---------------------|
+| Apple iCloud Mail (added at v5.0.3p1)                | None               | `Apple`             |
 | Microsoft Exchange Online                            | `ExchangeOnline`   | `Microsoft`         |
 | Google Workspace                                     | `GoogleApps`       | `Google`            |
 | Tencent                                              | `TencentQQ`        | `Tencent`           |
+| Yahoo Mail (added at v5.0.3p1)                       | None               | `YahooInc`          |
 
 
 Bounce Reasons
