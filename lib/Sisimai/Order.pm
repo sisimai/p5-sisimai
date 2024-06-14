@@ -52,6 +52,7 @@ sub make {
         'mail-could'    => ['Sisimai::Lhost::InterScanMSS'],
         'mail-delivery' => [
             'Sisimai::Lhost::Exim',
+            'Sisimai::Lhost::DragonFly',
             'Sisimai::Lhost::MailRu',
             'Sisimai::Lhost::GMX',
             'Sisimai::Lhost::EinsUndEins',
