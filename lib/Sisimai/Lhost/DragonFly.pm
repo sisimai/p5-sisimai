@@ -93,7 +93,7 @@ sub inquire {
             next if length $v->{'rhost'} > 0;
 
             my $p = [split(' ', $e, 3)];
-            $v->{'rhost'} ||= index($p->[0], '.') > 1 ? $p->[0] : $p->[1];
+            $v->{'rhost'}   = index($p->[0], '.') > 1 ? $p->[0] : $p->[1];
             $v->{'command'} = Sisimai::SMTP::Command->find($e) || '';
         }
     }
