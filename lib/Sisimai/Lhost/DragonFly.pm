@@ -17,7 +17,6 @@ sub inquire {
     my $mbody = shift // return undef;
 
     return undef unless index($mhead->{'subject'}, 'Mail delivery failed') > -1;
-    return undef unless index($mhead->{'from'}, 'MAILER-DAEMON <>') > -1;
     return undef unless grep { rindex($_, ' (DragonFly Mail Agent') > -1 } $mhead->{'received'}->@*;
 
     state $indicators = __PACKAGE__->INDICATORS;
