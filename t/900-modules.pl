@@ -20,6 +20,7 @@ sub list {
             Lhost/Biglobe.pm
             Lhost/Courier.pm
             Lhost/Domino.pm
+            Lhost/DragonFly.pm
             Lhost/EinsUndEins.pm
             Lhost/Exchange2003.pm
             Lhost/Exchange2007.pm

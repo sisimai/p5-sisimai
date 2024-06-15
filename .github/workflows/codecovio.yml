@@ -3,14 +3,16 @@ on:
   push:
     branches: ["5-stable"]
   pull_request:
-    branches: ["5-stable"]
+    branches: ["*"]
 jobs:
   codecov:
     runs-on: ubuntu-latest
     container: perl:latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Install modules
         run:  cpanm --installdeps .
       - name: Install modules for the coverage

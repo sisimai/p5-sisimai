@@ -3,7 +3,7 @@ on:
   push:
     branches: ["5-stable"]
   pull_request:
-    branches: ["5-stable"]
+    branches: ["*"]
 jobs:
   test:
     name: Make Test with Perl ${{ matrix.perl }}
@@ -14,7 +14,9 @@ jobs:
         perl: ["5.26", "5.38"]
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
         with:
