@@ -75,7 +75,7 @@ The key features of Sisimai
   * `cpan`, `cpanm`, `cpm install`
   * `git clone & make`
 * __高い解析精度__
-  * [72種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
+  * [73種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
   * Feedback Loop(ARF)にも対応
   * [34種類のバウンス理由](https://libsisimai.org/en/reason/)を検出
 
@@ -350,11 +350,11 @@ Sisimai 5.0.0から**Perl 5.26.0以上**が必要になります。
 |------------------------------------------------------|--------------------|---------------------|
 | 動作環境(Perl)                                       | 5.10 - 5.38        | **5.26** - 5.38     |
 | 元メールファイルを操作可能なコールバック機能         | なし               | あり[^3]            |
-| 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 72                  |
+| 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 73                  |
 | 検出可能なバウンス理由の数                           | 29                 | 34                  |
 | 依存もジュール数(Perlのコアモジュールを除く)         | 2 モジュール       | 2 モジュール        |
-| ソースコードの行数                                   | 10,800 行          | 11,700 行           |
-| テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 330,500 件          |
+| ソースコードの行数                                   | 10,800 行          | 11,800 行           |
+| テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 335,000 件          |
 | 1秒間に解析できるバウンスメール数[^4]                | 541 通             | 660 通              |
 | ライセンス                                           | 2条項BSD           | 2条項BSD            |
 | 開発会社による商用サポート                           | 提供中             | 提供中              |
@@ -387,13 +387,14 @@ MTA/ESP Module Names
 Sisimai 5で3個のESPモジュール名(解析エンジン)が変更になりました。詳細はMTA/ESPモジュールの一覧/
 [LIBSISIMAI.ORG/JA/ENGINE](https://libsisimai.org/ja/engine/)を参照してください。
 
-| `Sisimai::Rhost::`                                   | Sisimai 4          | Sisimai 5           |
-|------------------------------------------------------|--------------------|---------------------|
-| Apple iCloud Mail (added at v5.0.3p1)                | なし               | `Apple`             |
-| Microsoft Exchange Online                            | `ExchangeOnline`   | `Microsoft`         |
-| Google Workspace                                     | `GoogleApps`       | `Google`            |
-| Tencent                                              | `TencentQQ`        | `Tencent`           |
-| Yahoo Mail (added at v5.0.3p1)                       | なし               | `YahooInc`          |
+| `Sisimai::`                                     | Sisimai 4               | Sisimai 5           |
+|-------------------------------------------------|-------------------------|---------------------|
+| Apple iCloud Mail (added at v5.0.3p1)           | なし                    | `Rhost::Apple`      |
+| Microsoft Exchange Online                       | `Rhost::ExchangeOnline` | `Rhost::Microsoft`  |
+| Google Workspace                                | `Rhost::GoogleApps`     | `Rhost::Google`     |
+| Tencent                                         | `Rhost::TencentQQ`      | `Rhost::Tencent`    |
+| Yahoo Mail (added at v5.0.3p1)                  | なし                    | `Rhost::YahooInc`   |
+| DragonFly Mail Agent (added at v5.0.3p2)        | なし                    | `Lhost::DragonFly`  |
 
 Bounce Reasons
 ---------------------------------------------------------------------------------------------------
