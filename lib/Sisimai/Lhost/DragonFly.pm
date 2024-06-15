@@ -74,7 +74,8 @@ sub inquire {
         $v = $dscontents->[-1];
 
         if( index($e, 'There was an error delivering your mail to <') == 0 ) {
-            # There was an error delivering your mail to <kijitora@example.com>.
+            # email.example.jp [192.0.2.25] did not like our RCPT TO:
+            # 552 5.2.2 <kijitora@example.com>: Recipient address rejected: Mailbox full
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
