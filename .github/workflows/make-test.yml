@@ -3,7 +3,7 @@ on:
   push:
     branches: ["5-stable"]
   pull_request:
-    branches: ["${{ github.head_ref }}"]
+    types: ["opened", "closed"]
 jobs:
   test:
     name: Make Test with Perl ${{ matrix.perl }}
