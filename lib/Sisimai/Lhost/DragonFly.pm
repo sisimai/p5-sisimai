@@ -73,7 +73,7 @@ sub inquire {
         # Original message follows.
         $v = $dscontents->[-1];
 
-        if( index($e, 'There was an error delivering your mail to <') > -1 ) {
+        if( index($e, 'There was an error delivering your mail to <') == 0 ) {
             # There was an error delivering your mail to <kijitora@example.com>.
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
