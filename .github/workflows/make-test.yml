@@ -14,13 +14,9 @@ jobs:
         perl: ["5.26", "5.38"]
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - name: TEST1
-        run: /bin/ls -laF .
-      - name: TEST2
-        run: /bin/ls -laF ./lib/Sisimai/Lhost/
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
         with:
