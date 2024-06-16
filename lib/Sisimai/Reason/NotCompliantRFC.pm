@@ -53,10 +53,10 @@ Sisimai::Reason::NotCompliantRFC - Bounce reason is C<notcompliantrfc> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::NotCompliantRFC checks the bounce reason is C<notcompliantrfc> or not. This class
-is called only from Sisimai::Reason class.
+C<Sisimai::Reason::NotCompliantRFC> checks the bounce reason is C<notcompliantrfc> or not.
+This class is called only from C<Sisimai::Reason class>.
 
-This is the error that an email is not compliant RFC 5322 or other email related RFCs. For example,
+This is the error that the email is not compliant RFC 5322 or other email related RFCs. For example,
 there are multiple C<Subject> headers in the email.
 
     host aspmx.l.google.com[142.251.170.26] said: This message is not RFC 5322 compliant. There are
@@ -68,20 +68,20 @@ there are multiple C<Subject> headers in the email.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<notcompliantrfc>.
+C<text()> method returns the fixed string C<notcompliantrfc>.
 
     print Sisimai::Reason::NotCompliantRFC->text;  # notcompliantrfc
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::NotCompliantRFC->match('This message is not RFC 5322 compliant');    # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<notcompliantrfc>. The argument must be Sisimai::Fact
-object and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<notcompliantrfc>. The argument must be
+C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

@@ -46,28 +46,28 @@ Sisimai::Reason::OnHold - Bounce reason is C<onhold> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::OnHold checks the bounce reason is C<onhold> or not. This class is called only
-Sisimai::Reason class. Sisimai will set C<onhold> to the reason of email bounce if there is no (or
-less) detailed information about email bounce for judging the reason.
+C<Sisimai::Reason::OnHold> checks the bounce reason is C<onhold> or not. This class is called only
+C<Sisimai::Reason> class. Sisimai will set C<onhold> to the reason of email bounce if there is no
+(or less) detailed information about email bounce for judging the reason.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<onhold>.
+C<text()> method returns the fixed string C<onhold>.
 
     print Sisimai::Reason::OnHold->text;  # onhold
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::OnHold->match; # 0;
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<onhold>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<onhold>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -82,3 +82,4 @@ Copyright (C) 2014-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

@@ -192,13 +192,13 @@ Sisimai::RFC1894 - DSN field defined in RFC3464 (obsoletes RFC1894)
 
 =head1 DESCRIPTION
 
-Sisimai::RFC1894 provide methods for checking or getting DSN fields
+C<Sisimai::RFC1894> provide methods for checking or getting DSN fields
 
 =head1 CLASS METHODS
 
 =head2 C<B<match(I<String>)>>
 
-C<match()> checks the argument includes a field defined in RFC3464 or not
+C<match()> method checks the argument includes the field defined in RFC3464 or not
 
     print Sisimai::RFC1894->match('From: Nyaan <kijitora@libsisimai.org>'); # 0
     print Sisimai::RFC1894->match('Reporting-MTA: DNS; mx.libsisimai.org'); # 1
@@ -206,8 +206,8 @@ C<match()> checks the argument includes a field defined in RFC3464 or not
 
 =head2 C<B<label(I<String>)>>
 
-C<label()> returns a lower cased field name such as "diagnostic-code" from given an email header or
-a delivery status field.
+C<label()> method returns a lower cased field name such as C<"diagnostic-code"> from the given email
+header or the delivery status field.
 
     print Sisimai::RFC1894->label('Remote-MTA: DNS; mx.nyaan.jp');  # remote-mta
     print Sisimai::RFC1894->field('Status: 5.1.1');                 # status
@@ -216,8 +216,8 @@ a delivery status field.
 
 =head2 C<B<field(I<String>)>>
 
-C<field()> returns splited values as an array reference from given a string including DSN fields
-defined in RFC3464.
+C<field()> method returns the splited values as an array reference from the given string including
+DSN fields defined in RFC3464.
 
     my $v = Sisimai::RFC1894->field('Remote-MTA: DNS; mx.nyaan.jp');
     my $r = Sisimai::RFC1894->field('Status: 5.1.1');

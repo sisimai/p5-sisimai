@@ -4,13 +4,13 @@ use v5.26;
 use strict;
 use warnings;
 
-sub description { 'au EZweb: http://www.au.kddi.com/mobile/' }
+sub description { 'au EZweb: https://www.au.com/mobile/' }
 sub inquire {
     # Detect an error from EZweb
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.0.0
     my $class = shift;
     my $mhead = shift // return undef;
@@ -173,7 +173,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::EZweb - bounce mail parser class for C<au EZweb>.
+Sisimai::Lhost::EZweb - bounce mail decoder class for au EZweb L<https://www.au.com/mobile/>.
 
 =head1 SYNOPSIS
 
@@ -181,8 +181,8 @@ Sisimai::Lhost::EZweb - bounce mail parser class for C<au EZweb>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::EZweb parses a bounce email which created by C<au EZweb>. Methods in the module are
-called from only Sisimai::Message.
+C<Sisimai::Lhost::EZweb> decodes a bounce email which created by au EZweb L<https://www.au.com/mobile/>.
+Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -194,8 +194,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method decodes a bounced email and return results as a array reference.
+See C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 

@@ -4,13 +4,13 @@ use v5.26;
 use strict;
 use warnings;
 
-sub description { 'Microsoft Office 365: https://office.microsoft.com/' }
+sub description { 'Microsoft 365: https://office.microsoft.com/' }
 sub inquire {
     # Detect an error from Microsoft Office 365
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.3
     my $class = shift;
     my $mhead = shift // return undef;
@@ -242,7 +242,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::Office365 - bounce mail parser class for Microsoft Office 365.
+Sisimai::Lhost::Office365 - bounce mail decoder class for Microsoft 365 L<https://office.microsoft.com/>.
 
 =head1 SYNOPSIS
 
@@ -250,8 +250,8 @@ Sisimai::Lhost::Office365 - bounce mail parser class for Microsoft Office 365.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::Office365 parses a bounce email which created by Microsoft Office 365. Methods in
-the module are called from only Sisimai::Message.
+C<Sisimai::Lhost::Office365> decodes a bounce email which created by Microsoft 365 L<https://office.microsoft.com/>.
+Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -263,8 +263,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method decodes a bounced email and return results as a array reference.
+See C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 

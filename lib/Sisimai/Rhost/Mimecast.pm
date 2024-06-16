@@ -314,19 +314,19 @@ Sisimai::Rhost::Mimecast - Detect the bounce reason returned from Mimecast
 
 =head1 SYNOPSIS
 
-    use Sisimai::Rhost;
+    use Sisimai::Rhost::Mimecast;
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument of
-get() method when the value of C<rhost> or C<destination> of the object is "mimecast.com". This
-class is called only Sisimai::Fact class.
+C<Sisimai::Rhost::Mimecast> detects the bounce reason from the content of C<Sisimai::Fact> object
+as an argument of C<get()> method when the value of C<rhost> or C<destination> of the object is
+C<mimecast.com>. This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
 =head2 C<B<get(I<Sisimai::Fact Object>)>>
 
-C<get()> detects the bounce reason.
+C<get()> method detects the bounce reason.
 
 =head1 AUTHOR
 

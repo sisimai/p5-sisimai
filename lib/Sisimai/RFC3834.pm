@@ -153,21 +153,21 @@ Sisimai::RFC3834 - RFC3834 auto reply message detector
 
 =head1 DESCRIPTION
 
-Sisimai::RFC3834 is a class which called from called from only Sisimai::Message when other
-Sisimai::Lhost::* modules did not detected a bounce reason.
+C<Sisimai::RFC3834> is a class which called from called from only C<Sisimai::Message> when other
+C<Sisimai::Lhost::*> modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
 =head2 C<B<description()>>
 
-C<description()> returns description string of this module.
+C<description()> method returns the description string of this module.
 
     print Sisimai::RFC3834->description;
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses an auto replied message and return results as an array reference. See
-Sisimai::Message for more details.
+C<inquire()> method decodes an auto replied message and return results as an array reference. See
+C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 

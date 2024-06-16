@@ -77,9 +77,9 @@ Sisimai::Reason::NoRelaying - Bounce reason is C<norelaying> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::NoRelaying checks the bounce reason is C<norelaying> or not. This class is called
-only Sisimai::Reason class. This is the error that SMTP connection rejected with error message
-C<Relaying Denied>.
+C<Sisimai::Reason::NoRelaying> checks the bounce reason is C<norelaying> or not. This class is called
+only C<Sisimai::Reason> class. This is the error that the SMTP connection rejected with an error message
+like C<Relaying Denied>.
 
     ... while talking to mailin-01.mx.example.com.:
     >>> RCPT To:<kijitora@example.org>
@@ -90,20 +90,20 @@ C<Relaying Denied>.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<norelaying>.
+C<text()> method returns the fixed string C<norelaying>.
 
     print Sisimai::Reason::NoRelaying->text;  # norelaying
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::NoRelaying->match('Relaying denied');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<norelaying>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<norelaying>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -118,3 +118,4 @@ Copyright (C) 2014-2018,2020-2023,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

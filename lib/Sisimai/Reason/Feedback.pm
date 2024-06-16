@@ -24,24 +24,24 @@ Sisimai::Reason::Feedback - Email forwarded as a complaint message
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Feedback is for only returning text and description.  This class is called only
-from Sisimai->reason method and Sisimai::ARF class.
+C<Sisimai::Reason::Feedback> is for only returning the text and the description. This class is called
+only from C<Sisimai->reason()> method and C<Sisimai::ARF> class.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<feedback>.
+C<text()> method returns the fixed string C<feedback>.
 
     print Sisimai::Reason::Feedback->text;  # feedback
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> always return undef
+C<match()> method always return C<undef>
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> always return undef
+C<true()> method always return C<undef>
 
 =head1 AUTHOR
 

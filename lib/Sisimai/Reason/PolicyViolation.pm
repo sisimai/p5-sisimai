@@ -74,12 +74,12 @@ Sisimai::Reason::PolicyViolation - Bounce reason is C<policyviolation> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::PolicyViolation checks the bounce reason is C<policyviolation> or not. This class
-is called only Sisimai::Reason class.
+C<Sisimai::Reason::PolicyViolation> checks the bounce reason is C<policyviolation> or not.
+This class is called only C<Sisimai::Reason> class.
 
-This is the error that a policy violation was detected on a destination mail host. When a header
-content or a format of the original message violates security policies, or multiple addresses exist
-in the From: header, Sisimai will set C<policyviolation>.
+This is the error that a policy violation was detected on the destination mail host. When the header
+content or the format of the original message violates their security policies, or multiple addresses
+exist in the C<From:> header, Sisimai will set C<policyviolation>.
 
     Action: failed
     Status: 5.7.0
@@ -91,20 +91,20 @@ in the From: header, Sisimai will set C<policyviolation>.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<policyviolation>.
+C<text()> method returns the fixed string C<policyviolation>.
 
     print Sisimai::Reason::PolicyViolation->text;  # policyviolation
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::PolicyViolation->match('5.7.9 Header error');    # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<policyviolation>. The argument must be Sisimai::Fact
-object and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<policyviolation>. The argument must be
+<CSisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

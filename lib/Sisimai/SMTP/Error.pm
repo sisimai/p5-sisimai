@@ -126,13 +126,13 @@ Sisimai::SMTP::Error - SMTP Errors related utilities
 
 =head1 DESCRIPTION
 
-Sisimai::SMTP::Error provide method to check an SMTP errors.
+C<Sisimai::SMTP::Error> provide methods to check an SMTP errors.
 
 =head1 CLASS METHODS
 
 =head2 C<B<is_permanent(I<String>)>>
 
-C<is_permanent()> checks the given string points an permanent error or not.
+C<is_permanent()> method checks the given string points an permanent error or not.
 
     print Sisimai::SMTP::Error->is_permanent('5.1.1 User unknown'); # 1
     print Sisimai::SMTP::Error->is_permanent('4.2.2 Mailbox Full'); # 0
@@ -140,9 +140,9 @@ C<is_permanent()> checks the given string points an permanent error or not.
 
 =head2 C<B<soft_or_hard(I<String>, I<String>)>>
 
-C<soft_or_hard()> returns string 'soft' if given bounce reason is a soft bounce. When the reason is
-a hard bounce, this method returns 'hard'. If the return value is an empty string, it means that
-returned email may not be a bounce.
+C<soft_or_hard()> method returns string C<soft> if given bounce reason is a soft bounce. When the
+reason is a hard bounce, this method returns C<hard>. If the return value is an empty string, it
+means that returned email may not be a bounce.
 
     print Sisimai::SMTP::Error->soft_or_hard('userunknown', '5.1.1 No such user');   # 'hard'
     print Sisimai::SMTP::Error->soft_or_hard('mailboxfull');                         # 'soft'

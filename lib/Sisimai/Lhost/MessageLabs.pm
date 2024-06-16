@@ -4,13 +4,13 @@ use v5.26;
 use strict;
 use warnings;
 
-sub description { 'Symantec.cloud http://www.messagelabs.com' }
+sub description { 'Email Security (formerly Messaging Security): https://www.broadcom.com/products/cybersecurity/email' }
 sub inquire {
     # Detect an error from MessageLabs.com
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.10
     my $class = shift;
     my $mhead = shift // return undef;
@@ -122,7 +122,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::MessageLabs - bounce mail parser class for C<MessageLabs>.
+Sisimai::Lhost::MessageLabs - bounce mail decode class for Email Security (formerly Messaging Security)
+L<https://www.broadcom.com/products/cybersecurity/email>
 
 =head1 SYNOPSIS
 
@@ -130,8 +131,10 @@ Sisimai::Lhost::MessageLabs - bounce mail parser class for C<MessageLabs>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::MessageLabs parses a bounce email which created by C<Symantec.cloud>: formerly known
-as C<MessageLabs>. Methods in the module are called from only Sisimai::Message.
+C<Sisimai::Lhost::MessageLabs> decodes a bounce email which created by Email Security (formerly Messaging
+Security) L<https://www.broadcom.com/products/cybersecurity/email> (formerly Symantec.cloud: formerly
+known as MessageLabs L<https://messagelabs.com>.
+Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -143,8 +146,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method decodes a bounced email and return results as a array reference.
+See C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 

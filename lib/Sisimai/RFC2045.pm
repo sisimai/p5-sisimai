@@ -373,42 +373,44 @@ Sisimai::RFC2045 - MIME Utilities
 
 =head1 DESCRIPTION
 
-Sisimai::RFC2045 is MIME Utilities for C<Sisimai>, is formerly known as C<Sisimai::MIME>.
+C<Sisimai::RFC2045> is MIME Utilities for Sisimai, is formerly known as C<Sisimai::MIME>.
 
 =head1 CLASS METHODS
 
 =head2 C<B<is_encoded(I<Scalar Reference>)>>
 
-C<is_encoded()> returns that the argument is MIME-Encoded string or not.
+C<is_encoded()> method returns that the argument is a MIME-Encoded string or not.
 
     my $e = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
     my $v = Sisimai::RFC2045->is_encoded(\$e);  # 1
 
 =head2 C<B<decodeH(I<Array-Ref>)>>
 
-C<decodeH()> is a decoder method for getting the original string from MIME-Encoded string in email
-headers.
+C<decodeH()> method is a decoding method for getting the original string from the MIME-Encoded string
+in the email headers.
 
     my $r = '=?utf-8?B?55m954yr44Gr44KD44KT44GT?=';
     my $v = Sisimai::RFC2045->decodeH([$r]);
 
 =head2 C<B<decodeB(I<\String>)>>
 
-C<decodeB> is a decoder method for getting the original string from MIME Base64 encoded string.
+C<decodeB> method is a decoding method for getting the original string from the MIME Base64 encoded
+string.
 
     my $r = '44Gr44KD44O844KT';
     my $v = Sisimai::RFC2045->decodeB(\$r);
 
 =head2 C<B<decodeQ(I<\String>)>>
 
-C<decodeQ> is a decoder method for getting the original string from MIME quoted-printable encoded string.
+C<decodeQ> method is a decoding method for getting the original string from the MIME quoted-printable
+encoded string.
 
     my $r = '=4e=65=6b=6f';
     my $v = Sisimai::RFC2045->decodeQ(\$r);
 
 =head2 C<B<parameter(I<String>, I<String>)>>
 
-C<parameter()> returns the value of parameter in Content-Type header.
+C<parameter()> method returns the value of parameter in C<Content-Type:> header.
 
     my $r = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466'; charset=utf8;
     print Sisimai::RFC2045->parameter($r, 'charset');  # utf8
@@ -417,7 +419,7 @@ C<parameter()> returns the value of parameter in Content-Type header.
 
 =head2 C<B<boundary(I<String>, I<Integer>)>>
 
-C<boundary()> returns a boundary string from the value of Content-Type header.
+C<boundary()> method returns the boundary string from the value of C<Content-Type:> header.
 
     my $r = 'Content-Type: multipart/mixed; boundary=Apple-Mail-1-526612466';
     my $v = Sisimai::RFC2045->boundary($r);
@@ -428,18 +430,18 @@ C<boundary()> returns a boundary string from the value of Content-Type header.
 
 =head2 C<B<haircut(I<\String>, I<Boolean>)>>
 
-C<haircut()> remove unused headers from multipart/* block.
+C<haircut()> method remove unused headers from the C<multipart/* >block.
 
 =head2 C<B<levelout(I<String>, I<\String>)>>
 
-C<levelout> breaks multipart/* message block into each part and returns an array reference.
+C<levelout> method breaks the C<multipart/*> message block into each part and returns an array reference.
 
 =head2 C<B<makeflat(I<String>, I<\String>)>>
 
-C<makeflat> makes flat multipart/* message: This method breaks multipart/* block into each part, remove
-parts which are not needed to parse a bounce message such as image/* MIME type, and decode an encoded
-text part (text/*, message/*) in a body of each part that has C<Content-Transfer-Encoding> header and
-the value of the header is quoted-printabe, base64, or 7bit.
+C<makeflat> method makes flat C<multipart/*> message: This method breaks C<multipart/*> block into
+each part, remove parts which are not needed to parse the bounce message such as C<image/*> MIME
+type, and decode the encoded text part (C<text/*>, C<message/*>) in the body of each part that has
+C<Content-Transfer-Encoding:> header and the value of the header is quoted-printabe, base64, or 7bit.
 
 =head1 AUTHOR
 

@@ -139,8 +139,8 @@ Sisimai::SMTP::Transcript - Transcript of SMTP session parser
 
 =head1 DESCRIPTION
 
-Sisimai::SMTP::Transcript provides a parser method for converting transcript of SMTP session to a
-structured data.
+C<Sisimai::SMTP::Transcript> provides a decoding method for converting the transcript of the SMTP
+session to the structured data.
 
 =head1 AUTHOR
 

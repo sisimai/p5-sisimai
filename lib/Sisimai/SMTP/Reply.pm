@@ -192,13 +192,14 @@ Sisimai::SMTP::Reply - SMTP reply code related class
 
 =head1 DESCRIPTION
 
-Sisimai::SMTP::Reply is utilities for getting SMTP reply code value from given error message text.
+C<Sisimai::SMTP::Reply> is a utility class for getting the SMTP reply code value from given error
+message text.
 
 =head1 CLASS METHODS
 
 =head2 C<B<test(I<D.S.N.>)>>
 
-C<test()> checks whether a reply code is a valid code or not.
+C<test()> method checks whether the reply code is a valid code or not.
 
     print Sisimai::SMTP::Reply->test('521');    # 1
     print Sisimai::SMTP::Reply->test('386');    # 0
@@ -207,7 +208,7 @@ C<test()> checks whether a reply code is a valid code or not.
 
 =head2 C<B<find(I<String>)>>
 
-C<find()> returns an SMTP reply code value.
+C<find()> method returns the SMTP reply code value.
 
     print Sisimai::SMTP::Reply->find('5.0.0');                  # ''
     print Sisimai::SMTP::Reply->find('550 5.1.1 User unknown'); # 550

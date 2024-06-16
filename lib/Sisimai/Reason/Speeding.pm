@@ -59,29 +59,29 @@ Sisimai::Reason::Speeding - Bounce reason is C<speeding> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Speeding checks the bounce reason is C<speeding> or not. This class is called only
-Sisimai::Reason class. This is the error that a connection rejected due to exceeding a rate limit
-or sending too fast.
+C<Sisimai::Reason::Speeding> checks the bounce reason is C<speeding> or not. This class is called
+only C<Sisimai::Reason> class. This is the error that the SMTP connection rejected due to exceeding
+a rate limit or sending too fast.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<speeding>.
+C<text()> method returns the fiexed string C<speeding>.
 
     print Sisimai::Reason::Speeding->text;  # speeding
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     my $v = '451 4.7.1 <mx.example.jp[192.0.2.2]>: Client host rejected: Please try again slower';
     print Sisimai::Reason::Speeding->match($v); # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<speeding>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<speeding>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

@@ -50,7 +50,7 @@ sub new {
 }
 
 sub read {
-    # Maildir reader, works as a iterator.
+    # Maildir reader, works as an iterator.
     # @return       [String] Contents of file in Maildir/
     my $self = shift;
     return undef unless defined $self->{'dir'};
@@ -103,13 +103,13 @@ Sisimai::Mail::Maildir - Mailbox reader
 
 =head1 DESCRIPTION
 
-Sisimai::Mail::Maildir is a reader for getting contents of each email in the Maildir/ directory.
+C<Sisimai::Mail::Maildir> is a reader for getting contents of each email in the Maildir/ directory.
 
 =head1 CLASS METHODS
 
 =head2 C<B<new(I<path to Maildir/>)>>
 
-C<new()> is a constructor of Sisimai::Mail::Maildir
+C<new()> method is a constructor of C<Sisimai::Mail::Maildir>
 
     my $maildir = Sisimai::Mail::Maildir->new('/home/neko/Maildir/new');
 
@@ -117,43 +117,43 @@ C<new()> is a constructor of Sisimai::Mail::Maildir
 
 =head2 C<B<dir()>>
 
-C<dir()> returns the path to Maildir/
+C<dir()> method returns the path to Maildir/
 
     print $maildir->dir;   # /home/neko/Maildir/new/
 
 =head2 C<B<path()>>
 
-C<path()> returns the path to each email in Maildir/
+C<path()> method returns the path to each email in Maildir/
 
     print $maildir->path;   # /home/neko/Maildir/new/1.eml
 
 =head2 C<B<file()>>
 
-C<file()> returns current file name of the Maildir.
+C<file()> method returns the current file name of the Maildir.
 
     print $maildir->file;
 
 =head2 C<B<size()>>
 
-C<size()> returns the amount of email size which has been read
+C<size()> method returns the amount of email size which has been read
 
     print $maildir->size;
 
 =head2 C<B<offset()>>
 
-C<offset()> returns the number of emails which have been read in Maildir/
+C<offset()> method returns the number of emails which have been read in the Maildir/
 
     $maildir->offset;   # 2
 
 =head2 C<B<handle()>>
 
-C<handle()> returns file handle object (IO::Dir) of the Maildir.
+C<handle()> meethod returns file handle object C<IO::Dir> of the Maildir.
 
     $maildir->handle->close;
 
 =head2 C<B<read()>>
 
-C<read()> works as a iterator for reading each email in the Maildir.
+C<read()> method works as an iterator for reading each email in the Maildir.
 
     my $maildir = Sisimai::Mail->new('/home/neko/Maildir/new');
     while( my $r = $mailbox->read ) {
@@ -173,3 +173,4 @@ Copyright (C) 2014-2016,2018-2021,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

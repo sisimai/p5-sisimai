@@ -133,13 +133,13 @@ Sisimai::Reason::Rejected - Bounce reason is C<rejected> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Rejected checks the bounce reason is C<rejected> or not. This class is called only
-Sisimai::Reason class.
+C<Sisimai::Reason::Rejected> checks the bounce reason is C<rejected> or not. This class is called
+only C<Sisimai::Reason> class.
 
-This is the error that a connection to destination server was rejected by a sender's email address
-(envelope from). Sisimai set C<rejected> to the reason of email bounce if the value of Status: field
-in a bounce email is C<5.1.8> or the connection has been rejected due to the argument of SMTP MAIL
-command.
+This is the error that the SMTP connection to the destination server was rejected by the sender's
+email address (envelope from). Sisimai set C<rejected> to the reason of the email bounce if the value
+of C<Status:> field in the  bounce email is C<5.1.8> or the SMTP connection has been rejected due to
+the argument of SMTP C<MAIL> command.
 
     <kijitora@example.org>:
     Connected to 192.0.2.225 but sender was rejected.
@@ -149,20 +149,20 @@ command.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<rejected>.
+C<text()> method returns the fixed string C<rejected>.
 
     print Sisimai::Reason::Rejected->text;  # rejected
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::Rejected->match('550 Address rejected');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<rejected>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<rejected>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

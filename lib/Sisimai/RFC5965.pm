@@ -42,7 +42,7 @@ Sisimai::RFC5965 - A class for An Extensible Format for Email Feedback Reports
 
 =head1 DESCRIPTION
 
-Sisimai::RFC5965 provide methods related to An Extensible Format for Email Feedback Reports
+C<Sisimai::RFC5965> provide methods related to An Extensible Format for Email Feedback Reports
 
 =head1 AUTHOR
 

@@ -61,11 +61,11 @@ Sisimai::Reason::ExceedLimit - Bounce reason is C<exceedlimit> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::ExceedLimit checks the bounce reason is C<exceedlimit> or not. This class is called
-only Sisimai::Reason class.
+C<Sisimai::Reason::ExceedLimit> checks the bounce reason is C<exceedlimit> or not. This class is
+called only C<Sisimai::Reason> class.
 
-This is the error that a message was rejected due to an email exceeded the limit. The value of D.S.N.
-is 5.2.3. This reason is almost the same as C<MesgTooBig>, we think.
+This is the error that a message was rejected due to an email exceeded the limit. The value of DSN
+is C<5.2.3>. This reason is almost the same as C<MesgTooBig>, we think.
 
     ... while talking to mx.example.org.:
     >>> MAIL From:<kijitora@example.co.jp> SIZE=16600348
@@ -76,20 +76,20 @@ is 5.2.3. This reason is almost the same as C<MesgTooBig>, we think.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<exceedlimit>.
+C<text()> method returns the fixed string C<exceedlimit>.
 
     print Sisimai::Reason::ExceedLimit->text;  # exceedlimit
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::ExceedLimit->match; # 0;
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<exceedlimit>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<exceedlimit>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 SEE ALSO
 
@@ -112,3 +112,4 @@ Copyright (C) 2014-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

@@ -73,12 +73,13 @@ Sisimai::Reason::MesgTooBig - Bounce reason is C<mesgtoobig> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::MesgTooBig checks the bounce reason is C<mesgtoobig> or not. This class is called
-only Sisimai::Reason class.
+C<Sisimai::Reason::MesgTooBig> checks the bounce reason is C<mesgtoobig> or not. This class is
+called only C<Sisimai::Reason> class.
 
-This is the error that a sent email size is too big for a destination mail server. In many case,
-There are many attachment files with email, or the file size is too large. Sisimai will set C<mesgtoobig>
-to the reason of email bounce if the value of Status: field in a bounce email is C<5.3.4>.
+This is the error that the sent email size is too big for the destination mail server. In many case,
+There are many attachment files with the email, or the file size is too large. Sisimai will set
+C<mesgtoobig> to the reason of the email bounce if the value of C<Status:> field in the bounce email
+is C<5.3.4>.
 
     Action: failed
     Status: 553 Exceeded maximum inbound message size
@@ -87,20 +88,20 @@ to the reason of email bounce if the value of Status: field in a bounce email is
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<mesgtoobig>.
+C<text()> method returns the fixed string C<mesgtoobig>.
 
     print Sisimai::Reason::MesgTooBig->text;  # mesgtoobig
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::MesgTooBig->match('400 Message too big');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<mesgtoobig>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<mesgtoobig>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 SEE ALSO
 

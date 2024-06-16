@@ -70,14 +70,14 @@ Sisimai::Fact::YAML - Dumps parsed data object as a YAML format
 
 =head1 DESCRIPTION
 
-Sisimai::Fact::YAML dumps parsed data object as a YAML format. This class and method should be called
-from the parent object "Sisimai::Fact".
+C<Sisimai::Fact::YAML> dumps decoded data object as a YAML format. This class and method should be
+called only from the parent object C<Sisimai::Fact>.
 
 =head1 CLASS METHODS
 
 =head2 C<B<dump(I<Sisimai::Fact>)>>
 
-C<dump> method returns Sisimai::Fact object as a YAML formatted string.
+C<dump()> method returns C<Sisimai::Fact> object as a YAML formatted string.
 
     my $mail = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mail->read ) {

@@ -4,13 +4,13 @@ use v5.26;
 use strict;
 use warnings;
 
-sub description { 'DragonFly' }
+sub description { 'DragonFly: https://www.dragonflybsd.org/handbook/mta/' }
 sub inquire {
     # Detect an error from DMA: DragonFly Mail Agent
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v5.0.4
     my $class = shift;
     my $mhead = shift // return undef;
@@ -120,7 +120,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::DragonFly - bounce mail parser class for C<DMA: DragonFly Mail Agent>.
+Sisimai::Lhost::DragonFly - bounce mail decoder class for DMA: DragonFly Mail Agent L<https://www.dragonflybsd.org/handbook/mta/>.
 
 =head1 SYNOPSIS
 
@@ -128,8 +128,8 @@ Sisimai::Lhost::DragonFly - bounce mail parser class for C<DMA: DragonFly Mail A
 
 =head1 DESCRIPTION
 
-C<Sisimai::Lhost::DragonFly> parses a bounce email which created by C<DMA: DragonFly Mail Agent>.
-Methods in the module are called from only C<Sisimai::Message>.
+C<Sisimai::Lhost::DragonFly> decodes a bounce email which created by DMA: DragonFly Mail Agent
+L<https://www.dragonflybsd.org/handbook/mta/>. Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -141,7 +141,7 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as an array reference.
+C<inquire()> method decodes a bounced email and return results as an array reference.
 See C<Sisimai::Message> for more details.
 
 =head1 AUTHOR

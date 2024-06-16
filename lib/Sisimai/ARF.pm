@@ -344,36 +344,32 @@ __END__
 
 =head1 NAME
 
-Sisimai::ARF - Parser class for detecting ARF: Abuse Feedback Reporting Format.
+C<Sisimai::ARF> - Parser class for detecting ARF: Abuse Feedback Reporting Format.
 
 =head1 SYNOPSIS
-
-Do not use this class directly, use Sisimai::ARF.
 
     use Sisimai::ARF;
     my $v = Sisimai::ARF->inquire($header, $body);
 
 =head1 DESCRIPTION
 
-Sisimai::ARF is a parser for email returned as a Feedback Loop report message.
+C<Sisimai::ARF> is a parser for email returned as a Feedback Loop report message.
 
 =head1 FEEDBACK TYPES
 
-=head2 B<abuse>
+=over
 
-Unsolicited email or some other kind of email abuse.
+=item B<abuse> spam or some other kind of email abuse
 
-=head2 B<fraud>
+=item B<fraud> Indicates some kind of fraud or phishing activity
 
-Indicates some kind of C<fraud> or C<phishing> activity.
+=item B<virus> report of a virus found in the originating message
 
-=head2 B<other>
+=item B<other> any other feedback that doesn't fit into other types
 
-Any other feedback that does not fit into other registered types.
+=item B<not-spam> can be used to report an email message that was mistakenly marked as spam
 
-=head2 B<virus>
-
-Report of a virus found in the originating message.
+=back
 
 =head1 SEE ALSO
 

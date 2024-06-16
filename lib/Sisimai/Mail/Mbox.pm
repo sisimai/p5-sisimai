@@ -39,7 +39,7 @@ sub new {
 }
 
 sub read {
-    # Mbox reader, works as a iterator.
+    # Mbox reader, works as an iterator.
     # @return   [String] Contents of mbox
     my $self = shift;
 
@@ -89,13 +89,13 @@ Sisimai::Mail::Mbox - Mailbox reader
 
 =head1 DESCRIPTION
 
-Sisimai::Mail::Mbox is a mailbox file (UNIX mbox) reader.
+C<Sisimai::Mail::Mbox> is a mailbox file (UNIX mbox) reader.
 
 =head1 CLASS METHODS
 
 =head2 C<B<new(I<path to mbox>)>>
 
-C<new()> is a constructor of Sisimai::Mail::Mbox
+C<new()> method is a constructor of C<Sisimai::Mail::Mbox>
 
     my $mailbox = Sisimai::Mail::Mbox->new('/var/mail/root');
 
@@ -103,44 +103,44 @@ C<new()> is a constructor of Sisimai::Mail::Mbox
 
 =head2 C<B<dir()>>
 
-C<dir()> returns the directory name of mbox
+C<dir()> method returns the directory name of the UNIX mbox
 
     print $mailbox->dir;   # /var/mail
 
 =head2 C<B<path()>>
 
-C<path()> returns the path to mbox.
+C<path()> meethod returns the path to the mbox.
 
     print $mailbox->path;   # /var/mail/root
 
 =head2 C<B<file()>>
 
-C<file()> returns a file name of the mbox.
+C<file()> method returns the file name of the mbox.
 
     print $mailbox->file;   # root
 
 =head2 C<B<size()>>
 
-C<size()> returns the file size of the mbox.
+C<size()> method returns the file size of the mbox.
 
     print $mailbox->size;   # 94515
 
 =head2 C<B<offset()>>
 
-C<offset()> returns offset position for seeking the mbox. The value of "offset" is bytes which have
-already read.
+C<offset()> method returns the offset position for seeking the mbox. The value of C<"offset"> is a
+bytes which have already read.
 
     print $mailbox->offset;   # 0
 
 =head2 C<B<handle()>>
 
-C<handle()> returns file handle object (IO::File) of the mbox.
+C<handle()> method returns file handle object C<IO::File> of the mbox.
 
     $mailbox->handle->close;
 
 =head2 C<B<read()>>
 
-C<read()> works as a iterator for reading each email in the mbox.
+C<read()> method works as an iterator for reading each email in the mbox.
 
     my $mailbox = Sisimai::Mail->new('/var/mail/neko');
     while( my $r = $mailbox->read ) {
@@ -160,3 +160,4 @@ Copyright (C) 2014-2016,2018,2019,2021,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

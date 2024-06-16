@@ -56,8 +56,8 @@ Sisimai::Reason::BadReputation - Bounce reason is C<badreputation> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::BadReputation checks the bounce reason is C<badreputation> or not. This class is
-called only Sisimai::Reason class.
+C<Sisimai::Reason::BadReputation> checks the bounce reason is C<badreputation> or not. This class
+is called only C<Sisimai::Reason> class.
 
 This is the error that an email rejected due to a reputation score of the sender IP address.
 
@@ -74,20 +74,20 @@ This is the error that an email rejected due to a reputation score of the sender
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<badreputation>.
+C<text()> method returns the fixed string C<badreputation>.
 
     print Sisimai::Reason::BadReputation->text;  # badreputation
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::BadReputation->match('low reputation of the sending IP');    # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<badreputation>. The argument must be Sisimai::Fact
-object and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<badreputation>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

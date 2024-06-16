@@ -4,13 +4,14 @@ use v5.26;
 use strict;
 use warnings;
 
-sub description { 'V8Sendmail: /usr/sbin/sendmail' }
+sub description { 'Sendmail Open Source: https://sendmail.org/' }
 sub inquire {
     # Parse bounce messages from Sendmail
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
+    # @see      https://www.proofpoint.com/us/products/email-protection/open-source-email-solution
     # @since v4.0.0
     my $class = shift;
     my $mhead = shift // return undef;
@@ -216,7 +217,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::Sendmail - bounce mail parser class for v8 Sendmail.
+Sisimai::Lhost::Sendmail - bounce mail decoder class for Sendmail Open Source L<https://sendmail.org/>.
 
 =head1 SYNOPSIS
 
@@ -224,8 +225,8 @@ Sisimai::Lhost::Sendmail - bounce mail parser class for v8 Sendmail.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::Sendmail parses a bounce email which created by v8 Sendmail. Methods in the module
-are called from only Sisimai::Message.
+C<Sisimai::Lhost::Sendmail> decodes a bounce email which created by Sendmail Open Source L<https://sendmail.org/>.
+Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -237,8 +238,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method decodes a bounced email and return results as a array reference.
+See C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 
@@ -253,3 +254,4 @@ Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

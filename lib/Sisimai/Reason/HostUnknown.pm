@@ -82,13 +82,13 @@ Sisimai::Reason::HostUnknown - Bounce reason is C<hostunknown> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::HostUnknown checks the bounce reason is C<hostunknown> or not. This class is called
-only Sisimai::Reason class.
+C<Sisimai::Reason::HostUnknown> checks the bounce reason is C<hostunknown> or not. This class is
+called only C<Sisimai::Reason> class.
 
-This is the error that a domain part (Right hand side of @ sign) of a recipient's email address does
-not exist. In many case, the domain part is misspelled, or the domain name has been expired. Sisimai
-will set C<hostunknown> to the reason of email bounce if the value of Status: field in a bounce mail
-is C<5.1.2>.
+This is the error that the domain part (Right hand side of C<@> sign) of the recipient's email address
+does not exist. In many case, the domain part is misspelled, or the domain name has been expired.
+Sisimai will set C<hostunknown> to the reason of the email bounce if the value of C<Status:> field
+in a bounce mail is C<5.1.2>.
 
     Your message to the following recipients cannot be delivered:
 
@@ -99,20 +99,20 @@ is C<5.1.2>.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<hostunknown>.
+C<text()> method returns the fixed string C<hostunknown>.
 
     print Sisimai::Reason::HostUnknown->text;  # hostunknown
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::HostUnknown->match('550 5.2.1 Host Unknown');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<hostunknown>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<hostunknown>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -127,3 +127,4 @@ Copyright (C) 2014-2018,2020,2021,2023,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

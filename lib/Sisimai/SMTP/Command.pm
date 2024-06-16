@@ -70,20 +70,20 @@ Sisimai::SMTP::Command - SMTP Command related utilities
 
 =head1 DESCRIPTION
 
-Sisimai::SMTP::Command is a class for finding the last SMTP command from given error message.
+C<Sisimai::SMTP::Command> is a class for finding the last SMTP command from given error message.
 
 =head1 CLASS METHODS
 
 =head2 C<B<test(I<String>)>>
 
-C<test()> checks whether an SMTP command is a valid command or not
+C<test()> method checks whether the SMTP command is a valid command or not
 
     print Sisimai::SMTP::Command->test('STARTTLS'); # 1
     print Sisimai::SMTP::Command->test('NEKO');     # 0
 
 =head2 C<B<find(I<String>)>>
 
-C<find()> returns the last SMTP command like the following:
+C<find()> method returns the last SMTP command like the following:
 
     print Sisimai::SMTP::Command->find('MAIL FROM: <> 250 OK RCPT TO: <...> 550');  # "RCPT"
 

@@ -107,11 +107,11 @@ Sisimai::Reason::MailboxFull - Bounce reason is C<mailboxfull> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::MailboxFull checks the bounce reason is C<mailboxfull> or not. This class is called
-only Sisimai::Reason class.
+C<Sisimai::Reason::MailboxFull> checks the bounce reason is C<mailboxfull> or not. This class is
+called only C<Sisimai::Reason> class.
 
-This is the error that a recipient's mailbox is full. Sisimai will set C<mailboxfull> to the reason
-of email bounce if the value of Status: field in a bounce email is C<4.2.2> or C<5.2.2>.
+This is the error that the recipient's mailbox is full. Sisimai will set C<mailboxfull> to the reason
+of the email bounce if the value of C<Status:> field in a bounce email is C<4.2.2> or C<5.2.2>.
 
     Action: failed
     Status: 5.2.2
@@ -121,20 +121,20 @@ of email bounce if the value of Status: field in a bounce email is C<4.2.2> or C
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<mailboxfull>.
+C<text()> method returns the fixed string C<mailboxfull>.
 
     print Sisimai::Reason::MailboxFull->text;  # mailboxfull
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::MailboxFull->match('400 4.2.3 Mailbox full');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<mailboxfull>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<mailboxfull>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

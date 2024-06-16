@@ -63,11 +63,11 @@ Sisimai::Reason::VirusDetected - Bounce reason is C<virusdetected> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::VirusDetected checks the bounce reason is C<virusdetected> or not. This class is
-called only Sisimai::Reason class.
+C<Sisimai::Reason::VirusDetected> checks the bounce reason is C<virusdetected> or not.
+This class is called only C<Sisimai::Reason> class.
 
-This is an error that any virus or trojan horse detected in the message by a virus scanner program
-at a destination mail server. This reason has been divided from C<securityerror> at Sisimai 4.22.0.
+This is an error that any virus or trojan horse detected in the message by the virus scanner program
+at the destination mail server. This reason has been divided from C<securityerror> at Sisimai 4.22.0.
 
     Your message was infected with a virus. You should download a virus
     scanner and check your computer for viruses.
@@ -79,21 +79,21 @@ at a destination mail server. This reason has been divided from C<securityerror>
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<virusdetected>.
+C<text()> method returns the fixed string C<virusdetected>.
 
     print Sisimai::Reason::VirusDetected->text;  # virusdetected
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     my $v = 'Your message was infected with a virus. ...';
     print Sisimai::Reason::VirusDetected->match($v);    # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<virusdetected>. The argument must be Sisimai::Fact
-object and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<virusdetected>. The argument must be
+C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -108,3 +108,4 @@ Copyright (C) 2017-2021,2023,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

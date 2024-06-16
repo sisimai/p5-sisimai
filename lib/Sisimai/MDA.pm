@@ -148,14 +148,14 @@ Sisimai::MDA - Error message parser for MDA
 
 =head1 DESCRIPTION
 
-Sisimai::MDA parse bounced email which created by some MDA, such as C<dovecot>, C<mail.local>,
-C<procmail>, and so on. This class is called from Sisimai::Message only.
+C<Sisimai::MDA> decodes bounced email which created by some MDA, such as Dovecot, C<mail.local>,
+C<procmail>, and so on. This class is called from C<Sisimai::Message> only.
 
 =head1 CLASS METHODS
 
 =head2 C<B<inquire(I<Header>, I<Reference to message body>)>>
 
-C<inquire()> is a parser for detecting an error from mail delivery agent.
+C<inquire()> is a decoder for detecting an error from the mail delivery agent.
 
     my $header = { 'from' => 'mailer-daemon@example.jp' };
     my $string = 'mail.local: Disc quota exceeded';
@@ -180,3 +180,4 @@ Copyright (C) 2014-2016,2018-2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

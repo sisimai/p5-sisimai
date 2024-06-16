@@ -29,7 +29,7 @@ sub new {
 }
 
 sub read {
-    # Mbox reader, works as a iterator.
+    # Mbox reader, works as an iterator.
     # @return   [String] Contents of mbox
     my $self = shift;
     return undef unless -T $self->{'handle'};
@@ -68,13 +68,13 @@ Sisimai::Mail::STDIN - Mailbox reader
 
 =head1 DESCRIPTION
 
-Sisimai::Mail::STDIN read email data from STDIN.
+C<Sisimai::Mail::STDIN> read email data from Standard-In
 
 =head1 CLASS METHODS
 
 =head2 C<B<new()>>
 
-C<new()> is a constructor of Sisimai::Mail::STDIN
+C<new()> method is a constructor of C<Sisimai::Mail::STDIN>
 
     my $mailbox = Sisimai::Mail::STDIN->new();
 
@@ -82,32 +82,32 @@ C<new()> is a constructor of Sisimai::Mail::STDIN
 
 =head2 C<B<path()>>
 
-C<path()> returns "<STDIN>"
+C<path()> metehod returns a fixed string C<"<STDIN>">
 
     print $mailbox->path;   # "<STDIN>"
 
 =head2 C<B<size()>>
 
-C<size()> returns the data size which has been read
+C<size()> method returns the data size which has been read
 
     print $mailbox->size;   # 2202
 
 =head2 C<B<offset()>>
 
-C<offset()> returns offset position for seeking the mbox. The value of "offset" is bytes which have
-already read.
+C<offset()> method returns the offset position for seeking the mbox. The value of C<"offset"> is a
+bytes which have already read.
 
     print $mailbox->offset;   # 0
 
 =head2 C<B<handle()>>
 
-C<handle()> returns file handle object (IO::Handle) of the mbox.
+C<handle()> method returns file handle object C<IO::Handle> of the mbox.
 
     $mailbox->handle;
 
 =head2 C<B<read()>>
 
-C<read()> works as a iterator for reading each email in the mbox.
+C<read()> method works as an iterator for reading each email in the mbox.
 
     my $mailbox = Sisimai::Mail->new();
     while( my $r = $mailbox->read ) {

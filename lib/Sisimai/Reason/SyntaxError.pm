@@ -39,12 +39,12 @@ Sisimai::Reason::SyntaxError - Bounce reason is C<syntaxerror> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SyntaxError checks the bounce reason is C<syntaxerror> or not. This class is called
-only Sisimai::Reason class.
+C<Sisimai::Reason::SyntaxError> checks the bounce reason is C<syntaxerror> or not. This class is
+called only C<Sisimai::Reason> class.
 
-This is the error that a destination mail server could not recognize SMTP command which is sent from
-a sender's MTA. Sisimai will set C<syntaxerror> to the reason if the value of C<replycode> begins
-with "50" such as 502, or 503.
+This is the error that the destination mail server could not recognize the SMTP command which is sent
+from the sender's MTA. Sisimai will set C<syntaxerror> to the reason if the value of C<replycode>
+begins with C<50> such as C<502>, or C<503>.
 
     Action: failed
     Status: 5.5.0
@@ -54,18 +54,18 @@ with "50" such as 502, or 503.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<syntaxerror>.
+C<text()> method returns the fixed string C<syntaxerror>.
 
     print Sisimai::Reason::SyntaxError->text;  # syntaxerror
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> always return undef
+C<match()> method always return C<undef>
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<syntaxerror>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<syntaxerror>. The argument must be
+C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -80,3 +80,4 @@ Copyright (C) 2015-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+
