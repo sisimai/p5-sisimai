@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Postfix: https://www.postfix.org/' }
 sub inquire {
-    # Parse bounce messages from Postfix
+    # Decode bounce messages from Postfix
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

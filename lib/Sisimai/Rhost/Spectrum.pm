@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from https://www.spectrum.com/
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason at Spectrum
     # @since v4.25.8
     my $class = shift;

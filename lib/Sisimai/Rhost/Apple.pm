@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from Apple iCloud Mail
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for Apple
     # @see      https://support.apple.com/en-us/102322
     #           https://www.postmastery.com/icloud-postmastery-page/

@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from Orange and La Poste
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decdoed email object
     # @return   [String]                The bounce reason for Orange, La Poste
     # @see      https://www.postmastery.com/orange-postmaster-smtp-error-codes-ofr/
     #           https://smtpfieldmanual.com/provider/orange

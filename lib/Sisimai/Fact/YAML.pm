@@ -58,7 +58,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Fact::YAML - Dumps parsed data object as a YAML format
+Sisimai::Fact::YAML - Dumps decoded data object as a YAML format
 
 =head1 SYNOPSIS
 

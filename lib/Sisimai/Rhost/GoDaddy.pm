@@ -6,7 +6,7 @@ use warnings;
 # https://www.godaddy.com/help/what-does-my-email-bounceback-mean-3568
 sub get {
     # Detect bounce reason from GoDaddy (smtp.secureserver.net)
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for GoDaddy
     # @see      https://ca.godaddy.com/help/fix-rejected-email-with-a-bounce-error-40685
     # @since v4.22.2

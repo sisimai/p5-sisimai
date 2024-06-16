@@ -40,7 +40,7 @@ sub inquire {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -344,7 +344,7 @@ __END__
 
 =head1 NAME
 
-C<Sisimai::ARF> - Parser class for detecting ARF: Abuse Feedback Reporting Format.
+C<Sisimai::ARF> - Decoder class for detecting ARF: Abuse Feedback Reporting Format.
 
 =head1 SYNOPSIS
 
@@ -353,7 +353,7 @@ C<Sisimai::ARF> - Parser class for detecting ARF: Abuse Feedback Reporting Forma
 
 =head1 DESCRIPTION
 
-C<Sisimai::ARF> is a parser for email returned as a Feedback Loop report message.
+C<Sisimai::ARF> is a decoder for email returned as a Feedback Loop report message.
 
 =head1 FEEDBACK TYPES
 

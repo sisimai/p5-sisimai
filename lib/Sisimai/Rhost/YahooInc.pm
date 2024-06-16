@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from Yahoo Inc. (*.yahoodns.net)
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for YahooInc
     # @see      https://senders.yahooinc.com/smtp-error-codes
     #           https://smtpfieldmanual.com/provider/yahoo

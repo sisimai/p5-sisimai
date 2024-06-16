@@ -54,7 +54,7 @@ sub path {
 
 sub get {
     # Detect the bounce reason
-    # @param    [Hash]   argvs  Parsed email object
+    # @param    [Hash]   argvs  Decoded email object
     # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
     # @see anotherone
     my $class = shift;
@@ -102,7 +102,7 @@ sub get {
 
 sub anotherone {
     # Detect the other bounce reason, fall back method for get()
-    # @param    [Hash] argvs    Parsed email structure
+    # @param    [Hash] argvs    Decoded email structure
     # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
     # @see get
     my $class = shift;

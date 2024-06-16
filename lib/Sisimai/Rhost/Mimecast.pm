@@ -6,7 +6,7 @@ use Sisimai::SMTP::Reply;
 
 sub get {
     # Detect bounce reason from https://www.mimecast.com/
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason at Mimecast
     # @since v4.25.15
     my $class = shift;

@@ -11,7 +11,7 @@ sub inquire {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -178,8 +178,8 @@ sub inquire {
     }
 
     # ---------------------------------------------------------------------------------------------
-    BODY_PARSER_FOR_FALLBACK: {
-        # Fallback, parse entire message body
+    BODY_DECODER_FOR_FALLBACK: {
+        # Fallback, decode the entire message body
         last if $recipients;
 
         # Failed to get a recipient address at code above
@@ -351,7 +351,7 @@ sub inquire {
             }
             $b->{'diagnosis'} .= ' '.$e;
         }
-    } # END OF BODY_PARSER_FOR_FALLBACK
+    } # END OF BODY_DECODER_FOR_FALLBACK
     return undef unless $itisbounce;
 
     my $p1 = index($rfc822text, "\nTo: ");

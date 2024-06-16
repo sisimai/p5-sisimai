@@ -503,7 +503,8 @@ C<is_mailerdaemon()> method checks the argument is B<mailer-daemon> or not.
 
 =head2 C<B<find(I<String>)>>
 
-C<find()> method is a new parser for getting only email address from text including email addresses.
+C<find()> method is a new parser for getting only the email address from the given string including
+an email addresses.
 
     my $r = 'Stray cat <cat@example.org>, nyaa@example.org (White Cat)',
     my $v = Sisimai::Address->find($r);

@@ -10,7 +10,7 @@ sub inquire {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.28
     my $class = shift;
     my $mhead = shift // return undef;
@@ -107,7 +107,7 @@ sub inquire {
         $markingsof->{'boundary'} = $q if $q;
     }
 
-    BODY_PARSER: {
+    MESSAGE_BODY: {
         # Get vacation message
         for my $e ( split("\n", $$mbody) ) {
             # Read the first 5 lines except a blank line

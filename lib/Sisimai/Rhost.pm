@@ -40,7 +40,7 @@ sub match {
 
 sub get {
     # Detect the bounce reason from certain remote hosts
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @param    [String]        proxy   The alternative of the "rhost"
     # @return   [String]                The value of bounce reason
     my $class = shift;

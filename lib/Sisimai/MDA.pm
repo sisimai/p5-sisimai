@@ -4,11 +4,11 @@ use strict;
 use warnings;
 
 sub inquire {
-    # Parse message body and return reason and text
+    # Decode the message body and return the MDA name, the reason and the error message text
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -137,7 +137,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::MDA - Error message parser for MDA
+Sisimai::MDA - Error message decoder for MDA
 
 =head1 SYNOPSIS
 

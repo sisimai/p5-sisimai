@@ -439,7 +439,7 @@ C<levelout> method breaks the C<multipart/*> message block into each part and re
 =head2 C<B<makeflat(I<String>, I<\String>)>>
 
 C<makeflat> method makes flat C<multipart/*> message: This method breaks C<multipart/*> block into
-each part, remove parts which are not needed to parse the bounce message such as C<image/*> MIME
+each part, remove parts which are not needed to decode the bounce message such as C<image/*> MIME
 type, and decode the encoded text part (C<text/*>, C<message/*>) in the body of each part that has
 C<Content-Transfer-Encoding:> header and the value of the header is quoted-printabe, base64, or 7bit.
 

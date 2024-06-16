@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from https://cox.com/
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason at Cox
     # @see      https://www.cox.com/residential/support/email-error-codes.html
     # @since v4.25.8

@@ -4,8 +4,8 @@ use strict;
 use warnings;
 
 sub get {
-    # Detect bounce reason from Tencent 
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # Detect bounce reason from Tencent
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason at Tencent 
     # @see      https://service.mail.qq.com/detail/122
     # @since v4.25.0

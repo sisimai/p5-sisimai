@@ -364,7 +364,7 @@ sub sift {
     # @param options mail  [Array]  ds     Delivery status list(decoded data)
     # @param options argvs [String] body   Email message body
     # @param options argvs [Code]   hook   Hook method to be called
-    # @return              [Hash]          Parsed and structured bounce mails
+    # @return              [Hash]          Decoded and structured bounce mails
     my $class = shift;
     my $argvs = { @_ };
 
@@ -419,7 +419,7 @@ sub sift {
     my $haveloaded = {};
     my $havesifted = undef;
     my $modulename = '';
-    PARSER: while(1) {
+    DECODER: while(1) {
         # 1. User-Defined Module
         # 2. MTA Module Candidates to be tried on first
         # 3. Sisimai::Lhost::*
@@ -432,7 +432,7 @@ sub sift {
             $havesifted = $r->inquire($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
 
         TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$defaultset ) {
@@ -442,7 +442,7 @@ sub sift {
             $havesifted = $r->inquire($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::RFC3464'} ) {
@@ -450,14 +450,14 @@ sub sift {
             require Sisimai::RFC3464;
             $havesifted = Sisimai::RFC3464->inquire($mailheader, $bodystring);
             $modulename = 'RFC3464';
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::ARF'} ) {
             # Feedback Loop message
             require Sisimai::ARF;
             $havesifted = Sisimai::ARF->inquire($mailheader, $bodystring);
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::RFC3834'} ) {
@@ -465,11 +465,11 @@ sub sift {
             require Sisimai::RFC3834;
             $havesifted = Sisimai::RFC3834->inquire($mailheader, $bodystring);
             $modulename = 'RFC3834';
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
         last; # as of now, we have no sample email for coding this block
 
-    } # End of while(PARSER)
+    } # End of while(DECODER)
     return undef unless $havesifted;
 
     $havesifted->{'catch'} = $havecaught;

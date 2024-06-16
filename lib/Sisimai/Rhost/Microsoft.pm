@@ -9,7 +9,7 @@ use Sisimai::SMTP::Status;
 # https://learn.microsoft.com/en-us/Exchange/mail-flow/non-delivery-reports-and-bounce-messages/non-delivery-reports-and-bounce-messages
 sub get {
     # Detect bounce reason from Exchange Server 2019 or older and Exchange Online
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for Exchange Online
     # @see      https://technet.microsoft.com/en-us/library/bb232118
     # @since v4.17.2

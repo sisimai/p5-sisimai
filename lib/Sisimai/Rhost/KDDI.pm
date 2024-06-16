@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from au(KDDI)
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason au.com and ezweb.ne.jp
     # @since v4.22.6
     my $class = shift;

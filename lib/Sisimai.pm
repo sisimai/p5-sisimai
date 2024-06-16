@@ -232,7 +232,7 @@ messages like the following code:
     # dump() method also accepts "delivered" and "vacation" option like the following code:
     my $j = Sisimai->dump('/path/to/mbox', 'delivered' => 1, 'vacation' => 1);
 
-=head1 OTHER WAYS TO PARSE
+=head1 OTHER WAYS TO DECODE
 
 =head2 Read email data from STDIN
 
@@ -298,8 +298,8 @@ dealing each email file.
                 $e->{'catch'}->{'return-path'} = $1;
             }
 
-            # Save the original email with an additional "X-Sisimai-Parsed:" header to a different PATH.
-            my $a = sprintf("X-Sisimai-Parsed: %d\n", scalar @$fact);
+            # Save the original email with an additional "X-Sisimai-Decoded:" header to a different PATH.
+            my $a = sprintf("X-Sisimai-Decoded: %d\n", scalar @$fact);
             my $p = sprintf("/path/to/another/directory/sisimai-%s.eml", $e->token);
             my $f = IO::File->new($p, 'w');
             my $v = $$mail; $v =~ s/^(From:.+)$/$a$1/m;

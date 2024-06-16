@@ -143,7 +143,7 @@ sub rise {
             push @datevalues, $mesg1->{'header'}->{'date'} if scalar(@datevalues) < 2;
 
             while( my $v = shift @datevalues ) {
-                # Parse each date value in the array
+                # Decode each date value in the array
                 $datestring = Sisimai::DateTime->parse($v);
                 last if $datestring;
             }
@@ -457,7 +457,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Fact - Parsed data object
+Sisimai::Fact - Decoded data object
 
 =head1 SYNOPSIS
 

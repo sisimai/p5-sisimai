@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Sendmail Open Source: https://sendmail.org/' }
 sub inquire {
-    # Parse bounce messages from Sendmail
+    # Decode bounce messages from Sendmail
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
