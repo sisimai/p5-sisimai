@@ -361,10 +361,10 @@ sub sift {
     # @param options mail  [String] from   From line of mbox
     # @param options mail  [Hash]   header Email header data
     # @param options mail  [String] rfc822 Original message part
-    # @param options mail  [Array]  ds     Delivery status list(parsed data)
+    # @param options mail  [Array]  ds     Delivery status list(decoded data)
     # @param options argvs [String] body   Email message body
     # @param options argvs [Code]   hook   Hook method to be called
-    # @return              [Hash]          Parsed and structured bounce mails
+    # @return              [Hash]          Decoded and structured bounce mails
     my $class = shift;
     my $argvs = { @_ };
 
@@ -419,7 +419,7 @@ sub sift {
     my $haveloaded = {};
     my $havesifted = undef;
     my $modulename = '';
-    PARSER: while(1) {
+    DECODER: while(1) {
         # 1. User-Defined Module
         # 2. MTA Module Candidates to be tried on first
         # 3. Sisimai::Lhost::*
@@ -432,7 +432,7 @@ sub sift {
             $havesifted = $r->inquire($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
 
         TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$defaultset ) {
@@ -442,7 +442,7 @@ sub sift {
             $havesifted = $r->inquire($mailheader, $bodystring);
             $haveloaded->{ $r } = 1;
             $modulename = $r;
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::RFC3464'} ) {
@@ -450,14 +450,14 @@ sub sift {
             require Sisimai::RFC3464;
             $havesifted = Sisimai::RFC3464->inquire($mailheader, $bodystring);
             $modulename = 'RFC3464';
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::ARF'} ) {
             # Feedback Loop message
             require Sisimai::ARF;
             $havesifted = Sisimai::ARF->inquire($mailheader, $bodystring);
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
 
         unless( $haveloaded->{'Sisimai::RFC3834'} ) {
@@ -465,11 +465,11 @@ sub sift {
             require Sisimai::RFC3834;
             $havesifted = Sisimai::RFC3834->inquire($mailheader, $bodystring);
             $modulename = 'RFC3834';
-            last(PARSER) if $havesifted;
+            last(DECODER) if $havesifted;
         }
         last; # as of now, we have no sample email for coding this block
 
-    } # End of while(PARSER)
+    } # End of while(DECODER)
     return undef unless $havesifted;
 
     $havesifted->{'catch'} = $havecaught;
@@ -485,7 +485,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Message - Convert bounce email text to data structure.
+Sisimai::Message - Converts the bounce email text to the data structure.
 
 =head1 SYNOPSIS
 
@@ -505,20 +505,20 @@ Sisimai::Message - Convert bounce email text to data structure.
 
 =head1 DESCRIPTION
 
-Sisimai::Message convert bounce email text to data structure. It resolve email text into an UNIX From
-line, the header part of the mail, delivery status, and RFC822 header part. When the email given as a
-argument of "new" method is not a bounce email, the method returns "undef".
+C<Sisimai::Message> converts the bounce email text to the data structure. It resolves the email text
+into the UNIX From line, the header part of the mail, the delivery status, and RFC822 header part lines.
+When the email given as a argument of C<new()> method is not a bounce email, the method returns C<undef>.
 
 =head1 CLASS METHODS
 
 =head2 C<B<rise(I<Hash reference>)>>
 
-C<rise()> is a constructor of Sisimai::Message
+C<rise()> method is a constructor of C<Sisimai::Message>
 
     my $mailtxt = 'Entire email text';
     my $message = Sisimai::Message->rise('data' => $mailtxt);
 
-If you have implemented a custom MTA module and use it, set the value of "load" in the argument of
+If you have implemented a custom MTA module and use it, set the value of C<load> in the argument of
 this method as an array reference like following code:
 
     my $message = Sisimai::Message->rise(
@@ -526,56 +526,23 @@ this method as an array reference like following code:
                         'load' => ['Your::Custom::MTA::Module']
                   );
 
-Beginning from v4.19.0, C<hook> argument is available to callback user defined method like the
-following codes:
-
-    my $cmethod = sub {
-        my $argv = shift;
-        my $data = {
-            'queue-id' => '',
-            'x-mailer' => '',
-            'precedence' => '',
-        };
-
-        # Header part of the bounced mail
-        for my $e ( 'x-mailer', 'precedence' ) {
-            next unless exists $argv->{'headers'}->{ $e };
-            $data->{ $e } = $argv->{'headers'}->{ $e };
-        }
-
-        # Message body of the bounced email
-        if( $argv->{'message'} =~ /^X-Postfix-Queue-ID:\s*(.+)$/m ) {
-            $data->{'queue-id'} = $1;
-        }
-
-        return $data;
-    };
-
-    my $message = Sisimai::Message->rise(
-        'data' => $mailtxt,
-        'hook' => $cmethod,
-    );
-    print $message->catch->{'x-mailer'};    # Apple Mail (2.1283)
-    print $message->catch->{'queue-id'};    # 2DAEB222022E
-    print $message->catch->{'precedence'};  # bulk
-
 =head1 INSTANCE METHODS
 
 =head2 C<B<(from)>>
 
-C<from()> returns the UNIX From line of the email.
+C<from()> method returns the UNIX From line of the email.
 
     print $message->from;
 
 =head2 C<B<header()>>
 
-C<header()> returns the header part of the email.
+C<header()> method returns the header part of the email.
 
     print $message->header->{'subject'};    # Returned mail: see transcript for details
 
 =head2 C<B<ds()>>
 
-C<ds()> returns an array reference which include contents of delivery status.
+C<ds()> method returns an array reference which include contents of the delivery status.
 
     for my $e ( $message->ds->@* ) {
         print $e->{'status'};   # 5.1.1
@@ -584,15 +551,15 @@ C<ds()> returns an array reference which include contents of delivery status.
 
 =head2 C<B<rfc822()>>
 
-C<rfc822()> returns a hash reference which include the header part of the original message.
+C<rfc822()> method returns a hash reference which include the header part of the original message.
 
     print $message->rfc822->{'from'};   # cat@example.com
     print $message->rfc822->{'to'};     # neko@example.jp
 
 =head2 C<B<catch()>>
 
-C<catch()> returns any data generated by user-defined method passed at the `hook` argument of new()
-constructor.
+C<catch()> method returns any data generated by user-defined method passed at the C<c___> argument
+of C<new()> constructor.
 
 =head1 AUTHOR
 

@@ -47,30 +47,31 @@ Sisimai::Reason::SystemFull - Bounce reason is C<systemfull> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SystemFull checks the bounce reason is C<systemfull> or not. This class is called
-only Sisimai::Reason class.
+C<Sisimai::Reason::SystemFull> checks the bounce reason is C<systemfull> or not. This class is called
+only C<Sisimai::Reason> class.
 
-This is the error that a destination mail server's disk (or spool) is full. Sisimai will set C<systemfull>
-to the reason of email bounce if the value of Status: field in a bounce email is C<4.3.1> or C<5.3.1>.
+This is the error that the destination mail server's storage (or spool) is full. Sisimai will set
+C<systemfull> to the reason of email bounce if the value of C<Status:> field in a bounce email is
+C<4.3.1> or C<5.3.1>.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<systemfull>.
+C<text()> method returns the fixed string C<systemfull>.
 
     print Sisimai::Reason::SystemFull->text;  # systemfull
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::SystemFull->match('Mail System Full');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<systemfull>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<systemfull>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -85,3 +86,4 @@ Copyright (C) 2014-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

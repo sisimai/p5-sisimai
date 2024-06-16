@@ -50,11 +50,12 @@ Sisimai::Reason::HasMoved - Bounce reason is C<hasmoved> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::HasMoved checks the bounce reason is C<hasmoved> or not. This class is called only
-Sisimai::Reason class.
+C<Sisimai::Reason::HasMoved> checks the bounce reason is C<hasmoved> or not. This class is called
+only C<Sisimai::Reason> class.
 
-This is the error that a user's mailbox has moved (and is not forwarded automatically). Sisimai will
-set C<hasmoved> to the reason of email bounce if the value of Status: field in a bounce email is C<5.1.6>.
+This is the error that the user's mailbox has moved (and is not forwarded automatically). Sisimai
+will set C<hasmoved> to the reason of the email bounce if the value of the C<Status:> field in the
+bounce email is C<5.1.6>.
 
     <kijitora@example.go.jp>: host mx1.example.go.jp[192.0.2.127] said: 550 5.1.6 recipient
         no longer on server: kijitora@example.go.jp (in reply to RCPT TO command)
@@ -63,20 +64,20 @@ set C<hasmoved> to the reason of email bounce if the value of Status: field in a
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<hasmoved>.
+C<text()> method returns the fixed string C<hasmoved>.
 
     print Sisimai::Reason::HasMoved->text;  # hasmoved
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::HasMoved->match('address cat@example.jp has been replaced by ');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<hasmoved>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<hasmoved>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -91,3 +92,4 @@ Copyright (C) 2015-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

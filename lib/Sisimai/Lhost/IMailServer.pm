@@ -4,13 +4,13 @@ use v5.26;
 use strict;
 use warnings;
 
-sub description { 'IPSWITCH IMail Server' }
+sub description { 'Progress iMail Server: https://community.progress.com/s/products/imailserver' }
 sub inquire {
-    # Detect an error from IMailServer
+    # Detect an error from Progress iMail Server
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.1
     my $class = shift;
     my $mhead = shift // return undef;
@@ -106,7 +106,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::IMailServer - bounce mail parser class for C<IMail Server>.
+Sisimai::Lhost::IMailServer - bounce mail decoder class for Progress iMail Server
+L<https://community.progress.com/s/products/imailserver>.
 
 =head1 SYNOPSIS
 
@@ -114,8 +115,9 @@ Sisimai::Lhost::IMailServer - bounce mail parser class for C<IMail Server>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::IMailServer parses a bounce email which created by C<Ipswitch IMail Server>. Methods
-in the module are called from only Sisimai::Message.
+C<Sisimai::Lhost::IMailServer> decodes a bounce email which created by Progress iMail Server
+L<https://community.progress.com/s/products/imailserver>. Methods in the module are called from
+only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -127,8 +129,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method decodes a bounced email and return results as a array reference.
+See C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 

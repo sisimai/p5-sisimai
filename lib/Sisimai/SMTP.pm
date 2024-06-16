@@ -17,7 +17,7 @@ Sisimai::SMTP - SMTP Status Codes related utilities
 
 =head1 DESCRIPTION
 
-Sisimai::SMTP is a parent class of Sisimai::SMTP::Status and Sisimai::SMTP::Reply.
+C<Sisimai::SMTP> is a parent class of C<Sisimai::SMTP::Status>, and C<Sisimai::SMTP::Reply>.
 
 =head1 AUTHOR
 

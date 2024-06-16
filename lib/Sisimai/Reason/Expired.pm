@@ -71,30 +71,30 @@ Sisimai::Reason::Expired - Bounce reason is C<expired> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Expired checks the bounce reason is C<expired> or not. This class is called only
-Sisimai::Reason class.
+C<Sisimai::Reason::Expired> checks the bounce reason is C<expired> or not. This class is called only
+C<Sisimai::Reason> class.
 
-This is the error that delivery time has expired due to connection failure or network error and the
-message you sent has been in the queue for long time.
+This is the error that the delivery time has expired due to a connection failure or a network error
+and the message you sent has been in the queue for long time.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<expired>.
+C<text()> method returns the fixed string C<expired>.
 
     print Sisimai::Reason::Expired->text;  # expired
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::Expired->match('400 Delivery time expired');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<expired>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<expired>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

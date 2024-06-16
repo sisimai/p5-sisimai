@@ -67,9 +67,9 @@ Sisimai::Reason::SystemError - Bounce reason is C<systemerror> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::SystemError checks the bounce reason is C<systemerror> or not. This class is called
-only Sisimai::Reason class. This is the error that an email has bounced due to system error on the
-remote host such as LDAP connection failure or other internal system error.
+C<Sisimai::Reason::SystemError> checks the bounce reason is C<systemerror> or not. This class is
+called only C<Sisimai::Reason> class. This is the error that the email has bounced due to system
+error on the remote host such as LDAP connection failures or other internal system errors.
 
     <kijitora@example.net>:
     Unable to contact LDAP server. (#4.4.3)I'm not going to try again; this
@@ -79,20 +79,20 @@ remote host such as LDAP connection failure or other internal system error.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<systemerror>.
+C<text()> method returns the fixed string C<systemerror>.
 
     print Sisimai::Reason::SystemError->text;  # systemerror
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::SystemError->match('5.3.5 System config error'); # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<systemerror>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<systemerror>. The argument must be
+C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

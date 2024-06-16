@@ -10,7 +10,7 @@ sub inquire {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.28
     my $class = shift;
     my $mhead = shift // return undef;
@@ -107,7 +107,7 @@ sub inquire {
         $markingsof->{'boundary'} = $q if $q;
     }
 
-    BODY_PARSER: {
+    MESSAGE_BODY: {
         # Get vacation message
         for my $e ( split("\n", $$mbody) ) {
             # Read the first 5 lines except a blank line
@@ -153,21 +153,21 @@ Sisimai::RFC3834 - RFC3834 auto reply message detector
 
 =head1 DESCRIPTION
 
-Sisimai::RFC3834 is a class which called from called from only Sisimai::Message when other
-Sisimai::Lhost::* modules did not detected a bounce reason.
+C<Sisimai::RFC3834> is a class which called from called from only C<Sisimai::Message> when other
+C<Sisimai::Lhost::*> modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
 =head2 C<B<description()>>
 
-C<description()> returns description string of this module.
+C<description()> method returns the description string of this module.
 
     print Sisimai::RFC3834->description;
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses an auto replied message and return results as an array reference. See
-Sisimai::Message for more details.
+C<inquire()> method decodes an auto replied message and return results as an array reference. See
+C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 

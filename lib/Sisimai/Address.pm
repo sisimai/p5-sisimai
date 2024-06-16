@@ -475,13 +475,13 @@ Sisimai::Address - Email address object
 
 =head1 DESCRIPTION
 
-Sisimai::Address provide methods for dealing email address.
+C<Sisimai::Address> provide methods for dealing email address.
 
 =head1 CLASS METHODS
 
 =head2 C<B<is_emailaddress(I<email address>)>>
 
-C<is_emailaddress()> checks the argument is valid email address or not.
+C<is_emailaddress()> method checks the argument is valid email address or not.
 
     print Sisimai::Address->is_emailaddress('neko@example.jp');  # 1
     print Sisimai::Address->is_emailaddress('neko%example.jp');  # 0
@@ -496,14 +496,15 @@ C<is_emailaddress()> checks the argument is valid email address or not.
 
 =head2 C<B<is_mailerdaemon(I<email address>)>>
 
-C<is_mailerdaemon()> checks the argument is mailer-daemon or not.
+C<is_mailerdaemon()> method checks the argument is B<mailer-daemon> or not.
 
     print Sisimai::Address->is_mailerdaemon('neko@example.jp');          # 0
     print Sisimai::Address->is_mailerdaemon('mailer-daemon@example.jp'); # 1
 
 =head2 C<B<find(I<String>)>>
 
-C<find()> is a new parser for getting only email address from text including email addresses.
+C<find()> method is a new parser for getting only the email address from the given string including
+an email addresses.
 
     my $r = 'Stray cat <cat@example.org>, nyaa@example.org (White Cat)',
     my $v = Sisimai::Address->find($r);
@@ -524,7 +525,7 @@ C<find()> is a new parser for getting only email address from text including ema
 
 =head2 C<B<s3s4(I<email address>)>>
 
-C<s3s4()> works Ruleset 3, and 4 of sendmail.cf.
+C<s3s4()> method works Ruleset 3, and 4 of F<sendmail.cf>.
 
     my $r = [
         'Stray cat <cat@example.org>',
@@ -538,14 +539,14 @@ C<s3s4()> works Ruleset 3, and 4 of sendmail.cf.
 
 =head2 C<B<expand_verp(I<email address>)>>
 
-C<expand_verp()> gets the original email address from VERP
+C<expand_verp()> method gets the original email address from C<VERP>
 
     my $r = 'nyaa+neko=example.org@example.org';
     print Sisimai::Address->expand_verp($r); # neko@example.org
 
 =head2 C<B<expand_alias(I<email address>)>>
 
-C<expand_alias()> gets the original email address from alias
+C<expand_alias()> method gets the original email address from the alias address
 
     my $r = 'nyaa+neko@example.org';
     print Sisimai::Address->expand_alias($r); # nyaa@example.org
@@ -554,28 +555,28 @@ C<expand_alias()> gets the original email address from alias
 
 =head2 C<B<user()>>
 
-C<user()> returns a local part of the email address.
+C<user()> method returns a local part of the email address.
 
     my $v = Sisimai::Address->new({ 'address' => 'neko@example.org' });
     print $v->user;     # neko
 
 =head2 C<B<host()>>
 
-C<host()> returns a domain part of the email address.
+C<host()> method returns a domain part of the email address.
 
     my $v = Sisimai::Address->new({ 'address' => 'neko@example.org' });
     print $v->host;     # example.org
 
 =head2 C<B<address()>>
 
-C<address()> returns an email address
+C<address()> method returns an email address
 
     my $v = Sisimai::Address->new({ 'address' => 'neko@example.org' });
     print $v->address;     # neko@example.org
 
 =head2 C<B<verp()>>
 
-C<verp()> returns a VERP email address
+C<verp()> method returns a VERP email address
 
     my $v = Sisimai::Address->new({ 'address' => 'neko+nyaan=example.org@example.org' });
     print $v->verp;     # neko+nyaan=example.org@example.org
@@ -583,7 +584,7 @@ C<verp()> returns a VERP email address
 
 =head2 C<B<alias()>>
 
-C<alias()> returns an email address (alias)
+C<alias()> method returns an email address (alias)
 
     my $v = Sisimai::Address->new({ 'address' => 'neko+nyaan@example.org' });
     print $v->alias;    # neko+nyaan@example.org
@@ -591,7 +592,7 @@ C<alias()> returns an email address (alias)
 
 =head2 C<B<name()>>
 
-C<name()> returns a display name
+C<name()> method returns a display name
 
     my $e = '"Neko, Nyaan" <neko@example.org>';
     my $r = Sisimai::Address->find($e);
@@ -601,7 +602,7 @@ C<name()> returns a display name
 
 =head2 C<B<comment()>>
 
-C<name()> returns a comment
+C<comment()> method returns a comment
 
     my $e = '"Neko, Nyaan" <neko(nyaan)@example.org>';
     my $v = Sisimai::Address->new(shift Sisimai::Address->find($e)->@*);

@@ -6,7 +6,7 @@ use warnings;
 # https://www.godaddy.com/help/what-does-my-email-bounceback-mean-3568
 sub get {
     # Detect bounce reason from GoDaddy (smtp.secureserver.net)
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for GoDaddy
     # @see      https://ca.godaddy.com/help/fix-rejected-email-with-a-bounce-error-40685
     # @since v4.22.2
@@ -239,19 +239,19 @@ Sisimai::Rhost::GoDaddy - Detect the bounce reason returned from GoDaddy.
 
 =head1 SYNOPSIS
 
-    use Sisimai::Rhost;
+    use Sisimai::Rhost::GoDaddy;
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
-of get() method when the value of C<rhost> of the object end with "secureserver.net". This class
-is called only Sisimai::Fact class.
+C<Sisimai::Rhost::GoDaddy> detects the bounce reason from the content of C<Sisimai::Fact> object as
+an argument of C<get()> method when the value of C<rhost> of the object end with C<secureserver.net>.
+This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
 =head2 C<B<get(I<Sisimai::Fact Object>)>>
 
-C<get()> detects the bounce reason.
+C<get()> method detects the bounce reason.
 
 =head1 AUTHOR
 

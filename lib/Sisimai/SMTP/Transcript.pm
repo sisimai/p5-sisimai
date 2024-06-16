@@ -7,12 +7,12 @@ use Sisimai::SMTP::Status;
 use Sisimai::SMTP::Command;
 
 sub rise {
-    # Parse a transcript of an SMTP session and makes structured data
+    # Decode the transcript of the SMTP session and makes the structured data
     # @param    [String] argv0  A transcript text MTA returned
     # @param    [String] argv1  A label string of a SMTP client
     # @param    [String] argv2  A label string of a SMTP server
     # @return   [Array]         Structured data
-    # @return   [undef]         Failed to parse or the 1st argument is missing
+    # @return   [undef]         Failed to decode or the 1st argument is missing
     # @since v5.0.0
     my $class = shift;
     my $argv0 = shift // return undef;
@@ -130,7 +130,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::SMTP::Transcript - Transcript of SMTP session parser
+Sisimai::SMTP::Transcript - Transcript of the SMTP session decoder
 
 =head1 SYNOPSIS
 
@@ -139,8 +139,8 @@ Sisimai::SMTP::Transcript - Transcript of SMTP session parser
 
 =head1 DESCRIPTION
 
-Sisimai::SMTP::Transcript provides a parser method for converting transcript of SMTP session to a
-structured data.
+C<Sisimai::SMTP::Transcript> provides a decoding method for converting the transcript of the SMTP
+session to the structured data.
 
 =head1 AUTHOR
 

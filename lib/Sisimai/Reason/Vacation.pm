@@ -32,7 +32,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::Vacation - A recipient is out of office
+Sisimai::Reason::Vacation - the recipient is out of the office
 
 =head1 SYNOPSIS
 
@@ -41,24 +41,24 @@ Sisimai::Reason::Vacation - A recipient is out of office
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Vacation is for only returning text and description. This class is called only from
-Sisimai->reason method.
+C<Sisimai::Reason::Vacation> is for only returning the text and the description.
+This class is called only from C<Sisimai->reason()> method.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<vacation>.
+C<text()> method returns the fixed string C<vacation>.
 
     print Sisimai::Reason::Vacation->text;  # vacation
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> always return undef
+C<match()> method always return C<undef>
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> always return undef
+C<true()> method always return C<undef>
 
 =head1 AUTHOR
 

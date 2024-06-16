@@ -25,7 +25,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Fact::JSON - Dumps parsed data object as a JSON format
+Sisimai::Fact::JSON - Dumps decoded data object as a JSON format
 
 =head1 SYNOPSIS
 
@@ -37,14 +37,14 @@ Sisimai::Fact::JSON - Dumps parsed data object as a JSON format
 
 =head1 DESCRIPTION
 
-Sisimai::Fact::JSON dumps parsed data object as a JSON format. This class and method should be called
-from the parent object "Sisimai::Fact".
+C<Sisimai::Fact::JSON> dumps decoded data object as a JSON format. This class and method should be
+called only from the parent object C<Sisimai::Fact>.
 
 =head1 CLASS METHODS
 
 =head2 C<B<dump(I<Sisimai::Fact>)>>
 
-C<dump> method returns Sisimai::Fact object as a JSON formatted string.
+C<dump()> method returns C<Sisimai::Fact> object as a JSON formatted string.
 
     my $mail = Sisimai::Mail->new('/var/mail/root');
     while( my $r = $mail->read ) {

@@ -54,7 +54,7 @@ sub true {
     # @return   [Integer]               1: is missing PTR or invalid PTR
     #           [Integer]               0: is not blocked due to missing PTR record
     # @see      http://www.ietf.org/rfc/rfc2822.txt
-    # @since v4.0.0
+    # @since v5.0.0
     my $class = shift;
     my $argvs = shift // return undef;
 
@@ -80,11 +80,11 @@ Sisimai::Reason::RequirePTR - Bounce reason is "requireptr" or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::RequirePTR checks the bounce reason is "requireptr" or not. This class is called
-only from Sisimai::Reason class.
+C<Sisimai::Reason::RequirePTR> checks the bounce reason is C<requireptr> or not. This class is called
+only from C<Sisimai::Reason> class.
 
-This is the error that SMTP connection was rejected due to missing PTR record or having invalid PTR
-record at the source IP address used for the SMTP connection.
+This is the error that the SMTP connection was rejected due to missing PTR record or having invalid
+PTR record at the source IP address used for the SMTP connection.
 
     host gmail-smtp-in.l.google.com[142.251.170.27] said:
     [192.0.2.25] The IP address sending this message does not have a PTR record setup, or the
@@ -96,18 +96,18 @@ record at the source IP address used for the SMTP connection.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: "requireptr".
+C<text()> method returns the fixed string C<requireptr>.
 
     print Sisimai::Reason::RequirePTR->text;  # "requireptr"
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::RequirePTR->match('Reverse DNS failed');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is "requireptr". The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<requireptr>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

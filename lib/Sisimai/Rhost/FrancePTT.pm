@@ -5,7 +5,7 @@ use warnings;
 
 sub get {
     # Detect bounce reason from Orange and La Poste
-    # @param    [Sisimai::Fact] argvs   Parsed email object
+    # @param    [Sisimai::Fact] argvs   Decdoed email object
     # @return   [String]                The bounce reason for Orange, La Poste
     # @see      https://www.postmastery.com/orange-postmaster-smtp-error-codes-ofr/
     #           https://smtpfieldmanual.com/provider/orange
@@ -160,19 +160,19 @@ Sisimai::Rhost::FrancePTT - Detect the bounce reason returned from Orange and La
 
 =head1 SYNOPSIS
 
-    use Sisimai::Rhost;
+    use Sisimai::Rhost::FrancePTT;
 
 =head1 DESCRIPTION
 
-Sisimai::Rhost detects the bounce reason from the content of Sisimai::Fact object as an argument
-of get() method when the value of C<rhost> of the object end with "laposte.net" or "orange.fr".
-This class is called only Sisimai::Fact class.
+C<Sisimai::Rhost::FrancePTT> detects the bounce reason from the content of C<Sisimai::Fact> object
+as an argument of C<get()> method when the value of C<rhost> of the object end with C<laposte.net>
+or C<orange.fr>. This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
 =head2 C<B<get(I<Sisimai::Fact Object>)>>
 
-C<get()> detects the bounce reason.
+C<get()> method detects the bounce reason.
 
 =head1 AUTHOR
 

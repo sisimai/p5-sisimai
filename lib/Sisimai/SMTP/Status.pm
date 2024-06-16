@@ -883,36 +883,36 @@ Sisimai::SMTP::Status - SMTP Enhanced Status Codes related utilities
 
 =head1 DESCRIPTION
 
-Sisimai::SMTP::Status is utilities for getting DSN value from error reason text, getting the reason
-from DSN value, and getting DSN from the text including DSN.
+C<Sisimai::SMTP::Status> is a utility class for getting the DSN value from the error reason text,
+getting the reason from the DSN value, and getting the DSN from the text including a DSN.
 
 =head1 CLASS METHODS
 
 =head2 C<B<code(I<reason>,I<temp>)>>
 
-C<code()> returns pseudo DSN value from the specified reason string. The second argument is a flag
-for getting pseudo DSN value as a temporary error.
+C<code()> method returns pseudo DSN value from the specified reason string. The second argument is
+a flag for getting pseudo DSN value as a temporary error.
 
     print Sisimai::SMTP::Status->code('mailboxfull');   # '5.0.922'
     print Sisimai::SMTP::Status->code('mailboxfull',1); # '4.0.922'
 
 =head2 C<B<name(I<D.S.N.>)>>
 
-C<name()> returns a reason string from the specified DSN value.
+C<name()> method returns the reason string from the specified DSN value.
 
     print Sisimai::SMTP::Status->name('5.1.6');         # 'hasmoved'
     print Sisimai::SMTP::Status->name('4.2.3');         # 'exceedlimit'
 
 =head2 C<B<test(I<D.S.N.>)>>
 
-C<test()> checks whether a status code is a valid code or not.
+C<test()> method checks whether the status code is a valid code or not.
 
     print Sisimai::SMTP::Status->test('5.1.6'); # 1
     print Sisimai::SMTP::Status->test('3.14');  # 0
 
 =head2 C<B<find(I<String>, I<String>)>>
 
-C<find()> returns a DSN value only from the text including DSN
+C<find()> method returns the DSN value only from the text including a DSN
 
     print Sisimai::SMTP::Status->find('5.0.0');                  # '5.0.0'
     print Sisimai::SMTP::Status->find('550 5.1.1 User unknown'); # '5.1.1'
@@ -920,7 +920,7 @@ C<find()> returns a DSN value only from the text including DSN
 
 =head2 C<B<prefer(I<Code in Status: field>, I<Code in an error message>, [I<Reply code>])>>
 
-C<prefer()> returns the preferred value selected from the arguments.
+C<prefer()> method returns the preferred value selected from the arguments.
 
     print Sisimai::SMTP::Status->prefer("5.2.1", "5.0.0");      # "5.2.1"
     print Sisimai::SMTP::Status->prefer("4.4.7", "5.1.1", 421); # "4.4.7"

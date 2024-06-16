@@ -202,7 +202,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Order - A Class for making an optimized order list for calling MTA modules in Sisimai::Lhost::*.
+Sisimai::Order - A Class for making an optimized order list for calling MTA modules in C<Sisimai::Lhost::*>
 
 =head1 SYNOPSIS
 
@@ -210,23 +210,23 @@ Sisimai::Order - A Class for making an optimized order list for calling MTA modu
 
 =head1 DESCRIPTION
 
-Sisimai::Order class makes optimized order list which include MTA modules to be loaded on first from
-MTA specific headers in the bounce mail headers such as X-Failed-Recipients, which MTA modules for
-JSON structure.
+C<Sisimai::Order> class makes optimized order list which include MTA modules to be loaded on first
+from MTA specific headers in the bounce mail headers such as C<X-Failed-Recipients:>, which MTA modules
+for JSON structure.
 
 =head1 CLASS METHODS
 
 =head2 C<B<default()>>
 
-C<default()> returns a default order of MTA modules as an array reference. The default order is
-defined at Sisimai::Lhost->index method.
+C<default()> method returns a default order of MTA modules as an array reference. The default order
+is defined at C<Sisimai::Lhost->index()> method.
 
     print for Sisimai::Order->default->@*;
 
 =head2 C<B<another()>>
 
-C<another()> returns another list of MTA modules as an array reference. Another list is defined at
-this class.
+C<another()> method returns another list of MTA modules as an array reference. Another list is defined
+at this class.
 
     print for Sisimai::Order->another->@*;
 
@@ -243,3 +243,4 @@ Copyright (C) 2015-2017,2019-2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

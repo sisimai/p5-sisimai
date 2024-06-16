@@ -85,15 +85,15 @@ Sisimai::Reason::Filtered - Bounce reason is C<filtered> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Filtered checks the bounce reason is C<filtered> or not. This class is called only
-Sisimai::Reason class.
+C<Sisimai::Reason::Filtered> checks the bounce reason is C<filtered> or not. This class is called
+only C<Sisimai::Reason> class.
 
-This is the error that an email has been rejected by a header content after SMTP DATA command. In
-Japanese cellular phones, the error will incur that a sender's email address or a domain is rejected
-by recipient's email configuration. Sisimai will set C<filtered> to the reason of email bounce if
-the value of Status: field in a bounce email is C<5.2.0> or C<5.2.1>.
+This is the error that an email has been rejected by a header content after SMTP C<DATA> command.
+In Japanese cellular phones, the error will incur that the sender's email address or the domain is
+rejected by recipient's email configuration. Sisimai will set C<filtered> to the reason of email
+bounce if the value of C<Status:> field in the bounce email is C<5.2.0> or C<5.2.1>.
 
-This error reason is almost the same as UserUnknown.
+This error reason is almost the same as C<UserUnknown>.
 
     ... while talking to mfsmax.ntt.example.ne.jp.:
     >>> DATA
@@ -104,20 +104,20 @@ This error reason is almost the same as UserUnknown.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<filtered>.
+C<text()> method returns the fixed string C<filtered>.
 
     print Sisimai::Reason::Filtered->text;  # filtered
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::Filtered->match('550 5.1.2 User reject');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<filtered>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<filtered>. The argument must be C<Sisimai::Fact>
+object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
 

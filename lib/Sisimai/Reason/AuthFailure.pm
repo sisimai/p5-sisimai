@@ -67,8 +67,8 @@ Sisimai::Reason::AuthFailure - Bounce reason is C<authfailure> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::AuthFailure checks the bounce reason is C<authfailure> or not. This class is called
-only Sisimai::Reason class.
+C<Sisimai::Reason::AuthFailure> checks the bounce reason is C<authfailure> or not. This class is
+called only C<Sisimai::Reason> class.
 
 This is the error that an authenticaion failure related to SPF, DKIM, or DMARC was detected on a
 destination mail host. 
@@ -82,20 +82,20 @@ destination mail host.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<authfailure>.
+C<text()> method returns the fixed string C<authfailure>.
 
     print Sisimai::Reason::AuthFailure->text;  # authfailure
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::AuthFailure->match('5.7.0 SPF Check: fail');    # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<authfailure>. The argument must be Sisimai::Fact
-object and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<authfailure>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 

@@ -7,13 +7,13 @@ use Sisimai::String;
 use Encode;
 use Encode::Guess; Encode::Guess->add_suspects(Sisimai::String->encodenames->@*);
 
-sub description { 'IBM Domino Server' }
+sub description { 'HCL Domino' }
 sub inquire {
-    # Detect an error from IBM Domino
+    # Detect an error from HCL Domino (Formerly IBM Domino (Formerly Lotus Domino))
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.0.2
     my $class = shift;
     my $mhead = shift // return undef;
@@ -170,7 +170,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::Domino - bounce mail parser class for IBM Domino Server.
+Sisimai::Lhost::Domino - bounce mail decoder class for HCL Domino L<https://www.hcl-software.com/domino>.
 
 =head1 SYNOPSIS
 
@@ -178,8 +178,8 @@ Sisimai::Lhost::Domino - bounce mail parser class for IBM Domino Server.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::Domino parses a bounce email which created by IBM Domino Server. Methods in the module
-are called from only Sisimai::Message.
+C<Sisimai::Lhost::Domino> decodes a bounce email which created by HCL Domino L<https://www.hcl-software.com/domino>.
+Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -191,8 +191,8 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method decodes a bounced email and return results as a array reference.
+See C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 
@@ -207,3 +207,4 @@ Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

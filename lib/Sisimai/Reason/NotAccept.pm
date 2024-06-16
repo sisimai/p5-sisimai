@@ -64,32 +64,32 @@ Sisimai::Reason::NotAccept - Bounce reason is C<notaccept> or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::NotAccept checks the bounce reason is C<notaccept> or not. This class is called
-only Sisimai::Reason class.
+C<Sisimai::Reason::NotAccept> checks the bounce reason is C<notaccept> or not. This class is called
+only C<Sisimai::Reason> class.
 
-This is the error that a destination mail server does ( or can ) not accept any email. In many case,
-the server is high load or under the maintenance. Sisimai will set C<notaccept> to the reason of
-email bounce if the value of Status: field in a bounce email is C<5.3.2> or the value of SMTP reply
-code is 556.
+This is the error that the destination mail server does (or can) not accept any email. In many case,
+the server is high load or under the maintenance. Sisimai will set C<notaccept> to the reason of the
+email bounce if the value of C<Status:> field in the bounce email is C<5.3.2> or the value of SMTP
+reply code is C<556>.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> returns string: C<notaccept>.
+C<text()> method returns the fixed string C<notaccept>.
 
     print Sisimai::Reason::NotAccept->text;  # notaccept
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::NotAccept->match('domain does not exist:');   # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is C<notaccept>. The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<notaccept>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -104,3 +104,4 @@ Copyright (C) 2014-2016,2018,2020-2023,2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

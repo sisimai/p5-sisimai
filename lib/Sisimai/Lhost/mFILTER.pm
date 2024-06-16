@@ -4,13 +4,13 @@ use v5.26;
 use strict;
 use warnings;
 
-sub description { 'Digital Arts m-FILTER' }
+sub description { 'Digital Arts m-FILTER: https://www.daj.jp/bs/mf/' }
 sub inquire {
-    # Detect an error from DigitalArts m-FILTER
+    # Detect an error from Digital Arts m-FILTER
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.1
     my $class = shift;
     my $mhead = shift // return undef;
@@ -126,7 +126,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::mFILTER - bounce mail parser class for C<Digital Arts m-FILTER>.
+Sisimai::Lhost::mFILTER - bounce mail decoder class for Digital Arts m-FILTER L<https://www.daj.jp/bs/mf/>.
 
 =head1 SYNOPSIS
 
@@ -134,8 +134,8 @@ Sisimai::Lhost::mFILTER - bounce mail parser class for C<Digital Arts m-FILTER>.
 
 =head1 DESCRIPTION
 
-Sisimai::Lhost::mFILTER parses a bounce email which created by C<Digital Arts m-FILTER>. Methods in
-the module are called from only Sisimai::Message.
+C<Sisimai::Lhost::mFILTER> decodes a bounce email which created by Digital Arts m-FILTER L<https://www.daj.jp/bs/mf/>.
+Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
 
@@ -147,7 +147,7 @@ C<description()> returns description string of this module.
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
+C<inquire()> method decodes a bounced email and return results as a array reference. See Sisimai::Message
 for more details.
 
 =head1 AUTHOR

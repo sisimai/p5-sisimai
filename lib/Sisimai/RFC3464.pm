@@ -11,7 +11,7 @@ sub inquire {
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
-    # @return   [undef]         failed to parse or the arguments are missing
+    # @return   [undef]         failed to decode or the arguments are missing
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
@@ -178,8 +178,8 @@ sub inquire {
     }
 
     # ---------------------------------------------------------------------------------------------
-    BODY_PARSER_FOR_FALLBACK: {
-        # Fallback, parse entire message body
+    BODY_DECODER_FOR_FALLBACK: {
+        # Fallback, decode the entire message body
         last if $recipients;
 
         # Failed to get a recipient address at code above
@@ -351,7 +351,7 @@ sub inquire {
             }
             $b->{'diagnosis'} .= ' '.$e;
         }
-    } # END OF BODY_PARSER_FOR_FALLBACK
+    } # END OF BODY_DECODER_FOR_FALLBACK
     return undef unless $itisbounce;
 
     my $p1 = index($rfc822text, "\nTo: ");
@@ -406,7 +406,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::RFC3464 - bounce mail parser class for Fallback.
+Sisimai::RFC3464 - bounce mail decoder class for Fallback.
 
 =head1 SYNOPSIS
 
@@ -414,21 +414,21 @@ Sisimai::RFC3464 - bounce mail parser class for Fallback.
 
 =head1 DESCRIPTION
 
-Sisimai::RFC3464 is a class which called from called from only Sisimai::Message when other 
-Sisimai::Lhost::* modules did not detected a bounce reason.
+C<Sisimai::RFC3464> is a class which called from called from only C<Sisimai::Message> when other 
+C<Sisimai::Lhost::*> modules did not detected a bounce reason.
 
 =head1 CLASS METHODS
 
 =head2 C<B<description()>>
 
-C<description()> returns description string of this module.
+C<description()> method returns the description string of this module.
 
     print Sisimai::RFC3464->description;
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
-C<inquire()> method parses a bounced email and return results as a array reference. See Sisimai::Message
-for more details.
+C<inquire()> method method decodes a bounced email and return results as an array reference.
+See C<Sisimai::Message> for more details.
 
 =head1 AUTHOR
 
@@ -443,3 +443,4 @@ Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

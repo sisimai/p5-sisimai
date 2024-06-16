@@ -140,11 +140,11 @@ Sisimai::Reason::Blocked - Bounce reason is "blocked" or not.
 
 =head1 DESCRIPTION
 
-Sisimai::Reason::Blocked checks the bounce reason is "blocked" or not. This class is called only
-Sisimai::Reason class.
+C<Sisimai::Reason::Blocked> checks the bounce reason is C<blocked> or not. This class is called
+only C<Sisimai::Reason> class.
 
 This is the error that SMTP connection was rejected due to a client IP address or a hostname, or
-the parameter of "HELO/EHLO" command. This reason has added in Sisimai 4.0.0.
+the parameter of C<HELO> or C<EHLO> command. This reason has added in Sisimai 4.0.0.
 
     <kijitora@example.net>:
     Connected to 192.0.2.112 but my name was rejected.
@@ -154,20 +154,20 @@ the parameter of "HELO/EHLO" command. This reason has added in Sisimai 4.0.0.
 
 =head2 C<B<text()>>
 
-C<text()> returns string: "blocked".
+C<text()> method returns the fixed string C<blocked>.
 
     print Sisimai::Reason::Blocked->text;  # blocked
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> returns 1 if the argument matched with patterns defined in this class.
+C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
     print Sisimai::Reason::Blocked->match('Access from ip address 192.0.2.1 blocked');  # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> returns 1 if the bounce reason is "blocked". The argument must be Sisimai::Fact object
-and this method is called only from Sisimai::Reason class.
+C<true()> method returns C<1> if the bounce reason is C<blocked>. The argument must be C<Sisimai::Fact>
+object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
 
@@ -182,3 +182,4 @@ Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
 This software is distributed under The BSD 2-Clause License.
 
 =cut
+

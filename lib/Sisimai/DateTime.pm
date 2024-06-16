@@ -414,13 +414,13 @@ Sisimai::DateTime - Date and time utilities
 
 =head1 DESCRIPTION
 
-Sisimai::DateTime provide methods for dealing date and time.
+C<Sisimai::DateTime> provide methods for dealing date and time.
 
 =head1 CLASS METHODS
 
 =head2 C<B<parse(I<Date string>)>>
 
-C<parse()> convert various date format string.
+C<parse()> method converts a various date format string.
 
     my $x = 'Fri, 9 Apr 2004 04:01:03 +0000 (GMT)';
     my $y = '27 Apr 2009 08:08:54 +0900';
@@ -429,7 +429,7 @@ C<parse()> convert various date format string.
 
 =head2 C<B<abbr2tz(I<Abbr>)>>
 
-C<abbr2tz()> convert a time zone abbreviation to 4 digit string of time zone.
+C<abbr2tz()> method converts a time zone abbreviation to 4 digit string of time zone.
 
     print Sisimai::DateTime->abbr2tz('JST');   # +0900
     print Sisimai::DateTime->abbr2tz('UTC');   # +0000
