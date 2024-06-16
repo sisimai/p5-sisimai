@@ -4,9 +4,9 @@ use v5.26;
 use strict;
 use warnings;
 
-sub description { 'G Suite: https://workspace.google.com/' }
+sub description { 'Google Workspace: https://workspace.google.com/' }
 sub inquire {
-    # Detect an error from G Suite (Transfer from G Suite to a destination host)
+    # Detect an error from Google Workspace (Transfer from the Google Workspace to the destination host)
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
