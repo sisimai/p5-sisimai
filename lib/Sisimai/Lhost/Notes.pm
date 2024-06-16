@@ -7,7 +7,7 @@ use Encode;
 
 sub description { 'HCL Notes' }
 sub inquire {
-    # Detect an error from Lotus Notes
+    # Detect an error from HCL Notes (Formerly IBM Notes(Formerly Lotus Notes))
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

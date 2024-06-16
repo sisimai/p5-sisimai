@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Twilio SendGrid: https://sendgrid.com/' }
 sub inquire {
-    # Detect an error from SendGrid
+    # Detect an error from Twilio SendGrid
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

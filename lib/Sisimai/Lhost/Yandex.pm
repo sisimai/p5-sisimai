@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Yandex Mail: https://360.yandex.com/mail/' }
 sub inquire {
-    # Detect an error from Yandex.Mail
+    # Detect an error from Yandex Mail
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

@@ -7,7 +7,7 @@ use warnings;
 # Based on Sisimai::Lhost::Exim
 sub description { 'McAfee SaaS' }
 sub inquire {
-    # Detect an error from MXLogic
+    # Detect an error from McAfee Saas (Formerly MXLogic)
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

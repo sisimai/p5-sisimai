@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Microsoft 365: https://office.microsoft.com/' }
 sub inquire {
-    # Detect an error from Microsoft Office 365
+    # Detect an error from Microsoft 365 (formerly Office 365)
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

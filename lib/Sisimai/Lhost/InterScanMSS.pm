@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Trend Micro InterScan Messaging Security Suite: https://www.trendmicro.com/en_us/business/products/user-protection/sps/email-and-collaboration/interscan-messaging.html' }
 sub inquire {
-    # Detect an error from InterScanMSS
+    # Detect an error from Trend Micro InterScan Messaging Security Suite
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

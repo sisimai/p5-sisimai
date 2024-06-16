@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Yahoo MAIL: https://mail.yahoo.com/' }
 sub inquire {
-    # Detect an error from Yahoo! MAIL
+    # Detect an error from Yahoo Mail
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

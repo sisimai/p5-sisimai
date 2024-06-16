@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'TransWARE Active!hunter' };
 sub inquire {
-    # Detect an error from TransWARE Active!hunter
+    # Detect an error from QUALITIA Active!hunter
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
@@ -81,7 +81,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::Activehunter - bounce mail decodeder class for Active!hunter L<https://www.qualitia.com/jp/product/ah/function.html>
+Sisimai::Lhost::Activehunter - bounce mail decodeder class for QUALITIA Active!hunter
+L<https://www.qualitia.com/jp/product/ah/function.html>
 
 =head1 SYNOPSIS
 

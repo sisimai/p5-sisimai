@@ -9,7 +9,7 @@ use Encode::Guess; Encode::Guess->add_suspects(Sisimai::String->encodenames->@*)
 
 sub description { 'HCL Domino' }
 sub inquire {
-    # Detect an error from HCL Domino
+    # Detect an error from HCL Domino (Formerly IBM Domino (Formerly Lotus Domino))
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Email Security (formerly Messaging Security): https://www.broadcom.com/products/cybersecurity/email' }
 sub inquire {
-    # Detect an error from MessageLabs.com
+    # Detect an error from Email Security (Formerly MessageLabs.com)
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

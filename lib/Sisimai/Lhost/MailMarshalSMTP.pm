@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Trustwave Secure Email Gateway: https://www.trustwave.com/en-us/services/email-security/' }
 sub inquire {
-    # Detect an error from MailMarshalSMTP
+    # Detect an error from Trustwave Secure Email Gateway (Formerly MailMarshalSMTP)
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Digital Arts m-FILTER: https://www.daj.jp/bs/mf/' }
 sub inquire {
-    # Detect an error from DigitalArts m-FILTER
+    # Detect an error from Digital Arts m-FILTER
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part

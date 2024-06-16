@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Progress iMail Server: https://community.progress.com/s/products/imailserver' }
 sub inquire {
-    # Detect an error from IMailServer
+    # Detect an error from Progress iMail Server
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
@@ -106,7 +106,8 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::IMailServer - bounce mail decoder class for iMail Server L<https://community.progress.com/s/products/imailserver>.
+Sisimai::Lhost::IMailServer - bounce mail decoder class for Progress iMail Server
+L<https://community.progress.com/s/products/imailserver>.
 
 =head1 SYNOPSIS
 
@@ -114,7 +115,7 @@ Sisimai::Lhost::IMailServer - bounce mail decoder class for iMail Server L<https
 
 =head1 DESCRIPTION
 
-C<Sisimai::Lhost::IMailServer> decodes a bounce email which created by Progress iMail Server 
+C<Sisimai::Lhost::IMailServer> decodes a bounce email which created by Progress iMail Server
 L<https://community.progress.com/s/products/imailserver>. Methods in the module are called from
 only C<Sisimai::Message>.
 

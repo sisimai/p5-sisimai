@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'McAfee Email Appliance' }
 sub inquire {
-    # Detect an error from McAfee
+    # Detect an error from McAfee Email Appliance
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
