@@ -36,6 +36,8 @@ my $isexpected = {
     '26' => [['5.1.1',   '550', 'userunknown',     1]],
     '27' => [['5.7.13',  '525', 'suspend',         0]],
     '28' => [['5.2.2',   '552', 'mailboxfull',     0]],
+    '29' => [['5.0.947', '',    'expired',         0]],
+    '30' => [['5.0.947', '',    'expired',         0]],
 };
 
 $enginetest->($enginename, $isexpected);
