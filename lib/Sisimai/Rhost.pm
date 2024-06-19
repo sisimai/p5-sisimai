@@ -19,41 +19,25 @@ state $RhostClass = {
     'YahooInc'  => ['.yahoodns.net'],
 };
 
-sub match {
-    # The value of "rhost" is listed in RhostClass or not
-    # @param    [String] argv1  Remote host name
-    # @return   [Integer]       0: did not match
-    #                           1: match
-    my $class = shift;
-    my $rhost = shift // return undef;
-    my $host0 = lc($rhost) || return 0;
-    my $match = 0;
-
-    for my $e ( keys %$RhostClass ) {
-        # Try to match with each key of RhostClass
-        next unless grep { index($host0, $_) > -1 } $RhostClass->{ $e }->@*;
-        $match = 1;
-        last;
-    }
-    return $match;
-}
-
 sub get {
     # Detect the bounce reason from certain remote hosts
     # @param    [Sisimai::Fact] argvs   Decoded email object
-    # @param    [String]        proxy   The alternative of the "rhost"
     # @return   [String]                The value of bounce reason
     my $class = shift;
     my $argvs = shift || return undef;
-    my $proxy = shift || undef;
-    return '' unless length $argvs->{'diagnosticcode'};
+    return undef unless length $argvs->{'diagnosticcode'};
 
-    my $remotehost = $proxy || lc $argvs->{'rhost'};
+    my $remotehost = lc $argvs->{'rhost'}       || '';
+    my $domainpart = lc $argvs->{'destination'} || '';
+    my $rhostmatch = undef;
     my $rhostclass = '';
 
     for my $e ( keys %$RhostClass ) {
         # Try to match with each key of RhostClass
-        next unless grep { index($remotehost, $_) > -1 } $RhostClass->{ $e }->@*;
+        $rhostmatch   = 1 if grep { index($remotehost, $_) > -1 } $RhostClass->{ $e }->@*;
+        $rhostmatch ||= 1 if grep { index($domainpart, $_) > -1 } $RhostClass->{ $e }->@*;
+        next unless $rhostmatch;
+
         $rhostclass = __PACKAGE__.'::'.$e;
         last;
     }
@@ -84,10 +68,6 @@ of C<get()> method when the value of C<rhost> of the object is listed in C<$Rhos
 This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
-
-=head2 C<B<match(I<remote host>)>>
-
-C<match()> method returns C<1> if the remote host is listed in C<$RhostClass> variable.
 
 =head2 C<B<get(I<Sisimai::Fact Object>)>>
 
