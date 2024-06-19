@@ -338,12 +338,7 @@ sub rise {
             if( $o->{'reason'} eq '' || exists $retryindex->{ $o->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
                 $o->{'reason'} = '' if $o->{'reason'} eq 'undefined' || $o->{'reason'} eq 'onhold';
-                my $re; my $de = $o->{'destination'};
-                   $re   = Sisimai::Rhost->get($o)      if Sisimai::Rhost->match($o->{'rhost'});
-                   $re ||= Sisimai::Rhost->get($o, $de) if Sisimai::Rhost->match($de);
-                   $re ||= Sisimai::Reason->get($o);
-                   $re ||= 'undefined';
-                $o->{'reason'} = $re;
+                $o->{'reason'} = Sisimai::Rhost->get($o) || Sisimai::Reason->get($o) || 'undefined';
             }
         }
 
