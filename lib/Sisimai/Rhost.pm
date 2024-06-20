@@ -35,7 +35,7 @@ sub get {
     my $rhostclass = '';
 
     for my $e ( keys %$RhostClass ) {
-        # Try to match with each key of RhostClass
+        # Try to match with each value of RhostClass
         $rhostmatch   = 1 if grep { index($remotehost, $_) > -1 } $RhostClass->{ $e }->@*;
         $rhostmatch ||= 1 if grep { index($domainpart, $_) > -1 } $RhostClass->{ $e }->@*;
         next unless $rhostmatch;
