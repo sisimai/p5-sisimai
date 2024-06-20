@@ -29,6 +29,8 @@ sub get {
 
     my $remotehost = lc $argvs->{'rhost'}       || '';
     my $domainpart = lc $argvs->{'destination'} || '';
+    return undef unless length $remotehost.$domainpart;
+
     my $rhostmatch = undef;
     my $rhostclass = '';
 
