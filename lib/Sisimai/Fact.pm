@@ -337,8 +337,8 @@ sub rise {
             # Decide the reason of email bounce
             if( $o->{'reason'} eq '' || exists $retryindex->{ $o->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
-                $o->{'reason'} = '' if $o->{'reason'} eq 'undefined' || $o->{'reason'} eq 'onhold';
-                $o->{'reason'} = Sisimai::Rhost->get($o) || Sisimai::Reason->get($o) || 'undefined';
+                my $re = $o->{'reason'} || 'undefined';
+                $o->{'reason'} = Sisimai::Rhost->get($o) || Sisimai::Reason->get($o) || $re;
             }
         }
 
