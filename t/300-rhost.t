@@ -7,7 +7,7 @@ use Sisimai::Reason;
 use Module::Load;
 
 my $Package = 'Sisimai::Rhost';
-my $Methods = { 'class' => ['match', 'get'], 'object' => [] };
+my $Methods = { 'class' => ['get'], 'object' => [] };
 my $Classes = [qw|
     Apple Cox FrancePTT GoDaddy Google IUA KDDI Microsoft Mimecast NTTDOCOMO Spectrum Tencent YahooInc
 |];
@@ -15,7 +15,6 @@ my $Classes = [qw|
 MAKETEST: {
     use_ok $Package;
     can_ok $Package, @{ $Methods->{'class'} };
-    is $Package->match, undef;
     is $Package->get, undef;
 
     for my $e ( glob('./set-of-emails/maildir/bsd/rhost-*.eml') ) {
@@ -29,15 +28,8 @@ MAKETEST: {
             ok length $f->reason, '->reason = '.$f->reason;
 
             my $cx = $f->damn;
-            if( $Package->match($cx->{'rhost'}) ) {
-                # Get the reason by only the value of "rhost"
-                is $Package->get($cx), $f->reason, sprintf("->damn->reason = %s", $f->reason);
-
-            } else {
-                # Get the reason by the values of "rhost" and "desctination"
-                ok length $cx->{'destination'};
-                is $Package->get($cx, $cx->{'destination'}), $f->reason, sprintf("->damn->reason = %s", $f->reason);
-            }
+            ok length $cx->{'destination'};
+            is $Package->get($cx, $cx->{'destination'}), $f->reason, sprintf("->damn->reason = %s", $f->reason);
         }
     }
 
