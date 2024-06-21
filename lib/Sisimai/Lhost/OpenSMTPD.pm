@@ -60,7 +60,11 @@ sub inquire {
             'Domain does not exist',
         ],
         # smtp/mta.c:1085|  relay->failstr = "Destination seem to reject all mails";
-        'notaccept'   => ['Destination seem to reject all mails'],
+        'notaccept'   => [
+            'Destination seem to reject all mails',
+            'No MX found for domain',
+            'No MX found for destination',
+        ],
         'networkerror'=> [
             #  smtpd/mta.c:972|  relay->failstr = "Temporary failure in MX lookup";
             'Address family mismatch on destination MXs',
@@ -69,8 +73,6 @@ sub inquire {
             'Could not retrieve source address',
             'Loop detected',
             'Network error on destination MXs',
-            'No MX found for domain',
-            'No MX found for destination',
             'No valid route to remote MX',
             'No valid route to destination',
             'Temporary failure in MX lookup',
