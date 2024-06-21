@@ -26,6 +26,9 @@ my $isexpected = {
     '01013' => [['5.0.912', '',    'hostunknown',     1]],
     '01014' => [['5.0.947', '',    'expired',         0]],
     '01015' => [['5.0.944', '',    'networkerror',    0]],
+    '01016' => [['5.0.912', '',    'hostunknown',     1]],
+    '01017' => [['5.7.26',  '550', 'authfailure',     0]],
+    '01018' => [['5.0.932', '',    'notaccept',       1]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
