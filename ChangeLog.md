@@ -23,7 +23,7 @@ v5.0.3p2
     - `rhost-apple-02.eml`
     - `rhost-apple-03.eml`
     - `rhost-apple-04.eml`
-  - #524 #525 Sisimai::Rhost improvements
+  - #524 #525 #529 Sisimai::Rhost improvements
     - Update the error code list and error message patterns in the following classes:
         - `Sisimai::Rhost::Cox`
         - `Sisimai::Rhost::FrancePTT`
@@ -34,6 +34,7 @@ v5.0.3p2
     - Each error message should be compared with the lowercased string 
     - Follow any updates of the SMTP error code and message list in each email services related to
       `AuthFailure`, `BadReputation`, `RequirePTR`, and other error reasons added at v5
+    - No longer needed method `Sisimai::Rhost->match' has been removed
 
 v5.0.3
 ---------------------------------------------------------------------------------------------------
