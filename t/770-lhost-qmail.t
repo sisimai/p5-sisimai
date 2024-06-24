@@ -19,6 +19,15 @@ my $isexpected = {
     '08' => [['5.0.922', '552', 'mailboxfull',     0]],
     '09' => [['5.7.606', '550', 'blocked',         0]],
     '10' => [['5.0.921', '',    'suspend',         0]],
+    '11' => [['5.4.4',   '',    'notaccept',       1]],
+    '12' => [['5.4.4',   '',    'notaccept',       1]],
+    '13' => [['5.1.2',   '',    'hostunknown',     1]],
+    '14' => [['5.7.26',  '550', 'authfailure',     0]],
+    '15' => [['5.7.509', '550', 'authfailure',     0]],
+    '16' => [['5.1.1',   '550', 'userunknown',     1]],
+    '17' => [['5.1.1',   '550', 'userunknown',     1],
+             ['5.2.2',   '552', 'mailboxfull',     0]],
+    '18' => [['5.1.1',   '550', 'userunknown',     1]],
 };
 
 $enginetest->($enginename, $isexpected);
