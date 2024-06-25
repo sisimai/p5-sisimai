@@ -19,6 +19,7 @@ sub match {
         'has been temporarily rate limited due to ip reputation',
         'ip/domain reputation problems',
         'likely suspicious due to the very low reputation',
+        'temporarily deferred due to unexpected volume or user complaints', # Yahoo Inc.
         "the sending mta's poor reputation",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
