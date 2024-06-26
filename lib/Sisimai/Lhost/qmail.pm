@@ -191,11 +191,7 @@ sub inquire {
         }
 
         # Detect the reason of bounce
-        if( $e->{'command'} eq 'MAIL' ) {
-            # MAIL | Connected to 192.0.2.135 but sender was rejected.
-            $e->{'reason'} = 'rejected';
-
-        } elsif( $e->{'command'} eq 'HELO' || $e->{'command'} eq 'EHLO' ) {
+        if( $e->{'command'} eq 'HELO' || $e->{'command'} eq 'EHLO' ) {
             # HELO | Connected to 192.0.2.135 but my name was rejected.
             $e->{'reason'} = 'blocked';
 
@@ -255,7 +251,8 @@ Sisimai::Lhost::qmail - bounce mail decoder class for qmail L<https://cr.yp.to/q
 
 =head1 DESCRIPTION
 
-C<Sisimai::Lhost::qmail> decodes a bounce email which created by qmail L<https://cr.yp.to/qmail.html>.
+C<Sisimai::Lhost::qmail> decodes a bounce email which created by qmail L<https://cr.yp.to/qmail.html>
+or qmail clones or notqmail L<https://notqmail.org/>.
 Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
