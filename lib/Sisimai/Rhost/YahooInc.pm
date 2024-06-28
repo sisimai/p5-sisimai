@@ -47,6 +47,10 @@ sub get {
             'not accepted for policy reasons',
         ],
         'rejected' => [
+            # - 451 Message temporarily deferred due to unresolvable RFC.5321 from domain.
+            #   See https://senders.yahooinc.com/error-codes#unresolvable-from-domain
+            'due to unresolvable rfc.5321 domain',
+
             # - 553 5.7.2 [TSS09] All messages from 192.0.2.25 will be permanently deferred;
             #   Retrying will NOT succeed. See https://postmaster.yahooinc.com/error-codes
             # - 553 5.7.2 [TSS11] All messages from 192.0.2.25 will be permanently deferred;
