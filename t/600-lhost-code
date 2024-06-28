@@ -496,23 +496,6 @@ my $moduletest = sub {
                     };
                 }
 
-                SOFTBOUNCE: {
-                    last;
-                    $cv = $rr->softbounce;
-                    $cr = qr/\A[-]?[01]\z/;
-                    $ct = sprintf("[%s-%02d] ->softbounce =", $e, $errorindex);
-
-                    ok length $cv;
-                    ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
-
-                    if( $rr->reason =~ /\A(?:feedback|delivered|vacation)\z/ ) {
-                        is $cv, -1, sprintf("%s %s", $ct, $cr);
-
-                    } else {
-                        is $cv,  0, sprintf("%s %s", $ct, $cr) if $rr->hardbounce == 1;
-                        is $cv,  1, sprintf("%s %s", $ct, $cr) if $rr->hardbounce == 0;
-                    }
-                }
             } # End of the loop for checking each Sisimai::Fact object
             $emailindex++;
             ok $errorindex, sprintf("%s is including %d bounces", $mailobject->data->path, $errorindex);

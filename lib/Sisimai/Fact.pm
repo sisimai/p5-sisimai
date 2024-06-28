@@ -396,16 +396,6 @@ sub rise {
     return $listoffact;
 }
 
-sub softbounce {
-    # Emulate "softbounce" accessor for the backward compatible
-    # @return   [Integer]
-    warn ' ***warning: Sisimai::Fact->softbounce will be removed at v5.1.0. Use Sisimai::Fact->hardbounce instead';
-    my $self = shift;
-    return  0 if $self->hardbounce == 1;
-    return -1 if $self->reason eq 'delivered' || $self->reason eq 'feedback' || $self->reason eq 'vacation';
-    return  1;
-}
-
 sub damn {
     # Convert from object to hash reference
     # @return   [Hash] Data in Hash reference
