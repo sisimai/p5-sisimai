@@ -59,14 +59,14 @@ sub get {
         ],
         'speeding' => [
             # - 450 User is receiving mail too quickly
-            'User is receiving mail too quickly',
+            'user is receiving mail too quickly',
         ],
         'suspend' => [
             # - 554 delivery error: dd ****@yahoo.com is no longer valid.
             # - 554 30 Sorry, your message to *****@aol.jp cannot be delivered.
             #   This mailbox is disabled (554.30)
             ' is no longer valid.',
-            'This mailbox is disabled',
+            'this mailbox is disabled',
         ],
         'syntaxerror' => [
             # - 501 Syntax error in parameters or arguments
