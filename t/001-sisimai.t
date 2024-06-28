@@ -9,7 +9,7 @@ require './t/999-values.pl';
 
 my $Package = 'Sisimai';
 my $Methods = {
-    'class'  => ['libname', 'version', 'rise', 'dump', 'engine', 'reason', 'match', 'make'],
+    'class'  => ['libname', 'version', 'rise', 'dump', 'engine', 'reason', 'match'],
     'object' => [],
 };
 my $Samples = {
@@ -31,7 +31,6 @@ MAKETEST: {
     is 'v'.$Package->version, $v, '->version = v'.$v;
     is $Package->rise(undef), undef;
     is $Package->dump(undef), undef;
-    is $Package->make(undef), undef;
 
     # Wrong number of arguments
     eval { $Package->rise('/dev/null', undef) };

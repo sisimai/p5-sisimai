@@ -6,15 +6,6 @@ use version; our $VERSION = version->declare('v5.0.3'); our $PATCHLV = 4;
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub libname { 'Sisimai' }
 
-sub make {
-    # Emulate "rise" method for the backward compatible
-    warn ' ***warning: Sisimai->make will be removed at v5.1.0. Use Sisimai->rise instead';
-    my $class = shift;
-    my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
-    my $argv1 = { @_ };
-    return __PACKAGE__->rise($argv0, %$argv1);
-}
-
 sub rise {
     # Wrapper method for decoding mailbox or Maildir/
     # @param         [String]  argv0      Path to mbox or Maildir/
