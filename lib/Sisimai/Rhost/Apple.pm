@@ -10,7 +10,7 @@ sub get {
     # @see      https://support.apple.com/en-us/102322
     #           https://www.postmastery.com/icloud-postmastery-page/
     #           https://smtpfieldmanual.com/provider/apple
-    # @since v5.0.4
+    # @since v5.1.0
     my $class = shift;
     my $argvs = shift // return undef;
 

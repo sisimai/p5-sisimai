@@ -10,7 +10,7 @@ sub get {
     # @see      https://senders.yahooinc.com/smtp-error-codes
     #           https://smtpfieldmanual.com/provider/yahoo
     #           https://www.postmastery.com/yahoo-postmaster/
-    # @since v5.0.4
+    # @since v5.1.0
     my $class = shift;
     my $argvs = shift // return undef;
 
