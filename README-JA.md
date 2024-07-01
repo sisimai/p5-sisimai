@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
-[![Perl](https://img.shields.io/badge/perl-v5.26--v5.38-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.0.3-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![Perl](https://img.shields.io/badge/perl-v5.26--v5.40-blue.svg)](https://www.perl.org)
+[![CPAN](https://img.shields.io/badge/cpan-v5.1.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
@@ -131,14 +131,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.0.3 ... OK
-Building and testing Sisimai-v5.0.3 ... Password: <sudo password here>
+Configuring Sisimai-v5.1.0 ... OK
+Building and testing Sisimai-v5.1.0 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.0.3
+Successfully installed Sisimai-v5.1.0
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.0.3
+5.1.0
 ```
 
 Usage
@@ -389,12 +389,12 @@ Sisimai 5で3個のESPモジュール名(解析エンジン)が変更になり�
 
 | `Sisimai::`                                     | Sisimai 4               | Sisimai 5           |
 |-------------------------------------------------|-------------------------|---------------------|
-| Apple iCloud Mail (added at v5.0.3p1)           | なし                    | `Rhost::Apple`      |
+| Apple iCloud Mail (added at v5.1.0)             | なし                    | `Rhost::Apple`      |
 | Microsoft Exchange Online                       | `Rhost::ExchangeOnline` | `Rhost::Microsoft`  |
 | Google Workspace                                | `Rhost::GoogleApps`     | `Rhost::Google`     |
 | Tencent                                         | `Rhost::TencentQQ`      | `Rhost::Tencent`    |
-| Yahoo Mail (added at v5.0.3p1)                  | なし                    | `Rhost::YahooInc`   |
-| DragonFly Mail Agent (added at v5.0.3p2)        | なし                    | `Lhost::DragonFly`  |
+| Yahoo Mail (added at v5.1.0)                    | なし                    | `Rhost::YahooInc`   |
+| DragonFly Mail Agent (added at v5.1.0)          | なし                    | `Lhost::DragonFly`  |
 
 Bounce Reasons
 ---------------------------------------------------------------------------------------------------
