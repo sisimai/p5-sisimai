@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.0.3p5
+v5.1.0
 ---------------------------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Mon,  1 Jul 2024 12:02:22 +0900 (JST)"
+- version: "5.1.0"
 - changes:
   - #531 #535 Remove v4 compatible features
     - `Sisimai->make()`
@@ -40,8 +40,8 @@ v5.0.3p5
 
 v5.0.3
 ---------------------------------------------------------------------------------------------------
-- release: "5.0.3"
-- version: "Wed, 22 May 2024 14:00:22 +0900 (JST)"
+- release: "Wed, 22 May 2024 14:00:22 +0900 (JST)"
+- version: "5.0.3"
 - changes:
   - Declare `use v5.26;` at each file using the postfix dereference #511
     - Replace `use feature ":5.10";` with `use v5.26;`
