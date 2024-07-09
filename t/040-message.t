@@ -42,15 +42,7 @@ MAKETEST: {
     isa_ok $p->{'rfc822'}, 'HASH', '->rfc822';
     ok length $p->{'from'}, $p->{'from'};
 
-    $p = $Package->rise({
-            'data' => $mailastext, 
-            'hook' => $callbackto,
-            'order' => [
-                'Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Postfix', 
-                'Sisimai::Lhost::qmail', 'Sisimai::Lhost::Exchange2003', 
-                'Sisimai::Lhost::Gmail', 'Sisimai::Lhost::Verizon',
-            ]
-        });
+    $p = $Package->rise({ 'data' => $mailastext, 'hook' => $callbackto });
 
     for my $e ( @{ $p->{'ds'} } ) {
         is $e->{'spec'}, 'SMTP', '->spec = SMTP';
