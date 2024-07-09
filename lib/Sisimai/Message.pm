@@ -88,7 +88,7 @@ sub rise {
     return $thing;
 }
 
-sub load { warn ' ***warning: Sisimai::Message->load will be removed at v5.2.0'; return [] }
+sub load { warn ' ***warning: Sisimai::Message->load will be removed at v5.1.1'; return [] }
 sub part {
     # Divide email data up headers and a body part.
     # @param         [String] email  Email data
