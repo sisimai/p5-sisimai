@@ -4,7 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Message;
 
 my $Package = 'Sisimai::Message';
-my $Methods = { 'class'  => ['rise', 'load', 'sift', 'part', 'makemap', 'tidy'] };
+my $Methods = { 'class'  => ['rise', 'sift', 'part', 'makemap', 'tidy'] };
 my $Mailbox = './set-of-emails/mailbox/mbox-0';
 
 use_ok $Package;
@@ -14,7 +14,6 @@ MAKETEST: {
     use IO::File;
     my $filehandle = IO::File->new($Mailbox, 'r');
     my $mailastext = '';
-    my $tobeloaded = $Package->load('load' => ['Sisimai::Lhost::Postfix'], 'order' => ['Sisimai::Lhost::Postfix']) ;
     my $callbackto = sub {
         my $argvs = shift;
         my $catch = { 
@@ -31,11 +30,7 @@ MAKETEST: {
         $mailastext .= $r;
     }
     $filehandle->close;
-
-    isa_ok $tobeloaded, 'ARRAY';
     ok length $mailastext;
-    isa_ok $Package->load('load' => {}, 'order' => []), 'ARRAY';
-    isa_ok $Package->load('load' => [], 'order' => {}), 'ARRAY';
 
     is $Package->rise(), undef;
     is $Package->rise({}), undef;

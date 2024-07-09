@@ -56,9 +56,7 @@ can_ok $Package, @{ $Methods->{'class'} };
 MAKETEST: {
     is $Package->rise, undef;
     is $Package->rise({'data' => ''}), undef;
-    is $Package->rise({'data' => 'test', 'load' => ''}), undef;
-    is $Package->rise({'data' => 'test', 'load' => [], 'order' => ''}), undef;
-    is $Package->rise({'data' => 'test', 'load' => [], 'order' => []}), undef;
+    is $Package->rise({'data' => 'test' }), undef;
 
     my $json = JSON->new;
     my $call = sub {
