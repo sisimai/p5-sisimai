@@ -5,7 +5,7 @@ use Sisimai::Order;
 
 my $Package = 'Sisimai::Order';
 my $Methods = {
-    'class'  => ['make', 'default', 'another'],
+    'class'  => ['make', 'another'],
     'object' => [],
 };
 
@@ -14,18 +14,15 @@ can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
     my $pattern = $Package->make('delivery failure');
-    my $default = $Package->default;
     my $another = $Package->another;
 
     isa_ok $pattern, 'ARRAY';
-    isa_ok $default, 'ARRAY';
     isa_ok $another, 'ARRAY';
 
     ok scalar @$pattern, scalar(@$pattern).' Modules';
-    ok scalar @$default, scalar(@$default).' Modules';
     ok scalar @$another, scalar(@$another).' Modules';
 
-    for my $v ( @$pattern, @$default, @$another ) {
+    for my $v ( @$pattern, @$another ) {
         # Module name test
         like $v, qr/\ASisimai::Lhost::/, $v;
         use_ok $v;

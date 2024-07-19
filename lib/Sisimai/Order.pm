@@ -116,13 +116,6 @@ sub make {
     return $subject->{ $first } || [];
 }
 
-sub default {
-    # Make default order of MTA modules to be loaded
-    # @return   [Array] Default order list of MTA modules
-    # @since v4.13.1
-    return [map { 'Sisimai::Lhost::'.$_ } Sisimai::Lhost->index()->@*];
-}
-
 sub another {
     # Make MTA modules list as a spare
     # @return   [Array] Ordered module list
@@ -215,13 +208,6 @@ from MTA specific headers in the bounce mail headers such as C<X-Failed-Recipien
 for JSON structure.
 
 =head1 CLASS METHODS
-
-=head2 C<B<default()>>
-
-C<default()> method returns a default order of MTA modules as an array reference. The default order
-is defined at C<Sisimai::Lhost->index()> method.
-
-    print for Sisimai::Order->default->@*;
 
 =head2 C<B<another()>>
 
