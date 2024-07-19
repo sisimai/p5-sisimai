@@ -18,15 +18,12 @@ state $FieldTable = { map { lc $_ => $_ } ($Fields1894->@*, $Fields5322->@*, $Fi
 state $ReplacesAs = { 'Content-Type' => [['message/xdelivery-status', 'message/delivery-status']] };
 state $Boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
 
-my $ToBeLoaded = [];
 my $TryOnFirst = [];
 
 sub rise {
     # Constructor of Sisimai::Message
     # @param         [Hash] argvs   Email text data
     # @options argvs [String] data  Entire email message
-    # @options argvs [Array]  load  User defined MTA module list
-    # @options argvs [Array]  order The order of MTA modules
     # @options argvs [Code]   hook  Reference to callback method
     # @return        [Hash]         Structured email data
     #                [Undef]        If each value of the arguments are missing
@@ -35,16 +32,6 @@ sub rise {
     my $email = $argvs->{'data'} || return undef;
     my $thing = { 'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [], 'catch' => undef };
     my $param = {};
-
-    # 0. Load specified MTA modules
-    for my $e ('load', 'order') {
-        # Order of MTA modules
-        next unless exists $argvs->{ $e };
-        next unless ref $argvs->{ $e } eq 'ARRAY';
-        next unless scalar $argvs->{ $e }->@*;
-        $param->{ $e } = $argvs->{ $e };
-    }
-    $ToBeLoaded = __PACKAGE__->load(%$param);
 
     my $aftersplit = undef;
     my $beforefact = undef;
@@ -99,48 +86,7 @@ sub rise {
     return $thing;
 }
 
-sub load {
-    # Load MTA modules which specified at 'order' and 'load' in the argument
-    # @param         [Hash] argvs       Module information to be loaded
-    # @options argvs [Array]  load      User defined MTA module list
-    # @options argvs [Array]  order     The order of MTA modules
-    # @return        [Array]            Module list
-    # @since v4.20.0
-    my $class = shift;
-    my $argvs = { @_ };
-
-    my @modulelist;
-    my $tobeloaded = [];
-
-    for my $e ('load', 'order') {
-        # The order of MTA modules specified by user
-        next unless exists $argvs->{ $e };
-        next unless ref $argvs->{ $e } eq 'ARRAY';
-        next unless scalar $argvs->{ $e }->@*;
-
-        push @modulelist, $argvs->{'order'}->@* if $e eq 'order';
-        next unless $e eq 'load';
-
-        # Load user defined MTA module
-        for my $v ( $argvs->{'load'}->@* ) {
-            # Load user defined MTA module
-            eval {
-                (my $modulepath = $v) =~ s|::|/|g;
-                require $modulepath.'.pm';
-            };
-            next if $@;
-            push @$tobeloaded, $v;
-        }
-    }
-
-    for my $e ( @modulelist ) {
-        # Append the custom order of MTA modules
-        next if grep { $e eq $_ } @$tobeloaded;
-        push @$tobeloaded, $e;
-    }
-    return $tobeloaded;
-}
-
+sub load { warn ' ***warning: Sisimai::Message->load will be removed at v5.1.1'; return [] }
 sub part {
     # Divide email data up headers and a body part.
     # @param         [String] email  Email data
@@ -420,21 +366,11 @@ sub sift {
     my $havesifted = undef;
     my $modulename = '';
     DECODER: while(1) {
-        # 1. User-Defined Module
-        # 2. MTA Module Candidates to be tried on first
-        # 3. Sisimai::Lhost::*
-        # 4. Sisimai::RFC3464
-        # 5. Sisimai::ARF
-        # 6. Sisimai::RFC3834
-        USER_DEFINED: for my $r ( @$ToBeLoaded ) {
-            # Call user defined MTA modules
-            next if exists $haveloaded->{ $r };
-            $havesifted = $r->inquire($mailheader, $bodystring);
-            $haveloaded->{ $r } = 1;
-            $modulename = $r;
-            last(DECODER) if $havesifted;
-        }
-
+        # 1. MTA Module Candidates to be tried on first
+        # 2. Sisimai::Lhost::*
+        # 3. Sisimai::RFC3464
+        # 4. Sisimai::ARF
+        # 5. Sisimai::RFC3834
         TRY_ON_FIRST_AND_DEFAULTS: for my $r ( @$TryOnFirst, @$defaultset ) {
             # Try MTA module candidates
             next if exists $haveloaded->{ $r };

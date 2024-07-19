@@ -48,8 +48,6 @@ sub rise {
     # @options argvs [Integer] delivered    Include the result which has "delivered" reason
     # @options argvs [Integer] vcacation    Include the result which has "vacation" reason
     # @options argvs [Code]    hook         Code reference to callback method
-    # @options argvs [Array]   load         User defined MTA module list
-    # @options argvs [Array]   order        The order of MTA modules
     # @options argvs [String]  origin       Path to the original email file
     # @return        [Array]                Array of Sisimai::Fact objects
     my $class = shift;
@@ -57,9 +55,7 @@ sub rise {
     die ' ***error: Sisimai::Fact->rise receives only a HASH reference as an argument' unless ref $argvs eq 'HASH';
 
     my $email = $argvs->{'data'} || return undef;
-    my $loads = $argvs->{'load'} || undef;
-    my $order = $argvs->{'order'}|| undef;
-    my $args1 = { 'data' => $email, 'hook' => $argvs->{'hook'}, 'load' => $loads, 'order' => $order };
+    my $args1 = { 'data' => $email, 'hook' => $argvs->{'hook'} };
     my $mesg1 = Sisimai::Message->rise($args1) || return undef;
 
     return undef unless $mesg1->{'ds'};

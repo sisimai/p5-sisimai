@@ -4,7 +4,7 @@ use lib qw(./lib ./blib/lib);
 use Sisimai::Message;
 
 my $Package = 'Sisimai::Message';
-my $Methods = { 'class'  => ['rise', 'load', 'sift', 'part', 'makemap', 'tidy'] };
+my $Methods = { 'class'  => ['rise', 'sift', 'part', 'makemap', 'tidy'] };
 my $Mailbox = './set-of-emails/mailbox/mbox-0';
 
 use_ok $Package;
@@ -14,7 +14,6 @@ MAKETEST: {
     use IO::File;
     my $filehandle = IO::File->new($Mailbox, 'r');
     my $mailastext = '';
-    my $tobeloaded = $Package->load('load' => ['Sisimai::Lhost::Postfix'], 'order' => ['Sisimai::Lhost::Postfix']) ;
     my $callbackto = sub {
         my $argvs = shift;
         my $catch = { 
@@ -31,11 +30,7 @@ MAKETEST: {
         $mailastext .= $r;
     }
     $filehandle->close;
-
-    isa_ok $tobeloaded, 'ARRAY';
     ok length $mailastext;
-    isa_ok $Package->load('load' => {}, 'order' => []), 'ARRAY';
-    isa_ok $Package->load('load' => [], 'order' => {}), 'ARRAY';
 
     is $Package->rise(), undef;
     is $Package->rise({}), undef;
@@ -47,15 +42,7 @@ MAKETEST: {
     isa_ok $p->{'rfc822'}, 'HASH', '->rfc822';
     ok length $p->{'from'}, $p->{'from'};
 
-    $p = $Package->rise({
-            'data' => $mailastext, 
-            'hook' => $callbackto,
-            'order' => [
-                'Sisimai::Lhost::Sendmail', 'Sisimai::Lhost::Postfix', 
-                'Sisimai::Lhost::qmail', 'Sisimai::Lhost::Exchange2003', 
-                'Sisimai::Lhost::Gmail', 'Sisimai::Lhost::Verizon',
-            ]
-        });
+    $p = $Package->rise({ 'data' => $mailastext, 'hook' => $callbackto });
 
     for my $e ( @{ $p->{'ds'} } ) {
         is $e->{'spec'}, 'SMTP', '->spec = SMTP';
