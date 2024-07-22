@@ -202,9 +202,6 @@ sub tidy {
     my $argv0 = shift || return '';
     my $email = '';
 
-    return '' unless $argv0;
-    return '' unless length $$argv0;
-
     for my $e ( split("\n", $$argv0) ) {
         # Find and tidy up fields defined in RFC5322, RFC1894, and RFC5965
         # 1. Find a field label defined in RFC5322, RFC1894, or RFC5965 from this line
