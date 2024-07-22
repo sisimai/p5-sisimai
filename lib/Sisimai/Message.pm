@@ -179,7 +179,7 @@ sub makemap {
         # MIME-Encoded subject field or ASCII characters only
         my $r = [];
         if( Sisimai::RFC2045->is_encoded(\$headermaps->{'subject'}) ) {
-            # split the value of Subject by $borderline
+            # split the Subject: field by " "
             for my $v ( split(/ /, $headermaps->{'subject'}) ) {
                 # Insert value to the array if the string is MIME encoded text
                 push @$r, $v if Sisimai::RFC2045->is_encoded(\$v);
@@ -212,7 +212,7 @@ sub tidy {
         my $cf = substr(lc $e, 0, $p0);
 
         unless( $FieldTable->{ $cf } ) {
-            # There is neither ":" character nor a field listed in @fieldindex
+            # There is neither ":" character nor the field listed in $FieldTable
             $email .= $e."\n";
             next;
         }
