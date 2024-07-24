@@ -268,13 +268,12 @@ sub tidy {
             my $p2 = 0;
 
             for my $f ( $ReplacesAs->{ $fieldlabel }->@* ) {
-                # Content-Type: message/xdelivery-status
-                $p2 = index($e, $f->[0]);
-                next unless $p2 > 1;
+                # - Before: Content-Type: message/xdelivery-status; ...
+                # - After:  Content-Type: message/delivery-status; ...
+                $p2 = index($e, $f->[0]); next unless $p2 > 1;
 
                 substr($e, $p2, length $f->[0], $f->[1]);
                 $p1 = index($e, ';');
-                last;
             }
 
             # A parameter name of Content-Type field should be a lower-cased string
