@@ -210,7 +210,7 @@ sub tidy {
         my $fn = $FieldTable->{ $cf } || '';
 
         # There is neither ":" character nor the field listed in $FieldTable
-        if( length $fn == 0 ){ $email .= $e."\n"; next }
+        if( $fn eq '' ){ $email .= $e."\n"; next }
 
         # 2. Tidy up a sub type of each field defined in RFC1894 such as Reporting-MTA: DNS;...
         my $ab = [];
