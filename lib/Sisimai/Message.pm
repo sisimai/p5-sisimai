@@ -201,8 +201,10 @@ sub tidy {
     my $class = shift;
     my $argv0 = shift || return '';
     my $email = '';
+    my @lines = split("\n", $$argv0);
+    my $index = -1;
 
-    for my $e ( split("\n", $$argv0) ) {
+    for my $e ( @lines ) {
         # Find and tidy up fields defined in RFC5322, RFC1894, and RFC5965
         # 1. Find a field label defined in RFC5322, RFC1894, or RFC5965 from this line
         my $p0 = index($e, ':');
@@ -210,6 +212,7 @@ sub tidy {
         my $fn = $FieldTable->{ $cf } || '';
 
         # There is neither ":" character nor the field listed in $FieldTable
+        $index++;
         if( $fn eq '' ){ $email .= $e."\n"; next }
 
         # 2. Tidy up a sub type of each field defined in RFC1894 such as Reporting-MTA: DNS;...
@@ -226,8 +229,8 @@ sub tidy {
                 # The field including one or more ";"
                 for my $f (split(';', $bf)) {
                     # 2-1. Trim leading and trailing space characters from the current buffer
-                    while( index($f, ' ') == 0 )     { $f = substr($f, 1,) }
-                    while( substr($f, -1, 1) eq ' ') { $f = substr($f, 0, length($f) - 1) }
+                    while( index($f, ' ') == 0 )    { $f = substr($f, 1,) }
+                    while( substr($f, -1, 1) eq ' '){ $f = substr($f, 0, length($f) - 1) }
                     my $ps = '';
 
                     # 2-2. Convert some parameters to the lower-cased string
@@ -249,6 +252,18 @@ sub tidy {
                         last;
                     }
                     push @$ab, $f;
+                }
+
+                while(1) {
+                    # Diagnostic-Code: x-unix;
+                    #   /var/email/kijitora/Maildir/tmp/1000000000.A000000B00000.neko22:
+                    #   Disk quota exceeded
+                    last unless $fn eq 'Diagnostic-Code';
+                    last unless scalar(@$ab) == 1;
+                    last unless index($lines[$index + 1], ' ') == 0;
+
+                    push @$ab, '';
+                    last;
                 }
                 $bf = join('; ', @$ab); $ab = []; # Insert " " (space characer) immediately after ";"
 
@@ -273,12 +288,12 @@ sub tidy {
         }
 
         # 4. Concatenate the field name and the field value
-        for my $f ( split(" ", $bf) ) {
+        for my $f ( split(' ', $bf) ) {
             # Remove redundant space characters
             next if length $f == 0;
             push @$ab, $f;
         }
-        $email .= sprintf("%s: %s\n", $fn, join(" ", @$ab));
+        $email .= sprintf("%s: %s\n", $fn, join(' ', @$ab));
     }
 
     $email .= "\n" if substr($email, -2, 2) ne "\n\n";
