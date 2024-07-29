@@ -6,7 +6,7 @@ use warnings;
 sub FIELDINDEX {
     return [qw|
         Action Arrival-Date Diagnostic-Code Final-Recipient Last-Attempt-Date Original-Recipient
-        Received-From-MTA Remote-MTA Reporting-MTA Status X-Actual-Recipienet X-Original-Message-ID
+        Received-From-MTA Remote-MTA Reporting-MTA Status X-Actual-Recipient X-Original-Message-ID
     |];
 }
 sub FIELDTABLE {

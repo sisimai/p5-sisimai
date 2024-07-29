@@ -128,7 +128,7 @@ sub inquire {
         } elsif( $o->[-1] eq 'code' ) {
             # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
             $v->{'spec'} = $o->[1];
-            $v->{'spec'} = 'SMTP' if $v->{'spec'} eq 'X-POSTFIX';
+            $v->{'spec'} = 'SMTP' if uc $v->{'spec'} eq 'X-POSTFIX';
             $v->{'diagnosis'} = $o->[2];
 
         } else {

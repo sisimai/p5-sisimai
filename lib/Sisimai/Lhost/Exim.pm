@@ -378,6 +378,7 @@ sub inquire {
             } elsif( length($e->{'diagnosis'}) < length($e->{'alterrors'}) ) {
                 # Override the value of diagnostic code message with the value of alterrors because
                 # the latter includes the former.
+                $e->{'alterrors'} =~ y/ //s;
                 $e->{'diagnosis'} = $e->{'alterrors'} if index(lc $e->{'alterrors'}, lc $e->{'diagnosis'}) > -1;
             }
             delete $e->{'alterrors'};

@@ -201,95 +201,99 @@ sub tidy {
     my $class = shift;
     my $argv0 = shift || return '';
     my $email = '';
+    my @lines = split("\n", $$argv0);
+    my $index = -1;
 
-    for my $e ( split("\n", $$argv0) ) {
+    for my $e ( @lines ) {
         # Find and tidy up fields defined in RFC5322, RFC1894, and RFC5965
         # 1. Find a field label defined in RFC5322, RFC1894, or RFC5965 from this line
         my $p0 = index($e, ':');
         my $cf = substr(lc $e, 0, $p0);
+        my $fn = $FieldTable->{ $cf } || '';
 
-        unless( $FieldTable->{ $cf } ) {
-            # There is neither ":" character nor the field listed in $FieldTable
-            $email .= $e."\n";
-            next;
-        }
+        # There is neither ":" character nor the field listed in $FieldTable
+        $index++;
+        if( $fn eq '' ){ $email .= $e."\n"; next }
 
-        # 2. There is a field label defined in RFC5322, RFC1894, or RFC5965 from this line.
-        #    Code below replaces the field name with a valid name listed in @fieldindex when
-        #    the field name does not match with a valid name.
-        #    - Before: Message-id: <...>
-        #    - After:  Message-Id: <...>
-        my $fieldlabel = $FieldTable->{ $cf };
-        my $substring0 = substr($e, 0, $p0);
-        substr($e, 0, $p0, $fieldlabel) if $substring0 ne $fieldlabel;
-
-        # 3. There is no " " (space character) immediately after ":"
-        #    - before: Content-Type:text/plain
-        #    - After:  Content-Type: text/plain
-        $substring0 = substr($e, $p0 + 1, 1);
-        substr($e, $p0, 1, ': ') if $substring0 ne ' ';
-
-        # 4. Remove redundant space characters after ":"
-        while(1) {
-            # - Before: Message-Id:    <...>
-            # - After:  Message-Id: <...>
-            last unless $p0 + 2 < length($e);
-            last unless substr($e, $p0 + 2, 1) eq ' ';
-            substr($e, $p0 + 2, 1, '');
-        }
-
-        # 5. Tidy up a sub type of each field defined in RFC1894 such as Reporting-MTA: DNS;...
-        my $p1 = index($e, ';');
+        # 2. Tidy up a sub type of each field defined in RFC1894 such as Reporting-MTA: DNS;...
+        my $ab = [];
+        my $bf = substr($e, $p0 + 1,);
+        my $p1 = index($bf, ';');
         while(1) {
             # Such as Diagnostic-Code, Remote-MTA, and so on
             # - Before: Diagnostic-Code: SMTP;550 User unknown
             # - After:  Diagnostic-Code: smtp; 550 User unknown
-            last unless $p1 > $p0;
-            last unless grep { $fieldlabel eq $_ } (@$Fields1894, 'Content-Type');
+            last unless grep { $fn eq $_ } (@$Fields1894, 'Content-Type');
 
-            $substring0 = substr($e, $p0 + 2, $p1 - $p0 - 1);
-            substr($e, $p0 + 2, length($substring0), sprintf("%s ", lc $substring0));
+            if( $p1 > 0 ) {
+                # The field including one or more ";"
+                for my $f (split(';', $bf)) {
+                    # 2-1. Trim leading and trailing space characters from the current buffer
+                    while( index($f, ' ') == 0 )    { $f = substr($f, 1,) }
+                    while( substr($f, -1, 1) eq ' '){ $f = substr($f, 0, length($f) - 1) }
+                    my $ps = '';
+
+                    # 2-2. Convert some parameters to the lower-cased string
+                    while(1) {
+                        # For example,
+                        # - Content-Type: Message/delivery-status => message/delivery-status
+                        # - Content-Type: Charset=UTF8            => charset=utf8
+                        # - Reporting-MTA: DNS; ...               => dns
+                        # - Final-Recipient: RFC822; ...          => rfc822
+                        last if index($f, ' ') > 0;
+
+                        my $p2 = index($f, '=');
+                        if( $p2 > 0 ) {
+                            # charset=, boundary=, and other pairs divided by "="
+                            $ps = lc substr($f, 0, $p2);
+                            substr($f, 0, $p2, $ps);
+                        }
+                        $f = lc $f if $ps ne 'boundary';
+                        last;
+                    }
+                    push @$ab, $f;
+                }
+
+                while(1) {
+                    # Diagnostic-Code: x-unix;
+                    #   /var/email/kijitora/Maildir/tmp/1000000000.A000000B00000.neko22:
+                    #   Disk quota exceeded
+                    last unless $fn eq 'Diagnostic-Code';
+                    last unless scalar(@$ab) == 1;
+                    last unless index($lines[$index + 1], ' ') == 0;
+
+                    push @$ab, '';
+                    last;
+                }
+                $bf = join('; ', @$ab); $ab = []; # Insert " " (space characer) immediately after ";"
+
+            } else {
+                # There is no ";" in the field
+                last if index($fn, '-Date')       > 0;  # Arrival-Date, Last-Attempt-Date
+                last if index($fn, '-Message-ID') > 0;  # X-Original-Message-ID
+                $bf = lc $bf;
+            }
             last;
         }
 
-        # 6. Remove redundant space characters after ";"
-        while(1) {
-            # - Before: Diagnostic-Code: SMTP;      550 User unknown
-            # - After:  Diagnostic-Code: SMTP; 550 User unknown
-            last unless $p1 + 2 < length($e);
-            last unless substr($e, $p1 + 2, 1) eq ' ';
-            substr($e, $p1 + 2, 1, '');
-        }
-
-        # 7. Tidy up a value, and a parameter of Content-Type: field
-        while(1) {
+        # 3. Tidy up a value, and a parameter of Content-Type: field
+        if( exists $ReplacesAs->{ $fn } ) {
             # Replace the value of "Content-Type" field
-            last unless exists $ReplacesAs->{ $fieldlabel };
-            my $p2 = 0;
-
-            for my $f ( $ReplacesAs->{ $fieldlabel }->@* ) {
+            for my $f ( $ReplacesAs->{ $fn }->@* ) {
                 # - Before: Content-Type: message/xdelivery-status; ...
                 # - After:  Content-Type: message/delivery-status; ...
-                $p2 = index($e, $f->[0]); next unless $p2 > 1;
-
-                substr($e, $p2, length $f->[0], $f->[1]);
-                $p1 = index($e, ';');
+                $p1 = index($bf, $f->[0]); next if $p1 < 0;
+                substr($bf, $p1, length $f->[0], $f->[1]);
             }
-
-            # A parameter name of Content-Type field should be a lower-cased string
-            # - Before: Content-Type: text/plain; CharSet=ascii; Boundary=...
-            # - After:  Content-Type: text/plain; charset=ascii; boundary=...
-            last unless $fieldlabel eq 'Content-Type';
-            $p2 = index($e, '=');
-            last unless $p2 > 0;
-            last unless $p2 > $p1;
-
-            $substring0 = substr($e, $p1 + 2, $p2 - $p1 - 2); 
-            substr($e, $p1 + 2, $p2 - $p1 - 2, lc $substring0);
-
-            last;
         }
-        $email .= $e."\n";
+
+        # 4. Concatenate the field name and the field value
+        for my $f ( split(' ', $bf) ) {
+            # Remove redundant space characters
+            next if length $f == 0;
+            push @$ab, $f;
+        }
+        $email .= sprintf("%s: %s\n", $fn, join(' ', @$ab));
     }
 
     $email .= "\n" if substr($email, -2, 2) ne "\n\n";
