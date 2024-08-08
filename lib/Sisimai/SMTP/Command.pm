@@ -10,12 +10,10 @@ sub test {
     # @since v5.0.0
     my $class = shift;
     my $argv0 = shift // return undef;
-    my $comm0 = [qw|HELO EHLO MAIL RCPT DATA QUIT RSET NOOP VRFY ETRN EXPN HELP|];
-    my $comm1 = [qw|AUTH STARTTLS XFORWARD|];
+    my $table = [qw|HELO EHLO MAIL RCPT DATA QUIT RSET NOOP VRFY ETRN EXPN HELP AUTH STARTTLS XFORWARD|];
 
     return undef unless length $argv0 > 3;
-    return 1 if grep { index($argv0, $_) > -1 } @$comm0;
-    return 1 if grep { index($argv0, $_) > -1 } @$comm1;
+    return 1 if grep { index($argv0, $_) > -1 } @$table;
     return 1 if index($argv0, 'CONN') > -1; # CONN is a pseudo SMTP command used only in Sisimai
     return 0;
 }
