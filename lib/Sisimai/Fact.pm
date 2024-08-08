@@ -62,7 +62,7 @@ sub rise {
     return undef unless $mesg1->{'rfc822'};
 
     state $retryindex = Sisimai::Reason->retry;
-    state $rfc822head = Sisimai::RFC5322->HEADERFIELDS('all');
+    state $rfc822head = Sisimai::RFC5322::HEADERTABLE;
     state $actionlist = { 'delayed' => 1, 'delivered' => 1, 'expanded' => 1, 'failed' => 1, 'relayed' => 1 };
 
     my $deliveries = $mesg1->{'ds'};

@@ -26,11 +26,11 @@ sub FIELDINDEX {
 sub HEADERFIELDS {
     # Grouped RFC822 headers
     # @param    [String] group  RFC822 Header group name
-    # @return   [Array,Hash]    RFC822 Header list
+    # @return   [Array]         RFC822 Header list
     my $class = shift;
-    my $group = shift;
+    my $group = shift || return [];
     return HEADERTABLE->{ $group } if exists HEADERTABLE->{ $group };
-    return HEADERTABLE;
+    return [];
 }
 
 sub LONGFIELDS {

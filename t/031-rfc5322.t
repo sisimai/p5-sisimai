@@ -23,7 +23,10 @@ MAKETEST: {
     }
 
     $r = $Package->HEADERFIELDS('neko');
-    isa_ok $r, 'HASH';
+    isa_ok $r, 'ARRAY';
+    is scalar @$r, 0;
+
+    $r = Sisimai::RFC5322::HEADERTABLE;
     for my $e ( keys %$r ) {
         isa_ok $r->{ $e }, 'ARRAY';
         ok scalar @{ $r->{ $e } }, $e.' = '.scalar @{ $r->{ $e } };
