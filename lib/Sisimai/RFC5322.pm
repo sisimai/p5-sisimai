@@ -13,14 +13,6 @@ use constant HEADERTABLE => {
     'recipient' => [qw|to delivered-to forward-path envelope-to x-envelope-to resent-to apparently-to|],
 };
 
-my $HEADERINDEX = {};
-BUILD_FLATTEN_RFC822HEADER_LIST: {
-    # Convert $HEADER: hash reference to flatten hash reference for being called from Sisimai::Lhost::*
-    for my $v ( values HEADERTABLE()->%* ) {
-        $HEADERINDEX->{ $_ } = 1 for @$v;
-    }
-}
-
 sub FIELDINDEX {
     return [qw|
         Resent-Date From Sender Reply-To To Message-ID Subject Return-Path Received Date X-Mailer
@@ -36,7 +28,7 @@ sub HEADERFIELDS {
     # @param    [String] group  RFC822 Header group name
     # @return   [Array,Hash]    RFC822 Header list
     my $class = shift;
-    my $group = shift || return $HEADERINDEX;
+    my $group = shift;
     return HEADERTABLE->{ $group } if exists HEADERTABLE->{ $group };
     return HEADERTABLE;
 }

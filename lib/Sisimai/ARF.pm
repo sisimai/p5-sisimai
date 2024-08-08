@@ -67,7 +67,6 @@ sub inquire {
     };
     state $indicators = Sisimai::Lhost->INDICATORS;
     state $longfields = Sisimai::RFC5322->LONGFIELDS;
-    state $rfc822head = Sisimai::RFC5322->HEADERFIELDS;
 
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
     my $rfc822part = '';    # (String) message/rfc822-headers part
@@ -167,9 +166,6 @@ sub inquire {
                 # Get required headers only
                 my($lhs, $rhs) = split(/:[ ]/, $e, 2);
                 next unless $lhs = lc($lhs || '');
-
-                $previousfn = '';
-                next unless exists $rfc822head->{ $lhs };
 
                 $previousfn  = $lhs;
                 $rfc822part .= $e."\n";

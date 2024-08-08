@@ -15,14 +15,6 @@ can_ok $Package, @{ $Methods->{'class'} };
 MAKETEST: {
     my $r = undef;
 
-    $r = $Package->HEADERFIELDS();
-    isa_ok $r, 'HASH';
-    for my $e ( keys %$r ) {
-        ok length $e, $e;
-        like $e, qr/\A[a-z-]+\z/;
-        is $r->{ $e }, 1, $e.' = '.1;
-    }
-
     $r = $Package->HEADERFIELDS('date');
     isa_ok $r, 'ARRAY';
     for my $e ( @$r ) {
