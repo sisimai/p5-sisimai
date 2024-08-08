@@ -12,6 +12,7 @@ v5.1.0p1
   - Warn if `Sisimai::Message->load` was called #537 #538
   - Remove unused method `Sisimai::Order->default` #539
   - Fix bug in `Sisimai::Message->tidy()` method #540
+  - Code improvement in `Sisimai::RFC5322` and `Sisimai::ARF`
 
 v5.1.0
 ---------------------------------------------------------------------------------------------------
