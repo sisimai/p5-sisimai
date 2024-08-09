@@ -121,7 +121,7 @@ sub test {
     my $reply = int $argv1;
     my $first = int($reply / 100);
 
-    return 0 if $reply < 200;
+    return 0 if $reply < 211;
     return 0 if $reply > 557;
     return 0 if $reply % 100 > 59;
 
