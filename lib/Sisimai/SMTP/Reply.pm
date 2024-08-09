@@ -127,10 +127,9 @@ sub test {
 
     if( $first == 2 ) {
         # 2yz
-        return 1 if $reply == 235;
-        return 0 if $reply <  211;
-        return 0 if $reply >  252;
-        return 0 if $reply >  221 && $reply < 250;
+        return 1 if $reply == 235;                  # 235 is a valid code for AUTH (RFC4954)
+        return 0 if $reply >  253;                  # The maximum code of 2xy is 253 (RFC5248)
+        return 0 if $reply >  221 && $reply < 250;  # There is no reply code between 221 and 250
         return 1;
     }
 
