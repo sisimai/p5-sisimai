@@ -2,7 +2,9 @@ package Sisimai::SMTP::Reply;
 use v5.26;
 use strict;
 use warnings;
+
 # http://www.ietf.org/rfc/rfc5321.txt
+# -------------------------------------------------------------------------------------------------
 #   4.2.1.  Reply Code Severities and Theory
 #
 #   There are four values for the first digit of the reply code:
@@ -102,8 +104,9 @@ state $ReplyCode5 = [
     # 554   Transaction failed (Or, in the case of a connection-opening response, "No SMTP service here")
     # 555   MAIL FROM/RCPT TO parameters not recognized or not implemented
     # 556   Domain does not accept mail (See RFC7504)
+    # 557   draft-moore-email-addrquery-01
     550, 552, 553, 551, 521, 525, 502, 520, 523, 524, 530, 533, 534, 535, 538, 551, 555, 556, 554,
-    500, 501, 502, 503, 504,
+    557, 500, 501, 502, 503, 504,
 ];
 state $CodeOfSMTP = { '2' => $ReplyCode2, '4' => $ReplyCode4, '5' => $ReplyCode5 };
 
@@ -119,7 +122,7 @@ sub test {
     my $first = int($reply / 100);
 
     return 0 if $reply < 200;
-    return 0 if $reply > 559;
+    return 0 if $reply > 557;
     return 0 if $reply % 100 > 59;
 
     if( $first == 2 ) {
