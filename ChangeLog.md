@@ -14,6 +14,7 @@ v5.1.0p1
   - Fix bug in `Sisimai::Message->tidy()` method #540
   - Code improvement in `Sisimai::RFC5322` and `Sisimai::ARF`
   - Fix the minimum and the maximum SMTP Reply code: 221 and 557 in `Sisimai::SMTP::Reply`
+  - The first argument need not to be a reference at `Sisimai::SMTP::Transcript->rise()`
 
 v5.1.0
 ---------------------------------------------------------------------------------------------------
