@@ -19,12 +19,9 @@ sub rise {
     my $argv1 = shift // '>>>'; # Label for an SMTP Client
     my $argv2 = shift // '<<<'; # Label for an SMTP Server
 
-    return undef unless ref $argv0 eq 'SCALAR';
-    return undef unless length $$argv0;
-
     # 1. Replace label strings of SMTP client/server at the each line
-    $$argv0 =~ s/^[ ]+$argv1\s+/>>> /gm; return undef unless index($$argv0, '>>> ') > -1;
-    $$argv0 =~ s/^[ ]+$argv2\s+/<<< /gm; return undef unless index($$argv0, '<<< ') > -1;
+    $argv0 =~ s/^[ ]+$argv1\s+/>>> /gm; return undef unless index($argv0, '>>> ') > -1;
+    $argv0 =~ s/^[ ]+$argv2\s+/<<< /gm; return undef unless index($argv0, '<<< ') > -1;
 
     # 2. Remove strings until the first '<<<' or '>>>'
     my $esmtp = [];
@@ -44,25 +41,25 @@ sub rise {
     my $cursession = undef; # Current session for $esmtp
 
     my $cv = '';
-    my $p0 = index($$argv0, '<<<'); # Server response
-    my $p1 = index($$argv0, '>>>'); # Sent command
+    my $p0 = index($argv0, '<<<');  # Server response
+    my $p1 = index($argv0, '>>>');  # Sent command
     if( $p0 < $p1 ) {
         # An SMTP server response starting with '<<<' is the first
         push @$esmtp, $table->();
         $cursession = $esmtp->[-1];
         $cursession->{'command'} = 'CONN';
-        $$argv0 = substr($$argv0, $p0,) if $p0 > -1;
+        $argv0 = substr($argv0, $p0,) if $p0 > -1;
 
     } else {
         # An SMTP command starting with '>>>' is the first
-        $$argv0 = substr($$argv0, $p1,) if $p1 > -1;
+        $argv0 = substr($argv0, $p1,) if $p1 > -1;
     }
 
     # 3. Remove unused lines, concatenate folded lines
-    $$argv0 = substr($$argv0, 0, index($$argv0, "\n\n") - 1);   # Remove strings from the first blank line to the tail
-    $$argv0 =~ s/\n[ ]+/ /g;                                    # Concatenate folded lines to each previous line
+    $argv0 = substr($argv0, 0, index($argv0, "\n\n") - 1); # Remove strings from the first blank line to the tail
+    $argv0 =~ s/\n[ ]+/ /g;                                # Concatenate folded lines to each previous line
 
-    for my $e ( split("\n", $$argv0) ) {
+    for my $e ( split("\n", $argv0) ) {
         # 4. Read each SMTP command and server response
         $p0 = index($e, '>>> ');
         $p1 = index($e, ' ', $p1 + 4);

@@ -14,7 +14,7 @@ MAKETEST: {
     my $targetmail = 'set-of-emails/maildir/bsd/lhost-postfix-75.eml';
     my $mailobject = Sisimai::Mail->new($targetmail);
     my $entiremesg = $mailobject->read; $entiremesg =~ s/\A.+?\n\n(.+)\z/$1/ms;
-    my $transcript = Sisimai::SMTP::Transcript->rise(\$entiremesg, 'In:', 'Out:');
+    my $transcript = Sisimai::SMTP::Transcript->rise($entiremesg, 'In:', 'Out:');
     my $resmtpcomm = qr/(?:CONN|HELO|EHLO|AUTH|MAIL|RCPT|DATA|QUIT|RSET|X[A-Z]+)/;
 
     is $Package->rise([]), undef;
@@ -57,10 +57,10 @@ MAKETEST: {
 
     my $q = 'nekochan-nyaan';
     is(Sisimai::SMTP::Transcript->rise(undef), undef);
-    is(Sisimai::SMTP::Transcript->rise(\''), undef);
-    is(Sisimai::SMTP::Transcript->rise(\$q, ''), undef);
-    is(Sisimai::SMTP::Transcript->rise(\$q, '', ''), undef);
-    is(Sisimai::SMTP::Transcript->rise(\$q, 'x', 'y'), undef);
+    is(Sisimai::SMTP::Transcript->rise(''), undef);
+    is(Sisimai::SMTP::Transcript->rise($q, ''), undef);
+    is(Sisimai::SMTP::Transcript->rise($q, '', ''), undef);
+    is(Sisimai::SMTP::Transcript->rise($q, 'x', 'y'), undef);
 }
 
 done_testing;
