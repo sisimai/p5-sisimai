@@ -40,7 +40,6 @@ sub rise {
     my $parameters = '';    # Command parameters of MAIL, RCPT
     my $cursession = undef; # Current session for $esmtp
 
-    my $cv = '';
     my $p1 = index($argv0, '>>>');  # Sent command
     my $p2 = index($argv0, '<<<');  # Server response
     if( $p2 < $p1 ) {
@@ -66,7 +65,7 @@ sub rise {
         $p4 = index($e, ' ', $p4 + 4);
         if( $p3 == 0 ) {
             # SMTP client sent a command ">>> SMTP-command arguments"
-            $cv = Sisimai::SMTP::Command->find($e) || '';
+            my $cv = Sisimai::SMTP::Command->find($e) || '';
             if( length $cv ) {
                 # >>> SMTP Command
                 my $thecommand = $cv;
@@ -99,8 +98,8 @@ sub rise {
                         # SIZE=22022, PROTO=SMTP, and so on
                         my $p5 = index($f, '='); next if $p5 < 1;
                         my $p6 = length $f;      next if $p6 < 3;
-                        $cv = [split('=', $f)];  next unless scalar @$cv == 2;
-                        $cursession->{'parameter'}->{ lc $cv->[0] } = $cv->[1];
+                        my $ee = [split('=', $f)];  next unless scalar @$ee == 2;
+                        $cursession->{'parameter'}->{ lc $ee->[0] } = $ee->[1];
                     }
                 } else {
                     # HELO, EHLO, AUTH, DATA, QUIT or Other SMTP command
