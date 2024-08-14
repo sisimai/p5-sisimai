@@ -63,46 +63,42 @@ sub rise {
         my $p3 = index($e, '>>> ');
         if( $p3 == 0 ) {
             # SMTP client sent a command ">>> SMTP-command arguments"
-            my $cv = Sisimai::SMTP::Command->find($e) || '';
-            if( length $cv ) {
-                # >>> SMTP Command
-                my $thecommand = $cv;
-                my $commandarg = Sisimai::String->sweep(substr($e, index($e, $cv) + length($cv),));
+            my $thecommand = Sisimai::SMTP::Command->find($e) || next;
+            my $commandarg = Sisimai::String->sweep(substr($e, index($e, $thecommand) + length($thecommand),));
 
-                push @$esmtp, $table->();
-                $cursession = $esmtp->[-1];
-                $cursession->{'command'} = uc $thecommand;
+            push @$esmtp, $table->();
+            $cursession = $esmtp->[-1];
+            $cursession->{'command'} = uc $thecommand;
 
-                if( $thecommand eq 'MAIL' || $thecommand eq 'RCPT' || $thecommand eq 'XFORWARD' ) {
-                    # MAIL or RCPT
-                    if( index($commandarg, 'FROM:') == 0 || index($commandarg, 'TO:') == 0 ) {
-                        # >>> MAIL FROM: <neko@example.com> SIZE=65535
-                        # >>> RCPT TO: <kijitora@example.org>
-                        my $p4 = index($commandarg, '<');
-                        my $p5 = index($commandarg, '>');
-                        $cursession->{'argument'} = substr($commandarg, $p4 + 1, $p5 - $p4 - 1);
-                        $parameters = Sisimai::String->sweep(substr($commandarg, $p5 + 1,));
+            if( $thecommand eq 'MAIL' || $thecommand eq 'RCPT' || $thecommand eq 'XFORWARD' ) {
+                # MAIL or RCPT
+                if( index($commandarg, 'FROM:') == 0 || index($commandarg, 'TO:') == 0 ) {
+                    # >>> MAIL FROM: <neko@example.com> SIZE=65535
+                    # >>> RCPT TO: <kijitora@example.org>
+                    my $p4 = index($commandarg, '<');
+                    my $p5 = index($commandarg, '>');
+                    $cursession->{'argument'} = substr($commandarg, $p4 + 1, $p5 - $p4 - 1);
+                    $parameters = Sisimai::String->sweep(substr($commandarg, $p5 + 1,));
 
-                    } else {
-                        # >>> XFORWARD NAME=neko2-nyaan3.y.example.co.jp ADDR=230.0.113.2 PORT=53672
-                        # <<< 250 2.0.0 Ok
-                        # >>> XFORWARD PROTO=SMTP HELO=neko2-nyaan3.y.example.co.jp IDENT=2LYC6642BLzFK3MM SOURCE=REMOTE
-                        # <<< 250 2.0.0 Ok
-                        $parameters = $commandarg;
-                        $commandarg = '';
-                    }
-
-                    for my $f ( split(" ", $parameters) ) {
-                        # SIZE=22022, PROTO=SMTP, and so on
-                        my $p6 = index($f, '='); next if $p6 < 1;
-                        my $p7 = length $f;      next if $p7 < 3;
-                        my $ee = [split('=', $f)];  next unless scalar @$ee == 2;
-                        $cursession->{'parameter'}->{ lc $ee->[0] } = $ee->[1];
-                    }
                 } else {
-                    # HELO, EHLO, AUTH, DATA, QUIT or Other SMTP command
-                    $cursession->{'argument'} = $commandarg;
+                    # >>> XFORWARD NAME=neko2-nyaan3.y.example.co.jp ADDR=230.0.113.2 PORT=53672
+                    # <<< 250 2.0.0 Ok
+                    # >>> XFORWARD PROTO=SMTP HELO=neko2-nyaan3.y.example.co.jp IDENT=2LYC6642BLzFK3MM SOURCE=REMOTE
+                    # <<< 250 2.0.0 Ok
+                    $parameters = $commandarg;
+                    $commandarg = '';
                 }
+
+                for my $f ( split(" ", $parameters) ) {
+                    # SIZE=22022, PROTO=SMTP, and so on
+                    my $p6 = index($f, '='); next if $p6 < 1;
+                    my $p7 = length $f;      next if $p7 < 3;
+                    my $ee = [split('=', $f)];  next unless scalar @$ee == 2;
+                    $cursession->{'parameter'}->{ lc $ee->[0] } = $ee->[1];
+                }
+            } else {
+                # HELO, EHLO, AUTH, DATA, QUIT or Other SMTP command
+                $cursession->{'argument'} = $commandarg;
             }
         } else {
             # SMTP server sent a response "<<< response text"
