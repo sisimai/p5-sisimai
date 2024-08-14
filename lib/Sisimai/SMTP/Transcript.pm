@@ -60,8 +60,7 @@ sub rise {
 
     for my $e ( split("\n", $argv0) ) {
         # 4. Read each SMTP command and server response
-        my $p3 = index($e, '>>> ');
-        if( $p3 == 0 ) {
+        if( index($e, '>>> ') == 0 ) {
             # SMTP client sent a command ">>> SMTP-command arguments"
             my $thecommand = Sisimai::SMTP::Command->find($e) || next;
             my $commandarg = Sisimai::String->sweep(substr($e, index($e, $thecommand) + length($thecommand),));
@@ -102,7 +101,7 @@ sub rise {
             }
         } else {
             # SMTP server sent a response "<<< response text"
-            $p3 = index($e, '<<< '); next unless $p3 == 0; substr($e, $p3, 4, '');
+            my $p3 = index($e, '<<< '); next unless $p3 == 0; substr($e, $p3, 4, '');
 
             $cursession->{'response'}->{'reply'}  = Sisimai::SMTP::Reply->find($e)  || '';
             $cursession->{'response'}->{'status'} = Sisimai::SMTP::Status->find($e) || '';
