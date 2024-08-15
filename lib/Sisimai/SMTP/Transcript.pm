@@ -90,10 +90,11 @@ sub rise {
 
                 for my $f ( split(" ", $parameters) ) {
                     # SIZE=22022, PROTO=SMTP, and so on
-                    my $p6 = index($f, '='); next if $p6 < 1;
-                    my $p7 = length $f;      next if $p7 < 3;
-                    my $ee = [split('=', $f)];  next unless scalar @$ee == 2;
-                    $cx->{'parameter'}->{ lc $ee->[0] } = $ee->[1];
+                    next if index($f, '=') < 1;
+                    next if length $f      < 3;
+
+                    my @ee = (split('=', $f)); next unless scalar @ee == 2;
+                    $cx->{'parameter'}->{ lc $ee[0] } = $ee[1];
                 }
             } else {
                 # HELO, EHLO, AUTH, DATA, QUIT or Other SMTP command
