@@ -16,16 +16,15 @@ sub inquire {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
     my $match = 0;
-    my $sessx = 0;
 
     if( index($mhead->{'subject'}, 'SMTP server: errors from ') > 0 ) {
         # src/smtpd/smtpd_chat.c:|337: post_mail_fprintf(notice, "Subject: %s SMTP server: errors from %s",
         # src/smtpd/smtpd_chat.c:|338:   var_mail_name, state->namaddr);
-        $match++;
-        $sessx++;
+        $match = 2;
+
     } else {
         # Subject: Undelivered Mail Returned to Sender
-        $match++ if $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
+        $match = 1 if $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
     }
     return undef if $match == 0;
     return undef if $mhead->{'x-aol-ip'};
@@ -54,7 +53,7 @@ sub inquire {
     my $v = undef;
     my $p = '';
 
-    if( $sessx ) {
+    if( $match == 2 ) {
         # The message body starts with 'Transcript of session follows.'
         require Sisimai::SMTP::Transcript;
         my $transcript = Sisimai::SMTP::Transcript->rise($emailparts->[0], 'In:', 'Out:');
