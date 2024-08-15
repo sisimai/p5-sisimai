@@ -37,16 +37,15 @@ sub rise {
             }
         };
     };
-    my $parameters = '';    # Command parameters of MAIL, RCPT
-    my $cursession = undef; # Current session for $esmtp
 
+    my $cx = undef;                 # Current session for $esmtp
     my $p1 = index($argv0, '>>>');  # Sent command
     my $p2 = index($argv0, '<<<');  # Server response
     if( $p2 < $p1 ) {
         # An SMTP server response starting with '<<<' is the first
         push @$esmtp, $table->();
-        $cursession = $esmtp->[-1];
-        $cursession->{'command'} = 'CONN';
+        $cx = $esmtp->[-1];
+        $cx->{'command'} = 'CONN';
         $argv0 = substr($argv0, $p2,) if $p2 > -1;
 
     } else {
@@ -64,10 +63,11 @@ sub rise {
             # SMTP client sent a command ">>> SMTP-command arguments"
             my $thecommand = Sisimai::SMTP::Command->find($e) || next;
             my $commandarg = Sisimai::String->sweep(substr($e, index($e, $thecommand) + length($thecommand),));
+            my $parameters = '';
 
             push @$esmtp, $table->();
-            $cursession = $esmtp->[-1];
-            $cursession->{'command'} = uc $thecommand;
+            $cx = $esmtp->[-1];
+            $cx->{'command'} = uc $thecommand;
 
             if( $thecommand eq 'MAIL' || $thecommand eq 'RCPT' || $thecommand eq 'XFORWARD' ) {
                 # MAIL or RCPT
@@ -76,7 +76,7 @@ sub rise {
                     # >>> RCPT TO: <kijitora@example.org>
                     my $p4 = index($commandarg, '<');
                     my $p5 = index($commandarg, '>');
-                    $cursession->{'argument'} = substr($commandarg, $p4 + 1, $p5 - $p4 - 1);
+                    $cx->{'argument'} = substr($commandarg, $p4 + 1, $p5 - $p4 - 1);
                     $parameters = Sisimai::String->sweep(substr($commandarg, $p5 + 1,));
 
                 } else {
@@ -93,19 +93,19 @@ sub rise {
                     my $p6 = index($f, '='); next if $p6 < 1;
                     my $p7 = length $f;      next if $p7 < 3;
                     my $ee = [split('=', $f)];  next unless scalar @$ee == 2;
-                    $cursession->{'parameter'}->{ lc $ee->[0] } = $ee->[1];
+                    $cx->{'parameter'}->{ lc $ee->[0] } = $ee->[1];
                 }
             } else {
                 # HELO, EHLO, AUTH, DATA, QUIT or Other SMTP command
-                $cursession->{'argument'} = $commandarg;
+                $cx->{'argument'} = $commandarg;
             }
         } else {
             # SMTP server sent a response "<<< response text"
             my $p3 = index($e, '<<< '); next unless $p3 == 0; substr($e, $p3, 4, '');
 
-            $cursession->{'response'}->{'reply'}  = Sisimai::SMTP::Reply->find($e)  || '';
-            $cursession->{'response'}->{'status'} = Sisimai::SMTP::Status->find($e) || '';
-            push $cursession->{'response'}->{'text'}->@*, $e;
+            $cx->{'response'}->{'reply'}  = Sisimai::SMTP::Reply->find($e)  || '';
+            $cx->{'response'}->{'status'} = Sisimai::SMTP::Status->find($e) || '';
+            push $cx->{'response'}->{'text'}->@*, $e;
         }
     }
     return undef unless scalar @$esmtp;
