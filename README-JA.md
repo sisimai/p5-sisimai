@@ -10,6 +10,11 @@
 > (Sisimai 5)になりました。** もし古いバージョンを使いたい場合は[4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)
 > ブランチを見てください。また`main`や`master`ブランチはもうこのリポジトリでは使用していません。
 
+> [!CAUTION]
+> **Sisimai 4.25.14p11およびそれ以前のバージョンには 正規表現に関する脆弱性
+> [ReDoS: CVE-2022-4891](https://jvndb.jvn.jp/ja/contents/2022/JVNDB-2022-005663.html)があります。
+> 該当するバージョンをお使いの場合はv4.25.14p12以降へアップグレードしてください。**
+
 > [!WARNING]
 > Sisimai 5はPerl 5.26以上が必要です。インストール/アップグレードを実行する前に`perl -v`コマンドで
 > システムに入っているPerlのバージョンを確認してください。
