@@ -153,7 +153,6 @@ sub field {
         } else {
             # - Action: failed
             # - Status: 5.2.2
-            $table->[1] = '';
             $table->[2] = $group eq 'date' ? $2 : lc $2;
 
             # Correct invalid value in Action field:
