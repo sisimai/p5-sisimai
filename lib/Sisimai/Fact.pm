@@ -98,14 +98,13 @@ sub rise {
         }
 
         EMAILADDRESS: {
-            # Detect email address from message/rfc822 part
+            # Detect an email address from message/rfc822 part
             for my $f ( $rfc822head->{'addresser'}->@* ) {
                 # Check each header in message/rfc822 part
-                my $g = lc $f;
-                next unless exists $rfc822data->{ $g };
-                next unless $rfc822data->{ $g };
+                next unless exists $rfc822data->{ $f };
+                next unless $rfc822data->{ $f };
 
-                my $j = Sisimai::Address->find($rfc822data->{ $g }) || next;
+                my $j = Sisimai::Address->find($rfc822data->{ $f }) || next;
                 $p->{'addresser'} = shift @$j;
                 last;
             }
