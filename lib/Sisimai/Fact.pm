@@ -64,12 +64,10 @@ sub rise {
     state $retryindex = Sisimai::Reason->retry;
     state $rfc822head = Sisimai::RFC5322::HEADERTABLE;
     state $actionlist = { 'delayed' => 1, 'delivered' => 1, 'expanded' => 1, 'failed' => 1, 'relayed' => 1 };
+    my    $rfc822data = $mesg1->{'rfc822'};
+    my    $listoffact = [];
 
-    my $deliveries = $mesg1->{'ds'};
-    my $rfc822data = $mesg1->{'rfc822'};
-    my $listoffact = [];
-
-    RISEOF: for my $e ( @$deliveries ) {
+    RISEOF: for my $e ( $mesg1->{'ds'}->@* ) {
         # Create parameters
         my $o = {}; # To be blessed and pushed into the array above at the end of the loop
         my $p = {
