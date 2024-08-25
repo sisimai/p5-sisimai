@@ -45,8 +45,8 @@ sub rise {
     # Constructor of Sisimai::Fact
     # @param         [Hash]   argvs
     # @options argvs [String]  data         Entire email message
-    # @options argvs [Integer] delivered    Include the result which has "delivered" reason
-    # @options argvs [Integer] vcacation    Include the result which has "vacation" reason
+    # @options argvs [Integer] delivered    1 if the result which has "delivered" reason is included
+    # @options argvs [Integer] vacation     1 if the result which has "vacation" reason is included
     # @options argvs [Code]    hook         Code reference to callback method
     # @options argvs [String]  origin       Path to the original email file
     # @return        [Array]                Array of Sisimai::Fact objects
