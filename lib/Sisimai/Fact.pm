@@ -69,7 +69,7 @@ sub rise {
 
     RISEOF: for my $e ( $mesg1->{'ds'}->@* ) {
         # Create parameters
-        next unless $e->{'recipient'};
+        next if length $e->{'recipient'} < 5;
 
         my $o = {}; # To be blessed and pushed into the array above at the end of the loop
         my $p = {
