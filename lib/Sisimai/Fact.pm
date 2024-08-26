@@ -93,24 +93,23 @@ sub rise {
             'smtpcommand'    => $e->{'command'}      // '',
         };
 
-        EMAILADDRESS: {
+        ADDRESSER: {
             # Detect an email address from message/rfc822 part
+            my $j = [];
             for my $f ( $rfc822head->{'addresser'}->@* ) {
                 # Check each header in message/rfc822 part
                 next unless exists $rfc822data->{ $f };
                 next unless $rfc822data->{ $f };
 
-                my $j = Sisimai::Address->find($rfc822data->{ $f }) || next;
+                $j = Sisimai::Address->find($rfc822data->{ $f }) || next;
                 $p->{'addresser'} = shift @$j;
-                last;
+                last ADDRESSER;
             }
 
-            unless( $p->{'addresser'} ) {
-                # Fallback: Get the sender address from the header of the bounced email if the address
-                # is not set at the loop above.
-                my $j = Sisimai::Address->find($mesg1->{'header'}->{'to'}) || [];
-                $p->{'addresser'} = shift @$j;
-            }
+            # Fallback: Get the sender address from the header of the bounced email if the address
+            # is not set at the loop above.
+            $j = Sisimai::Address->find($mesg1->{'header'}->{'to'}) || [];
+            $p->{'addresser'} = shift @$j;
         }
         next RISEOF unless $p->{'addresser'};
 
