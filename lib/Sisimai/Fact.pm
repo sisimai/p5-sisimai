@@ -70,6 +70,8 @@ sub rise {
     RISEOF: for my $e ( $mesg1->{'ds'}->@* ) {
         # Create parameters
         next if length $e->{'recipient'} < 5;
+        next if ! $argvs->{'delivered'} && index($e->{'status'}, '2.') == 0;
+        next if ! $argvs->{'vacation'}  && $e->{'reason'} eq 'vacation';
 
         my $o = {}; # To be blessed and pushed into the array above at the end of the loop
         my $p = {
@@ -90,14 +92,6 @@ sub rise {
             'smtpagent'      => $e->{'agent'}        // '',
             'smtpcommand'    => $e->{'command'}      // '',
         };
-        unless( $argvs->{'delivered'} ) {
-            # Skip if the value of "deliverystatus" begins with "2." such as 2.1.5
-            next RISEOF if index($p->{'deliverystatus'}, '2.') == 0;
-        }
-        unless( $argvs->{'vacation'} ) {
-            # Skip if the value of "reason" is "vacation"
-            next RISEOF if $p->{'reason'} eq 'vacation';
-        }
 
         EMAILADDRESS: {
             # Detect an email address from message/rfc822 part
