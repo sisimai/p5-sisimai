@@ -69,6 +69,8 @@ sub rise {
 
     RISEOF: for my $e ( $mesg1->{'ds'}->@* ) {
         # Create parameters
+        next unless $e->{'recipient'};
+
         my $o = {}; # To be blessed and pushed into the array above at the end of the loop
         my $p = {
             'action'         => $e->{'action'}       // '',
@@ -117,7 +119,6 @@ sub rise {
             }
         }
         next RISEOF unless $p->{'addresser'};
-        next RISEOF unless $p->{'recipient'};
 
         TIMESTAMP: {
             # Convert from a time stamp or a date string to a machine time.
