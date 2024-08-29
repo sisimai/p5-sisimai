@@ -131,7 +131,7 @@ sub rise {
 
             while( my $v = shift @datevalues ) {
                 # Decode each date value in the array
-                $datestring = Sisimai::DateTime->parse($v); next unless length $datestring;
+                $datestring = Sisimai::DateTime->parse($v) || next;
 
                 if( $datestring =~ /\A(.+)[ ]+([-+]\d{4})\z/ ) {
                     # Get the value of timezone offset from $datestring: Wed, 26 Feb 2014 06:05:48 -0500
