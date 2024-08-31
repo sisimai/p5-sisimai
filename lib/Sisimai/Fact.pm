@@ -150,14 +150,14 @@ sub rise {
         }
         next RISEOF unless defined $p->{'timestamp'};
 
-        OTHER_TEXT_HEADERS: {
+        RECEIVED: {
             # Scan "Received:" header of the original message
-            my $rr = $mesg1->{'header'}->{'received'} || [];
-            if( scalar @$rr ) {
+            my $recv = $mesg1->{'header'}->{'received'} || [];
+            if( scalar @$recv ) {
                 # Get a local host name and a remote host name from the Received header.
-                $p->{'rhost'} ||= Sisimai::RFC5322->received($rr->[-1])->[1] || '';
+                $p->{'rhost'} ||= Sisimai::RFC5322->received($recv->[-1])->[1] || '';
                 $p->{'lhost'}   = '' if $p->{'lhost'} eq $p->{'rhost'};
-                $p->{'lhost'} ||= Sisimai::RFC5322->received($rr->[ 0])->[0];
+                $p->{'lhost'} ||= Sisimai::RFC5322->received($recv->[ 0])->[0];
             }
 
             for my $v ('rhost', 'lhost') {
@@ -170,11 +170,15 @@ sub rise {
                 $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if rindex($p->{ $v }, ' ') > -1;
                 chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq '.';    # Remove "." at the end of the value
             }
+        }
 
+        SUBJECT: {
             # Subject: header of the original message
             $p->{'subject'} = $rfc822data->{'subject'} // '';
             chop $p->{'subject'} if substr($p->{'subject'}, -1, 1) eq "\r";
+        }
 
+        ID_HEADERS: {
             if( Sisimai::String->aligned(\$rfc822data->{'list-id'}, ['<', '.', '>']) ) {
                 # https://www.rfc-editor.org/rfc/rfc2919
                 # Get the value of List-Id header: "List name <list-id@example.org>"
