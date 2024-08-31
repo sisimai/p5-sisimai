@@ -162,13 +162,26 @@ sub rise {
 
             for my $v ('rhost', 'lhost') {
                 # Check and rewrite each host name
-                $p->{ $v } =  [split('@', $p->{ $v })]->[-1] if index($p->{ $v }, '@') > -1;
-                y/[]()//d, s/\A.+=// for $p->{ $v };                    # Remove [], (), and strings before "="
-                chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq "\r";   # Remove CR at the end of the value
+                next unless length $p->{ $v };
+                if( index($p->{ $v }, '@') > -1 ) {
+                    # Use the domain part as a remote/local host when the value is an email address
+                    $p->{ $v } = (split('@', $p->{ $v }))[-1]; # if index($p->{ $v }, '@') > -1;
+                }
+                y/[]()\r//d, s/\A.+=// for $p->{ $v }; # Remove [], (), \r, and strings before "="
 
-                # Check a space character in each value and get the first element
-                $p->{ $v } = (split(' ', $p->{ $v }, 2))[0] if rindex($p->{ $v }, ' ') > -1;
-                chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq '.';    # Remove "." at the end of the value
+                if( index($p->{ $v }, ' ') > -1 ) {
+                    # Check a space character in each value and get the first hostname
+                    my @ee = split(' ', $p->{ $v });
+                    for my $w ( @ee ) {
+                        # get a hostname from the string like "127.0.0.1 x109-20.example.com 192.0.2.20"
+                        # or "mx.sp.example.jp 192.0.2.135"
+                        next if $w =~ /\A\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}\z/; # Skip if it is an IPv4 address
+                        $p->{ $v } = $w; last;
+                    }
+                    $p->{ $v } ||= $ee[0];
+                    $p->{ $v }   = $ee[0] if index($p->{ $v }, ' ') > 0;
+                }
+                chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq '.'; # Remove "." at the end of the value
             }
         }
 
