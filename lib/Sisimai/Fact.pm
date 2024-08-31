@@ -165,7 +165,7 @@ sub rise {
                 next unless length $p->{ $v };
                 if( index($p->{ $v }, '@') > -1 ) {
                     # Use the domain part as a remote/local host when the value is an email address
-                    $p->{ $v } = (split('@', $p->{ $v }))[-1]; # if index($p->{ $v }, '@') > -1;
+                    $p->{ $v } = (split('@', $p->{ $v }))[-1];
                 }
                 y/[]()\r//d, s/\A.+=// for $p->{ $v }; # Remove [], (), \r, and strings before "="
 
