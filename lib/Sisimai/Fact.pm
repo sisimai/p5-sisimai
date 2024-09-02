@@ -185,7 +185,7 @@ sub rise {
         }
 
         ID_HEADERS: {
-            # Message-ID:, List-ID:, and Subject: headers of the original message
+            # Message-ID:, List-ID: headers of the original message
             my $p0 = 0;
             my $p1 = 0;
             if( Sisimai::String->aligned(\$rfc822data->{'message-id'}, ['<', '@', '>']) ) {
@@ -211,78 +211,81 @@ sub rise {
                 # Invalid value of the List-Id: field
                 $p->{'listid'} = '';
             }
-
-            $p->{'subject'} = $rfc822data->{'subject'} // '';
-            chop $p->{'subject'} if substr($p->{'subject'}, -1, 1) eq "\r";
         }
 
-        CHECK_DELIVERYSTATUS_VALUE: {
+        DIAGNOSTIC_CODE: {
             # Cleanup the value of "Diagnostic-Code:" header
-            if( length $p->{'diagnosticcode'} ) {
-                # Get an SMTP Reply Code and an SMTP Enhanced Status Code
-                chop $p->{'diagnosticcode'} if substr($p->{'diagnosticcode'}, -1, 1) eq "\r";
+            last unless length $p->{'diagnosticcode'};
 
-                my $cs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'})     || '';
-                my $cr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}, $cs) || '';
-                $p->{'deliverystatus'} = Sisimai::SMTP::Status->prefer($p->{'deliverystatus'}, $cs, $cr);
+            # Get an SMTP Reply Code and an SMTP Enhanced Status Code
+            chop $p->{'diagnosticcode'} if substr($p->{'diagnosticcode'}, -1, 1) eq "\r";
 
-                if( length $cr == 3 ) {
-                    # There is an SMTP reply code in the error message
-                    $p->{'replycode'} ||= $cr;
+            my $cs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'})     || '';
+            my $cr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}, $cs) || '';
+            $p->{'deliverystatus'} = Sisimai::SMTP::Status->prefer($p->{'deliverystatus'}, $cs, $cr);
 
-                    if( index($p->{'diagnosticcode'}, $cr.'-') > -1 ) {
-                        # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
-                        # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
-                        # 550-5.7.1 this message has been blocked. Please visit
-                        # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
-                        #
-                        # kijitora@example.co.uk
-                        #   host c.eu.example.com [192.0.2.3]
-                        #   SMTP error from remote mail server after end of data:
-                        #   553-SPF (Sender Policy Framework) domain authentication
-                        #   553-fail. Refer to the Troubleshooting page at
-                        #   553-http://www.symanteccloud.com/troubleshooting for more
-                        #   553 information. (#5.7.1)
-                        for my $q ( '-', ' ' ) {
-                            # Remove strings: "550-5.7.1", and "550 5.7.1" from the error message
-                            my $cx = sprintf("%s%s%s", $cr, $q, $cs);
-                            my $p0 = index($p->{'diagnosticcode'}, $cx);
-                            while( $p0 > -1 ) {
-                                # Remove strings like "550-5.7.1"
-                                substr($p->{'diagnosticcode'}, $p0, length $cx, '');
-                                $p0 = index($p->{'diagnosticcode'}, $cx);
-                            }
+            if( length $cr == 3 ) {
+                # There is an SMTP reply code in the error message
+                $p->{'replycode'} ||= $cr;
 
-                            # Remove "553-" and "553 " (SMTP reply code only) from the error message
-                            $cx = sprintf("%s%s", $cr, $q);
+                if( index($p->{'diagnosticcode'}, $cr.'-') > -1 ) {
+                    # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
+                    # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
+                    # 550-5.7.1 this message has been blocked. Please visit
+                    # 550 5.7.1 https://support.google.com/mail/answer/188131 for more information.
+                    #
+                    # kijitora@example.co.uk
+                    #   host c.eu.example.com [192.0.2.3]
+                    #   SMTP error from remote mail server after end of data:
+                    #   553-SPF (Sender Policy Framework) domain authentication
+                    #   553-fail. Refer to the Troubleshooting page at
+                    #   553-http://www.symanteccloud.com/troubleshooting for more
+                    #   553 information. (#5.7.1)
+                    for my $q ( '-', ' ' ) {
+                        # Remove strings: "550-5.7.1", and "550 5.7.1" from the error message
+                        my $cx = sprintf("%s%s%s", $cr, $q, $cs);
+                        my $p0 = index($p->{'diagnosticcode'}, $cx);
+                        while( $p0 > -1 ) {
+                            # Remove strings like "550-5.7.1"
+                            substr($p->{'diagnosticcode'}, $p0, length $cx, '');
                             $p0 = index($p->{'diagnosticcode'}, $cx);
-                            while( $p0 > -1 ) {
-                                # Remove strings like "553-"
-                                substr($p->{'diagnosticcode'}, $p0, length $cx, '');
-                                $p0 = index($p->{'diagnosticcode'}, $cx);
-                            }
                         }
 
-                        if( index($p->{'diagnosticcode'}, $cr) > 1 ) {
-                            # Add "550 5.1.1" into the head of the error message when the error
-                            # message does not begin with "550"
-                            $p->{'diagnosticcode'} = sprintf("%s %s %s", $cr, $cs, $p->{'diagnosticcode'});
+                        # Remove "553-" and "553 " (SMTP reply code only) from the error message
+                        $cx = sprintf("%s%s", $cr, $q);
+                        $p0 = index($p->{'diagnosticcode'}, $cx);
+                        while( $p0 > -1 ) {
+                            # Remove strings like "553-"
+                            substr($p->{'diagnosticcode'}, $p0, length $cx, '');
+                            $p0 = index($p->{'diagnosticcode'}, $cx);
                         }
                     }
-                }
 
-                my $p1 = index(lc $p->{'diagnosticcode'}, '<html>');
-                my $p2 = index(lc $p->{'diagnosticcode'}, '</html>');
-                substr($p->{'diagnosticcode'}, $p1, $p2 + 7 - $p1, '') if $p1 > 0 && $p2 > 0;
-                $p->{'diagnosticcode'} = Sisimai::String->sweep($p->{'diagnosticcode'});
+                    if( index($p->{'diagnosticcode'}, $cr) > 1 ) {
+                        # Add "550 5.1.1" into the head of the error message when the error
+                        # message does not begin with "550"
+                        $p->{'diagnosticcode'} = sprintf("%s %s %s", $cr, $cs, $p->{'diagnosticcode'});
+                    }
+                }
             }
 
+            my $dc = lc $p->{'diagnosticcode'};
+            my $p1 = index($dc, '<html>');
+            my $p2 = index($dc, '</html>');
+            substr($p->{'diagnosticcode'}, $p1, $p2 + 7 - $p1, '') if $p1 > 0 && $p2 > 0;
+            $p->{'diagnosticcode'} = Sisimai::String->sweep($p->{'diagnosticcode'});
+        }
+
+        DIAGNOSTICTYPE: {
+            # Set the value of "diagnostictype" if it is empty
             $p->{'diagnostictype'} ||= 'X-UNIX' if $p->{'reason'} eq 'mailererror';
             $p->{'diagnostictype'} ||= 'SMTP' unless grep { $p->{'reason'} eq $_ } ('feedback', 'vacation');
-
-            # Check the value of SMTP command
-            $p->{'smtpcommand'} = '' unless Sisimai::SMTP::Command->test($p->{'smtpcommand'});
         }
+
+        # Check the SMTP command, the Subject field of the original message
+        $p->{'smtpcommand'} = '' unless Sisimai::SMTP::Command->test($p->{'smtpcommand'});
+        $p->{'subject'}     = $rfc822data->{'subject'} // '';
+        chop $p->{'subject'} if substr($p->{'subject'}, -1, 1) eq "\r";
 
         CONSTRUCTOR: {
             # Create email address object
@@ -301,8 +304,6 @@ sub rise {
                 'alias'        => $p->{'alias'} || $ar->alias,
                 'token'        => Sisimai::String->token($as->address, $ar->address, $p->{'timestamp'}),
             };
-
-            # Other accessors
             $o->{ $_ }           ||= $p->{ $_ }    // '' for @ea;
             $o->{'catch'}          = $p->{'catch'} // undef;
             $o->{'hardbounce'}     = int $p->{'hardbounce'};
