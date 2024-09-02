@@ -184,18 +184,27 @@ sub rise {
             }
         }
 
-        SUBJECT: {
-            # Subject: header of the original message
-            $p->{'subject'} = $rfc822data->{'subject'} // '';
-            chop $p->{'subject'} if substr($p->{'subject'}, -1, 1) eq "\r";
-        }
-
         ID_HEADERS: {
+            # Message-ID:, List-ID:, and Subject: headers of the original message
+            my $p0 = 0;
+            my $p1 = 0;
+            if( Sisimai::String->aligned(\$rfc822data->{'message-id'}, ['<', '@', '>']) ) {
+                # https://www.rfc-editor.org/rfc/rfc5322#section-3.6.4
+                # Leave only string inside of angle brackets(<>)
+                $p0 = index($rfc822data->{'message-id'}, '<') + 1;
+                $p1 = index($rfc822data->{'message-id'}, '>');
+                $p->{'messageid'} = substr($rfc822data->{'message-id'}, $p0, $p1 - $p0);
+
+            } else {
+                # Invalid value of the Message-Id: field
+                $p->{'messageid'} = '';
+            }
+
             if( Sisimai::String->aligned(\$rfc822data->{'list-id'}, ['<', '.', '>']) ) {
                 # https://www.rfc-editor.org/rfc/rfc2919
                 # Get the value of List-Id header: "List name <list-id@example.org>"
-                my $p0 = index($rfc822data->{'list-id'}, '<') + 1;
-                my $p1 = index($rfc822data->{'list-id'}, '>');
+                $p0 = index($rfc822data->{'list-id'}, '<') + 1;
+                $p1 = index($rfc822data->{'list-id'}, '>');
                 $p->{'listid'} = substr($rfc822data->{'list-id'}, $p0, $p1 - $p0);
 
             } else {
@@ -203,17 +212,8 @@ sub rise {
                 $p->{'listid'} = '';
             }
 
-            if( Sisimai::String->aligned(\$rfc822data->{'message-id'}, ['<', '@', '>']) ) {
-                # https://www.rfc-editor.org/rfc/rfc5322#section-3.6.4
-                # Leave only string inside of angle brackets(<>)
-                my $p0 = index($rfc822data->{'message-id'}, '<') + 1;
-                my $p1 = index($rfc822data->{'message-id'}, '>');
-                $p->{'messageid'} = substr($rfc822data->{'message-id'}, $p0, $p1 - $p0);
-
-            } else {
-                # Invalid value of the Message-Id: field
-                $p->{'messageid'} = '';
-            }
+            $p->{'subject'} = $rfc822data->{'subject'} // '';
+            chop $p->{'subject'} if substr($p->{'subject'}, -1, 1) eq "\r";
         }
 
         CHECK_DELIVERYSTATUS_VALUE: {
