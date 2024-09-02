@@ -178,8 +178,7 @@ sub rise {
                         next if $w =~ /\A\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}\z/; # Skip if it is an IPv4 address
                         $p->{ $v } = $w; last;
                     }
-                    $p->{ $v } ||= $ee[0];
-                    $p->{ $v }   = $ee[0] if index($p->{ $v }, ' ') > 0;
+                    $p->{ $v } = $ee[0] if index($p->{ $v }, ' ') > 0;
                 }
                 chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq '.'; # Remove "." at the end of the value
             }
