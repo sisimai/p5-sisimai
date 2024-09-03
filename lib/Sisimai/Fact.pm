@@ -213,7 +213,7 @@ sub rise {
             }
         }
 
-        DIAGNOSTIC_CODE: {
+        DIAGNOSTICCODE: {
             # Cleanup the value of "Diagnostic-Code:" header
             last unless length $p->{'diagnosticcode'};
 
