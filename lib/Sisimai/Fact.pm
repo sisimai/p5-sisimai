@@ -73,8 +73,8 @@ sub rise {
         next if ! $argvs->{'delivered'} && index($e->{'status'}, '2.') == 0;
         next if ! $argvs->{'vacation'}  && $e->{'reason'} eq 'vacation';
 
-        my $o = {}; # To be blessed and pushed into the array above at the end of the loop
-        my $p = {
+        my $thing = {}; # To be blessed and pushed into the array above at the end of the loop
+        my $piece = {
             'action'         => $e->{'action'}       // '',
             'alias'          => $e->{'alias'}        // '',
             'catch'          => $mesg1->{'catch'}    // undef,
@@ -102,16 +102,16 @@ sub rise {
                 next unless $rfc822data->{ $f };
 
                 $j = Sisimai::Address->find($rfc822data->{ $f }) || next;
-                $p->{'addresser'} = shift @$j;
+                $piece->{'addresser'} = shift @$j;
                 last ADDRESSER;
             }
 
             # Fallback: Get the sender address from the header of the bounced email if the address
             # is not set at the loop above.
             $j = Sisimai::Address->find($mesg1->{'header'}->{'to'}) || [];
-            $p->{'addresser'} = shift @$j;
+            $piece->{'addresser'} = shift @$j;
         }
-        next RISEOF unless $p->{'addresser'};
+        next RISEOF unless $piece->{'addresser'};
 
         TIMESTAMP: {
             # Convert from a time stamp or a date string to a machine time.
@@ -137,7 +137,7 @@ sub rise {
                     # Get the value of timezone offset from $datestring: Wed, 26 Feb 2014 06:05:48 -0500
                     $datestring = $1;
                     $zoneoffset = Sisimai::DateTime->tz2second($2);
-                    $p->{'timezoneoffset'} = $2;
+                    $piece->{'timezoneoffset'} = $2;
                 }
                 last if $datestring;
             }
@@ -145,42 +145,42 @@ sub rise {
             eval {
                 # Convert from the date string to an object then calculate time zone offset.
                 my $t = Sisimai::Time->strptime($datestring, '%a, %d %b %Y %T');
-                $p->{'timestamp'} = ($t->epoch - $zoneoffset) // undef;
+                $piece->{'timestamp'} = ($t->epoch - $zoneoffset) // undef;
             };
         }
-        next RISEOF unless defined $p->{'timestamp'};
+        next RISEOF unless defined $piece->{'timestamp'};
 
         RECEIVED: {
             # Scan "Received:" header of the original message
             my $recv = $mesg1->{'header'}->{'received'} || [];
             if( scalar @$recv ) {
                 # Get a local host name and a remote host name from the Received header.
-                $p->{'rhost'} ||= Sisimai::RFC5322->received($recv->[-1])->[1] || '';
-                $p->{'lhost'}   = '' if $p->{'lhost'} eq $p->{'rhost'};
-                $p->{'lhost'} ||= Sisimai::RFC5322->received($recv->[ 0])->[0];
+                $piece->{'rhost'} ||= Sisimai::RFC5322->received($recv->[-1])->[1] || '';
+                $piece->{'lhost'}   = '' if $piece->{'lhost'} eq $piece->{'rhost'};
+                $piece->{'lhost'} ||= Sisimai::RFC5322->received($recv->[ 0])->[0];
             }
 
             for my $v ('rhost', 'lhost') {
                 # Check and rewrite each host name
-                next unless length $p->{ $v };
-                if( index($p->{ $v }, '@') > -1 ) {
+                next unless length $piece->{ $v };
+                if( index($piece->{ $v }, '@') > -1 ) {
                     # Use the domain part as a remote/local host when the value is an email address
-                    $p->{ $v } = (split('@', $p->{ $v }))[-1];
+                    $piece->{ $v } = (split('@', $piece->{ $v }))[-1];
                 }
-                y/[]()\r//d, s/\A.+=// for $p->{ $v }; # Remove [], (), \r, and strings before "="
+                y/[]()\r//d, s/\A.+=// for $piece->{ $v }; # Remove [], (), \r, and strings before "="
 
-                if( index($p->{ $v }, ' ') > -1 ) {
+                if( index($piece->{ $v }, ' ') > -1 ) {
                     # Check a space character in each value and get the first hostname
-                    my @ee = split(' ', $p->{ $v });
+                    my @ee = split(' ', $piece->{ $v });
                     for my $w ( @ee ) {
                         # get a hostname from the string like "127.0.0.1 x109-20.example.com 192.0.2.20"
                         # or "mx.sp.example.jp 192.0.2.135"
                         next if $w =~ /\A\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}\z/; # Skip if it is an IPv4 address
-                        $p->{ $v } = $w; last;
+                        $piece->{ $v } = $w; last;
                     }
-                    $p->{ $v } = $ee[0] if index($p->{ $v }, ' ') > 0;
+                    $piece->{ $v } = $ee[0] if index($piece->{ $v }, ' ') > 0;
                 }
-                chop $p->{ $v } if substr($p->{ $v }, -1, 1) eq '.'; # Remove "." at the end of the value
+                chop $piece->{ $v } if substr($piece->{ $v }, -1, 1) eq '.'; # Remove "." at the end of the value
             }
         }
 
@@ -193,11 +193,11 @@ sub rise {
                 # Leave only string inside of angle brackets(<>)
                 $p0 = index($rfc822data->{'message-id'}, '<') + 1;
                 $p1 = index($rfc822data->{'message-id'}, '>');
-                $p->{'messageid'} = substr($rfc822data->{'message-id'}, $p0, $p1 - $p0);
+                $piece->{'messageid'} = substr($rfc822data->{'message-id'}, $p0, $p1 - $p0);
 
             } else {
                 # Invalid value of the Message-Id: field
-                $p->{'messageid'} = '';
+                $piece->{'messageid'} = '';
             }
 
             if( Sisimai::String->aligned(\$rfc822data->{'list-id'}, ['<', '.', '>']) ) {
@@ -205,30 +205,30 @@ sub rise {
                 # Get the value of List-Id header: "List name <list-id@example.org>"
                 $p0 = index($rfc822data->{'list-id'}, '<') + 1;
                 $p1 = index($rfc822data->{'list-id'}, '>');
-                $p->{'listid'} = substr($rfc822data->{'list-id'}, $p0, $p1 - $p0);
+                $piece->{'listid'} = substr($rfc822data->{'list-id'}, $p0, $p1 - $p0);
 
             } else {
                 # Invalid value of the List-Id: field
-                $p->{'listid'} = '';
+                $piece->{'listid'} = '';
             }
         }
 
         DIAGNOSTICCODE: {
             # Cleanup the value of "Diagnostic-Code:" header
-            last unless length $p->{'diagnosticcode'};
+            last unless length $piece->{'diagnosticcode'};
 
             # Get an SMTP Reply Code and an SMTP Enhanced Status Code
-            chop $p->{'diagnosticcode'} if substr($p->{'diagnosticcode'}, -1, 1) eq "\r";
+            chop $piece->{'diagnosticcode'} if substr($piece->{'diagnosticcode'}, -1, 1) eq "\r";
 
-            my $cs = Sisimai::SMTP::Status->find($p->{'diagnosticcode'})     || '';
-            my $cr = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}, $cs) || '';
-            $p->{'deliverystatus'} = Sisimai::SMTP::Status->prefer($p->{'deliverystatus'}, $cs, $cr);
+            my $cs = Sisimai::SMTP::Status->find($piece->{'diagnosticcode'})      || '';
+            my $cr = Sisimai::SMTP::Reply->find( $piece->{'diagnosticcode'}, $cs) || '';
+            $piece->{'deliverystatus'} = Sisimai::SMTP::Status->prefer($piece->{'deliverystatus'}, $cs, $cr);
 
             if( length $cr == 3 ) {
                 # There is an SMTP reply code in the error message
-                $p->{'replycode'} ||= $cr;
+                $piece->{'replycode'} ||= $cr;
 
-                if( index($p->{'diagnosticcode'}, $cr.'-') > -1 ) {
+                if( index($piece->{'diagnosticcode'}, $cr.'-') > -1 ) {
                     # 550-5.7.1 [192.0.2.222] Our system has detected that this message is
                     # 550-5.7.1 likely unsolicited mail. To reduce the amount of spam sent to Gmail,
                     # 550-5.7.1 this message has been blocked. Please visit
@@ -244,79 +244,79 @@ sub rise {
                     for my $q ( '-', ' ' ) {
                         # Remove strings: "550-5.7.1", and "550 5.7.1" from the error message
                         my $cx = sprintf("%s%s%s", $cr, $q, $cs);
-                        my $p0 = index($p->{'diagnosticcode'}, $cx);
+                        my $p0 = index($piece->{'diagnosticcode'}, $cx);
                         while( $p0 > -1 ) {
                             # Remove strings like "550-5.7.1"
-                            substr($p->{'diagnosticcode'}, $p0, length $cx, '');
-                            $p0 = index($p->{'diagnosticcode'}, $cx);
+                            substr($piece->{'diagnosticcode'}, $p0, length $cx, '');
+                            $p0 = index($piece->{'diagnosticcode'}, $cx);
                         }
 
                         # Remove "553-" and "553 " (SMTP reply code only) from the error message
                         $cx = sprintf("%s%s", $cr, $q);
-                        $p0 = index($p->{'diagnosticcode'}, $cx);
+                        $p0 = index($piece->{'diagnosticcode'}, $cx);
                         while( $p0 > -1 ) {
                             # Remove strings like "553-"
-                            substr($p->{'diagnosticcode'}, $p0, length $cx, '');
-                            $p0 = index($p->{'diagnosticcode'}, $cx);
+                            substr($piece->{'diagnosticcode'}, $p0, length $cx, '');
+                            $p0 = index($piece->{'diagnosticcode'}, $cx);
                         }
                     }
 
-                    if( index($p->{'diagnosticcode'}, $cr) > 1 ) {
+                    if( index($piece->{'diagnosticcode'}, $cr) > 1 ) {
                         # Add "550 5.1.1" into the head of the error message when the error
                         # message does not begin with "550"
-                        $p->{'diagnosticcode'} = sprintf("%s %s %s", $cr, $cs, $p->{'diagnosticcode'});
+                        $piece->{'diagnosticcode'} = sprintf("%s %s %s", $cr, $cs, $piece->{'diagnosticcode'});
                     }
                 }
             }
 
-            my $dc = lc $p->{'diagnosticcode'};
+            my $dc = lc $piece->{'diagnosticcode'};
             my $p1 = index($dc, '<html>');
             my $p2 = index($dc, '</html>');
-            substr($p->{'diagnosticcode'}, $p1, $p2 + 7 - $p1, '') if $p1 > 0 && $p2 > 0;
-            $p->{'diagnosticcode'} = Sisimai::String->sweep($p->{'diagnosticcode'});
+            substr($piece->{'diagnosticcode'}, $p1, $p2 + 7 - $p1, '') if $p1 > 0 && $p2 > 0;
+            $piece->{'diagnosticcode'} = Sisimai::String->sweep($piece->{'diagnosticcode'});
         }
 
         DIAGNOSTICTYPE: {
             # Set the value of "diagnostictype" if it is empty
-            $p->{'diagnostictype'} ||= 'X-UNIX' if $p->{'reason'} eq 'mailererror';
-            $p->{'diagnostictype'} ||= 'SMTP' unless grep { $p->{'reason'} eq $_ } ('feedback', 'vacation');
+            $piece->{'diagnostictype'} ||= 'X-UNIX' if $piece->{'reason'} eq 'mailererror';
+            $piece->{'diagnostictype'} ||= 'SMTP' unless grep { $piece->{'reason'} eq $_ } ('feedback', 'vacation');
         }
 
         # Check the SMTP command, the Subject field of the original message
-        $p->{'smtpcommand'} = '' unless Sisimai::SMTP::Command->test($p->{'smtpcommand'});
-        $p->{'subject'}     = $rfc822data->{'subject'} // '';
-        chop $p->{'subject'} if substr($p->{'subject'}, -1, 1) eq "\r";
+        $piece->{'smtpcommand'} = '' unless Sisimai::SMTP::Command->test($piece->{'smtpcommand'});
+        $piece->{'subject'}     = $rfc822data->{'subject'} // '';
+        chop $piece->{'subject'} if substr($piece->{'subject'}, -1, 1) eq "\r";
 
         CONSTRUCTOR: {
             # Create email address object
-            my $as = Sisimai::Address->new($p->{'addresser'})                  || next RISEOF;
-            my $ar = Sisimai::Address->new({ 'address' => $p->{'recipient'} }) || next RISEOF;
+            my $as = Sisimai::Address->new($piece->{'addresser'})                || next RISEOF;
+            my $ar = Sisimai::Address->new({'address' => $piece->{'recipient'}}) || next RISEOF;
             my @ea = (qw|
                 action deliverystatus diagnosticcode diagnostictype feedbacktype lhost listid
                 messageid origin reason replycode rhost smtpagent smtpcommand subject 
             |);
 
-            $o = {
+            $thing = {
                 'addresser'    => $as,
                 'recipient'    => $ar,
                 'senderdomain' => $as->host,
                 'destination'  => $ar->host,
-                'alias'        => $p->{'alias'} || $ar->alias,
-                'token'        => Sisimai::String->token($as->address, $ar->address, $p->{'timestamp'}),
+                'alias'        => $piece->{'alias'} || $ar->alias,
+                'token'        => Sisimai::String->token($as->address, $ar->address, $piece->{'timestamp'}),
             };
-            $o->{ $_ }           ||= $p->{ $_ }    // '' for @ea;
-            $o->{'catch'}          = $p->{'catch'} // undef;
-            $o->{'hardbounce'}     = int $p->{'hardbounce'};
-            $o->{'replycode'}    ||= Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}) || '';
-            $o->{'timestamp'}      = Sisimai::Time->new($p->{'timestamp'});
-            $o->{'timezoneoffset'} = $p->{'timezoneoffset'} // '+0000';
+            $thing->{ $_ }           ||= $piece->{ $_ }    // '' for @ea;
+            $thing->{'catch'}          = $piece->{'catch'} // undef;
+            $thing->{'hardbounce'}     = int $piece->{'hardbounce'};
+            $thing->{'replycode'}    ||= Sisimai::SMTP::Reply->find($piece->{'diagnosticcode'}) || '';
+            $thing->{'timestamp'}      = Sisimai::Time->new($piece->{'timestamp'});
+            $thing->{'timezoneoffset'} = $piece->{'timezoneoffset'} // '+0000';
         }
 
         ALIAS: while(1) {
             # Look up the Envelope-To address from the Received: header in the original message
             # when the recipient address is same with the value of $o->{'alias'}.
-            last if length $o->{'alias'} == 0;
-            last if $o->{'recipient'}->address ne $o->{'alias'};
+            last if length $thing->{'alias'} == 0;
+            last if $thing->{'recipient'}->address ne $thing->{'alias'};
             last unless exists $rfc822data->{'received'};
             last unless scalar $rfc822data->{'received'}->@*;
 
@@ -328,73 +328,73 @@ sub rise {
                 next unless scalar @$or;
                 next unless length $or->[5];
                 next unless Sisimai::Address->is_emailaddress($or->[5]);
-                next if $o->{'recipient'}->address eq $or->[5];
+                next if $thing->{'recipient'}->address eq $or->[5];
 
-                $o->{'alias'} = $or->[5];
+                $thing->{'alias'} = $or->[5];
                 last;
             }
             last;
         }
-        $o->{'alias'} = '' if $o->{'alias'} eq $o->{'recipient'}->{'address'};
+        $thing->{'alias'} = '' if $thing->{'alias'} eq $thing->{'recipient'}->{'address'};
 
         REASON: {
             # Decide the reason of email bounce
-            if( $o->{'reason'} eq '' || exists $retryindex->{ $o->{'reason'} } ) {
+            if( $thing->{'reason'} eq '' || exists $retryindex->{ $thing->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
-                my $re = $o->{'reason'} || 'undefined';
-                $o->{'reason'} = Sisimai::Rhost->get($o) || Sisimai::Reason->get($o) || $re;
+                my $re = $thing->{'reason'} || 'undefined';
+                $thing->{'reason'} = Sisimai::Rhost->get($thing) || Sisimai::Reason->get($thing) || $re;
             }
         }
 
         HARD_BOUNCE: {
             # Set the value of "hardbounce", default value of "bouncebounce" is 0
-            if( $o->{'reason'} eq 'delivered' || $o->{'reason'} eq 'feedback' || $o->{'reason'} eq 'vacation' ) {
+            if( $thing->{'reason'} eq 'delivered' || $thing->{'reason'} eq 'feedback' || $thing->{'reason'} eq 'vacation' ) {
                 # The value of "reason" is "delivered", "vacation" or "feedback".
-                $o->{'replycode'} = '' unless $o->{'reason'} eq 'delivered';
+                $thing->{'replycode'} = '' unless $thing->{'reason'} eq 'delivered';
 
             } else {
-                my $smtperrors = $p->{'deliverystatus'}.' '.$p->{'diagnosticcode'};
+                my $smtperrors = $piece->{'deliverystatus'}.' '.$piece->{'diagnosticcode'};
                    $smtperrors = '' if length $smtperrors < 4;
-                my $softorhard = Sisimai::SMTP::Error->soft_or_hard($o->{'reason'}, $smtperrors);
-                $o->{'hardbounce'} = 1 if $softorhard eq 'hard';
+                my $softorhard = Sisimai::SMTP::Error->soft_or_hard($thing->{'reason'}, $smtperrors);
+                $thing->{'hardbounce'} = 1 if $softorhard eq 'hard';
             }
         }
 
         DELIVERYSTATUS: {
             # Set pseudo status code
-            last DELIVERYSTATUS if $o->{'deliverystatus'};
+            last DELIVERYSTATUS if $thing->{'deliverystatus'};
 
-            my $smtperrors = $o->{'replycode'}.' '.$p->{'diagnosticcode'};
+            my $smtperrors = $thing->{'replycode'}.' '.$piece->{'diagnosticcode'};
                $smtperrors = '' if length $smtperrors < 4;
             my $permanent1 = Sisimai::SMTP::Error->is_permanent($smtperrors) // 1;
-            $o->{'deliverystatus'} = Sisimai::SMTP::Status->code($o->{'reason'}, $permanent1 ? 0 : 1);
+            $thing->{'deliverystatus'} = Sisimai::SMTP::Status->code($thing->{'reason'}, $permanent1 ? 0 : 1);
         }
 
         REPLYCODE: {
             # Check both of the first digit of "deliverystatus" and "replycode"
-            my $cx = [substr($o->{'deliverystatus'}, 0, 1), substr($o->{'replycode'}, 0, 1)];
+            my $cx = [substr($thing->{'deliverystatus'}, 0, 1), substr($thing->{'replycode'}, 0, 1)];
             if( $cx->[0] ne $cx->[1] ) {
                 # The class of the "Status:" is defer with the first digit of the reply code
-                $cx->[1] = Sisimai::SMTP::Reply->find($p->{'diagnosticcode'}, $cx->[0]) || '';
-                $o->{'replycode'} = index($cx->[1], $cx->[0]) == 0 ? $cx->[1] : '';
+                $cx->[1] = Sisimai::SMTP::Reply->find($piece->{'diagnosticcode'}, $cx->[0]) || '';
+                $thing->{'replycode'} = index($cx->[1], $cx->[0]) == 0 ? $cx->[1] : '';
             }
 
-            unless( exists $actionlist->{ $o->{'action'} } ) {
+            unless( exists $actionlist->{ $thing->{'action'} } ) {
                 # There is an action value which is not described at RFC1894
-                if( my $ox = Sisimai::RFC1894->field('Action: '.$o->{'action'}) ) {
+                if( my $ox = Sisimai::RFC1894->field('Action: '.$thing->{'action'}) ) {
                     # Rewrite the value of "Action:" field to the valid value
                     #
                     #    The syntax for the action-field is:
                     #       action-field = "Action" ":" action-value
                     #       action-value = "failed" / "delayed" / "delivered" / "relayed" / "expanded"
-                    $o->{'action'} = $ox->[2];
+                    $thing->{'action'} = $ox->[2];
                 }
             }
-            $o->{'action'}   = 'delayed' if $o->{'reason'} eq 'expired';
-            $o->{'action'} ||= 'failed'  if $cx->[0] eq '4' || $cx->[0] eq '5';
+            $thing->{'action'}   = 'delayed' if $thing->{'reason'} eq 'expired';
+            $thing->{'action'} ||= 'failed'  if $cx->[0] eq '4' || $cx->[0] eq '5';
         }
 
-        push @$listoffact, bless($o, __PACKAGE__);
+        push @$listoffact, bless($thing, __PACKAGE__);
     } # End of for(RISEOF)
 
     return $listoffact;
