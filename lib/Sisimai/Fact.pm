@@ -337,7 +337,7 @@ sub rise {
         $thing->{'alias'} = '' if $thing->{'alias'} eq $thing->{'recipient'}->{'address'};
 
         REASON: {
-            # Decide the reason of email bounce
+            # Decide the reason of the email bounce
             if( $thing->{'reason'} eq '' || exists $retryindex->{ $thing->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
                 my $re = $thing->{'reason'} || 'undefined';
@@ -345,13 +345,14 @@ sub rise {
             }
         }
 
-        HARD_BOUNCE: {
+        HARDBOUNCE: {
             # Set the value of "hardbounce", default value of "bouncebounce" is 0
             if( $thing->{'reason'} eq 'delivered' || $thing->{'reason'} eq 'feedback' || $thing->{'reason'} eq 'vacation' ) {
-                # The value of "reason" is "delivered", "vacation" or "feedback".
+                # Delete the value of ReplyCode when the Reason is "feedback" or "vacation"
                 $thing->{'replycode'} = '' unless $thing->{'reason'} eq 'delivered';
 
             } else {
+                # The reason is not "delivered", or "feedback", or "vacation"
                 my $smtperrors = $piece->{'deliverystatus'}.' '.$piece->{'diagnosticcode'};
                    $smtperrors = '' if length $smtperrors < 4;
                 my $softorhard = Sisimai::SMTP::Error->soft_or_hard($thing->{'reason'}, $smtperrors);
