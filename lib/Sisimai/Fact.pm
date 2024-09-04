@@ -312,13 +312,13 @@ sub rise {
             $thing->{'timezoneoffset'} = $piece->{'timezoneoffset'} // '+0000';
         }
 
-        ALIAS: while(1) {
+        ALIAS: {
             # Look up the Envelope-To address from the Received: header in the original message
             # when the recipient address is same with the value of $o->{'alias'}.
-            last ALIAS if length $thing->{'alias'} == 0;
-            last ALIAS if $thing->{'recipient'}->address ne $thing->{'alias'};
-            last ALIAS unless exists $rfc822data->{'received'};
-            last ALIAS unless scalar $rfc822data->{'received'}->@*;
+            last if length $thing->{'alias'} == 0;
+            last if $thing->{'recipient'}->address ne $thing->{'alias'};
+            last unless exists $rfc822data->{'received'};
+            last unless scalar $rfc822data->{'received'}->@*;
 
             for my $er ( reverse $rfc822data->{'received'}->@* ) {
                 # Search for the string " for " from the Received: header
@@ -333,7 +333,6 @@ sub rise {
                 $thing->{'alias'} = $or->[5];
                 last ALIAS;
             }
-            last;
         }
         $thing->{'alias'} = '' if $thing->{'alias'} eq $thing->{'recipient'}->{'address'};
 
