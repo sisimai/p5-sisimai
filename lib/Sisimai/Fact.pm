@@ -315,10 +315,10 @@ sub rise {
         ALIAS: while(1) {
             # Look up the Envelope-To address from the Received: header in the original message
             # when the recipient address is same with the value of $o->{'alias'}.
-            last if length $thing->{'alias'} == 0;
-            last if $thing->{'recipient'}->address ne $thing->{'alias'};
-            last unless exists $rfc822data->{'received'};
-            last unless scalar $rfc822data->{'received'}->@*;
+            last ALIAS if length $thing->{'alias'} == 0;
+            last ALIAS if $thing->{'recipient'}->address ne $thing->{'alias'};
+            last ALIAS unless exists $rfc822data->{'received'};
+            last ALIAS unless scalar $rfc822data->{'received'}->@*;
 
             for my $er ( reverse $rfc822data->{'received'}->@* ) {
                 # Search for the string " for " from the Received: header
@@ -331,7 +331,7 @@ sub rise {
                 next if $thing->{'recipient'}->address eq $or->[5];
 
                 $thing->{'alias'} = $or->[5];
-                last;
+                last ALIAS;
             }
             last;
         }
