@@ -7,9 +7,9 @@ use warnings;
 sub description { 'Sendmail Open Source: https://sendmail.org/' }
 sub inquire {
     # Decode bounce messages from Sendmail Open Source
-    # @param    [Hash] mhead    Message headers of a bounce email
-    # @param    [String] mbody  Message body of a bounce email
-    # @return   [Hash]          Bounce data list and message/rfc822 part
+    # @param    [Hash] mhead    Message headers of the bounce email
+    # @param    [String] mbody  Message body of the bounce email
+    # @return   [Hash]          The list of decoded bounces and a message/rfc822 part block
     # @return   [undef]         failed to decode or the arguments are missing
     # @see      https://www.proofpoint.com/us/products/email-protection/open-source-email-solution
     # @since v4.0.0
@@ -57,7 +57,7 @@ sub inquire {
         # Read error messages and delivery status lines from the head of the email to the previous
         # line of the beginning of the original message.
         unless( $readcursor ) {
-            # Beginning of the bounce message or message/delivery-status part
+            # Beginning of the bounce message or the message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
@@ -110,16 +110,16 @@ sub inquire {
             if( substr($e, 0, 1) ne ' ') {
                 # Other error messages
                 if( index($e, '>>> ') == 0 ) {
-                    # >>> DATA
+                    # >>> DATA (Client Command)
                     $thecommand = Sisimai::SMTP::Command->find($e);
 
                 } elsif( index($e, '<<< ') == 0 ) {
-                    # <<< Response
+                    # <<< Response from the SMTP server
                     my $cv = substr($e, 4,);
                     push @$esmtpreply, $cv unless grep { $cv eq $_ } @$esmtpreply;
 
                 } else {
-                    # Detect SMTP session error or connection error
+                    # Detect an SMTP session error or a connection error
                     next if $sessionerr;
                     if( index($e, $startingof->{'error'}->[0]) == 0 ) {
                         # ----- Transcript of session follows -----
@@ -147,7 +147,7 @@ sub inquire {
                             $anotherset->{'status'}     = $cs;
                             $anotherset->{'diagnosis'} .= ' '.$e;
 
-                        } elsif( index($e, 'Message: ') == 0 || index($e, 'Warning: ') == 0 ) {
+                        } elsif( index($e, 'Message ') == 0 || index($e, 'Warning: ') == 0 ) {
                             # Message could not be delivered for too long
                             # Warning: message still undelivered after 4 hours
                             $anotherset->{'diagnosis'} .= ' '.$e;
