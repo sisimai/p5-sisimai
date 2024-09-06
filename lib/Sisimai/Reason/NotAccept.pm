@@ -44,8 +44,7 @@ sub true {
     # SMTP Reply Code is 521, 554 or 556
     return 1 if $reply == 521 || $reply == 554 || $reply == 556;
     return 0 if $argvs->{'smtpcommand'} ne 'MAIL';
-    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
-    return 0;
+    return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
 1;

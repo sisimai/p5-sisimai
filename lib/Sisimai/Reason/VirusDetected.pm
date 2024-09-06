@@ -43,8 +43,7 @@ sub true {
     return 0 if $argvs->{'smtpcommand'} eq 'CONN' || $argvs->{'smtpcommand'} eq 'HELO'
              || $argvs->{'smtpcommand'} eq 'HELO' || $argvs->{'smtpcommand'} eq 'MAIL'
              || $argvs->{'smtpcommand'} eq 'RCPT';
-    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
-    return 0;
+    return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
 1;
