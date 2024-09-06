@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.1.0p1
+v5.1.0p2
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -15,6 +15,10 @@ v5.1.0p1
   - Code improvement in `Sisimai::RFC5322` and `Sisimai::ARF`
   - Fix the minimum and the maximum SMTP Reply code: 221 and 557 in `Sisimai::SMTP::Reply`
   - The first argument need not to be a reference at `Sisimai::SMTP::Transcript->rise()`
+  - Remove regular expressions from error message patterns at the following classes: #543
+    - `Sisimai::Reason::Blocked`
+    - `Sisimai::Reason::MailerError`
+    - `Sisimai::Reason::SpamDetected`
 
 v5.1.0
 ---------------------------------------------------------------------------------------------------
