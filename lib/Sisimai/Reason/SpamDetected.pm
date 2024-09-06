@@ -116,11 +116,8 @@ sub match {
         ['spam ', ' exceeded'],
         ['this message scored ', ' spam points'],
     ];
-    state $regex = qr/(?:\d[.]\d[.]\d|\d{3})[ ]spam\z/;
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
-    return 1 if $argv1 =~ $regex;
     return 0;
 }
 
