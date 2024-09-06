@@ -38,8 +38,7 @@ sub true {
     # Diagnostic-Code: smtp; 451 4.7.1 <mx.example.org[192.0.2.2]>: Client host rejected: Please try again slower
     return undef unless $argvs->{'deliverystatus'};
     return 1 if $argvs->{'reason'} eq 'speeding';
-    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
-    return 0;
+    return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
 1;

@@ -141,8 +141,7 @@ sub true {
     my $thecommand = $argvs->{'smtpcommand'} || '';
     return 0 if $thecommand eq 'CONN' || $thecommand eq 'EHLO' || $thecommand eq 'HELO'
              || $thecommand eq 'MAIL' || $thecommand eq 'RCPT';
-    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
-    return 0;
+    return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
 1;

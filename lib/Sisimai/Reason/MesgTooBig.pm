@@ -53,8 +53,7 @@ sub true {
 
     #  5.2.3   Message length exceeds administrative limit
     return 0 if( $tempreason eq 'exceedlimit' || $statuscode eq '5.2.3' );
-    return 1 if __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
-    return 0;
+    return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
 1;
