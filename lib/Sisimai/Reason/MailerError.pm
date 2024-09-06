@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return undef;
 
     state $index = [
+        ' || exit ',
         'procmail: ',
         'bin/procmail',
         'bin/maidrop',
@@ -25,10 +26,7 @@ sub match {
         'pipe to |/',
         'x-unix; ',
     ];
-    state $regex = qr/exit[ ]\d+/;
-
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if $argv1 =~ $regex;
     return 0;
 }
 
