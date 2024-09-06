@@ -54,13 +54,13 @@ sub true {
     my $issuedcode = lc $argvs->{'diagnosticcode'} // '';
 
     if( (Sisimai::SMTP::Status->name($statuscode) || '') eq 'hostunknown' ) {
-        # Status: 5.1.2
-        # Diagnostic-Code: SMTP; 550 Host unknown
+        # To prevent classifying DNS errors as "HostUnknown"
         require Sisimai::Reason::NetworkError;
         return 1 unless Sisimai::Reason::NetworkError->match($issuedcode);
 
     } else {
-        # Check the value of Diagnosic-Code: header with patterns
+        # Status: 5.1.2
+        # Diagnostic-Code: SMTP; 550 Host unknown
         return 1 if __PACKAGE__->match($issuedcode);
     }
     return 0;
