@@ -45,6 +45,7 @@ sub match {
         'host network not allowed',
         'hosts with dynamic ip',
         'invalid ip for sending mail of domain',
+        'is in a black list',
         'is not allowed to send mail from',
         'no access from mail server',
         'no matches to nameserver query',
@@ -65,6 +66,7 @@ sub match {
         'to submit messages to this e-mail system has been rejected',
         'too many spams from your ip',  # free.fr
         'too many unwanted messages have been sent from the following ip address above',
+        'was blocked by ',
         'we do not accept mail from dynamic ips',   # @mail.ru
         'you are not allowed to connect',
         'you are sending spam',
@@ -73,12 +75,14 @@ sub match {
         'your server requires confirmation',
     ];
     state $pairs = [
+        ['(', '@', ':blocked)'],
         ['access from ip address ', ' blocked'],
         ['client host ', ' blocked using'],
         ['connections will not be accepted from ', " because the ip is in spamhaus's list"],
         ['dnsbl:rbl ', '>_is_blocked'],
         ['email blocked by ', '.barracudacentral.org'],
         ['email blocked by ', 'spamhaus'],
+        ['host ', ' refused to talk to me: ', ' blocked'],
         ['ip ', ' is blocked by earthlink'],    # Earthlink
         ['is in an ', 'rbl on '],
         ['mail server at ', ' is blocked'],
@@ -93,18 +97,10 @@ sub match {
         ['veuillez essayer plus tard. service refused, please try later. ', '103'],
         ['veuillez essayer plus tard. service refused, please try later. ', '510'],
         ["your sender's ip address is listed at ", '.abuseat.org'],
-    ];
-    state $regex = qr{(?>
-         [(][^ ]+[@][^ ]+:blocked[)]
-        |host[ ][^ ]+[ ]refused[ ]to[ ]talk[ ]to[ ]me:[ ]\d+[ ]blocked
-        |is[ ]in[ ]a[ ]black[ ]list(?:[ ]at[ ][^ ]+[.])?
-        |was[ ]blocked[ ]by[ ][^ ]+
-        )
-    }x;
 
+    ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
-    return 1 if $argv1 =~ $regex;
     return 0;
 }
 
