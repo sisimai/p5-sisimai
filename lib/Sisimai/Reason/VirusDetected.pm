@@ -40,7 +40,7 @@ sub true {
     # mand to be sent before the SMTP DATA command because all the MTAs read the headers and the
     # entire message body after the DATA command.
     return 1 if $argvs->{'reason'} eq 'virusdetected';
-    return 0 if $argvs->{'smtpcommand'} eq 'CONN' || $argvs->{'smtpcommand'} eq 'HELO'
+    return 0 if $argvs->{'smtpcommand'} eq 'CONN' || $argvs->{'smtpcommand'} eq 'EHLO'
              || $argvs->{'smtpcommand'} eq 'HELO' || $argvs->{'smtpcommand'} eq 'MAIL'
              || $argvs->{'smtpcommand'} eq 'RCPT';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
