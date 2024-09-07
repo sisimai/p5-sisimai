@@ -15,6 +15,10 @@ v5.1.0p2
   - Code improvement in `Sisimai::RFC5322` and `Sisimai::ARF`
   - Fix the minimum and the maximum SMTP Reply code: 221 and 557 in `Sisimai::SMTP::Reply`
   - The first argument need not to be a reference at `Sisimai::SMTP::Transcript->rise()`
+  - Fix typo in `Sisimai::RFC1894` (X-Actual-Recipient)
+  - Fix bug in `Sisimai::Message->tidy()`: `;` is missing when the value of `Diagnostic-Code` field
+    has multiple lines, And large scale code improvements.
+  - Fix bug in `Sisimai::Reason::VirusDetected->true()`; fix `HELO` with `EHLO`
   - Remove regular expressions from error message patterns at the following classes: #543
     - `Sisimai::Reason::Blocked`
     - `Sisimai::Reason::MailerError`
