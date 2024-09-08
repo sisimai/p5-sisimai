@@ -12,7 +12,7 @@ sub get {
     #           https://smtpfieldmanual.com/provider/apple
     # @since v5.1.0
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return undef; return '' unless length $argvs->{'diagnosticcode'};
 
     state $messagesof = {
         'authfailure' => [
