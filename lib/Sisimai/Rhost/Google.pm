@@ -517,8 +517,8 @@ sub get {
         ],
     };
 
-    my $statuscode = substr($argvs->{'deliverystatus'}, 2); # 421   => 21
-    my $esmtpreply = substr($argvs->{'replycode'}, 1, 2);   # 5.7.1 => 7.1
+    my $statuscode = substr($argvs->{'deliverystatus'}, 2); # 5.7.1 => 7.1
+    my $esmtpreply = substr($argvs->{'replycode'}, 1, 2);   #   421 =>  21
     my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
