@@ -373,7 +373,7 @@ sub inquire {
 
             if( index($e->{'diagnosis'}, '-') == 0 || substr($e->{'diagnosis'}, -2, 2) eq '__' ) {
                 # Override the value of diagnostic code message
-                $e->{'diagnosis'} = $e->{'alterrors'} if $e->{'alterrors'};
+                $e->{'diagnosis'} = $e->{'alterrors'};
 
             } elsif( length($e->{'diagnosis'}) < length($e->{'alterrors'}) ) {
                 # Override the value of diagnostic code message with the value of alterrors because
