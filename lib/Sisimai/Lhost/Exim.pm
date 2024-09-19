@@ -283,7 +283,7 @@ sub inquire {
                     # Error message ?
                     next if $nextcursor;
                     # Content-type: message/delivery-status
-                    $nextcursor = 1 if index($e, $startingof->{'deliverystatus'}) == 0;
+                    $nextcursor = 1 if index($e, $startingof->{'deliverystatus'}->[0]) == 0;
                     $v->{'alterrors'} .= $e.' ' if index($e, ' ') == 0;
                 }
             } else {
