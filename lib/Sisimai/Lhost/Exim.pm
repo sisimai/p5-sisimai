@@ -443,50 +443,21 @@ sub inquire {
             #
             # The value of "Status:" indicates permanent error but the value of SMTP reply code in
             # Diagnostic-Code: field is "TEMPERROR"!!!!
-            my $cs = $e->{'status'}    || Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
-            my $cr = $e->{'replycode'} || Sisimai::SMTP::Reply->find($e->{'diagnosis'})  || '';
-            my $s1 = 0; # First character of Status as integer
-            my $r1 = 0; # First character of SMTP reply code as integer
-            my $v1 = 0;
+            my $re = $e->{'reason'} || '';
+            my $cs = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
+            my $cr = Sisimai::SMTP::Reply->find($e->{'diagnosis'})  || '';
+            my $cv = "";
 
-            FIND_CODE: while(1) {
-                # "Status:" field did not exist in the bounce message
-                last if $cs;
-                last unless $cr;
-
-                # Check SMTP reply code, Generate pseudo DSN code from SMTP reply code
-                $r1 = substr($cr, 0, 1);
-                if( $r1 == 4 ) {
-                    # Get the internal DSN(temporary error)
-                    $cs = Sisimai::SMTP::Status->code($e->{'reason'}, 1) || '';
-
-                } elsif( $r1 == 5 ) {
-                    # Get the internal DSN(permanent error)
-                    $cs = Sisimai::SMTP::Status->code($e->{'reason'}, 0) || '';
-                }
-                last;
-            }
-
-            $s1  = substr($cs, 0, 1) if $cs;
-            $v1  = $s1 + $r1;
-            $v1 += substr($e->{'status'}, 0, 1) if $e->{'status'};
-
-            if( $v1 > 0 ) {
-                # Status or SMTP reply code exists, Set pseudo DSN into the value of "status" accessor
-                $e->{'status'} = $cs if $r1 > 0;
+            if( substr($cr, 0, 1) eq "4" || $re eq 'expired' || $re eq 'mailboxfull' ) {
+                # Set the pseudo status code as a temporary error
+                $cv = Sisimai::SMTP::Status->code($re, 1) || '';
 
             } else {
-                # Neither Status nor SMTP reply code exist
-                if( $e->{'reason'} eq 'expired' || $e->{'reason'} eq 'mailboxfull' ) {
-                    # Set pseudo DSN (temporary error)
-                    $cs = Sisimai::SMTP::Status->code($e->{'reason'}, 1) || '';
-
-                } else {
-                    # Set pseudo DSN (permanent error)
-                    $cs = Sisimai::SMTP::Status->code($e->{'reason'}, 0) || '';
-                }
+                # Set the pseudo status code as a permanent error
+                $cv = Sisimai::SMTP::Status->code($re, 0) || '';
             }
-            $e->{'status'} ||= $cs;
+            $e->{'replycode'} ||= $cr;
+            $e->{'status'}    ||= Sisimai::SMTP::Status->prefer($cs, $cv, $cr);
         }
         $e->{'command'} ||= '';
     }
