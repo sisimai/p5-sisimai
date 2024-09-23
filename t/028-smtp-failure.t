@@ -1,9 +1,9 @@
 use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
-use Sisimai::SMTP::Error;
+use Sisimai::SMTP::Failure;
 
-my $Package = 'Sisimai::SMTP::Error';
+my $Package = 'Sisimai::SMTP::Failure';
 my $Methods = { 'class' => ['is_permanent', 'soft_or_hard'], 'object' => [] };
 
 use_ok $Package;

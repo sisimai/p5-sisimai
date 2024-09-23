@@ -1,4 +1,4 @@
-package Sisimai::SMTP::Error;
+package Sisimai::SMTP::Failure;
 use v5.26;
 use strict;
 use warnings;
@@ -116,17 +116,17 @@ __END__
 
 =head1 NAME
 
-Sisimai::SMTP::Error - SMTP Errors related utilities
+Sisimai::SMTP::Failure - SMTP Errors related utilities
 
 =head1 SYNOPSIS
 
-    use Sisimai::SMTP::Error;
-    print Sisimai::SMTP::Error->is_permanent('SMTP error message');
-    print Sisimai::SMTP::Error->soft_or_hard('userunknown', 'SMTP error message');
+    use Sisimai::SMTP::Failure;
+    print Sisimai::SMTP::Failure->is_permanent('SMTP error message');
+    print Sisimai::SMTP::Failure->soft_or_hard('userunknown', 'SMTP error message');
 
 =head1 DESCRIPTION
 
-C<Sisimai::SMTP::Error> provide methods to check an SMTP errors.
+C<Sisimai::SMTP::Failure> provide methods to check an SMTP errors.
 
 =head1 CLASS METHODS
 
@@ -134,9 +134,9 @@ C<Sisimai::SMTP::Error> provide methods to check an SMTP errors.
 
 C<is_permanent()> method checks the given string points an permanent error or not.
 
-    print Sisimai::SMTP::Error->is_permanent('5.1.1 User unknown'); # 1
-    print Sisimai::SMTP::Error->is_permanent('4.2.2 Mailbox Full'); # 0
-    print Sisimai::SMTP::Error->is_permanent('2.1.5 Message Sent'); # undef
+    print Sisimai::SMTP::Failure->is_permanent('5.1.1 User unknown'); # 1
+    print Sisimai::SMTP::Failure->is_permanent('4.2.2 Mailbox Full'); # 0
+    print Sisimai::SMTP::Failure->is_permanent('2.1.5 Message Sent'); # undef
 
 =head2 C<B<soft_or_hard(I<String>, I<String>)>>
 
@@ -144,9 +144,9 @@ C<soft_or_hard()> method returns string C<soft> if given bounce reason is a soft
 reason is a hard bounce, this method returns C<hard>. If the return value is an empty string, it
 means that returned email may not be a bounce.
 
-    print Sisimai::SMTP::Error->soft_or_hard('userunknown', '5.1.1 No such user');   # 'hard'
-    print Sisimai::SMTP::Error->soft_or_hard('mailboxfull');                         # 'soft'
-    print Sisimai::SMTP::Error->soft_or_hard('vacation');                            # ''
+    print Sisimai::SMTP::Failure->soft_or_hard('userunknown', '5.1.1 No such user');   # 'hard'
+    print Sisimai::SMTP::Failure->soft_or_hard('mailboxfull');                         # 'soft'
+    print Sisimai::SMTP::Failure->soft_or_hard('vacation');                            # ''
 
 =head1 AUTHOR
 

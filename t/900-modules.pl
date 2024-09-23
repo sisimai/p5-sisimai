@@ -130,8 +130,7 @@ sub list {
             Rhost/YahooInc.pm
         SMTP.pm
             SMTP/Command.pm
-            SMTP/Error.pm
-            SMTP/Error.pm
+            SMTP/Failure.pm
             SMTP/Reply.pm
             SMTP/Status.pm
             SMTP/Transcript.pm

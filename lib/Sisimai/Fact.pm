@@ -10,7 +10,7 @@ use Sisimai::Address;
 use Sisimai::DateTime;
 use Sisimai::Time;
 use Sisimai::SMTP::Command;
-use Sisimai::SMTP::Error;
+use Sisimai::SMTP::Failure;
 use Sisimai::String;
 use Sisimai::Rhost;
 use Class::Accessor::Lite ('new' => 0, 'rw' => [
@@ -355,7 +355,7 @@ sub rise {
                 # The reason is not "delivered", or "feedback", or "vacation"
                 my $smtperrors = $piece->{'deliverystatus'}.' '.$piece->{'diagnosticcode'};
                    $smtperrors = '' if length $smtperrors < 4;
-                my $softorhard = Sisimai::SMTP::Error->soft_or_hard($thing->{'reason'}, $smtperrors);
+                my $softorhard = Sisimai::SMTP::Failure->soft_or_hard($thing->{'reason'}, $smtperrors);
                 $thing->{'hardbounce'} = 1 if $softorhard eq 'hard';
             }
         }
@@ -366,7 +366,7 @@ sub rise {
 
             my $smtperrors = $thing->{'replycode'}.' '.$piece->{'diagnosticcode'};
                $smtperrors = '' if length $smtperrors < 4;
-            my $permanent1 = Sisimai::SMTP::Error->is_permanent($smtperrors) // 1;
+            my $permanent1 = Sisimai::SMTP::Failure->is_permanent($smtperrors) // 1;
             $thing->{'deliverystatus'} = Sisimai::SMTP::Status->code($thing->{'reason'}, $permanent1 ? 0 : 1);
         }
 
