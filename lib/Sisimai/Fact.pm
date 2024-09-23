@@ -341,7 +341,7 @@ sub rise {
             if( $thing->{'reason'} eq '' || exists $retryindex->{ $thing->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
                 my $re = $thing->{'reason'} || 'undefined';
-                $thing->{'reason'} = Sisimai::Rhost->get($thing) || Sisimai::Reason->get($thing) || $re;
+                $thing->{'reason'} = Sisimai::Rhost->find($thing) || Sisimai::Reason->get($thing) || $re;
             }
         }
 

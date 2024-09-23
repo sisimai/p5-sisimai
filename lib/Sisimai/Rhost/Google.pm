@@ -3,7 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 
-sub get {
+sub find {
     # Detect bounce reason from Google Workspace
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for Google Workspace
@@ -552,14 +552,14 @@ Sisimai::Rhost::Google - Detect the bounce reason returned from Google Workspace
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost::Google> detects the bounce reason from the content of C<Sisimai::Fact> object as
-an argument of C<get()> method when the value of C<rhost> of the object is C<aspmx.l.google.com>.
+an argument of C<find()> method when the value of C<rhost> of the object is C<aspmx.l.google.com>.
 This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head1 AUTHOR
 

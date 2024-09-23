@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Sisimai::SMTP::Reply;
 
-sub get {
+sub find {
     # Detect bounce reason from https://www.mimecast.com/
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason at Mimecast
@@ -319,14 +319,14 @@ Sisimai::Rhost::Mimecast - Detect the bounce reason returned from Mimecast
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost::Mimecast> detects the bounce reason from the content of C<Sisimai::Fact> object
-as an argument of C<get()> method when the value of C<rhost> or C<destination> of the object is
+as an argument of C<find()> method when the value of C<rhost> or C<destination> of the object is
 C<mimecast.com>. This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head1 AUTHOR
 
