@@ -8,105 +8,96 @@ use Sisimai::SMTP::Status;
 sub is_permanent {
     # Permanent error or not
     # @param    [String] argv1  String including SMTP Status code
-    # @return   [Integer]       1:     Permanet error
-    #                           0:     Temporary error
-    #                           undef: is not an error
+    # @return   [Integer]       1:     Is a permanet error
+    #                           0:     Is not a permanent error
     # @since v4.17.3
     my $class = shift;
-    my $argv1 = shift || return undef;
+    my $argv1 = shift || return 0;
 
-    my $statuscode = Sisimai::SMTP::Status->find($argv1) || Sisimai::SMTP::Reply->find($argv1) || '';
-    my $permanent1 = undef;
+    my $statuscode   = Sisimai::SMTP::Status->find($argv1);
+       $statuscode ||= Sisimai::SMTP::Reply->find($argv1) || '';
 
-    if( (my $classvalue = int(substr($statuscode, 0, 1) || 0)) > 0 ) {
-        # 2, 4, or 5
-        if( $classvalue == 5 ) {
-            # Permanent error
-            $permanent1 = 1;
-
-        } elsif( $classvalue == 4 ) {
-            # Temporary error
-            $permanent1 = 0;
-
-        } elsif( $classvalue == 2 ) {
-            # Succeeded
-            $permanent1 = undef;
-        }
-    } else {
-        # Check with regular expression
-        my $v = lc $argv1;
-        if( rindex($v, 'temporar') > -1 || rindex($v, 'persistent') > -1 ) {
-            # Temporary failure
-            $permanent1 = 0;
-
-        } elsif( rindex($v, 'permanent') > -1 ) {
-            # Permanently failure
-            $permanent1 = 1;
-
-        } else {
-            # did not find information to decide that it is a soft bounce or a hard bounce.
-            $permanent1 = undef;
-        }
-    }
-    return $permanent1;
+    return 1 if substr($statuscode, 0, 1) eq "5";
+    return 1 if index(lc $argv1, " permanent ") > -1;
+    return 0;
 }
 
-sub soft_or_hard {
-    # Check softbounce or not
-    # @param    [String] argv1  Detected bounce reason
-    # @param    [String] argv2  String including SMTP Status code
-    # @return   [String]        'soft': Soft bounce
-    #                           'hard': Hard bounce
-    #                           '':     May not be bounce ?
-    # @since v4.17.3
+sub is_temporary {
+    # Temporary error or not
+    # @param    [String] argv1  String including SMTP Status code
+    # @return   [Integer]       1:     Is a temporary error
+    #                           0:     Is not a temporary error
+    # @since v5.2.0
     my $class = shift;
-    my $argv1 = shift || return undef;
-    my $argv2 = shift || '';
-    my $value = undef;
+    my $argv1 = shift || return 0;
 
-    state $softorhard = {
-        'soft' => [qw/
-            blocked contenterror exceedlimit expired filtered mailboxfull mailererror mesgtoobig
-            networkerror norelaying policyviolation rejected securityerror spamdetected suspend
-            syntaxerror systemerror systemfull toomanyconn virusdetected/
-        ],
-        'hard' => [qw/hasmoved hostunknown userunknown/],
-    };
+    my $statuscode   = Sisimai::SMTP::Status->find($argv1);
+       $statuscode ||= Sisimai::SMTP::Reply->find($argv1) || '';
 
-    if( $argv1 eq 'delivered' || $argv1 eq 'feedback' || $argv1 eq 'vacation' ) {
-        # These are not dealt as a bounce reason
-        $value = '';
+    return 1 if substr($statuscode, 0, 1) eq "4";
+    return 1 if index(lc $argv1, " temporar")   > -1;
+    return 1 if index(lc $argv1, " persistent") > -1;
+    return 0;
+}
 
-    } elsif( $argv1 eq 'onhold' || $argv1 eq 'undefined' ) {
-        # It should be "soft" when a reason is "onhold" or "undefined"
-        $value = 'soft';
+sub is_hardbounce {
+    # Checks the reason sisimai detected is a hard bounce or not
+    # @param   [String] argv1  The bounce reason sisimai detected
+    # @param   [String] argv2  String including SMTP Status code
+    # @return  [Bool]          1: is a hard bounce
+    # @since v5.2.0
+    my $class = shift;
+    my $argv1 = shift || return 0;
+    my $argv2 = shift // '';
 
-    } elsif( $argv1 eq 'notaccept' ) {
-        # NotAccept: 5xx => hard bounce, 4xx => soft bounce
-        if( $argv2 ) {
-            # Get D.S.N. or SMTP reply code from The 2nd argument string
-            my $statuscode = Sisimai::SMTP::Status->find($argv2) || Sisimai::SMTP::Reply->find($argv2) || '';
-            my $classvalue = int(substr($statuscode, 0, 1) || 0);
-            $value = $classvalue == 4 ? 'soft' : 'hard';
+    return 0 if $argv1 eq "undefined" || $argv1 eq "onhold";
+    return 0 if $argv1 eq "delivered" || $argv1 eq "feedback"    || $argv1 eq "vacation";
+    return 1 if $argv1 eq "hasmoved"  || $argv1 eq "userunknown" || $argv1 eq "hostunknown";
+    return 0 if $argv1 ne "notaccept";
+
+    # NotAccept: 5xx => hard bounce, 4xx => soft bounce
+    my $hardbounce = 0;
+    if( length $argv2 > 0 ) {
+        # Check the 2nd argument(a status code or a reply code)
+        my $cv = Sisimai::SMTP::Status->find($argv2, "") || Sisimai::SMTP::Reply->find($argv2, "") || '';
+        if( substr($cv, 0, 1) eq "5" ) {
+            # The SMTP status code or the SMTP reply code starts with "5"
+            $hardbounce = 1 
 
         } else {
-            # "notaccept" is a hard bounce
-            $value = 'hard';
+            # Deal as a hard bounce when the error message does not indicate a temporary error
+            $hardbounce = 1 unless __PACKAGE__->is_temporary($argv2);
         }
     } else {
-        # Check all the reasons defined at the above
-        SOFT_OR_HARD: for my $e ('hard', 'soft') {
-            # Soft or Hard?
-            for my $f ( $softorhard->{ $e }->@* ) {
-                # Hard bounce?
-                next unless $argv1 eq $f;
-                $value = $e;
-                last(SOFT_OR_HARD);
-            }
-        }
+        # Deal "NotAccept" as a hard bounce when the 2nd argument is empty
+        $hardbounce = 1;
     }
-    $value //= '';
-    return $value;
+    return $hardbounce;
+}
+
+sub is_softbounce {
+    # Checks the reason sisimai detected is a soft bounce or not
+    # @param   [String] argv1  The bounce reason sisimai detected
+    # @param   [String] argv2  String including SMTP Status code
+    # @return  [Bool]          1: is a soft bounce
+    # @since v5.2.0
+    my $class = shift;
+    my $argv1 = shift || return 0;
+    my $argv2 = shift // '';
+
+    return 0 if $argv1 eq "delivered" || $argv1 eq "feedback"    || $argv1 eq "vacation";
+    return 0 if $argv1 eq "hasmoved"  || $argv1 eq "userunknown" || $argv1 eq "hostunknown";
+    return 1 if $argv1 eq "undefined" || $argv1 eq "onhold";
+    return 1 if $argv1 ne "notaccept";
+
+    # NotAccept: 5xx => hard bounce, 4xx => soft bounce
+    my $softbounce = 0;
+    if( length $argv2 > 0 ) {
+        # Check the 2nd argument(a status code or a reply code)
+        my $cv = Sisimai::SMTP::Status->find($argv2, "") || Sisimai::SMTP::Reply->find($argv2, "") || '';
+        $softbounce = 1 if substr($cv, 0, 1) eq "4";
+    }
+    return $softbounce;
 }
 
 1;
@@ -121,8 +112,10 @@ Sisimai::SMTP::Failure - SMTP Errors related utilities
 =head1 SYNOPSIS
 
     use Sisimai::SMTP::Failure;
-    print Sisimai::SMTP::Failure->is_permanent('SMTP error message');
-    print Sisimai::SMTP::Failure->soft_or_hard('userunknown', 'SMTP error message');
+    print Sisimai::SMTP::Failure->is_temporary('421 SMTP error message');
+    print Sisimai::SMTP::Failure->is_permanent('550 SMTP error message');
+    print Sisimai::SMTP::Failure->is_softbounce('mailboxfull', 4.2.2 mailbox full');
+    print Sisimai::SMTP::Failure->is_hardbounce('userunknown', 5.1.1 user not found');
 
 =head1 DESCRIPTION
 
@@ -136,17 +129,29 @@ C<is_permanent()> method checks the given string points an permanent error or no
 
     print Sisimai::SMTP::Failure->is_permanent('5.1.1 User unknown'); # 1
     print Sisimai::SMTP::Failure->is_permanent('4.2.2 Mailbox Full'); # 0
-    print Sisimai::SMTP::Failure->is_permanent('2.1.5 Message Sent'); # undef
+    print Sisimai::SMTP::Failure->is_permanent('2.1.5 Message Sent'); # 0
 
-=head2 C<B<soft_or_hard(I<String>, I<String>)>>
+=head2 C<B<is_temporary(I<String>)>>
 
-C<soft_or_hard()> method returns string C<soft> if given bounce reason is a soft bounce. When the
-reason is a hard bounce, this method returns C<hard>. If the return value is an empty string, it
-means that returned email may not be a bounce.
+C<is_temporary()> method checks the given string points an temporary error or not.
 
-    print Sisimai::SMTP::Failure->soft_or_hard('userunknown', '5.1.1 No such user');   # 'hard'
-    print Sisimai::SMTP::Failure->soft_or_hard('mailboxfull');                         # 'soft'
-    print Sisimai::SMTP::Failure->soft_or_hard('vacation');                            # ''
+    print Sisimai::SMTP::Failure->is_permanent('5.1.1 User unknown'); # 0
+    print Sisimai::SMTP::Failure->is_permanent('4.2.2 Mailbox Full'); # 1
+    print Sisimai::SMTP::Failure->is_permanent('2.1.5 Message Sent'); # 0
+
+=head2 C<B<is_hardbounce(I<String>, I<String>)>>
+
+C<is_hardbounce()> method checks the given reason is a hard bounce or not
+
+    print Sisimai::SMTP::Failure->is_hardbounce('5.1.1 User unknown'); # 1
+    print Sisimai::SMTP::Failure->is_hardbounce('4.2.2 Mailbox Full'); # 0
+    print Sisimai::SMTP::Failure->is_hardbounce('5.7.27 DKIM failed'); # 0
+
+C<is_softbounce()> method checks the given reason is a soft bounce or not
+
+    print Sisimai::SMTP::Failure->is_softbounce('5.1.1 User unknown'); # 0
+    print Sisimai::SMTP::Failure->is_softbounce('4.2.2 Mailbox Full'); # 1
+    print Sisimai::SMTP::Failure->is_softbounce('5.7.27 DKIM failed'); # 1
 
 =head1 AUTHOR
 
