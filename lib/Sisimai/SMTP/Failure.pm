@@ -6,7 +6,7 @@ use Sisimai::SMTP::Reply;
 use Sisimai::SMTP::Status;
 
 sub is_permanent {
-    # Permanent error or not
+    # Returns true if the given string indicates a permanent error
     # @param    [String] argv1  String including SMTP Status code
     # @return   [Integer]       1:     Is a permanet error
     #                           0:     Is not a permanent error
@@ -23,7 +23,7 @@ sub is_permanent {
 }
 
 sub is_temporary {
-    # Temporary error or not
+    # Returns true if the given string indicates a temporary error
     # @param    [String] argv1  String including SMTP Status code
     # @return   [Integer]       1:     Is a temporary error
     #                           0:     Is not a temporary error
