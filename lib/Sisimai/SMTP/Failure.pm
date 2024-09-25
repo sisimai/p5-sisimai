@@ -33,10 +33,11 @@ sub is_temporary {
 
     my $statuscode   = Sisimai::SMTP::Status->find($argv1);
        $statuscode ||= Sisimai::SMTP::Reply->find($argv1) || '';
+    my $issuedcode   = lc $argv1;
 
     return 1 if substr($statuscode, 0, 1) eq "4";
-    return 1 if index(lc $argv1, " temporar")   > -1;
-    return 1 if index(lc $argv1, " persistent") > -1;
+    return 1 if index($issuedcode, " temporar")   > -1;
+    return 1 if index($issuedcode, " persistent") > -1;
     return 0;
 }
 
