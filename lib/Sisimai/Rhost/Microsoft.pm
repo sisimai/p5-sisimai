@@ -7,7 +7,7 @@ use Sisimai::SMTP::Status;
 # https://technet.microsoft.com/en-us/library/bb232118
 # https://learn.microsoft.com/en-us/Exchange/mail-flow-best-practices/non-delivery-reports-in-exchange-online/non-delivery-reports-in-exchange-online
 # https://learn.microsoft.com/en-us/Exchange/mail-flow/non-delivery-reports-and-bounce-messages/non-delivery-reports-and-bounce-messages
-sub get {
+sub find {
     # Detect bounce reason from Exchange Server 2019 or older and Exchange Online
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for Exchange Online
@@ -337,6 +337,7 @@ sub get {
         ],
         'notaccept' => [
             ['4.3.2', 0, 0, 'system not accepting network messages'],
+            ['4.4.4', 0, 0, 'hosted tenant which has no mail-enabled subscriptions'],
 
             # Exchange Server 2019 ----------------------------------------------------------------
             # - You're using the ABP Routing agent, and the recipient isn't a member of the global
@@ -764,14 +765,14 @@ older and Office 365.
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost::Microsoft> detects the bounce reason from the content of C<Sisimai::Fact> object
-as an argument of C<get()> method when the value of C<rhost> of the object is C<*.protection.outlook.com>.
+as an argument of C<find()> method when the value of C<rhost> of the object is C<*.protection.outlook.com>.
 This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head1 AUTHOR
 

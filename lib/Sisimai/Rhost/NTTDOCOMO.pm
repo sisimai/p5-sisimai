@@ -3,7 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 
-sub get {
+sub find {
     # Detect bounce reason from NTT docomo
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for docomo.ne.jp
@@ -126,14 +126,14 @@ Sisimai::Rhost::NTTDOCOMO - Detect the bounce reason returned from NTT docomo.
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost::NTTDOCOMO> detects the bounce reason from the content of C<Sisimai::Fact> object
-as an argument of C<get()> method when the value of C<rhost> of the object is C<mfsmax.docomo.ne.jp>.
+as an argument of C<find()> method when the value of C<rhost> of the object is C<mfsmax.docomo.ne.jp>.
 This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head1 AUTHOR
 

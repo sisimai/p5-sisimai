@@ -3,7 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 
-sub get {
+sub find {
     # Detect bounce reason from https://www.i.ua/
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason at https://www.i.ua/
@@ -46,14 +46,14 @@ Sisimai::Rhost::IUA - Detect the bounce reason returned from https://www.i.ua/.
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost::IUA> detects the bounce reason from the content of C<Sisimai::Fact> object as an
-argument of C<get()> method when the value of C<rhost> of the object is C<*.email.ua>.
+argument of C<find()> method when the value of C<rhost> of the object is C<*.email.ua>.
 This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head1 AUTHOR
 

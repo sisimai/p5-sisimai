@@ -10,7 +10,7 @@ use Sisimai::Address;
 use Sisimai::DateTime;
 use Sisimai::Time;
 use Sisimai::SMTP::Command;
-use Sisimai::SMTP::Error;
+use Sisimai::SMTP::Failure;
 use Sisimai::String;
 use Sisimai::Rhost;
 use Class::Accessor::Lite ('new' => 0, 'rw' => [
@@ -341,7 +341,7 @@ sub rise {
             if( $thing->{'reason'} eq '' || exists $retryindex->{ $thing->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
                 my $re = $thing->{'reason'} || 'undefined';
-                $thing->{'reason'} = Sisimai::Rhost->get($thing) || Sisimai::Reason->get($thing) || $re;
+                $thing->{'reason'} = Sisimai::Rhost->find($thing) || Sisimai::Reason->get($thing) || $re;
             }
         }
 
@@ -355,8 +355,7 @@ sub rise {
                 # The reason is not "delivered", or "feedback", or "vacation"
                 my $smtperrors = $piece->{'deliverystatus'}.' '.$piece->{'diagnosticcode'};
                    $smtperrors = '' if length $smtperrors < 4;
-                my $softorhard = Sisimai::SMTP::Error->soft_or_hard($thing->{'reason'}, $smtperrors);
-                $thing->{'hardbounce'} = 1 if $softorhard eq 'hard';
+                $thing->{'hardbounce'} = Sisimai::SMTP::Failure->is_hardbounce($thing->{'reason'}, $smtperrors);
             }
         }
 
@@ -366,8 +365,10 @@ sub rise {
 
             my $smtperrors = $thing->{'replycode'}.' '.$piece->{'diagnosticcode'};
                $smtperrors = '' if length $smtperrors < 4;
-            my $permanent1 = Sisimai::SMTP::Error->is_permanent($smtperrors) // 1;
-            $thing->{'deliverystatus'} = Sisimai::SMTP::Status->code($thing->{'reason'}, $permanent1 ? 0 : 1);
+            my $permanent0 = Sisimai::SMTP::Failure->is_permanent($smtperrors);
+            my $temporary0 = Sisimai::SMTP::Failure->is_temporary($smtperrors);
+            my $temporary1 = $permanent0.$temporary0 eq "00" ? 0 : $temporary0;
+            $thing->{'deliverystatus'} = Sisimai::SMTP::Status->code($thing->{'reason'}, $temporary1);
         }
 
         REPLYCODE: {

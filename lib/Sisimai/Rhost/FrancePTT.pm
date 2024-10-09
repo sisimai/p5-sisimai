@@ -3,7 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 
-sub get {
+sub find {
     # Detect bounce reason from Orange and La Poste
     # @param    [Sisimai::Fact] argvs   Decdoed email object
     # @return   [String]                The bounce reason for Orange, La Poste
@@ -165,14 +165,14 @@ Sisimai::Rhost::FrancePTT - Detect the bounce reason returned from Orange and La
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost::FrancePTT> detects the bounce reason from the content of C<Sisimai::Fact> object
-as an argument of C<get()> method when the value of C<rhost> of the object end with C<laposte.net>
+as an argument of C<find()> method when the value of C<rhost> of the object end with C<laposte.net>
 or C<orange.fr>. This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head1 AUTHOR
 

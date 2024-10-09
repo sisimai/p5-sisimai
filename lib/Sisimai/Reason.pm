@@ -115,13 +115,10 @@ sub anotherone {
     my $actiontext = $argvs->{'action'}            // '';
     my $statuscode = $argvs->{'deliverystatus'}    // '';
     my $reasontext = Sisimai::SMTP::Status->name($statuscode) || '';
+    my $trytomatch = $reasontext eq '' ? 1 : 0;
+       $trytomatch = 1 if exists $GetRetried->{ $reasontext } || $codeformat ne 'SMTP';
 
-    TRY_TO_MATCH: while(1) {
-        my $trytomatch   = $reasontext eq '' ? 1 : 0;
-           $trytomatch ||= 1 if exists $GetRetried->{ $reasontext };
-           $trytomatch ||= 1 if $codeformat ne 'SMTP';
-        last unless $trytomatch;
-
+    while($trytomatch) {
         # Could not decide the reason by the value of Status:
         for my $e ( $ClassOrder->[1]->@* ) {
             # Trying to match with other patterns in Sisimai::Reason::* classes
@@ -132,7 +129,7 @@ sub anotherone {
             $reasontext = lc $e;
             last;
         }
-        last(TRY_TO_MATCH) if $reasontext;
+        last if $reasontext;
 
         # Check the value of Status:
         my $code2digit = substr($statuscode, 0, 3) || '';
@@ -153,7 +150,7 @@ sub anotherone {
             require Sisimai::Reason::SyntaxError;
             $reasontext = 'syntaxerror' if Sisimai::Reason::SyntaxError->true($argvs);
         }
-        last(TRY_TO_MATCH) if $reasontext;
+        last if $reasontext;
 
         # Check the value of Action: field, first
         if( CORE::index($actiontext, 'delayed') == 0 || CORE::index($actiontext, 'expired') == 0 ) {
@@ -168,7 +165,7 @@ sub anotherone {
                 $reasontext = 'blocked';
             }
         }
-        last(TRY_TO_MATCH);
+        last;
     }
     return $reasontext;
 }

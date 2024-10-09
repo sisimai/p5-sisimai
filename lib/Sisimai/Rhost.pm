@@ -19,7 +19,7 @@ state $RhostClass = {
     'YahooInc'  => ['.yahoodns.net'],
 };
 
-sub get {
+sub find {
     # Detect the bounce reason from certain remote hosts
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The value of bounce reason
@@ -33,11 +33,10 @@ sub get {
 
     my $rhostmatch = undef;
     my $rhostclass = '';
-
     for my $e ( keys %$RhostClass ) {
         # Try to match with each value of RhostClass
         $rhostmatch   = 1 if grep { index($remotehost, $_) > -1 } $RhostClass->{ $e }->@*;
-        $rhostmatch ||= 1 if grep { index($domainpart, $_) > -1 } $RhostClass->{ $e }->@*;
+        $rhostmatch ||= 1 if grep { index($_, $domainpart) > -1 } $RhostClass->{ $e }->@*;
         next unless $rhostmatch;
 
         $rhostclass = __PACKAGE__.'::'.$e;
@@ -47,7 +46,7 @@ sub get {
 
     (my $modulepath = $rhostclass) =~ s|::|/|g;
     require $modulepath.'.pm';
-    return $rhostclass->get($argvs);
+    return $rhostclass->find($argvs);
 }
 
 1;
@@ -66,14 +65,14 @@ Sisimai::Rhost - Detect the bounce reason returned from certain remote hosts.
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost> detects the bounce reason from the content of C<Sisimai::Fact> object as an argument
-of C<get()> method when the value of C<rhost> of the object is listed in C<$RhostClass> variable.
+of C<find()> method when the value of C<rhost> of the object is listed in C<$RhostClass> variable.
 This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head1 AUTHOR
 

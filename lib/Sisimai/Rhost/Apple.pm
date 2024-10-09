@@ -3,7 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 
-sub get {
+sub find {
     # Detect bounce reason from Apple iCloud Mail
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for Apple
@@ -12,7 +12,7 @@ sub get {
     #           https://smtpfieldmanual.com/provider/apple
     # @since v5.1.0
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return undef; return '' unless length $argvs->{'diagnosticcode'};
 
     state $messagesof = {
         'authfailure' => [
@@ -98,14 +98,14 @@ Sisimai::Rhost::Apple - Detect the bounce reason returned from Apple iCloud Mail
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost::Apple> detects the bounce reason from the content of C<Sisimai::Fact> object as
-an argument of C<get()> method when the value of C<rhost> of the object end with C<mail.icloud.com>
+an argument of C<find()> method when the value of C<rhost> of the object end with C<mail.icloud.com>
 or C<apple.com>. This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head1 AUTHOR
 
