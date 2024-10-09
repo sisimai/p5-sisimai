@@ -32,7 +32,7 @@ sub find {
             # - 550 relaying denied for <***@yahoo.com>
             'relaying denied for ',
         ],
-        'notcomplaintrfc' => ['headers are not rfc compliant'],
+        'notcompliantrfc' => ['headers are not rfc compliant'],
         'policyviolation' => [
             # - 554 Message not allowed - [PH01] Email not accepted for policy reasons.
             #   Please visit https://postmaster.yahooinc.com/error-codes
