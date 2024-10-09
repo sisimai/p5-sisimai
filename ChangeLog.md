@@ -4,7 +4,7 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.1.0p2
+v5.1.0p3
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
@@ -40,6 +40,7 @@ v5.1.0p2
     - `Sisimai::Reason::Blocked`
     - `Sisimai::Reason::MailerError`
     - `Sisimai::Reason::SpamDetected`
+  - Fix typo in `Sisimai::Rhost::YahooInc` Thanks to @bohwaz #546
 
 v5.1.0
 ---------------------------------------------------------------------------------------------------
