@@ -9,6 +9,23 @@ v5.1.0p2
 - release: ""
 - version: ""
 - changes:
+  - **Keep compatibility with the Go language version of Sisimai** #547
+    - **There are some breaking changes at internal APIs**
+    - `Sisimai::SMTP::Error` has been renamed to `Sisimai::SMTP::Failure` and the following methods
+      implemented:
+      - `is_temporary()`
+      - `is_hardbounce()`
+      - `is_softbounce()`
+      - `soft_or_hard()` has been removed
+    - Changes in `Sisimai::Rhost` 
+      - `get()` method has been renamed to `find()`
+      - Fix bug in code to check the domain part of an email address as a remote hostname
+      - Add a new error message pattern: `hosted tenant which has no mail-enabled subscriptions'`
+        in `Sisimai::Rhost::Microsoft`
+    - Code improvement and bug fix at `Sisimai::Lhost::Exim`
+      - Remove needless condition for getting error messages
+      - Rewrite code for getting an SMTP reply code and a delivery status code
+    - Add a new error message pattern in `Sisimai::Reason::BadReputation`
   - Warn if `Sisimai::Message->load` was called #537 #538
   - Remove unused method `Sisimai::Order->default` #539
   - Fix bug in `Sisimai::Message->tidy()` method #540
