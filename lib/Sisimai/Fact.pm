@@ -3,6 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 use Sisimai::Message;
+use Sisimai::RFC1123;
 use Sisimai::RFC1894;
 use Sisimai::RFC5322;
 use Sisimai::Reason;
@@ -153,11 +154,25 @@ sub rise {
         RECEIVED: {
             # Scan "Received:" header of the original message
             my $recv = $mesg1->{'header'}->{'received'} || [];
-            if( scalar @$recv ) {
-                # Get a local host name and a remote host name from the Received header.
-                $piece->{'rhost'} ||= Sisimai::RFC5322->received($recv->[-1])->[1] || '';
-                $piece->{'lhost'}   = '' if $piece->{'lhost'} eq $piece->{'rhost'};
-                $piece->{'lhost'} ||= Sisimai::RFC5322->received($recv->[ 0])->[0];
+            unless( $piece->{'rhost'} ) {
+                # Try to pick a remote hostname from Received: headers of the bounce message
+                for my $re ( reverse @$recv ) {
+                    # Check the Received: headers backwards and get a remote hostname
+                    my $cv = Sisimai::RFC5322->received($re)->[0] || '';
+                    next unless Sisimai::RFC1123->is_validhostname($cv);
+                    $piece->{'rhost'} = $cv; last;
+                }
+            }
+            $piece->{'lhost'} = '' if $piece->{'lhost'} eq $piece->{'rhost'};
+
+            unless( $piece->{'lhost'} ) {
+                # Try to pick a local hostname from Received: headers of the bounce message
+                for my $le ( @$recv ) {
+                    # Check the Received: headers forwards and get a local hostname
+                    my $cv = Sisimai::RFC5322->received($le)->[0] || '';
+                    next unless Sisimai::RFC1123->is_validhostname($cv);
+                    $piece->{'lhost'} = $cv; last;
+                }
             }
 
             for my $v ('rhost', 'lhost') {
