@@ -8,12 +8,14 @@ sub is_validhostname {
     # @param    [String] argv0  String to be checked
     # @return   [Boolean]       0: is not a valid hostname
     #                           1: is a valid hostname
+    # @since v5.2.0
     my $class = shift;
     my $argv0 = shift || return 0;
     my $valid = 1;
     my $token = [split(/\./, $argv0)] || ['0'];
 
     return 0 if length $argv0 > 255;
+    return 0 if length $argv0 <   4;
     return 0 if index($argv0, ".") == -1;
     return 0 if index($argv0, "..") > -1;
     return 0 if index($argv0, "--") > -1;

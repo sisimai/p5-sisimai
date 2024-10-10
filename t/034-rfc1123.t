@@ -14,6 +14,7 @@ MAKETEST: {
         '',
         'localhost',
         '127.0.0.1',
+        'cat',
         'neko',
         'nyaan.22',
         'mx0.example.22',
@@ -25,6 +26,7 @@ MAKETEST: {
     my $hostnames1 = [
         'mx1.example.jp',
         'mx1.example.jp.',
+        'a.jp',
     ];
 
     for my $e ( @$hostnames0 ) {
