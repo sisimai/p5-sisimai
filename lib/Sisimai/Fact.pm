@@ -158,7 +158,7 @@ sub rise {
                 # Try to pick a remote hostname from Received: headers of the bounce message
                 for my $re ( reverse @$recv ) {
                     # Check the Received: headers backwards and get a remote hostname
-                    my $cv = Sisimai::RFC5322->received($re)->[0] || '';
+                    my $cv = Sisimai::RFC5322->received($re)->[0];
                     next unless Sisimai::RFC1123->is_validhostname($cv);
                     $piece->{'rhost'} = $cv; last;
                 }
@@ -169,7 +169,7 @@ sub rise {
                 # Try to pick a local hostname from Received: headers of the bounce message
                 for my $le ( @$recv ) {
                     # Check the Received: headers forwards and get a local hostname
-                    my $cv = Sisimai::RFC5322->received($le)->[0] || '';
+                    my $cv = Sisimai::RFC5322->received($le)->[0];
                     next unless Sisimai::RFC1123->is_validhostname($cv);
                     $piece->{'lhost'} = $cv; last;
                 }
