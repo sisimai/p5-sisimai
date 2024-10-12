@@ -225,7 +225,6 @@ sub inquire {
             $p2 = rindex($e->{'diagnosis'}, '. [' );
             my $hostname = substr($e->{'diagnosis'}, $p1 + 4, $p2 - $p1 - 4);
             my $ipv4addr = substr($e->{'diagnosis'}, $p2 + 3, rindex($e->{'diagnosis'}, ']. ') - $p2 - 3);
-            my $lastchar = ord(uc substr($hostname, -1, 1));
 
             $e->{'rhost'}   = $hostname if Sisimai::RFC1123->is_validhostname($hostname);
             $e->{'rhost'} ||= $ipv4addr;
