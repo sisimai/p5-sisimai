@@ -156,6 +156,8 @@ sub inquire {
         # 550 550 Unknown user *****@***.**.*** (state 18).
         '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
     };
+    require Sisimai::Address;
+    require Sisimai::String;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
