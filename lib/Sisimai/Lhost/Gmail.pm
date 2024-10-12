@@ -157,7 +157,6 @@ sub inquire {
         '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
     };
     require Sisimai::Address;
-    require Sisimai::String;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -211,24 +210,25 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::String;
+    require Sisimai::RFC1123;
+
     my $p1 = -1; my $p2 = -1;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
-        unless( $e->{'rhost'} ) {
-            # Get the value of remote host
-            if( Sisimai::String->aligned(\$e->{'diagnosis'}, [' by ', '. [', ']. ']) ) {
-                # Google tried to deliver your message, but it was rejected by # the server
-                # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
-                $p1 = rindex($e->{'diagnosis'}, ' by ');
-                $p2 = rindex($e->{'diagnosis'}, '. [' );
-                my $hostname = substr($e->{'diagnosis'}, $p1 + 4, $p2 - $p1 - 4);
-                my $ipv4addr = substr($e->{'diagnosis'}, $p2 + 3, rindex($e->{'diagnosis'}, ']. ') - $p2 - 3);
-                my $lastchar = ord(uc substr($hostname, -1, 1));
+        # Get the value of remote host
+        if( Sisimai::String->aligned(\$e->{'diagnosis'}, [' by ', '. [', ']. ']) ) {
+            # Google tried to deliver your message, but it was rejected by # the server
+            # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
+            $p1 = rindex($e->{'diagnosis'}, ' by ');
+            $p2 = rindex($e->{'diagnosis'}, '. [' );
+            my $hostname = substr($e->{'diagnosis'}, $p1 + 4, $p2 - $p1 - 4);
+            my $ipv4addr = substr($e->{'diagnosis'}, $p2 + 3, rindex($e->{'diagnosis'}, ']. ') - $p2 - 3);
+            my $lastchar = ord(uc substr($hostname, -1, 1));
 
-                $e->{'rhost'}   = $hostname if $lastchar > 64 && $lastchar < 91;
-                $e->{'rhost'} ||= $ipv4addr;
-            }
+            $e->{'rhost'}   = $hostname if Sisimai::RFC1123->is_validhostname($hostname);
+            $e->{'rhost'} ||= $ipv4addr;
         }
 
         $p1 = rindex($e->{'diagnosis'}, ' ');
