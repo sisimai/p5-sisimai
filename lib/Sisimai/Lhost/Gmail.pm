@@ -212,8 +212,6 @@ sub inquire {
 
     require Sisimai::String;
     require Sisimai::RFC1123;
-
-    my $p1 = -1; my $p2 = -1;
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
 
@@ -221,8 +219,8 @@ sub inquire {
         if( Sisimai::String->aligned(\$e->{'diagnosis'}, [' by ', '. [', ']. ']) ) {
             # Google tried to deliver your message, but it was rejected by # the server
             # for the recipient domain example.jp by mx.example.jp. [192.0.2.153].
-            $p1 = rindex($e->{'diagnosis'}, ' by ');
-            $p2 = rindex($e->{'diagnosis'}, '. [' );
+            my $p1 = rindex($e->{'diagnosis'}, ' by ');
+            my $p2 = rindex($e->{'diagnosis'}, '. [' );
             my $hostname = substr($e->{'diagnosis'}, $p1 + 4, $p2 - $p1 - 4);
             my $ipv4addr = substr($e->{'diagnosis'}, $p2 + 3, rindex($e->{'diagnosis'}, ']. ') - $p2 - 3);
 
@@ -230,23 +228,28 @@ sub inquire {
             $e->{'rhost'} ||= $ipv4addr;
         }
 
-        $p1 = rindex($e->{'diagnosis'}, ' ');
-        $p2 = rindex($e->{'diagnosis'}, ')');
-        my $statecode0 = substr($e->{'diagnosis'}, $p1 + 1, $p2 - $p1 - 1) || 0;
-        if( exists $statetable->{ $statecode0 } ) {
-            # (state *)
-            $e->{'reason'}  = $statetable->{ $statecode0 }->{'reason'};
-            $e->{'command'} = $statetable->{ $statecode0 }->{'command'};
-        } else {
-            # No state code
-            SESSION: for my $r ( keys %$messagesof ) {
+        while(1) {
+            # Find "(state 18)" and pick "18" as a key of statetable
+            my $p1 = rindex($e->{'diagnosis'}, ' (state '); last if $p1 < 0;
+            my $p2 = rindex($e->{'diagnosis'}, ')');        last if $p1 < 0;
+                                                            last if $p1 > $p2;
+            my $cu = substr($e->{'diagnosis'}, $p1 + 8, $p2 - $p1 - 8);
+            last unless $cu;
+
+            $e->{'reason'}  = $statetable->{ $cu }->{'reason'};
+            $e->{'command'} = $statetable->{ $cu }->{'command'};
+            last;
+        }
+        unless( $e->{'reason'} ) {
+            # There is no state code in the error message
+            FINDREASON: for my $r ( keys %$messagesof ) {
                 # Verify each regular expression of session errors
                 next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
                 $e->{'reason'} = $r;
                 last;
             }
         }
-        next unless $e->{'reason'};
+        $e->{'reason'} ||= ''; next unless $e->{'reason'};
 
         # Set pseudo status code and override bounce reason
         $e->{'status'} = Sisimai::SMTP::Status->find($e->{'diagnosis'}) || '';
