@@ -52,7 +52,7 @@ sub path {
     return $table;
 }
 
-sub get {
+sub find {
     # Detect the bounce reason
     # @param    [Hash]   argvs  Decoded email object
     # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
@@ -101,10 +101,10 @@ sub get {
 }
 
 sub anotherone {
-    # Detect the other bounce reason, fall back method for get()
+    # Detect the other bounce reason, fall back method for find()
     # @param    [Hash] argvs    Decoded email structure
     # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
-    # @see get
+    # @see      find()
     my $class = shift;
     my $argvs = shift // return undef;
     return $argvs->{'reason'} if $argvs->{'reason'};
@@ -222,18 +222,18 @@ Sisimai::Reason - Detect the bounce reason
 =head1 DESCRIPTION
 
 C<Sisimai::Reason> detects the bounce reason from the content of C<Sisimai::Fact> object as an argument
-of C<get()> method. This class is called only C<Sisimai::Fact> class.
+of C<find()> method. This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
 
-=head2 C<B<get(I<Sisimai::Fact Object>)>>
+=head2 C<B<find(I<Sisimai::Fact Object>)>>
 
-C<get()> method detects the bounce reason.
+C<find()> method detects the bounce reason.
 
 =head2 C<B<anotherone(I<Sisimai::Fact object>)>>
 
 C<anotherone()> method is a method for detecting the bounce reason, it works as a fall back method
-of C<get()> and called only from C<get()> method.
+of C<find()> and called only from C<find()> method.
 
 C<match()> detects the bounce reason from given text as a error message.
 
@@ -244,7 +244,7 @@ of the method. However, this method is low analytical precision.
 
 =head1 LIST OF BOUNCE REASONS
 
-C<Sisimai::Reason->get()> method detects the reason of bounce with decoding the bounced messages.
+C<Sisimai::Reason->find()> method detects the reason of bounce with decoding the bounced messages.
 The following reasons will be set in the value of C<reason> property of C<Sisimai::Fact> instance.
 The list of all the bounce reasons is available at L<https://libsisimai.org/en/reason/>.
 

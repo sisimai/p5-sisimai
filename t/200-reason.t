@@ -5,7 +5,7 @@ use Sisimai;
 use Sisimai::Reason;
 
 my $Package = 'Sisimai::Reason';
-my $Methods = { 'class' => ['get', 'path', 'retry', 'index', 'match'], 'object' => [] };
+my $Methods = { 'class' => ['find', 'path', 'retry', 'index', 'match'], 'object' => [] };
 my $Message = [
     'smtp; 550 5.1.1 <kijitora@example.co.jp>... User Unknown',
     'smtp; 550 Unknown user kijitora@example.jp',
@@ -106,7 +106,7 @@ use_ok $Package;
 can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
-    is $Package->get, undef;
+    is $Package->find, undef;
     is $Package->anotherone, undef;
     isa_ok $Package->index, 'ARRAY';
     isa_ok $Package->retry, 'HASH';
