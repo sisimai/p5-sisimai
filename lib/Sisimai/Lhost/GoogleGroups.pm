@@ -38,7 +38,7 @@ sub inquire {
     # Thanks,
     #
     # Google Groups
-    state $boundaries = ['----- Original message -----'];
+    state $boundaries = ['----- Original message -----', 'Content-Type: message/rfc822'];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;
