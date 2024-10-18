@@ -38,27 +38,26 @@ sub inquire {
     # Thanks,
     #
     # Google Groups
-    state $indicators = __PACKAGE__->INDICATORS;
-    state $boundaries = ['----- Original message -----'];
-
+    state $boundaries = ['----- Original message -----', 'Content-Type: message/rfc822'];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
-    my $recordwide = { 'rhost' => '', 'reason' => '', 'diagnosis' => '' };
     my $recipients = 0;
-    my $v = $dscontents->[-1];
+    my $v          = $dscontents->[-1];
+    my @entiremesg = split(/\n\n/, $emailparts->[0], 5); pop @entiremesg;
+    my $issuedcode = join(' ', @entiremesg); $issuedcode =~ y/\n/ /;
+    my $receivedby = $mhead->{'received'} || [];
+    my $recordwide = {
+        'rhost'     => Sisimai::RFC5322->received($receivedby->[0])->[1],
+        'reason'    => 'onhold',
+        'diagnosis' => Sisimai::String->sweep($issuedcode),
+    };
 
     # * You might have spelled or formatted the group name incorrectly.
     # * The owner of the group may have removed this group.
     # * You may need to join the group before receiving permission to post.
     # * This group may not be open to posting.
     my $fewdetails = [$emailparts->[0] =~ /^[ ]?[*][ ]?/gm] || [];
-    $recordwide->{'reason'} = scalar @$fewdetails == 4 ? 'rejected' : 'onhold';
-
-    my @entiremesg = split(/\n\n/, $emailparts->[0], 5); pop @entiremesg;
-    my $issuedcode = join(' ', @entiremesg); $issuedcode =~ y/\n/ /;
-    my $receivedby = $mhead->{'received'} || [];
-    $recordwide->{'diagnosis'} = Sisimai::String->sweep($issuedcode);
-    $recordwide->{'rhost'}     = Sisimai::RFC5322->received($receivedby->[0])->[1];
+    $recordwide->{'reason'} = 'rejected' if scalar @$fewdetails == 4;
 
     for my $e ( split(',', $mhead->{'x-failed-recipients'}) ) {
         # X-Failed-Recipients: neko@example.jp, nyaan@example.org, ...

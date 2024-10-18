@@ -24,12 +24,12 @@ sub inquire {
 
     state $boundaries = ['Original message follows.'];
     state $startingof = { 'error' => ['Body of message generated response:'] };
-    state $refailures = {
+    state $messagesof = {
         'hostunknown'   => ['Unknown host'],
         'userunknown'   => ['Unknown user', 'Invalid final delivery userid'],
         'mailboxfull'   => ['User mailbox exceeds allowed size'],
         'virusdetected' => ['Requested action not taken: virus detected'],
-        'undefined'     => ['undeliverable to'],
+        'spamdetected'  => ['Blacklisted URL in message'],
         'expired'       => ['Delivery failed '],
     };
 
@@ -48,24 +48,15 @@ sub inquire {
         $v = $dscontents->[-1];
 
         my $p0 = index($e, ': ');
-        if( $p0 > 8 && Sisimai::String->aligned(\$e, [': ', '@']) ) {
+        if( ($p0 > 8 && Sisimai::String->aligned(\$e, [': ', '@'])) || index($e, 'undeliverable ') == 0 ) {
             # Unknown user: kijitora@example.com
-            if( $v->{'recipient'} ) {
-                # There are multiple recipient addresses in the message body.
-                push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
-                $v = $dscontents->[-1];
-            }
-            $v->{'diagnosis'} = $e;
-            $v->{'recipient'} = Sisimai::Address->s3s4(substr($e, $p0 + 2));
-            $recipients++;
-
-        } elsif( index($e, 'undeliverable ') == 0 ) {
             # undeliverable to kijitora@example.com
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
+            $v->{'diagnosis'} = $e;
             $v->{'recipient'} = Sisimai::Address->s3s4($e);
             $recipients++;
 
@@ -89,9 +80,9 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'}   = Sisimai::SMTP::Command->find($e->{'diagnosis'});
 
-        SESSION: for my $r ( keys %$refailures ) {
+        SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $refailures->{ $r }->@*;
+            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
             $e->{'reason'} = $r;
             last;
         }

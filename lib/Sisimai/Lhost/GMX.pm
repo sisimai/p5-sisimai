@@ -81,22 +81,9 @@ sub inquire {
             $v->{'rhost'} = substr($e, 6, );
 
         } else {
-            # Get error message
-            if( Sisimai::SMTP::Status->find($e) || Sisimai::String->aligned(\$e, ['<', '@', '>']) ) {
-                # 5.1.1 <shironeko@example.jp>... User Unknown
-                $v->{'diagnosis'} ||= $e;
-
-            } else {
-                next if $e eq '';
-                if( $e eq 'Reason:' ) {
-                    # Reason:
-                    # delivery retry timeout exceeded
-                    $v->{'diagnosis'} = $e;
-
-                } elsif( $v->{'diagnosis'} eq 'Reason:' ) {
-                    $v->{'diagnosis'} = $e;
-                }
-            }
+            # Get error messages
+            next unless $e;
+            $v->{'diagnosis'} .= $e." ";
         }
     }
     return undef unless $recipients;
