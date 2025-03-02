@@ -46,6 +46,18 @@ MAKETEST: {
         'SMTP; 550 5.7.25 The ip address sending this message does not have a ptr record setup',
         'smtp; 550-5.7.1 This message is not RFC 5322 compliant. There are multiple Subject 550-5.7.1 headers',
     ];
+    my $_issue_574 = [
+        # https://github.com/sisimai/p5-sisimai/issues/574
+        # The following strings cause errors:
+        #   - substr outside of string at lib/Sisimai/SMTP/Status.pm line 779.
+        #   - Use of uninitialized value in ord at lib/Sisimai/SMTP/Status.pm line 779.
+        'SMTP; 5.0.',
+        'SMTP; 5.1. ',
+        'NEKO; 5.2. ',
+        'NYAN; 5.3..',
+        'E 5.4..',
+        '5 5.5..',
+    ];
     my $v = '';
 
     is $Package->code(''), undef, '->code() = undef';
@@ -85,6 +97,11 @@ MAKETEST: {
         $v = $Package->find($e);
         like $v, qr/\A[245][.]\d[.]\d{1,3}\z/, '->find() returns '.$v;
         is $Package->test($v), 1, '->test() returns 1';
+    }
+
+    for my $e ( @$_issue_574 ) {
+        # https://github.com/sisimai/p5-sisimai/issues/574
+        is $Package->find($e), "", '->find('.$e.') returns an empty string without any errors';
     }
 
     is $Package->prefer(''), "", '->prefer("") = ""';

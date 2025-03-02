@@ -733,7 +733,7 @@ sub find {
 
     my $givenclass = substr($argv2, 0, 1);
     my $eestatuses = $givenclass eq '2' || $givenclass eq '4' || $givenclass eq '5' ? [$givenclass.'.'] : ['5.', '4.', '2.'];
-    my $esmtperror = ' '.$argv1.' ';
+    my $esmtperror = ' '.$argv1.'   ';
     my $lookingfor = {};
 
     for my $e ( Sisimai::RFC791->find($esmtperror)->@* ) {
