@@ -6,6 +6,7 @@ use warnings;
 state $RhostClass = {
     "Aol"         => [".mail.aol.com", ".mx.aol.com"],
     "Apple"       => [".mail.icloud.com", ".apple.com", ".me.com"],
+    "Cloudflare"  => [".mx.cloudflare.net"],
     "Cox"         => ["cox.net"],
     "Facebook"    => [".facebook.com"],
     "FrancePTT"   => [".laposte.net", ".orange.fr", ".wanadoo.fr"],
