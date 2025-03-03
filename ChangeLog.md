@@ -11,6 +11,7 @@ v5.2.0p1
 - changes:
   - Bug fix: `substr outsite of string` and `Use of uninitialized value` errors at `find()` method
     in `Sisimai::SMTP::Status`. #574 #575 Thanks to @ViktorNacht
+  - Implement `Sisimai::Rhost::Cloudflare` #534 #578
 
 v5.2.0
 ---------------------------------------------------------------------------------------------------
