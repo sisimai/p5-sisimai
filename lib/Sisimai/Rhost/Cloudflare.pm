@@ -39,7 +39,7 @@ Sisimai::Rhost::Cloudflare - Detect the bounce reason returned from Cloudflare E
 =head1 DESCRIPTION
 
 C<Sisimai::Rhost::Cloudflare> detects the bounce reason from the content of C<Sisimai::Fact> object
-as an argument of C<find()> method when the value of C<rhost> of the object is C<*.mx.cloudflare.com>.
+as an argument of C<find()> method when the value of C<rhost> of the object is C<*.mx.cloudflare.net>.
 This class is called only C<Sisimai::Fact> class.
 
 =head1 CLASS METHODS
