@@ -13,6 +13,7 @@ sub find {
     my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
 
     state $messagesof = {
+        "blocked"     => ["found on one or more DNSBLs"],
         "systemerror" => ["Upstream error"],
     };
     for my $e ( keys %$messagesof ) {
