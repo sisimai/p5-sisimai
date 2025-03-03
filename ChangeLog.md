@@ -4,6 +4,14 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.2.0p1
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Bug fix: `substr outsite of string` and `Use of uninitialized value` errors at `find()` method
+    in `Sisimai::SMTP::Status`. #574 #575 Thanks to @ViktorNacht
+
 v5.2.0
 ---------------------------------------------------------------------------------------------------
 - release: "Tue, 25 Feb 2025 11:05:09 +0900 (JST)"
