@@ -55,6 +55,8 @@ my $moduletest = sub {
 
     PARSE_EACH_EMAIL: for my $e ( @$isexpected ) {
         # Open each email in set-of-emails/ directory
+        $e->{'n'} = int $e->{'n'};
+
         my $samplefile = undef;
         my $mailobject = undef;
         my $indexlabel = sprintf("%02d", $e->{'n'});
@@ -69,7 +71,9 @@ my $moduletest = sub {
 
         if( $privateset ) {
             # Private sample
-            $samplefile = [glob(sprintf("./%s/%s-*.eml", $samplepath, $e->{'n'}))]->[0];
+            $samplefile = [glob(sprintf("./%s/%s-*.eml", $samplepath, $e->{'n'}))]->[0] || next;
+            next unless -f $samplefile;
+            next unless -s $samplefile;
 
         } else {
             # Public sample

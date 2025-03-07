@@ -13,8 +13,9 @@ sub get {
 
     my $messagesof = {
         'mailboxfull' => qr/552 too much mail data/,
-        'toomanyconn' => qr/552 too many recipients/,
         'syntaxerror' => qr/(?:503 bad sequence of commands|504 command parameter not implemented)/,
+        'toomanyconn' => qr/552 too many recipients/,
+        'userunknown' => qr/550 unknown user/,
     };
     my $statuscode = $argvs->{'deliverystatus'}    || '';
     my $commandtxt = $argvs->{'smtpcommand'}       || '';
@@ -51,7 +52,11 @@ sub get {
     } else {
         # The value of "Diagnostic-Code:" field is not empty
         for my $e ( keys %$messagesof ) {
-            # Try to match the value of "diagnosticcode"
+            # - The key name is a bounce reason name
+            # - https://github.com/sisimai/go-sisimai/issues/64
+            # - After March 12, 2025, if an error message contains "550 Unknown user", the bounce
+            #   reason will be definitively "userunknown". This is because NTT DOCOMO no longer
+            #   rejects emails via SMTP for domain-specific rejection or specified reception filters.
             next unless $esmtperror =~ $messagesof->{ $e };
             $reasontext = $e;
             last;
@@ -141,7 +146,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2022,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
