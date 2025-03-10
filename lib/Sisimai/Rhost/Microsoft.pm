@@ -193,10 +193,10 @@ sub find {
         ],
         'failedstarttls' => [
             # Exchange Online ---------------------------------------------------------------------
-            # - MX hosts of <domain> failed MTA-STS validation The destination MX host is not the
+            # - MX hosts of <domain> failed MTA-STS validation The destination MX host is not the
             #   expected host per the domain's STS policy
-            ["4.4.8", 0, 0, " failed mta-sts validation"],
-            ["5.4.8", 0, 0, " failed mta-sts validation"],
+            ["4.4.8", 0, 0, " failed mta-sts validation"],
+            ["5.4.8", 0, 0, " failed mta-sts validation"],
 
             # - DNSSEC checks have passed, yet upon connection, destination mail server doesn't re-
             #   spond to the STARTTLS command. The destination server responds to the STARTTLS com-
@@ -207,12 +207,12 @@ sub find {
             ['4.4.317', 0, 0, 'starttls is required to send mail'],
             ['5.4.317', 0, 0, 'starttls is required to send mail'],
 
-            # - Remote certificate failed MTA-STS validation. Reason: <validityStatus> The destina-
+            # - Remote certificate failed MTA-STS validation. Reason: <validityStatus> The destina-
             #   tion mail server's certificate must chain to a trusted root Certificate Authority
             #   and the Common Name or Subject Alternative Name must contain an entry for the host
             #   name in the STS policy.
-            ["4.7.5", 0, 0, "remote certificate failed mta-sts validation"],
-            ["5.7.5", 0, 0, "remote certificate failed mta-sts validation"],
+            ["4.7.5", 0, 0, "remote certificate failed mta-sts validation"],
+            ["5.7.5", 0, 0, "remote certificate failed mta-sts validation"],
 
             # - DNSSEC checks have passed, yet upon establishing the connection the destination
             #   mail server provides a certificate that is expired.
