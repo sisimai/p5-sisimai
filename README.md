@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.38-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.16-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.17-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 > [!IMPORTANT]
 > **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
@@ -99,7 +99,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.16.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.17.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -114,7 +114,7 @@ $ git clone https://github.com/sisimai/p5-sisimai.git
 $ cd ./p5-sisimai
 $ make install-from-local
 --> Working on .
-Configuring Sisimai-4.25.16 ... OK
+Configuring Sisimai-4.25.17 ... OK
 1 distribution installed
 ```
 
@@ -301,7 +301,8 @@ Related sites
 * __GitHub__ | [github.com/sisimai/p5-sisimai](https://github.com/sisimai/p5-sisimai)
 * __CPAN__ | [Sisimai - Mail Analyzing Interface for bounce mails. - metacpan.org](https://metacpan.org/pod/Sisimai)
 * __CPAN Testers Reports__ | [CPAN Testers Reports: Reports for Sisimai](http://cpantesters.org/distro/S/Sisimai.html)
-* __Ruby verson__ | [Ruby version of Sisimai](https://github.com/sisimai/rb-sisimai)
+* __Ruby version__ | [Ruby version of Sisimai](https://github.com/sisimai/rb-sisimai)
+* __Go version__ | [Go version of Sisimai 5](https://github.com/sisimai/go-sisimai)
 * __Fixtures__ | [set-of-emails - Sample emails for "make test"](https://github.com/sisimai/set-of-emails)
 * __bounceHammer.JP__ | [bounceHammer will be EOL on February 29, 2016](http://bouncehammer.jp/)
 
@@ -320,7 +321,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2024 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================

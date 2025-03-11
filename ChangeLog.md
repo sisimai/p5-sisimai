@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v4.25.16p2
+v4.25.17
 --------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Wed, 12 Mar 2025 06:07:23 +0900 (JST)"
+- version: "4.25.17"
 - changes:
   - #497 Tiny code improvement on `Sisimai::Lhost::EinsUndEins` to parse bounce
     emails in slightly different formats.

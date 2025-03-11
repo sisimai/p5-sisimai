@@ -4,6 +4,17 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.17
+--------------------------------------------------------------------------------
+- release: "Wed, 12 Mar 2025 06:07:23 +0900 (JST)"
+- version: "4.25.17"
+- changes:
+  - #497 Tiny code improvement on `Sisimai::Lhost::EinsUndEins` to parse bounce
+    emails in slightly different formats.
+  - #573 NTT DOCOMO (Major Japanese mobile carrier) no longer returns a bounce
+    mail due to domain rejection or similar email settings, but instead were
+    being delivered to the spam folder after March 13th. #577
+
 v4.25.16
 --------------------------------------------------------------------------------
 - release: "Tue, 16 May 2023 15:03:56 +0900 (JST)"
