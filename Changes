@@ -4,6 +4,18 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.2.1
+---------------------------------------------------------------------------------------------------
+- release: "Wed, 12 Mar 2025 06:50:22 +0900 (JST)"
+- version: "5.2.1"
+- changes:
+  - Bug fix: `substr outsite of string` and `Use of uninitialized value` errors at `find()` method
+    in `Sisimai::SMTP::Status`. #574 #575 Thanks to @ViktorNacht
+  - Implement `Sisimai::Rhost::Cloudflare` #534 #578
+  - #573 NTT DOCOMO (Major Japanese mobile carrier) no longer returns a bounce mail due to domain
+    rejection or similar email settings, but instead were being delivered to the spam folder after
+    March 13th. #576 
+
 v5.2.0
 ---------------------------------------------------------------------------------------------------
 - release: "Tue, 25 Feb 2025 11:05:09 +0900 (JST)"
