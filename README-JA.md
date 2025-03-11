@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.40-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.2.0-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.2.1-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
@@ -63,14 +63,14 @@ Sisimai(シシマイ)は複雑で多種多様なバウンスメールを解析�
 The key features of Sisimai
 ---------------------------------------------------------------------------------------------------
 * __バウンスメールを構造化したデータに変換__
-  * 以下24項目の情報を含むデータ構造[^2]
+  * 以下26項目の情報を含むデータ構造[^2]
     * __基本的情報__: `timestamp`, `origin`
     * __発信者情報__: `addresser`, `senderdomain`, 
     * __受信者情報__: `recipient`, `destination`, `alias`
-    * __配信の情報__: `action`, `replycode`,`action`, `replycode`, `deliverystatus`
-    * __エラー情報__: `reason`, `diagnosticcode`, `diagnostictype`, `feedbacktype`, `hardbounce`
+    * __配信の情報__: `action`, `replycode`, `deliverystatus`, `command`
+    * __エラー情報__: `reason`, `diagnosticcode`, `diagnostictype`, `feedbacktype`, `feedbackid`, `hardbounce`
     * __メール情報__: `subject`, `messageid`, `listid`,
-    * __その他情報__: `smtpagent`, `timezoneoffset`, `lhost`, `rhost`, `token`, `catch`
+    * __その他情報__: `decodedby`, `timezoneoffset`, `lhost`, `rhost`, `token`, `catch`
   * __出力可能な形式__
     * Perl (Hash, Array)
     * JSON ([`JSON`](https://metacpan.org/pod/JSON)モジュールを使用)
@@ -80,9 +80,9 @@ The key features of Sisimai
   * `cpan`, `cpanm`, `cpm install`
   * `git clone & make`
 * __高い解析精度__
-  * [73種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
+  * [59種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
   * Feedback Loop(ARF)にも対応
-  * [34種類のバウンス理由](https://libsisimai.org/en/reason/)を検出
+  * [36種類のバウンス理由](https://libsisimai.org/en/reason/)を検出
 
 [^2]: コールバック機能を使用すると`catch`アクセサの下に独自のデータを追加できます
 
@@ -109,7 +109,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.16.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.2.1.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -136,14 +136,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.2.0 ... OK
-Building and testing Sisimai-v5.2.0 ... Password: <sudo password here>
+Configuring Sisimai-v5.2.1 ... OK
+Building and testing Sisimai-v5.2.1 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.2.0
+Successfully installed Sisimai-v5.2.1
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.2.0
+5.2.1
 ```
 
 Usage
@@ -318,8 +318,8 @@ Output example
     "catch": null,
     "addresser": "michitsuna@example.jp",
     "alias": "nekochan@example.co.jp",
-    "smtpagent": "Postfix",
-    "smtpcommand": "DATA",
+    "decodedby": "Postfix",
+    "command": "DATA",
     "senderdomain": "example.jp",
     "listid": "",
     "action": "failed",
@@ -355,7 +355,7 @@ Sisimai 5.0.0から**Perl 5.26.0以上**が必要になります。
 |------------------------------------------------------|--------------------|---------------------|
 | 動作環境(Perl)                                       | 5.10 -             | **5.26** -          |
 | 元メールファイルを操作可能なコールバック機能         | なし               | あり[^3]            |
-| 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 58                  |
+| 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 59                  |
 | 検出可能なバウンス理由の数                           | 29                 | 36                  |
 | 依存もジュール数(Perlのコアモジュールを除く)         | 2 モジュール       | 2 モジュール        |
 | ソースコードの行数                                   | 10,800 行          | 9,900 行            |
