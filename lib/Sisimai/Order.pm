@@ -92,28 +92,28 @@ sub another {
         'Sisimai::Lhost::Sendmail',
         'Sisimai::Lhost::Exchange2007',
         'Sisimai::Lhost::Exchange2003',
-        'Sisimai::Lhost::AmazonSES',
         'Sisimai::Lhost::InterScanMSS',
         'Sisimai::Lhost::KDDI',
         'Sisimai::Lhost::Verizon',
         'Sisimai::Lhost::ApacheJames',
-        'Sisimai::Lhost::X2',
         'Sisimai::Lhost::FML',
+        'Sisimai::Lhost::AmazonSES',
+        'Sisimai::Lhost::X2',
     ];
 
     # Fallback list: The following MTA/ESP modules is not listed orderE0
     state $orderE1 = [
         'Sisimai::Lhost::Postfix',
         'Sisimai::Lhost::OpenSMTPD',
-        'Sisimai::Lhost::Courier',
         'Sisimai::Lhost::qmail',
+        'Sisimai::Lhost::Courier',
         'Sisimai::Lhost::MessagingServer',
         'Sisimai::Lhost::MailMarshalSMTP',
+        'Sisimai::Lhost::Gmail',
+        'Sisimai::Lhost::GMX',
+        'Sisimai::Lhost::Zoho',
         'Sisimai::Lhost::Domino',
         'Sisimai::Lhost::Notes',
-        'Sisimai::Lhost::Gmail',
-        'Sisimai::Lhost::Zoho',
-        'Sisimai::Lhost::GMX',
         'Sisimai::Lhost::GoogleGroups',
         'Sisimai::Lhost::MailFoundry',
         'Sisimai::Lhost::V5sendmail',
@@ -164,7 +164,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017,2019-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017,2019-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
