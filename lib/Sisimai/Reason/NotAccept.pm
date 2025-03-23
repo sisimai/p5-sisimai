@@ -42,7 +42,7 @@ sub true {
     return 1 if $argvs->{'reason'} eq 'notaccept';
 
     # SMTP Reply Code is 521, 554 or 556
-    return 1 if $reply == 521 || $reply == 554 || $reply == 556;
+    return 1 if $reply == 521 || $reply == 556;
     return 0 if $argvs->{'command'} ne 'MAIL';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
@@ -96,7 +96,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020-2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

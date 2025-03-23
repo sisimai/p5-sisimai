@@ -2,6 +2,8 @@ use strict;
 use Test::More;
 use lib qw(./lib ./blib/lib);
 use Sisimai::SMTP::Reply;
+use Sisimai::SMTP::Status;
+use Sisimai::SMTP::Command;
 
 my $Package = 'Sisimai::SMTP::Reply';
 my $Methods = { 'class' => ['test', 'find'], 'object' => [] };
@@ -101,9 +103,18 @@ MAKETEST: {
     }
     is $Package->find('x-unix; Quota exceeded message delivery failed to'), '';
 
-    for my $e ( 235, 354 ) { is $Package->test($e), 1 }
+    for my $e ( 235, 334, 354 ) { is $Package->test($e), 1 }
     for my $e ( qw|101 192 210 230 240 270 365 386 499 567 640 727| ) {
         is $Package->test($e), 0, '->test('.$e.') returns 0';
+    }
+
+    for my $e (422, 432, 500, 501, 502, 503, 504, 521, 523, 524, 525, 534, 535, 538, 556) {
+        my $v = $Package->associatedwith($e);
+        isa_ok $v, "ARRAY";
+        is scalar @$v, 3;
+        is(Sisimai::SMTP::Command->test($v->[0]), 1) if length $v->[0];
+        is(Sisimai::SMTP::Status->test($v->[1]),  1) if length $v->[1];
+        ok $v->[2];
     }
 }
 
