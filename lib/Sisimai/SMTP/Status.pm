@@ -879,6 +879,17 @@ sub prefer {
     return $statuscode;
 }
 
+sub is_explicit {
+    # is_explicit() returns 0 when the argument is empty or is an internal status code
+    # @param    string argv1  Delivery status code
+    # @return   bool          0: The delivery status is not explicit
+    my $class = shift;
+    my $argv1 = shift || return 0;
+
+    return 0 if length($argv1) == 7 && index($argv1, "5.0.9") == 0 || index($argv1, "4.0.9") == 0;
+    return 1;
+}
+
 1;
 __END__
 
@@ -938,6 +949,13 @@ C<prefer()> method returns the preferred value selected from the arguments.
 
     print Sisimai::SMTP::Status->prefer("5.2.1", "5.0.0");      # "5.2.1"
     print Sisimai::SMTP::Status->prefer("4.4.7", "5.1.1", 421); # "4.4.7"
+
+=head2 C<B<is_explicit(I<delivery status code>)
+
+C<is_explicit()> method returns 0 if the delivery status code is empty or is an internal code
+
+    print Sisimai::SMTP::Status->is_explicit("5.0.901"); # 0
+    print Sisimai::SMTP::Status->is_explicit("5.7.625"); # 1
 
 =head1 AUTHOR
 
