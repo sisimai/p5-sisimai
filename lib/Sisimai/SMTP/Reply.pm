@@ -4,6 +4,18 @@ use strict;
 use warnings;
 
 # http://www.ietf.org/rfc/rfc5321.txt
+# RFC 1870: SMTP Service Extension for Message Size Declaration (SIZE)
+# RFC 1985: SMTP Service Extension for Remote Message Queue Starting (ETRN)
+# RFC 2645: Authenticated TURN for On-Demand Mail Relay (ATRN)
+# RFC 3207: SMTP Service Extension for Secure SMTP over Transport Layer Security (STARTTLS) 1
+# RFC 3030: SMTP Service Extension for Command Pipelining (CHUNKING)
+# RFC 3461: Delivery Status Notifications (DSN)
+# RFC 4954: SMTP Service Extension for Authentication (AUTH)
+# RFC 5321: Simple Mail Transfer Protocol
+# RFC 5336: SMTP Extension for Internationalized Email (UTF8SMTP)
+# RFC 6531: SMTP Extension for Internationalized Email (SMTPUTF8)
+# RFC 7504: SMTP 521 and 556 Reply Codes 
+# RFC 9422: The LIMITS SMTP Service Extension
 # -------------------------------------------------------------------------------------------------
 #   4.2.1.  Reply Code Severities and Theory
 #
@@ -58,8 +70,11 @@ state $ReplyCode2 = [
     # 251   User not local; will forward to <forward-path> (See Section 3.4)
     # 252   Cannot VRFY user, but will accept message and attempt delivery (See Section 3.5.3)
     # 253   OK, <n> pending messages for node <domain> started (See RFC1985)
+    # 334   A server challenge is sent as a 334 reply with the text part containing the [BASE64]
+    #       encoded string supplied by the SASL mechanism.  This challenge MUST NOT contain any text
+    #       other than the BASE64 encoded challenge. (RFC4954)
     # 354   Start mail input; end with <CRLF>.<CRLF>
-    211, 214, 220, 221, 235, 250, 251, 252, 253, 354
+    211, 214, 220, 221, 235, 250, 251, 252, 253, 334, 354
 ];
 state $ReplyCode4 = [
     # 421   <domain> Service not available, closing transmission channel (This may be a reply to
@@ -74,11 +89,9 @@ state $ReplyCode4 = [
     # 453   You have no mail (See RFC2645)
     # 454   Temporary authentication failure (See RFC4954)
     # 455   Server unable to accommodate parameters
-    # 456   please retry immediately the message over IPv4 because it fails SPF and DKIM (See
-    #       https://datatracker.ietf.org/doc/html/draft-martin-smtp-ipv6-to-ipv4-fallback-00
     # 458   Unable to queue messages for node <domain> (See RFC1985)
     # 459   Node <domain> not allowed: <reason> (See RFC51985)
-    421, 450, 451, 452, 422, 430, 432, 453, 454, 455, 456, 458, 459
+    421, 450, 451, 452, 422, 430, 432, 453, 454, 455, 458, 459
 ];
 state $ReplyCode5 = [
     # 500   Syntax error, command unrecognized (This may include errors such as command line too long)
@@ -86,7 +99,6 @@ state $ReplyCode5 = [
     # 502   Command not implemented (see Section 4.2.4)
     # 503   Bad sequence of commands
     # 504   Command parameter not implemented
-    # 520   Please use the correct QHLO ID (See https://datatracker.ietf.org/doc/id/draft-fanf-smtp-quickstart-01.txt)
     # 521   Host does not accept mail (See RFC7504)
     # 523   Encryption Needed (See RFC5248)
     # 524   (See RFC5248)
@@ -104,11 +116,27 @@ state $ReplyCode5 = [
     # 554   Transaction failed (Or, in the case of a connection-opening response, "No SMTP service here")
     # 555   MAIL FROM/RCPT TO parameters not recognized or not implemented
     # 556   Domain does not accept mail (See RFC7504)
-    # 557   draft-moore-email-addrquery-01
-    550, 552, 553, 551, 521, 525, 502, 520, 523, 524, 530, 533, 534, 535, 538, 551, 555, 556, 554,
-    557, 500, 501, 502, 503, 504,
+    550, 552, 553, 551, 521, 525, 523, 524, 530, 533, 534, 535, 538, 555, 556, 554,
+    500, 501, 502, 503, 504,
 ];
 state $CodeOfSMTP = { '2' => $ReplyCode2, '4' => $ReplyCode4, '5' => $ReplyCode5 };
+state $Associated = {
+    "422" => ["AUTH",     "4.7.12",  "securityerror"], # RFC5238
+    "432" => ["AUTH",     "4.7.12",  "securityerror"], # RFC4954, RFC5321
+    "500" => ["",         "",        "syntaxerror"],   # RFC5321
+    "501" => ["",         "",        "syntaxerror"],   # RFC5321
+    "502" => ["",         "",        "syntaxerror"],   # RFC5321
+    "503" => ["",         "",        "syntaxerror"],   # RFC5321
+    "504" => ["",         "",        "syntaxerror"],   # RFC5321
+    "521" => ["CONN",     "",        "notaccept"],     # RFC7504
+    "523" => ["AUTH",     "",        "securityerror"], # RFC5248
+    "524" => ["AUTH",     "",        "securityerror"], # RFC5248
+    "525" => ["AUTH",     "",        "securityerror"], # RFC5248
+    "534" => ["AUTH",     "5.7.9",   "securityerror"], # RFC4954, RFC5248
+    "535" => ["AUTH",     "5.7.8",   "securityerror"], # RFC4954, RFC5248
+    "538" => ["AUTH",     "5.7.11",  "securityerror"], # RFC4954, RFC5248
+    "556" => ["RCPT",     "",        "notaccept"],     # RFC7504
+};
 
 sub test {
     # Check whether a reply code is a valid code or not
@@ -122,7 +150,7 @@ sub test {
     my $first = int($reply / 100);
 
     return 0 if $reply < 211;
-    return 0 if $reply > 557;
+    return 0 if $reply > 556;
     return 0 if $reply % 100 > 59;
 
     if( $first == 2 ) {
@@ -135,7 +163,7 @@ sub test {
 
     if( $first == 3 ) {
         # 3yz
-        return 0 unless $reply == 354;
+        return 0 unless $reply == 334 || $reply == 354;
         return 1;
     }
     return 1;
@@ -183,6 +211,16 @@ sub find {
     return $esmtpreply;
 }
 
+sub associatedwith {
+    # associatedwith returns a slice associated with the SMTP reply code of the argument
+    # @param    [String] argv1  SMTP reply code like 550
+    # @return   [Array]         ["SMTP Command", "DSN", "Reason"]
+    # @since v5.2.2
+    my $class = shift;
+    my $argv1 = shift || return [];
+    return $Associated->{ $argv1 } || []
+}
+
 1;
 __END__
 
@@ -221,13 +259,20 @@ C<find()> method returns the SMTP reply code value.
     print Sisimai::SMTP::Reply->find('550 5.1.1 User unknown'); # 550
     print Sisimai::SMTP::Reply->find('421 Delivery Expired');   # 421
 
+=head2 C<B<associatedwith(I<String>)>>
+
+C<associatedwith()> method returns a list related to the SMTP reply code in the argument
+
+    print Sisimai::SMTP::Reply->associatedwith("556"); # ["RCPT", "", "notaccept"]
+    print Sisimai::SMTP::Reply->associatedwith("421"); # []
+
 =head1 AUTHOR
 
 azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018,2020,2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020,2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
