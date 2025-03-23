@@ -427,6 +427,16 @@ sub rise {
             $thing->{'action'} ||= 'failed'    if $cx->[0] eq '4' || $cx->[0] eq '5';
             $thing->{'action'} ||= "";
         }
+
+        if( $thing->{'replycode'} ne "" ) {
+            # Fill empty values: ["SMTP Command", "DSN", "Reason"]
+            my $cv = Sisimai::SMTP::Reply->associatedwith($thing->{'replycode'});
+            if( scalar @$cv > 0 ) {
+                $thing->{'command'}        = $cv->[0] if $cv->[0] ne "" && $thing->{'command'} eq "";
+                $thing->{'deliverystatus'} = $cv->[1] if $cv->[1] ne "" && Sisimai::SMTP::Status->is_explicit($thing->{'deliverystatus'}) == 0;
+                $thing->{'reason'}         = $cv->[2] if $cv->[2] ne "" && Sisimai::Reason->is_explicit($thing->{'reason'}) == 0;
+            }
+        }
         # Feedback-ID: 1.us-west-2.QHuyeCQrGtIIMGKQfVdUhP9hCQR2LglVOrRamBc+Prk=:AmazonSES
         $thing->{'feedbackid'} = $rfc822data->{'feedback-id'} || "";
 
@@ -774,7 +784,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
