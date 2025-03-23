@@ -115,6 +115,13 @@ MAKETEST: {
     is $Package->prefer('4.2.1', '5.7.0', 421), '4.2.1';
     is $Package->prefer('5.7', '5.7.26', 421), '5.7.26';
     is $Package->prefer('5.7.26', '5.7', 421), '5.7.26';
+
+    for my $e ( @$statuslist ) {
+        is $Package->is_explicit($e), 1, $e;
+    }
+    for my $e ("", "5.0.999", "4.0.999") {
+        is $Package->is_explicit($e), 0, $e;
+    }
 }
 
 done_testing;
