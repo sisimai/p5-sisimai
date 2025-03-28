@@ -4,11 +4,12 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.2.1p1
+v5.3.0
 ---------------------------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Sat, 29 Mar 2025 06:03:17 +0900 (JST)"
+- version: "5.3.0"
 - changes:
+  - Collateral update due to the Go version of Sisimai's broken module path fix.
   - SMTP reply code improvements
     - Update the list of SMTP reply codes in `Sisimai::SMTP::Reply`
     - Implement `Sisimai::SMTP::Reply->associatedwith()`
