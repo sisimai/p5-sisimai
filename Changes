@@ -4,6 +4,17 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.3.0
+---------------------------------------------------------------------------------------------------
+- release: "Sat, 29 Mar 2025 06:03:17 +0900 (JST)"
+- version: "5.3.0"
+- changes:
+  - Collateral update due to the Go version of Sisimai's broken module path fix.
+  - SMTP reply code improvements
+    - Update the list of SMTP reply codes in `Sisimai::SMTP::Reply`
+    - Implement `Sisimai::SMTP::Reply->associatedwith()`
+    - Implement `Sisimai::SMTP::Status->is_explicit()`
+
 v5.2.1
 ---------------------------------------------------------------------------------------------------
 - release: "Wed, 12 Mar 2025 06:50:22 +0900 (JST)"
@@ -164,7 +175,7 @@ v5.0.3
 - changes:
   - Declare `use v5.26;` at each file using the postfix dereference #511
     - Replace `use feature ":5.10";` with `use v5.26;`
-    - https://www.cpantesters.org/cpan/report/4a49b2fa-e101-11ee-9c91-c03a6e8775ea (Slaven Rezić)
+    - https://www.cpantesters.org/cpan/report/4a49b2fa-e101-11ee-9c91-c03a6e8775ea (Slaven Rezi�
     - https://www.cpantesters.org/cpan/report/8345bf54-e192-11ee-bcdd-1845aa8c77b5 (David Cantrell)
     - https://www.cpantesters.org/cpan/report/3170e9aa-e526-11ee-98b0-b3c3213a625c (Chris Williams)
     - https://www.cpantesters.org/cpan/report/e51d7d7a-e58e-11ee-922b-530cbea18e0e (Andreas J. König)

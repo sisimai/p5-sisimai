@@ -4,7 +4,7 @@
       "azumakuniyuki"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.8, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.25, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "freebsd"
    ],
@@ -58,18 +58,7 @@
       }
    },
    "release_status" : "unstable",
-   "resources" : {
-      "bugtracker" : {
-         "web" : "https://github.com/sisimai/p5-sisimai/issues"
-      },
-      "homepage" : "https://libsisimai.org/",
-      "repository" : {
-         "type" : "git",
-         "url" : "git://github.com/sisimai/p5-sisimai.git",
-         "web" : "https://github.com/sisimai/p5-sisimai"
-      }
-   },
-   "version" : "v5.2.1",
+   "version" : "v5.3.0",
    "x_contributors" : [
       "0xcdcdcdcd <0xcdcdcdcd@gmail.com>",
       "Adrian Yee <adrian@gt.net>",
@@ -89,6 +78,6 @@
       "jcbf <underspell@gmail.com>",
       "root <root@bwt-1.squaremx.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 4.02",
+   "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 1
 }
