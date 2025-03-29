@@ -92,7 +92,6 @@ sub rise {
     return $thing;
 }
 
-sub load { warn ' ***warning: Sisimai::Message->load will be removed at v5.3.0'; return [] }
 sub part {
     # Divide email data up headers and a body part.
     # @param         [String] email  Email data
@@ -461,14 +460,6 @@ C<rise()> method is a constructor of C<Sisimai::Message>
     my $mailtxt = 'Entire email text';
     my $message = Sisimai::Message->rise('data' => $mailtxt);
 
-If you have implemented a custom MTA module and use it, set the value of C<load> in the argument of
-this method as an array reference like following code:
-
-    my $message = Sisimai::Message->rise(
-                        'data' => $mailtxt,
-                        'load' => ['Your::Custom::MTA::Module']
-                  );
-
 =head1 INSTANCE METHODS
 
 =head2 C<B<(from)>>
@@ -510,7 +501,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
