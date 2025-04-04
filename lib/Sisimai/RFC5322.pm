@@ -49,10 +49,8 @@ sub received {
     my $class = shift;
     my $argv1 = shift || return [];
 
-    # Received: (qmail 10000 invoked by uid 999); 24 Apr 2013 00:00:00 +0900
     return [] if ref $argv1;
-    return [] if index($argv1, ' invoked by uid')       > 0;
-    return [] if index($argv1, ' invoked from network') > 0;
+    return [] if index($argv1, woReceived->[0]) > 0 || index($argv1, woReceived->[1]) > 0;
 
     # - https://datatracker.ietf.org/doc/html/rfc5322
     #   received        =   "Received:" *received-token ";" date-time CRLF
