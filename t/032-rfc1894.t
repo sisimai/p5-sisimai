@@ -5,7 +5,7 @@ use Sisimai::RFC1894;
 
 my $Package = 'Sisimai::RFC1894';
 my $Methods = {
-    'class'  => ['FIELDINDEX', 'FIELDTABLE', 'field', 'match', 'label'],
+    'class'  => ['field', 'match', 'label'],
     'object' => [],
 };
 

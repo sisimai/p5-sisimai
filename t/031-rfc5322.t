@@ -5,7 +5,7 @@ use Sisimai::RFC5322;
 
 my $Package = 'Sisimai::RFC5322';
 my $Methods = {
-    'class'  => ['HEADERFIELDS', 'LONGFIELDS', 'FIELDINDEX', 'received', 'part'],
+    'class'  => ['HEADERFIELDS', 'FIELDINDEX', 'woReceived', 'received', 'part'],
     'object' => [],
 };
 
@@ -36,19 +36,17 @@ MAKETEST: {
         }
     }
 
-    $r = $Package->LONGFIELDS;
-    isa_ok $r, 'HASH';
-    for my $e ( keys %$r ) {
-        ok length $e, $e;
-        like $e, qr/\A[a-z-]+\z/;
-        is $r->{ $e }, 1, $e.' = '.1;
-    }
-
     $r = $Package->FIELDINDEX;
     isa_ok $r, 'ARRAY';
     for my $e ( @$r ) {
         ok length $e, $e;
         like $e, qr/\A[A-Z][A-Za-z-]+\z/;
+    }
+
+    $r = $Package->woReceived;
+    for my $e ( @$r ) {
+        ok length $e, $e;
+        like $e, qr/invoked/;
     }
 
     # Check the value of Received header

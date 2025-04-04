@@ -5,17 +5,16 @@ use Sisimai::RFC5965;
 
 my $Package = 'Sisimai::RFC5965';
 my $Methods = {
-    'class'  => ['FIELDINDEX'],
+    'class'  => [],
     'object' => [],
 };
 
 use_ok $Package;
-can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
     my $v = $Package->FIELDINDEX;
-    isa_ok $v, 'ARRAY', '->FIELDINDEX() returns ARRAY';
-    ok scalar @$v,      '->FIELDINDEX() returns ARRAY';
+    isa_ok $v, 'ARRAY', '->FIELDINDEX returns ARRAY';
+    ok scalar @$v,      '->FIELDINDEX returns ARRAY';
 }
 
 done_testing;

@@ -4,28 +4,24 @@ use strict;
 use warnings;
 use Sisimai::String;
 
-sub FIELDINDEX {
-    return [qw|
-        Action Arrival-Date Diagnostic-Code Final-Recipient Last-Attempt-Date Original-Recipient
-        Received-From-MTA Remote-MTA Reporting-MTA Status X-Actual-Recipient X-Original-Message-ID
-    |];
-}
-sub FIELDTABLE {
+use constant FIELDINDEX => [qw|
+    Action Arrival-Date Diagnostic-Code Final-Recipient Last-Attempt-Date Original-Recipient
+    Received-From-MTA Remote-MTA Reporting-MTA Status X-Actual-Recipient X-Original-Message-ID
+|];
+use constant FIELDTABLE => {
     # Return pairs that a field name and key name defined in Sisimai::Lhost class
-    return {
-        'action'            => 'action',
-        'arrival-date'      => 'date',
-        'diagnostic-code'   => 'diagnosis',
-        'final-recipient'   => 'recipient',
-        'last-attempt-date' => 'date',
-        'original-recipient'=> 'alias',
-        'received-from-mta' => 'lhost',
-        'remote-mta'        => 'rhost',
-        'reporting-mta'     => 'lhost',
-        'status'            => 'status',
-        'x-actual-recipient'=> 'alias',
-    };
-}
+    'action'            => 'action',
+    'arrival-date'      => 'date',
+    'diagnostic-code'   => 'diagnosis',
+    'final-recipient'   => 'recipient',
+    'last-attempt-date' => 'date',
+    'original-recipient'=> 'alias',
+    'received-from-mta' => 'lhost',
+    'remote-mta'        => 'rhost',
+    'reporting-mta'     => 'lhost',
+    'status'            => 'status',
+    'x-actual-recipient'=> 'alias',
+};
 
 sub match {
     # Check the argument matches with a field defined in RFC3464
