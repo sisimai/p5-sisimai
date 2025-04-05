@@ -2,7 +2,6 @@ package Sisimai::SMTP::Command;
 use v5.26;
 use strict;
 use warnings;
-
 state $Availables = [
     "HELO", "EHLO", "MAIL", "RCPT", "DATA", "QUIT", "RSET", "NOOP", "VRFY", "ETRN", "EXPN", "HELP",
     "AUTH", "STARTTLS", "XFORWARD",
@@ -19,9 +18,7 @@ sub test {
     # @return   [Boolean]       0: Is not a valid SMTP command, 1: Is a valid SMTP command
     # @since v5.0.0
     my $class = shift;
-    my $argv0 = shift // return undef;
-
-    return undef unless length $argv0 > 3;
+    my $argv0 = shift // return undef; return undef unless length $argv0 > 3;
     return 1 if grep { index($argv0, $_) > -1 } @$Availables;
     return 0;
 }
@@ -32,8 +29,7 @@ sub find {
     # @return   [String]        An SMTP command
     # @since v5.0.0
     my $class = shift;
-    my $argv0 = shift // return undef;
-    return undef unless __PACKAGE__->test($argv0);
+    my $argv0 = shift // return undef; return undef unless __PACKAGE__->test($argv0);
 
     my $issuedcode = ' '.lc($argv0).' ';
     my $commandmap = { 'STAR' => 'STARTTLS', 'XFOR' => 'XFORWARD' };
@@ -106,7 +102,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
