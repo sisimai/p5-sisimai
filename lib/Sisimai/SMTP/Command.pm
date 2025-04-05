@@ -2,6 +2,7 @@ package Sisimai::SMTP::Command;
 use v5.26;
 use strict;
 use warnings;
+use constant ExceptDATA => ["CONN", "EHLO", "HELO", "MAIL", "RCPT"];
 state $Availables = [
     "HELO", "EHLO", "MAIL", "RCPT", "DATA", "QUIT", "RSET", "NOOP", "VRFY", "ETRN", "EXPN", "HELP",
     "AUTH", "STARTTLS", "XFORWARD",

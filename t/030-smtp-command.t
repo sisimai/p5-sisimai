@@ -55,6 +55,15 @@ MAKETEST: {
             is $v, $e, 'SMTP command = '.$v;
         }
     }
+
+    $v = $Package->ExceptDATA;
+    isa_ok $v, 'ARRAY';
+    is scalar @$v, 5;
+    for my $e ( @$v ) {
+        is $Package->test($e), 1;
+        ok $e ne "DATA";
+    }
+
 }
 
 done_testing;
