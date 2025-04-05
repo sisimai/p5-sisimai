@@ -3,6 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 use Sisimai::String;
+use Sisimai::SMTP::Command;
 
 sub text  { 'spamdetected' }
 sub description { 'Email rejected by spam filter running on the remote host' }
@@ -140,8 +141,7 @@ sub true {
     # be sent before the SMTP DATA command because all the MTAs read the headers and the entire
     # message body after the DATA command.
     my $thecommand = $argvs->{'command'} || '';
-    return 0 if $thecommand eq 'CONN' || $thecommand eq 'EHLO' || $thecommand eq 'HELO'
-             || $thecommand eq 'MAIL' || $thecommand eq 'RCPT';
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->ExceptDATA->@*;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -198,7 +198,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018,2020-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

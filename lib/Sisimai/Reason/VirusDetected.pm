@@ -2,6 +2,7 @@ package Sisimai::Reason::VirusDetected;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::SMTP::Command;
 
 sub text  { 'virusdetected' }
 sub description { 'Email rejected due to a virus scanner on a destination host' }
@@ -40,9 +41,7 @@ sub true {
     # be sent before the SMTP DATA command because all the MTAs read the headers and the entire
     # message body after the DATA command.
     return 1 if $argvs->{'reason'} eq 'virusdetected';
-    return 0 if $argvs->{'command'} eq 'CONN' || $argvs->{'command'} eq 'EHLO'
-             || $argvs->{'command'} eq 'HELO' || $argvs->{'command'} eq 'MAIL'
-             || $argvs->{'command'} eq 'RCPT';
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->ExceptDATA->@*;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
