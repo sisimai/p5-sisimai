@@ -33,9 +33,7 @@ sub inquire {
 
     while( $messageidv ne "" ) {
         # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
-        last if index($messageidv, '<') !=  0;
-        last if index($messageidv, '-') !=  8;
-        last if index($messageidv, '@') != 18;
+        last if index($messageidv, '<') != 0 || index($messageidv, '-') !=  8 || index($messageidv, '@') != 18;
         $proceedsto++; last;
     }
     for my $e ( @$emailtitle ) {
@@ -176,13 +174,12 @@ sub inquire {
     }
 
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # Points the current cursor position
     my $nextcursor = 0;
     my $recipients = 0;     # The number of 'Final-Recipient' header
     my $boundary00 = '';    # Boundary string
-    my $v = undef;
 
     if( $mhead->{'content-type'} ) {
         # Get the boundary string and set regular expression for matching with the boundary string.
@@ -201,8 +198,7 @@ sub inquire {
                 next unless grep { index($e, $_) > -1 } $startingof->{'frozen'}->@*;
             }
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # This message was created automatically by mail delivery software.
         #
@@ -527,7 +523,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -25,7 +25,7 @@ state $Sandwiched = [
 ];
 state $StartAfter = [
     "generating server: ",      # (Exchange2007) en-US/Generating server: mta4.example.org
-    "serveur de g",             # (Exchange2007) fr-FR/Serveur de g辿n辿ration
+    "serveur de g",             # (Exchange2007) fr-FR/Serveur de g辿�辿�ation
     "server di generazione",    # (Exchange2007) it-CH
     "genererande server",       # (Exchange2007) sv-SE
 ];
@@ -42,8 +42,7 @@ sub is_internethost {
     my $class = shift;
     my $argv0 = shift || return 0;
 
-    return 0 if length $argv0 > 255;
-    return 0 if length $argv0 <   4;
+    return 0 if length $argv0 > 255 || length $argv0 < 4;
     return 0 if index($argv0, ".") == -1;
     return 0 if index($argv0, "..") > -1;
     return 0 if index($argv0, "--") > -1;
@@ -135,9 +134,7 @@ sub find {
         substr($e, -1, 1, "") if substr($e, -1, 1) eq ".";  # Remove "." at the end of the string
         $e =~ y/[]()<>:;//d;                                # Remove brackets, colon, and semi-colon
 
-        next if length $e < 4;
-        next if index($e, ".") < 0;
-        next if __PACKAGE__->is_internethost($e) == 0;
+        next if length $e < 4 || index($e, ".") < 0 || __PACKAGE__->is_internethost($e) == 0;
         push @$foundtoken, $e;
     }
     return ""               if scalar @$foundtoken == 0;
@@ -187,7 +184,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -693,9 +693,7 @@ sub name {
     # @see      code
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return undef;
-
-    return '' unless __PACKAGE__->test($argv1);
+    my $argv1 = shift || return undef; return '' unless __PACKAGE__->test($argv1);
     return StandardCode->{ $argv1 } // '';
 }
 
@@ -706,9 +704,7 @@ sub test {
     # @see      code
     # @since v5.0.0
     my $class = shift;
-    my $argv1 = shift || return undef; 
-    return 0 if length $argv1 < 5;
-    return 0 if length $argv1 > 7;
+    my $argv1 = shift || return undef; return 0 if length $argv1 < 5 || length $argv1 > 7;
 
     my $token = []; push @$token, int $_ for split(/[.]/, $argv1);
     return 0 unless scalar @$token == 3;

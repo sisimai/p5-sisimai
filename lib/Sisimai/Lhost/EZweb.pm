@@ -55,12 +55,11 @@ sub inquire {
     };
 
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # Points the current cursor position
     my $recipients = 0;     # The number of 'Final-Recipient' header
     my $substrings = [];    # All the values of "messagesof"
-    my $v = undef;
     map { push @$substrings, $messagesof->{ $_ }->@* } keys %$messagesof;
 
     for my $e ( split("\n", $emailparts->[0]) ) {
@@ -70,8 +69,7 @@ sub inquire {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if grep { index($e, $_) > -1 } $startingof->{'message'}->@*;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # The user(s) account is disabled.
         #
@@ -197,7 +195,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

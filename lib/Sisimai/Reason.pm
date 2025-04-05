@@ -58,8 +58,7 @@ sub path {
     # @since    v4.25.6
     my $class = shift;
     my $index = __PACKAGE__->index;
-    my $table = {};
-    $table->{ __PACKAGE__.'::'.$_ } = 'Sisimai/Reason/'.$_.'.pm' for @$index;
+    my $table = {}; $table->{ __PACKAGE__.'::'.$_ } = 'Sisimai/Reason/'.$_.'.pm' for @$index;
     return $table;
 }
 
@@ -117,8 +116,7 @@ sub anotherone {
     # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
     # @see      find()
     my $class = shift;
-    my $argvs = shift // return undef;
-    return $argvs->{'reason'} if $argvs->{'reason'};
+    my $argvs = shift // return undef; return $argvs->{'reason'} if $argvs->{'reason'};
 
     require Sisimai::SMTP::Status;
     my $issuedcode = lc $argvs->{'diagnosticcode'} // '';
@@ -271,7 +269,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

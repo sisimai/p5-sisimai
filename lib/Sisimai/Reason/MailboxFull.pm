@@ -77,14 +77,12 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
-
-    return undef unless $argvs->{'deliverystatus'};
-    return 1 if $argvs->{'reason'} eq 'mailboxfull';
+    my $argvs = shift // return undef; return undef unless $argvs->{'deliverystatus'};
 
     # Delivery status code points "mailboxfull".
     # Status: 4.2.2
     # Diagnostic-Code: SMTP; 450 4.2.2 <***@example.jp>... Mailbox Full
+    return 1 if $argvs->{'reason'} eq 'mailboxfull';
     return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'mailboxfull';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
@@ -140,7 +138,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

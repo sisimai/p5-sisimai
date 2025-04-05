@@ -13,19 +13,17 @@ sub inquire {
     # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.25.6
     my $class = shift;
-    my $mhead = shift // return undef;
+    my $mhead = shift // return undef; return undef if index($mhead->{'subject'}, 'There was an error sending your mail') != 0;
     my $mbody = shift // return undef;
-    return undef unless index($mhead->{'subject'}, 'There was an error sending your mail') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['The attachment contains the original mail headers'];
     state $startingof = { 'message' => ['We had trouble delivering your message. Full details follow:'] };
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $v = undef;
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -35,8 +33,7 @@ sub inquire {
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # We had trouble delivering your message. Full details follow:
         #
@@ -128,7 +125,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020,2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2020,2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -221,8 +221,7 @@ sub parse {
                     $v->{'d'} = $p;
                 }
             }
-        } elsif( $p =~ /\A([0-2]\d):([0-5]\d):([0-5]\d)\z/ ||
-                 $p =~ /\A(\d{1,2})[-:](\d{1,2})[-:](\d{1,2})\z/ ) {
+        } elsif( $p =~ /\A([0-2]\d):([0-5]\d):([0-5]\d)\z/ || $p =~ /\A(\d{1,2})[-:](\d{1,2})[-:](\d{1,2})\z/ ) {
             # Time; 12:34:56, 03:14:15, ...
             # Arrival-Date: 2014-03-26 00-01-19
             if( $1 < 24 && $2 < 60 && $3 < 60 ) {
@@ -295,10 +294,7 @@ sub parse {
     }
 
     $v->{'a'} ||= 'Thu';   # There is no day of week
-    if( defined $v->{'Y'} && $v->{'Y'} < 200 ) {
-        # 99 -> 1999, 102 -> 2002
-        $v->{'Y'} += 1900;
-    }
+    $v->{'Y'}  += 1900 if defined $v->{'Y'} && $v->{'Y'} < 200; # 99 -> 1999, 102 -> 2002
     $v->{'z'} ||= __PACKAGE__->second2tz(Time::Piece->new->tzoffset);
 
     # Adjust 2-digit Year
@@ -321,13 +317,9 @@ sub parse {
         return undef;
     }
 
-    if( $v->{'Y'} < 1902 || $v->{'Y'} > 2037 ) {
-        # -(2^31) ~ (2^31)
-        return undef;
-    }
-
     # Build date string
     #   Thu, 29 Apr 2004 10:01:11 +0900
+    return undef if $v->{'Y'} < 1902 || $v->{'Y'} > 2037; # -(2^31) ~ (2^31)
     return sprintf("%s, %s %s %s %s %s",
             $v->{'a'}, $v->{'d'}, $v->{'M'}, $v->{'Y'}, $v->{'T'}, $v->{'z'});
 }
@@ -441,7 +433,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

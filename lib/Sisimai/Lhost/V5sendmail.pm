@@ -13,9 +13,8 @@ sub inquire {
     # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.2
     my $class = shift;
-    my $mhead = shift // return undef;
+    my $mhead = shift // return undef; return undef if index($mhead->{'subject'}, 'Returned mail: ') != 0;
     my $mbody = shift // return undef;
-    return undef unless index($mhead->{'subject'}, 'Returned mail: ') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['   ----- Unsent message follows -----', '  ----- No message was collected -----'];
@@ -45,13 +44,12 @@ sub inquire {
 
     require Sisimai::RFC1123;
     require Sisimai::SMTP::Command;
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $anotherone = {};    # (Ref->Hash) Another error information
     my $remotehost = "";    # (String) The last remote hostname
     my $curcommand = "";    # (String) The last SMTP command
-    my $v = undef;
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -61,8 +59,7 @@ sub inquire {
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) > -1;
             next;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         #    ----- Transcript of session follows -----
         # While talking to smtp.example.com:

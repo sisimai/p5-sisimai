@@ -342,8 +342,7 @@ sub rise {
         ALIAS: {
             # Look up the Envelope-To address from the Received: header in the original message
             # when the recipient address is same with the value of $o->{'alias'}.
-            last if length $thing->{'alias'} == 0;
-            last if $thing->{'recipient'}->address ne $thing->{'alias'};
+            last if length $thing->{'alias'} == 0 || $thing->{'recipient'}->address ne $thing->{'alias'};
             last unless exists $rfc822data->{'received'};
             last unless scalar $rfc822data->{'received'}->@*;
 
@@ -352,9 +351,8 @@ sub rise {
                 next unless index($er, ' for ') > 1;
                 my $or = Sisimai::RFC5322->received($er);
 
-                next unless scalar @$or;
-                next unless length $or->[5];
-                next unless Sisimai::Address->is_emailaddress($or->[5]);
+                next if scalar(@$or) == 0 || length($or->[5]) == 0;
+                next if Sisimai::Address->is_emailaddress($or->[5]) == 0;
                 next if $thing->{'recipient'}->address eq $or->[5];
 
                 $thing->{'alias'} = $or->[5];
@@ -478,8 +476,7 @@ sub dump {
     # @return   [String]        Dumped data
     #           [undef]         When the value of first argument is neither "json" nor "yaml"
     my $self = shift;
-    my $type = shift || 'json';
-    return undef unless $type =~ /\A(?:json|yaml)\z/;
+    my $type = shift || 'json'; return undef unless $type =~ /\A(?:json|yaml)\z/;
 
     my $referclass = 'Sisimai::Fact::'.uc($type);
     my $modulepath = 'Sisimai/Fact/'.uc($type).'.pm';

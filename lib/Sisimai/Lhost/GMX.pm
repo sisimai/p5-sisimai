@@ -13,26 +13,23 @@ sub inquire {
     # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.4
     my $class = shift;
-    my $mhead = shift // return undef;
+    my $mhead = shift // return undef; return undef unless defined $mhead->{'x-gmx-antispam'};
     my $mbody = shift // return undef;
 
     # Envelope-To: <kijitora@mail.example.com>
     # X-GMX-Antispam: 0 (Mail was not recognized as spam); Detail=V3;
     # X-GMX-Antivirus: 0 (no virus found)
     # X-UI-Out-Filterresults: unknown:0;
-    return undef unless defined $mhead->{'x-gmx-antispam'};
-
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- The header of the original message is following. ---'];
     state $startingof = { 'message' => ['This message was created automatically by mail delivery software'] };
     state $messagesof = { 'expired' => ['delivery retry timeout exceeded'] };
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $v = undef;
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -42,8 +39,7 @@ sub inquire {
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # This message was created automatically by mail delivery software.
         #
@@ -139,7 +135,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

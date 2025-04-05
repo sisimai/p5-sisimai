@@ -65,11 +65,9 @@ sub inquire {
     # @since v4.0.2
     my $class = shift;
     my $mhead = shift // return undef;
-    my $mbody = shift // return undef;
-
-    return undef unless index($$mbody, "{") > -1;
+    my $mbody = shift // return undef; return undef unless index($$mbody, "{") > -1;
     return undef unless exists $mhead->{'x-amz-sns-message-id'};
-    return undef unless $mhead->{'x-amz-sns-message-id'};
+    return undef unless        $mhead->{'x-amz-sns-message-id'};
 
     my $proceedsto = 0;
     my $sespayload = $$mbody;
@@ -97,10 +95,8 @@ sub inquire {
             $sespayload =~ s/,$//g;
             $sespayload =~ s/"$//g;
         }
-
-        last unless index($sespayload, "notificationType") > -1;
-        last unless index($sespayload, "{") == 0;
-        last unless substr($sespayload, -1, 1) eq "}";
+        last if index($sespayload, "notificationType") < 0 || index($sespayload, "{") != 0;
+        last if substr($sespayload, -1, 1) ne "}";
         $proceedsto = 1; last;
     }
     return undef unless $proceedsto;
@@ -250,7 +246,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

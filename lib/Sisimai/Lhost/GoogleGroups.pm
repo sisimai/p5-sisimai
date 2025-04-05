@@ -40,10 +40,9 @@ sub inquire {
     #
     # Google Groups
     state $boundaries = ['----- Original message -----', 'Content-Type: message/rfc822'];
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = $dscontents->[-1];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;
-    my $v          = $dscontents->[-1];
     my @entiremesg = split(/\n\n/, $emailparts->[0], 5); pop @entiremesg;
     my $issuedcode = join(' ', @entiremesg); $issuedcode =~ y/\n/ /;
     my $receivedby = $mhead->{'received'} || [];
@@ -114,7 +113,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2020-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

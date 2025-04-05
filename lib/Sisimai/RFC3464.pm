@@ -44,7 +44,7 @@ sub inquire {
     }
 
     my $permessage = {};
-    my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS];
+    my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS]; my $v = undef;
     my $alternates = Sisimai::Lhost->DELIVERYSTATUS;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -52,7 +52,6 @@ sub inquire {
     my $beforemesg = "";    # (String) String before $startingof->{"message"}
     my $goestonext = 0;     # (Bool) Flag: do not append the line into $beforemesg
     my $isboundary = [Sisimai::RFC2045->boundary($mhead->{"content-type"}, 0)]; $isboundary->[0] ||= "";
-    my $v = undef;
     my $p = "";
 
     while( index($emailparts->[0], '@') < 0 ) {
@@ -144,8 +143,7 @@ sub inquire {
             }
             next;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         if( my $f = Sisimai::RFC1894->match($e) ) {
             # $e matched with any field defined in RFC3464

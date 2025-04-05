@@ -35,9 +35,7 @@ sub is_8bit {
     # @return   [Integer]       0: ASCII Characters only
     #                           1: Including 8-bit character
     my $class = shift;
-    my $argv1 = shift // return undef;
-
-    return undef unless ref $argv1 eq 'SCALAR';
+    my $argv1 = shift // return 0; return undef if ref $argv1 ne 'SCALAR';
     return 1 unless $$argv1 =~ /\A[\x00-\x7f]+\z/;
     return 0;
 }
@@ -86,9 +84,8 @@ sub to_plain {
     # @param    [Integer] loose Loose check flag
     # @return   [Scalar]        Plain text(reference to string)
     my $class = shift;
-    my $argv1 = shift // return \'';
+    my $argv1 = shift // return \''; return \'' if ref $argv1 ne 'SCALAR';
     my $loose = shift // 0;
-    return \'' unless ref $argv1 eq 'SCALAR';
 
     my $plain = $$argv1;
     state $match = {
@@ -208,7 +205,7 @@ and the envelope recipient address.
 C<is_8bit()> method checks the argument include any 8bit character or not.
 
     print Sisimai::String->is_8bit(\'cat');  # 0;
-    print Sisimai::String->is_8bit(\'ねこ'); # 1;
+    print Sisimai::String->is_8bit(\'ね�); # 1;
 
 =head2 C<B<sweep(I<String>)>>
 
@@ -244,7 +241,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019,2021-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019,2021-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -43,11 +43,10 @@ sub inquire {
         ],
     };
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $v = undef;
 
     require Sisimai::Address;
     require Sisimai::SMTP::Command;
@@ -60,8 +59,7 @@ sub inquire {
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # This is the DragonFly Mail Agent v0.13 at df.example.jp.
         #
@@ -90,8 +88,7 @@ sub inquire {
 
             # Pick the remote hostname, and the SMTP command
             # net.c:500| snprintf(errmsg, sizeof(errmsg), "%s [%s] did not like our %s:\n%s",
-            next if index($e, ' did not like our ') < 0;
-            next if length $v->{'rhost'} > 0;
+            next if index($e, ' did not like our ') < 0 || length $v->{'rhost'} > 0;
 
             my $p = [split(' ', $e, 3)];
             $v->{'rhost'}   = index($p->[0], '.') > 1 ? $p->[0] : $p->[1];
@@ -150,7 +147,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -91,8 +91,7 @@ sub rise {
 
                 for my $f ( split(" ", $parameters) ) {
                     # SIZE=22022, PROTO=SMTP, and so on
-                    next if index($f, '=') < 1;
-                    next if length $f      < 3;
+                    next if index($f, '=') < 1 || length $f < 3;
 
                     my @ee = (split('=', $f)); next unless scalar @ee == 2;
                     $cx->{'parameter'}->{ lc $ee[0] } = $ee[1];
@@ -139,7 +138,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

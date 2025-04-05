@@ -13,25 +13,22 @@ sub inquire {
     # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.7
     my $class = shift;
-    my $mhead = shift // return undef;
+    my $mhead = shift // return undef; return undef unless $mhead->{'x-zohomail'};
     my $mbody = shift // return undef;
 
     # X-ZohoMail: Si CHF_MF_NL SS_10 UW48 UB48 FMWL UW48 UB48 SGR3_1_09124_42
     # X-Zoho-Virus-Status: 2
     # X-Mailer: Zoho Mail
-    return undef unless $mhead->{'x-zohomail'};
-
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Received: from mail.zoho.com by mx.zohomail.com'];
     state $startingof = { 'message' => ['This message was created automatically by mail delivery'] };
     state $messagesof = { 'expired' => ['Host not reachable'] };
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $qprintable = 0;
-    my $v = undef;
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -41,8 +38,7 @@ sub inquire {
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # This message was created automatically by mail delivery software.
         # A message that you sent could not be delivered to one or more of its recip=
@@ -147,7 +143,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

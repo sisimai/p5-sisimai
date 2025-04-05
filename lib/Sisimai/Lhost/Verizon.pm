@@ -29,7 +29,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     my $boundaries = [];
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = [];
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -39,7 +39,6 @@ sub inquire {
     my $startingof = {};    # (Ref->Hash) Delimiter strings
     my $markingsof = {};    # (Ref->Hash) Delimiter patterns
     my $messagesof = {};    # (Ref->Hash) Error message patterns
-    my $v = undef;
 
     if( $match == 1 ) {
         # vtext.com
@@ -59,8 +58,7 @@ sub inquire {
                 $readcursor |= $indicators->{'deliverystatus'} if index($e, $markingsof->{'message'}->[0]) == 0;
                 next;
             }
-            next unless $readcursor & $indicators->{'deliverystatus'};
-            next unless length $e;
+            next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
             # Message details:
             #   Subject: Test message
@@ -106,8 +104,7 @@ sub inquire {
                 $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
                 next;
             }
-            next unless $readcursor & $indicators->{'deliverystatus'};
-            next unless length $e;
+            next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
             # Original Message:
             # From: kijitora <kijitora@example.jp>
@@ -197,7 +194,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

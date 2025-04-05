@@ -24,9 +24,8 @@ sub new {
     # @return   [Sisimai::Mail::Maildir]    Object
     #           [Undef]                     is not a directory or does not exist
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return undef; return undef unless -d $argv1;
     my $files = 0;
-    return undef unless -d $argv1;
 
     eval {
         # Count the number of files in the Maildir/
@@ -166,7 +165,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

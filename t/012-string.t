@@ -25,7 +25,7 @@ MAKETEST: {
     is(Sisimai::String->token($s, $r), '', '->token = ""');
     ok(Sisimai::String->token($s, $r, 0), '->token');
 
-    is(Sisimai::String->is_8bit(), undef, '->is_8bit = undef');
+    is(Sisimai::String->is_8bit(), 0, '->is_8bit = 0');
     is(Sisimai::String->is_8bit(\$s), 0, '->is_8bit = 0');
     is(Sisimai::String->is_8bit(\'日本語'), 1, '->is_8bit = 1');
 

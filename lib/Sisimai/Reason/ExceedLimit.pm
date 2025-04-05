@@ -30,14 +30,12 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
-
-    return undef unless $argvs->{'deliverystatus'};
-    return 1 if $argvs->{'reason'} eq 'exceedlimit';
+    my $argvs = shift // return undef; return undef unless $argvs->{'deliverystatus'};
 
     # Delivery status code points "exceedlimit".
     # Status: 5.2.3
     # Diagnostic-Code: SMTP; 552 5.2.3 Message size exceeds fixed maximum message size
+    return 1 if $argvs->{'reason'} eq 'exceedlimit';
     return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'exceedlimit';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
@@ -102,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -31,10 +31,9 @@ sub inquire {
     require Sisimai::SMTP::Command;
     state $boundaries = ['Content-type: message/rfc822'];
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
-    my $v = undef;
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -125,7 +124,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

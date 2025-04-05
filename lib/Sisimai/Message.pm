@@ -105,13 +105,13 @@ sub part {
     $$email =~ s/\r\n/\n/gm if rindex($$email, "\r\n") > -1;
 
     ($parts->[1], $parts->[2]) = split(/\n\n/, $$email, 2);
-    return undef unless $parts->[1];
-    return undef unless $parts->[2];
+    return undef if $parts->[1] eq "" || $parts->[2] eq "";
 
     if( substr($parts->[1], 0, 5) eq 'From ' ) {
         # From MAILER-DAEMON Tue Feb 11 00:00:00 2014
         $parts->[0] =  [split(/\n/, $parts->[1], 2)]->[0];
         $parts->[0] =~ y/\r\n//d;
+
     } else {
         # Set pseudo UNIX From line
         $parts->[0] =  'MAILER-DAEMON Tue Feb 11 00:00:00 2014';
@@ -157,8 +157,7 @@ sub makemap {
         for my $e ( @$re ) {
             # 1. Exclude the Received header including "(qmail ** invoked from network)".
             # 2. Convert all consecutive spaces and line breaks into a single space character.
-            next if index($e, ' invoked by uid')       > 0;
-            next if index($e, ' invoked from network') > 0;
+            next if index($e, Sisimai::RFC5322->woReceived->[0]) > 0 || index($e, Sisimai::RFC5322->woReceived->[1]) > 0;
 
             $e =~ s/\n\s+/ /;
             $e =~ y/\n\t / /s;
@@ -259,23 +258,19 @@ sub tidy {
                     push @$ab, $f;
                 }
 
-                while(1) {
+                if( $fn eq 'Diagnostic-Code' ) {
                     # Diagnostic-Code: x-unix;
                     #   /var/email/kijitora/Maildir/tmp/1000000000.A000000B00000.neko22:
                     #   Disk quota exceeded
-                    last unless $fn eq 'Diagnostic-Code';
-                    last unless scalar(@$ab) == 1;
-                    last unless index($lines[$index + 1], ' ') == 0;
-
-                    push @$ab, '';
-                    last;
+                    push @$ab, '' if scalar @$ab == 1 && index($lines[$index + 1], " ") == 0;
                 }
                 $bf = join('; ', @$ab); $ab = []; # Insert " " (space characer) immediately after ";"
 
             } else {
                 # There is no ";" in the field
-                last if index($fn, '-Date')       > 0;  # Arrival-Date, Last-Attempt-Date
-                last if index($fn, '-Message-ID') > 0;  # X-Original-Message-ID
+                # Arrival-Date, Last-Attempt-Date
+                # X-Original-Message-ID
+                last if index($fn, '-Date') > 0 || index($fn, '-Message-ID') > 0;
                 $bf = lc $bf;
             }
             last;
@@ -295,8 +290,7 @@ sub tidy {
         # 4. Concatenate the field name and the field value
         for my $f ( split(' ', $bf) ) {
             # Remove redundant space characters
-            next if length $f == 0;
-            push @$ab, $f;
+            push @$ab, $f if length $f > 0;
         }
         $email .= sprintf("%s: %s\n", $fn, join(' ', @$ab));
     }
@@ -320,8 +314,8 @@ sub sift {
     my $argvs = { @_ };
 
     my $mailheader = $argvs->{'mail'}->{'header'} || return undef;
-    my $bodystring = $argvs->{'body'} || return undef;
-    my $hookmethod = $argvs->{'hook'} || undef;
+    my $bodystring = $argvs->{'body'}             || return undef;
+    my $hookmethod = $argvs->{'hook'}             || undef;
     my $havecaught = undef;
 
     state $defaultset = Sisimai::Order->another;

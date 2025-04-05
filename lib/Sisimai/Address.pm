@@ -81,8 +81,7 @@ sub is_mailerdaemon {
         'postmaster@', '<postmaster>', '(postmaster)'
     ];
     return 1 if grep { index($email, $_) > -1 } @$postmaster;
-    return 1 if $email eq 'mailer-daemon';
-    return 1 if $email eq 'postmaster';
+    return 1 if $email eq 'mailer-daemon' || $email eq 'postmaster';
     return 0;
 }
 
@@ -92,7 +91,7 @@ sub new {
     # @return   [Sisimai::Address]  Object or undef when the email address was not valid
     # @since    v4.22.1
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return undef; return undef if ref $argvs ne 'HASH';
     my $thing = {
         'address' => '',    # Entire email address
         'user'    => '',    # Local part
@@ -103,7 +102,6 @@ sub new {
         'name'    => '',    # Display name
     };
 
-    return undef unless ref $argvs eq 'HASH';
     return undef unless exists $argvs->{'address'};
     return undef unless $argvs->{'address'};
 
@@ -435,8 +433,7 @@ sub expand_alias {
     # @param    [String] email  Email alias string
     # @return   [String]        Expanded email address
     my $class = shift;
-    my $email = shift // return undef;
-    return undef unless __PACKAGE__->is_emailaddress($email);
+    my $email = shift // return undef; return undef unless __PACKAGE__->is_emailaddress($email);
 
     # neko+straycat@example.org => neko@example.org
     my @local = split('@', $email);
@@ -447,8 +444,7 @@ sub expand_alias {
 sub TO_JSON {
     # Instance method for JSON::encode()
     # @return   [String] The value of "address" accessor
-    my $self = shift;
-    return $self->address;
+    my $self = shift; return $self->address;
 }
 
 1;
@@ -615,7 +611,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -131,16 +131,14 @@ sub true {
     # @since v4.1.19
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return undef; return undef unless $argvs->{'deliverystatus'};
 
-    return undef unless $argvs->{'deliverystatus'};
     return 1 if $argvs->{'reason'} eq 'spamdetected';
     return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'spamdetected';
 
     # The value of "reason" isn't "spamdetected" when the value of "command" is an SMTP command to
     # be sent before the SMTP DATA command because all the MTAs read the headers and the entire
     # message body after the DATA command.
-    my $thecommand = $argvs->{'command'} || '';
     return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->ExceptDATA->@*;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }

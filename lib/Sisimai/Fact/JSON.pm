@@ -9,8 +9,7 @@ sub dump {
     # @param    [Sisimai::Fact] argvs   Object
     # @return   [String, undef]         Dumped data or undef if the argument is missing
     my $class = shift;
-    my $argvs = shift // return undef;
-    return undef unless ref $argvs eq 'Sisimai::Fact';
+    my $argvs = shift // return undef; return undef if ref $argvs ne 'Sisimai::Fact';
 
     my $jsonstring = '';
     eval { $jsonstring = JSON->new->space_after(1)->encode($argvs->damn) };
@@ -60,7 +59,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

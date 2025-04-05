@@ -203,14 +203,8 @@ sub haircut {
         last;
     }
 
-    LOWER: while(1) {
-        # Append LF before the lower chunk into the 2nd element of $multipart1
-        last if length $lowerchunk == 0;
-        last if substr($lowerchunk, 0, 1) eq "\n";
-
-        $multipart1->[2] .= "\n";
-        last;
-    }
+    # Append LF before the lower chunk into the 2nd element of $multipart1
+    $multipart1->[2] .= "\n" if $lowerchunk ne "" && substr($lowerchunk, 0, 1) ne "\n";
     $multipart1->[2] .= $lowerchunk;
     return $multipart1;
 }
@@ -222,11 +216,8 @@ sub levelout {
     # @return   [Array]         List of each part of multipart/*
     # @since v5.0.0
     my $class = shift;
-    my $argv0 = shift || return [];
-    my $argv1 = shift || return [];
-
-    return [] unless length $argv0;
-    return [] unless length $$argv1;
+    my $argv0 = shift || return []; return [] unless length $argv0;
+    my $argv1 = shift || return []; return [] unless length $$argv1;
 
     my $boundary01 = __PACKAGE__->boundary($argv0, 0) || return [];
     my $multiparts = [split(/\Q$boundary01\E\n/, $$argv1)];
@@ -243,8 +234,7 @@ sub levelout {
             # There is nested multipart/* block
             my $boundary02 = __PACKAGE__->boundary($f->[0], -1) || next;
             my $bodyinside = [split(/\n\n/, $f->[-1], 2)]->[-1];
-            next unless length $bodyinside > 8;
-            next unless index($bodyinside, $boundary02) > -1;
+            next if length $bodyinside < 9 || index($bodyinside, $boundary02) < 0;
 
             my $v = __PACKAGE__->levelout($f->[0], \$bodyinside);
             push @$partstable, @$v if scalar @$v;
@@ -275,9 +265,7 @@ sub makeflat {
     my $class = shift;
     my $argv0 = shift // return undef;
     my $argv1 = shift // return undef;
-
-    return \'' unless index($argv0, 'multipart/') > -1;
-    return \'' unless index($argv0, 'boundary=')  > -1;
+    return \'' if index($argv0, 'multipart/') < 0 || index($argv0, 'boundary=')  < 0;
 
     my $iso2022set = qr/charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/;
     my $multiparts = __PACKAGE__->levelout($argv0, $argv1);
@@ -448,7 +436,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

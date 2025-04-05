@@ -45,12 +45,11 @@ sub inquire {
     require Sisimai::RFC1123;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $subjecttxt = '';    # (String) The value of Subject:
-    my $v = undef;
     my $p = '';
 
     for my $e ( split("\n", $emailparts->[0]) ) {
@@ -61,8 +60,7 @@ sub inquire {
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
             next;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # Your message
         #
@@ -137,8 +135,7 @@ sub inquire {
         UTF8FLAG: while(1) {
             # Delete the utf8 flag because there are a string including some characters which have 
             # utf8 flag but utf8::is_utf8 returns false
-            last unless length $e->{'diagnosis'};
-            last unless Sisimai::String->is_8bit(\$e->{'diagnosis'});
+            last if $e->{'diagnosis'} eq "" || Sisimai::String->is_8bit(\$e->{'diagnosis'}) == 0;
 
             my $cv = $e->{'diagnosis'};
             my $ce = Encode::Guess->guess($cv);

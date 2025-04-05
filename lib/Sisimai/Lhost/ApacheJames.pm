@@ -31,12 +31,11 @@ sub inquire {
         "message" => ["Message details:"],
     };
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = $dscontents->[-1];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;                 # Points the current cursor position
     my $recipients = 0;                 # The number of 'Final-Recipient' header
     my $alternates = ["", "", "", ""];  # [Envelope-From, Header-From, Date, Subject]
-    my $v          = $dscontents->[-1];
 
     for my $e ( split("\n", $emailparts->[0]) ) {
         # Read error messages and delivery status lines from the head of the email to the previous
@@ -51,8 +50,7 @@ sub inquire {
             $v->{"diagnosis"} .= $e." " if $e ne "";
             next;
         }
-        next unless $readcursor & $indicators->{"deliverystatus"};
-        next unless length $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # Message details:
         #   Subject: Nyaaan
@@ -147,7 +145,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

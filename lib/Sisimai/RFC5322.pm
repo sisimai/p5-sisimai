@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Sisimai::RFC791;
 use Sisimai::Address;
+
 use constant HEADERTABLE => {
     'messageid' => ['message-id'],
     'subject'   => ['subject'],
@@ -47,9 +48,7 @@ sub received {
     #                           4: (id)     "queue-id"
     #                           5: (for)    "envelope-to address"
     my $class = shift;
-    my $argv1 = shift || return [];
-
-    return [] if ref $argv1;
+    my $argv1 = shift || return []; return [] if ref $argv1;
     return [] if index($argv1, woReceived->[0]) > 0 || index($argv1, woReceived->[1]) > 0;
 
     # - https://datatracker.ietf.org/doc/html/rfc5322
@@ -111,14 +110,9 @@ sub received {
 
     for my $e ( @$other ) {
         # Check alternatives in $other, and then delete uninformative values.
-        next unless $e;
-        next if length $e < 4;
-        next if $e eq 'unknown';
-        next if $e eq 'localhost';
-        next if $e eq '[127.0.0.1]';
-        next if $e eq '[IPv6:::1]';
-        next if index($e, '.') == -1;
-        next if index($e, '=') >   1;
+        next if length $e < 4 || $e eq 'unknown';
+        next if $e eq 'localhost' || $e eq '[127.0.0.1]' || $e eq '[IPv6:::1]';
+        next if index($e, '.') == -1 || index($e, '=') > 1;
         push @$alter, $e;
     }
 
@@ -133,8 +127,7 @@ sub received {
     $token->{'from'} ||= '';
     while(1) {
         # Prefer hostnames over IP addresses, except for localhost.localdomain and similar.
-        last if $token->{'from'} eq 'localhost';
-        last if $token->{'from'} eq 'localhost.localdomain';
+        last if $token->{'from'} eq 'localhost' || $token->{'from'} eq 'localhost.localdomain';
         last if index($token->{'from'}, '.') < 0;   # A hostname without a domain name
         last if scalar Sisimai::RFC791->find($token->{'from'})->@*;
 
@@ -216,8 +209,7 @@ sub part {
         # Substitute the entire message to the former part when the boundary string is not included
         # the $$email
         $formerpart = $$email;
-        $latterpart = '';
-    } 
+    }
 
     if( length $latterpart > 0 ) {
         # Remove blank lines, the message body of the original message, and append "\n" at the end
@@ -294,7 +286,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

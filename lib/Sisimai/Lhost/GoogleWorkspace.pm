@@ -50,8 +50,7 @@ sub inquire {
                 $entiremesg .= $e." ";
             }
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
-        next unless $e;
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
         # ** Message not delivered **
         # You're sending this from a different address or alias using the 'Send mail as' feature.
@@ -125,7 +124,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

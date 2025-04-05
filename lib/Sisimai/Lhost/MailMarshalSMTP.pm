@@ -13,9 +13,8 @@ sub inquire {
     # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.9
     my $class = shift;
-    my $mhead = shift // return undef;
+    my $mhead = shift // return undef; return undef unless index($mhead->{'subject'}, 'Undeliverable Mail: "') == 0;
     my $mbody = shift // return undef;
-    return undef unless index($mhead->{'subject'}, 'Undeliverable Mail: "') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $startingof = {
@@ -24,11 +23,10 @@ sub inquire {
         'rcpts'    => ['The following recipients were affected:'],
     };
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $endoferror = 0;     # (Integer) Flag for the end of error message
-    my $v = undef;
 
     my $boundaries = ['+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'];
     my $q = Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1); push @$boundaries, $q if $q;
@@ -41,7 +39,7 @@ sub inquire {
             # Beginning of the bounce message or message/delivery-status part
             $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
         }
-        next unless $readcursor & $indicators->{'deliverystatus'};
+        next if ($readcursor & $indicators->{'deliverystatus'}) == 0;
 
         # Your message:
         #    From:    originalsender@example.com
@@ -163,7 +161,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

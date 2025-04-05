@@ -39,9 +39,9 @@ sub true {
     my $class = shift;
     my $argvs = shift // return undef;
     my $reply = int $argvs->{'replycode'} || 0;
-    return 1 if $argvs->{'reason'} eq 'notaccept';
 
     # SMTP Reply Code is 521, 554 or 556
+    return 1 if $argvs->{'reason'} eq 'notaccept';
     return 1 if $reply == 521 || $reply == 556;
     return 0 if $argvs->{'command'} ne 'MAIL';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});

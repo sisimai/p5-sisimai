@@ -30,13 +30,12 @@ sub true {
     #                                   0: is not speeding
     # @see      http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return undef; return undef unless $argvs->{'deliverystatus'};
 
     # Action: failed
     # Status: 4.7.1
     # Remote-MTA: dns; smtp.example.jp
     # Diagnostic-Code: smtp; 451 4.7.1 <mx.example.org[192.0.2.2]>: Client host rejected: Please try again slower
-    return undef unless $argvs->{'deliverystatus'};
     return 1 if $argvs->{'reason'} eq 'speeding';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
@@ -88,7 +87,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2022,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -47,7 +47,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
