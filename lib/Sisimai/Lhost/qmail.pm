@@ -21,7 +21,6 @@ sub inquire {
     #   e.g.) Received: (qmail 12345 invoked for bounce); 29 Apr 2009 12:34:56 -0000
     #         Subject: failure notice
     my $proceedsto = 0;
-    my $relayedvia = [["(qmail ", "invoked for bounce)"], ["(qmail ", "invoked from ", "network)"]];
     my $emailtitle = [
         "failure notice", # qmail-send.c:Subject: failure notice\n\
         "Failure Notice", # Yahoo
@@ -31,7 +30,7 @@ sub inquire {
     for my $e ( $mhead->{"received"}->@* ) {
         # Received: (qmail 2222 invoked for bounce);29 Apr 2017 23:34:45 +0900
         # Received: (qmail 2202 invoked from network); 29 Apr 2018 00:00:00 +0900
-        $proceedsto ||= 1 if grep { Sisimai::String->aligned(\$e, $_) } $relayedvia->@*;
+        $proceedsto ||= 1 if Sisimai::String->aligned(\$e, ["(qmail", " invoked "]);
     }
     return undef if $proceedsto == 0;
 
