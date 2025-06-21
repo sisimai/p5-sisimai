@@ -15,12 +15,10 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
-
-    $match ||= 1 if index($mhead->{'from'},    'MAILER-DAEMON@')   > -1;
-    $match ||= 1 if index($mhead->{'subject'}, 'Delivery failure') == 0;
-    $match ||= 1 if index($mhead->{'subject'}, 'failure delivery') == 0;
-    $match ||= 1 if index($mhead->{'subject'}, 'failed delivery')  == 0;
+    my $match = 0; $match ||= 1 if index($mhead->{'from'},    'MAILER-DAEMON@')   > -1;
+                   $match ||= 1 if index($mhead->{'subject'}, 'Delivery failure') == 0;
+                   $match ||= 1 if index($mhead->{'subject'}, 'failure delivery') == 0;
+                   $match ||= 1 if index($mhead->{'subject'}, 'failed delivery')  == 0;
     return undef unless $match > 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
