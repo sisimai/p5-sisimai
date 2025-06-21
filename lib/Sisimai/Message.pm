@@ -246,8 +246,7 @@ sub tidy {
                         # - Final-Recipient: RFC822; ...          => rfc822
                         last if index($f, ' ') > 0;
 
-                        my $p2 = index($f, '=');
-                        if( $p2 > 0 ) {
+                        my $p2 = index($f, '='); if( $p2 > 0 ) {
                             # charset=, boundary=, and other pairs divided by "="
                             $ps = lc substr($f, 0, $p2);
                             substr($f, 0, $p2, $ps);
