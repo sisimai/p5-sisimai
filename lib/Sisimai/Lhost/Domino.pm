@@ -18,13 +18,9 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
 
-    while(1) {
-        $match ||= 1 if index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
-        $match ||= 1 if index($mhead->{'subject'}, 'DELIVERY_FAILURE:') == 0;
-        last;
-    }
+    my $match = 0; $match ||= 1 if index($mhead->{'subject'}, 'DELIVERY FAILURE:') == 0;
+                   $match ||= 1 if index($mhead->{'subject'}, 'DELIVERY_FAILURE:') == 0;
     return undef unless $match > 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
