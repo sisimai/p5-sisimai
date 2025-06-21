@@ -343,7 +343,7 @@ sub find {
         # No email address like <neko@example.org> in the argument
         if( $v->{'name'} =~ $validemail ) {
             # String like an email address will be set to the value of "address"
-             $v->{'address'} = $1.'@'.$2;
+            $v->{'address'} = $1.'@'.$2;
 
         } elsif( __PACKAGE__->is_mailerdaemon($v->{'name'}) ) {
             # Allow if the argument is MAILER-DAEMON
