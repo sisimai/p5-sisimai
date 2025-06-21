@@ -4,13 +4,7 @@ use strict;
 use warnings;
 use Time::Piece;
 
-sub BASE_D()    { 86400 }           # 1 day = 86400 sec
-sub BASE_Y()    { 365.2425 }        # 1 year = 365.2425 days
-sub BASE_L()    { 29.53059 }        # 1 lunar month = 29.53059 days
-sub CONST_P()   { 4 * atan2(1,1) }  # PI, 3.1415926535
-sub CONST_E()   { exp(1) }          # e, Napier's constant
-sub TZ_OFFSET() { 54000 }           # Max time zone offset, 54000 seconds
-
+sub TZ_OFFSET() { 54000 } # Max time zone offset, 54000 seconds
 use constant MonthName => {
     'full' => [qw|January February March April May June July August September October November December|],
     'abbr' => [qw|Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec|],
@@ -157,8 +151,7 @@ sub monthname {
     #   monthname(1) #=> ['January', 'February', 'March', ...]
     my $class = shift;
     my $argv1 = shift // 0;
-    my $value = $argv1 ? 'full' : 'abbr';
-    return MonthName->{ $value };
+    return MonthName->{ $argv1 ? 'full' : 'abbr' };
 }
 
 sub parse {
@@ -224,15 +217,12 @@ sub parse {
         } elsif( $p =~ /\A([0-2]\d):([0-5]\d):([0-5]\d)\z/ || $p =~ /\A(\d{1,2})[-:](\d{1,2})[-:](\d{1,2})\z/ ) {
             # Time; 12:34:56, 03:14:15, ...
             # Arrival-Date: 2014-03-26 00-01-19
-            if( $1 < 24 && $2 < 60 && $3 < 60 ) {
-                # Valid time format, maybe...
-                $v->{'T'} = sprintf("%02d:%02d:%02d", $1, $2, $3);
-            }
+            $v->{'T'} = sprintf("%02d:%02d:%02d", $1, $2, $3) if( $1 < 24 && $2 < 60 && $3 < 60 );
+
         } elsif( $p =~ /\A([0-2]\d):([0-5]\d)\z/ ) {
             # Time; 12:34 => 12:34:00
-            if( $1 < 24 && $2 < 60 ) {
-                $v->{'T'} = sprintf("%02d:%02d:00", $1, $2);
-            }
+            $v->{'T'} = sprintf("%02d:%02d:00", $1, $2) if( $1 < 24 && $2 < 60 );
+
         } elsif( $p =~ /\A(\d\d?):(\d\d?)\z/ ) {
             # Time: 1:4 => 01:04:00
             $v->{'T'} = sprintf("%02d:%02d:00", $1, $2);
@@ -265,9 +255,8 @@ sub parse {
                     $v->{'M'} = MonthName->{'abbr'}->[int($2) - 1];
                     $v->{'d'} = int $3 if $3 < 32;
 
-                    if( $4 < 24 && $5 < 60 && $6 < 60 ) {
-                        $v->{'T'} = sprintf("%02d:%02d:%02d", $4, $5, $6);
-                    }
+                    $v->{'T'} = sprintf("%02d:%02d:%02d", $4, $5, $6) if( $4 < 24 && $5 < 60 && $6 < 60 );
+
                 } elsif( $p =~ m|\A(\d{1,2})/(\d{1,2})/(\d{1,2})\z| ) {
                     # 4/29/01 11:34:45 PM
                     $v->{'M'} = MonthName->{'abbr'}->[int($1) - 1];
@@ -320,8 +309,7 @@ sub parse {
     # Build date string
     #   Thu, 29 Apr 2004 10:01:11 +0900
     return undef if $v->{'Y'} < 1902 || $v->{'Y'} > 2037; # -(2^31) ~ (2^31)
-    return sprintf("%s, %s %s %s %s %s",
-            $v->{'a'}, $v->{'d'}, $v->{'M'}, $v->{'Y'}, $v->{'T'}, $v->{'z'});
+    return sprintf("%s, %s %s %s %s %s", $v->{'a'}, $v->{'d'}, $v->{'M'}, $v->{'Y'}, $v->{'T'}, $v->{'z'});
 }
 
 sub abbr2tz {
