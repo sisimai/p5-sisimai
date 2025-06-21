@@ -15,17 +15,14 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
     my $tryto = [
         'Mail could not be delivered',
         'メッセージを配信できません。',
         'メール配信に失敗しました',
     ];
-
-    # 'received' => qr/[ ][(]InterScanMSS[)][ ]with[ ]/,
-    $match ||= 1 if index($mhead->{'from'}, '"InterScan MSS"') == 0;
-    $match ||= 1 if index($mhead->{'from'}, '"InterScan Notification"') == 0;
-    $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
+    my $match = 0; $match ||= 1 if index($mhead->{'from'}, '"InterScan MSS"') == 0;
+                   $match ||= 1 if index($mhead->{'from'}, '"InterScan Notification"') == 0;
+                   $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
     return undef unless $match;
 
     require Sisimai::SMTP::Command;
