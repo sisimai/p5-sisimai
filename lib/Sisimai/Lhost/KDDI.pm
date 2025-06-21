@@ -15,13 +15,10 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
-
-    # 'message-id' => qr/[@].+[.]ezweb[.]ne[.]jp[>]\z/,
-    $match ||= 1 if Sisimai::String->aligned(\$mhead->{'from'}, ['no-reply@.', '.dion.ne.jp']);
-    $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} eq 'no-reply@app.auone-net.jp';
-    $match ||= 1 if grep { rindex($_, 'ezweb.ne.jp (') > -1 } $mhead->{'received'}->@*;
-    $match ||= 1 if grep { rindex($_, '.au.com (') > -1 } $mhead->{'received'}->@*;
+    my $match = 0; $match ||= 1 if Sisimai::String->aligned(\$mhead->{'from'}, ['no-reply@.', '.dion.ne.jp']);
+                   $match ||= 1 if $mhead->{'reply-to'} && $mhead->{'reply-to'} eq 'no-reply@app.auone-net.jp';
+                   $match ||= 1 if grep { rindex($_, 'ezweb.ne.jp (') > -1 } $mhead->{'received'}->@*;
+                   $match ||= 1 if grep { rindex($_, '.au.com (') > -1 } $mhead->{'received'}->@*;
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
