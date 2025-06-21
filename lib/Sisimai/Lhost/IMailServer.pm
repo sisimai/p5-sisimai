@@ -15,11 +15,10 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
 
     # X-Mailer: <SMTP32 v8.22>
-    $match ||= 1 if index($mhead->{'subject'}, 'Undeliverable Mail ') == 0;
-    $match ||= 1 if defined $mhead->{'x-mailer'} && index($mhead->{'x-mailer'}, '<SMTP32 v') == 0;
+    my $match = 0; $match ||= 1 if index($mhead->{'subject'}, 'Undeliverable Mail ') == 0;
+                   $match ||= 1 if defined $mhead->{'x-mailer'} && index($mhead->{'x-mailer'}, '<SMTP32 v') == 0;
     return undef unless $match;
 
     state $boundaries = ['Original message follows.'];
