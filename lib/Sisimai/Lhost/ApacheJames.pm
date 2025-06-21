@@ -15,11 +15,9 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
-
-    $match ||= 1 if $mhead->{'subject'} eq '[BOUNCE]';
-    $match ||= 1 if defined $mhead->{'message-id'} && rindex($mhead->{'message-id'}, '.JavaMail.') > -1;
-    $match ||= 1 if grep { rindex($_, 'JAMES SMTP Server') > -1 } $mhead->{'received'}->@*;
+    my $match = 0; $match ||= 1 if $mhead->{'subject'} eq '[BOUNCE]';
+                   $match ||= 1 if defined $mhead->{'message-id'} && rindex($mhead->{'message-id'}, '.JavaMail.') > -1;
+                   $match ||= 1 if grep { rindex($_, 'JAMES SMTP Server') > -1 } $mhead->{'received'}->@*;
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
