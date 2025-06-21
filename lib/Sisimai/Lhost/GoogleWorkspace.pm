@@ -16,8 +16,7 @@ sub inquire {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef if     index($$mbody, "\nDiagnostic-Code:") > -1;
-    return undef if     index($$mbody, "\nFinal-Recipient:") > -1;
+    return undef if index($$mbody, "\nDiagnostic-Code:") > -1 || index($$mbody, "\nFinal-Recipient:") > -1;
     return undef unless rindex($mhead->{'from'}, '<mailer-daemon@googlemail.com>') > -1;
     return undef unless index($mhead->{'subject'}, "Delivery Status Notification") > -1;
 
