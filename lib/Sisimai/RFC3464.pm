@@ -105,8 +105,7 @@ sub inquire {
             while(1) {
                 # Append each string before startingof["message"][0] except the following patterns
                 # for the later reference
-                last if $e eq "";       # Blank line
-                last if $goestonext;    # Skip if the part is text/html, image/icon, in multipart/*
+                last if $e eq "" || $goestonext; # Blank line or the part is text/html, image/icon, in multipart/*
 
                 # This line is a boundary kept in "multiparts" as a string, when the end of the boundary
                 # appeared, the condition above also returns true.
