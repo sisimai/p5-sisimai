@@ -17,7 +17,7 @@ sub inquire {
     my $mbody = shift // return undef; return undef unless ref $mbody eq 'SCALAR';
     my $lower = {};
 
-    my $markingsof = { 'boundary' => '__SISIMAI_PSEUDO_BOUNDARY__' };
+    my $markingsof = {'boundary' => '__SISIMAI_PSEUDO_BOUNDARY__'};
     my $lowerlabel = ['from', 'to', 'subject', 'auto-submitted', 'precedence', 'x-apple-action'];
 
     for my $e ( @$lowerlabel ) {
