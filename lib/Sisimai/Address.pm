@@ -18,7 +18,7 @@ use Class::Accessor::Lite (
 );
 
 # Regular expression of valid RFC-5322 email address(<addr-spec>)
-my $Re = { 'rfc5322' => undef, 'ignored' => undef, 'domain' => undef, };
+my $Re = {'rfc5322' => undef, 'ignored' => undef, 'domain' => undef};
 BUILD_REGULAR_EXPRESSIONS: {
     # See http://www.ietf.org/rfc/rfc5322.txt
     #  or http://www.ex-parrot.com/pdw/Mail-RFC822-Address.html ...
@@ -173,7 +173,7 @@ sub find {
         'quoted-string' => (1 << 1),    # "Neko, Nyaan"
         'comment-block' => (1 << 2),    # (neko)
     };
-    state $delimiters = { '<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1 };
+    state $delimiters = {'<' => 1, '>' => 1, '(' => 1, ')' => 1, '"' => 1, ',' => 1};
     state $validemail = qr{(?>
         (?:([^\s]+|["].+?["]))          # local part
         [@]
@@ -181,7 +181,7 @@ sub find {
         )
     }x;
 
-    my $emailtable = { 'address' => '', 'name' => '', 'comment' => '' };
+    my $emailtable = {'address' => '', 'name' => '', 'comment' => ''};
     my $addrtables = [];
     my @readbuffer;
     my $readcursor = 0;
@@ -210,7 +210,7 @@ sub find {
                         # The cursor is not in neither the quoted-string nor the comment block
                         $readcursor = 0;    # reset cursor position
                         push @readbuffer, $v;
-                        $v = { 'address' => '', 'name' => '', 'comment' => '' };
+                        $v = {'address' => '', 'name' => '', 'comment' => ''};
                         $p = '';
                     }
                 } else {
