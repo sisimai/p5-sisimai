@@ -35,7 +35,7 @@ sub rise {
     my $class = shift;
     my $argvs = shift            || return undef;
     my $email = $argvs->{'data'} || return undef;
-    my $thing = { 'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [], 'catch' => undef };
+    my $thing = {'from' => '', 'header' => {}, 'rfc822' => '', 'ds' => [], 'catch' => undef};
     my $param = {};
 
     my $aftersplit = undef;
@@ -69,7 +69,7 @@ sub rise {
 
         # 4. Rewrite message body for detecting the bounce reason
         $TryOnFirst = Sisimai::Order->make($thing->{'header'}->{'subject'});
-        $param = { 'hook' => $argvs->{'hook'} || undef, 'mail' => $thing, 'body' => \$aftersplit->[2] };
+        $param = {'hook' => $argvs->{'hook'} || undef, 'mail' => $thing, 'body' => \$aftersplit->[2]};
         last if $beforefact = __PACKAGE__->sift(%$param);
         last unless grep { index($aftersplit->[2], $_) > -1 } @$Boundaries;
 
@@ -144,13 +144,12 @@ sub makemap {
 
     # Select and convert all the headers in $argv0. The following regular expression is based on
     # https://gist.github.com/xtetsuji/b080e1f5551d17242f6415aba8a00239
-    my $firstpairs = { $$argv0 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms };
-    my $headermaps = { 'subject' => '' };
+    my $firstpairs = {$$argv0 =~ /^([\w-]+):[ ]*(.*?)\n(?![\s\t])/gms};
+    my $headermaps = {'subject' => ''};
        $headermaps->{ lc $_ } = $firstpairs->{ $_ } for keys %$firstpairs;
     my $receivedby = [];
 
     for my $e ( values %$headermaps ) { s/\n\s+/ /, y/\t / /s for $e }
-
     if( index($$argv0, "\nReceived:") > 0 || index($$argv0, "Received:") == 0 ) {
         # Capture values of each Received: header
         my $re = [$$argv0 =~ /^Received:[ ]*(.*?)\n(?![\s\t])/gms];
@@ -355,7 +354,7 @@ sub sift {
 
     if( ref $hookmethod eq 'CODE' ) {
         # Call hook method
-        my $p = { 'headers' => $mailheader, 'message' => $$bodystring };
+        my $p = {'headers' => $mailheader, 'message' => $$bodystring};
         eval { $havecaught = $hookmethod->($p) };
         warn sprintf(" ***warning: Something is wrong in hook method 'hook': %s", $@) if $@;
     }
@@ -379,37 +378,28 @@ sub sift {
             last(DECODER) if $havesifted;
         }
 
-        unless( $haveloaded->{'Sisimai::RFC3464'} ) {
-            # When the all of Sisimai::Lhost::* modules did not return bounce data, call Sisimai::RFC3464;
-            require Sisimai::RFC3464;
-            $havesifted = Sisimai::RFC3464->inquire($mailheader, $bodystring);
-            $modulename = 'RFC3464';
-            last(DECODER) if $havesifted;
-        }
+        # When the all of Sisimai::Lhost::* modules did not return bounce data, call Sisimai::RFC3464;
+        require Sisimai::RFC3464;
+        $havesifted = Sisimai::RFC3464->inquire($mailheader, $bodystring);
+        if( $havesifted ){ $modulename = 'RFC3464'; last(DECODER) }
 
-        unless( $haveloaded->{'Sisimai::ARF'} ) {
-            # Feedback Loop message
-            require Sisimai::ARF;
-            $havesifted = Sisimai::ARF->inquire($mailheader, $bodystring);
-            $modulename = "ARF";
-            last(DECODER) if $havesifted;
-        }
+        # Feedback Loop message
+        require Sisimai::ARF;
+        $havesifted = Sisimai::ARF->inquire($mailheader, $bodystring);
+        if( $havesifted ){ $modulename = "ARF"; last(DECODER) }
 
-        unless( $haveloaded->{'Sisimai::RFC3834'} ) {
-            # Try to sift the message as auto reply message defined in RFC3834
-            require Sisimai::RFC3834;
-            $havesifted = Sisimai::RFC3834->inquire($mailheader, $bodystring);
-            $modulename = 'RFC3834';
-            last(DECODER) if $havesifted;
-        }
+        # Try to sift the message as auto reply message defined in RFC3834
+        require Sisimai::RFC3834;
+        $havesifted = Sisimai::RFC3834->inquire($mailheader, $bodystring);
+        if( $havesifted ){ $modulename = 'RFC3834'; last(DECODER) }
+
         last; # as of now, we have no sample email for coding this block
 
     } # End of while(DECODER)
     return undef unless $havesifted;
 
     $havesifted->{'catch'} = $havecaught;
-    $modulename =~ s/\A.+:://;
-    $_->{'agent'} ||= $modulename for $havesifted->{'ds'}->@*;
+    $modulename =~ s/\A.+:://; $_->{'agent'} ||= $modulename for $havesifted->{'ds'}->@*;
     return $havesifted;
 }
 
