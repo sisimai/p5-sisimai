@@ -135,8 +135,8 @@ sub boundary {
     # Content-Type: multipart/mixed; boundary=Apple-Mail-5--931376066
     # Content-Type: multipart/report; report-type=delivery-status;
     #    boundary="n6H9lKZh014511.1247824040/mx.example.jp"
-    $btext =  '--'.$btext if $start > -1;
-    $btext =  $btext.'--' if $start >  0;
+    $btext = '--'.$btext if $start > -1;
+    $btext = $btext.'--' if $start >  0;
     return $btext;
 }
 
