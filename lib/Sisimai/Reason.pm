@@ -70,12 +70,10 @@ sub find {
     my $class = shift;
     my $argvs = shift // return undef;
 
-    unless( exists $GetRetried->{ $argvs->{'reason'} } ) {
-        # Return a reason text already decided except a reason matched with the regular expression
-        # of ->retry() method.
-        return $argvs->{'reason'} if $argvs->{'reason'};
-    }
-    return 'delivered' if substr($argvs->{'deliverystatus'}, 0, 2) eq '2.';
+    # Return a reason text already decided except a reason matched with the regular expression of
+    # Sisimai::Reason->retry() method.
+    return $argvs->{'reason'} if( (not exists $GetRetried->{ $argvs->{'reason'} }) && $argvs->{'reason'} );
+    return 'delivered'        if substr($argvs->{'deliverystatus'}, 0, 2) eq '2.';
 
     my $reasontext = '';
     my $issuedcode = $argvs->{'diagnosticcode'} || '';
