@@ -366,7 +366,7 @@ sub second2tz {
     #   second2tz(12345)    #=> '+0325'
     my $class = shift;
     my $argv1 = shift // return '+0000';
-    my $digit = { 'operator' => '+' };
+    my $digit = {'operator' => '+'};
 
     return '' if( ref($argv1) && ref($argv1) ne 'Time::Seconds' );
     return '' if( abs($argv1) > TZ_OFFSET );   # UTC+14 + 1(DST?)
