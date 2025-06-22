@@ -21,8 +21,8 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Return-path: '];
-    state $startingof = { 'message' => ['This report relates to a message you sent with the following header fields:'] };
-    state $messagesof = { 'hostunknown' => ['Illegal host/domain name found'] };
+    state $startingof = {'message' => ['This report relates to a message you sent with the following header fields:']};
+    state $messagesof = {'hostunknown' => ['Illegal host/domain name found']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

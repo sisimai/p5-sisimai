@@ -21,7 +21,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Received: from '];
-    state $markingsof = { 'message' => ['The original message was received at '] };
+    state $markingsof = {'message' => ['The original message was received at ']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

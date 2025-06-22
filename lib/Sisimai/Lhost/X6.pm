@@ -18,7 +18,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['The attachment contains the original mail headers'];
-    state $startingof = { 'message' => ['We had trouble delivering your message. Full details follow:'] };
+    state $startingof = {'message' => ['We had trouble delivering your message. Full details follow:']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

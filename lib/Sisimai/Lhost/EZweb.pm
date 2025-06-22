@@ -35,7 +35,7 @@ sub inquire {
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ["--------------------------------------------------", "Content-Type: message/rfc822"];
-    state $startingof = { "message" => ['The user(s) ', 'Your message ', 'Each of the following', '<'] };
+    state $startingof = {"message" => ['The user(s) ', 'Your message ', 'Each of the following', '<']};
     state $messagesof = {
         #'notaccept'  => ['The following recipients did not receive this message:'],
         'expired' => [

@@ -33,7 +33,7 @@ sub inquire {
 
     if( $match == 1 ) {
         # vtext.com
-        my $markingsof = { 'message' => ['Error: '] };
+        my $markingsof = {'message' => ['Error: ']};
            $messagesof = {
             # The attempted recipient address does not exist.
             'userunknown' => ['550 - Requested action not taken: no such user here'],
@@ -83,8 +83,8 @@ sub inquire {
         }
     } else {
         # vzwpix.com
-        my $startingof = { 'message' => ['Message could not be delivered to mobile'] };
-           $messagesof = { 'userunknown' => ['No valid recipients for this MM'] };
+        my $startingof = {'message' => ['Message could not be delivered to mobile']};
+           $messagesof = {'userunknown' => ['No valid recipients for this MM']};
            $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'})];
            $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
         for my $e ( split("\n", $emailparts->[0]) ) {

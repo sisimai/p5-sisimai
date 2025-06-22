@@ -18,7 +18,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
-    state $startingof = { 'message' => ['  ----- The following addresses had permanent fatal errors -----'] };
+    state $startingof = {'message' => ['  ----- The following addresses had permanent fatal errors -----']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

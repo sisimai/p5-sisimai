@@ -23,7 +23,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- Original message follows.'];
-    state $startingof = { 'message' => ['Unable to deliver message to the following address'] };
+    state $startingof = {'message' => ['Unable to deliver message to the following address']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

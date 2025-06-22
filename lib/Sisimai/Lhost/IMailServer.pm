@@ -22,7 +22,7 @@ sub inquire {
     return undef unless $match;
 
     state $boundaries = ['Original message follows.'];
-    state $startingof = { 'error' => ['Body of message generated response:'] };
+    state $startingof = {'error' => ['Body of message generated response:']};
     state $messagesof = {
         'hostunknown'   => ['Unknown host'],
         'userunknown'   => ['Unknown user', 'Invalid final delivery userid'],

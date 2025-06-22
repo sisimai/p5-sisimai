@@ -23,7 +23,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
-    state $startingof = { 'message' => ['Your mail sent on:', 'Your mail attempted to be delivered on:'] };
+    state $startingof = {'message' => ['Your mail sent on:', 'Your mail attempted to be delivered on:']};
     state $messagesof = {
         'mailboxfull' => ['As their mailbox is full'],
         'norelaying'  => ['Due to the following SMTP relay error'],

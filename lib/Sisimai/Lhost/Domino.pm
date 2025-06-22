@@ -25,7 +25,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
-    state $startingof = { 'message' => ['Your message'] };
+    state $startingof = {'message' => ['Your message']};
     state $messagesof = {
         'filtered'    => ['Cannot route mail to user'],
         'systemerror' => ['Several matches found in Domino Directory'],
