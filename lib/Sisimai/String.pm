@@ -86,8 +86,8 @@ sub to_plain {
     my $class = shift;
     my $argv1 = shift // return \''; return \'' if ref $argv1 ne 'SCALAR';
     my $loose = shift // 0;
-
     my $plain = $$argv1;
+
     state $match = {
         'html' => qr|<html[ >].+?</html>|sim,
         'body' => qr|<head>.+</head>.*<body[ >].+</body>|sim,
