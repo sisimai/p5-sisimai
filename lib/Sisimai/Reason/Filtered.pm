@@ -56,7 +56,7 @@ sub true {
     if( $tempreason eq 'filtered' ) {
         # Delivery status code points "filtered".
         return 1 if Sisimai::Reason::UserUnknown->match($issuedcode);
-        return 1 if __PACKAGE__->match($issuedcode);
+        return __PACKAGE__->match($issuedcode);
 
     } else {
         # The value of "reason" isn't "filtered" when the value of "command" is an SMTP command to
@@ -64,9 +64,8 @@ sub true {
         # message body after the DATA command.
         return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->ExceptDATA->@*;
         return 1 if __PACKAGE__->match($issuedcode);
-        return 1 if Sisimai::Reason::UserUnknown->match($issuedcode);
+        return Sisimai::Reason::UserUnknown->match($issuedcode);
     }
-    return 0;
 }
 
 1;
