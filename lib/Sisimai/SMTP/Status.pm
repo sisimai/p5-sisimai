@@ -840,8 +840,8 @@ sub prefer {
     }
     return $statuscode if $statuscode eq $codeinmesg;
 
-    my $zeroindex1 = { 'field' => index($statuscode, '.0'),   'error' => index($codeinmesg, '.0')   };
-    my $zeroindex2 = { 'field' => index($statuscode, '.0.0'), 'error' => index($codeinmesg, '.0.0') };
+    my $zeroindex1 = {'field' => index($statuscode, '.0'),   'error' => index($codeinmesg, '.0')  };
+    my $zeroindex2 = {'field' => index($statuscode, '.0.0'), 'error' => index($codeinmesg, '.0.0')};
 
     if( $zeroindex2->{'field'} > 0 ) {
         # "Status:" field is "X.0.0"
