@@ -40,7 +40,7 @@ MAKETEST: {
             }
         }
     }
-    is $Package->find(undef), undef;
+    is $Package->find(undef), "";
 }
 
 done_testing;
