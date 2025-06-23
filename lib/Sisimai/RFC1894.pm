@@ -29,8 +29,8 @@ sub match {
     # @return   [Integer]      0: did not matched, 1,2: matched
     # @since v4.25.0
     my $class = shift;
-    my $argv0 = shift                      || return undef;
-    my $label = __PACKAGE__->label($argv0) || return undef;
+    my $argv0 = shift                      || return 0;
+    my $label = __PACKAGE__->label($argv0) || return 0;
     my $match = 0;
 
     state $fieldnames = [
@@ -100,8 +100,8 @@ sub label {
     # @return   [String]       Field name as a label
     # @since v4.25.15
     my $class = shift;
-    my $argv0 = shift || return undef;
-    return lc((split(':', $argv0, 2))[0]) || undef;
+    my $argv0 = shift || return "";
+    return lc((split(':', $argv0, 2))[0]) || "";
 }
 
 sub field {
