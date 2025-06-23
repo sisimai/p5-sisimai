@@ -103,8 +103,7 @@ sub inquire {
 
     # Load as JSON string and decode
     require JSON;
-    my $jsonobject = undef;
-    eval { $jsonobject = JSON->new->decode($sespayload) };
+    my $jsonobject = undef; eval { $jsonobject = JSON->new->decode($sespayload) };
     if( $@ ) {
         # Something wrong in decoding JSON
         warn sprintf(" ***warning: Failed to decode JSON: %s", $@);
@@ -153,8 +152,7 @@ sub inquire {
         }
     } elsif( $whatnotify eq "C" ) {
         # "notificationType":"Complaint"
-        my $p = $jsonobject->{"complaint"};
-        for my $e ( $p->{"complainedRecipients"}->@* ) {
+        my $p = $jsonobject->{"complaint"}; for my $e ( $p->{"complainedRecipients"}->@* ) {
             # {"emailAddress":"neko@example.jp"}
             if( $v->{"recipient"} ) {
                 # There are multiple recipient addresses in the message body.
@@ -170,8 +168,7 @@ sub inquire {
         }
     } elsif( $whatnotify eq "D" ) {
         # "notificationType":"Delivery"
-        my $p = $jsonobject->{"delivery"};
-        for my $e ( $p->{"recipients"}->@* ) {
+        my $p = $jsonobject->{"delivery"}; for my $e ( $p->{"recipients"}->@* ) {
             # {"recipients":["neko@example.jp"]}
             if( $v->{"recipient"} ) {
                 # There are multiple recipient addresses in the message body.

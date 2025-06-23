@@ -23,8 +23,8 @@ sub inquire {
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- The header of the original message is following. ---'];
-    state $startingof = { 'message' => ['This message was created automatically by mail delivery software'] };
-    state $messagesof = { 'expired' => ['delivery retry timeout exceeded'] };
+    state $startingof = {'message' => ['This message was created automatically by mail delivery software']};
+    state $messagesof = {'expired' => ['delivery retry timeout exceeded']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

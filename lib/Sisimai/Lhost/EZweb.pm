@@ -15,18 +15,17 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
 
     # Pre-process email headers of NON-STANDARD bounce message au by EZweb, as known as ezweb.ne.jp.
     #   Subject: Mail System Error - Returned Mail
     #   From: <Postmaster@ezweb.ne.jp>
     #   Received: from ezweb.ne.jp (wmflb12na02.ezweb.ne.jp [222.15.69.197])
     #   Received: from nmomta.auone-net.jp ([aaa.bbb.ccc.ddd]) by ...
-    $match++ if rindex($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
-    $match++ if rindex($mhead->{'from'}, 'Postmaster@au.com') > -1;
-    $match++ if $mhead->{'subject'} eq 'Mail System Error - Returned Mail';
-    $match++ if grep { rindex($_, 'ezweb.ne.jp (EZweb Mail) with') > -1 } $mhead->{'received'}->@*;
-    $match++ if grep { rindex($_, '.au.com (') > -1 } $mhead->{'received'}->@*;
+    my $match = 0; $match++ if rindex($mhead->{'from'}, 'Postmaster@ezweb.ne.jp') > -1;
+                   $match++ if rindex($mhead->{'from'}, 'Postmaster@au.com') > -1;
+                   $match++ if $mhead->{'subject'} eq 'Mail System Error - Returned Mail';
+                   $match++ if grep { rindex($_, 'ezweb.ne.jp (EZweb Mail) with') > -1 } $mhead->{'received'}->@*;
+                   $match++ if grep { rindex($_, '.au.com (') > -1 } $mhead->{'received'}->@*;
     if( defined $mhead->{'message-id'} ) {
         $match++ if substr($mhead->{'message-id'}, -13, 13) eq '.ezweb.ne.jp>';
         $match++ if substr($mhead->{'message-id'}, -8, 8) eq '.au.com>';
@@ -36,7 +35,7 @@ sub inquire {
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ["--------------------------------------------------", "Content-Type: message/rfc822"];
-    state $startingof = { "message" => ['The user(s) ', 'Your message ', 'Each of the following', '<'] };
+    state $startingof = {"message" => ['The user(s) ', 'Your message ', 'Each of the following', '<']};
     state $messagesof = {
         #'notaccept'  => ['The following recipients did not receive this message:'],
         'expired' => [

@@ -137,14 +137,11 @@ sub find {
     unless( $reasontext ) {
         # The error code was not found in $errorcodes
         $issuedcode = lc $issuedcode;
-        REASON: for my $e ( keys %$messagesof ) {
+        for my $e ( keys %$messagesof ) {
             # Try to find with each error message defined in $messagesof
-            for my $f ( $messagesof->{ $e }->@* ) {
-                # Find an error reason
-                next unless index($issuedcode, $f) > -1;
-                $reasontext = $e;
-                last REASON;
-            }
+            next unless grep { index($issuedcode, $_) > -1 } $messagesof->{ $e }->@*;
+            $reasontext = $e;
+            last;
         }
     }
     return $reasontext;
@@ -181,7 +178,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2020-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

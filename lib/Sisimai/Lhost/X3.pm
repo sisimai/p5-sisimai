@@ -22,7 +22,7 @@ sub inquire {
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822'];
-    state $startingof = { 'message' => ['      This is an automatically generated Delivery Status Notification.'] };
+    state $startingof = {'message' => ['      This is an automatically generated Delivery Status Notification.']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

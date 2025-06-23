@@ -15,11 +15,9 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef; return undef unless keys %$mhead;
     my $mbody = shift // return undef; return undef unless ref $mbody eq 'SCALAR';
-    my $leave = 0;
-    my $match = 0;
     my $lower = {};
 
-    my $markingsof = { 'boundary' => '__SISIMAI_PSEUDO_BOUNDARY__' };
+    my $markingsof = {'boundary' => '__SISIMAI_PSEUDO_BOUNDARY__'};
     my $lowerlabel = ['from', 'to', 'subject', 'auto-submitted', 'precedence', 'x-apple-action'];
 
     for my $e ( @$lowerlabel ) {
@@ -52,7 +50,7 @@ sub inquire {
         [ ]*(.+)\z
     }x;
 
-    DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$donotparse ) {
+    my $leave = 0; DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$donotparse ) {
         # Exclude message from root@
         next unless exists  $lower->{ $e };
         next unless grep { index($lower->{ $e }, $_) > -1 } $donotparse->{ $e }->@*;
@@ -61,7 +59,7 @@ sub inquire {
     }
     return undef if $leave;
 
-    DETECT_AUTO_REPLY_MESSAGE0: for my $e ( keys %$autoreply0 ) {
+    my $match = 0; DETECT_AUTO_REPLY_MESSAGE0: for my $e ( keys %$autoreply0 ) {
         # RFC3834 Auto-Submitted and other headers
         next unless exists  $lower->{ $e };
         next unless grep { index($lower->{ $e }, $_) == 0 } $autoreply0->{ $e }->@*;

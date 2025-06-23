@@ -15,16 +15,14 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
-
-    $match ||= 1 if rindex($mhead->{'content-type'}, 'Boundary_(ID_') > -1;
-    $match ||= 1 if index($mhead->{'subject'}, 'Delivery Notification: ') == 0;
+    my $match = 0; $match ||= 1 if rindex($mhead->{'content-type'}, 'Boundary_(ID_') > -1;
+                   $match ||= 1 if index($mhead->{'subject'}, 'Delivery Notification: ') == 0;
     return undef unless $match;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Return-path: '];
-    state $startingof = { 'message' => ['This report relates to a message you sent with the following header fields:'] };
-    state $messagesof = { 'hostunknown' => ['Illegal host/domain name found'] };
+    state $startingof = {'message' => ['This report relates to a message you sent with the following header fields:']};
+    state $messagesof = {'hostunknown' => ['Illegal host/domain name found']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

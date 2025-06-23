@@ -26,8 +26,7 @@ sub inquire {
         # Subject: Undelivered Mail Returned to Sender
         $match = 1 if $mhead->{'subject'} eq 'Undelivered Mail Returned to Sender';
     }
-    return undef if $match == 0;
-    return undef if $mhead->{'x-aol-ip'};
+    return undef if $match == 0 || $mhead->{'x-aol-ip'};
 
     require Sisimai::RFC1123;
     require Sisimai::SMTP::Reply;

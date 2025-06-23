@@ -112,9 +112,9 @@ sub field {
     my $class = shift;
     my $argv0 = shift || return undef;
 
-    state $subtypeset = { "addr" => "RFC822", "cdoe" => "SMTP", "host" => "DNS" };
+    state $subtypeset = {"addr" => "RFC822", "cdoe" => "SMTP", "host" => "DNS"};
     state $actionlist = ["failed", "delayed", "delivered", "relayed", "expanded"];
-    state $correction = { 'deliverable' => 'delivered', 'expired' => 'delayed', 'failure' => 'failed' };
+    state $correction = {'deliverable' => 'delivered', 'expired' => 'delayed', 'failure' => 'failed'};
     state $fieldgroup = {
         'original-recipient'    => 'addr',
         'final-recipient'       => 'addr',

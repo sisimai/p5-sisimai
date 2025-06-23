@@ -15,16 +15,10 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = -1;
 
-    while(1) {
-        # Check the value of "From" header
-        # 'subject' => qr/Undeliverable Message/,
-        last unless grep { rindex($_, '.vtext.com (') > -1 } $mhead->{'received'}->@*;
-        $match = 1 if $mhead->{'from'} eq 'post_master@vtext.com';
-        $match = 0 if Sisimai::String->aligned(\$mhead->{'from'}, ['sysadmin@', '.vzwpix.com']);
-        last;
-    }
+    return undef unless grep { rindex($_, '.vtext.com (') > -1 } $mhead->{'received'}->@*;
+    my $match = -1; $match = 1 if $mhead->{'from'} eq 'post_master@vtext.com';
+                    $match = 0 if Sisimai::String->aligned(\$mhead->{'from'}, ['sysadmin@', '.vzwpix.com']);
     return undef if $match < 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
@@ -35,15 +29,12 @@ sub inquire {
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $senderaddr = '';    # (String) Sender address in the message body
     my $subjecttxt = '';    # (String) Subject of the original message
-
-    my $startingof = {};    # (Ref->Hash) Delimiter strings
-    my $markingsof = {};    # (Ref->Hash) Delimiter patterns
     my $messagesof = {};    # (Ref->Hash) Error message patterns
 
     if( $match == 1 ) {
         # vtext.com
-        $markingsof = { 'message' => ['Error: '] };
-        $messagesof = {
+        my $markingsof = {'message' => ['Error: ']};
+           $messagesof = {
             # The attempted recipient address does not exist.
             'userunknown' => ['550 - Requested action not taken: no such user here'],
         };
@@ -92,10 +83,10 @@ sub inquire {
         }
     } else {
         # vzwpix.com
-        $startingof = { 'message' => ['Message could not be delivered to mobile'] };
-        $messagesof = { 'userunknown' => ['No valid recipients for this MM'] };
-        $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'})];
-        $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+        my $startingof = {'message' => ['Message could not be delivered to mobile']};
+           $messagesof = {'userunknown' => ['No valid recipients for this MM']};
+           $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'})];
+           $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
         for my $e ( split("\n", $emailparts->[0]) ) {
             # Read error messages and delivery status lines from the head of the email to the previous
             # line of the beginning of the original message.

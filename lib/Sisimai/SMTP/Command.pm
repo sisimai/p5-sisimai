@@ -33,7 +33,7 @@ sub find {
     my $argv0 = shift // return undef; return undef unless __PACKAGE__->test($argv0);
 
     my $issuedcode = ' '.lc($argv0).' ';
-    my $commandmap = { 'STAR' => 'STARTTLS', 'XFOR' => 'XFORWARD' };
+    my $commandmap = {'STAR' => 'STARTTLS', 'XFOR' => 'XFORWARD'};
     my $commandset = [];
 
     for my $e ( @$Detectable ) {

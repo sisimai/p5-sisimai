@@ -21,8 +21,8 @@ sub inquire {
     # X-Mailer: Zoho Mail
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Received: from mail.zoho.com by mx.zohomail.com'];
-    state $startingof = { 'message' => ['This message was created automatically by mail delivery'] };
-    state $messagesof = { 'expired' => ['Host not reachable'] };
+    state $startingof = {'message' => ['This message was created automatically by mail delivery']};
+    state $messagesof = {'expired' => ['Host not reachable']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

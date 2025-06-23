@@ -41,7 +41,7 @@ sub rise {
         if( $c___->[1] ) {
             # Run the callback function specified with "c___" parameter of Sisimai->rise after reading
             # each email file in Maildir/ every time
-            $args = { 'kind' => $kind, 'mail' => \$r, 'path' => $path, 'fact' => $fact };
+            $args = {'kind' => $kind, 'mail' => \$r, 'path' => $path, 'fact' => $fact};
             eval { $c___->[1]->($args) if ref $c___->[1] eq 'CODE' };
             warn sprintf(" ***warning: Something is wrong in the second element of the 'c___': %s", $@) if $@;
         }

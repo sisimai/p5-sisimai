@@ -20,12 +20,11 @@ sub inquire {
     # see https://cr.yp.to/qmail.html
     #   e.g.) Received: (qmail 12345 invoked for bounce); 29 Apr 2009 12:34:56 -0000
     #         Subject: failure notice
-    my $proceedsto = 0;
     my $emailtitle = [
         "failure notice", # qmail-send.c:Subject: failure notice\n\
         "Failure Notice", # Yahoo
     ];
-    $proceedsto++ if grep { $mhead->{"subject"} eq $_ } @$emailtitle;
+    my $proceedsto = 0; $proceedsto++ if grep { $mhead->{"subject"} eq $_ } @$emailtitle;
 
     for my $e ( $mhead->{"received"}->@* ) {
         # Received: (qmail 2222 invoked for bounce);29 Apr 2017 23:34:45 +0900

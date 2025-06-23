@@ -19,7 +19,7 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['------- Returned Message --------'];
-    state $startingof = { 'message' => ['------- Failure Reasons '] };
+    state $startingof = {'message' => ['------- Failure Reasons ']};
     state $messagesof = {
         'userunknown' => [
             'User not listed in public Name & Address Book',

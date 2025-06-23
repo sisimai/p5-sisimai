@@ -16,11 +16,10 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
 
     return undef if $mhead->{'x-aol-ip'};   # X-AOL-IP is a header defined in AOL
-    $match ||= 1 if index($mhead->{'subject'}, 'see transcript for details') > -1;
-    $match ||= 1 if index($mhead->{'subject'}, 'Warning: ')                  == 0;
+    my $match = 0; $match ||= 1 if index($mhead->{'subject'}, 'see transcript for details') > -1;
+                   $match ||= 1 if index($mhead->{'subject'}, 'Warning: ')                  == 0;
     return undef unless $match > 0;
 
     require Sisimai::RFC1123;

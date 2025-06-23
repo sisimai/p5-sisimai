@@ -15,12 +15,11 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-    my $match = 0;
 
     # X-MS-TNEF-Correlator: <00000000000000000000000000000000000000@example.com>
     # X-Mailer: Internet Mail Service (5.5.1960.3)
     # X-MS-Embedded-Report:
-    $match ||= 1 if defined $mhead->{'x-ms-embedded-report'};
+    my $match = 0; $match ||= 1 if defined $mhead->{'x-ms-embedded-report'};
     EXCHANGE_OR_NOT: while(1) {
         # Check the value of X-Mailer header
         last if $match;
@@ -205,8 +204,8 @@ sub inquire {
 
         # Could not detect the reason from the value of "diagnosis", copy alternative error message
         next if $e->{'reason'};
-        next unless exists $e->{'alterrors'};
-        next unless length $e->{'alterrors'};
+        next unless exists $e->{'alterrors'} && length $e->{'alterrors'};
+
         $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         delete $e->{'alterrors'};

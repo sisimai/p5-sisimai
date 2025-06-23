@@ -22,7 +22,7 @@ sub new {
     my $argv1 = shift;
     my $klass = undef;
     my $loads = 'Sisimai/Mail/';
-    my $param = { 'kind' => '', 'data' => undef, 'path' => $argv1 };
+    my $param = {'kind' => '', 'data' => undef, 'path' => $argv1};
 
     # The argumenet is a mailbox or a Maildir/.
     if( -f $argv1 ) {

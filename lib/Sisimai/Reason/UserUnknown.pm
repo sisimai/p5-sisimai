@@ -143,8 +143,7 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
-    return 1 if $argvs->{'reason'} eq 'userunknown';
+    my $argvs = shift // return undef; return 1 if $argvs->{'reason'} eq 'userunknown';
 
     my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
     return 0 if $tempreason eq 'suspend';
@@ -239,7 +238,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

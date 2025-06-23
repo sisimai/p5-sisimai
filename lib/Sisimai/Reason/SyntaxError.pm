@@ -14,7 +14,7 @@ sub true {
     # @since v4.1.25
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return undef; return undef unless exists $argvs->{'replycode'};
     my $reply = int($argvs->{'replycode'} || 0);
 
     return 1 if $argvs->{'reason'} eq 'syntaxerror';
@@ -73,7 +73,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

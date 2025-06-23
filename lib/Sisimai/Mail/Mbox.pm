@@ -25,7 +25,7 @@ sub new {
     #           [Undef]                 is not a file or does not exist
     my $class = shift;
     my $argv1 = shift // return undef; return undef unless -f $argv1;
-    my $param = { 'offset' => 0 };
+    my $param = {'offset' => 0};
 
     $param->{'dir'}    = File::Basename::dirname $argv1;
     $param->{'path'}   = $argv1;

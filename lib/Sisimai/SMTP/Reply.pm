@@ -119,7 +119,7 @@ state $ReplyCode5 = [
     550, 552, 553, 551, 521, 525, 523, 524, 530, 533, 534, 535, 538, 555, 556, 554,
     500, 501, 502, 503, 504,
 ];
-state $CodeOfSMTP = { '2' => $ReplyCode2, '4' => $ReplyCode4, '5' => $ReplyCode5 };
+state $CodeOfSMTP = {'2' => $ReplyCode2, '4' => $ReplyCode4, '5' => $ReplyCode5};
 state $Associated = {
     "422" => ["AUTH",     "4.7.12",  "securityerror"], # RFC5238
     "432" => ["AUTH",     "4.7.12",  "securityerror"], # RFC4954, RFC5321

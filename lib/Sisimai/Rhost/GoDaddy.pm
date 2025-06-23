@@ -218,12 +218,10 @@ sub find {
 
     $issuedcode = lc $issuedcode;
     for my $e ( keys %$messagesof ) {
-        for my $f ( $messagesof->{ $e }->@* ) {
-            next if index($issuedcode, $f) == -1;
-            $reasontext = $e;
-            last
-        }
-        last if $reasontext;
+        # Try to find the error message matches with the given error message string
+        next unless grep { index($issuedcode, $_) > -1 } $messagesof->{ $e }->@*;
+        $reasontext = $e;
+        last;
     }
     return $reasontext;
 }

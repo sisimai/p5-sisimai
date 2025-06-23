@@ -30,12 +30,9 @@ sub is_arf {
         }
     }
 
-    APPLE: while(1) {
-        # X-Apple-Unsubscribe: true
-        last unless exists $heads->{"x-apple-unsubscribe"};
-        return 1 if $heads->{"x-apple-unsubscribe"} eq "true";
-        last APPLE;
-    }
+    # X-Apple-Unsubscribe: true
+    return 0 unless exists $heads->{"x-apple-unsubscribe"};
+    return 1 if $heads->{"x-apple-unsubscribe"} eq "true";
     return 0;
 }
 
