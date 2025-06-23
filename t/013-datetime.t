@@ -100,11 +100,11 @@ MAKETEST: {
 
         for my $e ( @$invaliddates ) {
             my $text = $v->parse($e);
-            ok length($text || '') == 0, '->parse('.$e.') = '.($text || '');
+            is $text, "", '->parse('.$e.') = ""';
         }
 
         my $e = $v->parse();
-        is $e, undef, '->parse() = undef';
+        is $e, "", '->parse() = ""';
     }
 
     ABBR2TZ: {
@@ -117,7 +117,7 @@ MAKETEST: {
         is $v->abbr2tz('EDT'), '-0400', 'EDT = -0400';
         is $v->abbr2tz('HST'), '-1000', 'HST = -1000';
         is $v->abbr2tz('UT'),  '-0000', 'UT  = -0000';
-        is $v->abbr2tz(),      undef,   '""  = undef';
+        is $v->abbr2tz(),      "",      '""  = ""';
     }
 
     TIMEZONE_TO_SECOND: {
@@ -127,10 +127,10 @@ MAKETEST: {
         is $v->tz2second('+0900'), 32400, $v.'->tz2second(+0900)';
         is $v->tz2second('-1200'), -43200, $v.'->tz2second(-1200)';
         is $v->tz2second('+1200'), 43200, $v.'->tz2second(+1200)';
-        is $v->tz2second('-1800'), undef, $v.'->tz2second(-1800)';
-        is $v->tz2second('+1800'), undef, $v.'->tz2second(+1800)';
-        is $v->tz2second('NULL'), undef, $v.'->tz2second(NULL)';
-        is $v->tz2second, undef, $v.'->tz2second';
+        is $v->tz2second('-1800'), -1, $v.'->tz2second(-1800)';
+        is $v->tz2second('+1800'), -1, $v.'->tz2second(+1800)';
+        is $v->tz2second('NULL'), -1, $v.'->tz2second(NULL)';
+        is $v->tz2second, -1, $v.'->tz2second';
     }
 
     SECOND_TO_TIMEZONE: {
@@ -148,11 +148,11 @@ MAKETEST: {
     IRREGULAR_CASE: {
         for my $e ( @{ $L->{'false'} }, @{ $L->{'zero'} }, @{ $L->{'esc'} }, @{ $L->{'ctrl'} } ) {
             my $r = defined $e ? sprintf("%#x", ord $e) : 'undef';
-            is $v->tz2second($e), undef, '->tz2second() The value: '.$r;
+            is $v->tz2second($e), -1, '->tz2second() The value: '.$r;
         }
 
         for my $e ( @{ $L->{'minus'} } ) {
-            is $v->tz2second($e), undef, '->tz2second() The value: '.$e;
+            is $v->tz2second($e), -1, '->tz2second() The value: '.$e;
         }
     }
 }
