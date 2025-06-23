@@ -45,8 +45,8 @@ BUILD_REGULAR_EXPRESSIONS: {
 sub undisclosed {
     # Return pseudo recipient or sender address
     # @param    [String] argv0  Address type: true = recipient, false = sender
-    # @return   [String, undef] Pseudo recipient address or sender address or undef when the $atype
-    #                           is neither 'r' nor 's'
+    # @return   [String]        Pseudo recipient address or sender address or an empty value when
+    #                           the $argv0 is neither 'r' nor 's'
     my $class = shift;
     my $argv0 = shift // 0;
     my $local = $argv0 ? 'recipient' : 'sender';
@@ -160,8 +160,7 @@ sub find {
     # @param    [String] argv1  String including email address
     # @param    [Boolean] addrs 0 = Returns list including all the elements
     #                           1 = Returns list including email addresses only
-    # @return   [Array, undef]  Email address list or undef when there is no
-    #                           email address in the argument
+    # @return   [Array]         Email address list or undef when there is no email address in the argument
     # @since    v4.22.0
     my $class = shift;
     my $argv1 = shift // return undef; y/\r//d, y/\n//d for $argv1; # Remove CR, NL
@@ -408,7 +407,7 @@ sub s3s4 {
     # @param    [String] input  Text including an email address
     # @return   [String]        Email address without comment, brackets
     my $class = shift;
-    my $input = shift // return undef;
+    my $input = shift // return "";
     my $addrs = __PACKAGE__->find($input, 1) || [];
     return $input unless scalar @$addrs;
     return $addrs->[0]->{'address'};
@@ -419,11 +418,11 @@ sub expand_verp {
     # @param    [String] email  VERP Address
     # @return   [String]        Email address
     my $class = shift;
-    my $email = shift // return undef;
+    my $email = shift // return "";
     my $local = (split('@', $email, 2))[0];
 
     # bounce+neko=example.org@example.org => neko@example.org
-    return undef unless $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/;
+    return "" unless $local =~ /\A[-_\w]+?[+](\w[-._\w]+\w)[=](\w[-.\w]+\w)\z/;
     my $verp0 = $1.'@'.$2;
     return $verp0 if __PACKAGE__->is_emailaddress($verp0);
 }
@@ -433,11 +432,11 @@ sub expand_alias {
     # @param    [String] email  Email alias string
     # @return   [String]        Expanded email address
     my $class = shift;
-    my $email = shift // return undef; return undef unless __PACKAGE__->is_emailaddress($email);
+    my $email = shift // return ""; return "" unless __PACKAGE__->is_emailaddress($email);
 
     # neko+straycat@example.org => neko@example.org
     my @local = split('@', $email);
-    return undef unless $local[0] =~ /\A([-_\w]+?)[+].+\z/;
+    return "" unless $local[0] =~ /\A([-_\w]+?)[+].+\z/;
     return $1.'@'.$local[1];
 }
 

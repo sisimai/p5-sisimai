@@ -293,7 +293,7 @@ MAKETEST: {
         $a = 'nyaa+neko=example.jp@example.org';
         $v = $p->new({ 'address' => $a });
         is $p->expand_verp($a), 'neko@example.jp', sprintf("%s->expand_verp(%s) = %s", $p, $a, $v);
-        is $p->expand_verp(undef), undef;
+        is $p->expand_verp(undef), "";
         is $v->verp, $a, sprintf("%s->new(v)->verp = %s", $p, $a);
 
     }
@@ -303,7 +303,7 @@ MAKETEST: {
         $v = $p->new({ 'address' => $a });
 
         is $p->expand_alias($a), 'neko@example.jp', sprintf("%s->expand_alias(%s) = %s", $p, $a, $v);
-        is $p->expand_alias(undef), undef;
+        is $p->expand_alias(undef), "";
         is $v->alias, $a, sprintf("%s->new(v)->alias = %s", $p, $a);
     }
 
@@ -322,7 +322,9 @@ MAKETEST: {
 
     IS_NOT_EMAIL: {
         for my $e ( @$isnotemail ) {
-            $v = $p->s3s4($e);                 is $v, $e,    sprintf("%s->s3s4(v) = %s", $p, $e);
+            if( defined $e ) {
+                $v = $p->s3s4($e);             is $v, $e,    sprintf("%s->s3s4(v) = %s", $p, $e);
+            }
             $v = $p->new({ 'address' => $e }); is $v, undef, sprintf("%s->new(v) = undef", $p);
             $v = $p->find($e);                 is $v, undef, sprintf("%s->find(v) = undef", $p);
             $v = $p->is_emailaddress($e);      is $v, 0,     sprintf("%s->is_emailaddress = 0", $p);
