@@ -18,7 +18,7 @@ use Class::Accessor::Lite (
 );
 
 # Regular expression of valid RFC-5322 email address(<addr-spec>)
-my $Re = {'rfc5322' => undef, 'ignored' => undef, 'domain' => undef};
+my $Re = {'rfc5322' => "", 'ignored' => "", 'domain' => ""};
 BUILD_REGULAR_EXPRESSIONS: {
     # See http://www.ietf.org/rfc/rfc5322.txt
     #  or http://www.ex-parrot.com/pdw/Mail-RFC822-Address.html ...
@@ -37,9 +37,9 @@ BUILD_REGULAR_EXPRESSIONS: {
     my $local_part     = qr/(?:$dot_atom|$quoted_string)/o;
     my $domain         = qr/(?:$dot_atom|$domain_literal)/o;
 
-    $Re->{'rfc5322'} = qr/\A$local_part[@]$domain\z/o;
-    $Re->{'ignored'} = qr/\A$local_part[.]*[@]$domain\z/o;
-    $Re->{'domain'}  = qr/\A$domain\z/o;
+    $Re->{'rfc5322'}   = qr/\A$local_part[@]$domain\z/o;
+    $Re->{'ignored'}   = qr/\A$local_part[.]*[@]$domain\z/o;
+    $Re->{'domain'}    = qr/\A$domain\z/o;
 }
 
 sub undisclosed {
