@@ -131,7 +131,7 @@ sub to_utf8 {
     state $dontencode = ['utf8', 'utf-8', 'us-ascii', 'ascii'];
     my $tobeutf8ed = $$argv1;
     my $encodefrom = lc $argv2 || '';
-    my $hasencoded = undef;
+    my $hasencoded = 0;
     my $hasguessed = Encode::Guess->guess($tobeutf8ed);
     my $encodingto = ref $hasguessed ? lc($hasguessed->name) : '';
 
