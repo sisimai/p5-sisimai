@@ -52,9 +52,9 @@ sub read {
     # Maildir reader, works as an iterator.
     # @return       [String] Contents of file in Maildir/
     my $self = shift;
-    return undef unless defined $self->{'dir'};
-    return undef unless -d $self->{'dir'};
-    return undef unless $self->{'offset'} < $self->{'size'};
+    return "" unless defined $self->{'dir'};
+    return "" unless -d $self->{'dir'};
+    return "" unless $self->{'offset'} < $self->{'size'};
 
     my $seekhandle = $self->{'handle'};
     my $readbuffer = '';

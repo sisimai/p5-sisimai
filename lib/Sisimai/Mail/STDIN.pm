@@ -31,7 +31,7 @@ sub new {
 sub read {
     # Mbox reader, works as an iterator.
     # @return   [String] Contents of mbox
-    my $self       = shift; return undef unless -T $self->{'handle'};
+    my $self       = shift; return "" unless -T $self->{'handle'};
     my $readhandle = $self->{'handle'};
     my $readbuffer = '';
     eval {
