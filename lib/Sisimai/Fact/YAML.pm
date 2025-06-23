@@ -6,12 +6,12 @@ use warnings;
 sub dump {
     # Data dumper(YAML)
     # @param    [Sisimai::Fact] argvs   Object
-    # @return   [String, undef]         Dumped data or undef if the argument is missing
+    # @return   [String]                Dumped data or an empty string if the argument is missing
     my $class = shift;
-    my $argvs = shift // return undef; return undef if ref $argvs ne 'Sisimai::Fact';
+    my $argvs = shift // return ""; return "" if ref $argvs ne 'Sisimai::Fact';
     my $damneddata = undef;
-    my $yamlstring = undef;
     my $modulename = undef;
+    my $yamlstring = "";
 
     eval {
         require YAML;
