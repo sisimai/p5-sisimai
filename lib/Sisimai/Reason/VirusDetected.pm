@@ -13,7 +13,7 @@ sub match {
     #                           1: Matched
     # @since v4.22.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'it has a potentially executable attachment',
@@ -35,7 +35,7 @@ sub true {
     # @since v4.22.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return 0;
 
     # The value of "reason" isn't "virusdetected" when the value of "command" is an SMTP command to
     # be sent before the SMTP DATA command because all the MTAs read the headers and the entire
@@ -99,7 +99,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

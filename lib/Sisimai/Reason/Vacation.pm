@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v4.22.3
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'i am away on vacation',
@@ -23,7 +23,7 @@ sub match {
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
 }
-sub true  { return undef }
+sub true  { return 0 }
 1;
 
 __END__
@@ -54,11 +54,11 @@ C<text()> method returns the fixed string C<vacation>.
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> method always return C<undef>
+C<match()> method always return C<0>
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method always return C<undef>
+C<true()> method always return C<0>
 
 =head1 AUTHOR
 
@@ -66,7 +66,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018,2020,2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

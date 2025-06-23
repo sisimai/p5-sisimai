@@ -13,7 +13,7 @@ sub match {
     #                           1: Matched
     # @since v4.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'connection timed out',
@@ -52,7 +52,7 @@ sub true {
     # @return   [Integer]               1: is expired
     #                                   0: is not expired
     # @see      http://www.ietf.org/rfc/rfc2822.txt
-    return undef;
+    return 0;
 }
 
 1;
@@ -102,7 +102,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v4.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         ' is currently suspended',
@@ -51,7 +51,7 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return 0;
 
     return 1 if $argvs->{'reason'} eq 'suspend';
     return 1 if length $argvs->{'replycode'} && $argvs->{'replycode'} == 525;

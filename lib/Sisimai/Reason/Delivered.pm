@@ -5,8 +5,8 @@ use warnings;
 
 sub text  { 'delivered' }
 sub description { 'Email delivered successfully' }
-sub match { return undef }
-sub true  { return undef }
+sub match { return 0 }
+sub true  { return 0 }
 
 1;
 __END__
@@ -45,11 +45,11 @@ C<text()> returns the fixed string C<delivered>.
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> method always return C<undef>
+C<match()> method always return C<0>
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method always return C<undef>
+C<true()> method always return C<0>
 
 =head1 AUTHOR
 
@@ -57,7 +57,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016,2020,2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2016,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

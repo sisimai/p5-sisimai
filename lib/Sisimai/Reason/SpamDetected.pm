@@ -14,7 +14,7 @@ sub match {
     #                           1: Matched
     # @since v4.1.19
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         ' - spam',
@@ -131,7 +131,7 @@ sub true {
     # @since v4.1.19
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef; return undef unless $argvs->{'deliverystatus'};
+    my $argvs = shift // return 0; return 0 unless $argvs->{'deliverystatus'};
 
     return 1 if $argvs->{'reason'} eq 'spamdetected';
     return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'spamdetected';

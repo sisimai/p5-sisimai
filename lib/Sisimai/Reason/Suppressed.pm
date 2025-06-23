@@ -22,7 +22,7 @@ sub true {
     # @since v4.1.25
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return 0;
 
     return 1 if $argvs->{'reason'} eq 'suppressed';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
@@ -75,7 +75,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

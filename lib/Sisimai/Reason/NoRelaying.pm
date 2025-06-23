@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v4.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'as a relay',
@@ -49,7 +49,7 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return 0;
 
     return 0 if $argvs->{'reason'} eq 'securityerror'
              || $argvs->{'reason'} eq 'systemerror'
@@ -110,7 +110,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020-2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
