@@ -13,7 +13,7 @@ sub is_encoded {
     # @return   [Boolean]       0: Not MIME encoded string
     #                           1: MIME encoded string
     my $class = shift;
-    my $argv0 = shift || return undef;
+    my $argv0 = shift || return 0;
     my $text1 = $$argv0; $text1 =~ y/"//d;
     my @piece = ($text1);
     my $mime1 = 0;
@@ -81,7 +81,7 @@ sub decodeB {
     # @param    [String] argv0   MIME Encoded text
     # @return   [String]         MIME-Decoded text
     my $class = shift;
-    my $argv0 = shift // return undef;
+    my $argv0 = shift // return "";
 
     my $p = $$argv0 =~ m|([+/=0-9A-Za-z\r\n]+)| ? MIME::Base64::decode($1) : '';
     return \$p;
@@ -93,7 +93,7 @@ sub decodeQ {
     # @param    [String] argv1  The value of Content-Type: header
     # @return   [String]        MIME Decoded text
     my $class = shift;
-    my $argv0 = shift // return undef;
+    my $argv0 = shift // return "";
 
     my $p = MIME::QuotedPrint::decode($$argv0) || '';
     return \$p;
@@ -106,7 +106,7 @@ sub parameter {
     # @return   [String]        The value of the parameter
     # @since v5.0.0
     my $class = shift;
-    my $argv0 = shift || return undef;
+    my $argv0 = shift || return "";
     my $argv1 = shift || '';
 
     my $parameterq = length $argv1 > 0 ? $argv1.'=' : '';
@@ -128,7 +128,7 @@ sub boundary {
     #                            1: End of boundary
     # @return   [String] Boundary string
     my $class = shift;
-    my $argv0 = shift || return undef;
+    my $argv0 = shift || return "";
     my $start = shift // -1;
     my $btext = __PACKAGE__->parameter($argv0, 'boundary') || return '';
 
@@ -265,7 +265,7 @@ sub makeflat {
     my $class = shift;
     my $argv0 = shift // return undef;
     my $argv1 = shift // return undef;
-    return \'' if index($argv0, 'multipart/') < 0 || index($argv0, 'boundary=')  < 0;
+    return undef if index($argv0, 'multipart/') < 0 || index($argv0, 'boundary=')  < 0;
 
     my $iso2022set = qr/charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/;
     my $multiparts = __PACKAGE__->levelout($argv0, $argv1);

@@ -347,7 +347,7 @@ sub sift {
     } elsif( index($mesgformat, 'multipart/') == 0 ) {
         # In case of Content-Type: multipart/*
         my $p = Sisimai::RFC2045->makeflat($mailheader->{'content-type'}, $bodystring);
-        $bodystring = $p if length $$p;
+        $bodystring = $p if defined $p && length $$p;
     }
     $$bodystring =~ tr/\r//d;
     $$bodystring =~ s/\t/ /g;
