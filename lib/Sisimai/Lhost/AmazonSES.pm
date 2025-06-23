@@ -203,7 +203,7 @@ sub inquire {
     map { $cv .= sprintf("%s: %s\n", $_->{"name"}, $_->{"value"}) } $or->{"headers"}->@*;
     map { $cv .= sprintf("%s: %s\n", ucfirst($_), $or->{"commonHeaders"}->{ $_ }) if exists $or->{"commonHeaders"}->{ $_ } } @$ch;
 
-    return { 'ds' => $dscontents, 'rfc822' => $cv };
+    return {"ds" => $dscontents, "rfc822" => $cv};
 }
 
 1;

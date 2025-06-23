@@ -155,7 +155,7 @@ sub inquire {
         next if index($e->{'recipient'}, '@ezweb.ne.jp') > 1 || index($e->{'recipient'}, '@au.com') > 1;
         $e->{"reason"} = "userunknown" if index($e->{"diagnosis"}, "<") == 0;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

@@ -103,7 +103,7 @@ sub inquire {
         $emailparts->[1] .= sprintf("Subject: %s\n", $alternates->[3]) if $alternates->[3] ne "";
     }
     $_->{"diagnosis"} = Sisimai::String->sweep($_->{"diagnosis"}) for @$dscontents;
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

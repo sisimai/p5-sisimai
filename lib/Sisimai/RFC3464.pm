@@ -275,7 +275,7 @@ sub inquire {
     # Set the recipient address as To: header in the original message part
     $emailparts->[1] = sprintf("To: <%s>\n", $dscontents->[0]->{'recipient'}) unless $emailparts->[1];
     
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

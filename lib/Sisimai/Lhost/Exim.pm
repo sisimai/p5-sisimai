@@ -476,7 +476,7 @@ sub inquire {
         }
         $e->{'command'} ||= '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

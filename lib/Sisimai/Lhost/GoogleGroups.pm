@@ -73,7 +73,7 @@ sub inquire {
         $v->{ $_ } = $recordwide->{ $_ } for keys %$recordwide;
     }
     return undef unless $recipients;
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

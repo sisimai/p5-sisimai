@@ -217,7 +217,7 @@ sub inquire {
         $emailparts->[1] .= sprintf("Date: %s\n", $connheader->{'date'});
         $emailparts->[1] .= sprintf("Subject: %s\n", $connheader->{'subject'});
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

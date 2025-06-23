@@ -253,7 +253,7 @@ sub inquire {
         next if length($e->{'status'}) == 0 || index($e->{'status'}, '.0') > 0;
         $e->{'reason'} = Sisimai::SMTP::Status->name($e->{'status'}) || '';
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

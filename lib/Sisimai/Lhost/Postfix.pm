@@ -279,7 +279,7 @@ sub inquire {
         $e->{'command'} ||= 'HELO' if index($e->{'diagnosis'}, 'refused to talk to me:') > -1;
         $e->{'spec'}    ||= 'SMTP' if Sisimai::String->aligned(\$e->{'diagnosis'}, ['host ', ' said:']);
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

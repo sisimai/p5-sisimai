@@ -129,7 +129,7 @@ sub inquire {
 
     # Get the Subject header from the original message
     my $rfc822part = $lower->{'subject'} =~ $subjectset ? 'Subject: '.$1."\n" : '';
-    return { 'ds' => $dscontents, 'rfc822' => $rfc822part };
+    return {"ds" => $dscontents, "rfc822" => $rfc822part};
 }
 
 1;

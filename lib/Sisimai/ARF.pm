@@ -229,7 +229,7 @@ sub inquire {
         $e->{"diagnosis"}    = $dscontents->[$j - 1]->{"diagnosis"};
         $e->{"feedbacktype"} = $dscontents->[$j - 1]->{"feedbacktype"};
     }
-    return { "ds" => $dscontents, "rfc822" => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

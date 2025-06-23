@@ -79,7 +79,7 @@ sub inquire {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'reason'} = 'userunknown' if index($e->{'diagnosis'}, 'Unable to deliver') > -1;
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;

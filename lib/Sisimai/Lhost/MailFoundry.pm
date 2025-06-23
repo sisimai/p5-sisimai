@@ -72,7 +72,7 @@ sub inquire {
         # Set default values if each value is empty.
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
     }
-    return { 'ds' => $dscontents, 'rfc822' => $emailparts->[1] };
+    return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
 1;
