@@ -10,7 +10,7 @@ sub find {
     # @since v5.2.1
     # @see https://developers.cloudflare.com/email-routing/postmaster/
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     state $messagesof = {
         "blocked"     => ["found on one or more DNSBLs"],

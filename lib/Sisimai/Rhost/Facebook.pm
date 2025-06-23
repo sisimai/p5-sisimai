@@ -10,7 +10,7 @@ sub find {
     # @see https://www.facebook.com/postmaster/response_codes
     # @since v5.2.0
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return "";
     return "" unless $argvs->{'diagnosticcode'};
     return "" unless index($argvs->{'diagnosticcode'}, '-');
 

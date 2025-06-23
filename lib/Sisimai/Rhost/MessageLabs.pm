@@ -10,7 +10,7 @@ sub find {
     # @see      https://www.broadcom.com/products/cybersecurity/email
     # @since v5.2.0
     my $class = shift;
-    my $argvs = shift // return undef; return '' unless length $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return '' unless length $argvs->{'diagnosticcode'};
 
     state $messagesof = {
         'securityerror' => ["Please turn on SMTP Authentication in your mail client"],
@@ -59,7 +59,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

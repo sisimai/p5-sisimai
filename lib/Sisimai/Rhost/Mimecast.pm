@@ -10,7 +10,7 @@ sub find {
     # @return   [String]                The bounce reason at Mimecast
     # @since v4.25.15
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return "";
     return '' unless $argvs->{'diagnosticcode'};
     return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
 
@@ -336,7 +336,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

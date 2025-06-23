@@ -9,7 +9,7 @@ sub find {
     # @return   [String]                The bounce reason for docomo.ne.jp
     # @since v4.25.15
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     my $messagesof = {
         'mailboxfull' => ['552 too much mail data'],
