@@ -29,17 +29,17 @@ MAKETEST: {
     is(Sisimai::String->is_8bit(\$s), 0, '->is_8bit = 0');
     is(Sisimai::String->is_8bit(\'日本語'), 1, '->is_8bit = 1');
 
-    is(Sisimai::String->sweep(undef), undef, '->sweep = ""');
+    is(Sisimai::String->sweep(undef), "", '->sweep = ""');
     is(Sisimai::String->sweep(' neko cat '), 'neko cat', '->sweep = "neko cat"');
     is(Sisimai::String->sweep(' nyaa   !!'), 'nyaa !!', '->sweep = "nyaa !!"');
 
     is(Sisimai::String->aligned(\$v, ['rfc822', ' <', '@', '>']), 1, '->aligned(rfc822, <, @, >)');
     is(Sisimai::String->aligned(\$v, ['rfc822', '<<', ' ', '>']), 0, '->aligned(rfc822, <, @, >)');
     is(Sisimai::String->aligned(\$v, ['rfc822']), 1, '->aligned(rfc822)');
-    is(Sisimai::String->aligned(undef, ['rfc822']), undef, '->aligned(undef)');
-    is(Sisimai::String->aligned(\'', ['rfc822']), undef, '->aligned("")');
-    is(Sisimai::String->aligned(\$v, undef), undef, '->aligned(undef)');
-    is(Sisimai::String->aligned(\$v, []), undef, '->aligned([])');
+    is(Sisimai::String->aligned(undef, ['rfc822']), 0, '->aligned(undef)');
+    is(Sisimai::String->aligned(\'', ['rfc822']), 0, '->aligned("")');
+    is(Sisimai::String->aligned(\$v, undef), 0, '->aligned(undef)');
+    is(Sisimai::String->aligned(\$v, []), 0, '->aligned([])');
 
     my $h = '
         <html>
@@ -78,10 +78,10 @@ MAKETEST: {
     like $$p, qr/Nyaan/, '->to_plain("<body>Nyaan</body>")';
 
     $p = Sisimai::String->to_plain(undef);
-    is length $$p, 0;
+    is $p, undef;
 
     $p = Sisimai::String->to_plain([]);
-    is length $$p, 0;
+    is $p, undef;
 }
 
 done_testing;
