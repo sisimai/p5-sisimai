@@ -60,7 +60,7 @@ MAKETEST: {
     ];
     my $v = '';
 
-    is $Package->code(''), undef, '->code() = undef';
+    is $Package->code(''), "", '->code() = ""';
     PSEUDO_STATUS_CODE: for my $e ( @$reasonlist ) {
         $v = $Package->code($e);
         like $v, qr/\A5[.]\d[.]9\d+/, 'pseudo status code('.$e.') = '.$v;
@@ -69,7 +69,7 @@ MAKETEST: {
         like $v, qr/\A[45][.]\d[.]9\d+/, 'pseudo status code('.$e.',1) = '.$v;
     }
 
-    is $Package->name(''), undef, '->name() = undef';
+    is $Package->name(''), "", '->name() = ""';
     STANRDARD_STATUS_CODE: for my $e ( @$statuslist ) {
         $v = $Package->name($e);
         if( $v eq 'delivered' ) {
@@ -80,7 +80,7 @@ MAKETEST: {
         }
     }
 
-    is $Package->test(''), undef, '->test("") = undef';
+    is $Package->test(''), 0, '->test("") = 0';
     is $Package->test('3.14'), 0, '->test("3.14") = 0';
     is $Package->test('9.99'), 0, '->test("9.99") = 0';
     is $Package->test('5.0.3.2'), 0, '->test("5.0.3.2") = 0';
@@ -92,7 +92,7 @@ MAKETEST: {
     is $Package->test('5.2.-2'), 0, '->test("5.2.-2") = 0';
     is $Package->test('5.2.2220'), 0, '->test("5.2.2220") = 0';
 
-    is $Package->find(''), undef, '->find("") = undef';
+    is $Package->find(''), "", '->find("") = ""';
     for my $e ( @$smtperrors ) {
         $v = $Package->find($e);
         like $v, qr/\A[245][.]\d[.]\d{1,3}\z/, '->find() returns '.$v;
