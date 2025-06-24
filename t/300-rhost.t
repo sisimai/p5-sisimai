@@ -16,7 +16,7 @@ my $Classes = [qw|
 MAKETEST: {
     use_ok $Package;
     can_ok $Package, @{ $Methods->{'class'} };
-    is $Package->find, undef;
+    is $Package->find, "";
 
     for my $e ( glob('./set-of-emails/maildir/bsd/rhost-*.eml') ) {
         my $v = Sisimai->rise($e);
@@ -35,7 +35,7 @@ MAKETEST: {
     for my $e ( @$Classes ) {
         my $r = sprintf("%s::%s", $Package, $e);
         Module::Load::load $r;
-        is $r->find(undef), undef;
+        is $r->find(undef), "";
         is $r->find({'diagnosticcode' => '', 'replycode' => 10, 'deliverystatus' => ''}), '';
         is $r->find({'diagnosticcode' => 22, 'replycode' => 10, 'deliverystatus' => ''}), '';
         is $r->find({'diagnosticcode' => 22, 'replycode' => 10, 'deliverystatus' => 33}), '';
