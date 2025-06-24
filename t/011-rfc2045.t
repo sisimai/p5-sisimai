@@ -26,7 +26,7 @@ MAKETEST: {
         is $Package->is_encoded(\$p2), 0, '->is_encoded = 0';
         is $Package->is_encoded(\$b2), 1, '->is_encoded = 1';
         is $Package->is_encoded(\$q3), 1, '->is_encoded = 1';
-        is $Package->is_encoded(''), undef;
+        is $Package->is_encoded(''),   0, '->is_encoded = 0';
 
         for my $e ( $p1, $p2 ) {
             $v0 = $Package->decodeH([$e]);
@@ -73,8 +73,8 @@ MAKETEST: {
         my $b6 = '44Gr44KD44O844KT';
         my $p6 = 'にゃーん';
 
-        is $Package->decodeB(undef), undef;
-        is $Package->decodeQ(undef), undef;
+        is $Package->decodeB(undef), "";
+        is $Package->decodeQ(undef), "";
         is ${ $Package->decodeB(\$b6) }, $p6, '->decodeB = '.$p6;
         is ${ $Package->decodeQ(\'=4e=65=6b=6f') }, 'Neko', '->decodeQ = Neko';
     }
