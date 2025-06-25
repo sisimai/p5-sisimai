@@ -12,7 +12,7 @@ sub find {
     #           https://www.postmastery.com/yahoo-postmaster/
     # @since v5.1.0
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     state $messagesof = {
         'authfailure' => [
@@ -132,7 +132,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

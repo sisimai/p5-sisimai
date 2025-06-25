@@ -164,7 +164,7 @@ sub parse {
     #   parse("2015-11-03T23:34:45 Tue")    #=> Tue, 3 Nov 2015 23:34:45 +0900
     #   parse("Tue, Nov 3 2015 2:2:2")      #=> Tue, 3 Nov 2015 02:02:02 +0900
     my $class = shift;
-    my $argv1 = shift || return undef;
+    my $argv1 = shift || return "";
 
     # "Apr 29", -> "Apr 29" "Thu,13" -> "Thu, 13"
     my $datestring = $argv1; s/[,](\d+)/, $1/, s/(\d{1,2}),/$1/ for $datestring;
@@ -173,12 +173,12 @@ sub parse {
     my $afternoon1 = 0;     # [Integer] After noon flag
     my $altervalue = {};    # [Hash] To store alternative values
     my $v = {
-        'Y' => undef,   # [Integer] Year
-        'M' => undef,   # [String]  Month Abbr.
-        'd' => undef,   # [Integer] Day
-        'a' => undef,   # [String]  Day of week, Abbr.
-        'T' => undef,   # [String]  Time
-        'z' => undef,   # [Integer] Timezone offset
+        'Y' => "",   # [Integer] Year
+        'M' => "",   # [String]  Month Abbr.
+        'd' => "",   # [Integer] Day
+        'a' => "",   # [String]  Day of week, Abbr.
+        'T' => "",   # [String]  Time
+        'z' => "",   # [Integer] Timezone offset
     };
 
     for my $p ( @timetokens ) {
@@ -283,7 +283,7 @@ sub parse {
     }
 
     $v->{'a'} ||= 'Thu';   # There is no day of week
-    $v->{'Y'}  += 1900 if defined $v->{'Y'} && $v->{'Y'} < 200; # 99 -> 1999, 102 -> 2002
+    $v->{'Y'}  += 1900 if int($v->{'Y'}) < 200; # 99 -> 1999, 102 -> 2002
     $v->{'z'} ||= __PACKAGE__->second2tz(Time::Piece->new->tzoffset);
 
     # Adjust 2-digit Year
@@ -300,39 +300,39 @@ sub parse {
     }
 
     # Check each piece
-    if( grep { ! defined $_ } values %$v ) {
+    if( grep { $_ eq "" } values %$v ) {
         # Strange date format
         printf(STDERR " ***warning: Strange date format [%s]\n", $datestring);
-        return undef;
+        return "";
     }
 
     # Build date string
     #   Thu, 29 Apr 2004 10:01:11 +0900
-    return undef if $v->{'Y'} < 1902 || $v->{'Y'} > 2037; # -(2^31) ~ (2^31)
+    return "" if $v->{'Y'} < 1902 || $v->{'Y'} > 2037; # -(2^31) ~ (2^31)
     return sprintf("%s, %s %s %s %s %s", $v->{'a'}, $v->{'d'}, $v->{'M'}, $v->{'Y'}, $v->{'T'}, $v->{'z'});
 }
 
 sub abbr2tz {
     # Abbreviation -> Tiemzone
     # @param    [String] argv1  Abbr. e.g.) JST, GMT, PDT
-    # @return   [String, undef] +0900, +0000, -0600 or undef if the argument is invalid format or
-    #                           not supported abbreviation
+    # @return   [String]        +0900, +0000, -0600 or an empty string if the argument is invalid
+    #                           format or not supported abbreviation
     # @example  Get the timezone string of "JST"
     #   abbr2tz('JST')  #=> '+0900'
     my $class = shift;
-    my $argv1 = shift || return undef;
+    my $argv1 = shift || return "";
     return TimeZones->{ $argv1 };
 }
 
 sub tz2second {
     # Convert to second
     # @param    [String] argv1  Timezone string e.g) +0900
-    # @return   [Integer,undef] n: seconds or undef it the argument is invalid format string
+    # @return   [Integer]       Seconds or -1 it the argument is invalid format string
     # @see      second2tz
     # @example  Convert '+0900' to seconds
     #   tz2second('+0900')  #=> 32400
     my $class = shift;
-    my $argv1 = shift || return undef;
+    my $argv1 = shift || return -1;
 
     if( $argv1 =~ /\A([-+])(\d)(\d)(\d{2})\z/ ) {
         my $ztime = 0;
@@ -346,14 +346,14 @@ sub tz2second {
         $ztime += ( $digit->{'minutes'} * 60 );
         $ztime *= -1 if $digit->{'operator'} eq '-';
 
-        return undef if abs($ztime) > TZ_OFFSET;
+        return -1 if abs($ztime) > TZ_OFFSET;
         return $ztime;
 
     } elsif( $argv1 =~ /\A[A-Za-z]+\z/ ) {
         return __PACKAGE__->tz2second(TimeZones->{ $argv1 });
 
     } else {
-        return undef;
+        return -1;
     }
 }
 

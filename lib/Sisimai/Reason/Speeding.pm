@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v5.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'mail sent from your IP address has been temporarily rate limited',
@@ -30,7 +30,7 @@ sub true {
     #                                   0: is not speeding
     # @see      http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef; return undef unless $argvs->{'deliverystatus'};
+    my $argvs = shift // return 0; return 0 unless $argvs->{'deliverystatus'};
 
     # Action: failed
     # Status: 4.7.1

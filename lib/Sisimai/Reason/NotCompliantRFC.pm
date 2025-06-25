@@ -13,7 +13,7 @@ sub match {
     #                           1: Matched
     # @since v5.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'duplicate header',
@@ -36,7 +36,7 @@ sub true {
     # @since v5.0.0
     # @see http://www.ietf.org/rfc/rfc5322.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return 0;
 
     return 1 if $argvs->{'reason'} eq 'notcompliantrfc';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});

@@ -10,7 +10,7 @@ sub find {
     # @see      https://www.cox.com/residential/support/email-error-codes.html
     # @since v4.25.8
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     state $errorcodes = {
         # CXBL

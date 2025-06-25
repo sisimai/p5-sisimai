@@ -473,10 +473,9 @@ sub damn {
 sub dump {
     # Data dumper
     # @param    [String] type   Data format: json, yaml
-    # @return   [String]        Dumped data
-    #           [undef]         When the value of first argument is neither "json" nor "yaml"
+    # @return   [String]        Dumped data or an empty string when the argument is neither "json" nor "yaml"
     my $self = shift;
-    my $type = shift || 'json'; return undef unless $type =~ /\A(?:json|yaml)\z/;
+    my $type = shift || 'json'; return "" unless $type =~ /\A(?:json|yaml)\z/;
 
     my $referclass = 'Sisimai::Fact::'.uc($type);
     my $modulepath = 'Sisimai/Fact/'.uc($type).'.pm';

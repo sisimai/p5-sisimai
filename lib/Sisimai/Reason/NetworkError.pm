@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v4.1.12
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'could not connect and send the mail to',
@@ -42,7 +42,7 @@ sub true {
     # @return   [Integer]               1: is network error
     #                                   0: is not network error
     # @see http://www.ietf.org/rfc/rfc2822.txt
-    return undef;
+    return 0;
 }
 
 1;
@@ -97,7 +97,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020-2022,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020-2022,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

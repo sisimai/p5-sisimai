@@ -47,14 +47,14 @@ for my $e ( keys %$ReasonChildren ) {
     my $r = 'Sisimai::Reason::'.$e;
     Module::Load::load $r;
     is $r->text, lc $e, $r.'->text = '.lc($e);
-    is $r->true, undef, $r.'->true = undef';
+    is $r->true, 0, $r.'->true = 0';
     ok length $r->description, $r.'->description = '.$r->description;
 
     my $q = $r->true($ss) // 0;
     like $q, qr/\A[01]\z/, $r.'->true($ss) = 0 or 1';
 
     unless( $e =~ /\A(?:Content|Expire|Mailer|Network|Policy|Security|System|User|NoRelay|OnHold)/ ) {
-        # Skip a class its true() method always return undef
+        # Skip a class its true() method always return 0 
         $cv->{'reason'} = lc $e;
         is $r->true($cv), 1;
 
@@ -68,15 +68,15 @@ for my $e ( keys %$ReasonChildren ) {
     for my $v ( @{ $ReasonChildren->{ $e } } ) {
         is $r->match(lc $v), 1, $r.'->match('.$v.') = 1';
     }
-    is $r->match(), undef;
+    is $r->match(), 0;
 } 
 
 for my $e ( 'Delivered', 'Feedback', 'Undefined', 'Vacation', 'SyntaxError' ) {
     my $r = 'Sisimai::Reason::'.$e;
     Module::Load::load $r;
     is $r->text, lc $e, $r.'->text = '.lc($e);
-    is $r->true, undef, $r.'->true = undef';
-    is $r->match,undef, $r.'->match = undef';
+    is $r->true, 0, $r.'->true = 0';
+    is $r->match, 0, $r.'->match = 0';
     ok length $r->description, $r.'->description = '.$r->description;
 }
 

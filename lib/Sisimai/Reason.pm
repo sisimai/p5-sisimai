@@ -65,10 +65,10 @@ sub path {
 sub find {
     # Detect the bounce reason
     # @param    [Hash]   argvs  Decoded email object
-    # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
+    # @return   [String]        Bounce reason or an empty string if the argument is missing or not HASH
     # @see anotherone
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return "";
 
     # Return a reason text already decided except a reason matched with the regular expression of
     # Sisimai::Reason->retry() method.
@@ -111,10 +111,10 @@ sub find {
 sub anotherone {
     # Detect the other bounce reason, fall back method for find()
     # @param    [Hash] argvs    Decoded email structure
-    # @return   [String]        Bounce reason or undef if the argument is missing or not HASH
+    # @return   [String]        Bounce reason or an empty string if the argument is missing or not HASH
     # @see      find()
     my $class = shift;
-    my $argvs = shift // return undef; return $argvs->{'reason'} if $argvs->{'reason'};
+    my $argvs = shift // return ""; return $argvs->{'reason'} if $argvs->{'reason'};
 
     require Sisimai::SMTP::Status;
     my $issuedcode = lc $argvs->{'diagnosticcode'} // '';
@@ -182,7 +182,7 @@ sub match {
     # @param    [String] argv1  Error message
     # @return   [String]        Bounce reason
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return "";
 
     my $reasontext = '';
     my $issuedcode = lc $argv1;

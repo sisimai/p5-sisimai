@@ -10,7 +10,7 @@ sub find {
     # @see      https://support.google.com/a/answer/3726730?hl=en
     # @since v4.0.0
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
     return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
     return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 
@@ -568,7 +568,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

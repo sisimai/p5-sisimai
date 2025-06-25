@@ -43,7 +43,7 @@ sub new {
 sub read {
     # Memory reader, works as an iterator.
     # @return   [String] Contents of a bounce mail
-    my $self = shift; return undef unless scalar $self->{'payload'}->@*;
+    my $self = shift; return "" unless scalar $self->{'payload'}->@*;
 
     $self->{'offset'} += 1;
     return shift $self->{'payload'}->@*;

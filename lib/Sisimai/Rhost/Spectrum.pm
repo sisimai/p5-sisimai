@@ -9,7 +9,7 @@ sub find {
     # @return   [String]                The bounce reason at Spectrum
     # @since v4.25.8
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     state $errorcodes = [
         # https://www.spectrumbusiness.net/support/internet/understanding-email-error-codes
@@ -156,7 +156,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020,2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2020,2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

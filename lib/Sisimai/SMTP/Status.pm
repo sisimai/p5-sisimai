@@ -675,13 +675,10 @@ sub code {
     # @see      name
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return undef;
+    my $argv1 = shift || return "";
     my $argv2 = shift // 0;
-    my $table = undef;
-    my $code0 = undef;
-
-    $table = $argv2 ? InternalCode->{'temporary'} : InternalCode->{'permanent'};
-    $code0 = $table->{ $argv1 } // InternalCode->{'permanent'}->{ $argv1 } // '';
+    my $table = $argv2 ? InternalCode->{'temporary'} : InternalCode->{'permanent'};
+    my $code0 = $table->{ $argv1 } // InternalCode->{'permanent'}->{ $argv1 } // '';
     return $code0;
 }
 
@@ -693,7 +690,7 @@ sub name {
     # @see      code
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return undef; return '' unless __PACKAGE__->test($argv1);
+    my $argv1 = shift || return ""; return '' unless __PACKAGE__->test($argv1);
     return StandardCode->{ $argv1 } // '';
 }
 
@@ -704,7 +701,7 @@ sub test {
     # @see      code
     # @since v5.0.0
     my $class = shift;
-    my $argv1 = shift || return undef; return 0 if length $argv1 < 5 || length $argv1 > 7;
+    my $argv1 = shift || return 0; return 0 if length $argv1 < 5 || length $argv1 > 7;
 
     my $token = []; push @$token, int $_ for split(/[.]/, $argv1);
     return 0 unless scalar @$token == 3;
@@ -724,7 +721,7 @@ sub find {
     # @return   [String]        An SMTP Status Code
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return undef; return undef if length $argv1 < 7;
+    my $argv1 = shift || return ""; return "" if length $argv1 < 7;
     my $argv2 = shift || '';
 
     my $givenclass = substr($argv2, 0, 1);

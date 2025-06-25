@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v4.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     # Destination mail server does not accept any message
     state $index = [
@@ -37,7 +37,7 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef; my $reply = int $argvs->{'replycode'} || 0;
+    my $argvs = shift // return 0; my $reply = int $argvs->{'replycode'} || 0;
 
     # SMTP Reply Code is 521, 554 or 556
     return 1 if $argvs->{'reason'} eq 'notaccept' || $reply == 521 || $reply == 556;

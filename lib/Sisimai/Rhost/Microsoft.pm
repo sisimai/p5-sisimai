@@ -14,7 +14,7 @@ sub find {
     # @see      https://technet.microsoft.com/en-us/library/bb232118
     # @since v4.17.2
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return "";
     return '' unless $argvs->{'deliverystatus'};
     return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 
@@ -40,7 +40,7 @@ sub find {
             #   [SendingDomain] does not meet the required authentication level." 
             #   This change will state taking effect on May 5th as originally stated. 
             # - 550; 5.7.515 Access denied, sending domain [SendingDomain] does not meet the required authentication level.
-            ["5.7.515", "", "", "does not meet the required authentication level"],
+            ["5.7.515", 0, 0, "does not meet the required authentication level"],
 
         ],
         'badreputation' => [

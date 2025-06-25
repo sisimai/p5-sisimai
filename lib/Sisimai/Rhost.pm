@@ -70,7 +70,7 @@ sub find {
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The value of bounce reason
     my $class = shift;
-    my $argvs = shift || return undef;
+    my $argvs = shift || return "";
     my $rhost = __PACKAGE__->name($argvs) || return "";
 
     $rhost = __PACKAGE__."::".$rhost; (my $modulepath = $rhost) =~ s|::|/|g;

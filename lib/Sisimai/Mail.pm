@@ -66,7 +66,7 @@ sub read {
     # Alias method of Sisimai::Mail::*->read()
     # @return   [String] Contents of mbox/Maildir
     my $self = shift;
-    return undef unless ref $self->{'data'};
+    return "" unless ref $self->{'data'};
     return $self->{'data'}->read;
 }
 
@@ -156,7 +156,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

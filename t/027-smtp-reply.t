@@ -92,8 +92,8 @@ MAKETEST: {
     ];
 
     my $v = '';
-    is $Package->test(''), undef, '->test() returns undef';
-    is $Package->find(''), undef, '->find() returns undef';
+    is $Package->test(''), 0,  '->test() returns 0';
+    is $Package->find(''), "", '->find() returns ""';
 
     for my $e ( @$smtperrors ) {
         $v = $Package->find($e);

@@ -40,17 +40,17 @@ sub new {
 sub read {
     # Mbox reader, works as an iterator.
     # @return   [String] Contents of mbox
-    my $self       = shift; return undef unless defined $self->{'path'};
+    my $self       = shift; return "" unless defined $self->{'path'};
     my $seekoffset = $self->{'offset'} // 0;
     my $filehandle = $self->{'handle'};
     my $readbuffer = '';
 
     unless( ref $self->{'path'} ) {
         # "path" is not IO::File object
-        return undef unless -f $self->{'path'};
-        return undef unless -T $self->{'path'};
+        return "" unless -f $self->{'path'};
+        return "" unless -T $self->{'path'};
     }
-    return undef unless $self->{'offset'} < $self->{'size'};
+    return "" unless $self->{'offset'} < $self->{'size'};
 
     eval {
         $seekoffset = 0 if $seekoffset < 0;

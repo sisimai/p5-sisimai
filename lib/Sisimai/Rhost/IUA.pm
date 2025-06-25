@@ -9,7 +9,7 @@ sub find {
     # @return   [String]                The bounce reason at https://www.i.ua/
     # @since v4.25.0
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     state $errorcodes = {
         # https://mail.i.ua/err/$(CODE)
@@ -61,7 +61,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019-2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2019-2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

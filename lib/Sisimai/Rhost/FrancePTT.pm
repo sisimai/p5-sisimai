@@ -11,7 +11,7 @@ sub find {
     #           https://smtpfieldmanual.com/provider/orange
     # @since v4.22.3
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     state $errorcodes = {
         # - 550 5.7.1 Service unavailable; client [192.0.2.1] blocked using Spamhaus
@@ -42,11 +42,11 @@ sub find {
         # - Too many connections, slow down. LPN105_104
         '104' => 'toomanyconn',
 
-        '105' => undef, # Veuillez essayer plus tard.
-        '107' => undef, # Service refused, please try later. LPN006_107
-        '108' => undef, # service refused, please try later. LPN001_108
-        '109' => undef, # Veuillez essayer plus tard. LPN003_109
-        '201' => undef, # Veuillez essayer plus tard. OFR004_201
+        '105' => "", # Veuillez essayer plus tard.
+        '107' => "", # Service refused, please try later. LPN006_107
+        '108' => "", # service refused, please try later. LPN001_108
+        '109' => "", # Veuillez essayer plus tard. LPN003_109
+        '201' => "", # Veuillez essayer plus tard. OFR004_201
 
         # - 550 5.7.0 Code d'authentification invalide OFR_305
         '305' => 'securityerror',
@@ -85,8 +85,8 @@ sub find {
         # - 5.5.3 Mail from not owned by user. LPN105_421.
         '421' => 'rejected',
 
-        '423' => undef, # Service refused, please try later. LPN105_423
-        '424' => undef, # Veuillez essayer plus tard. LPN105_424
+        '423' => "", # Service refused, please try later. LPN105_423
+        '424' => "", # Veuillez essayer plus tard. LPN105_424
 
         # - 550 5.5.0 Le compte du destinataire est bloque. The recipient account isblocked.
         #   LPN007_426 (in reply to RCPT TO command)
@@ -105,7 +105,7 @@ sub find {
         #   LPN005_510 (in reply to end of DATA command)
         '510' => 'blocked',
 
-        '513' => undef, # Mail rejete. Mail rejected. OUK_513
+        '513' => "", # Mail rejete. Mail rejected. OUK_513
 
         # - Taille limite du message atteinte
         '514' => 'mesgtoobig',
@@ -180,7 +180,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -193,7 +193,7 @@ MAKETEST: {
 
     MATCH: {
         is(Sisimai->match('550 5.1.1 User unknown'), 'userunknown');
-        is(Sisimai->match(''), undef);
+        is(Sisimai->match(''), "");
     }
 }
 done_testing;

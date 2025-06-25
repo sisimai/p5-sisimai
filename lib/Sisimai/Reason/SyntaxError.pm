@@ -5,7 +5,7 @@ use warnings;
 
 sub text  { 'syntaxerror' }
 sub description { 'Email rejected due to syntax error at sent commands in SMTP session' }
-sub match { return undef }
+sub match { return 0 }
 sub true {
     # Connection rejected due to syntax error or not
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
@@ -14,7 +14,7 @@ sub true {
     # @since v4.1.25
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef; return undef unless exists $argvs->{'replycode'};
+    my $argvs = shift // return 0; return 0 unless exists $argvs->{'replycode'};
     my $reply = int($argvs->{'replycode'} || 0);
 
     return 1 if $argvs->{'reason'} eq 'syntaxerror';
@@ -60,7 +60,7 @@ C<text()> method returns the fixed string C<syntaxerror>.
 
 =head2 C<B<match(I<string>)>>
 
-C<match()> method always return C<undef>
+C<match()> method always return C<0>
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 

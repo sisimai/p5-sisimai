@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v4.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         '452 insufficient disk space',
@@ -77,7 +77,7 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef; return undef unless $argvs->{'deliverystatus'};
+    my $argvs = shift // return 0; return 0 unless $argvs->{'deliverystatus'};
 
     # Delivery status code points "mailboxfull".
     # Status: 4.2.2

@@ -138,7 +138,7 @@ sub match {
     # @param    [String]    Error message text
     # @return   [String]    Reason text
     my $class = shift;
-    my $argvs = shift || return undef;
+    my $argvs = shift || return "";
 
     require Sisimai::Reason;
     return Sisimai::Reason->match(lc $argvs);

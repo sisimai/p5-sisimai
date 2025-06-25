@@ -9,7 +9,7 @@ sub find {
     # @return   [String]                The bounce reason au.com and ezweb.ne.jp
     # @since v4.22.6
     my $class = shift;
-    my $argvs = shift // return undef; return "" unless $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     state $messagesof = {
         'filtered'    => '550 : user unknown',  # The response was: 550 : User unknown
@@ -58,7 +58,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018,2020,2021,2023,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2018,2020,2021,2023-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -9,7 +9,7 @@ sub find {
     # @return   [String]                The bounce reason for GSuite
     # @since v5.2.0
     my $class = shift;
-    my $argvs = shift // return undef; return '' unless length $argvs->{'diagnosticcode'};
+    my $argvs = shift // return ""; return '' unless length $argvs->{'diagnosticcode'};
 
     state $messagesof = {
         "hostunknown"  => [" responded with code NXDOMAIN", "Domain name not found"],
@@ -63,7 +63,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v4.1.26
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'all available ips are at maximum connection limit',    # SendGrid
@@ -42,7 +42,7 @@ sub true {
     # @since v4.1.26
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return 0;
 
     return 1 if $argvs->{'reason'} eq 'toomanyconn';
     return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'toomanyconn';
@@ -99,7 +99,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

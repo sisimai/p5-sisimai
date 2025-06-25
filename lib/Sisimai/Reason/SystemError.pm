@@ -13,7 +13,7 @@ sub match {
     #                           1: Matched
     # @since v4.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'aliasing/forwarding loop broken',
@@ -53,7 +53,7 @@ sub true {
     # @return   [Integer]               1: is system error
     #                                   0: is not system error
     # @see http://www.ietf.org/rfc/rfc2822.txt
-    return undef;
+    return 0;
 }
 
 1;
@@ -105,7 +105,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -35,7 +35,7 @@ sub is_8bit {
     # @return   [Integer]       0: ASCII Characters only
     #                           1: Including 8-bit character
     my $class = shift;
-    my $argv1 = shift // return 0; return undef if ref $argv1 ne 'SCALAR';
+    my $argv1 = shift // return 0; return 0 if ref $argv1 ne 'SCALAR';
     return 1 unless $$argv1 =~ /\A[\x00-\x7f]+\z/;
     return 0;
 }
@@ -47,7 +47,7 @@ sub sweep {
     # @example  Clean up text
     #   sweep('  neko ') #=> 'neko'
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return "";
 
     chomp $argv1;
     y/ //s, s/\A //g, s/ \z//g, s/ [-]{2,}[^ ].+\z// for $argv1;
@@ -61,8 +61,8 @@ sub aligned {
     # @return   [Bool]          0, 1
     # @since v5.0.0
     my $class = shift;
-    my $argv1 = shift || return undef; return undef unless length $$argv1;
-    my $argv2 = shift || return undef; return undef unless scalar @$argv2;
+    my $argv1 = shift || return 0; return 0 unless length $$argv1;
+    my $argv2 = shift || return 0; return 0 unless scalar @$argv2;
     my $align = -1;
     my $right =  0;
 
@@ -84,7 +84,7 @@ sub to_plain {
     # @param    [Integer] loose Loose check flag
     # @return   [Scalar]        Plain text(reference to string)
     my $class = shift;
-    my $argv1 = shift // return \''; return \'' if ref $argv1 ne 'SCALAR';
+    my $argv1 = shift // return undef; return undef if ref $argv1 ne 'SCALAR';
     my $loose = shift // 0;
     my $plain = $$argv1;
 
@@ -125,13 +125,13 @@ sub to_utf8 {
     # @param    [String] argv2  Encoding name before converting
     # @return   [String]        UTF-8 Encoded string
     my $class = shift;
-    my $argv1 = shift || return \'';
+    my $argv1 = shift || return "";
     my $argv2 = shift;
 
     state $dontencode = ['utf8', 'utf-8', 'us-ascii', 'ascii'];
     my $tobeutf8ed = $$argv1;
     my $encodefrom = lc $argv2 || '';
-    my $hasencoded = undef;
+    my $hasencoded = 0;
     my $hasguessed = Encode::Guess->guess($tobeutf8ed);
     my $encodingto = ref $hasguessed ? lc($hasguessed->name) : '';
 

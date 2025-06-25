@@ -145,7 +145,7 @@ sub test {
     # @see      code
     # @since v5.0.0
     my $class = shift;
-    my $argv1 = shift || return undef;
+    my $argv1 = shift || return 0;
     my $reply = int $argv1;
     my $first = int($reply / 100);
 
@@ -177,7 +177,7 @@ sub find {
     #                           did not include SMTP Reply Code value
     # @since v4.14.0
     my $class = shift;
-    my $argv1 = shift || return undef; return '' if length $argv1 < 3 || index(uc($argv1), 'X-UNIX;') > -1;
+    my $argv1 = shift || return ""; return '' if length $argv1 < 3 || index(uc($argv1), 'X-UNIX;') > -1;
     my $argv2 = shift || 0;
 
     my $esmtperror = ' '.$argv1.' ';

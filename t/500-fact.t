@@ -146,7 +146,7 @@ MAKETEST: {
                 isa_ok $cj->{'catch'}, 'HASH';
                 is $cj->{'catch'}->{'from'}, $e->catch->{'from'}, sprintf("%s ->catch->from = %s", $ct, $e->catch->{'from'});
             };
-            is $e->dump('neko'), undef;
+            is $e->dump('neko'), "";
 
             $ce += 1;
         }

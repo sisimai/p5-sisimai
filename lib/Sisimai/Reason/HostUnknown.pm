@@ -13,7 +13,7 @@ sub match {
     #                           1: Matched
     # @since v4.0.0
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [
         'domain does not exist',
@@ -47,7 +47,7 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef; return 1 if $argvs->{'reason'} eq 'hostunknown';
+    my $argvs = shift // return 0; return 1 if $argvs->{'reason'} eq 'hostunknown';
 
     my $statuscode = $argvs->{'deliverystatus'}    // '';
     my $issuedcode = lc $argvs->{'diagnosticcode'} // '';

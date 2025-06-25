@@ -106,8 +106,8 @@ use_ok $Package;
 can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
-    is $Package->find, undef;
-    is $Package->anotherone, undef;
+    is $Package->find, "";
+    is $Package->anotherone, "";
     isa_ok $Package->index, 'ARRAY';
     isa_ok $Package->retry, 'HASH';
     isa_ok $Package->path,  'HASH';
@@ -153,7 +153,7 @@ MAKETEST: {
             ok grep { $b eq lc $_ } ( keys %$cv );
             is $a, $b;
         }
-        is(Sisimai::Reason->match(undef), undef);
+        is(Sisimai::Reason->match(undef), "");
         is(Sisimai::Reason->match('X-Unix; 77'), 'mailererror');
     }
 

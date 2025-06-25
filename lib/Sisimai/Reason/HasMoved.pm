@@ -12,7 +12,7 @@ sub match {
     #                           1: Matched
     # @since v4.1.25
     my $class = shift;
-    my $argv1 = shift // return undef;
+    my $argv1 = shift // return 0;
 
     state $index = [' has been replaced by '];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
@@ -27,7 +27,7 @@ sub true {
     # @since v4.1.25
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return 0;
 
     return 1 if $argvs->{'reason'} eq 'hasmoved';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
@@ -84,7 +84,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018,2020,2021,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

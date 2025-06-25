@@ -67,7 +67,7 @@ sub find {
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The value of bounce reason
     my $class = shift;
-    my $argvs = shift // return undef;
+    my $argvs = shift // return "";
 
     return "" unless length $argvs->{"diagnosticcode"};
     return "" unless $argvs->{"command"} eq "" || $argvs->{"command"} eq "DATA";
@@ -125,7 +125,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2025 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
