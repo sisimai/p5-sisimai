@@ -104,7 +104,7 @@ sub part {
     $$email =~ s/\A\s+//m;
     $$email =~ s/\r\n/\n/gm if rindex($$email, "\r\n") > -1;
 
-    ($parts->[1], $parts->[2]) = split(/\n\n/, $$email, 2);
+    ($parts->[1], $parts->[2]) = split(/\n\n/, $$email, 2); $parts->[2] ||= "";
     return undef if $parts->[1] eq "" || $parts->[2] eq "";
 
     if( substr($parts->[1], 0, 5) eq 'From ' ) {
