@@ -283,7 +283,7 @@ sub parse {
     }
 
     $v->{'a'} ||= 'Thu';   # There is no day of week
-    $v->{'Y'}  += 1900 if int($v->{'Y'}) < 200; # 99 -> 1999, 102 -> 2002
+    $v->{'Y'}  += 1900 if length($v->{'Y'}) > 0 && int($v->{'Y'}) < 200; # 99 -> 1999, 102 -> 2002
     $v->{'z'} ||= __PACKAGE__->second2tz(Time::Piece->new->tzoffset);
 
     # Adjust 2-digit Year
