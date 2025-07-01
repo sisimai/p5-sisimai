@@ -14,8 +14,11 @@ sub inquire {
     # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.1.1
     my $class = shift;
-    my $mhead = shift // return undef; return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
+    my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+
+    return undef unless $mhead->{'subject'};
+    return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['------- Returned Message --------'];

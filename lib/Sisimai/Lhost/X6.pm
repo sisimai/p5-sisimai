@@ -13,8 +13,11 @@ sub inquire {
     # @return   [undef]         failed to decode or the arguments are missing
     # @since v4.25.6
     my $class = shift;
-    my $mhead = shift // return undef; return undef if index($mhead->{'subject'}, 'There was an error sending your mail') != 0;
+    my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+
+    return undef unless $mhead->{'subject'};
+    return undef if index($mhead->{'subject'}, 'There was an error sending your mail') != 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['The attachment contains the original mail headers'];
