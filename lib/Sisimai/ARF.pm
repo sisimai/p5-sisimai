@@ -14,7 +14,7 @@ sub is_arf {
     my $class = shift;
     my $heads = shift || return 0;
     my $abuse = ['staff@hotmail.com', 'complaints@email-abuse.amazonses.com'];
-    my $ctype = $heads->{"content-type"};
+    my $ctype = $heads->{"content-type"} || "";
 
     # Content-Type: multipart/report; report-type=feedback-report; ...
     return 1 if Sisimai::String->aligned(\$ctype, ["report-type=", "feedback-report"]);
