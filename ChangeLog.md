@@ -4,6 +4,17 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.4.0
+---------------------------------------------------------------------------------------------------
+- release: "Tue,  1 Jul 2025 20:22:22 +0900 (JST)"
+- version: "5.4.0"
+- changes:
+  - #583 #588 #589 Implement the new status code `5.7.515` as `authfailure` and other undocumented
+    status codes begin with `4.4.` as `systemerror` of Microsoft in `Sisimai::Rhost::Microsoft`.
+  - #590 #591 Implement new status codes of Google: `4.7.40` and `5.7.32` as `authfailure`.
+  - #586 #587 Some internal sub routines do not return `undef`, standardize return values to align
+    with zero-value principle.
+
 v5.3.0
 ---------------------------------------------------------------------------------------------------
 - release: "Sat, 29 Mar 2025 06:03:17 +0900 (JST)"
