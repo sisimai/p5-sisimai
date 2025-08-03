@@ -97,9 +97,13 @@ sub find {
             ["421", "5.7.32", "aligned with either the authenticated spf or dkim"],
 
             # - 421 4.7.40 Your email has been rate limited because the sending domain doesn't
-            #   have a DMARC record, or the DMARC record doesn’t specify a DMARC policy. Gmail
+            #   have a DMARC record, or the DMARC record doesn't specify a DMARC policy. Gmail
             #   requires all bulk email senders to add a DMARC record to their sending domain.
+            # - 550 5.7.40 Your message was blocked because the sending domain doesn't have a DMARC
+            #   record or the DMARC record doesn?ft specify a DMARC policy. Gmail requires all bulk
+            #   email senders to add a DMARC record to their sending domain.            
             ["421", "4.7.40", "to add a dmarc record to "],
+            ["550", "5.7.40", "to add a dmarc record to "],
         ],
         'badreputation' => [
             # - 421 4.7.0 This message is suspicious due to the very low reputation of the sending
@@ -372,19 +376,19 @@ sub find {
 
             # - 535 5.7.1 Application-specific password required.
             #   For more information, visit https://support.google.com/accounts/answer/185833
-            ['535', '5.7.1', 'application-specific password required'],
-            ['535', '5.7.9', 'application-specific password required'],
+            ['535', '5.7.1',  'application-specific password required'],
+            ['535', '5.7.90', 'application-specific password required'],
 
             # - 535 5.7.1 Please log in with your web browser and then try again. For more infor-
             #   mation, visit https://support.google.com/mail/bin/accounts/answer/78754
             ['535', '5.7.1',  'please log in with your web browser'],
-            ['534', '5.7.9',  'please log in with your web browser'],
+            ['534', '5.7.90', 'please log in with your web browser'],
             ['534', '5.7.14', 'please log in through your web browser'],
 
             # - 535 5.7.1 Username and Password not accepted. For more information, visit 
             #   https://support.google.com/accounts/troubleshooter/2402620
-            ['535', '5.7.1', 'username and password not accepted'],
-            ['535', '5.7.8', 'username and password not accepted'],
+            ['535', '5.7.1',  'username and password not accepted'],
+            ['535', '5.7.80', 'username and password not accepted'],
         ],
         'spamdetected' => [
             # - 421 4.7.0 This message is suspicious due to the nature of the content or the links
@@ -463,17 +467,17 @@ sub find {
             #   sequence. For more information, go to About SMTP error messages and review RFC 3030
             #   specifications.
             # - https://support.google.com/a/answer/3221692
-            ['502', '5.5.1', 'too many unrecognized commands, goodbye'],
-            ['502', '5.5.1', 'unimplemented command'],
-            ['502', '5.5.1', 'unrecognized command'],
-            ['503', '5.5.1', 'bad sequence of commands'],
-            ['503', '5.5.1', 'ehlo/helo first'],
-            ['503', '5.5.1', 'mail first'],
-            ['503', '5.5.1', 'rcpt first'],
-            ['503', '5.5.1', 'no data after bdat'],
-            ['504', '5.7.4', 'unrecognized authentication type'],
-            ['504', '5.7.4', 'xoauth is no longer supported'],
-            ['554', '5.7.0', 'too many unauthenticated commands'],
+            ['502', '5.5.1',  'too many unrecognized commands, goodbye'],
+            ['502', '5.5.1',  'unimplemented command'],
+            ['502', '5.5.1',  'unrecognized command'],
+            ['503', '5.5.1',  'bad sequence of commands'],
+            ['503', '5.5.1',  'ehlo/helo first'],
+            ['503', '5.5.1',  'mail first'],
+            ['503', '5.5.1',  'rcpt first'],
+            ['503', '5.5.1',  'no data after bdat'],
+            ['504', '5.7.40', 'unrecognized authentication type'],
+            ['504', '5.7.40', 'xoauth is no longer supported'],
+            ['554', '5.7.0',  'too many unauthenticated commands'],
         ],
         'systemerror' => [
             # About SMTP error messages, https://support.google.com/a/answer/3221692
