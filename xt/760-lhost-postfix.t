@@ -297,6 +297,7 @@ my $isexpected = {
     '1278'  => [['5.7.25',  '550', 'requireptr',      0]],
     '1279'  => [['5.2.2',   '552', 'mailboxfull',     0]],
     '1280'  => [['5.7.1',   '550', 'notcompliantrfc', 0]],
+    '1281'  => [['5.1.1',   '550', 'userunknown',     1]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
