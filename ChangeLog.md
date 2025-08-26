@@ -11,6 +11,7 @@ v5.4.0p1
 - changes:
   - #596 Support a bounce mail returned from `privaterelay.appleid.com`.
   - #595 Update SMTP error and status codes of Gmail updated in August 2025.
+  - #592 sisimai works on Perl 5.42.
 
 v5.4.0
 ---------------------------------------------------------------------------------------------------
