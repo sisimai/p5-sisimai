@@ -4,6 +4,15 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.4.1
+---------------------------------------------------------------------------------------------------
+- release: "Sun, 31 Aug 2025 09:22:25 +0900 (JST)"
+- version: "5.4.1"
+- changes:
+  - #596 Support a bounce mail returned from `privaterelay.appleid.com`.
+  - #595 Update SMTP error and status codes of Gmail updated in August 2025.
+  - #592 sisimai works on Perl 5.42.
+
 v5.4.0
 ---------------------------------------------------------------------------------------------------
 - release: "Tue,  1 Jul 2025 20:22:22 +0900 (JST)"

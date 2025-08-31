@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
-[![Perl](https://img.shields.io/badge/perl-v5.26--v5.40-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.4.0-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![Perl](https://img.shields.io/badge/perl-v5.26--v5.42-blue.svg)](https://www.perl.org)
+[![CPAN](https://img.shields.io/badge/cpan-v5.4.1-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
