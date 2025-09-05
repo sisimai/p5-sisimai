@@ -4,6 +4,13 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.4.1p1
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #599 #600 Change file encodings from sjis to UTF-8.
+
 v5.4.1
 ---------------------------------------------------------------------------------------------------
 - release: "Sun, 31 Aug 2025 09:22:25 +0900 (JST)"
