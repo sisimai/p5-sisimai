@@ -205,7 +205,7 @@ and the envelope recipient address.
 C<is_8bit()> method checks the argument include any 8bit character or not.
 
     print Sisimai::String->is_8bit(\'cat');  # 0;
-    print Sisimai::String->is_8bit(\'ね�); # 1;
+    print Sisimai::String->is_8bit(\'ねこ'); # 1;
 
 =head2 C<B<sweep(I<String>)>>
 

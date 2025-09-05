@@ -25,7 +25,7 @@ state $Sandwiched = [
 ];
 state $StartAfter = [
     "generating server: ",      # (Exchange2007) en-US/Generating server: mta4.example.org
-    "serveur de g",             # (Exchange2007) fr-FR/Serveur de g辿�辿�ation
+    "serveur de g",             # (Exchange2007) fr-FR/Serveur de gènèration
     "server di generazione",    # (Exchange2007) it-CH
     "genererande server",       # (Exchange2007) sv-SE
 ];
