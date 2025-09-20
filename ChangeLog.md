@@ -11,6 +11,7 @@ v5.4.1p1
 - changes:
   - #599 #600 Change file encodings from sjis to UTF-8.
   - #601 #603 Update SMTP reply codes defined in `Sisimai::SMTP::Reply::Associated`.
+  - #604 Implement `Sisimai::SMTP::Status->is_ambiguous` method.
 
 v5.4.1
 ---------------------------------------------------------------------------------------------------
