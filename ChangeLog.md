@@ -10,6 +10,7 @@ v5.4.1p1
 - version: ""
 - changes:
   - #599 #600 Change file encodings from sjis to UTF-8.
+  - #601 #603 Update SMTP reply codes defined in `Sisimai::SMTP::Reply::Associated`.
 
 v5.4.1
 ---------------------------------------------------------------------------------------------------
