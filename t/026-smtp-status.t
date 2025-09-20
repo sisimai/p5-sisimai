@@ -118,9 +118,14 @@ MAKETEST: {
 
     for my $e ( @$statuslist ) {
         is $Package->is_explicit($e), 1, $e;
+        is $Package->is_ambiguous($e), 0, $e;
     }
     for my $e ("", "5.0.999", "4.0.999") {
         is $Package->is_explicit($e), 0, $e;
+    }
+
+    for my $e ("", "5.0.0", "4.0.0", "2.0.0") {
+        is $Package->is_ambiguous($e), 1, $e;
     }
 }
 

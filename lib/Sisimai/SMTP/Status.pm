@@ -777,7 +777,7 @@ sub find {
         next if $characters->[3] < 48 || $characters->[3] > 57; # The 1st digit of the detail is not a number
         $readbuffer .= chr $characters->[3];
 
-        if( index($readbuffer, '.0.0') == 1 || $readbuffer eq '4.4.7' ) {
+        if( Sisimai::SMTP::Status->is_ambiguous($readbuffer) || $readbuffer eq "4.4.7" ) {
             # Find another status code except *.0.0, 4.4.7
             $anotherone = $readbuffer;
             next;
@@ -883,6 +883,16 @@ sub is_explicit {
     return 1;
 }
 
+sub is_ambiguous {
+    # is_ambiguous() returns 1 when the argument is not empty and is ends with ".0.0".
+    # @param    string argv1  Delivery status code
+    # @return   bool          1: The delivery status is ambiguous
+    my $class = shift;
+    my $argv1 = shift || return 1;
+    return 1 if length($argv1) == 5 && substr($argv1, -4, 4) eq ".0.0";
+    return 0
+}
+
 1;
 __END__
 
@@ -949,6 +959,14 @@ C<is_explicit()> method returns 0 if the delivery status code is empty or is an 
 
     print Sisimai::SMTP::Status->is_explicit("5.0.901"); # 0
     print Sisimai::SMTP::Status->is_explicit("5.7.625"); # 1
+
+=head2 C<B<is_ambiguous(I<delivery status code>)
+
+C<is_ambiguous()> method returns 1 if the delivery status code is not empty and ends with ".0.0".
+
+    print Sisimai::SMTP::Status->is_ambiguous("5.0.0"); # 1
+    print Sisimai::SMTP::Status->is_ambiguous("");      # 1
+    print Sisimai::SMTP::Status->is_ambiguous("4.7.7"); # 0
 
 =head1 AUTHOR
 

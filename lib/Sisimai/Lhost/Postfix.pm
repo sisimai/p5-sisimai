@@ -30,6 +30,7 @@ sub inquire {
 
     require Sisimai::RFC1123;
     require Sisimai::SMTP::Reply;
+    require Sisimai::SMTP::Status;
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['Content-Type: message/rfc822', 'Content-Type: text/rfc822-headers'];
@@ -244,13 +245,10 @@ sub inquire {
                 my $as = ''; # status
                 my $ar = ''; # replycode
 
-                if( $e->{'status'} eq '' || substr($e->{'status'}, -4, 4) eq '.0.0' ) {
-                    # Check the value of D.S.N. in $anotherset
+                if( Sisimai::SMTP::Status->is_ambiguous($e->{'status'}) ) {
+                    # Check the value of D.S.N. in $anotherset is neither an empty nor *.0.0.
                     $as = Sisimai::SMTP::Status->find($anotherset->{'diagnosis'}) || '';
-                    if( length($as) > 0 && substr($as, -4, 4) ne '.0.0' ) {
-                        # The D.S.N. is neither an empty nor *.0.0
-                        $e->{'status'} = $as;
-                    }
+                    $e->{'status'} = $as unless Sisimai::SMTP::Status->is_ambiguous($as);
                 }
 
                 if( $e->{'replycode'} eq '' || substr($e->{'replycode'}, -2, 2) eq '00' ) {
