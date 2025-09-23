@@ -12,6 +12,7 @@ v5.4.1p1
   - #599 #600 Change file encodings from sjis to UTF-8.
   - #601 #603 Update SMTP reply codes defined in `Sisimai::SMTP::Reply::Associated`.
   - #604 Implement `Sisimai::SMTP::Status->is_ambiguous` method.
+  - #602 Sisimai partially supports the media types described in RFC6533 such as `message/global`.
 
 v5.4.1
 ---------------------------------------------------------------------------------------------------
