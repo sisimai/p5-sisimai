@@ -16,12 +16,15 @@ state $Fields5322 = Sisimai::RFC5322->FIELDINDEX;
 state $Fields5965 = Sisimai::RFC5965->FIELDINDEX;
 state $FieldTable = { map { lc $_ => $_ } ($Fields1894->@*, $Fields5322->@*, $Fields5965->@*) };
 state $Boundaries = ["Content-Type: message/rfc822", "Content-Type: text/rfc822-headers"];
-state $ReplacesAs = {
-    "Content-Type" => [
-        ["message/xdelivery-status",         "message/delivery-status"],
-        ["message/disposition-notification", "message/delivery-status"],
-    ],
-};
+state $MediaTypes = [
+    ["message/xdelivery-status",                "message/delivery-status"],
+    ["message/disposition-notification",        "message/delivery-status"],
+    ["message/global-delivery-status",          "message/delivery-status"],
+    ["message/global-disposition-notification", "message/delivery-status"],
+    ["message/global-delivery-status",          "message/delivery-status"],
+    ["message/global-headers",                  "text/rfc822-headers"],
+    ["message/global",                          "message/rfc822"],
+];
 
 my $TryOnFirst = [];
 
@@ -275,9 +278,9 @@ sub tidy {
         }
 
         # 3. Tidy up a value, and a parameter of Content-Type: field
-        if( exists $ReplacesAs->{ $fn } ) {
+        if( $fn eq "Content-Type" ) {
             # Replace the value of "Content-Type" field
-            for my $f ( $ReplacesAs->{ $fn }->@* ) {
+            for my $f ( @$MediaTypes ) {
                 # - Before: Content-Type: message/xdelivery-status; ...
                 # - After:  Content-Type: message/delivery-status; ...
                 $p1 = index($bf, $f->[0]); next if $p1 < 0;
