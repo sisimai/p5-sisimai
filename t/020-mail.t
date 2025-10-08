@@ -65,7 +65,7 @@ MAKETEST: {
             ok length $r, 'maildir->data->read('.($emindex + 1).')';
             $emindex++;
         }
-        is $emindex, 2;
+        is $emindex, 3;
     }
 
     DEVICE: {
