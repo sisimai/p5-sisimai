@@ -165,10 +165,14 @@ MAKETEST: {
     }
 
     for my $e ( 'maildir' ) {
-        my $parseddata = $Package->rise($Normals->{ $e });
-        my $jsonstring = $Package->dump($Normals->{ $e });
-        is $parseddata, undef, '->rise = undef';
-        is $jsonstring, '[]', '->dump = "[]"';
+        my $de = IO::Dir->new($Normals->{ $e }); while( my $r = $de->read ) {
+            # Read each file in the directory
+            next if( $r eq '.' || $r eq '..' );
+            my $parseddata = $Package->rise($Normals->{ $e }.'/'.$r);
+            my $jsonstring = $Package->dump($Normals->{ $e }.'/'.$r);
+            is $parseddata, undef, '->rise = undef';
+            is $jsonstring, '[]', '->dump = "[]"';
+        }
     }
 
     ENGINE: {

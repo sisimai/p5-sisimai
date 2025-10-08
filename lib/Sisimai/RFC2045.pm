@@ -225,6 +225,7 @@ sub levelout {
 
     # Remove empty or useless preamble and epilogue of multipart/* block
     shift @$multiparts if length $multiparts->[0]  < 8;
+    return []          if scalar @$multiparts     == 0;
     pop   @$multiparts if length $multiparts->[-1] < 8;
 
     while( my $e = shift @$multiparts ) {
