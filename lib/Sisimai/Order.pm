@@ -53,6 +53,7 @@ sub make {
         'non-recapitabile'  => ['Sisimai::Lhost::Exchange2007'],
         'non-remis'         => ['Sisimai::Lhost::Exchange2007'],
         'notice'            => ['Sisimai::Lhost::Courier'],
+        'postmaster-email'  => ['Sisimai::Lhost::Mimecast'],
         'postmaster-notify' => ['Sisimai::Lhost::Sendmail'],
         'returned-mail'     => [
             'Sisimai::Lhost::Sendmail',

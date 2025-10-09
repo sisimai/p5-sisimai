@@ -31,10 +31,10 @@ sub index {
     # Alphabetical sorted MTA module list
     # @return   [Array] MTA list with order
     return [qw|
-        Activehunter AmazonSES ApacheJames Biglobe Courier Domino DragonFly EZweb
-        EinsUndEins Exchange2003 Exchange2007 Exim FML GMX GoogleGroups GoogleWorkspace Gmail
-        IMailServer InterScanMSS KDDI MailFoundry MailMarshalSMTP MessagingServer Notes
-        OpenSMTPD Postfix Sendmail V5sendmail Verizon X1 X2 X3 X6 Zoho mFILTER qmail
+        Activehunter AmazonSES ApacheJames Biglobe Courier Domino DragonFly EZweb EinsUndEins Exchange2003
+        Exchange2007 Exim FML GMX GoogleGroups GoogleWorkspace Gmail IMailServer InterScanMSS KDDI MailFoundry
+        Mimecast MailMarshalSMTP MessagingServer Notes OpenSMTPD Postfix Sendmail V5sendmail Verizon
+        X1 X2 X3 X6 Zoho mFILTER qmail
     |];
 }
 
