@@ -71,7 +71,6 @@ sub inquire {
             if( my $f = Sisimai::RFC1894->match($e) ) {
                 # $e matched with any field defined in RFC3464
                 next unless my $o = Sisimai::RFC1894->field($e);
-                $v = $dscontents->[-1];
 
                 if( $o->[3] eq 'code' ) {
                     # Diagnostic-Code: SMTP; 550 5.1.1 <userunknown@example.jp>... User Unknown
