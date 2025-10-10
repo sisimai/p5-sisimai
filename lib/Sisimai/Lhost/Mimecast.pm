@@ -40,9 +40,7 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            if( rindex($e, $startingof->{'message'}->[0]) > -1 || rindex($e, $startingof->{'message'}->[0]) > -1 ) {
-                $readcursor |= $indicators->{'deliverystatus'};
-            }
+            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) > -1;
         }
         next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
 
