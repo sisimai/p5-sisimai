@@ -214,7 +214,7 @@ sub tidy {
         # Find and tidy up fields defined in RFC5322, RFC1894, and RFC5965
         # 1. Find a field label defined in RFC5322, RFC1894, or RFC5965 from this line
         my $p0 = index($e, ':');
-        my $cf = substr(lc $e, 0, $p0);
+        my $cf = substr(lc $e, 0, $p0); chop $cf if substr($cf, -1, 1) eq ' ';
         my $fn = $FieldTable->{ $cf } || '';
 
         # There is neither ":" character nor the field listed in $FieldTable
@@ -254,6 +254,7 @@ sub tidy {
                             substr($f, 0, $p2, $ps);
                         }
                         $f = lc $f if $ps ne 'boundary';
+                        $f = 'rfc822' if $f eq 'rfc/822';
                         last;
                     }
                     push @$ab, $f;
