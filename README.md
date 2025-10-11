@@ -84,7 +84,7 @@ The key features of Sisimai
   * `cpan`, `cpanm`, or `cpm`
   * `git clone & make`
 * __High Precision of Analysis__
-  * Support [59 MTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)
+  * Support [60 MTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)
   * Support Feedback Loop Message(ARF)
   * Can detect [36 bounce reasons](https://libsisimai.org/en/reason/)
 
@@ -361,11 +361,11 @@ Beginning with v5.0.0, Sisimai requires **Perl 5.26.0 or later.**
 |------------------------------------------------------|--------------------|---------------------|
 | System requirements (Perl)                           | 5.10 -             | **5.26** -          |
 | Callback feature for the original email file         | N/A                | Available[^3]       |
-| The number of MTA/ESP modules                        | 68                 | 59                  |
+| The number of MTA/ESP modules                        | 68                 | 60                  |
 | The number of detectable bounce reasons              | 29                 | 36                  |
 | Dependencies (Except core modules of Perl)           | 2 modules          | 2 modules           |
-| Source lines of code                                 | 10,800 lines       | 9,900 lines         |
-| The number of tests in t/, xt/ directory             | 270,000 tests      | 320,000 tests       | 
+| Source lines of code                                 | 10,800 lines       | 9,800 lines         |
+| The number of tests in t/, xt/ directory             | 270,000 tests      | 323,000 tests       | 
 | The number of bounce emails decoded per second[^4]   | 750 emails         | 750 emails          |
 | License                                              | 2 Clause BSD       | 2 Caluse BSD        |
 | Commercial support                                   | Available          | Available           |
@@ -407,6 +407,7 @@ available at [LIBSISIMAI.ORG/EN/ENGINE](https://libsisimai.org/en/engine/)
 | Tencent                                         | `Rhost::TencentQQ`      | `Rhost::Tencent`    |
 | Yahoo Mail (added at v5.1.0)                    | None                    | `Rhost::YahooInc`   |
 | DragonFly Mail Agent (added at v5.1.0)          | None                    | `Lhost::DragonFly`  |
+| Mimecast (added at v5.5.0)                      | None                    | `Lhost::Mimecast`   |
 
 Bounce Reasons
 ---------------------------------------------------------------------------------------------------

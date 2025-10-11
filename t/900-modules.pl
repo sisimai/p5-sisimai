@@ -32,6 +32,7 @@ sub list {
             Lhost/MailFoundry.pm
             Lhost/MailMarshalSMTP.pm
             Lhost/MessagingServer.pm
+            Lhost/Mimecast.pm
             Lhost/mFILTER.pm
             Lhost/Notes.pm
             Lhost/OpenSMTPD.pm
