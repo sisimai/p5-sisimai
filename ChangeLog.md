@@ -14,6 +14,7 @@ v5.4.1p1
   - #604 Implement `Sisimai::SMTP::Status->is_ambiguous` method.
   - #602 Sisimai partially supports the media types described in RFC6533 such as `message/global`.
   - #606 #607 Fix the index out of range bug in multipart blocks.
+  - #605 #608 Implement `Sisimai::Lhost::Mimecast`.
 
 v5.4.1
 ---------------------------------------------------------------------------------------------------
