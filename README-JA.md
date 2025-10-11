@@ -80,7 +80,7 @@ The key features of Sisimai
   * `cpan`, `cpanm`, `cpm install`
   * `git clone & make`
 * __高い解析精度__
-  * [59種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
+  * [60種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
   * Feedback Loop(ARF)にも対応
   * [36種類のバウンス理由](https://libsisimai.org/en/reason/)を検出
 
@@ -355,11 +355,11 @@ Sisimai 5.0.0から**Perl 5.26.0以上**が必要になります。
 |------------------------------------------------------|--------------------|---------------------|
 | 動作環境(Perl)                                       | 5.10 -             | **5.26** -          |
 | 元メールファイルを操作可能なコールバック機能         | なし               | あり[^3]            |
-| 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 59                  |
+| 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 60                  |
 | 検出可能なバウンス理由の数                           | 29                 | 36                  |
 | 依存もジュール数(Perlのコアモジュールを除く)         | 2 モジュール       | 2 モジュール        |
-| ソースコードの行数                                   | 10,800 行          | 9,900 行            |
-| テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 320,000 件          |
+| ソースコードの行数                                   | 10,800 行          | 9,800 行            |
+| テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 323,000 件          |
 | 1秒間に解析できるバウンスメール数[^4]                | 750 通             | 750 通              |
 | ライセンス                                           | 2条項BSD           | 2条項BSD            |
 | 開発会社による商用サポート                           | 提供中             | 提供中              |
@@ -400,6 +400,7 @@ Sisimai 5で3個のESPモジュール名(解析エンジン)が変更になり�
 | Tencent                                         | `Rhost::TencentQQ`      | `Rhost::Tencent`    |
 | Yahoo Mail (added at v5.1.0)                    | なし                    | `Rhost::YahooInc`   |
 | DragonFly Mail Agent (added at v5.1.0)          | なし                    | `Lhost::DragonFly`  |
+| Mimecast (added at v5.5.0)                      | なし                    | `Lhost::Mimecast`   |
 
 Bounce Reasons
 ---------------------------------------------------------------------------------------------------
