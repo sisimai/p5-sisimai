@@ -461,10 +461,6 @@ sub damn {
         $v->{'addresser'}  = $self->addresser->address;
         $v->{'recipient'}  = $self->recipient->address;
         $v->{'timestamp'}  = $self->timestamp->epoch;
-
-        # Backward compatibility until v5.5.0
-        $v->{"smtpagent"}   = $self->decodedby;
-        $v->{"smtpcommand"} = $self->command;
         $data = $v;
     };
     return $data;
@@ -483,9 +479,6 @@ sub dump {
     require $modulepath;
     return $referclass->dump($self);
 }
-
-sub smtpagent   { warn " ***warning: Sisimai::Fact->smtpagent will be removed at v5.5.0"; return shift->decodedby }
-sub smtpcommand { warn " ***warning: Sisimai::Fact->smtpcommand will be removed at v5.5.0"; return shift->command }
 
 1;
 __END__

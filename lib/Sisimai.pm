@@ -70,10 +70,6 @@ sub dump {
         # Set UTF8 flag before converting to JSON string
         utf8::decode $e->{'subject'};
         utf8::decode $e->{'diagnosticcode'};
-
-        # Backward compatibility until v5.5.0
-        $e->{"smtpagent"} = $e->{"decodedby"};
-        $e->{"smtpcommand"} = $e->{"command"};
     }
 
     require Module::Load;
