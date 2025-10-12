@@ -27,6 +27,18 @@ my $isexpected = {
     '1016'  => [['5.2.3',   '550', 'exceedlimit',     0]],
     '1017'  => [['5.1.10',  '550', 'userunknown',     1]],
     '1018'  => [['5.1.10',  '550', 'userunknown',     1]],
+    '1019'  => [['5.4.317', '550', 'failedstarttls',  0]],
+    '1020'  => [['5.7.23',  '550', 'authfailure',     0]],
+    '1021'  => [['5.7.509', '550', 'authfailure',     0]],
+    '1022'  => [['5.4.317', '550', 'failedstarttls',  0]],
+    '1023'  => [['5.4.317', '550', 'failedstarttls',  0]],
+  # '1024'  => [['5.4.318', '550', 'systemerror',     0]], # TODO: RFC3464
+  # '1025'  => [['5.1.351', '550', 'userunknown',     1]], # TODO: RFC3464
+    '1026'  => [['4.2.0',   '',    'systemerror',     0]],
+    '1027'  => [['5.4.3',   '550', 'systemerror',     0]],
+    '1028'  => [['5.7.520', '550', 'securityerror',   0]],
+    '1029'  => [['5.7.1',   '550', 'policyviolation', 0]],
+    '1030'  => [['5.4.317', '550', 'expired',         0]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
