@@ -85,6 +85,19 @@ my $isexpected = {
     '1071'  => [['5.7.1',   '554', 'norelaying',      0]],
     '1072'  => [['5.0.912', '',    'hostunknown',     1]],
     '1073'  => [['5.0.921', '',    'suspend',         0]],
+#   '1074'  => [['5.1.1',   '550', 'userunknown',     1], # TODO: 
+#               ['5.4.4',   '',    'notaccept',       1],
+#               ['5.4.4',   '',    'notaccept',       1],
+#               ['5.1.2',   '',    'userunknown',     1],
+#               ['5.7.26',  '550', 'authfailure',     0],
+#               ['5.7.509', '550', 'authfailure',     0],
+#               ['5.1.1',   '550', 'userunknown',     1],
+#               ['5.1.1',   '550', 'userunknown',     1],
+#               ['5.2.2',   '552', 'mailboxfull',     0]],
+#   '1075'  => [['5.1.1',   '550', 'userunknown',     1],
+#               ['5.2.2',   '552', 'mailboxfull',     0],
+#               ['4.7.0',   '421', 'badreputation',   0],
+#               ['4.7.0',   '421', 'userunknown',     1]], # TOOD: badreputation
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
