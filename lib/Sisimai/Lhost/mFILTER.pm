@@ -15,11 +15,7 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
-
-    # X-Mailer: m-FILTER
-    return undef unless defined $mhead->{'x-mailer'};
-    return undef unless $mhead->{'x-mailer'} eq 'm-FILTER';
-    return undef unless $mhead->{'subject'}  eq 'failure notice';
+    my $match = 0;
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['-------original message', '-------original mail info'];
@@ -27,6 +23,13 @@ sub inquire {
         'command'  => ['-------SMTP command'],
         'error'    => ['-------server message'],
     };
+
+    # X-Mailer: m-FILTER
+    $match   = 1 if defined $mhead->{'x-mailer'} && $mhead->{'x-mailer'} eq 'm-FILTER';
+    $match ||= 1 if grep { index($$mbody, $_) > 1 } @$boundaries;
+    $match ||= 1 if grep { index($$mbody, $_) > 1 } $startingof->{'command'}->@*;
+    $match ||= 1 if grep { index($$mbody, $_) > 1 } $startingof->{'error'}->@*;
+    return undef unless $match;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
