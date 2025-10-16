@@ -38,7 +38,7 @@ sub make {
         'failure-delivery' => ['Sisimai::Lhost::X2'],
         'failure-notice'   => ['Sisimai::Lhost::qmail', 'Sisimai::Lhost::mFILTER', 'Sisimai::Lhost::Activehunter'],
         'loop-alert'       => ['Sisimai::Lhost::FML'],
-        'mail-could'       => ['Sisimai::Lhost::InterScanMSS'],
+        'mail-could'       => ['Sisimai::Lhost::TrendMicro'],
         'mail-delivery'    => [
             'Sisimai::Lhost::Exim',
             'Sisimai::Lhost::DragonFly',
@@ -93,7 +93,7 @@ sub another {
         'Sisimai::Lhost::Sendmail',
         'Sisimai::Lhost::Exchange2007',
         'Sisimai::Lhost::Exchange2003',
-        'Sisimai::Lhost::InterScanMSS',
+        'Sisimai::Lhost::TrendMicro',
         'Sisimai::Lhost::KDDI',
         'Sisimai::Lhost::FML',
         'Sisimai::Lhost::Verizon',
