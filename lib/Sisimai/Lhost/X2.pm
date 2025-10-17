@@ -77,7 +77,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             $v->{'recipient'}   = substr($e, 1, length($e) - 3 );
-            $v->{'recipient'} ||= substr($e, length('Delivery failed: '),);
+            $v->{'recipient'} ||= substr($e, index($e, ': ') + 2,);
             $recipients++;
 
         } elsif( index($e, 'STTEP: ') == 0 ) {
