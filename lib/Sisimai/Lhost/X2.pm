@@ -76,7 +76,7 @@ sub inquire {
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'}   = substr($e, 1, length($e) - 3 );
+            $v->{'recipient'}   = substr($e, 1, length($e) - 3 ) if index($e, '<') == 0;
             $v->{'recipient'} ||= substr($e, index($e, ': ') + 2,);
             $recipients++;
 
