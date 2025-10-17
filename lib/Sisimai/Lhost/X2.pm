@@ -23,7 +23,12 @@ sub inquire {
 
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- Original message follows.'];
-    state $startingof = {'message' => ['Unable to deliver message to the following address']};
+    state $startingof = {
+        'message' => [
+            'Unable to deliver message to the following address',
+            'This Delivery Status Notification is sent from MTA',
+        ]
+    };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -35,7 +40,7 @@ sub inquire {
         # line of the beginning of the original message.
         unless( $readcursor ) {
             # Beginning of the bounce message or message/delivery-status part
-            $readcursor |= $indicators->{'deliverystatus'} if index($e, $startingof->{'message'}->[0]) == 0;
+            $readcursor |= $indicators->{'deliverystatus'} if grep { index($e, $_) == 0 } $startingof->{'message'}->@*;
             next;
         }
         next if ($readcursor & $indicators->{'deliverystatus'}) == 0 || $e eq "";
@@ -45,18 +50,42 @@ sub inquire {
         #
         # <kijitora@example.com>:
         # This user doesn't have a example.com account (kijitora@example.com) [0]
+        # 
+        # --- OR ---
+        # 
+        # This Delivery Status Notification is sent from MTA...
+        # 
+        # Your delivery to the following address has been failed.
+        # Please refer to the below for details.
+        # ------------------------------------------------------
+        # 
+        # Delivery failed: kijitora@example.co.jp
+        # 192.0.2.25 does not like recipient.
+        # Remote host said[Response Message]: 550 5.1.1 <kijitora@example.co.jp>:
+        #   Recipient address rejected: User unknown in local recipient table
+        # Giving up on 192.0.2.25.
+        # STEP: RCPT TO
         $v = $dscontents->[-1];
 
-        if( index($e, '<') == 0 && Sisimai::String->aligned(\$e, ['<', '@', '>', ':']) ) {
+        if( index($e, '<') == 0                 && Sisimai::String->aligned(\$e, ['<', '@', '>:']) ||
+            index($e, 'Delivery failed: ') == 0 && Sisimai::String->aligned(\$e, ['failed: ', '@']) ) {
             # <kijitora@example.com>:
+            # Delivery failed: kijitora@example.co.jp
             if( $v->{'recipient'} ) {
                 # There are multiple recipient addresses in the message body.
                 push @$dscontents, __PACKAGE__->DELIVERYSTATUS;
                 $v = $dscontents->[-1];
             }
-            $v->{'recipient'} = substr($e, 1, length($e) - 3 );
+            $v->{'recipient'}   = substr($e, 1, length($e) - 3 ) if index($e, '<') == 0;
+            $v->{'recipient'} ||= substr($e, index($e, ': ') + 2,);
             $recipients++;
-        } else {
+
+        } elsif( index($e, 'STTEP: ') == 0 ) {
+            # STEP: RCPT TO
+            # STEP: DATA SEND
+            $v->{'command'} = Sisimai::SMTP::Command->find($e)
+
+        } elsif( index($e, '-----') != 0 ) {
             # This user doesn't have a example.com account (kijitora@example.com) [0]
             $v->{'diagnosis'} .= ' '.$e;
         }

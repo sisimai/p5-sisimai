@@ -1,12 +1,13 @@
-package Sisimai::Lhost::InterScanMSS;
+package Sisimai::Lhost::TrendMicro;
 use parent 'Sisimai::Lhost';
 use v5.26;
 use strict;
 use warnings;
 
-sub description { 'Trend Micro InterScan Messaging Security Suite: https://www.trendmicro.com/en_us/business/products/user-protection/sps/email-and-collaboration/interscan-messaging.html' }
+sub description { 'TREND VISION ONE(Email and Collaboration Security)' }
 sub inquire {
-    # Detect an error from Trend Micro InterScan Messaging Security Suite
+    # Detect an error from TREND VISION ONE: Email and Collaboration Security
+    # https://www.trendmicro.com/en_us/business/products/email-and-collaboration.html
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
@@ -89,17 +90,17 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::InterScanMSS - bounce mail decoder class for Trend Micro InterScan Messaging Security
-Suite L<https://www.trendmicro.com/en_us/business/products/user-protection/sps/email-and-collaboration/interscan-messaging.html>.
+Sisimai::Lhost::TrendMicro - bounce mail decoder class for TREND VISION ONE: Email and Collaboration
+Security L<https://www.trendmicro.com/en_us/business/products/email-and-collaboration.html>.
 
 =head1 SYNOPSIS
 
-    use Sisimai::Lhost::InterScanMSS;
+    use Sisimai::Lhost::TrendMicro;
 
 =head1 DESCRIPTION
 
-C<Sisimai::Lhost::InterScanMSS> decodes a bounce email which created by Trend Micro InterScan Messaging
-Security Suite L<https://www.trendmicro.com/en_us/business/products/user-protection/sps/email-and-collaboration/interscan-messaging.html>.
+C<Sisimai::Lhost::TrendMicro> decodes a bounce email which created by TREND VISION ONE: Email and
+Collaboration Security L<https://www.trendmicro.com/en_us/business/products/email-and-collaboration.html>.
 Methods in the module are called from only C<Sisimai::Message>.
 
 =head1 CLASS METHODS
@@ -108,7 +109,7 @@ Methods in the module are called from only C<Sisimai::Message>.
 
 C<description()> returns description string of this module.
 
-    print Sisimai::Lhost::InterScanMSS->description;
+    print Sisimai::Lhost::TrendMicro->description;
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
