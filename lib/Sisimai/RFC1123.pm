@@ -3,6 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 use Sisimai::String;
+use Sisimai::RFC791;
 
 state $Sandwiched = [
     # (Postfix) postfix/src/smtp/smtp_proto.c: "host %s said: %s (in reply to %s)",
@@ -70,6 +71,50 @@ sub is_internethost {
         if( $f > 47 && $f < 58 ) { $hostnameok = 0; last }
     }
     return $hostnameok;
+}
+
+sub is_domainliteral {
+    # returns true if the domain part is [IPv4:...] or [IPv6:...].
+    # @param    string email  Email address.
+    # @return   bool          0: the domain part is not a domain literal.
+    #                         1: the domain part is a domain literal.
+    my $class = shift;
+    my $email = shift || return 0;
+
+    $email =~ s/\A[<]//g; $email =~ s/[>]\z//g;
+    return 0 if length $email < 16; # e@[IPv4:0.0.0.0] is 16 characters
+    return 0 if substr($email, -1, 1) ne ']';
+
+    my $lastb = rindex($email, '@[IPv'); return 0 if $lastb < 0;
+    my $lastc = rindex($email, ']');
+    my $dpart = substr($email, $lastb + 7, $lastc - $lastb - 7);
+
+    if( index($email, '@[IPv4:') > 0 ) {
+        # neko@[IPv4:192.0.2.25]
+        return Sisimai::RFC791->is_ipv4address($dpart);
+
+    } elsif( index($email, '@[IPv6:') > 0 ) {
+        # neko@[IPv6:2001:0DB8:0000:0000:0000:0000:0000:0001]
+        # neko@[IPv6:2001:0DB8:0000:0000:0000:0000:0000:0001]
+        # IPv6-address-literal  = "IPv6:" IPv6-addr
+        #    IPv6-addr      = IPv6-full / IPv6-comp / IPv6v4-full / IPv6v4-comp
+        #    IPv6-hex       = 1*4HEXDIG
+        #    IPv6-full      = IPv6-hex 7(":" IPv6-hex)
+        #    IPv6-comp      = [IPv6-hex *5(":" IPv6-hex)] "::"
+        #                     [IPv6-hex *5(":" IPv6-hex)]
+        #                     ; The "::" represents at least 2 16-bit groups of
+        #                     ; zeros.  No more than 6 groups in addition to the
+        #                     ; "::" may be present.
+        #    IPv6v4-full    = IPv6-hex 5(":" IPv6-hex) ":" IPv4-address-literal
+        #    IPv6v4-comp    = [IPv6-hex *3(":" IPv6-hex)] "::"
+        #                     [IPv6-hex *3(":" IPv6-hex) ":"]
+        #                     IPv4-address-literal
+        #                     ; The "::" represents at least 2 16-bit groups of
+        #                     ; zeros.  No more than 4 groups in addition to the
+        #                     ; "::" and IPv4-address-literal may be present.
+        return 1 if length $dpart > 2 && index($dpart, ':') > 0;
+    }
+    return 0
 }
 
 sub find {
@@ -177,6 +222,13 @@ C<is_internethost()> method returns true when the argument is a valid hostname
 
     print Sisimai::RFC1123->is_internethost("mx2.example.jp"); # 1
     print Sisimai::RFC1123->is_internethost("localhost");      # 0
+
+
+C<is_domainliteral()> method returns true when the domain part of the argument begins with "[IPv4:"
+or "[IPv6:" and is a valid domain literal.
+
+    print Sisimai::RFC1123->is_domainliteral("neko@[IPv4:192.0.2.1]);   # 1
+    print Sisimai::RFC1123->is_domainliteral("neko@[192.0.2.1]);        # 0
 
 =head1 AUTHOR
 
