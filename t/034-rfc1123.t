@@ -12,7 +12,6 @@ can_ok $Package, @{ $Methods->{'class'} };
 MAKETEST: {
     my $hostnames0 = [
         '',
-        'localhost',
         '127.0.0.1',
         'cat',
         'neko',
@@ -24,6 +23,7 @@ MAKETEST: {
         'mx0.example.jp/neko',
     ];
     my $hostnames1 = [
+        'localhost',
         'mx1.example.jp',
         'mx1.example.jp.',
         'a.jp',
