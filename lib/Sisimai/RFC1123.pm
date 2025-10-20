@@ -43,6 +43,8 @@ sub is_internethost {
     my $class = shift;
     my $argv0 = shift || return 0;
 
+    # Deal "localhost", "localhost6" as a valid hostname
+    return 1 if $argv0 eq 'localhost' || $argv0 eq 'localhost6';
     return 0 if length $argv0 > 255 || length $argv0 < 4;
     return 0 if index($argv0, ".") == -1;
     return 0 if index($argv0, "..") > -1;
@@ -86,12 +88,13 @@ sub is_domainliteral {
     return 0 if substr($email, -1, 1) ne ']';
 
     my $lastb = rindex($email, '@[IPv'); return 0 if $lastb < 0;
-    my $lastc = rindex($email, ']');
-    my $dpart = substr($email, $lastb + 7, $lastc - $lastb - 7);
+    my $dpart = [split('@', $email)]->[-1];
 
     if( index($email, '@[IPv4:') > 0 ) {
         # neko@[IPv4:192.0.2.25]
-        return Sisimai::RFC791->is_ipv4address($dpart);
+        my $ipv4a = substr($email, $lastb + 7,);
+           $ipv4a = substr($ipv4a, 0, length($ipv4a) - 1);
+        return Sisimai::RFC791->is_ipv4address($ipv4a);
 
     } elsif( index($email, '@[IPv6:') > 0 ) {
         # neko@[IPv6:2001:0DB8:0000:0000:0000:0000:0000:0001]
@@ -112,7 +115,7 @@ sub is_domainliteral {
         #                     ; The "::" represents at least 2 16-bit groups of
         #                     ; zeros.  No more than 4 groups in addition to the
         #                     ; "::" and IPv4-address-literal may be present.
-        return 1 if length $dpart > 2 && index($dpart, ':') > 0;
+        return 1 if length $dpart > 2 && rindex($dpart, ':') > 7;
     }
     return 0
 }
@@ -223,6 +226,7 @@ C<is_internethost()> method returns true when the argument is a valid hostname
     print Sisimai::RFC1123->is_internethost("mx2.example.jp"); # 1
     print Sisimai::RFC1123->is_internethost("localhost");      # 0
 
+=head2 C<B<is_domainliteral(I<String>)>>
 
 C<is_domainliteral()> method returns true when the domain part of the argument begins with "[IPv4:"
 or "[IPv6:" and is a valid domain literal.
