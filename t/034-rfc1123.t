@@ -12,7 +12,6 @@ can_ok $Package, @{ $Methods->{'class'} };
 MAKETEST: {
     my $hostnames0 = [
         '',
-        'localhost',
         '127.0.0.1',
         'cat',
         'neko',
@@ -24,6 +23,8 @@ MAKETEST: {
         'mx0.example.jp/neko',
     ];
     my $hostnames1 = [
+        'localhost',
+        'localhost6',
         'mx1.example.jp',
         'mx1.example.jp.',
         'a.jp',
@@ -46,6 +47,19 @@ MAKETEST: {
         'neko.example.jp [192.0.2.25] did not like our RCPT TO: 550 5.1.1 <cat@example.jp>: Recipient address rejected: User unknown',
         'neko.example.jp [192.0.2.79] did not like our final DATA: 554 5.7.9 Message not accepted for policy reasons',
     ];
+    my $ip46domain = [
+        ['', 0],
+        ['<neko@example.jp>', 0],
+        ['<neko@[IPv4:192.0.2.25]>', 1],
+        ['neko@[IPv4:192.0.2.25]', 1],
+        ['neko@[Neko:192.0.2.25]', 0],
+        ['neko@[IPv6:192.0.2.25]', 0],
+        ['neko@[IPv6:2001:DB8::1]', 1],
+        ['neko@[IPv5:2001:DB8::1]', 0],
+        ['<neko@[IPv6:2001:DB8::1]>', 1],
+        ['neko@[IPv6:2001:0DB8:0000:0000:0000:0000:0000:0001]', 1],
+        ['<neko@[IPv6:2001:0DB8:0000:0000:0000:0000:0000:0001]>', 1],
+    ];
 
     for my $e ( @$hostnames0 ) {
         # Invalid hostnames
@@ -61,6 +75,10 @@ MAKETEST: {
         # find() returns "neko.example.jp"
         my $v = $Package->find($e);
         is $v, "neko.example.jp", '->find('.$e.') = '.$v;
+    }
+
+    for my $e ( @$ip46domain ) {
+        is $Package->is_domainliteral($e->[0]), $e->[1], '->is_domainliteral('.$e->[0].') = '.$e->[1];
     }
 }
 

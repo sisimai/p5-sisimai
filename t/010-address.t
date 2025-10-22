@@ -147,7 +147,6 @@ MAKETEST: {
           'a' => 'neko-nyaan@neko-nyaan.example.com',
           'n' => 'neko-nyaan@neko-nyaan.example.com',
           'c' => '' },
-        { 'v' => 'neko@nyaan', 'a' => 'neko@nyaan', 'n' => 'neko@nyaan', 'c' => '' },
         { 'v' => q[#!$%&'*+-/=?^_`{}|~@example.org],
           'a' => q[#!$%&'*+-/=?^_`{}|~@example.org],
           'n' => q[#!$%&'*+-/=?^_`{}|~@example.org],
@@ -163,6 +162,10 @@ MAKETEST: {
         { 'v' => q|neko@localhost|,
           'a' => 'neko@localhost',
           'n' => 'neko@localhost',
+          'c' => '' },
+        { 'v' => 'neko@[IPv4:192.0.2.22]',
+          'a' => 'neko@[IPv4:192.0.2.22]',
+          'n' => 'neko@[IPv4:192.0.2.22]',
           'c' => '' },
         { 'v' => 'neko@[IPv6:2001:DB8::1]',
           'a' => 'neko@[IPv6:2001:DB8::1]',
@@ -325,8 +328,8 @@ MAKETEST: {
             if( defined $e ) {
                 $v = $p->s3s4($e);             is $v, $e,    sprintf("%s->s3s4(v) = %s", $p, $e);
             }
-            $v = $p->new({ 'address' => $e }); is $v, undef, sprintf("%s->new(v) = undef", $p);
-            $v = $p->find($e);                 is $v, undef, sprintf("%s->find(v) = undef", $p);
+            $v = $p->new({ 'address' => $e }); is $v, undef, sprintf("%s->new(%s) = undef", $p, $e);
+            $v = $p->find($e);                 is $v, undef, sprintf("%s->find(%s) = undef", $p, $e);
             $v = $p->is_emailaddress($e);      is $v, 0,     sprintf("%s->is_emailaddress = 0", $p);
         }
         is $p->is_emailaddress(('neko-nyaan' x 25).'@example.jp'), 0;

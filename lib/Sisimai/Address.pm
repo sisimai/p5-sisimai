@@ -16,31 +16,7 @@ use Class::Accessor::Lite (
         'comment',  # [String] (Comment)
     ]
 );
-
-# Regular expression of valid RFC-5322 email address(<addr-spec>)
-my $Re = {'rfc5322' => "", 'ignored' => "", 'domain' => ""};
-BUILD_REGULAR_EXPRESSIONS: {
-    # See http://www.ietf.org/rfc/rfc5322.txt
-    #  or http://www.ex-parrot.com/pdw/Mail-RFC822-Address.html ...
-    #   addr-spec       = local-part "@" domain
-    #   local-part      = dot-atom / quoted-string / obs-local-part
-    #   domain          = dot-atom / domain-literal / obs-domain
-    #   domain-literal  = [CFWS] "[" *([FWS] dcontent) [FWS] "]" [CFWS]
-    #   dcontent        = dtext / quoted-pair
-    #   dtext           = NO-WS-CTL /     ; Non white space controls
-    #                     %d33-90 /       ; The rest of the US-ASCII
-    #                     %d94-126        ;  characters not including "[", "]", or "\"
-    my $atom           = qr;[a-zA-Z0-9_!#\$\%&'*+/=?\^`{}~|\-]+;o;
-    my $quoted_string  = qr/"(?:\\[^\r\n]|[^\\"])*"/o;
-    my $domain_literal = qr/\[(?:\\[\x01-\x09\x0B-\x0c\x0e-\x7f]|[\x21-\x5a\x5e-\x7e])*\]/o;
-    my $dot_atom       = qr/$atom(?:[.]$atom)*/o;
-    my $local_part     = qr/(?:$dot_atom|$quoted_string)/o;
-    my $domain         = qr/(?:$dot_atom|$domain_literal)/o;
-
-    $Re->{'rfc5322'}   = qr/\A$local_part[@]$domain\z/o;
-    $Re->{'ignored'}   = qr/\A$local_part[.]*[@]$domain\z/o;
-    $Re->{'domain'}    = qr/\A$domain\z/o;
-}
+use Sisimai::RFC1123;
 
 sub undisclosed {
     # Return pseudo recipient or sender address
@@ -58,12 +34,101 @@ sub is_emailaddress {
     # @param    [String] email  Email address string
     # @return   [Integer]       0: Not email address
     #                           1: Email address
-    my $class = shift;
-    my $email = shift // return 0;
+    my $class =  shift;
+    my $email =  shift // return 0; return 0 if length($email) < 5;
+       $email =~ s/\A[\s\t]+//; $email =~ s/[\s\t]+\z//;
 
-    return 0 if $email =~ /(?:[\x00-\x1f]|\x1f)/;
-    return 0 if length $email > 254;
-    return 1 if $email =~ $Re->{'ignored'};
+    my $width = length($email);
+    my $lasta = rindex($email, '@');
+    my $lastd = rindex($email, '.');
+
+    return 0 if $width > 254;               # The maximum length of an email address is 254
+    return 0 if $lasta < 1 || $lasta > 64;  # The maximum length of a local part is 64
+    return 0 if $width - $lasta > 253;      # The maximum length of a domain part is 252
+
+    my $quote = __PACKAGE__->is_quotedaddress($email); unless( $quote ) {
+        # The email address is not a quoted address
+        return 0 if index($email, '@') != $lasta; # There are 2 or more '@'.
+        return 0 if index($email, ' ') > 0;       # There is 1 or more ' '.
+    }
+    my @upper = split('', uc($email));
+    my $ipv46 = Sisimai::RFC1123->is_domainliteral($email);
+    my $match = 1;
+
+    my $j = -1; for my $e ( split('', $email) ) {
+        # 31 < The ASCII code of each character < 127
+        my $p = ord($e); $j++;
+
+        if( $j < $lasta ) {
+            # A local part of the email address: string before the last "@"
+            if( $p < 32 || $p > 126 ) { 
+                # Before ' ', After  '~'
+                $match = 0;
+                last;
+            }
+            next if $j == 0; # The character is the first character
+
+            if( $quote ) {
+                # The email address has quoted local part like "neko@cat"@example.org
+                my $jp = substr($email, $j - 1, 1);
+                if( ord($jp) == 92 ) { # 92 = '\'
+                    # When the previous character IS '\', only the followings are allowed: '\', '"'
+                    if( $p != 92 && $p != 34 ) { $match = 0; last }
+
+                } else {
+                    # When the previous character IS NOT '\'
+                    if( $p == 34 && $j + 1 < $lasta ) { $match = 0; last }
+                }
+            } else {
+                # The local part is not quoted
+                # ".." is not allowed in a local part when the local part is not quoted by "" but
+                # Non-RFC compliant email addresses still persist in the world.
+                #
+                # The following characters are not allowed in a local part without "..."@example.jp
+                if( $e eq ',' || $e eq '@' || $e eq ':' || $e eq ';' || $e eq '(' ) { $match = 0; last }
+                if( $e eq ')' || $e eq '<' || $e eq '>' || $e eq '[' || $e eq ']' ) { $match = 0; last }
+            }
+        } else {
+            # A domain part of the email address: string after the last "@"
+            next if $p == 64;                    # '@'
+            if( $p <   45 ) { $match = 0; last } # Before '-'
+            if( $p ==  47 ) { $match = 0; last } # Equals '/'
+            if( $p ==  92 ) { $match = 0; last } # Equals '\'
+            if( $p >  122 ) { $match = 0; last } # After  'z'
+
+            if( $ipv46 == 0 ) {
+                # Such as "example.jp", "neko.example.org"
+                if( $p > 57 && $p < 64 ) { $match = 0; last }   # ':' to '?'
+                if( $p > 90 && $p < 97 ) { $match = 0; last }   # '[' to '`'
+
+            } else {
+                # Such as "[IPv4:192.0.2.25]"
+                if( $p > 59 && $p < 64 ) { $match = 0; last }   # ';' to '?'
+                if( $p > 93 && $p < 97 ) { $match = 0; last }   # '^' to '`'
+            }
+
+            if( $j > $lastd && $ipv46 == 0 ) {
+                # *TLD of the domain part: string after the last '.'
+                my $q = ord($upper[$j]);
+                if( $q < 65 ) { $match = 0; last }  # Before 'A'
+                if( $q > 90 ) { $match = 0; last }  # After  'z'
+            }
+        }
+    }
+
+    # Check that the domain part is a valid internet host or not
+    $match = Sisimai::RFC1123->is_internethost(substr($email, $lasta + 1,)) if $match && $ipv46 == 0;
+    return $match;
+}
+
+sub is_quotedaddress {
+    # Checks that the local part of the argument is quoted address or not.
+    # @param    [String] argv0  Email address
+    # @return   [Integer]       0: is not a quoted address
+    #                           1: is a quoted address
+    my $class = shift;
+    my $argv0 = shift;
+    return 1 if index($argv0, '"') == 0 && index($argv0, '"@') > 1;
     return 0;
 }
 
@@ -488,6 +553,13 @@ C<is_emailaddress()> method checks the argument is valid email address or not.
     for my $e ( @$addr_with_name ) {
         print Sisimai::Address->is_emailaddress($e); # 1
     }
+
+=head2 C<B<is_quotedaddress(I<email address>)>>
+
+C<is_quotedaddress()> method returns 1 if an argument is like "neko@nyaan"@example.jp
+
+    print Sisimai::Address->is_quotedaddress('"neko@nyaan"@example.jp'); # 1
+    print Sisimai::Address->is_quotedaddress('neko-nyaan@example.org');  # 0
 
 =head2 C<B<is_mailerdaemon(I<email address>)>>
 
