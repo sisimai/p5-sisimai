@@ -24,6 +24,7 @@ MAKETEST: {
     ];
     my $hostnames1 = [
         'localhost',
+        'localhost6',
         'mx1.example.jp',
         'mx1.example.jp.',
         'a.jp',
