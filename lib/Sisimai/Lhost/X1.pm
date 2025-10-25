@@ -23,7 +23,7 @@ sub inquire {
     return undef unless $proceedsto;
 
     state $indicators = __PACKAGE__->INDICATORS;
-    state $boundaries = ['Received: from '];
+    state $boundaries = ['Content-Type: message/rfc822', 'Received: from '];
     state $markingsof = {'message' => ['The original message was received at ']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
