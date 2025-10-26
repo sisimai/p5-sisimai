@@ -242,7 +242,7 @@ my $moduletest = sub {
 
                 DIAGNOSTICTYPE: {
                     $cv = $rr->diagnostictype;
-                    $cr = qr/\A(?:LMTP|SMTP|UNKNOWN|X[.]?[45]00|X-[0-9A-Z-]+)/;
+                    $cr = qr/\A(?:DNS|LMTP|SMTP|UNKNOWN|X[.]?[45]00|X-[0-9A-Z-]+)/;
                     $ct = sprintf("[%s-%02d] ->diagnostictype =", $e, $errorindex);
 
                     if( $rr->reason eq 'feedback' || $rr->reason eq 'vacation' ) {
