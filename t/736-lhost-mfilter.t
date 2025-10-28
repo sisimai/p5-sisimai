@@ -12,6 +12,7 @@ my $isexpected = {
     '02' => [['5.1.1',   '550', 'userunknown',     1]],
     '03' => [['5.0.910', '550', 'filtered',        0]],
     '04' => [['5.4.1',   '550', 'rejected',        0]],
+    '05' => [['4.3.1',   '452', 'systemfull',      0]],
 };
 
 $enginetest->($enginename, $isexpected);
