@@ -110,12 +110,12 @@ sub inquire {
                 next unless my $o = Sisimai::RFC1894->field($e);
                 $v = $dscontents->[-1];
 
-                if( Sisimai::Address->is_emailaddress($o->[2]) ) {
+                if( $o->[3] eq 'addr' ) {
+                    # Final-Recipient: rfc822; kijitora@example.jp
+                    # X-Actual-Recipient: rfc822; kijitora@example.co.jp
+                    if( Sisimai::Address->is_emailaddress($o->[2]) ) {
                     # The email address is a valid email address, avoid an email address without a
                     # valid domain part such as "neko@mailhost".
-                    if( $o->[3] eq 'addr' ) {
-                        # Final-Recipient: rfc822; kijitora@example.jp
-                        # X-Actual-Recipient: rfc822; kijitora@example.co.jp
                         if( $o->[0] eq 'final-recipient' ) {
                             # Final-Recipient: rfc822; kijitora@example.jp
                             if( $v->{'recipient'} ) {
