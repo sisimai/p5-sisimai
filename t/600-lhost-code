@@ -362,7 +362,7 @@ my $moduletest = sub {
                     isa_ok $rr->recipient, 'Sisimai::Address';
 
                     $cv = $rr->recipient->address;
-                    $cr = qr/\A.+[@][0-9A-Za-z._-]+[A-Za-z]+?\z/;
+                    $cr = qr/\A.+[@][0-9A-Za-z._-]+[.][A-Za-z]+?\z/;
                     $ct = sprintf("[%s-%02d] ->recipient->", $e, $errorindex);
 
                     ok defined $rr->recipient->alias,   sprintf("%s%s = %s", $ct, 'alias', $rr->recipient->alias);

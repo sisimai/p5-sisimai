@@ -211,14 +211,15 @@ sub inquire {
 
     unless( $recipients ) {
         # Fallback: get a recipient address from error messages
-        if( defined $anotherset->{'recipient'} && $anotherset->{'recipient'} ||
-            defined $anotherset->{'alias'}     && $anotherset->{'alias'} ) {
-            # Set a recipient address
-            $dscontents->[-1]->{'recipient'}   = $anotherset->{'recipient'};
-            $dscontents->[-1]->{'recipient'} ||= $anotherset->{'alias'};
+        for my $e ( 'recipient', 'alias' ) {
+            # Set a valid recipient address picked from $anotherset
+            next unless Sisimai::Address->is_emailaddress($anotherset->{ $e });
+            $dscontents->[-1]->{'recipient'} = $anotherset->{ $e };
             $recipients++;
+            last;
+        }
 
-        } else {
+        if( $recipients == 0 ) {
             # Get a recipient address from message/rfc822 part if the delivery report was unavailable:
             # '--- Delivery report unavailable ---'
             my $p1 = index($emailparts->[1], "\nTo: ");

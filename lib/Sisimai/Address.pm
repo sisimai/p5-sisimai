@@ -117,7 +117,12 @@ sub is_emailaddress {
     }
 
     # Check that the domain part is a valid internet host or not
-    $match = Sisimai::RFC1123->is_internethost(substr($email, $lasta + 1,)) if $match && $ipv46 == 0;
+    my $cv = substr($email, $lasta + 1,);
+    if( $match == 0 ) {
+        # The domain part is not valid except "localhost6".
+        return 1 if $cv eq 'localhost6';
+    }
+    $match = Sisimai::RFC1123->is_internethost($cv) if $ipv46 == 0;
     return $match;
 }
 
