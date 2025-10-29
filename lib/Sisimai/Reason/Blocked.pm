@@ -86,6 +86,7 @@ sub match {
             )
         |mail[ ]server[ ]at[ ][^ ]+[ ]is[ ]blocked
         |mail[ ]from[ ]\d+[.]\d+[.]\d+[.]\d[ ]refused:
+        |mailfrom[ ]domain[ ]is[ ]listed[ ]in[ ]spamhaus
         |message[ ]from[ ][^ ]+[ ]rejected[ ]based[ ]on[ ]blacklist
         |message[ ]was[ ]rejected[ ]for[ ]possible[ ]spam/virus[ ]content
         |messages[ ]from[ ][^ ]+[ ]temporarily[ ]deferred[ ]due[ ]to[ ]user[ ]complaints   # Yahoo!
