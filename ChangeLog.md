@@ -19,6 +19,7 @@ v5.4.1p1
     - `smtpagent` (use `decodedby` instead)
     - `smtpcommand` (use `command` instead)
   - #611 `Sisimai::Lhost::InterScanMSS` has been renamed to `Sisimai::Lhost::TrendMicro`.
+  - #615 New error message pattern for Spamhaus in `Sisimai::Reason::Blocked`. Thanks to @vhenon
 
 v5.4.1
 ---------------------------------------------------------------------------------------------------
