@@ -29,7 +29,7 @@ sub list {
             Lhost/IMailServer.pm
             Lhost/KDDI.pm
             Lhost/MailFoundry.pm
-            Lhost/MailMarshalSMTP.pm
+            Lhost/MailMarshal.pm
             Lhost/MessagingServer.pm
             Lhost/Mimecast.pm
             Lhost/mFILTER.pm

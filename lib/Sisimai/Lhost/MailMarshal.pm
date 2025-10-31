@@ -1,4 +1,4 @@
-package Sisimai::Lhost::MailMarshalSMTP;
+package Sisimai::Lhost::MailMarshal;
 use parent 'Sisimai::Lhost';
 use v5.26;
 use strict;
@@ -6,7 +6,7 @@ use warnings;
 
 sub description { 'Trustwave Secure Email Gateway: https://www.trustwave.com/en-us/services/email-security/' }
 sub inquire {
-    # Detect an error from Trustwave Secure Email Gateway (Formerly MailMarshalSMTP)
+    # Detect an error from Trustwave Secure Email Gateway (Formerly MailMarshal)
     # @param    [Hash] mhead    Message headers of a bounce email
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
@@ -132,16 +132,16 @@ __END__
 
 =head1 NAME
 
-Sisimai::Lhost::MailMarshalSMTP - bounce mail decoder class for Trustwave Secure Email Gateway
+Sisimai::Lhost::MailMarshal - bounce mail decoder class for Trustwave Secure Email Gateway
 L<https://www.trustwave.com/en-us/services/email-security/>.
 
 =head1 SYNOPSIS
 
-    use Sisimai::Lhost::MailMarshalSMTP;
+    use Sisimai::Lhost::MailMarshal;
 
 =head1 DESCRIPTION
 
-C<Sisimai::Lhost::MailMarshalSMTP> decodes a bounce email which created by Trustwave Secure Email
+C<Sisimai::Lhost::MailMarshal> decodes a bounce email which created by Trustwave Secure Email
 Gateway L<https://www.trustwave.com/en-us/services/email-security/>: formerly MailMarshal SMTP.
 Methods in the module are called from only C<Sisimai::Message>.
 
@@ -151,7 +151,7 @@ Methods in the module are called from only C<Sisimai::Message>.
 
 C<description()> returns description string of this module.
 
-    print Sisimai::Lhost::MailMarshalSMTP->description;
+    print Sisimai::Lhost::MailMarshal->description;
 
 =head2 C<B<inquire(I<header data>, I<reference to body string>)>>
 
