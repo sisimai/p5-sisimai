@@ -34,7 +34,7 @@ sub rise {
         my $path = $mail->data->path;
         my $args = {
             'data' => $r, 'hook' => $c___->[0], 'origin' => $path,
-            'delivered' => $argv1->{'delivered'}, 'vaction' => $argv1->{'vacation'}
+            'delivered' => $argv1->{'delivered'}, 'vacation' => $argv1->{'vacation'}
         };
         my $fact = Sisimai::Fact->rise($args) || [];
 
