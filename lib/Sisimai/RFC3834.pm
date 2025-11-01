@@ -49,6 +49,9 @@ sub inquire {
         )
         [ ]*(.+)\z
     }x;
+    state $suspending = [
+		["this email inbox", " is no longer in use."],
+	];
 
     my $leave = 0; DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$donotparse ) {
         # Exclude message from root@
@@ -79,7 +82,7 @@ sub inquire {
 
     RECIPIENT_ADDRESS: {
         # Try to get the address of the recipient
-        for my $e ('from', 'return-path') {
+        for my $e ('reply-to', 'from', 'return-path') {
             # Get the recipient address
             next unless exists  $mhead->{ $e };
 
@@ -124,6 +127,13 @@ sub inquire {
 
     $v->{'diagnosis'} = Sisimai::String->sweep($v->{'diagnosis'});
     $v->{'reason'}    = 'vacation';
+
+    my $cv = lc $v->{'diagnosis'}; for my $e ( @$suspending ) {
+        # Check that the auto-replied message indicates the "Suspend" reason or not.
+        next unless Sisimai::String->aligned(\$cv, $e);
+        $v->{'reason'} = 'suspend'; last;
+    }
+
     $v->{'date'}      = $mhead->{'date'};
     $v->{'status'}    = '';
 
