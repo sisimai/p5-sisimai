@@ -50,8 +50,8 @@ sub inquire {
         [ ]*(.+)\z
     }x;
     state $suspending = [
-		["this email inbox", " is no longer in use."],
-	];
+        ["this email inbox", " is no longer in use."],
+    ];
 
     my $leave = 0; DETECT_EXCLUSION_MESSAGE: for my $e ( keys %$donotparse ) {
         # Exclude message from root@
