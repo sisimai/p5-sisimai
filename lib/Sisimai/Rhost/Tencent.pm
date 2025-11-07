@@ -29,7 +29,7 @@ sub find {
             'suspected spam',                   # https://service.mail.qq.com/detail/122/71
             'mail is rejected by recipients',   # https://service.mail.qq.com/detail/122/92
         ],
-        'spandetected' => [
+        'spamdetected' => [
             'spam is embedded in the email',    # https://service.mail.qq.com/detail/122/59
             'mail content denied',              # https://service.mail.qq.com/detail/122/171
         ],
