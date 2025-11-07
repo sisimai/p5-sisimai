@@ -44,7 +44,7 @@ use warnings;
 # Transient/ContentRejected -- message you sent contains content that the provider doesn't allow
 # Transient/AttachmentRejected the message contained an unacceptable attachment
 state $ReasonPair = {
-    "Supressed"                => "suppressed",
+    "Suppressed"               => "suppressed",
     "OnAccountSuppressionList" => "suppressed",
     "General"                  => "onhold",
     "MailboxFull"              => "mailboxfull",
