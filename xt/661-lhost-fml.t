@@ -9,7 +9,7 @@ my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
-    '1001'  => [['5.0.930', '',    'systemerror',     0]],
+    '1001'  => [['5.0.974', '',    'notcompliantrfc', 0]],
     '1002'  => [['5.0.918', '',    'rejected',        0]],
 };
 
