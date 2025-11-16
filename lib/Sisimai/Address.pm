@@ -40,7 +40,6 @@ sub is_emailaddress {
 
     my $width = length($email);
     my $lasta = rindex($email, '@');
-    my $lastd = rindex($email, '.');
 
     return 0 if $width > 254;               # The maximum length of an email address is 254
     return 0 if $lasta < 1 || $lasta > 64;  # The maximum length of a local part is 64
@@ -51,9 +50,7 @@ sub is_emailaddress {
         return 0 if index($email, '@') != $lasta; # There are 2 or more '@'.
         return 0 if index($email, ' ') > 0;       # There is 1 or more ' '.
     }
-    my @upper = split('', uc($email));
     my $ipv46 = Sisimai::RFC1123->is_domainliteral($email);
-    my $match = 1;
 
     my $j = -1; for my $e ( split('', $email) ) {
         # 31 < The ASCII code of each character < 127
@@ -61,23 +58,19 @@ sub is_emailaddress {
 
         if( $j < $lasta ) {
             # A local part of the email address: string before the last "@"
-            if( $p < 32 || $p > 126 ) { 
-                # Before ' ', After  '~'
-                $match = 0;
-                last;
-            }
-            next if $j == 0; # The character is the first character
+            return 0 if $p < 32 || $p > 126;    # Before ' ', After  '~'
+            next     if $j == 0;                # The character is the first character
 
             if( $quote ) {
                 # The email address has quoted local part like "neko@cat"@example.org
                 my $jp = substr($email, $j - 1, 1);
                 if( ord($jp) == 92 ) { # 92 = '\'
                     # When the previous character IS '\', only the followings are allowed: '\', '"'
-                    if( $p != 92 && $p != 34 ) { $match = 0; last }
+                    return 0 if $p != 92 && $p != 34;
 
                 } else {
                     # When the previous character IS NOT '\'
-                    if( $p == 34 && $j + 1 < $lasta ) { $match = 0; last }
+                    return 0 if $p == 34 && $j + 1 < $lasta;
                 }
             } else {
                 # The local part is not quoted
@@ -85,45 +78,31 @@ sub is_emailaddress {
                 # Non-RFC compliant email addresses still persist in the world.
                 #
                 # The following characters are not allowed in a local part without "..."@example.jp
-                if( $e eq ',' || $e eq '@' || $e eq ':' || $e eq ';' || $e eq '(' ) { $match = 0; last }
-                if( $e eq ')' || $e eq '<' || $e eq '>' || $e eq '[' || $e eq ']' ) { $match = 0; last }
+                return 0 if $e eq ',' || $e eq '@' || $e eq ':' || $e eq ';' || $e eq '(';
+                return 0 if $e eq ')' || $e eq '<' || $e eq '>' || $e eq '[' || $e eq ']';
             }
         } else {
             # A domain part of the email address: string after the last "@"
-            next if $p == 64;                    # '@'
-            if( $p <   45 ) { $match = 0; last } # Before '-'
-            if( $p ==  47 ) { $match = 0; last } # Equals '/'
-            if( $p ==  92 ) { $match = 0; last } # Equals '\'
-            if( $p >  122 ) { $match = 0; last } # After  'z'
+            next     if $p ==  64;  # '@'
+            return 0 if $p <   45;  # Before '-'
+            return 0 if $p ==  47;  # Equals '/'
+            return 0 if $p ==  92;  # Equals '\'
+            return 0 if $p >  122;  # After  'z'
 
             if( $ipv46 == 0 ) {
                 # Such as "example.jp", "neko.example.org"
-                if( $p > 57 && $p < 64 ) { $match = 0; last }   # ':' to '?'
-                if( $p > 90 && $p < 97 ) { $match = 0; last }   # '[' to '`'
+                return 0 if $p > 57 && $p < 64; # ':' to '?'
+                return 0 if $p > 90 && $p < 97; # '[' to '`'
 
             } else {
                 # Such as "[IPv4:192.0.2.25]"
-                if( $p > 59 && $p < 64 ) { $match = 0; last }   # ';' to '?'
-                if( $p > 93 && $p < 97 ) { $match = 0; last }   # '^' to '`'
-            }
-
-            if( $j > $lastd && $ipv46 == 0 ) {
-                # *TLD of the domain part: string after the last '.'
-                my $q = ord($upper[$j]);
-                if( $q < 65 ) { $match = 0; last }  # Before 'A'
-                if( $q > 90 ) { $match = 0; last }  # After  'z'
+                return 0 if $p > 59 && $p < 64; # ';' to '?'
+                return 0 if $p > 93 && $p < 97; # '^' to '`'
             }
         }
     }
-
-    # Check that the domain part is a valid internet host or not
-    my $cv = substr($email, $lasta + 1,);
-    if( $match == 0 ) {
-        # The domain part is not valid except "localhost6".
-        return 1 if $cv eq 'localhost6';
-    }
-    $match = Sisimai::RFC1123->is_internethost($cv) if $ipv46 == 0;
-    return $match;
+    return 1 if $ipv46;
+    return Sisimai::RFC1123->is_internethost(substr($email, $lasta + 1,));
 }
 
 sub is_quotedaddress {
