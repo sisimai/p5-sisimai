@@ -53,26 +53,23 @@ sub is_internethost {
     return 0 if index($argv0, "-") ==  0;
     return 0 if substr($argv0, -1, 1) eq "-";
 
-    my $hostnameok = 1;
     my @characters = split("", uc $argv0);
     for my $e ( @characters ) {
         # Check each characater is a number or an alphabet
         my $f = ord $e;
-        if( $f  < 45            ) { $hostnameok = 0; last } # 45 = '-'
-        if( $f == 47            ) { $hostnameok = 0; last } # 47 = '/'
-        if( $f  > 57 && $f < 65 ) { $hostnameok = 0; last } # 57 = '9', 65 = 'A'
-        if( $f  > 90            ) { $hostnameok = 0; last } # 90 = 'Z'
+        return 0 if $f  < 45;               # 45 = '-'
+        return 0 if $f == 47;               # 47 = '/'
+        return 0 if $f  > 57 && $f < 65;    # 57 = '9', 65 = 'A'
+        return 0 if $f  > 90;               # 90 = 'Z'
     }
-    return 0 if $hostnameok == 0;
 
     my $p1 = rindex($argv0, ".");
     my $cv = substr($argv0, $p1 + 1,); return 0 if length $cv > 63;
     for my $e ( split("", $cv) ) {
         # The top level domain should not include a number
-        my $f = ord $e;
-        if( $f > 47 && $f < 58 ) { $hostnameok = 0; last }
+        my $f = ord $e; return 0 if $f > 47 && $f < 58;
     }
-    return $hostnameok;
+    return 1;
 }
 
 sub is_domainliteral {
