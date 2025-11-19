@@ -20,8 +20,11 @@ v5.4.1p1
     - `smtpcommand` (use `command` instead)
   - #611 `Sisimai::Lhost::InterScanMSS` has been renamed to `Sisimai::Lhost::TrendMicro`.
   - #615 New error message pattern for Spamhaus in `Sisimai::Reason::Blocked`. Thanks to @vhenon
+  - #617 `Sisimai::Lhost::MailMarshalSMTP` has been renamed to `Sisimai::Lhost::MailMarshal`.
+  - #618 #620 #621 #623 #624 Fix wrong reason names and typos.
   - #619 Update Sisimai::RFC3834 for detecting `Supend` reason.
-  - #620 #621 #623 #624 Fix wrong reason names and typos.
+  - #622 Message-ID related errors are classified as `NotCompliantRFC`.
+  - #626 Fixed bugs in `Sisimai::Address->is_emailaddress`.
 
 v5.4.1
 ---------------------------------------------------------------------------------------------------
