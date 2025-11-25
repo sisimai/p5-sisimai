@@ -296,6 +296,16 @@ sub makeflat {
             if( $ctencoding eq 'base64' ) {
                 # Content-Transfer-Encoding: base64
                 $bodystring = __PACKAGE__->decodeB(\$bodyinside)->$*;
+                my $dontset = 0; while( my $first10 = substr($bodystring, 0, 10) ) {
+                    # Don't pick the decoded part as an error message when the part is
+                    # - BASE64 encoded.
+                    # - the value of the charset is not utf-8.
+                    # - NOT a plain text.
+                    last if     Sisimai::String->aligned(\$e->[0], ['charset', '=', 'utf-8']);
+                    last unless $first10 =~ /[\x00-\x08\x0E-\x1F\x7F-]/;
+                    $dontset = 1; last;
+                }
+                next if $dontset;
 
             } elsif( $ctencoding eq 'quoted-printable') {
                 # Content-Transfer-Encoding: quoted-printable
