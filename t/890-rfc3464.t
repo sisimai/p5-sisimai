@@ -43,6 +43,7 @@ my $isexpected = {
     '63' => [['5.1.1',   '550', 'userunknown',     1]],
     '64' => [['4.0.0',   '',    'networkerror',    0]],
     '65' => [['5.0.0',   '',    'userunknown',     1]],
+    '66' => [['5.0.0',   '',    'filtered',        0]],
 };
 $enginetest->($enginename, $isexpected);
 
