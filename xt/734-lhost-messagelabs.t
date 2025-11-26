@@ -11,7 +11,7 @@ my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
     '1001'  => [['5.1.1',   '550', 'userunknown',     1]],
     '1002'  => [['5.0.0',   '550', 'securityerror',   0]],
-    '1003'  => [['5.0.0',   '',    'userunknown',     1]],
+    '1003'  => [['5.0.0',   '',    'onhold',          0]],
     '1004'  => [['5.0.0',   '550', 'userunknown',     1]],
 };
 
