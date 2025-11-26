@@ -757,13 +757,62 @@ sub find {
             ['5.1.351', 0, 0, 'remote server returned unknown recipient or mailbox unavailable'],
         ],
     };
+    state $errorcodes = {
+        #  The mail server IP connecting to Outlook.com server has exceeded the rate limit allowed.
+        #  Reason for rate limitation is related to IP/domain reputation.
+        "RP-001" => ["421", "badreputation"],
+
+        #  The mail server IP connecting to Outlook.com server has exceeded the rate limit allowed
+        #  on this connection. Reason for rate limitation is related to IP/domain reputation.
+        "RP-002" => ["421", "badreputation"],
+
+        #  The mail server IP connecting to Outlook.com server has exceeded the connection limit
+        #  allowed. Reason for limitation is related to IP/domain reputation.
+        "RP-003" => ["421", "badreputation"],
+
+        #  Mail rejected by Outlook.com for policy reasons. Reasons for rejection may be related
+        #  to content with spam-like characteristics or IP/domain reputation. 
+        "SC-001" => ["550", "badreputation"],
+
+        #  Mail rejected by Outlook.com for policy reasons. The mail server IP connecting to
+        #  Outlook.com has exhibited namespace mining behavior.
+        "SC-002" => ["550", "policyviolation"],
+
+        #  Mail rejected by Outlook.com for policy reasons. Your IP address appears to be an
+        #  open proxy/relay.
+        "SC-003" => ["550", "blocked"],
+
+        #  Mail rejected by Outlook.com for policy reasons. A block has been placed against your
+        #  IP address because we have received complaints concerning mail coming from that IP
+        #  address. We recommend enrolling in our Junk Email Reporting Program (JMRP), a free
+        #  program intended to help senders remove unwanted recipients from their email list
+        "SC-004" => ["550", "blocked"],
+
+        #  Mail rejected by Outlook.com for policy reasons. We generally do not accept email
+        #  from dynamic IP's as they are not typically used to deliver unauthenticated SMTP email
+        #  to an Internet mail server. (Spamhaus)
+        "DY-001" => ["550", "blocked"],
+
+        #  Mail rejected by Outlook.com for policy reasons. The likely cause is a compromised or
+        #  virus infected server/personal computer.
+        "DY-002" => ["550", "virusdetected"],
+
+        #  Mail rejected by Outlook.com for policy reasons. If you are not an email/network admin
+        #  please contact your Email/Internet Service Provider for help. For more information
+        #  about this block and to request removal please go to: Spamhaus.
+        "OU-001" => ["550", "blocked"],
+
+        #  Mail rejected by Outlook.com for policy reasons. Reasons for rejection may be related
+        #  to content with spam-like characteristics or IP/domain reputation.
+        "OU-002" => ["550", "badreputation"],
+    };
 
     my $statuscode = $argvs->{'deliverystatus'};
     my $thirddigit = int [split /[.]/, $statuscode]->[-1];
     my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
 
-    REASON: for my $e ( keys %$messagesof ) {
+    for my $e ( keys %$messagesof ) {
         # Each key is a reason name
         for my $f ( $messagesof->{ $e }->@* ) {
             # ["status-code", min, max, "error message"]
@@ -777,13 +826,16 @@ sub find {
                 next if $thirddigit < $f->[1]; 
                 next if $thirddigit > $f->[2]; 
             }
-
-            next unless index($issuedcode, $f->[3]) > -1;
-            $reasontext = $e;
-            last REASON;
+            return $e if index($issuedcode, $f->[3]) > -1;
         }
     }
-    return $reasontext;
+    for my $e ( keys %$errorcodes ) {
+        # The key name is an error code described at Outlook.com Postmaster/Troubleshooting
+        # https://substrate.office.com/ip-domain-management-snds/postmaster/troubleshooting
+        next if index($argvs->{'diagnosticcode'}, $e) < 0;
+        return $errorcodes->{ $e }->[1] if $argvs->{'replycode'} eq $errorcodes->{ $e }->[0];
+    }
+    return "";
 }
 
 1;
