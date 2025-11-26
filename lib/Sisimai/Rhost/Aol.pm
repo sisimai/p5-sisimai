@@ -7,6 +7,9 @@ sub find {
     # Detect bounce reason for Aol Mail: https://www.aol.com
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                Detected bounce reason
+    # @see
+    # - Y!Sender Hub/SMTP Error Codes: https://senders.yahooinc.com/smtp-error-codes/
+    # - The MX record of Aol points "mx-aol.mail.gm0.yahoodns.net".
     # @since v5.2.0
     my $class = shift;
     my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};

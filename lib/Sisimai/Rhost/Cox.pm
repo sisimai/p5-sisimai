@@ -7,7 +7,9 @@ sub find {
     # Detect bounce reason from https://cox.com/
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason at Cox
-    # @see      https://www.cox.com/residential/support/email-error-codes.html
+    # @see
+    # - Email Error Codes: https://www.cox.com/business/support/email-error-codes.html
+    # - Feedback Loop Service https://www.cox.com/business/support/feedback-loop-service.html
     # @since v4.25.8
     my $class = shift;
     my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
@@ -68,7 +70,7 @@ sub find {
         'IPBL0101'  => 'blocked',       # The sending IP is in the Spamhaus Zen and Invaluement ivmSIP DNSBLs.
         'IPBL0110'  => 'blocked',       # The sending IP is in the Return Path and Invaluement ivmSIP DNSBLs.
         'IPBL0111'  => 'blocked',       # The sending IP is in the Spamhaus Zen, Return Path and Invaluement ivmSIP DNSBLs.
-        'IPBL1000'  => 'blocked',       # The sending IP address is listed on a CSI blacklist. You can check your status on the CSI website.
+        'IPBL1000'  => 'blocked',       # The sending IP address is listed on a CSI blacklist. 
         'IPBL1001'  => 'blocked',       # The sending IP is listed in the Cloudmark CSI and Spamhaus Zen DNSBLs.
         'IPBL1010'  => 'blocked',       # The sending IP is listed in the Cloudmark CSI and Return Path DNSBLs.
         'IPBL1011'  => 'blocked',       # The sending IP is in the Cloudmark CSI, Spamhaus Zen and Return Path DNSBLs.
@@ -76,12 +78,12 @@ sub find {
         'IPBL1101'  => 'blocked',       # The sending IP is in the Cloudmark CSI, Spamhaus Zen and Invaluement IVMsip DNSBLs.
         'IPBL1110'  => 'blocked',       # The sending IP is in the Cloudmark CSI, Return Path and Invaluement ivmSIP DNSBLs.
         'IPBL1111'  => 'blocked',       # The sending IP is in the Cloudmark CSI, Spamhaus Zen, Return Path and Invaluement ivmSIP DNSBLs.
-        'IPBL00001' => 'blocked',       # The sending IP address is listed on a Spamhaus blacklist. Check your status at Spamhaus.
+        'IPBL00001' => 'blocked',       # The sending IP address is listed on a Spamhaus blacklist.
 
         'URLBL011'  => 'spamdetected',  # A URL within the body of the message was found on blocklists SURBL and Spamhaus DBL.
         'URLBL101'  => 'spamdetected',  # A URL within the body of the message was found on blocklists SURBL and ivmURI.
         'URLBL110'  => 'spamdetected',  # A URL within the body of the message was found on blocklists Spamhaus DBL and ivmURI.
-        'URLBL1001' => 'spamdetected',  # The URL is listed on a Spamhaus blacklist. Check your status at Spamhaus.
+        'URLBL1001' => 'spamdetected',  # The URL is listed on a Spamhaus blacklist.
     };
     state $messagesof = {
         'blocked' => [
@@ -121,6 +123,8 @@ sub find {
             # - The SMTP connection has exceeded the 100 email message threshold and was disconnected.
             # - The sending IP address has exceeded one of these rate limits and has been temporarily
             #   blocked.
+            # - Cox enforces various rate limits to protect our platform. The sending IP address
+            #   has exceeded one of these rate limits and has been temporarily blocked.
             'too many sessions from',
             'requested action aborted: try again later',
             'message threshold exceeded',
