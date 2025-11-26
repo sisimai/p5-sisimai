@@ -810,7 +810,6 @@ sub find {
     my $statuscode = $argvs->{'deliverystatus'};
     my $thirddigit = int [split /[.]/, $statuscode]->[-1];
     my $issuedcode = lc $argvs->{'diagnosticcode'};
-    my $reasontext = '';
 
     for my $e ( keys %$messagesof ) {
         # Each key is a reason name
