@@ -25,6 +25,14 @@ v5.4.1p1
   - #619 Update Sisimai::RFC3834 for detecting `Supend` reason.
   - #622 Message-ID related errors are classified as `NotCompliantRFC`.
   - #626 Fixed bugs in `Sisimai::Address->is_emailaddress`.
+  - #627 Check that the decoded MIME part is a binary or not in `Sisimai::RFC2045`.
+  - #628 Update SMTP error codes and messages in the following `Sisimai::Rhost` packages:
+    - `Facebook` Update `AuthFailure` and `MailboxFull`
+    - `FrancePTT` Update `AuthFailure`, `Blocked`, `Rejected`, and `TooManyConn`
+    - `GoDaddy` Add `TooManyConn`
+    - `MessageLabs` Add many error message patterns
+    - `Tencent` Add `Speeding`
+    - `Microsoft` Implement SMTP error codes described in Outlook Postmaster/Troubleshooting
 
 v5.4.1
 ---------------------------------------------------------------------------------------------------
