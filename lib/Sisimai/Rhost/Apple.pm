@@ -7,10 +7,11 @@ sub find {
     # Detect bounce reason from Apple iCloud Mail
     # @param    [Sisimai::Fact] argvs   Decoded email object
     # @return   [String]                The bounce reason for Apple
-    # @see      https://support.apple.com/en-us/102322
-    #           https://www.postmastery.com/icloud-postmastery-page/
-    #           https://smtpfieldmanual.com/provider/apple
+    # @see
     # @since v5.1.0
+    # - Postmaster information for iCloud Mail: https://support.apple.com/en-us/102322
+    # - https://www.postmastery.com/icloud-postmastery-page/
+    # - https://smtpfieldmanual.com/provider/apple
     my $class = shift;
     my $argvs = shift // return ""; return '' unless length $argvs->{'diagnosticcode'};
 
