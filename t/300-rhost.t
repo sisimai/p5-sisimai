@@ -10,7 +10,7 @@ my $Package = 'Sisimai::Rhost';
 my $Methods = { 'class' => ['name', 'find'], 'object' => [] };
 my $Classes = [qw|
     Aol Apple Cloudflare Cox Facebook FrancePTT GSuite GoDaddy Google IUA KDDI MessageLabs Microsoft
-    Mimecast NTTDOCOMO Outlook Spectrum Tencent YahooInc
+    Mimecast NTTDOCOMO Outlook Spectrum Tencent YahooInc Zoho
 |];
 
 MAKETEST: {

@@ -119,6 +119,7 @@ sub list {
             Rhost/Spectrum.pm
             Rhost/Tencent.pm
             Rhost/YahooInc.pm
+            Rhost/Zoho.pm
         SMTP.pm
             SMTP/Command.pm
             SMTP/Failure.pm
