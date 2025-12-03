@@ -29,6 +29,7 @@ sub match {
         'backscatter protection detected an invalid or expired email address',  # MDaemon
         "because the sender isn't on the recipient's list of senders to accept mail from",
         'bogus mail from',          # IMail - block empty sender
+        'by non-member to a members-only list',
         "can't determine purported responsible address",
         'connections not accepted from servers without a valid sender domain',
         'denied [bouncedeny]',      # McAfee
@@ -67,6 +68,7 @@ sub match {
         'sender was rejected',      # qmail
         'spam reporting address',   # SendGrid|a message to an address has previously been marked as Spam by the recipient.
         'syntax error: empty email address',
+        'the email address used to send your message is not subscribed to this group',
         'the message has been rejected by batv defense',
         'this server does not accept mail from',
         'transaction failed unsigned dsn for',
