@@ -43,6 +43,7 @@ use Class::Accessor::Lite ('new' => 0, 'rw' => [
     'timestamp',        # [Sisimai::Time] Date: header in the original message
     'timezoneoffset',   # [Integer] Time zone offset(seconds)
     'token',            # [String] Message token/MD5 Hex digest value
+    'toxic',            # EXPERIMENTAL
 ]);
 
 sub rise {
@@ -95,6 +96,7 @@ sub rise {
             'replycode'      => $e->{'replycode'}    // '',
             'rhost'          => $e->{'rhost'}        // '',
             'command'        => $e->{'command'}      // '',
+            'toxic'          => $e->{'toxic'}        // 0,
         };
 
         ADDRESSER: {
@@ -334,6 +336,7 @@ sub rise {
             $thing->{'catch'}          = $piece->{'catch'} // undef;
             $thing->{"feedbackid"}     = "";
             $thing->{'hardbounce'}     = int $piece->{'hardbounce'};
+            $thing->{'toxic'}          = int $piece->{'toxic'};
             $thing->{'replycode'}    ||= Sisimai::SMTP::Reply->find($piece->{'diagnosticcode'}) || '';
             $thing->{'timestamp'}      = Sisimai::Time->new($piece->{'timestamp'});
             $thing->{'timezoneoffset'} = $piece->{'timezoneoffset'} // '+0000';
@@ -437,11 +440,48 @@ sub rise {
         }
         # Feedback-ID: 1.us-west-2.QHuyeCQrGtIIMGKQfVdUhP9hCQR2LglVOrRamBc+Prk=:AmazonSES
         $thing->{'feedbackid'} = $rfc822data->{'feedback-id'} || "";
+        $thing->{'toxic'}    ||= __PACKAGE__->is_toxic($thing);
 
         push @$listoffact, bless($thing, __PACKAGE__);
     } # End of for(RISEOF)
 
     return $listoffact;
+}
+
+sub is_toxic {
+    # is_toxic checks if the recipient address should be permanently excluded from the list.
+    # It returns true for addresses that pose a persistent delivery risk, making further resend
+    # attempts unviable and detrimental to the sender's reputation.
+    # @return   [Bool] 1 if the recipient address should be removed from the list.
+    my $class = shift;
+    my $thing = shift // return 0;
+    my $cr    = $thing->{'reason'}         || 'undefined';
+    my $cv    = $thing->{'replycode'}      || '';
+    my $cw    = $thing->{'deliverystatus'} || '';
+
+    # 1. Hard bounces or some soft bounces with a permanent error.
+    #   1-1. Hard bounce: UserUnknown, HostUnknown, HasMoved, NotAccept
+    #   1-2. Almost hard bounce: Suspend, Suppressed
+    return 0 if index($cv, '4') == 0 || index($cw, '4') == 0;
+    return 1 if grep { $cr eq $_ } qw[userunknown hostunknown hasmoved notaccept suspend suppressed];
+
+    if( grep { $cr eq $_ } qw[mailboxfull filtered norelaying] ) {
+        # 2. Several softbounces: MailboxFull, Filtered, NoRelaying
+        #   2-1. The SMTP command is "RCPT" except "MailboxFull".
+        #   2-2. The SMTP reply code begins with "5" such as "550".
+        #   2-3. The SMTP status code is explicit code (not empty, not 5.0.9XX).
+        #   2-4. The SMTP status code begins with "5." such as "5.1.1".
+        return 1 if $cr ne 'mailboxfull' && $thing->{'command'} eq 'RCPT';
+        return 1 if index($cv, '5') == 0;
+        return 0 if Sisimai::SMTP::Status->is_explicit($cw) == 0;
+        return 1 if index($cw, '5.') == 0;
+
+    } elsif( $cr eq 'feedback' ) {
+        # 3. Feedback Loop
+        #   3-1. The Feedback Type is any of "abuse", "fraud", "opt-out"
+        return 1 if grep { $thing->{'feedbacktype'} eq $_ } qw[abuse fraud opt-out];
+    }
+    return 0;
 }
 
 sub damn {
@@ -458,6 +498,7 @@ sub damn {
         my $v = {};
         $v->{ $_ }         = $self->$_ // '' for @$stringdata;
         $v->{'hardbounce'} = int $self->hardbounce;
+        $v->{'toxic'}      = int $self->toxic;
         $v->{'addresser'}  = $self->addresser->address;
         $v->{'recipient'}  = $self->recipient->address;
         $v->{'timestamp'}  = $self->timestamp->epoch;
@@ -527,6 +568,10 @@ method like the following:
     my $fact = Sisimai::Fact->rise('data' => $r, 'delivered' => 1);
 
 =head1 INSTANCE METHODS
+
+=head2 C<B<is_toxic()>>
+
+C<is_toxic> method returns 1 if the recipient address should be permanently excluded from the list.
 
 =head2 C<B<damn()>>
 
@@ -762,6 +807,10 @@ time (32 bits integer).
 C<timezoneoffset> is a time zone offset of a bounce email which its email has bounced. The format of
 this value is String like C<+0900>, C<-0200>.  If Sisimai has failed to get a value of time zone
 offset, this value will be set as C<+0000>.
+
+=head2 C<toxic> (I<Integer>)
+
+C<toxic> is a flag that the recipient address should be permanently excluded from the list or not.
 
 =head1 SEE ALSO
 
