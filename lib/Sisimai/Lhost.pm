@@ -24,6 +24,7 @@ sub DELIVERYSTATUS {
         'diagnosis'    => '',   # The value of Diagnostic-Code header
         'recipient'    => '',   # The value of Final-Recipient header
         'feedbacktype' => '',   # Feedback Type
+        'toxic'        => 0,    # EXPERIMENTAL
     };
 }
 sub description { return '' }
