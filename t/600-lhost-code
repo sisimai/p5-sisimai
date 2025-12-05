@@ -277,7 +277,7 @@ my $moduletest = sub {
                         # The value of "feedbacktype" is not empty
                         ok length $cv,                        sprintf("%s %s", $ct, $cv);
                         ok $cv =~ $cr,                        sprintf("%s %s", $ct, $cr);
-                        is $cv, $cx->[$errorindex - 1]->[4],  sprintf("%s %s", $ct, $cv);
+                        is $cv, $cx->[$errorindex - 1]->[5],  sprintf("%s %s", $ct, $cv);
 
                     } else {
                         # The value of "feedbacktype" is empty
@@ -505,6 +505,16 @@ my $moduletest = sub {
 
                     is length($cv), 40, sprintf("%s %s", $ct, $cv);
                     ok $cv =~ $cr,      sprintf("%s %s", $ct, $cr);
+                }
+
+                TOXIC: {
+                    $cv = $rr->toxic;
+                    $cr = qr/\A[01]\z/;
+                    $ct = sprintf("[%s-%02d] ->toxic =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %d", $ct, $cv);
+                    ok $cv =~ $cr,  sprintf("%s %s", $ct, $cr);
+                    is $cv, $cx->[$errorindex - 1]->[4], sprintf("%s %d", $ct, $cv);
                 }
 
                 DAMN: {

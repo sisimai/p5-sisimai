@@ -7,10 +7,10 @@ require './t/600-lhost-code';
 my $enginename = 'SurfControl';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
-    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
-    '01' => [['5.0.0',   '550', 'filtered',        0]],
-    '02' => [['5.0.0',   '554', 'systemerror',     0]],
-    '03' => [['5.0.0',   '554', 'systemerror',     0]],
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
+    '01' => [['5.0.0',   '550', 'filtered',        0, 1]],
+    '02' => [['5.0.0',   '554', 'systemerror',     0, 0]],
+    '03' => [['5.0.0',   '554', 'systemerror',     0, 0]],
 };
 
 $enginetest->($enginename, $isexpected);
