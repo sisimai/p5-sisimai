@@ -7,14 +7,14 @@ require './t/600-lhost-code';
 my $enginename = 'AmazonWorkMail';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
-    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
-    '01' => [['5.1.1',   '550', 'userunknown',     1]],
-    '02' => [['5.2.1',   '550', 'filtered',        0]],
-    '03' => [['5.3.5',   '550', 'systemerror',     0]],
-    '04' => [['5.2.2',   '550', 'mailboxfull',     0]],
-    '05' => [['4.4.2',   '421', 'expired',         0]],
-    '07' => [['4.4.2',   '421', 'expired',         0]],
-    '08' => [['5.2.2',   '550', 'mailboxfull',     0]],
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
+    '01' => [['5.1.1',   '550', 'userunknown',     1, 1]],
+    '02' => [['5.2.1',   '550', 'filtered',        0, 1]],
+    '03' => [['5.3.5',   '550', 'systemerror',     0, 0]],
+    '04' => [['5.2.2',   '550', 'mailboxfull',     0, 1]],
+    '05' => [['4.4.2',   '421', 'expired',         0, 0]],
+    '07' => [['4.4.2',   '421', 'expired',         0, 0]],
+    '08' => [['5.2.2',   '550', 'mailboxfull',     0, 1]],
 };
 
 $enginetest->($enginename, $isexpected);

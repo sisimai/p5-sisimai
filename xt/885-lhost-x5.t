@@ -8,9 +8,9 @@ my $enginename = 'X5';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
-    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
-    '1001'  => [['5.1.1',   '550', 'userunknown',     1]],
-    '1002'  => [['5.1.1',   '550', 'userunknown',     1]],
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
+    '1001'  => [['5.1.1',   '550', 'userunknown',     1, 1]],
+    '1002'  => [['5.1.1',   '550', 'userunknown',     1, 1]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

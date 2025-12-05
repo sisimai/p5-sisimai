@@ -7,13 +7,13 @@ require './t/600-lhost-code';
 my $enginename = 'RFC3834';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
-    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
-    '01' => [['',        '', 'vacation', 0]],
-    '02' => [['',        '', 'vacation', 0]],
-    '03' => [['',        '', 'vacation', 0]],
-    '04' => [['',        '', 'vacation', 0]],
-    '05' => [['',        '', 'vacation', 0]],
-    '06' => [['5.0.921', '', 'suspend',  0]],
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
+    '01' => [['',        '', 'vacation', 0, 0]],
+    '02' => [['',        '', 'vacation', 0, 0]],
+    '03' => [['',        '', 'vacation', 0, 0]],
+    '04' => [['',        '', 'vacation', 0, 0]],
+    '05' => [['',        '', 'vacation', 0, 0]],
+    '06' => [['5.0.921', '', 'suspend',  0, 1]],
 };
 $enginetest->($enginename, $isexpected);
 

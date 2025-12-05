@@ -7,9 +7,9 @@ require './t/600-lhost-code';
 my $enginename = 'FML';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
-    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
-    '02' => [['5.0.918', '',    'rejected',        0]],
-    '03' => [['5.0.974', '',    'notcompliantrfc', 0]],
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
+    '02' => [['5.0.918', '',    'rejected',        0, 0]],
+    '03' => [['5.0.974', '',    'notcompliantrfc', 0, 0]],
 };
 
 $enginetest->($enginename, $isexpected);

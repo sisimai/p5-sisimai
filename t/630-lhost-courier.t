@@ -7,11 +7,11 @@ require './t/600-lhost-code';
 my $enginename = 'Courier';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
-    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
-    '01' => [['5.1.1',   '550', 'userunknown',     1]],
-    '02' => [['5.0.0',   '550', 'filtered',        0]],
-    '03' => [['5.7.1',   '550', 'rejected',        0]],
-    '04' => [['5.0.0',   '',    'hostunknown',     1]],
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
+    '01' => [['5.1.1',   '550', 'userunknown',     1, 1]],
+    '02' => [['5.0.0',   '550', 'filtered',        0, 1]],
+    '03' => [['5.7.1',   '550', 'rejected',        0, 0]],
+    '04' => [['5.0.0',   '',    'hostunknown',     1, 1]],
 };
 
 $enginetest->($enginename, $isexpected);

@@ -8,8 +8,8 @@ my $enginename = 'ReceivingSES';
 my $samplepath = sprintf("./set-of-emails/private/lhost-%s", lc $enginename);
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
-    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
-    '1001'  => [['5.2.3',   '552', 'exceedlimit',     0]],
+    # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
+    '1001'  => [['5.2.3',   '552', 'exceedlimit',     0, 0]],
 };
 
 plan 'skip_all', sprintf("no private sample");
