@@ -4,6 +4,39 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.5.0
+---------------------------------------------------------------------------------------------------
+- release: "Fri,  5 Dec 2025 17:25:22 +0900 (JST)"
+- version: "5.5.0"
+- changes:
+  - #599 #600 Change file encodings from sjis to UTF-8.
+  - #601 #603 Update SMTP reply codes defined in `Sisimai::SMTP::Reply::Associated`.
+  - #604 Implement `Sisimai::SMTP::Status->is_ambiguous` method.
+  - #602 Sisimai partially supports the media types described in RFC6533 such as `message/global`.
+  - #606 #607 Fix the index out of range bug in multipart blocks.
+  - #605 #608 Implement `Sisimai::Lhost::Mimecast`.
+  - #566 #548 Remove the following accessors and JSON keys of `Sisimai::Fact` deprecated at v5.2.0.
+    - `smtpagent` (use `decodedby` instead)
+    - `smtpcommand` (use `command` instead)
+  - #611 `Sisimai::Lhost::InterScanMSS` has been renamed to `Sisimai::Lhost::TrendMicro`.
+  - #615 New error message pattern for Spamhaus in `Sisimai::Reason::Blocked`. Thanks to @vhenon
+  - #617 `Sisimai::Lhost::MailMarshalSMTP` has been renamed to `Sisimai::Lhost::MailMarshal`.
+  - #618 #620 #621 #623 #624 Fix wrong reason names and typos.
+  - #619 Update Sisimai::RFC3834 for detecting `Supend` reason.
+  - #622 Message-ID related errors are classified as `NotCompliantRFC`.
+  - #626 Fixed bugs in `Sisimai::Address->is_emailaddress`.
+  - #627 Check that the decoded MIME part is a binary or not in `Sisimai::RFC2045`.
+  - #628 #631 Update SMTP error codes and messages in the following `Sisimai::Rhost` packages:
+    - `Apple` `inactive email address` indicates `Suspend`
+    - `Facebook` Update `AuthFailure` and `MailboxFull`
+    - `FrancePTT` Update `AuthFailure`, `Blocked`, `Rejected`, and `TooManyConn`
+    - `GoDaddy` Add `TooManyConn`
+    - `MessageLabs` Add many error message patterns
+    - `Microsoft` Implement SMTP error codes described in Outlook Postmaster/Troubleshooting
+    - `Tencent` Add `Speeding`
+    - `Zoho` Implement as a new module
+  - #633 EXPERIMENTAL: Implement `toxic` field in the decoded results.
+
 v5.4.1
 ---------------------------------------------------------------------------------------------------
 - release: "Sun, 31 Aug 2025 09:22:25 +0900 (JST)"

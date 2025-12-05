@@ -58,7 +58,7 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "v5.4.1",
+   "version" : "v5.5.0",
    "x_contributors" : [
       "0xcdcdcdcd <0xcdcdcdcd@gmail.com>",
       "Adrian Yee <adrian@gt.net>",
@@ -68,11 +68,12 @@
       "Mutsutoshi Yoshimoto <negachov@gmail.com>",
       "Stefan Hornburg (Racke) <racke@linuxia.de>",
       "Valentin Henon <valentin.henon@gmail.com>",
+      "Valentin Henon <vhenon@mindbaz.com>",
       "Xavier <yadd@debian.org>",
       "Xavier Guimard <x.guimard@free.fr>",
-      "azuma, kuniyuki <azumakuniyuki@users.noreply.github.com>",
       "azumakuniyuki <azumakuniyuki+github.com@gmail.com>",
       "azumakuniyuki <azumakuniyuki@gmail.com>",
+      "azumakuniyuki <azumakuniyuki@users.noreply.github.com>",
       "azumakuniyuki <perl.org@azumakuniyuki.org>",
       "batarian71 <36008612+batarian71@users.noreply.github.com>",
       "jcbf <underspell@gmail.com>",

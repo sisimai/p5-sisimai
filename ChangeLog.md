@@ -4,10 +4,10 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
-v5.4.1p1
+v5.5.0
 ---------------------------------------------------------------------------------------------------
-- release: ""
-- version: ""
+- release: "Fri,  5 Dec 2025 17:25:22 +0900 (JST)"
+- version: "5.5.0"
 - changes:
   - #599 #600 Change file encodings from sjis to UTF-8.
   - #601 #603 Update SMTP reply codes defined in `Sisimai::SMTP::Reply::Associated`.
@@ -26,13 +26,16 @@ v5.4.1p1
   - #622 Message-ID related errors are classified as `NotCompliantRFC`.
   - #626 Fixed bugs in `Sisimai::Address->is_emailaddress`.
   - #627 Check that the decoded MIME part is a binary or not in `Sisimai::RFC2045`.
-  - #628 Update SMTP error codes and messages in the following `Sisimai::Rhost` packages:
+  - #628 #631 Update SMTP error codes and messages in the following `Sisimai::Rhost` packages:
+    - `Apple` `inactive email address` indicates `Suspend`
     - `Facebook` Update `AuthFailure` and `MailboxFull`
     - `FrancePTT` Update `AuthFailure`, `Blocked`, `Rejected`, and `TooManyConn`
     - `GoDaddy` Add `TooManyConn`
     - `MessageLabs` Add many error message patterns
-    - `Tencent` Add `Speeding`
     - `Microsoft` Implement SMTP error codes described in Outlook Postmaster/Troubleshooting
+    - `Tencent` Add `Speeding`
+    - `Zoho` Implement as a new module
+  - #633 EXPERIMENTAL: Implement `toxic` field in the decoded results.
 
 v5.4.1
 ---------------------------------------------------------------------------------------------------
