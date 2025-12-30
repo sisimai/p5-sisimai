@@ -96,9 +96,9 @@ sub inquire {
     state $onholdpair = [" does not like recipient.", "this message has been in the queue too long."];
     state $failonldap = {
         # qmail-ldap-1.03-20040101.patch:19817 - 19866
-        "exceedlimit" => ["The message exeeded the maximum size the user accepts"], # 5.2.3
-        "userunknown" => ["Sorry, no mailbox here by that name"],           # 5.1.1
-        "suspend"     => [ # 5.2.1
+        "emailtoolarge" => ["The message exeeded the maximum size the user accepts"], # 5.2.3
+        "userunknown"   => ["Sorry, no mailbox here by that name"],           # 5.1.1
+        "suspend"       => [ # 5.2.1
             "Mailaddress is administrativly disabled",
             "Mailaddress is administrativley disabled",
             "Mailaddress is administratively disabled",
@@ -119,6 +119,7 @@ sub inquire {
         ],
     };
     state $messagesof = {
+        "emailtoolarge" => ["Message size exceeds fixed maximum message size:"],
         # qmail-remote.c:68|  Sorry, I couldn't find any host by that name. (#4.1.2)\n"); zerodie();
         # qmail-remote.c:78|  Sorry, I couldn't find any host named ");
         "hostunknown" => ["Sorry, I couldn't find any host "],
@@ -126,8 +127,7 @@ sub inquire {
         "mailboxfull" => ["disk quota exceeded"],
         # qmail-qmtpd.c:233| ... result = "Dsorry, that message size exceeds my databytes limit (#5.3.4)";
         # qmail-smtpd.c:391| ... out("552 sorry, that message size exceeds my databytes limit (#5.3.4)\r\n"); return;
-        "mesgtoobig"  => ["Message size exceeds fixed maximum message size:"],
-        "networkerror"=> [
+        "networkerror" => [
             "Sorry, I wasn't able to establish an SMTP connection",
             "Sorry. Although I'm listed as a best-preference MX or A for that host",
         ],
