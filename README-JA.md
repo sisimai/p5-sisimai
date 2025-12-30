@@ -415,8 +415,11 @@ Sisimai 5では新たに5個のバウンス理由が増えました。検出可�
 | 送信者のドメイン・IPアドレスの低いレピュテーション   | `Blocked`          | `BadReputation`     |
 | PTRレコードが未設定または無効なPTRレコード           | `Blocked`          | `RequirePTR`        |
 | RFCに準拠していないメール[^7]                        | `SecurityError`    | `NotCompliantRFC`   |
-| 単位時間の流量制限・送信速度が速すぎる               | `SecurityError`    | `Speeding`          |
 | STARTTLS関連のエラー (added at v5.2.0)               | `SecurityError`    | `FailedSTARTTLS`    |
+| 単位時間の流量制限・送信速度が速すぎる               | `SecurityError`    | `RateLimited`       |
+| セッションあたりの受信者数制限や接続数を超過         | `TooManyConn`      | `RateLimited`       |
+| メールが大きすぎる(ExceedLimit)                      | `ExceedLimit`      | `EmailTooLarge`     |
+| メールが大きすぎる(MesgTooBig)                       | `MesgTooBig`       | `EmailTooLarge`     |
 | 宛先がサプレッションリストに一致 (added at v5.2.0)   | `OnHold`           | `Suppressed`        |
 
 [^7]: RFC5322など

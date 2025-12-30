@@ -422,8 +422,11 @@ detect is available at [LIBSISIMAI.ORG/EN/REASON](https://libsisimai.org/en/reas
 | low/bad reputation of the sender hostname/IP addr.   | `Blocked`          | `BadReputation`     |
 | missing PTR/having invalid PTR                       | `Blocked`          | `RequirePTR`        |
 | non-compliance with RFC[^7]                          | `SecurityError`    | `NotCompliantRFC`   |
-| exceeding a rate limit or sending too fast           | `SecurityError`    | `Speeding`          |
 | STARTTLS-related errors (added at v5.2.0)            | `SecurityError`    | `FailedSTARTTLS`    |
+| exceeding a rate limit or sending too fast           | `SecurityError`    | `RateLimited`       |
+| too many concurrency connections or recipients       | `TooManyConn`      | `RateLimited`       |
+| Email size is too large for the remote host          | `ExceedLimit`      | `EmailTooLarge`     |
+| Email size is too large for the remote host          | `MesgTooBig`       | `EmailTooLarge`     |
 | Recipient in the suppression list (added at v5.2.0)  | `OnHold`           | `Suppressed`        |
 
 [^7]: RFC5322 and related RFCs
