@@ -30,11 +30,11 @@ MACFORMATSET := $(SET_OF_EMAIL)/maildir/mac
 
 INDEX_LENGTH := 24
 DESCR_LENGTH := 50
-REASON_TABLE := AuthFailure BadReputation Blocked ContentError Delivered ExceedLimit Expired \
-				Feedback Filtered HasMoved HostUnknown MailboxFull MailerError MesgTooBig \
-				NetworkError NoRelaying NotAccept NotCompliantRFC OnHold PolicyViolation \
-				RequirePTR Rejected SecurityError SpamDetected Speeding Suspend SyntaxError \
-				SystemError SystemFull TooManyConn Undefined UserUnknown Vacation VirusDetected
+REASON_TABLE := AuthFailure BadReputation Blocked ContentError Delivered EmailTooLarge Expired \
+				Feedback Filtered HasMoved HostUnknown MailboxFull MailerError NetworkError \
+				NoRelaying NotAccept NotCompliantRFC OnHold PolicyViolation RequirePTR RateLimited \
+				Rejected SecurityError SpamDetected Suspend SyntaxError SystemError SystemFull \
+				Undefined UserUnknown Vacation VirusDetected
 # -------------------------------------------------------------------------------------------------
 .PHONY: clean
 
