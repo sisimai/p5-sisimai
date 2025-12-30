@@ -60,7 +60,7 @@ sub list {
             Reason/Blocked.pm
             Reason/ContentError.pm
             Reason/Delivered.pm
-            Reason/ExceedLimit.pm
+            Reason/EmailTooLarge.pm
             Reason/Expired.pm
             Reason/FailedSTARTTLS.pm
             Reason/Feedback.pm
@@ -69,24 +69,22 @@ sub list {
             Reason/HostUnknown.pm
             Reason/MailboxFull.pm
             Reason/MailerError.pm
-            Reason/MesgTooBig.pm
             Reason/NoRelaying.pm
             Reason/NotAccept.pm
             Reason/NotCompliantRFC.pm
             Reason/NetworkError.pm
             Reason/OnHold.pm
             Reason/PolicyViolation.pm
+            Reason/RateLimited.pm
             Reason/Rejected.pm
             Reason/RequirePTR.pm
             Reason/SecurityError.pm
             Reason/SpamDetected.pm
-            Reason/Speeding.pm
             Reason/Suppressed.pm
             Reason/Suspend.pm
             Reason/SyntaxError.pm
             Reason/SystemError.pm
             Reason/SystemFull.pm
-            Reason/TooManyConn.pm
             Reason/Undefined.pm
             Reason/UserUnknown.pm
             Reason/Vacation.pm

@@ -8,8 +8,8 @@ my $enginename = 'Tencent';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
-    '01' => [['5.0.0',   '550', 'toomanyconn',     0, 0]],
-    '02' => [['5.0.0',   '550', 'toomanyconn',     0, 0]],
+    '01' => [['5.0.0',   '550', 'ratelimited',     0, 0]],
+    '02' => [['5.0.0',   '550', 'ratelimited',     0, 0]],
     '03' => [['5.0.0',   '550', 'authfailure',     0, 0]],
 };
 
