@@ -6,18 +6,18 @@ use warnings;
 my $ModulePath = __PACKAGE__->path;
 my $GetRetried = __PACKAGE__->retry;
 my $ClassOrder = [
-    [qw/MailboxFull MesgTooBig ExceedLimit Suspend HasMoved NoRelaying AuthFailure UserUnknown
-        Filtered RequirePTR NotCompliantRFC BadReputation ContentError Rejected HostUnknown
-        SpamDetected Speeding TooManyConn Blocked/
+    [qw/MailboxFull EmailTooLarge Suspend HasMoved NoRelaying AuthFailure UserUnknown Filtered
+        RequirePTR NotCompliantRFC BadReputation ContentError Rejected HostUnknown SpamDetected
+        RateLimited Blocked/
     ],
-    [qw/MailboxFull AuthFailure BadReputation Speeding SpamDetected VirusDetected PolicyViolation 
+    [qw/MailboxFull AuthFailure BadReputation RateLimited SpamDetected VirusDetected PolicyViolation 
         NoRelaying SystemError NetworkError Suspend ContentError SystemFull NotAccept Expired
         FailedSTARTTLS SecurityError Suppressed MailerError/
     ],
-    [qw/MailboxFull MesgTooBig ExceedLimit Suspend UserUnknown Filtered Rejected HostUnknown
-        SpamDetected Speeding TooManyConn Blocked SpamDetected AuthFailure FailedSTARTTLS
-        SecurityError SystemError NetworkError Suspend Expired ContentError HasMoved SystemFull
-        NotAccept MailerError NoRelaying Suppressed SyntaxError OnHold/
+    [qw/MailboxFull EmailTooLarge Suspend UserUnknown Filtered Rejected HostUnknown SpamDetected
+        RateLimited Blocked SpamDetected AuthFailure FailedSTARTTLS SecurityError SystemError
+        NetworkError Suspend Expired ContentError HasMoved SystemFull NotAccept MailerError
+        NoRelaying Suppressed SyntaxError OnHold/
     ],
 ];
 
@@ -45,10 +45,10 @@ sub index {
     # All the error reason list Sisimai support
     # @return   [Array] Reason list
     return [qw/
-        AuthFailure BadReputation Blocked ContentError ExceedLimit Expired FailedSTARTTLS Filtered
-        HasMoved HostUnknown MailboxFull MailerError MesgTooBig NetworkError NotAccept NotCompliantRFC
-        OnHold Rejected NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError Speeding
-        Suspend RequirePTR SystemError SystemFull TooManyConn Suppressed UserUnknown SyntaxError/
+        AuthFailure BadReputation Blocked ContentError Expired FailedSTARTTLS Filtered HasMoved
+        HostUnknown MailboxFull MailerError EmailTooLarge NetworkError NotAccept NotCompliantRFC
+        OnHold Rejected NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError
+        Suspend RequirePTR SystemError SystemFull RateLimited Suppressed UserUnknown SyntaxError/
     ];
 }
 
