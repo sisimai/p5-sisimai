@@ -1,10 +1,10 @@
-package Sisimai::Reason::TooManyConn;
+package Sisimai::Reason::RateLimited;
 use v5.26;
 use strict;
 use warnings;
 
-sub text  { 'toomanyconn' }
-sub description { 'SMTP connection rejected temporarily due to too many concurrency connections to the remote host' }
+sub text  { 'ratelimited' }
+sub description { "Rejected due to exceeding a rate limit: sending too fast or too many concurrency connections" }
 sub match {
     # Try to match that the given text and regular expressions
     # @param    [String] argv1  String to be matched with regular expressions
@@ -19,10 +19,12 @@ sub match {
         'connection rate limit exceeded',
         'exceeds per-domain connection limit for',
         'has exceeded the max emails per hour ',
+        'mail sent from your IP address has been temporarily rate limited',
+        'please try again slower',
+        'receiving mail at a rate that prevents additional messages from being delivered',
         'throttling failure: daily message quota exceeded',
         'throttling failure: maximum sending rate exceeded',
         'too many connections',
-        'too many connections from your host.', # Microsoft
         'too many concurrent smtp connections', # Microsoft
         'too many errors from your ip',         # Free.fr
         'too many recipients',                  # ntt docomo
@@ -37,15 +39,15 @@ sub match {
 sub true {
     # Blocked due to that connection rate limit exceeded
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
-    # @return   [Integer]               1: Too many connections(blocked)
-    #                                   0: Not many connections
+    # @return   [Integer]               1: Rate limited
+    #                                   0: Not rate limited
     # @since v4.1.26
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'toomanyconn';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'toomanyconn';
+    return 1 if $argvs->{'reason'} eq 'ratelimited';
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'ratelimited';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -56,20 +58,20 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::TooManyConn - Bounced due to that too many connections.
+Sisimai::Reason::RateLimited - Bounced due to that too many connections.
 
 =head1 SYNOPSIS
 
-    use Sisimai::Reason::TooManyConn;
-    print Sisimai::Reason::TooManyConn->match('Connection rate limit exceeded');    # 1
+    use Sisimai::Reason::RateLimited;
+    print Sisimai::Reason::RateLimited->match('Connection rate limit exceeded');    # 1
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::TooManyConn> checks the bounce reason is C<toomanyconn> or not. This class is
+C<Sisimai::Reason::RateLimited> checks the bounce reason is C<ratelimited> or not. This class is
 called only C<Sisimai::Reason> class.
 
-This is the error that the SMTP connection was rejected temporarily due to too many concurrency
-connections to the remote server. This reason has added in Sisimai 4.1.26.
+This is the error that the SMTP connection was rejected temporarily due to too fast or too many
+concurrency connections to the remote server. This reason has added in Sisimai 4.1.26.
 
     <kijitora@example.ne.jp>: host mx02.example.ne.jp[192.0.1.20] said:
         452 4.3.2 Connection rate limit exceeded. (in reply to MAIL FROM command)
@@ -78,19 +80,19 @@ connections to the remote server. This reason has added in Sisimai 4.1.26.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<toomanyconn>.
+C<text()> method returns the fixed string C<ratelimited>.
 
-    print Sisimai::Reason::TooManyConn->text;  # toomanyconn
+    print Sisimai::Reason::RateLimited->text;  # ratelimited
 
 =head2 C<B<match(I<string>)>>
 
 C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
-    print Sisimai::Reason::TooManyConn->match('Connection rate limit exceeded');  # 1
+    print Sisimai::Reason::RateLimited->match('Connection rate limit exceeded');  # 1
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<toomanyconn>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<ratelimited>. The argument must be
 C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

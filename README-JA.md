@@ -82,7 +82,7 @@ The key features of Sisimai
 * __高い解析精度__
   * [60種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
   * Feedback Loop(ARF)にも対応
-  * [36種類のバウンス理由](https://libsisimai.org/en/reason/)を検出
+  * [34種類のバウンス理由](https://libsisimai.org/en/reason/)を検出
 
 [^2]: コールバック機能を使用すると`catch`アクセサの下に独自のデータを追加できます
 
@@ -357,7 +357,7 @@ Sisimai 5.0.0から**Perl 5.26.0以上**が必要になります。
 | 動作環境(Perl)                                       | 5.10 -             | **5.26** -          |
 | 元メールファイルを操作可能なコールバック機能         | なし               | あり[^3]            |
 | 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 60                  |
-| 検出可能なバウンス理由の数                           | 29                 | 36                  |
+| 検出可能なバウンス理由の数                           | 29                 | 34                  |
 | 依存もジュール数(Perlのコアモジュールを除く)         | 2 モジュール       | 2 モジュール        |
 | ソースコードの行数                                   | 10,800 行          | 9,990 行            |
 | テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 340,000 件          |
@@ -415,8 +415,11 @@ Sisimai 5では新たに5個のバウンス理由が増えました。検出可�
 | 送信者のドメイン・IPアドレスの低いレピュテーション   | `Blocked`          | `BadReputation`     |
 | PTRレコードが未設定または無効なPTRレコード           | `Blocked`          | `RequirePTR`        |
 | RFCに準拠していないメール[^7]                        | `SecurityError`    | `NotCompliantRFC`   |
-| 単位時間の流量制限・送信速度が速すぎる               | `SecurityError`    | `Speeding`          |
 | STARTTLS関連のエラー (added at v5.2.0)               | `SecurityError`    | `FailedSTARTTLS`    |
+| 単位時間の流量制限・送信速度が速すぎる               | `SecurityError`    | `RateLimited`       |
+| セッションあたりの受信者数制限や接続数を超過         | `TooManyConn`      | `RateLimited`       |
+| メールが大きすぎる(ExceedLimit)                      | `ExceedLimit`      | `EmailTooLarge`     |
+| メールが大きすぎる(MesgTooBig)                       | `MesgTooBig`       | `EmailTooLarge`     |
 | 宛先がサプレッションリストに一致 (added at v5.2.0)   | `OnHold`           | `Suppressed`        |
 
 [^7]: RFC5322など

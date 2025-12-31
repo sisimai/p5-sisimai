@@ -26,7 +26,7 @@ sub inquire {
         'message' => ['This message was created automatically by mail delivery software'],
         'error'   => ['For the following reason:'],
     };
-    state $messagesof = {'mesgtoobig' => ['Mail size limit exceeded']};
+    state $messagesof = {'emailtoolarge' => ['Mail size limit exceeded']};
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);

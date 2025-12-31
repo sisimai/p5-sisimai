@@ -48,7 +48,7 @@ state $ReasonPair = {
     "OnAccountSuppressionList" => "suppressed",
     "General"                  => "onhold",
     "MailboxFull"              => "mailboxfull",
-    "MessageTooLarge"          => "mesgtoobig",
+    "MessageTooLarge"          => "emailtoolarge",
     "ContentRejected"          => "contenterror",
     "AttachmentRejected"       => "securityerror",
 };

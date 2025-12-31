@@ -14,10 +14,10 @@ can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
     my $reasonlist = [qw/
-      authfailure badreputation blocked contenterror exceedlimit expired filtered hasmoved
-      hostunknown mailboxfull mailererror mesgtoobig networkerror notaccept onhold rejected
-      norelaying spamdetected virusdetected policyviolation securityerror speeding suspend
-      requireptr notcompliantrfc systemerror systemfull toomanyconn userunknown syntaxerror/
+      authfailure badreputation blocked contenterror emailtoolarge expired filtered hasmoved
+      hostunknown mailboxfull mailererror networkerror notaccept onhold ratelimited rejected
+      norelaying spamdetected virusdetected policyviolation securityerror suspend requireptr
+      notcompliantrfc systemerror systemfull userunknown syntaxerror/
     ];
     my $statuslist = [ qw/
         2.1.5

@@ -12,10 +12,10 @@ my $isexpected = {
     '02' => [['5.1.1',   '550', 'userunknown',     1, 1]],
     '03' => [['4.0.0',   '450', 'onhold',          0, 0]],
     '04' => [['5.2.2',   '552', 'mailboxfull',     0, 1]],
-    '05' => [['5.3.4',   '552', 'mesgtoobig',      0, 0]],
+    '05' => [['5.3.4',   '552', 'emailtoolarge',   0, 0]],
     '06' => [['5.6.1',   '500', 'spamdetected',    0, 0]],
     '07' => [['5.2.0',   '550', 'filtered',        0, 1]],
-    '08' => [['5.2.3',   '552', 'exceedlimit',     0, 0]],
+    '08' => [['5.2.3',   '552', 'emailtoolarge',   0, 0]],
 };
 
 $enginetest->($enginename, $isexpected);
