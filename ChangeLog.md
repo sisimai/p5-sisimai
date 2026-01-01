@@ -4,6 +4,13 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.X.X
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - Update some bounce reasons in `Sisimai::SMTP::Status`.
+
 v5.5.0
 ---------------------------------------------------------------------------------------------------
 - release: "Fri,  5 Dec 2025 17:25:22 +0900 (JST)"
