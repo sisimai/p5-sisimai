@@ -13,6 +13,7 @@ v5.X.X
   - #634 Cosolidate 4 bounce reasons into the following 2 reasons:
     - `TooManyConn` and `Speeding` are consolidated into `RateLimited`.
     - `ExceedLimit` and `MesgTooBig` are consolidated into `EmailTooLarge`.
+  - #636 `Sisimai::String->token` has been moved to `Sisimai::Fact->maketoken()`.
 
 v5.5.0
 ---------------------------------------------------------------------------------------------------
