@@ -5,7 +5,7 @@ use Sisimai;
 use JSON;
 
 my $Package = 'Sisimai::Fact';
-my $Methods = { 'class' => ['rise'], 'object' => ['dump', 'damn'] };
+my $Methods = { 'class' => ['rise', 'maketoken'], 'object' => ['dump', 'damn'] };
 my $Results = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce'], [...]]
     '00' => [
@@ -162,6 +162,16 @@ MAKETEST: {
     isa_ok $fw->[0], 'Sisimai::Fact';
     is $fw->[0]->alias, 'neko@libsisimai.org', '->alias = neko@libsisimai.org';
     is $fw->[0]->recipient->address, 'kijitora-cat@google.example.com', '->recipient = kijitora-cat@google.example.com';
+
+    my $s = 'envelope-sender@example.jp';
+    my $r = 'envelope-recipient@example.org';
+    my $t = '239aa35547613b2fa94f40c7f35f4394e99fdd88';
+    ok(Sisimai::Fact->maketoken($s, $r, 1), '->maketoken');
+    is(Sisimai::Fact->maketoken($s, $r, 1), $t, '->maketoken = '.$t);
+    is(Sisimai::Fact->maketoken(undef), '', '->maketoken = ""');
+    is(Sisimai::Fact->maketoken($s), '', '->maketoken = ""');
+    is(Sisimai::Fact->maketoken($s, $r), '', '->maketoken = ""');
+    ok(Sisimai::Fact->maketoken($s, $r, 0), '->maketoken');
 }
 
 done_testing;
