@@ -18,8 +18,8 @@ my $isexpected = {
     '1007'  => [['5.1.1',   '550', 'userunknown',     1, 1]],
     '1008'  => [['5.1.1',   '550', 'userunknown',     1, 1]],
     '1009'  => [['5.1.1',   '550', 'userunknown',     1, 1]],
-    '1010'  => [['5.0.910', '550', 'filtered',        0, 1]],
-    '1011'  => [['5.0.910', '550', 'filtered',        0, 1]],
+    '1010'  => [['5.9.210', '550', 'filtered',        0, 1]],
+    '1011'  => [['5.9.210', '550', 'filtered',        0, 1]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

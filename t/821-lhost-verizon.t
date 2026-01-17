@@ -8,8 +8,8 @@ my $enginename = 'Verizon';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
-    '01' => [['5.0.911', '',    'userunknown',     1, 1]],
-    '02' => [['5.0.911', '550', 'userunknown',     1, 1]],
+    '01' => [['5.9.213', '',    'userunknown',     1, 1]],
+    '02' => [['5.9.213', '550', 'userunknown',     1, 1]],
 };
 
 $enginetest->($enginename, $isexpected);

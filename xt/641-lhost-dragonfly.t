@@ -10,7 +10,7 @@ my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
     '1001'  => [['5.7.26',  '550', 'authfailure',     0, 0]],
-    '1002'  => [['5.0.947', '',    'expired',         0, 0]],
+    '1002'  => [['5.9.340', '',    'expired',         0, 0]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

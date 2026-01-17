@@ -8,11 +8,11 @@ my $enginename = 'IMailServer';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
-    '01' => [['5.0.911', '',    'userunknown',     1, 1]],
-    '02' => [['5.0.922', '',    'mailboxfull',     0, 0]],
-    '03' => [['5.0.911', '',    'userunknown',     1, 1]],
-    '04' => [['5.0.947', '',    'expired',         0, 0]],
-    '06' => [['5.0.980', '550', 'spamdetected',    0, 0]],
+    '01' => [['5.9.213', '',    'userunknown',     1, 1]],
+    '02' => [['5.9.220', '',    'mailboxfull',     0, 0]],
+    '03' => [['5.9.213', '',    'userunknown',     1, 1]],
+    '04' => [['5.9.340', '',    'expired',         0, 0]],
+    '06' => [['5.9.164', '550', 'spamdetected',    0, 0]],
 };
 
 $enginetest->($enginename, $isexpected);

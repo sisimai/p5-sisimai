@@ -22,7 +22,7 @@ my $isexpected = {
     '1011'  => [['',        '',    'vacation',        0, 0]],
     '1012'  => [['',        '',    'vacation',        0, 0]],
     '1013'  => [['',        '',    'vacation',        0, 0]],
-    '1014'  => [['5.0.921', '',    'suspend',         0, 1]],
+    '1014'  => [['5.9.221', '',    'suspend',         0, 1]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;

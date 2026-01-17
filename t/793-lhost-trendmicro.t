@@ -9,8 +9,8 @@ my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
     '01' => [['5.1.1',   '550', 'userunknown',     1, 1]],
-    '02' => [['5.0.911', '',    'userunknown',     1, 1]],
-    '03' => [['5.0.911', '',    'userunknown',     1, 1]],
+    '02' => [['5.9.213', '',    'userunknown',     1, 1]],
+    '03' => [['5.9.213', '',    'userunknown',     1, 1]],
 };
 
 $enginetest->($enginename, $isexpected);
