@@ -50,8 +50,10 @@ sub inquire {
                         $thirdparty ||= 1 if index($messageidv, "<mxl~") > -1;
     return undef if $proceedsto < 2 && $thirdparty == 0;
 
+    require Sisimai::Reason;
     require Sisimai::Address;
     require Sisimai::SMTP::Command;
+    require Sisimai::SMTP::Failure;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = [
         # deliver.c:6423|          if (bounce_return_body) fprintf(f,
@@ -458,21 +460,17 @@ sub inquire {
             #
             # The value of "Status:" indicates permanent error but the value of SMTP reply code in
             # Diagnostic-Code: field is "TEMPERROR"!!!!
-            my $re = $e->{'reason'} || '';
             my $cr = Sisimai::SMTP::Reply->find($e->{'diagnosis'},  $e->{'status'})  || '';
             my $cs = Sisimai::SMTP::Status->find($e->{'diagnosis'}, $cr)             || '';
+            my $re = $e->{'reason'} || '';
             my $cv = "";
 
-            if( substr($cr, 0, 1) eq "4" || $re eq 'expired' || $re eq 'mailboxfull' ) {
+            if( Sisimai::SMTP::Failure->is_temporary($cr) || $re eq 'expired' || $re eq 'mailboxfull' ) {
                 # Set the pseudo status code as a temporary error
-                $cv = Sisimai::SMTP::Status->code($re, 1) || '';
-
-            } else {
-                # Set the pseudo status code as a permanent error
-                $cv = Sisimai::SMTP::Status->code($re, 0) || '';
+                $cv = Sisimai::SMTP::Status->code($re, 1) if Sisimai::Reason->is_explicit($re);
             }
             $e->{'replycode'} ||= $cr;
-            $e->{'status'}    ||= Sisimai::SMTP::Status->prefer($cs, $cv, $cr);
+            $e->{'status'}    ||= Sisimai::SMTP::Status->prefer($cv, $cs, $cr);
         }
         $e->{'command'} ||= '';
     }
@@ -516,7 +514,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

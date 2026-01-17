@@ -594,72 +594,37 @@ use constant StandardCode => {
 };
 
 use constant InternalCode => {
-    'temporary' => {
-        'authfailure'    => '4.0.926',
-        'badreputation'  => '4.0.975',
-        'blocked'        => '4.0.971',
-        'contenterror'   => '4.0.960',
-        'emailtoolarge'  => '4.0.934',
-        'expired'        => '4.0.947',
-        'failedstarttls' => '4.0.976',
-        'filtered'       => '4.0.924',
-        #'hasmoved'      => '4.0.916',
-        #'hostunknown'   => '4.0.912',
-        'mailboxfull'    => '4.0.922',
-        'mailererror'    => '4.0.939',
-        'networkerror'   => '4.0.944',
-        'norelaying'     => '4.0.909',
-        'notaccept'      => '4.0.932',
-        'notcompliantrfc'=> '4.0.974',
-        'onhold'         => '4.0.901',
-        'policyviolation'=> '4.0.972',
-        'ratelimited'    => '4.0.945',
-        'rejected'       => '4.0.918',
-        'requireptr'     => '4.0.973',
-        'securityerror'  => '4.0.970',
-        'spamdetected'   => '4.0.980',
-        'suppressed'     => '4.0.903',
-        'suspend'        => '4.0.921',
-        'systemerror'    => '4.0.930',
-        'systemfull'     => '4.0.931',
-        'syntaxerror'    => '4.0.902',
-        #'userunknown'   => '4.0.911',
-        'undefined'      => '4.0.900',
-        'virusdetected'  => '4.0.981',
-    },
-    'permanent' => {
-        'authfailure'    => '5.0.926',
-        'badreputation'  => '5.0.975',
-        'blocked'        => '5.0.971',
-        'contenterror'   => '5.0.960',
-        'emailtoolarge'  => '5.0.934',
-        'expired'        => '5.0.947',
-        'failedstarttls' => '5.0.976',
-        'filtered'       => '5.0.910',
-        'hasmoved'       => '5.0.916',
-        'hostunknown'    => '5.0.912',
-        'mailboxfull'    => '5.0.922',
-        'mailererror'    => '5.0.939',
-        'networkerror'   => '5.0.944',
-        'norelaying'     => '5.0.909',
-        'notaccept'      => '5.0.932',
-        'notcompliantrfc'=> '5.0.974',
-        'onhold'         => '5.0.901',
-        'policyviolation'=> '5.0.972',
-        'ratelimited'    => '5.0.945',
-        'rejected'       => '5.0.918',
-        'requireptr'     => '5.0.973',
-        'securityerror'  => '5.0.970',
-        'spamdetected'   => '5.0.980',
-        'suppressed'     => '5.0.903',
-        'suspend'        => '5.0.921',
-        'systemerror'    => '5.0.930',
-        'systemfull'     => '5.0.931',
-        'syntaxerror'    => '5.0.902',
-        'userunknown'    => '5.0.911',
-        'undefined'      => '5.0.900',
-        'virusdetected'  => '5.0.981',
-    },
+    'authfailure'     => ['5.9.130', '4.9.130'],
+    'badreputation'   => ['5.9.132', '4.9.132'],
+    'blocked'         => ['5.9.134', '4.9.134'],
+    'contenterror'    => ['5.9.160', '4.9.160'],
+    'emailtoolarge'   => ['5.9.161', '4.9.161'],
+    'expired'         => ['5.9.340', '4.9.340'],
+    'failedstarttls'  => ['5.9.350', '4.9.350'],
+    'filtered'        => ['5.9.210', '4.9.210'],
+    'hasmoved'        => ['5.9.211', ''],
+    'hostunknown'     => ['5.9.212', ''],
+    'mailboxfull'     => ['5.9.220', '4.9.220'],
+    'mailererror'     => ['5.9.230', '4.9.230'],
+    'networkerror'    => ['5.9.341', '4.9.341'],
+    'norelaying'      => ['5.9.214', '4.9.214'],
+    'notaccept'       => ['5.9.215', '4.9.215'],
+    'notcompliantrfc' => ['5.9.162', '4.9.162'],
+    'onhold'          => ['5.9.301', '4.9.301'],
+    'policyviolation' => ['5.9.371', '4.9.371'],
+    'ratelimited'     => ['5.9.131', '4.9.131'],
+    'rejected'        => ['5.9.110', '4.9.110'],
+    'requireptr'      => ['5.9.133', '4.9.133'],
+    'securityerror'   => ['5.9.370', '4.9.370'],
+    'spamdetected'    => ['5.9.164', '4.9.164'],
+    'suppressed'      => ['5.9.310', '4.9.310'],
+    'suspend'         => ['5.9.221', '4.9.221'],
+    'syntaxerror'     => ['5.9.351', '4.9.351'],
+    'systemerror'     => ['5.9.231', '4.9.231'],
+    'systemfull'      => ['5.9.232', '4.9.232'],
+    'undefined'       => ['5.9.300', '4.9.300'],
+    'userunknown'     => ['5.9.213', ''],
+    'virusdetected'   => ['5.9.165', '4.9.165'],
 };
 
 sub code {
@@ -673,9 +638,8 @@ sub code {
     my $class = shift;
     my $argv1 = shift || return "";
     my $argv2 = shift // 0;
-    my $table = $argv2 ? InternalCode->{'temporary'} : InternalCode->{'permanent'};
-    my $code0 = $table->{ $argv1 } // InternalCode->{'permanent'}->{ $argv1 } // '';
-    return $code0;
+    my $pairs = InternalCode->{ $argv1 } || return "";
+    return $argv2 ? $pairs->[1] : $pairs->[0];
 }
 
 sub name {
@@ -818,6 +782,8 @@ sub prefer {
 
     my $statuscode = $argv0 || return $argv1; return $argv1 unless length $statuscode > 4;
     my $codeinmesg = $argv1 || return $argv0; return $argv0 unless length $codeinmesg > 4;
+    return $codeinmesg if index($statuscode, '.9.') == 1;
+
     my $esmtpreply = $argv2 || 0;
     my $the1stchar = {
         'field' => int substr($statuscode, 0, 1),
@@ -875,7 +841,7 @@ sub is_explicit {
     my $class = shift;
     my $argv1 = shift || return 0;
 
-    return 0 if length($argv1) == 7 && index($argv1, "5.0.9") == 0 || index($argv1, "4.0.9") == 0;
+    return 0 if length($argv1) == 7 && index($argv1, ".9.") == 1;
     return 1;
 }
 
@@ -901,7 +867,7 @@ Sisimai::SMTP::Status - SMTP Enhanced Status Codes related utilities
 =head1 SYNOPSIS
 
     use Sisimai::SMTP::Status;
-    print Sisimai::SMTP::Status->code('userunknown');           # '5.0.911'
+    print Sisimai::SMTP::Status->code('userunknown');           # '5.9.213'
     print Sisimai::SMTP::Status->name('5.1.2');                 # 'hostunknown'
     print Sisimai::SMTP::Status->find('550 5.1.1 Unknown user');# '5.1.1'
 
@@ -917,8 +883,8 @@ getting the reason from the DSN value, and getting the DSN from the text includi
 C<code()> method returns pseudo DSN value from the specified reason string. The second argument is
 a flag for getting pseudo DSN value as a temporary error.
 
-    print Sisimai::SMTP::Status->code('mailboxfull');   # '5.0.922'
-    print Sisimai::SMTP::Status->code('mailboxfull',1); # '4.0.922'
+    print Sisimai::SMTP::Status->code('mailboxfull');   # '5.9.220'
+    print Sisimai::SMTP::Status->code('mailboxfull',1); # '4.9.220'
 
 =head2 C<B<name(I<D.S.N.>)>>
 
@@ -953,7 +919,7 @@ C<prefer()> method returns the preferred value selected from the arguments.
 
 C<is_explicit()> method returns 0 if the delivery status code is empty or is an internal code
 
-    print Sisimai::SMTP::Status->is_explicit("5.0.901"); # 0
+    print Sisimai::SMTP::Status->is_explicit("5.9.301"); # 0
     print Sisimai::SMTP::Status->is_explicit("5.7.625"); # 1
 
 =head2 C<B<is_ambiguous(I<delivery status code>)
@@ -970,7 +936,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2018,2020-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2018,2020-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

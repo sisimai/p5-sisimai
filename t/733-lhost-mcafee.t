@@ -8,11 +8,11 @@ my $enginename = 'McAfee';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
-    '01' => [['5.0.910', '550', 'filtered',        0, 1]],
+    '01' => [['5.9.210', '550', 'filtered',        0, 1]],
     '02' => [['5.1.1',   '550', 'userunknown',     1, 1]],
     '03' => [['5.1.1',   '550', 'userunknown',     1, 1]],
-    '04' => [['5.0.910', '550', 'filtered',        0, 1]],
-    '05' => [['5.0.910', '550', 'filtered',        0, 1]],
+    '04' => [['5.9.210', '550', 'filtered',        0, 1]],
+    '05' => [['5.9.210', '550', 'filtered',        0, 1]],
 };
 
 $enginetest->($enginename, $isexpected);

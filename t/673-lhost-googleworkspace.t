@@ -8,7 +8,7 @@ my $enginename = 'GoogleWorkspace';
 my $enginetest = Sisimai::Lhost::Code->makeinquiry;
 my $isexpected = {
     # INDEX => [['D.S.N.', 'replycode', 'REASON', 'hardbounce', 'toxic'], [...]]
-    '01' => [['5.0.918', '',    'rejected',        0, 0]],
+    '01' => [['5.9.110', '',    'rejected',        0, 0]],
 };
 
 $enginetest->($enginename, $isexpected);

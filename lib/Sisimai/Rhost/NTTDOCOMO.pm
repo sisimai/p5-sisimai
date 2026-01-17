@@ -44,7 +44,7 @@ sub find {
     # Final-Recipient: RFC822; ***@docomo.ne.jp
     # Action: failed
     # Status: 5.2.0
-    return 'userunknown' if $statuscode eq '5.1.1' || $statuscode eq '5.0.911';
+    return 'userunknown' if $statuscode eq '5.1.1' || $statuscode eq '5.9.213';
     return 'filtered'    if $statuscode eq '5.2.0';
 
     for my $e ( keys %$messagesof ) {
@@ -129,7 +129,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

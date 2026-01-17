@@ -63,10 +63,11 @@ MAKETEST: {
     is $Package->code(''), "", '->code() = ""';
     PSEUDO_STATUS_CODE: for my $e ( @$reasonlist ) {
         $v = $Package->code($e);
-        like $v, qr/\A5[.]\d[.]9\d+/, 'pseudo status code('.$e.') = '.$v;
+        like $v, qr/\A5[.]9[.]\d{3}/, 'pseudo status code('.$e.') = '.$v;
 
+        next if $e =~ /userunknown|hostunknown|hasmoved/;
         $v = $Package->code($e, 1);
-        like $v, qr/\A[45][.]\d[.]9\d+/, 'pseudo status code('.$e.',1) = '.$v;
+        like $v, qr/\A4[.]9[.]\d+/, 'pseudo status code('.$e.',1) = '.$v;
     }
 
     is $Package->name(''), "", '->name() = ""';
@@ -120,7 +121,7 @@ MAKETEST: {
         is $Package->is_explicit($e), 1, $e;
         is $Package->is_ambiguous($e), 0, $e;
     }
-    for my $e ("", "5.0.999", "4.0.999") {
+    for my $e ("", "5.9.999", "4.9.999") {
         is $Package->is_explicit($e), 0, $e;
     }
 
