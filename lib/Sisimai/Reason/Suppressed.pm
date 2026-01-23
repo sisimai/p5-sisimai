@@ -19,7 +19,7 @@ sub true {
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: The address is in the suppression list
     #                                   0: is not in the suppression list
-    # @since v4.1.25
+    # @since v5.2.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return 0;
@@ -75,7 +75,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
