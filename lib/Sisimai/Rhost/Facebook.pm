@@ -24,10 +24,10 @@ sub find {
             "POL-P1",   # Your mail server's IP Address is listed on the Spamhaus PBL.
             "POL-P2",   # Facebook will no longer accept mail from your mail server's IP Address.
             "POL-P3",   # Facebook is not accepting messages from your mail server. This will persist for 4 to 8 hours.
-            "POL-P4",   # Facebook is not accepting messages from your mail server. This will persist for 24 to 48 hours.
-            "POL-T1",   # Facebook is not accepting messages from your mail server, but they may be retried later. This will persist for 1 to 2 hours.
-            "POL-T2",   # Facebook is not accepting messages from your mail server, but they may be retried later. This will persist for 4 to 8 hours.
-            "POL-T3",   # Facebook is not accepting messages from your mail server, but they may be retried later. This will persist for 24 to 48 hours.
+            "POL-P4",   # ". This will persist for 24 to 48 hours.
+            "POL-T1",   # ", but they may be retried later. This will persist for 1 to 2 hours.
+            "POL-T2",   # ", but they may be retried later. This will persist for 4 to 8 hours.
+            "POL-T3",   # ", but they may be retried later. This will persist for 24 to 48 hours.
         ],
         "contenterror" => [
             "MSG-P2",   # The message contains an attachment type that Facebook does not accept.
@@ -78,7 +78,7 @@ sub find {
         "userunknown" => [
             "RCP-P1",   # The attempted recipient address does not exist.
             "INT-P1",   # The attempted recipient address does not exist.
-            "INT-P3",   # The attempted recpient group address does not exist.
+            "INT-P3",   # The attempted recipient group address does not exist.
             "INT-P4",   # The attempted recipient address does not exist.
         ],
         "virusdetected" => [
@@ -128,7 +128,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
