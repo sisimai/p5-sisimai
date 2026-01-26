@@ -13,6 +13,8 @@ sub find {
     my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
     state $messagesof = {
+        # - 554 <YOUR_IP_ADDRESS> found on one or more RBLs (abusixip). Refer to
+        #   https://developers.cloudflare.com/email-routing/postmaster/#spam-and-abusive-traffic/
         "blocked"     => ["found on one or more DNSBLs"],
         "systemerror" => ["Upstream error"],
     };
@@ -54,7 +56,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2025-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
