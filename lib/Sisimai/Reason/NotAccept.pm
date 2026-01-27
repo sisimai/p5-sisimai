@@ -16,13 +16,12 @@ sub match {
 
     # Destination mail server does not accept any message
     state $index = [
-        'does not accept mail',             # Sendmail
-        'host/domain does not accept mail', # iCloud
-        'mail receiving disabled',
-        'name server: .: host not found',   # Sendmail
-        'no mx record found for domain=',   # Oath(Yahoo!)
-        'no route for current request',
-        'smtp protocol returned a permanent error',
+        "does not accept mail",             # Sendmail, iCloud
+        "mail receiving disabled",
+        "name server: .: host not found",   # Sendmail
+        "no mx record found for domain=",   # Oath(Yahoo!)
+        "no route for current request",
+        "smtp protocol returned a permanent error",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -93,7 +92,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
