@@ -15,14 +15,14 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'header size exceeds maximum permitted',
-        'improper use of 8-bit data in message header',
-        'message header size, or recipient list, exceeds policy limit',
-        'message mime complexity exceeds the policy maximum',
-        'routing loop detected -- too many received: headers',
-        'this message contain invalid mime headers',
-        'this message contain improperly-formatted binary content',
-        'this message contain text that uses unnecessary base64 encoding',
+        "header size exceeds maximum permitted",
+        "improper use of 8-bit data in message header",
+        "message contain invalid mime headers",
+        "message contain improperly-formatted binary content",
+        "message contain text that uses unnecessary base64 encoding",
+        "message header size, or recipient list, exceeds policy limit",
+        "message mime complexity exceeds the policy maximum",
+        "routing loop detected -- too many received: headers",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -107,7 +107,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2021,2022,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2021,2022,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
