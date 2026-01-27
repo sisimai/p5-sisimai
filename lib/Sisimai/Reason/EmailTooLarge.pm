@@ -15,22 +15,19 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'exceeded maximum inbound message size',
-        'exceeded the maximum incoming message size',
-        'line limit exceeded',
-        'max message size exceeded',
-        'message file too big',
-        'message header size exceeds limit',
-        'message length exceeds administrative limit',
-        'message size exceeds fixed limit',
-        'message size exceeds fixed maximum message size',
-        'message size exceeds maximum value',
-        'message too big',
-        'message too large',
-        'size limit',
-        'taille limite du message atteinte',
+        "line limit exceeded",
+        "message too large",
+        "size limit",
+        "taille limite du message atteinte",
+    ];
+    state $pairs = [
+        ["exceeded", "message size"],
+        ["message ", "exceeds ", "limit"],
+        ["message ", "size", "exceed"],
+        ["message ", "too", "big"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -109,7 +106,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
