@@ -15,24 +15,23 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'all available ips are at maximum connection limit',    # SendGrid
-        'connection rate limit exceeded',
-        'exceeds per-domain connection limit for',
-        'has exceeded the max emails per hour ',
-        'mail sent from your IP address has been temporarily rate limited',
-        'please try again slower',
-        'receiving mail at a rate that prevents additional messages from being delivered',
-        'throttling failure: daily message quota exceeded',
-        'throttling failure: maximum sending rate exceeded',
-        'too many connections',
-        'too many concurrent smtp connections', # Microsoft
-        'too many errors from your ip',         # Free.fr
-        'too many recipients',                  # ntt docomo
-        'too many smtp sessions for this host', # Sendmail(daemon.c)
-        'trop de connexions, ',
-        'we have already made numerous attempts to deliver this message',
+        "has exceeded the max emails per hour ",
+        "mail sent from your IP address has been temporarily rate limited",
+        "please try again slower",
+        "receiving mail at a rate that prevents additional messages from being delivered",
+        "throttling failure: ",
+        "too many errors from your ip",         # Free.fr
+        "too many recipients",                  # ntt docomo
+        "too many smtp sessions for this host", # Sendmail(daemon.c)
+        "trop de connexions, ",
+        "we have already made numerous attempts to deliver this message",
+    ];
+    state $pairs = [
+        ["connection ", "limit"],
+        ["too many con", "s"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -101,7 +100,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
