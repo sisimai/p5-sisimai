@@ -16,31 +16,27 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'an illegal attachment on your message',
-        'because the recipient is not accepting mail with ',    # AOL Phoenix
-        'closed mailing list',
-        'denied by policy',
-        'email not accepted for policy reasons',
+        "because the recipient is not accepting mail with ",    # AOL Phoenix
+        "closed mailing list",
+        "denied by policy",
         # http://kb.mimecast.com/Mimecast_Knowledge_Base/Administration_Console/Monitoring/Mimecast_SMTP_Error_Codes#554
-        'email rejected due to security policies',
-        'header are not accepted',
-        'header error',
-        'local policy violation',
-        'message bounced due to organizational settings',
-        'message given low priority',
-        'message not accepted for policy reasons',
-        'message rejected due to local policy',
-        'messages with multiple addresses',
-        'rejected for policy reasons',
-        'protocol violation',
-        'the message was rejected by organization policy',
-        'this message was blocked because its content presents a potential', # https://support.google.com/mail/answer/6590
-        'we do not accept messages containing images or other attachments',
+        "email rejected due to security policies",
+        "executable files are not allowed in compressed files",
+        "for policy reasons",
+        "header are not accepted",
+        "header error",
+        "illegal attachment on your message",
+        "local policy",
+        "message bounced due to organizational settings",
+        "message given low priority",
+        "message was rejected by organization policy",
+        "message was blocked because its content presents a potential", # https://support.google.com/mail/answer/6590
+        "messages with multiple addresses",
+        "protocol violation",
+        "we do not accept messages containing images or other attachments",
         "you're using a mass mailer",
     ];
-    state $pairs = [
-        ['you have exceeded the', 'allowable number of posts without solving a captcha'],
-    ];
+    state $pairs = [["you have exceeded the", "allowable number of posts without solving a captcha"]];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
@@ -110,7 +106,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
