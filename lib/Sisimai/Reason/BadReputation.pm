@@ -15,13 +15,13 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'a poor email reputation score',
-        'has been temporarily rate limited due to ip reputation',
-        'ip/domain reputation problems',
-        'likely suspicious due to the very low reputation',
-        'none/bad reputation', # t-online.de
-        'temporarily deferred due to unexpected volume or user complaints', # Yahoo Inc.
-        "the sending mta's poor reputation",
+        "has been temporarily rate limited due to ip reputation",
+        "ip/domain reputation problems",
+        "likely suspicious due to the very low reputation",
+        "none/bad reputation", # t-online.de
+        "poor email reputation score",
+        "sending mta's poor reputation",
+        "temporarily deferred due to unexpected volume or user complaints", # Yahoo Inc.
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -96,7 +96,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2022,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
