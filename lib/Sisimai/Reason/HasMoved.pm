@@ -29,7 +29,9 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0;
 
+    require Sisimai::SMTP::Command;
     return 1 if $argvs->{'reason'} eq 'hasmoved';
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -84,7 +86,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020,2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -59,7 +59,6 @@ sub match {
         "recipient refuses to accept your mail",
         "recipient unknown",
         "recipients was undeliverable",
-        "sorry, your envelope recipient has been denied",
         "spectator does not exist",
         "there is no one at this address",
         "unknown mailbox",
@@ -70,6 +69,7 @@ sub match {
         "user unknown",
         "utilisateur inconnu !",
         "weil die adresse nicht gefunden wurde oder keine e-mails empfangen kann",
+        "your envelope recipient has been denied",
     ];
     state $pairs = [
         ["<", "> not found"],
@@ -112,7 +112,11 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return 0; return 1 if $argvs->{'reason'} eq 'userunknown';
+    my $argvs = shift // return 0;
+
+    require Sisimai::SMTP::Command;
+    return 1 if $argvs->{'reason'} eq 'userunknown';
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
 
     my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
     return 0 if $tempreason eq 'suspend';

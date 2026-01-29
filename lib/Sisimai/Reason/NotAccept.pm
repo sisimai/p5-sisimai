@@ -21,7 +21,6 @@ sub match {
         "name server: .: host not found",   # Sendmail
         "no mx record found for domain=",   # Oath(Yahoo!)
         "no route for current request",
-        "smtp protocol returned a permanent error",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -38,8 +37,9 @@ sub true {
     my $argvs = shift // return 0; my $reply = int $argvs->{'replycode'} || 0;
 
     # SMTP Reply Code is 521, 554 or 556
+    require Sisimai::SMTP::Command;
     return 1 if $argvs->{'reason'} eq 'notaccept' || $reply == 521 || $reply == 556;
-    return 0 if $argvs->{'command'} ne 'MAIL';
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 

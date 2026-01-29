@@ -28,7 +28,6 @@ sub match {
         "unknown host",
     ];
     state $pairs = [
-        ["553 ", " does not exist"],
         ["domain ", "not exist"],
         ["unrout", "able ", "address"],
     ];
@@ -46,7 +45,11 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return 0; return 1 if $argvs->{'reason'} eq 'hostunknown';
+    my $argvs = shift // return 0;
+
+    require Sisimai::SMTP::Command;
+    return 1 if $argvs->{'reason'} eq 'hostunknown';
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
 
     my $statuscode = $argvs->{'deliverystatus'}    // '';
     my $issuedcode = lc $argvs->{'diagnosticcode'} // '';
