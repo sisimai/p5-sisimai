@@ -20,7 +20,7 @@ my $ReasonChildren = {
     'MailerError'     => ['X-Unix; 255'],
     'NetworkError'    => ['554 5.4.6 Too many hops'],
     'NoRelaying'      => ['550 5.0.0 Relaying Denied'],
-    'NotAccept'       => ['556 SMTP protocol returned a permanent error'],
+    'NotAccept'       => ["556 this server does not accept mail"],
     'NotCompliantRFC' => ['550 5.7.1 This message is not RFC 5322 compliant. There are multiple Subject headers.'],
     'OnHold'          => ['5.9.301 error'],
     'Rejected'        => ['550 5.1.8 Domain of sender address example.org does not exist'],
@@ -58,7 +58,7 @@ for my $e ( keys %$ReasonChildren ) {
 
         $cv->{'reason'} = 'undefined';
         $cv->{'diagnosticcode'} = $ReasonChildren->{ $e }->[0];
-        $cv->{'command'} = $e =~ /\A(?:Rejected|NotAccept)/ ? 'MAIL' : $ss->command;
+        $cv->{'command'} = $e eq 'Rejected' ? 'MAIL' : $ss->command;
         is $r->true($cv), 1, $e.'->true('.$cv->{'diagnosticcode'}.') = 1';
     }
 
