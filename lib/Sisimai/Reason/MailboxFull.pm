@@ -20,7 +20,6 @@ sub match {
         "boite du destinataire pleine",
         "exceeded storage allocation",
         "full mailbox",
-        "mail file size exceeds the maximum size allowed for mail delivery",
         "mailbox size limit exceeded",
         "mailbox would exceed maximum allowed storage",
         "mailfolder is full",
