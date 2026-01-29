@@ -17,49 +17,35 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        " - spam",
-        "//www.spamhaus.org/help/help_spam_16.htm",
-        "//dsbl.org/help/help_spam_16.htm",
-        "//mail.163.com/help/help_spam_16.htm",
-        "554 5.7.0 reject, id=",
-        "appears to be unsolicited",
         "blacklisted url in message",
         "block for spam",
         "blocked by policy: no spam please",
-        "blocked by spamassassin",                      # rejected by SpamAssassin
-        "blocked for abuse. see http://att.net/blocks", # AT&T
+        "blocked by spamassassin", # rejected by SpamAssassin
+        "classified as spam and is rejected",
         "content filter rejection",
         "denied due to spam list",
-        "is classified as spam and is rejected",
-        "listed in work.drbl.imedia.ru",
-        "mail content denied",  # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000726
+        "identified spam", # 554 SpamBouncer identified SPAM, message permanently rejected (#5.3.0)
         "may consider spam",
         "message content rejected",
-        "message filtered",
         "message has been temporarily blocked by our filter",
         "message is being rejected as it seems to be a spam",
-        "message rejected for policy reasons",
         "message was rejected by recurrent pattern detection system",
         "our email server thinks this email is spam",
-        "our system has detected that this message is ",
         "reject bulk.advertising",
         "spam check",
-        "spam content",
+        "spam content ",
         "spam detected",
         "spam email",
+        "spam-like header",
         "spam message",
         "spam not accepted",
         "spam refused",
-        "spam rejection",
-        "spam-like",
-        "spambouncer identified spam", # SpamBouncer identified SPAM
         "spamming not allowed",
-        "too many spam complaints",
-        "too much spam.",              # Earthlink
-        "we dont accept spam",
+        "unsolicited ",
         "your email breaches local uribl policy",
     ];
     state $pairs = [
+        ["accept", " spam"],
         ["appears", " to ", "spam"],
         ["bulk", "mail"],
         ["considered", " spam"],
@@ -72,7 +58,9 @@ sub match {
         ["message ", "like spam"],
         ["message ", "spamprofiler"],
         ["probab", " spam"],
+        ["refused by", " spamprofiler"],
         ["reject", " content"],
+        ["reject, id=", "spam"],
         ["rejected by ", " (spam)"],
         ["rejected due to spam ", "classification"],
         ["rule imposed as ", " is blacklisted on"],
