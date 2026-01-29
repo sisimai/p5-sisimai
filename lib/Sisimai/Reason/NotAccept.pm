@@ -16,13 +16,11 @@ sub match {
 
     # Destination mail server does not accept any message
     state $index = [
-        'does not accept mail',             # Sendmail
-        'host/domain does not accept mail', # iCloud
-        'mail receiving disabled',
-        'name server: .: host not found',   # Sendmail
-        'no mx record found for domain=',   # Oath(Yahoo!)
-        'no route for current request',
-        'smtp protocol returned a permanent error',
+        "does not accept mail",             # Sendmail, iCloud
+        "mail receiving disabled",
+        "name server: .: host not found",   # Sendmail
+        "no mx record found for domain=",   # Oath(Yahoo!)
+        "no route for current request",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -39,8 +37,9 @@ sub true {
     my $argvs = shift // return 0; my $reply = int $argvs->{'replycode'} || 0;
 
     # SMTP Reply Code is 521, 554 or 556
+    require Sisimai::SMTP::Command;
     return 1 if $argvs->{'reason'} eq 'notaccept' || $reply == 521 || $reply == 556;
-    return 0 if $argvs->{'command'} ne 'MAIL';
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -93,7 +92,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

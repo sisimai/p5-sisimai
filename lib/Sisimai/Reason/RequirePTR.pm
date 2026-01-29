@@ -16,32 +16,22 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'access denied. ip name lookup failed',
-        'all mail servers must have a ptr record with a valid reverse dns entry',
-        'bad dns ptr resource record',
-        'cannot find your hostname',
+        "cannot find your hostname",
         "cannot resolve your address.",
-        'client host rejected: cannot find your hostname',  # Yahoo!
-        'fix reverse dns for ',
-        'ips with missing ptr records',
-        'no ptr record found.',
-        'please get a custom reverse dns name from your isp for your host',
-        'ptr record setup',
-        'reverse dns failed',
-        'reverse dns required',
-        'sender ip reverse lookup rejected',
-        'the ip address sending this message does not have a ptr record setup', # Google
-        'the corresponding forward dns entry does not point to the sending ip', # Google
-        'this system will not accept messages from servers/devices with no reverse dns',
-        'unresolvable relay host name',
-        'we do not accept mail from hosts with dynamic ip or generic dns ptr-records',
+        "corresponding forward dns entry does not point to the sending ip", # Google
+        "ip name lookup failed",
+        "no matches to nameserver query",
+        "sender ip reverse lookup rejected",
+        "unresolvable relay host name",
     ];
     state $pairs = [
-        ['domain ',' mismatches client ip'],
-        ['dns lookup failure: ', ' try again later'],
-        ['reverse dns lookup for host ', ' failed permanently'],
-        ['server access ', ' forbidden by invalid rdns record of your mail server'],
-        ['service permits ', ' unverifyable sending ips'],
+        ["domain "," mismatches client ip"],
+        ["domain name verification on your ip address ", "failed"],
+        ["dns lookup failure: ", " try again later"],
+        ["ptr", "record"],
+        ["reverse", " dns"],
+        ["server access ", " forbidden by invalid rdns record of your mail server"],
+        ["service permits ", " unverifyable sending ips"],
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
@@ -115,7 +105,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

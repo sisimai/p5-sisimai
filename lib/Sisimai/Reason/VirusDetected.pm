@@ -15,15 +15,13 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return 0;
 
-    state $index = [
-        'it has a potentially executable attachment',
-        'the message was rejected because it contains prohibited virus or spam content',
-        'this form of attachment has been used by recent viruses or other malware',
-        'virus detected',
-        'virus phishing/malicious_url detected',
-        'your message was infected with a virus',
+    state $index = ["it has a potentially executable attachment"];
+    state $pairs = [
+        ["message was ", "ected", " virus"],
+        ["virus", " detected"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -99,7 +97,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

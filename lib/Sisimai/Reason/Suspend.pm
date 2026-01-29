@@ -15,32 +15,34 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        ' is currently suspended',
-        ' temporary locked',
-        'archived recipient',
-        'boite du destinataire archivee',
-        'email account that you tried to reach is disabled',
-        'has been suspended',
-        'inactive account',
-        'invalid/inactive user',
-        'is a deactivated mailbox', # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
-        'is unavailable: user is terminated',
-        'mailbox currently suspended',
-        'mailbox disabled',
-        'mailbox is frozen',
-        'mailbox unavailable or access denied',
-        'recipient rejected: temporarily inactive',
-        'recipient suspend the service',
-        "the email account that you tried to reach is inactive",
-        'this account has been disabled or discontinued',
-        'this account has been temporarily suspended',
-        'this address no longer accepts mail',
-        'this mailbox is disabled',
-        'user or domain is disabled',
-        'user suspended',   # http://mail.163.com/help/help_spam_16.htm
-        'vdelivermail: account is locked email bounced',
+        " currently suspended",
+        " temporary locked",
+        "address no longer accepts mail",
+        "archived recipient",
+        "boite du destinataire archivee",
+        "email account that you tried to reach is inactive",
+        "inactive account",
+        "inactivity new mail is not currently being accepted for this mailbox",
+        "invalid/inactive user",
+        "is a deactivated mailbox", # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
+        "is unavailable: user is terminated",
+        "mailbox is frozen",
+        "mailbox is inactive",
+        "mailbox unavailable or access denied",
+        "recipient rejected: temporarily inactive",
+        "recipient suspend the service",
+        "user or domain is disabled",
+        "user suspended", # http://mail.163.com/help/help_spam_16.htm
+        "vdelivermail: account is locked email bounced",
+    ];
+    state $pairs = [
+        ["account ", "disabled"],
+        ["has been ", "suspended"],
+        ["mailbox ", "disabled"],
+        ["not ", "active"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -104,7 +106,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

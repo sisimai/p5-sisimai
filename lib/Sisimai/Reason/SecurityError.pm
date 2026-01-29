@@ -16,25 +16,21 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'account not subscribed to ses',
-        'authentication credentials invalid',
-        'authentication failure',
-        'authentication required',
-        'authentication turned on in your email client',
-        'executable files are not allowed in compressed files',
-        'insecure mail relay',
-        'recipient address rejected: access denied',
-        "sorry, you don't authenticate or the domain isn't in my list of allowed rcpthosts",
-        'unauthenticated senders not allowed',
-        'verification failure',
-        'you are not authorized to send mail, authentication is required',
+        "account not subscribed to ses",
+        "authentication credentials invalid",
+        "authentication failure",
+        "authentication required",
+        "authentication turned on in your email client",
+        "unauthenticated senders not allowed",
+        "verification failure",
+        "you are not authorized to send mail, authentication is required",
+        "you don't authenticate or the domain isn't in my list of allowed rcpthosts",
     ];
     state $pairs = [
-        ['authentication failed; server ', ' said: '],  # Postfix
-        ['authentification invalide', '305'],
-        ['authentification requise', '402'],
-        ['domain ', ' is a dead domain'],
-        ['user ', ' is not authorized to perform ses:sendrawemail on resource'],
+        ["authentication failed; server ", " said: "], # Postfix
+        ["authentification invalide", "305"],
+        ["authentification requise", "402"],
+        ["user ", " is not authorized to perform ses:sendrawemail on resource"],
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
@@ -106,7 +102,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

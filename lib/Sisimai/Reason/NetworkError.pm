@@ -15,24 +15,24 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'could not connect and send the mail to',
-        'dns records for the destination computer could not be found',
-        'hop count exceeded - possible mail loop',
-        'host is unreachable',
-        'host name lookup failure',
-        'host not found, try again',
-        'mail forwarding loop for ',
-        'malformed name server reply',
-        'malformed or unexpected name server reply',
-        'maximum forwarding loop count exceeded',
-        'message looping',
-        'message probably in a routing loop',
-        'no route to host',
-        'too many hops',
-        'unable to resolve route ',
-        'unrouteable mail domain',
+        "could not connect and send the mail to",
+        "dns records for the destination computer could not be found",
+        "host is unreachable",
+        "host name lookup failure",
+        "host not found, try again",
+        "maximum forwarding loop count exceeded",
+        "no route to host",
+        "too many hops",
+        "unable to resolve route ",
+        "unrouteable mail domain",
+    ];
+    state $pairs = [
+        ["malformed", "name server reply"],
+        ["mail ", "loop"],
+        ["message ", "loop"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -97,7 +97,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020-2022,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020-2022,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -16,23 +16,21 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'domain does not exist',
-        'domain is not reachable',
-        'domain must exist',
-        'host or domain name not found',
-        'host unknown',
-        'host unreachable',
-        'mail domain mentioned in email address is unknown',
-        'name or service not known',
-        'no such domain',
-        'recipient address rejected: unknown domain name',
-        'recipient domain must exist',
-        'the account or domain may not exist',
-        'unknown host',
-        'unroutable address',
-        'unrouteable address',
+        "domain is not reachable",
+        "domain mentioned in email address is unknown",
+        "domain must exist",
+        "host or domain name not found",
+        "host unknown",
+        "host unreachable",
+        "name or service not known",
+        "no such domain",
+        "recipient address rejected: unknown domain name",
+        "unknown host",
     ];
-    state $pairs = [['553 ', ' does not exist']];
+    state $pairs = [
+        ["domain ", "not exist"],
+        ["unrout", "able ", "address"],
+    ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
@@ -47,7 +45,11 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return 0; return 1 if $argvs->{'reason'} eq 'hostunknown';
+    my $argvs = shift // return 0;
+
+    require Sisimai::SMTP::Command;
+    return 1 if $argvs->{'reason'} eq 'hostunknown';
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
 
     my $statuscode = $argvs->{'deliverystatus'}    // '';
     my $issuedcode = lc $argvs->{'diagnosticcode'} // '';
@@ -119,7 +121,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

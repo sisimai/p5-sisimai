@@ -16,22 +16,18 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'because the recipient is only accepting mail from specific email addresses',   # AOL Phoenix
-        'bounced address',  # SendGrid|a message to an address has previously been Bounced.
-        'due to extended inactivity new mail is not currently being accepted for this mailbox',
-        'has restricted sms e-mail',    # AT&T
-        'is not accepting any mail',
+        "account is protected by",
+        "has restricted sms e-mail", # AT&T
+        "is not accepting any mail",
         "message filtered",
-        'message rejected due to user rules',
-        'not found recipient account',
-        'refused due to recipient preferences', # Facebook
-        'resolver.rst.notauthorized',   # Microsoft Exchange
-        'this account is protected by',
-        'user not found',   # Filter on MAIL.RU
-        'user refuses to receive this mail',
-        'user reject',
-        'we failed to deliver mail because the following address recipient id refuse to receive mail',  # Willcom
-        'you have been blocked by the recipient',
+        "message rejected due to user rules",
+        "not found recipient account",
+        "recipient id refuse to receive mail", # Willcom
+        "recipient is only accepting mail from specific email addresses", # AOL Phoenix
+        "refused due to recipient preferences", # Facebook
+        "user refuses to receive this mail",
+        "user reject",
+        "you have been blocked by the recipient",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -124,7 +120,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

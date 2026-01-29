@@ -15,57 +15,35 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        '452 insufficient disk space',
-        'account disabled temporarly for exceeding receiving limits',
-        'account is exceeding their quota',
-        'account is over quota',
-        'account is temporarily over quota',
-        'boite du destinataire pleine',
-        'delivery failed: over quota',
-        'disc quota exceeded',
-        'diskspace quota',
-        'does not have enough space',
-        'exceeded storage allocation',
-        'exceeding its mailbox quota',
-        'full mailbox',
-        'is over disk quota',
-        'is over quota temporarily',
-        'mail file size exceeds the maximum size allowed for mail delivery',
-        'mail quota exceeded',
-        'mailbox exceeded the local limit',
-        'mailbox full',
-        'mailbox has exceeded its disk space limit',
-        'mailbox is full',
-        'mailbox over quota',
-        'mailbox quota usage exceeded',
-        'mailbox size limit exceeded',
-        'maildir over quota',
-        'maildir delivery failed: userdisk quota ',
-        'maildir delivery failed: domaindisk quota ',
-        'mailfolder is full',
-        'no space left on device',
-        'not enough disk space',
-        'not enough storage space in',
-        'not sufficient disk space',
-        'over the allowed quota',
-        'quota exceeded',
-        'quota violation for',
-        'recipient reached disk quota',
-        'recipient rejected: mailbox would exceed maximum allowed storage',
-        'the recipient mailbox has exceeded its disk space limit',
-        "the user's space has been used up",
-        'the user you are trying to reach is over quota',
-        'too much mail data',   # @docomo.ne.jp
-        'user has exceeded quota, bouncing mail',
-        'user has too many messages on the server',
-        'user is over quota',
-        'user is over the quota',
-        'user over quota',
-        'user over quota. (#5.1.1)',    # qmail-toaster
-        'was automatically rejected: quota exceeded',
-        'would be over the allowed quota',
+        "452 insufficient disk space",
+        "account disabled temporarly for exceeding receiving limits",
+        "boite du destinataire pleine",
+        "exceeded storage allocation",
+        "full mailbox",
+        "mailbox size limit exceeded",
+        "mailbox would exceed maximum allowed storage",
+        "mailfolder is full",
+        "no space left on device",
+        "not sufficient disk space",
+        "quota violation for",
+        "too much mail data", # @docomo.ne.jp
+        "user has exceeded quota, bouncing mail",
+        "user has too many messages on the server",
+        "user's space has been used up",
+    ];
+    state $pairs = [
+        ["account is ", " quota"],
+        ["disk", "quota"],
+        ["enough ", " space"],
+        ["mailbox ", "exceeded", " limit"],
+        ["mailbox ", "full"],
+        ["mailbox ", "quota"],
+        ["maildir ", "quota"],
+        ["over ", "quota"],
+        ["quota ", "exceeded"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -138,7 +116,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2018,2020,2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -16,20 +16,18 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        '//spf.pobox.com',
-        'bad spf records for',
-        'dmarc policy',
+        "//spf.pobox.com",
+        "5322.From address doesn't meet the authentication requirements",
+        "bad spf records for",
+        "dmarc policy",
         "doesn't meet the required authentication level",
-        'please inspect your spf settings',
-        'sender policy framework (spf) fail',
-        'sender policy framework violation',
-        'spf (sender policy framework) domain authentication fail',
-        'spf check: fail',
-        "the 5322.From address doesn't meet the authentication requirements defined for the sender",
+        "please inspect your spf settings",
+        "sender policy framework",
+        "spf check: fail",
     ];
     state $pairs = [
-        [' is not allowed to send mail.', '_401'],
-        ['is not allowed to send from <', " per it's spf record"],
+        [" is not allowed to send mail.", "_401"],
+        ["is not allowed to send from <", " per it's spf record"],
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
@@ -104,7 +102,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

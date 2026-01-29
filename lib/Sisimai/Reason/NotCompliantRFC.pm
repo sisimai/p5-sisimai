@@ -2,7 +2,6 @@ package Sisimai::Reason::NotCompliantRFC;
 use v5.26;
 use strict;
 use warnings;
-use Sisimai::String;
 
 sub text  { 'notcompliantrfc' }
 sub description { "Email rejected due to non-compliance with RFC" }
@@ -16,15 +15,13 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'duplicate header',
-        'this message is not rfc 5322 compliant',
-        'https://support.google.com/mail/?p=rfcmessagenoncompliant',
-    ];
-    state $pairs = [
-        [' multiple ', 'header'],
+        "duplicate header",
+        "message is not rfc 5322 compliant",
+        "multiple addresses in from: header are not accepted",
+        "rfc 1035 violation",
+        "https://support.google.com/mail/?p=rfcmessagenoncompliant",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
-    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
@@ -94,7 +91,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

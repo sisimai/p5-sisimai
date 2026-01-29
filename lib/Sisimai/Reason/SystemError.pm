@@ -16,31 +16,28 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        'aliasing/forwarding loop broken',
+        "aliasing/forwarding loop broken",
         "can't create user output file",
-        'could not load drd for domain',
-        'internal error reading data',  # Microsoft
-        'internal server error: operation now in progress', # Microsoft
-        'interrupted system call',
-        'it encountered an error while being processed',
-        'it would create a mail loop',
-        'local configuration error',
-        'local error in processing',
-        'loop was found in the mail exchanger',
-        'loops back to myself',
-        'mail system configuration error',
-        'queue file write error',
-        'recipient deferred because there is no mdb',
-        'remote server is misconfigured',
-        'server configuration error',
-        'service currently unavailable',
-        'system config error',
-        'temporary local problem',
-        'timeout waiting for input',
-        'transaction failed ',
+        "cannot send e-mail to yourself",
+        "could not load ",
+        "interrupted system call",
+        "it encountered an error while being processed",
+        "it would create a mail loop",
+        "loop was found in the mail exchanger",
+        "loops back to myself",
+        "queue file write error",
+        "recipient deferred because there is no mdb",
+        "remote server is misconfigured",
+        "service currently unavailable",
+        "temporary local problem",
+        "timeout waiting for input",
+        "transaction failed ",
     ];
     state $pairs = [
-        ['unable to connect ', 'daemon'],
+        ["config", " error"],
+        ["internal ", "error"],
+        ["local ", "error"],
+        ["unable to connect ", "daemon"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
@@ -105,7 +102,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2022,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2022,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

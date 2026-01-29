@@ -95,7 +95,7 @@ sub find {
 
         # 1560 Your email was rejected for having too many invalid recipients. Check your outgoing
         #      email addresses and try again later.
-        [1560, 0, 'policyviolation'],
+        [1560, 0, 'ratelimited'],
 
         # 1580 You've tried to send messages to too many recipients in a short period of time.
         #      Wait a little while and try again later.
@@ -156,7 +156,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020,2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2020,2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
