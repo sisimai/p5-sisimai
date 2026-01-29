@@ -93,7 +93,7 @@ my $isexpected = {
     '1051'  => [['5.9.213', '550', 'userunknown',     1, 1],
                 ['5.9.213', '550', 'userunknown',     1, 1],
                 ['5.9.212', '550', 'hostunknown',     1, 1]], # invalid domain name
-    '1052'  => [['5.9.134', '550', 'blocked',         0, 0],
+    '1052'  => [['5.9.231', '550', 'systemerror',     0, 0],
                 ['5.9.212', '550', 'hostunknown',     1, 1],
                 ['5.9.212', '550', 'hostunknown',     1, 1],
                 ['5.9.213', '550', 'userunknown',     1, 1]],
