@@ -297,6 +297,8 @@ sub tidy {
         $email .= sprintf("%s: %s\n", $fn, join(' ', @$ab));
     }
 
+    # 5. Convert the lower-cased SMTP command to the upper-cased.
+    $email =~ s/after end of data:/after end of DATA:/g;
     $email .= "\n" if substr($email, -2, 2) ne "\n\n";
     return \$email;
 }
@@ -488,7 +490,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
