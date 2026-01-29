@@ -15,14 +15,20 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
+        "executable files are not allowed in compressed files",
+        "header error",
         "header size exceeds maximum permitted",
+        "illegal attachment on your message",
         "improper use of 8-bit data in message header",
+        "it has a potentially executable attachment",
         "message contain invalid mime headers",
         "message contain improperly-formatted binary content",
         "message contain text that uses unnecessary base64 encoding",
         "message header size, or recipient list, exceeds policy limit",
         "message mime complexity exceeds the policy maximum",
+        "message was blocked because its content presents a potential", # https://support.google.com/mail/answer/6590
         "routing loop detected -- too many received: headers",
+        "we do not accept messages containing images or other attachments",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
