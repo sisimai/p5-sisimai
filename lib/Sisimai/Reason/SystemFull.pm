@@ -15,8 +15,8 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
+        'exceeded storage allocation',   # MS Exchange
         'mail system full',
-        'requested mail action aborted: exceeded storage allocation',   # MS Exchange
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 0;
@@ -79,7 +79,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2020,2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
