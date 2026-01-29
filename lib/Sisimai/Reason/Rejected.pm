@@ -21,44 +21,27 @@ sub match {
     ];
     state $index = [
         "access denied (in reply to mail from command)",
-        "address rejected",
         "administrative prohibition",
-        "batv failed to verify",   # SonicWall
-        "batv validation failure", # SonicWall
+        "all recipient addresses rejected : access denied",
         "backscatter protection detected an invalid or expired email address", # MDaemon
-        "because the sender isn't on the recipient's list of senders to accept mail from",
-        "bogus mail from",          # IMail - block empty sender
         "by non-member to a members-only list",
         "can't determine purported responsible address",
         "connections not accepted from servers without a valid sender domain",
-        "denied [bouncedeny]",      # McAfee
-        "denied by secumail valid-address-filter",
-        "delivery not authorized, message refused",
-        "does not exist e2110",
+        "denied by secumail valid-address-filter", # SecuMail
         "domain of sender address ",
         "email address is on senderfilterconfig list",
-        "email address used to send your message is not subscribed to this group",
         "emetteur invalide",
+        "empty email address",
         "empty envelope senders not allowed",
-        "envelope blocked - ",
-        "error: no third-party dsns",   # SpamWall - block empty sender
         "from: domain is invalid. please provide a valid from:",
         "fully qualified email address required",   # McAfee
-        "invalid domain, see <url:",
         "invalid sender",
         "is not a registered gateway user",
         "mail from not owned by user",
         "mailfrom domain is listed in spamhaus",
-        "message has been rejected by batv defense",
-        "message rejected: email address is not verified",
-        "mx records for ",
         "null sender is not allowed",
-        "recipient addresses rejected : access denied",
-        "recipient not accepted. (batv: no tag",
         "returned mail not accepted here",
-        "rule imposed mailbox access for",  # MailMarshal
         "sending this from a different address or alias using the ",
-        "sender is in my black list",
         "sender is spammer",
         "sender not pre-approved",
         "sender domain is empty",
@@ -66,17 +49,19 @@ sub match {
         "sender verify failed",     # Exim callout
         "server does not accept mail from",
         "spam reporting address",   # SendGrid|a message to an address has previously been marked as Spam by the recipient.
-        "syntax error: empty email address",
-        "transaction failed unsigned dsn for",
         "unroutable sender address",
         "you are not allowed to post to this mailing list",
         "your access to submit messages to this e-mail system has been rejected",
         "your email address has been blacklisted",  # MessageLabs
     ];
     state $pairs = [
+        ["after end of data:", ".", " does not exist"],
+        ["after mail from:", ".", " does not exist"],
         ["domain ", " is a dead domain"],
+        ["email address ", "is not "],
         ["send", "blacklisted"],
         ["sender", " rejected"],
+        ["sender is", " list"],
     ];
 
     return 0 if grep { rindex($argv1, $_) > -1 } @$isnot;
