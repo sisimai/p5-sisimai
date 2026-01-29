@@ -16,9 +16,9 @@ sub match {
 
     state $index = [
         "has exceeded the max emails per hour ",
-        "mail sent from your IP address has been temporarily rate limited",
         "please try again slower",
         "receiving mail at a rate that prevents additional messages from being delivered",
+        "temporarily deferred due to unexpected volume or user complaints",
         "throttling failure: ",
         "too many errors from your ip",         # Free.fr
         "too many recipients",                  # ntt docomo
@@ -27,7 +27,9 @@ sub match {
         "we have already made numerous attempts to deliver this message",
     ];
     state $pairs = [
+        ["exceeded ", "allowable number of posts without solving a captcha"],
         ["connection ", "limit"],
+        ["temporarily", "rate limited"],
         ["too many con", "s"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
