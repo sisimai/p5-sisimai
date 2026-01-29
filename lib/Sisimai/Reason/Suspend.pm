@@ -22,6 +22,7 @@ sub match {
         "boite du destinataire archivee",
         "email account that you tried to reach is inactive",
         "inactive account",
+        "inactivity new mail is not currently being accepted for this mailbox",
         "invalid/inactive user",
         "is a deactivated mailbox", # http://service.mail.qq.com/cgi-bin/help?subtype=1&&id=20022&&no=1000742
         "is unavailable: user is terminated",
