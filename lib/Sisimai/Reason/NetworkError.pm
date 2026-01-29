@@ -17,20 +17,20 @@ sub match {
     state $index = [
         "could not connect and send the mail to",
         "dns records for the destination computer could not be found",
-        "hop count exceeded - possible mail loop",
         "host is unreachable",
         "host name lookup failure",
         "host not found, try again",
-        "mail forwarding loop for ",
         "maximum forwarding loop count exceeded",
-        "message looping",
-        "message probably in a routing loop",
         "no route to host",
         "too many hops",
         "unable to resolve route ",
         "unrouteable mail domain",
     ];
-    state $pairs = [["malformed", "name server reply"]];
+    state $pairs = [
+        ["malformed", "name server reply"],
+        ["mail ", "loop"],
+        ["message ", "loop"],
+    ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
