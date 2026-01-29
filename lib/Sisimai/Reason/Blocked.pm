@@ -16,56 +16,34 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        " said: 550 blocked",
-        "//www.spamcop.net/bl.",
         "bad sender ip address",
         "banned sending ip", # Office365
         "blacklisted by",
-        "blocked using ",
-        "blocked - see http",
         "dnsbl:attrbl",
         "client host rejected: abus detecte gu_eib_02", # SFR
         "client host rejected: abus detecte gu_eib_04", # SFR
         "client host rejected: may not be mail exchanger",
-        "client host rejected: was not authenticated",  # Microsoft
-        "confirm this mail server",
-        "connection dropped",
         "connection refused by",
-        "connection reset by peer",
-        "connection was dropped by remote host",
-        "connections not accepted from ip addresses on spamhaus xbl",
         "currently sending spam see: ",
         "domain does not exist:",
         "domain isn't in my list of allowed rcpthosts",
         "error: no valid recipients from ",
         "esmtp not accepting connections", # icloud.com
         "extreme bad ip profile",
-        "go away",
         "helo command rejected:",
         "host network not allowed",
         "invalid ip for sending mail of domain",
         "is in a black list",
         "is not allowed to send mail from",
         "no access from mail server",
-        "no matches to nameserver query",
-        "not currently accepting mail from your ip", # Microsoft
         "part of their network is on our block list",
         "please use the smtp server of your isp",
-        "refused - see http",
-        "rejected - multi-blacklist", # junkemailfilter.com
         "rejected because the sending mta or the sender has not passed validation",
         "rejecting open proxy", # Sendmail(srvrsmtp.c)
         "sender ip address rejected",
         "server access forbidden by your ip ",
-        "service not available, closing transmission channel",
         "smtp error from remote mail server after initial connection:", # Exim
-        "temporarily deferred due to unexpected volume or user complaints",
-        "to submit messages to this e-mail system has been rejected",
-        "too many spams from your ip", # free.fr
-        "too many unwanted messages have been sent from the following ip address above",
-        "was blocked by ",
         "you are not allowed to connect",
-        "you are sending spam",
         "your ip address is listed in the rbl",
         "your network is temporary blacklisted",
         "your remotehost looks suspiciously like spammer",
@@ -74,12 +52,16 @@ sub match {
     state $pairs = [
         ["(", "@", ":blocked)"],
         ["access from ip address ", " blocked"],
+        ["blocked by ", " dnsbl"],
+        ["client ", " blocked using"],
+        ["connection ", "dropped"],
         ["client host ", " blocked using"],
         ["connections will not be accepted from ", " because the ip is in spamhaus's list"],
-        ["dnsbl:rbl ", ">_is_blocked"],
         ["dynamic", " ip"],
         ["email blocked by ", ".barracudacentral.org"],
         ["email blocked by ", "spamhaus"],
+        ["from ", " ip address"],
+        ["host ", " said: ", "550 blocked"],
         ["host ", " refused to talk to me: ", " blocked"],
         ["ip ", " is blocked by earthlink"], # Earthlink
         ["is in an ", "rbl on "],
