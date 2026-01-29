@@ -16,10 +16,11 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
-        "access denied. ip name lookup failed",
         "cannot find your hostname",
         "cannot resolve your address.",
         "corresponding forward dns entry does not point to the sending ip", # Google
+        "ip name lookup failed",
+        "no matches to nameserver query",
         "sender ip reverse lookup rejected",
         "unresolvable relay host name",
     ];
