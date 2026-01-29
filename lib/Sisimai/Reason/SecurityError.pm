@@ -21,12 +21,10 @@ sub match {
         "authentication failure",
         "authentication required",
         "authentication turned on in your email client",
-        "insecure mail relay",
-        "recipient address rejected: access denied",
-        "sorry, you don't authenticate or the domain isn't in my list of allowed rcpthosts",
         "unauthenticated senders not allowed",
         "verification failure",
         "you are not authorized to send mail, authentication is required",
+        "you don't authenticate or the domain isn't in my list of allowed rcpthosts",
     ];
     state $pairs = [
         ["authentication failed; server ", " said: "], # Postfix
