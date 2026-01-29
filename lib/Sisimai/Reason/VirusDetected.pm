@@ -15,13 +15,11 @@ sub match {
     my $class = shift;
     my $argv1 = shift // return 0;
 
-    state $index = [
-        "form of attachment has been used by recent viruses or other malware",
-        "it has a potentially executable attachment",
-        "virus detected",
-        "virus phishing/malicious_url detected",
+    state $index = ["it has a potentially executable attachment"];
+    state $pairs = [
+        ["message was ", "ected", " virus"],
+        ["virus", " detected"],
     ];
-    state $pairs = [["message was ", "ected", " virus"]];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
