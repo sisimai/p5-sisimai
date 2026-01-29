@@ -18,7 +18,8 @@ sub match {
     state $index = [
         "aliasing/forwarding loop broken",
         "can't create user output file",
-        "could not load drd for domain",
+        "cannot send e-mail to yourself",
+        "could not load ",
         "interrupted system call",
         "it encountered an error while being processed",
         "it would create a mail loop",
