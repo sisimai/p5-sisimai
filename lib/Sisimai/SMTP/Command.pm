@@ -3,6 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 use constant ExceptDATA => ["CONN", "EHLO", "HELO", "MAIL", "RCPT"];
+use constant BeforeRCPT => ["CONN", "EHLO", "EHLO", "MAIL", "AUTH", "STARTTLS"];
 state $Availables = [
     "HELO", "EHLO", "MAIL", "RCPT", "DATA", "QUIT", "RSET", "NOOP", "VRFY", "ETRN", "EXPN", "HELP",
     "AUTH", "STARTTLS", "XFORWARD",
@@ -103,7 +104,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
