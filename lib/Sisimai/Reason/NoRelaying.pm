@@ -19,22 +19,22 @@ sub match {
         "domain isn't in my list of allowed rcpthost",
         "email address is not verified.",
         "insecure mail relay",
-        "is not permitted to relay through this server without authentication",
-        "mail server requires authentication when attempting to send to a non-local e-mail address", # MailEnable
         "no relaying",
         "not a gateway",
-        "not allowed to relay through this machine",
         "not an open relay, so get lost",
         "not local host",
         "relay not permitted",
         "relaying denied", # Sendmail
         "relaying mail to ",
+        "send to a non-local e-mail address", # MailEnable
         "specified domain is not allowed",
-        "system is not configured to relay mail",
         "unable to relay ",
         "we don't handle mail for",
     ];
-    state $pairs = [["relay ", "denied"]];
+    state $pairs = [
+        ["relay ", "denied"],
+        [" not ", " to relay"],
+    ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
