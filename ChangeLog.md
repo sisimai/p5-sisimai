@@ -9,13 +9,19 @@ v5.6.0
 - release: ""
 - version: ""
 - changes:
-  - Update some bounce reasons in `Sisimai::SMTP::Status`.
-  - #634 Cosolidate 4 bounce reasons into the following 2 reasons:
-    - `TooManyConn` and `Speeding` are consolidated into `RateLimited`.
-    - `ExceedLimit` and `MesgTooBig` are consolidated into `EmailTooLarge`.
+  - **Changes in Bounce Reason Categorization**
+    - Update bounce status mappings in `Sisimai::SMTP::Status`.
+    - #634 Consolidate four bounce reasons into two:
+      - Merge `TooManyConn` and `Speeding` into `RateLimited`.
+      - Merge `ExceedLimit` and `MesgTooBig` into `EmailTooLarge`.
+    - #640 Update assigned reasons in `rhost/for-*.go`.
+    - #642 Error message patterns improvement.
+      - Merge similar error message patterns and remove ambiguous ones.
+      - Attachment-related errors have been moved from `PolicyViolation` to `ContentError`.
+  - **Reorganize the internal status code** #638
+    - Temporary error `4.0.9**` has been changed to `4.9.***`.
+    - Permanent error `5.0.9**` has been changed to `5.9.***`.
   - #636 `Sisimai::String->token` has been moved to `Sisimai::Fact->maketoken()`.
-  - #638 Internal status code, the value of `deliverystatus` has been reorganized and changed from
-    `5.0.9**` to `5.9.***`.
 
 v5.5.0
 ---------------------------------------------------------------------------------------------------
