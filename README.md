@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.42-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.5.0-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.6.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
@@ -113,7 +113,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.5.0.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.6.0.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -140,14 +140,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.5.0 ... OK
-Building and testing Sisimai-v5.5.0 ... Password: <sudo password here>
+Configuring Sisimai-v5.6.0 ... OK
+Building and testing Sisimai-v5.6.0 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.5.0
+Successfully installed Sisimai-v5.6.0
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.5.0
+5.6.0
 ```
 
 Usage
@@ -365,7 +365,7 @@ Beginning with v5.0.0, Sisimai requires **Perl 5.26.0 or later.**
 | The number of MTA/ESP modules                        | 68                 | 60                  |
 | The number of detectable bounce reasons              | 29                 | 34                  |
 | Dependencies (Except core modules of Perl)           | 2 modules          | 2 modules           |
-| Source lines of code                                 | 10,800 lines       | 9,990 lines         |
+| Source lines of code                                 | 10,800 lines       | 9,750 lines         |
 | The number of tests in t/, xt/ directory             | 270,000 tests      | 340,000 tests       | 
 | The number of bounce emails decoded per second[^4]   | 750 emails         | 750 emails          |
 | License                                              | 2 Clause BSD       | 2 Caluse BSD        |

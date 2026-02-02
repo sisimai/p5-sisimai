@@ -4,6 +4,26 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.6.0
+---------------------------------------------------------------------------------------------------
+- release: "Mon,  2 Feb 2026 18:30:22 +0900 (JST)"
+- version: "5.6.0"
+- changes:
+  - **Changes in Bounce Reason Categorization**
+    - Update bounce status mappings in `Sisimai::SMTP::Status`.
+    - #634 Consolidate four bounce reasons into two:
+      - Merge `TooManyConn` and `Speeding` into `RateLimited`.
+      - Merge `ExceedLimit` and `MesgTooBig` into `EmailTooLarge`.
+    - #640 Update assigned reasons in `rhost/for-*.go`.
+    - #642 Error message patterns improvement.
+      - Merge similar error message patterns and remove ambiguous ones.
+      - Attachment-related errors have been moved from `PolicyViolation` to `ContentError`.
+  - **Reorganize the internal status code** #638
+    - Temporary error `4.0.9**` has been changed to `4.9.***`.
+    - Permanent error `5.0.9**` has been changed to `5.9.***`.
+  - #636 `Sisimai::String->token` has been moved to `Sisimai::Fact->maketoken()`.
+  - Happy Birthday to Suzu (formerly known as "Neko-dono" Michitsuna).
+
 v5.5.0
 ---------------------------------------------------------------------------------------------------
 - release: "Fri,  5 Dec 2025 17:25:22 +0900 (JST)"
