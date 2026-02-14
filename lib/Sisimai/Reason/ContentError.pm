@@ -15,6 +15,7 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
+        "charset not supported",
         "executable files are not allowed in compressed files",
         "header error",
         "header size exceeds maximum permitted",
