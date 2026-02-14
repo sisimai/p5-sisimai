@@ -21,9 +21,10 @@ sub match {
         "insecure mail relay",
         "no relaying",
         "not a gateway",
-        "not an open relay, so get lost",
         "not local host",
+        "open relay",
         "relay not permitted",
+        "relay prohibition",
         "relaying denied", # Sendmail
         "relaying mail to ",
         "send to a non-local e-mail address", # MailEnable
@@ -33,7 +34,7 @@ sub match {
     ];
     state $pairs = [
         ["relay ", "denied"],
-        [" not ", " to relay"],
+        ["n", "t ", "to relay"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
@@ -50,12 +51,10 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0;
 
+    return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
     return 0 if $argvs->{'reason'} eq 'securityerror'
              || $argvs->{'reason'} eq 'systemerror'
              || $argvs->{'reason'} eq 'undefined';
-    return 0 if $argvs->{'command'} eq 'CONN'
-             || $argvs->{'command'} eq 'EHLO'
-             || $argvs->{'command'} eq 'HELO';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
