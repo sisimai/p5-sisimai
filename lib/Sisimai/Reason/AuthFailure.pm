@@ -26,8 +26,8 @@ sub match {
         "spf check: fail",
     ];
     state $pairs = [
-        [" is not allowed to send mail.", "_401"],
-        ["is not allowed to send from <", " per it's spf record"],
+        ["spf: ", " is not allowed to send "],
+        ["is not allowed to send ", " spf "],
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
