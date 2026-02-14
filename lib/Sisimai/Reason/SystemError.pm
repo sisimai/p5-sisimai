@@ -20,11 +20,13 @@ sub match {
         "can't create user output file",
         "cannot send e-mail to yourself",
         "could not load ",
+        "input/output error",
         "interrupted system call",
         "it encountered an error while being processed",
         "it would create a mail loop",
         "loop was found in the mail exchanger",
         "loops back to myself",
+        "mail transport unavailable",
         "queue file write error",
         "recipient deferred because there is no mdb",
         "remote server is misconfigured",
@@ -37,6 +39,7 @@ sub match {
         ["config", " error"],
         ["internal ", "error"],
         ["local ", "error"],
+        ["proxy", "broken pipe"],
         ["unable to connect ", "daemon"],
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
