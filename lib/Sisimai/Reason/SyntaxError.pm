@@ -6,22 +6,7 @@ use warnings;
 sub text  { 'syntaxerror' }
 sub description { 'Email rejected due to syntax error at sent commands in SMTP session' }
 sub match { return 0 }
-sub true {
-    # Connection rejected due to syntax error or not
-    # @param    [Sisimai::Fact] argvs   Object to be detected the reason
-    # @return   [Integer]               1: Rejected due to syntax error
-    #                                   0: is not syntax error
-    # @since v4.1.25
-    # @see http://www.ietf.org/rfc/rfc2822.txt
-    my $class = shift;
-    my $argvs = shift // return 0; return 0 unless exists $argvs->{'replycode'};
-    my $reply = int($argvs->{'replycode'} || 0);
-
-    return 1 if $argvs->{'reason'} eq 'syntaxerror';
-    return 1 if $reply > 400 && $reply < 408;
-    return 1 if $reply > 500 && $reply < 508;
-    return 0;
-}
+sub true  { return 0 }
 
 1;
 __END__
@@ -73,7 +58,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2016,2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2016,2018,2020,2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
