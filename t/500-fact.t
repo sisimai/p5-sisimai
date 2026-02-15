@@ -42,7 +42,7 @@ my $Results = {
         ['5.1.1',   '',    'userunknown',     1],
         ['5.3.4',   '552', 'emailtoolarge',   0],
         ['4.2.2',   '450', 'mailboxfull',     0],
-        ['5.7.1',   '550', 'norelaying',      0],
+        ['5.7.1',   '550', 'requireptr',      0],
         ['5.0.0',   '',    'mailererror',     0],
         ['5.2.0',   '550', 'filtered',        0],
         ['5.1.1',   '550', 'userunknown',     1],
