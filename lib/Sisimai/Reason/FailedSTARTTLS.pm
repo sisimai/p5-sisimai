@@ -31,7 +31,7 @@ sub true {
     # @since v5.2.0
     my $class = shift;
     my $argvs = shift // return 0;
-    my $reply = int $argvs->{'replycode'} || 0;
+    my $reply = $argvs->{'replycode'} || 0;
 
     return 1 if $argvs->{"reason"} eq "failedstarttls" || $argvs->{"command"} eq "STARTTLS";
     return 1 if $reply == 523 || $reply == 524 || $reply == 538;
