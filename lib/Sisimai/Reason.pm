@@ -6,13 +6,14 @@ use warnings;
 my $ModulePath = __PACKAGE__->path;
 my $GetRetried = __PACKAGE__->retry;
 my $ClassOrder = [
-    [qw/MailboxFull EmailTooLarge Suspend HasMoved NoRelaying AuthFailure UserUnknown Filtered
-        RequirePTR NotCompliantRFC BadReputation ContentError Rejected HostUnknown SpamDetected
-        RateLimited Blocked/
+    # 0. true() meethod in the following reasons are called from Reason->find()
+    [qw/MailboxFull EmailTooLarge Suspend HasMoved NoRelaying AuthFailure UserUnknown Filtered RequirePTR
+        NotCompliantRFC BadReputation ContentError Rejected HostUnknown SpamDetected RateLimited Blocked
+        FailedSTARTTLS NotAccept VirusDetected PolicyViolation/
     ],
-    [qw/MailboxFull AuthFailure BadReputation RateLimited SpamDetected VirusDetected PolicyViolation 
-        NoRelaying SystemError NetworkError Suspend ContentError SystemFull NotAccept Expired
-        FailedSTARTTLS SecurityError Suppressed MailerError/
+    # 1. match() method in the following reasons are called from Reason->find()
+    [qw/MailboxFull SpamDetected VirusDetected NoRelaying SystemError NetworkError Suspend SystemFull
+        Suppressed MailerError SecurityError PolicyViolation SyntaxError Expired/
     ],
     [qw/MailboxFull EmailTooLarge Suspend UserUnknown Filtered Rejected HostUnknown SpamDetected
         RateLimited Blocked SpamDetected AuthFailure FailedSTARTTLS SecurityError SystemError
@@ -267,7 +268,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
