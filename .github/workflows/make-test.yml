@@ -21,6 +21,7 @@ jobs:
         uses: shogo82148/actions-setup-perl@v2
         with:
           perl-version: ${{ matrix.perl }}
+          verify: false
       - name: Install modules
         run: cpanm --installdeps .
       - name: Check the Perl version
