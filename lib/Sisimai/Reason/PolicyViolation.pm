@@ -27,6 +27,7 @@ sub match {
         "message given low priority",
         "message was rejected by organization policy",
         "protocol violation",
+        "support.google.com/a/answer/172179",
         "you're using a mass mailer",
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
@@ -40,7 +41,12 @@ sub true {
     #                                   0: is not policyviolation
     # @since v4.22.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
-    return 0;
+    my $class = shift;
+    my $argvs = shift // return 0;
+
+    return 1 if $argvs->{'reason'} eq 'policyviolation';
+    return 0 if $argvs->{'command'} ne '' && $argvs->{'command'} ne 'DATA';
+    return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
 1;

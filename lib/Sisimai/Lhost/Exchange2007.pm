@@ -25,13 +25,6 @@ sub inquire {
         "Non recapitabile", # it-CH
         "Olevererbart",     # sv-SE
     ];
-    my $proceedsto = 0; $proceedsto++ if grep { index($mhead->{"subject"}, $_) > -1 } @$emailtitle;
-                        $proceedsto++ if grep { index($mhead->{"from"},  $_)   >  1 } @$mailsender;
-                        $proceedsto++ if defined $mhead->{"content-language"};
-    return undef if $proceedsto < 2;
-
-    require Sisimai::RFC1123;
-    state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = [
         "Original Message Headers",
         "Original message headers:",                # en-US
@@ -71,6 +64,15 @@ sub inquire {
         "RESOLVER.RST.RecipSizeLimit"    => "emailtoolarge", # 550 5.2.3 RESOLVER.RST.RecipSizeLimit
         "QUEUE.Expired"                  => "expired",       # 550 4.4.7 QUEUE.Expired
     };
+    my $proceedsto = 0; $proceedsto++ if grep { index($mhead->{"subject"}, $_) > -1 } @$emailtitle;
+                        $proceedsto++ if grep { index($mhead->{"from"},    $_) >  1 } @$mailsender;
+                        $proceedsto++ if grep { index($$mbody, $_) > 1 } $startingof->{"error"}->@*;
+                        $proceedsto++ if grep { index($$mbody, $_) > 1 } $startingof->{"message"}->@*;
+                        $proceedsto++ if defined $mhead->{"content-language"};
+    return undef if $proceedsto < 2;
+
+    require Sisimai::RFC1123;
+    state $indicators = __PACKAGE__->INDICATORS;
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -210,7 +212,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2021,2023,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2021,2023,2025,2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

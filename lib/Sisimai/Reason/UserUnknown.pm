@@ -95,8 +95,10 @@ sub match {
         ["unknown e", "mail address"],
         ["unknown local", "part"],
         ["user ", " not exist"],
+        ["user ", "doesn't exist"],
         ["user ", "not found"],
         ["user (", ") unknown"],
+        ["user <", "> unknown"],
     ];
 
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;

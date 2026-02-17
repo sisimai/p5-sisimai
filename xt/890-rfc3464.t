@@ -288,11 +288,13 @@ my $isexpected = {
     '1326'  => [['5.7.0',   '554', 'spamdetected',    0, 0]],
     '1327'  => [['4.4.7',   '',    'expired',         0, 0]],
     '1328'  => [['5.4.4',   '',    'hostunknown',     1, 1]],
-    '1329'  => [['5.7.1',   '',    'securityerror',   0, 0]],
+    '1329'  => [['5.7.1',   '',    'policyviolation', 0, 0]],
     '1330'  => [['5.9.213', '550', 'userunknown',     1, 1]],
     '1331'  => [['5.4.7',   '',    'expired',         0, 0]],
     '1332'  => [['5.3.0',   '550', 'filtered',        0, 1]],
     '1333'  => [['4.4.1',   '',    'expired',         0, 0]],
+    '1334'  => [['5.0.0',   '',    'systemerror',     0, 0]],
+    '1335'  => [['5.0.0',   '550', 'suspend',         0, 1]],
 };
 
 plan 'skip_all', sprintf("%s not found", $samplepath) unless -d $samplepath;
