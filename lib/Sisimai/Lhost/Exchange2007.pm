@@ -65,7 +65,7 @@ sub inquire {
         "QUEUE.Expired"                  => "expired",       # 550 4.4.7 QUEUE.Expired
     };
     my $proceedsto = 0; $proceedsto++ if grep { index($mhead->{"subject"}, $_) > -1 } @$emailtitle;
-                        $proceedsto++ if grep { index($mhead->{"from"},  $_)   >  1 } @$mailsender;
+                        $proceedsto++ if grep { index($mhead->{"from"},    $_) >  1 } @$mailsender;
                         $proceedsto++ if grep { index($$mbody, $_) > 1 } $startingof->{"error"}->@*;
                         $proceedsto++ if grep { index($$mbody, $_) > 1 } $startingof->{"message"}->@*;
                         $proceedsto++ if defined $mhead->{"content-language"};
