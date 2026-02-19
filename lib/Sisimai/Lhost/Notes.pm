@@ -28,7 +28,6 @@ sub inquire {
             'User not listed in public Name & Address Book',
             'ディレクトリのリストにありません',
         ],
-        'networkerror' => ['Message has exceeded maximum hop count'],
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
@@ -158,7 +157,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
