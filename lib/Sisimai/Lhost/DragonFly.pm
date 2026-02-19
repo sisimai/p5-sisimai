@@ -25,23 +25,6 @@ sub inquire {
         # https://github.com/corecode/dma/blob/ffad280aa40c242aa9a2cb9ca5b1b6e8efedd17e/mail.c#L84
         'message' => ['This is the DragonFly Mail Agent '],
     };
-    state $messagesof = {
-        'expired'     => [
-            # https://github.com/corecode/dma/blob/master/dma.c#L370C1-L374C19
-            # dma.c:370| if (gettimeofday(&now, NULL) == 0 &&
-            # dma.c:371|     (now.tv_sec - st.st_mtim.tv_sec > MAX_TIMEOUT)) {
-            # dma.c:372|     snprintf(errmsg, sizeof(errmsg),
-            # dma.c:373|          "Could not deliver for the last %d seconds. Giving up.",
-            # dma.c:374|          MAX_TIMEOUT);
-            # dma.c:375|     goto bounce;
-            # dma.c:376| }
-            'Could not deliver for the last ',
-        ],
-        'hostunknown' => [
-            # net.c:663| snprintf(errmsg, sizeof(errmsg), "DNS lookup failure: host %s not found", host);
-            'DNS lookup failure: host ',
-        ],
-    };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -99,13 +82,6 @@ sub inquire {
 
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
-        SESSION: for my $r ( keys %$messagesof ) {
-            # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
-            $e->{'reason'} = $r;
-            last;
-        }
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
@@ -147,7 +123,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
