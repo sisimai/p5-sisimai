@@ -27,8 +27,6 @@ sub inquire {
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = {'message' => ['Your message']};
     state $messagesof = {
-        'filtered'    => ['Cannot route mail to user'],
-        'systemerror' => ['Several matches found in Domino Directory'],
         'userunknown' => [
             'not listed in Domino Directory',
             'not listed in public Name & Address Book',
@@ -198,7 +196,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
