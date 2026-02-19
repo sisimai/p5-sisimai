@@ -28,8 +28,6 @@ sub inquire {
     };
     state $messagesof = {
         "userunknown"  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
-        "notaccept"    => ["Null MX"],
-        "networkerror" => [" had no relevant answers.", " responded with code NXDOMAIN"],
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
@@ -123,7 +121,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
