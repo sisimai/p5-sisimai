@@ -16,13 +16,20 @@ sub match {
 
     # Destination mail server does not accept any message
     state $index = [
-        "does not accept mail",             # Sendmail, iCloud
+        "destination seem to reject all mails", # OpenSMTPD/smtp/mta.c
+        "does not accept mail",                 # Sendmail, iCloud
         "mail receiving disabled",
-        "name server: .: host not found",   # Sendmail
-        "no mx record found for domain=",   # Oath(Yahoo!)
+        "mx or srv record indicated no smtp ",  # Exim/routers/dnslookup.c:328
+        "name server: .: host not found",       # Sendmail
+        "no host found for existing smtp ",     # Exim/transports/smtp.c:3502
         "no route for current request",
+        "null mx",
+    ];
+    state $pairs = [
+        ["no mx ", "found for "], # OpenSMTPD/smtp/mta.c
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
+    return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;
     return 0;
 }
 
