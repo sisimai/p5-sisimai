@@ -93,16 +93,11 @@ sub inquire {
 
         } else {
             # The line does not begin with a DSN field defined in RFC3464
+            #    >>> RCPT TO:<******@ezweb.ne.jp>
+            # <<< 550 ...
             next if Sisimai::String->is_8bit(\$e);
-            if( index($e, " >>> ") > -1 ) {
-                #    >>> RCPT TO:<******@ezweb.ne.jp>
-                $v->{"command"} = Sisimai::SMTP::Command->find($e);
-                $v->{"diagnosis"} .= " ".$e;
-
-            } elsif( index($e, " <<< ") > -1 ) {
-                # <<< 550 ...
-                $v->{"diagnosis"} .= " ".$e;
-            }
+            $v->{"command"} = Sisimai::SMTP::Command->find($e) if index($e, " >>> ") > -1;
+            $v->{"diagnosis"} .= " ".$e;
         } # End of error message part
     }
     return undef unless $recipients;
