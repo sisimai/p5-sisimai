@@ -18,7 +18,7 @@ my $isexpected = {
     '07' => [['5.9.210', '550', 'filtered',        0, 1]],
     '08' => [['5.9.213', '550', 'userunknown',     1, 1]],
     '09' => [['5.1.8',   '501', 'rejected',        0, 0]],
-    '10' => [['4.9.340', '',    'expired',         0, 0]],
+    '10' => [['5.9.340', '',    'expired',         0, 0]],
 };
 
 $enginetest->($enginename, $isexpected);
