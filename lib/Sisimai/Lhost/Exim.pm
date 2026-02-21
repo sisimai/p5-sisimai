@@ -397,34 +397,33 @@ sub inquire {
                     $e->{'reason'} = $r;
                     last;
                 }
+                $e->{'reason'} ||= 'expired' if grep { index($e->{'diagnosis'}, $_) > -1 } @$delayedfor;
             }
         }
 
-        STATUS: {
-            # Prefer the value of smtp reply code in Diagnostic-Code: field
-            # See set-of-emails/maildir/bsd/exim-20.eml
-            #
-            #   Action: failed
-            #   Final-Recipient: rfc822;userx@test.ex
-            #   Status: 5.0.0
-            #   Remote-MTA: dns; 127.0.0.1
-            #   Diagnostic-Code: smtp; 450 TEMPERROR: retry timeout exceeded
-            #
-            # The value of "Status:" indicates permanent error but the value of SMTP reply code in
-            # Diagnostic-Code: field is "TEMPERROR"!!!!
-            my $cr = Sisimai::SMTP::Reply->find($e->{'diagnosis'},  $e->{'status'})  || '';
-            my $cs = Sisimai::SMTP::Status->find($e->{'diagnosis'}, $cr)             || '';
-            my $re = $e->{'reason'} || '';
-            my $cv = "";
+        # Prefer the value of smtp reply code in Diagnostic-Code: field
+        # See set-of-emails/maildir/bsd/exim-20.eml
+        #
+        #   Action: failed
+        #   Final-Recipient: rfc822;userx@test.ex
+        #   Status: 5.0.0
+        #   Remote-MTA: dns; 127.0.0.1
+        #   Diagnostic-Code: smtp; 450 TEMPERROR: retry timeout exceeded
+        #
+        # The value of "Status:" indicates permanent error but the value of SMTP reply code in
+        # Diagnostic-Code: field is "TEMPERROR"!!!!
+        my $cr = Sisimai::SMTP::Reply->find($e->{'diagnosis'},  $e->{'status'})  || '';
+        my $cs = Sisimai::SMTP::Status->find($e->{'diagnosis'}, $cr)             || '';
+        my $re = $e->{'reason'} || '';
+        my $cv = "";
 
-            if( Sisimai::SMTP::Failure->is_temporary($cr) || $re eq 'expired' ) {
-                # Set the pseudo status code as a temporary error
-                $cv = Sisimai::SMTP::Status->code($re, 1) if Sisimai::Reason->is_explicit($re);
-            }
-            $e->{'replycode'} ||= $cr;
-            $e->{'status'}    ||= Sisimai::SMTP::Status->prefer($cv, $cs, $cr);
+        if( Sisimai::SMTP::Failure->is_temporary($cr) || $re eq 'expired' ) {
+            # Set the pseudo status code as a temporary error
+            $cv = Sisimai::SMTP::Status->code($re, 1) if Sisimai::Reason->is_explicit($re);
         }
-        $e->{'command'} ||= '';
+        $e->{'replycode'} ||= $cr;
+        $e->{'status'}    ||= Sisimai::SMTP::Status->prefer($cv, $cs, $cr);
+        $e->{'command'}   ||= '';
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
