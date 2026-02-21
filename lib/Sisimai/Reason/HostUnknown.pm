@@ -29,6 +29,7 @@ sub match {
     ];
     state $pairs = [
         ["domain ", "not exist"],
+        ["host ", " not found"],
         ["unrout", "able ", "address"],
     ];
 
