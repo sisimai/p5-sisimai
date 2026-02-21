@@ -72,17 +72,6 @@ sub inquire {
         'message' => ['Delivery to the following recipient'],
         'error'   => ['The error that the other server returned was:'],
     };
-    state $messagesof = {
-        'expired' => [
-            'DNS Error: Could not contact DNS servers',
-            'Delivery to the following recipient has been delayed',
-            'The recipient server did not accept our requests to connect',
-        ],
-        'hostunknown' => [
-            'DNS Error: Domain name not found',
-            'DNS Error: DNS server returned answer with no data',
-        ],
-    };
     state $statetable = {
         # Technical details of permanent failure:
         # Google tried to deliver your message, but it was rejected by the recipient domain.
@@ -237,15 +226,6 @@ sub inquire {
             $e->{'command'} = $statetable->{ $cu }->{'command'};
             last;
         }
-        unless( $e->{'reason'} ) {
-            # There is no state code in the error message
-            FINDREASON: for my $r ( keys %$messagesof ) {
-                # Verify each regular expression of session errors
-                next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
-                $e->{'reason'} = $r;
-                last;
-            }
-        }
         $e->{'reason'} ||= ''; next unless $e->{'reason'};
 
         # Set pseudo status code and override bounce reason
@@ -293,7 +273,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

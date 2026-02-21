@@ -26,11 +26,6 @@ sub inquire {
         'message' => ['   ----- The following addresses had delivery problems -----'],
         'error'   => ['   ----- Non-delivered information -----'],
     };
-    state $messagesof = {
-        'filtered'    => ['Mail Delivery Failed... User unknown'],
-        'mailboxfull' => ["The number of messages in recipient's mailbox exceeded the local limit."],
-    };
-
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
@@ -83,13 +78,6 @@ sub inquire {
 
     for my $e ( @$dscontents ) {
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
-        SESSION: for my $r ( keys %$messagesof ) {
-            # Verify each regular expression of session errors
-            next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
-            $e->{'reason'} = $r;
-            last;
-        }
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
@@ -131,7 +119,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -100,27 +100,6 @@ sub inquire {
         # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
         # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
         "userunknown" => ["user not found"],
-        # transports/smtp.c:3524|  addr->message = US"all host address lookups failed permanently";
-        # routers/dnslookup.c:331|  addr->message = US"all relevant MX records point to non-existent hosts";
-        # route.c:1826|  uschar *message = US"Unrouteable address";
-        "hostunknown" => [
-            "all host address lookups failed permanently",
-            "all relevant MX records point to non-existent hosts",
-            "Unrouteable address",
-        ],
-        # transports/appendfile.c:2567|  addr->user_message = US"mailbox is full";
-        # transports/appendfile.c:3049|  addr->message = string_sprintf("mailbox is full "
-        # transports/appendfile.c:3050|  "(quota exceeded while writing to file %s)", filename);
-        "mailboxfull" => [
-            "mailbox is full",
-            "error: quota exceed",
-        ],
-        # routers/dnslookup.c:328|  addr->message = US"an MX or SRV record indicated no SMTP service";
-        # transports/smtp.c:3502|  addr->message = US"no host found for existing SMTP connection";
-        "notaccept" => [
-            "an MX or SRV record indicated no SMTP service",
-            "no host found for existing SMTP connection",
-        ],
         # parser.c:666| *errorptr = string_sprintf("%s (expected word or \"<\")", *errorptr);
         # parser.c:701| if(bracket_count++ > 5) FAILED(US"angle-brackets nested too deep");
         # parser.c:738| FAILED(US"domain missing in source-routed address");
@@ -131,35 +110,14 @@ sub inquire {
             "domain missing in source-routed address",
             "malformed address:",
         ],
-        # deliver.c:5614|  addr->message = US"delivery to file forbidden";
-        # deliver.c:5624|  addr->message = US"delivery to pipe forbidden";
-        # transports/pipe.c:1156|  addr->user_message = US"local delivery failed";
-        "systemerror" => [
-            "delivery to file forbidden",
-            "delivery to pipe forbidden",
-            "local delivery failed",
-            "LMTP error after ",
-        ],
-        # deliver.c:5425|  new->message = US"Too many \"Received\" headers - suspected mail loop";
-        "contenterror" => ['Too many "Received" headers'],
     };
     state $delayedfor = [
-        # retry.c:902|  addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
-        # deliver.c:7475|  "No action is required on your part. Delivery attempts will continue for\n"
-        # smtp.c:3508|  US"retry time not reached for any host after a long failure period" :
-        # smtp.c:3508|  US"all hosts have been failing for a long time and were last tried "
-        #                 "after this message arrived";
-        # deliver.c:7459|  print_address_error(addr, f, US"Delay reason: ");
-        # deliver.c:7586|  "Message %s has been frozen%s.\nThe sender is <%s>.\n", message_id,
-        # receive.c:4021|  moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
-        # receive.c:4022|  "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
-        "retry timeout exceeded",
+        # deliver.c:7475| "No action is required on your part. Delivery attempts will continue for\n"
+        # smtp.c:3508|    US"retry time not reached for any host after a long failure period" :
+        # deliver.c:7459| print_address_error(addr, f, US"Delay reason: ");
         "No action is required on your part",
         "retry time not reached for any host after a long failure period",
-        "all hosts have been failing for a long time and were last tried",
         "Delay reason: ",
-        "has been frozen",
-        "was frozen on arrival by ",
     ];
 
     if( index($$mbody, "\n----- This is a copy ") > -1 ) {
@@ -439,40 +397,33 @@ sub inquire {
                     $e->{'reason'} = $r;
                     last;
                 }
-
-                unless( $e->{'reason'} ) {
-                    # The reason "expired", or "mailererror"
-                    $e->{'reason'}   = 'expired' if grep { index($e->{'diagnosis'}, $_) > -1 } @$delayedfor;
-                    $e->{'reason'} ||= 'mailererror' if index($e->{'diagnosis'}, 'pipe to |') > -1;
-                }
+                $e->{'reason'} ||= 'expired' if grep { index($e->{'diagnosis'}, $_) > -1 } @$delayedfor;
             }
         }
 
-        STATUS: {
-            # Prefer the value of smtp reply code in Diagnostic-Code: field
-            # See set-of-emails/maildir/bsd/exim-20.eml
-            #
-            #   Action: failed
-            #   Final-Recipient: rfc822;userx@test.ex
-            #   Status: 5.0.0
-            #   Remote-MTA: dns; 127.0.0.1
-            #   Diagnostic-Code: smtp; 450 TEMPERROR: retry timeout exceeded
-            #
-            # The value of "Status:" indicates permanent error but the value of SMTP reply code in
-            # Diagnostic-Code: field is "TEMPERROR"!!!!
-            my $cr = Sisimai::SMTP::Reply->find($e->{'diagnosis'},  $e->{'status'})  || '';
-            my $cs = Sisimai::SMTP::Status->find($e->{'diagnosis'}, $cr)             || '';
-            my $re = $e->{'reason'} || '';
-            my $cv = "";
+        # Prefer the value of smtp reply code in Diagnostic-Code: field
+        # See set-of-emails/maildir/bsd/exim-20.eml
+        #
+        #   Action: failed
+        #   Final-Recipient: rfc822;userx@test.ex
+        #   Status: 5.0.0
+        #   Remote-MTA: dns; 127.0.0.1
+        #   Diagnostic-Code: smtp; 450 TEMPERROR: retry timeout exceeded
+        #
+        # The value of "Status:" indicates permanent error but the value of SMTP reply code in
+        # Diagnostic-Code: field is "TEMPERROR"!!!!
+        my $cr = Sisimai::SMTP::Reply->find($e->{'diagnosis'},  $e->{'status'})  || '';
+        my $cs = Sisimai::SMTP::Status->find($e->{'diagnosis'}, $cr)             || '';
+        my $re = $e->{'reason'} || '';
+        my $cv = "";
 
-            if( Sisimai::SMTP::Failure->is_temporary($cr) || $re eq 'expired' || $re eq 'mailboxfull' ) {
-                # Set the pseudo status code as a temporary error
-                $cv = Sisimai::SMTP::Status->code($re, 1) if Sisimai::Reason->is_explicit($re);
-            }
-            $e->{'replycode'} ||= $cr;
-            $e->{'status'}    ||= Sisimai::SMTP::Status->prefer($cv, $cs, $cr);
+        if( Sisimai::SMTP::Failure->is_temporary($cr) || $re eq 'expired' ) {
+            # Set the pseudo status code as a temporary error
+            $cv = Sisimai::SMTP::Status->code($re, 1) if Sisimai::Reason->is_explicit($re);
         }
-        $e->{'command'} ||= '';
+        $e->{'replycode'} ||= $cr;
+        $e->{'status'}    ||= Sisimai::SMTP::Status->prefer($cv, $cs, $cr);
+        $e->{'command'}   ||= '';
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }

@@ -39,7 +39,9 @@ sub match {
     ];
     state $pairs = [
         ["account ", "disabled"],
+        ["account ", "limited"],
         ["has been ", "suspended"],
+        ["mailaddress ", "disabled"],
         ["mailbox ", "disabled"],
         ["not ", "active"],
     ];

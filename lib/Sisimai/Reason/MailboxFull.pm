@@ -20,6 +20,7 @@ sub match {
         "boite du destinataire pleine",
         "exceeded storage allocation",
         "full mailbox",
+        "mailbox exceeds allowed size",
         "mailbox size limit exceeded",
         "mailbox would exceed maximum allowed storage",
         "mailfolder is full",
@@ -36,11 +37,11 @@ sub match {
         ["disk", "quota"],
         ["enough ", " space"],
         ["mailbox ", "exceeded", " limit"],
-        ["mailbox ", "full"],
+        ["mailbox ", "full"],   # Exim/transports/appendfile.c:2567
         ["mailbox ", "quota"],
         ["maildir ", "quota"],
         ["over ", "quota"],
-        ["quota ", "exceeded"],
+        ["quota ", "exceeded"], # Exim/transports/appendfile.c:3050
     ];
     return 1 if grep { rindex($argv1, $_) > -1 } @$index;
     return 1 if grep { Sisimai::String->aligned(\$argv1, $_) } @$pairs;

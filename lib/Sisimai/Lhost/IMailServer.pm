@@ -24,12 +24,8 @@ sub inquire {
     state $boundaries = ['Original message follows.'];
     state $startingof = {'error' => ['Body of message generated response:']};
     state $messagesof = {
-        'hostunknown'   => ['Unknown host'],
-        'userunknown'   => ['Unknown user', 'Invalid final delivery userid'],
-        'mailboxfull'   => ['User mailbox exceeds allowed size'],
-        'virusdetected' => ['Requested action not taken: virus detected'],
-        'spamdetected'  => ['Blacklisted URL in message'],
-        'expired'       => ['Delivery failed '],
+        'userunknown' => ['Unknown user', 'Invalid final delivery userid'],
+        'expired'     => ['Delivery failed '],
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
@@ -127,7 +123,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

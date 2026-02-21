@@ -15,8 +15,8 @@ sub match {
     my $argv1 = shift // return 0;
 
     state $index = [
+        "exceeds the maximum size ",
         "line limit exceeded",
-        "mail file size exceeds the maximum size allowed for mail delivery",
         "message too large",
         "size limit",
         "taille limite du message atteinte",

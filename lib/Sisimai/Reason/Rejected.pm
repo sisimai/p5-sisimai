@@ -41,6 +41,7 @@ sub match {
         "is not a registered gateway user",
         "mail from not owned by user",
         "mailfrom domain is listed in spamhaus",
+        "not member article from ", # FML
         "null sender is not allowed",
         "returned mail not accepted here",
         "sending this from a different address or alias using the ",
@@ -63,6 +64,7 @@ sub match {
         ["after mail from:", ".", " does not exist"],
         ["domain ", " is a dead domain"],
         ["email address ", "is not "],
+        ["reject mail from ", "@"], # FML
         ["send", "blacklisted"],
         ["sender", " rejected"],
         ["sender is", " list"],
