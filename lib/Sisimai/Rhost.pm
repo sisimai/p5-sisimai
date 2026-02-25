@@ -23,7 +23,7 @@ state $RhostClass = {
     "Spectrum"    => ["charter.net"],
     "Tencent"     => [".qq.com"],
     "YahooInc"    => [".yahoodns.net"],
-    "Zoho"        => [".zoho.com", ".zoho.eu"],
+    "Zoho"        => [".zoho.com", ".zoho.eu", ".zoho.jp"],
 };
 
 sub name {
@@ -114,7 +114,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2020,2022-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2020,2022-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
