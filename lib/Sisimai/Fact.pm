@@ -311,10 +311,16 @@ sub rise {
             $piece->{'diagnostictype'} ||= 'SMTP' unless grep { $piece->{'reason'} eq $_ } ('feedback', 'vacation');
         }
 
-        # Check the SMTP command, the Subject field of the original message
-        $piece->{'command'} = '' unless Sisimai::SMTP::Command->test($piece->{'command'});
+        # Check the Subject field of the original message
         $piece->{'subject'} = $rfc822data->{'subject'} // '';
         chop $piece->{'subject'} if substr($piece->{'subject'}, -1, 1) eq "\r";
+
+        # When "RCPT first" in the error message, set "RCPT" as the last command.
+        # - <<< 503 RCPT first (#5.5.1)
+        # - <<< 503-5.5.1 RCPT first. A mail transaction protocol command was issued ...
+        # -   RCPT first (in reply to DATA command)
+        $piece->{'command'} = '' unless Sisimai::SMTP::Command->test($piece->{'command'});
+        $piece->{'command'} = 'RCPT' if index($piece->{'diagnosticcode'}, 'RCPT first') > -1;
 
         CONSTRUCTOR: {
             # Create email address object
