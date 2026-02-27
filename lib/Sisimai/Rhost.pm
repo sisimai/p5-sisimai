@@ -23,7 +23,7 @@ state $RhostClass = {
     "Spectrum"    => ["charter.net"],
     "Tencent"     => [".qq.com"],
     "YahooInc"    => [".yahoodns.net"],
-    "Zoho"        => [".zoho.com", ".zoho.eu", ".zoho.jp"],
+    "Zoho"        => [".zoho.com", ".zoho.eu", ".zoho.jp", ".zoho.com.au", ".zoho.com.cn", ".zoho.in"],
 };
 
 sub name {
