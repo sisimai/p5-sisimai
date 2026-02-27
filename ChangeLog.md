@@ -4,6 +4,21 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.?.?
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+- changes:
+  - #645 #647 Improvement in error message patterns.
+    - Update error message patterns in `AuthFailure`, `ContentError`, `NoRelaying`, `UserUnknown`,
+      `Rejected`, `SystemError`, `Suspend`, and `Sisimai::Rhost::Microsoft`.
+    - Remove error message patterns already defined in `Sisimai::Reason` from some MTA moudles of
+      `Sisimai::Lhost`.
+    - Move error message patterns from some MTA modules of `Sisimai::Lhost` to `Sisimai::Reason`.
+  - #648 List all the Zoho domains.
+  - #649 Bug fix: The value of command should be `RCPT` when `RCPT first` in the error message.
+  - Update the order of `$ClassOrder` in `Sisimai::Reason`.
+
 v5.6.0
 ---------------------------------------------------------------------------------------------------
 - release: "Mon,  2 Feb 2026 18:30:22 +0900 (JST)"
