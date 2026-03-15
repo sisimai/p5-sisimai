@@ -16,11 +16,10 @@ sub inquire {
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
 
-    return undef unless  index($$mbody, "Google Groups") > -1;
+    return undef unless  index($$mbody, "Google Group") > -1;
     return undef unless rindex($mhead->{'from'}, '<mailer-daemon@googlemail.com>')  > -1;
     return undef unless  index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
     return undef unless exists $mhead->{'x-failed-recipients'};
-    return undef unless exists $mhead->{'x-google-smtp-source'};
 
     # Hello kijitora@libsisimai.org,
     #
@@ -113,7 +112,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2020-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
