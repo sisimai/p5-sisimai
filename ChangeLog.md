@@ -18,6 +18,8 @@ v5.?.?
   - #648 List all the Zoho domains.
   - #649 Bug fix: The value of command should be `RCPT` when `RCPT first` in the error message.
   - Update the order of `$ClassOrder` in `Sisimai::Reason`.
+  - #653 Code improvement for detecting bounce messages returned from Google Groups.
+  - #656 Fix and update comments in `Sisimai::SMTP::Status`.
 
 v5.6.0
 ---------------------------------------------------------------------------------------------------
