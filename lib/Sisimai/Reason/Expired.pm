@@ -43,6 +43,7 @@ sub match {
         ["could not deliver for the last", "second"],
         ["delivery ", "expired"],
         ["delivery ", "delayed"],
+        ["exceed", "time", "out"],
         ["not", "reach", "period"], # Exim/smtp.c:3508
     ];
 
