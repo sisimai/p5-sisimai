@@ -24,7 +24,6 @@ sub DELIVERYSTATUS {
         'diagnosis'    => '',   # The value of Diagnostic-Code header
         'recipient'    => '',   # The value of Final-Recipient header
         'feedbacktype' => '',   # Feedback Type
-        'toxic'        => 0,    # EXPERIMENTAL
     };
 }
 sub description { return '' }
@@ -87,7 +86,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2021,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2017-2021,2025-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
