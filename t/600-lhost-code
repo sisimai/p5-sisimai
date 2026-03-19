@@ -515,6 +515,14 @@ my $moduletest = sub {
                     is $cv, 0,      sprintf("%s 0", $ct);
                 }
 
+                BOGUS: {
+                    $cv = $rr->bogus;
+                    $ct = sprintf("[%s-%02d] ->bogus =", $e, $errorindex);
+
+                    ok defined $cv, sprintf("%s %d", $ct, $cv);
+                    is $cv, 0,      sprintf("%s 0", $ct);
+                }
+
                 DAMN: {
                     $cv = $rr->damn;
                     $ct = sprintf("[%s-%02d] ->damn =", $e, $errorindex);
