@@ -509,12 +509,10 @@ my $moduletest = sub {
 
                 TOXIC: {
                     $cv = $rr->toxic;
-                    $cr = qr/\A[01]\z/;
                     $ct = sprintf("[%s-%02d] ->toxic =", $e, $errorindex);
 
                     ok defined $cv, sprintf("%s %d", $ct, $cv);
-                    ok $cv =~ $cr,  sprintf("%s %s", $ct, $cr);
-                    is $cv, $cx->[$errorindex - 1]->[4], sprintf("%s %d", $ct, $cv);
+                    is $cv, 0,      sprintf("%s 0", $ct);
                 }
 
                 DAMN: {

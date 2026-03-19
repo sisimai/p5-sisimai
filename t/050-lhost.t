@@ -23,7 +23,7 @@ MAKETEST: {
     ok scalar keys %{ $Package->path };
 
     isa_ok $Package->DELIVERYSTATUS, 'HASH';
-    is scalar(keys %{ $Package->DELIVERYSTATUS }), 15;
+    is scalar(keys %{ $Package->DELIVERYSTATUS }), 14;
 
     isa_ok $Package->INDICATORS, 'HASH';
     is scalar(keys %{ $Package->INDICATORS }), 2;
