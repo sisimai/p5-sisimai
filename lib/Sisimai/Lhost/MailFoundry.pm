@@ -67,11 +67,6 @@ sub inquire {
         }
     }
     return undef unless $recipients;
-
-    for my $e ( @$dscontents ) {
-        # Set default values if each value is empty.
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-    }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
@@ -112,7 +107,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
