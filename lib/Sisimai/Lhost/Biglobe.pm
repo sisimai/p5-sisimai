@@ -75,10 +75,6 @@ sub inquire {
         }
     }
     return undef unless $recipients;
-
-    for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-    }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
