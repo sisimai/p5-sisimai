@@ -72,9 +72,6 @@ sub inquire {
 
     $dscontents->[0]->{'diagnosis'} = $entiremesg;
     for my $e ( @$dscontents ) {
-        # Tidy up the error message in e.Diagnosis, Try to detect the bounce reason.
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
         for my $r ( keys %$messagesof ) {
             # Guess an reason of the bounce
             next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
