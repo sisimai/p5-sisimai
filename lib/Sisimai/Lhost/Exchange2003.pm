@@ -184,7 +184,6 @@ sub inquire {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         delete $e->{'msexch'};
 
         if( index($e->{'diagnosis'}, 'MSEXCH:') == 0 ) {
@@ -207,7 +206,6 @@ sub inquire {
         next unless exists $e->{'alterrors'} && length $e->{'alterrors'};
 
         $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         delete $e->{'alterrors'};
     }
 
@@ -259,7 +257,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
