@@ -167,7 +167,6 @@ sub inquire {
     my $j = 0; for my $e ( @$dscontents ) {
         # Tidy up the error message in e.Diagnosis
         $e->{"diagnosis"} ||= $anotherone->{ $j };
-        $e->{'diagnosis'}   = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{"command"}   ||= Sisimai::SMTP::Command->find($e->{"diagnosis"});
         $e->{'replycode'}   = Sisimai::SMTP::Reply->find($e->{'diagnosis'}) || $anotherone->{'replycode'};
 
@@ -218,7 +217,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
