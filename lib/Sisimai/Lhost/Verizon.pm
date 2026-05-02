@@ -125,7 +125,7 @@ sub inquire {
             } else {
                 # Message could not be delivered to mobile.
                 # Error: No valid recipients for this MM
-                $v->{'diagnosis'} = Sisimai::String->sweep(substr($e, 7,)) if index($e, 'Error: ') == 0;
+                $v->{'diagnosis'} = substr($e, 7,) if index($e, 'Error: ') == 0;
             }
         }
     }
@@ -136,8 +136,6 @@ sub inquire {
     $emailparts->[1] .= sprintf("Subject: %s\n", $subjecttxt) if index($emailparts->[1], "\nSubject: ") < 0;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
         SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
             next unless grep { index($e->{'diagnosis'}, $_) > -1 } $messagesof->{ $r }->@*;
