@@ -139,7 +139,7 @@ sub inquire {
                 my $cm = length $r;
                 my $p2 = index($e, ' ', $p1 + $cm + 1); $p2 = rindex($e, '.') if $p2 == -1;
 
-                $v->{'rhost'} = Sisimai::String->sweep(substr($e, $p1 + $cm, $p2 - $p1 - $cm));
+                $v->{'rhost'} = substr($e, $p1 + $cm, $p2 - $p1 - $cm);
                 last;
             }
         }
@@ -147,9 +147,6 @@ sub inquire {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        # Tidy up the error message in $e->{'diagnosis'}, Try to detect the bounce reason.
-        $e->{"diagnosis"} = Sisimai::String->sweep($e->{"diagnosis"});
-
         # Get the SMTP command name for the session
         SMTP: for my $r ( keys %$commandset ) {
             # Get the last SMTP Command
