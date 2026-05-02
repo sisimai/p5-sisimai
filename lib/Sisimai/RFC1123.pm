@@ -137,7 +137,7 @@ sub find {
     s/\[/ [/g, s/\(/ (/g, s/</ </g for $sourcetext; # Prefix a space character before each bracket
     s/\]/] /g, s/\)/) /g, s/</> /g for $sourcetext; # Suffix a space character behind each bracket
     s/:/: /g, s/;/; /g             for $sourcetext; # Suffix a space character behind : and ;
-    $sourcetext =  Sisimai::String->sweep($sourcetext);
+    $sourcetext = Sisimai::String->sweep($sourcetext);
 
     MAKELIST: while(1) {
         for my $e ( @$Sandwiched ) {
@@ -237,7 +237,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
