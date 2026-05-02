@@ -113,15 +113,13 @@ sub inquire {
                     $p2 = index($e, ':');
 
                     my $cf = substr($e, $p1 + 1, $p2 - $p1 - 1);
-                    my $cv = Sisimai::String->sweep(substr($e, $p2 + 1,));
+                    my $cv = substr($e, $p2 + 1,);
                     $emailparts->[1] .= sprintf("%s: %s\n", $cf, $cv);
                 }
             }
         }
     }
     return undef unless $recipients;
-
-    $_->{'diagnosis'} = Sisimai::String->sweep($_->{'diagnosis'}) for @$dscontents;
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
@@ -164,7 +162,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
