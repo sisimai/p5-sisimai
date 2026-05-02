@@ -191,7 +191,7 @@ sub inquire {
             # X-Apple-Unsubscribe: true
             last if $mhead->{"x-apple-unsubscribe"} ne "true" || index($mhead->{"from"}, "@") < 1;
             $dscontents->[0]->{"recipient"}    = $mhead->{"from"};
-            $dscontents->[0]->{"diagnosis"}    = Sisimai::String->sweep($emailparts->[0]);
+            $dscontents->[0]->{"diagnosis"}    = $emailparts->[0];
             $dscontents->[0]->{"feedbacktype"} = "opt-out";
 
             # Addpend To: field as a pseudo header
@@ -212,7 +212,7 @@ sub inquire {
     }
     return undef if $recipients == 0;
 
-    $anotherone = ": ".Sisimai::String->sweep($anotherone) if $anotherone ne "";
+    $anotherone = ": ".$anotherone if $anotherone ne "";
     substr($anotherone, -1, 1, "") if substr($anotherone, -1, 1) eq ",";
 
     my $j = -1; for my $e ( @$dscontents ) {
@@ -276,7 +276,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
