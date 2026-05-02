@@ -218,7 +218,7 @@ sub inquire {
                 # Diagnostic-Code: SMTP; 550-5.7.26 The MAIL FROM domain [email.example.jp]
                 #    has an SPF record with a hard fail
                 next unless index($e, " ") == 0;
-                $v->{'diagnosis'} .= " ".Sisimai::String->sweep($e);
+                $v->{'diagnosis'} .= " ".$e;
             }
         }
     } continue {
@@ -251,7 +251,6 @@ sub inquire {
     for my $e ( @$dscontents ) {
         # Set default values stored in "permessage" if each value in "dscontents" is empty.
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         my $lowercased = lc $e->{'diagnosis'};
 
         if( $recipients == 1 ) {
@@ -264,7 +263,7 @@ sub inquire {
             } else {
                 # The value of $e->{'diagnosis'} is not contained in $beforemesg
                 # There may be an important error message in $beforemesg
-                $e->{'diagnosis'} = Sisimai::String->sweep(sprintf("%s %s", $beforemesg, $e->{'diagnosis'}))
+                $e->{'diagnosis'} = sprintf("%s %s", $beforemesg, $e->{'diagnosis'});
             }
         }
         $e->{'command'}   = Sisimai::SMTP::Command->find($e->{'diagnosis'})                   || $alternates->{'command'};
@@ -315,7 +314,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
