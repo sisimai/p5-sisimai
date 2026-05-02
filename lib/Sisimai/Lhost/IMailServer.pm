@@ -68,11 +68,9 @@ sub inquire {
         if( exists $e->{'alterrors'} && $e->{'alterrors'} ) {
             # Copy alternative error message
             $e->{'diagnosis'} = $e->{'alterrors'}.' '.$e->{'diagnosis'};
-            $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
             delete $e->{'alterrors'};
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'command'}   = Sisimai::SMTP::Command->find($e->{'diagnosis'});
+        $e->{'command'} = Sisimai::SMTP::Command->find($e->{'diagnosis'});
 
         SESSION: for my $r ( keys %$messagesof ) {
             # Verify each regular expression of session errors
