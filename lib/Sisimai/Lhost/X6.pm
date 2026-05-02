@@ -86,7 +86,6 @@ sub inquire {
             # ...(Error following RCPT command).
             $e->{'command'} = $cv;
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
@@ -128,7 +127,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2020,2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2020,2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

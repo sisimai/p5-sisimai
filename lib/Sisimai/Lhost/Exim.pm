@@ -212,7 +212,7 @@ sub inquire {
                     # parser.c:749|   goto PARSE_FAILED;
                     # parser.c:750|   }
                     $cv = Sisimai::Address->s3s4(substr($e, $p1, $p2 - $p1 - 1));
-                    $v->{'diagnosis'} = Sisimai::String->sweep(substr($e, $p2 + 1,));
+                    $v->{'diagnosis'} = substr($e, $p2 + 1,);
 
                 } else {
                     # There is an email address only in the line
@@ -358,7 +358,7 @@ sub inquire {
             }
             delete $e->{'alterrors'};
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'}); $p1 = index($e->{'diagnosis'}, '__');
+        $p1 = index($e->{'diagnosis'}, '__');
         $e->{'diagnosis'} = substr($e->{'diagnosis'}, 0, $p1) if $p1 > 1;
 
         unless( $e->{'rhost'} ) {

@@ -153,9 +153,6 @@ sub inquire {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        # Tidy up the error message in $e->{'diagnosis'}, Try to detect the bounce reason.
-        $e->{"diagnosis"} = Sisimai::String->sweep($e->{"diagnosis"});
-
         my $p0 = -1; for my $r ( $startingof->{"error"}->@* ) {
             # Try to find the NDR subject string such as "RESOLVER.ADR.RecipientNotFound" from the
             # error message

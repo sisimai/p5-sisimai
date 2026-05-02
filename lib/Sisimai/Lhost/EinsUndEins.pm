@@ -94,7 +94,7 @@ sub inquire {
             my $p1 = index($e->{'diagnosis'}, 'host: ');
             my $p2 = index($e->{'diagnosis'}, ' reason:');
 
-            $e->{'rhost'}   = Sisimai::String->sweep(substr($e->{'diagnosis'}, $p1 + 6, $p2 - $p1 - 6));
+            $e->{'rhost'}   = substr($e->{'diagnosis'}, $p1 + 6, $p2 - $p1 - 6);
             $e->{'command'} = 'DATA' if index($e->{'diagnosis'}, 'for TEXT command') > -1;
             $e->{'spec'}    = 'SMTP' if index($e->{'diagnosis'}, 'SMTP error')       > -1;
             $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
@@ -102,7 +102,6 @@ sub inquire {
             # For the following reason:
             substr($e->{'diagnosis'}, 0, length $startingof->{'error'}->[0], '');
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }

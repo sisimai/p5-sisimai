@@ -111,7 +111,6 @@ sub inquire {
     }
     return undef unless exists $jsonobject->{'notificationType'};
 
-    require Sisimai::String;
     require Sisimai::RFC1123;
     require Sisimai::SMTP::Reply;
     require Sisimai::SMTP::Status;
@@ -135,7 +134,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             $v->{"recipient"} = $e->{"emailAddress"};
-            $v->{"diagnosis"} = Sisimai::String->sweep($e->{"diagnosticCode"});
+            $v->{"diagnosis"} = $e->{"diagnosticCode"};
             $v->{"command"}   = Sisimai::SMTP::Command->find($v->{"diagnosis"});
             $v->{"action"}    = $e->{"action"};
             $v->{"status"}    = Sisimai::SMTP::Status->find($v->{"diagnosis"}, $r);
@@ -243,7 +242,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

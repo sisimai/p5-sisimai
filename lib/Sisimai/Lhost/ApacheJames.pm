@@ -102,7 +102,6 @@ sub inquire {
         # Set the envelope from address as a Return-Path: header
         $emailparts->[1] .= sprintf("Subject: %s\n", $alternates->[3]) if $alternates->[3] ne "";
     }
-    $_->{"diagnosis"} = Sisimai::String->sweep($_->{"diagnosis"}) for @$dscontents;
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
@@ -143,7 +142,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

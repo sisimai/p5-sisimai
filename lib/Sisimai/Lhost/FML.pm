@@ -70,8 +70,6 @@ sub inquire {
     return undef unless $recipients;
 
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-
         # Error messages in the message body did not matched
         for my $f ( keys %$errortitle ) {
             # Try to match with the Subject string

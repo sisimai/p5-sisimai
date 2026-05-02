@@ -164,7 +164,7 @@ sub field {
 
         } else {
             # There is no sub type like "Diagnostic-Code: 550 5.1.1 <kijitora@example.jp>..."
-            $table->[2] = Sisimai::String->sweep($parts->[1]);
+            $table->[2] = $parts->[1];
             $table->[1] = $subtypeset->{ $group } || "";
         }
         $table->[2] = lc $table->[2] if $group eq "host";
@@ -259,7 +259,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

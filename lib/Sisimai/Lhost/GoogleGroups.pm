@@ -48,7 +48,7 @@ sub inquire {
     my $recordwide = {
         'rhost'     => Sisimai::RFC5322->received($receivedby->[0])->[1],
         'reason'    => 'onhold',
-        'diagnosis' => Sisimai::String->sweep($issuedcode),
+        'diagnosis' => $issuedcode,
     };
 
     # * You might have spelled or formatted the group name incorrectly.

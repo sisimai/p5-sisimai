@@ -124,9 +124,7 @@ sub inquire {
         }
         $v->{'diagnosis'} ||= $mhead->{'subject'};
     }
-
-    $v->{'diagnosis'} = Sisimai::String->sweep($v->{'diagnosis'});
-    $v->{'reason'}    = 'vacation';
+    $v->{'reason'} = 'vacation';
 
     my $cv = lc $v->{'diagnosis'}; for my $e ( @$suspending ) {
         # Check that the auto-replied message indicates the "Suspend" reason or not.
@@ -178,7 +176,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

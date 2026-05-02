@@ -129,7 +129,7 @@ sub inquire {
                 # Continued line of the value of Diagnostic-Code field
                 next unless index($p, 'Diagnostic-Code:') == 0;
                 next unless index($e, ' ') == 0;
-                $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
+                $v->{'diagnosis'} .= ' '.$e;
             }
         }
     } continue {
@@ -191,7 +191,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
