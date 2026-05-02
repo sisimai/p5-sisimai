@@ -156,7 +156,7 @@ sub inquire {
             } else {
                 # Continued line of the value of Diagnostic-Code field
                 next if index($p, 'Diagnostic-Code:') != 0 || index($e, ' ') != 0;
-                $v->{'diagnosis'} .= ' '.Sisimai::String->sweep($e);
+                $v->{'diagnosis'} .= ' '.$e;
             }
         }
     } continue {
@@ -183,7 +183,6 @@ sub inquire {
             $e->{'diagnosis'} = sprintf("%s %s", join(' ', @$esmtpreply), $e->{'diagnosis'});
             last;
         }
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'} ||= $thecommand || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
         $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
 
@@ -242,7 +241,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
