@@ -200,7 +200,6 @@ sub inquire {
     require Sisimai::String;
     require Sisimai::RFC1123;
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         # Get the value of remote host
         if( Sisimai::String->aligned(\$e->{'diagnosis'}, [' by ', '. [', ']. ']) ) {
             # Google tried to deliver your message, but it was rejected by the server for the recipient
