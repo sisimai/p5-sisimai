@@ -78,7 +78,7 @@ sub rise {
                     my $p4 = index($commandarg, '<');
                     my $p5 = index($commandarg, '>');
                     $cx->{'argument'} = substr($commandarg, $p4 + 1, $p5 - $p4 - 1);
-                    $parameters = Sisimai::String->sweep(substr($commandarg, $p5 + 1,));
+                    $parameters = substr($commandarg, $p5 + 1,);
 
                 } else {
                     # >>> XFORWARD NAME=neko2-nyaan3.y.example.co.jp ADDR=230.0.113.2 PORT=53672
@@ -138,7 +138,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
