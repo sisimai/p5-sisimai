@@ -68,8 +68,7 @@ sub inquire {
 
     require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'command'}   = Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
+        $e->{'command'} = Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
 
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by KDDI)
