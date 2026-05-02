@@ -70,10 +70,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
-    for my $e ( @$dscontents ) {
-        $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
-        $e->{'date'}      = $datestring || '';
-    }
+    $_->{'date'} = $datestring || '' for @$dscontents;
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
@@ -114,7 +111,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
