@@ -84,8 +84,6 @@ sub inquire {
         }
     }
     return undef unless $recipients;
-
-    $_->{'status'} = Sisimai::SMTP::Status->find($_->{'diagnosis'}) || '' for @$dscontents;
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
 
