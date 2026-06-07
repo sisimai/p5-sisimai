@@ -152,6 +152,7 @@ sub haircut {
 
     my($upperchunk, $lowerchunk) = split("\n\n", $$block, 2);
     return ['', ''] unless $upperchunk;
+    return ['', ''] unless $lowerchunk;
     return ['', ''] unless index($upperchunk, 'Content-Type:') > -1;
 
     my $headerpart = ['', ''];  # ["text/plain; charset=iso-2022-jp; ...", "quoted-printable"]
