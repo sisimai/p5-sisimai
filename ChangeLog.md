@@ -21,6 +21,9 @@ v5.?.?
   - #653 Code improvement for detecting bounce messages returned from Google Groups.
   - #656 Fix and update comments in `Sisimai::SMTP::Status`.
   - #661 Remove useless code blocks.
+  - #664 Check `$lowerchunk` to avoid an infinite loop in `Sisimai::RFC2045`. Thanks to @c-schmitz.
+    - Add `set-of-emails/should-not-crash/p5-664-iomart-mail-filter.eml` for testing.
+    - Test cases for the email above.
 
 v5.6.0
 ---------------------------------------------------------------------------------------------------
