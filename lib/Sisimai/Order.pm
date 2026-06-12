@@ -45,7 +45,9 @@ sub make {
             'Sisimai::Lhost::GMX',
             'Sisimai::Lhost::Zoho',
             'Sisimai::Lhost::EinsUndEins',
+            'Sisimai::Lhost::DeutscheTelekom',
         ],
+        'mail-failed'       => ['Sisimai::Lhost::DeutscheTelekom'],
         'mail-failure'      => ['Sisimai::Lhost::Exim'],
         'mail-system'       => ['Sisimai::Lhost::EZweb'],
         'message-delivery'  => ['Sisimai::Lhost::MailFoundry'],
@@ -93,11 +95,12 @@ sub another {
         'Sisimai::Lhost::Sendmail',
         'Sisimai::Lhost::Exchange2007',
         'Sisimai::Lhost::Exchange2003',
+        'Sisimai::Lhost::AmazonSES',
         'Sisimai::Lhost::TrendMicro',
+        'Sisimai::Lhost::DeutscheTelekom',
         'Sisimai::Lhost::KDDI',
         'Sisimai::Lhost::FML',
         'Sisimai::Lhost::Verizon',
-        'Sisimai::Lhost::AmazonSES',
         'Sisimai::Lhost::ApacheJames',
         'Sisimai::Lhost::X2',
     ];
@@ -167,7 +170,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2015-2017,2019-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2015-2017,2019-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
