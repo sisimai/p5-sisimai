@@ -5,7 +5,7 @@ use warnings;
 use Sisimai::RFC5322;
 
 use constant INDICATORS => { 'deliverystatus' => (1 << 1), 'message-rfc822' => (1 << 2) };
-state $BannerDTAG = [
+use constant BannerDTAG => [
     # smail-3.2.0.108/src/
     #   notify.c:61|static char *log_banner = "\
     #   notify.c:62||------------------------- Message log follows: -------------------------|\n";
