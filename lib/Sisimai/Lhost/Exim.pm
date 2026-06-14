@@ -15,6 +15,7 @@ sub inquire {
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
+    return undef if grep { index($$mbody, $_) > 0 } __PACKAGE__->BannerDTAG->@*;
 
     # Message-Id: <E1P1YNN-0003AD-Ga@example.org>
     # X-Failed-Recipients: kijitora@example.ed.jp

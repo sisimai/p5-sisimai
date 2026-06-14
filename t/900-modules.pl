@@ -14,6 +14,7 @@ sub list {
             Lhost/ApacheJames.pm
             Lhost/Biglobe.pm
             Lhost/Courier.pm
+            Lhost/DeutscheTelekom.pm
             Lhost/Domino.pm
             Lhost/DragonFly.pm
             Lhost/EinsUndEins.pm

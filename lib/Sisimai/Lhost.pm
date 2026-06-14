@@ -5,6 +5,20 @@ use warnings;
 use Sisimai::RFC5322;
 
 use constant INDICATORS => { 'deliverystatus' => (1 << 1), 'message-rfc822' => (1 << 2) };
+use constant BannerDTAG => [
+    # smail-3.2.0.108/src/
+    #   notify.c:61|static char *log_banner = "\
+    #   notify.c:62||------------------------- Message log follows: -------------------------|\n";
+    #   notify.c:63|static char *addr_error_banner = "\
+    #   notify.c:64||------------------------- Failed addresses follow: ---------------------|\n";
+    #   notify.c:65|static char *text_banner = "\
+    #   notify.c:66||------------------------- Message text follows: ------------------------|\n";
+    "|------------------------- Message log follows: -------------------------|", # 0. Smail 3
+    "|------------------------- Failed addresses follow: ---------------------|", # 1. Smail 3
+    "|------------------------- Message text follows: ------------------------|", # 2. Smail 3
+    "|------------------------- Message header follows: ----------------------|", # 3. Deutsche Telekom
+#   "|----------- Message text follows: (body too large, truncated) ----------|", # 4. Deutsche Telekom
+];
 sub DELIVERYSTATUS {
     # Data structure for decoded bounce messages
     # @private
@@ -31,10 +45,10 @@ sub index {
     # Alphabetical sorted MTA module list
     # @return   [Array] MTA list with order
     return [qw|
-        Activehunter AmazonSES ApacheJames Biglobe Courier Domino DragonFly EZweb EinsUndEins Exchange2003
-        Exchange2007 Exim FML GMX GoogleGroups GoogleWorkspace Gmail IMailServer KDDI MailFoundry Mimecast
-        MailMarshal MessagingServer Notes OpenSMTPD Postfix Sendmail TrendMicro V5sendmail Verizon
-        X1 X2 X3 X6 Zoho mFILTER qmail
+        Activehunter AmazonSES ApacheJames Biglobe Courier Domino DeutscheTelekom DragonFly EZweb
+        EinsUndEins Exchange2003 Exchange2007 Exim FML GMX GoogleGroups GoogleWorkspace Gmail
+        IMailServer KDDI MailFoundry Mimecast MailMarshal MessagingServer Notes OpenSMTPD Postfix
+        Sendmail TrendMicro V5sendmail Verizon X1 X2 X3 X6 Zoho mFILTER qmail
     |];
 }
 
