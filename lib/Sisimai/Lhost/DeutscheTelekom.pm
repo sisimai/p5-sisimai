@@ -11,7 +11,7 @@ sub inquire {
     # @param    [String] mbody  Message body of a bounce email
     # @return   [Hash]          Bounce data list and message/rfc822 part
     # @return   [undef]         failed to decode or the arguments are missing
-    # @since v5.6.1
+    # @since v5.7.0
     my $class = shift;
     my $mhead = shift // return undef;
     my $mbody = shift // return undef;
