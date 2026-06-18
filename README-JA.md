@@ -435,7 +435,7 @@ Bug report
 Emails could not be decoded
 ---------------------------------------------------------------------------------------------------
 Sisimaiで解析できないバウンスメールは
-[set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet](https://github.com/sisimai/set-of-emails/tree/master/to-be-debugged-because/sisimai-cannot-parse-yet)リポジトリに追加してPull-Requestを送ってください。
+[set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet](https://github.com/sisimai/p5-sisimai/tree/5-stable/set-of-emails/to-be-debugged-because/sisimai-cannot-parse-yet)に追加してプルリクエストを送ってください。
 
 
 Other Information
