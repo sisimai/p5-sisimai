@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
-[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/5-stable/LICENSE)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.42-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.6.0-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.7.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
@@ -63,14 +63,15 @@ Sisimai(シシマイ)は複雑で多種多様なバウンスメールを解析�
 The key features of Sisimai
 ---------------------------------------------------------------------------------------------------
 * __バウンスメールを構造化したデータに変換__
-  * 以下27項目の情報を含むデータ構造[^2]
+  * 以下28項目の情報を含むデータ構造[^2]
     * __基本的情報__: `timestamp`, `origin`
     * __発信者情報__: `addresser`, `senderdomain`, 
     * __受信者情報__: `recipient`, `destination`, `alias`
     * __配信の情報__: `action`, `replycode`, `deliverystatus`, `command`
     * __エラー情報__: `reason`, `diagnosticcode`, `diagnostictype`, `feedbacktype`, `feedbackid`, `hardbounce`
     * __メール情報__: `subject`, `messageid`, `listid`,
-    * __その他情報__: `decodedby`, `timezoneoffset`, `lhost`, `rhost`, `token`, `catch`
+    * __評価用項目__: `toxic`, `bogus`, `catch`
+    * __その他情報__: `decodedby`, `timezoneoffset`, `lhost`, `rhost`, `token`
   * __出力可能な形式__
     * Perl (Hash, Array)
     * JSON ([`JSON`](https://metacpan.org/pod/JSON)モジュールを使用)
@@ -80,7 +81,7 @@ The key features of Sisimai
   * `cpan`, `cpanm`, `cpm install`
   * `git clone & make`
 * __高い解析精度__
-  * [60種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
+  * [61種類のMTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)に対応
   * Feedback Loop(ARF)にも対応
   * [34種類のバウンス理由](https://libsisimai.org/en/reason/)を検出
 
@@ -109,7 +110,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.6.0.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.7.0.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -136,14 +137,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.6.0 ... OK
-Building and testing Sisimai-v5.6.0 ... Password: <sudo password here>
+Configuring Sisimai-v5.7.0 ... OK
+Building and testing Sisimai-v5.7.0 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.6.0
+Successfully installed Sisimai-v5.7.0
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.6.0
+5.7.0
 ```
 
 Usage
@@ -332,7 +333,8 @@ Output example
     "timezoneoffset": "+0900",
     "replycode": 550,
     "token": "84656774898baa90660be3e12fe0526e108d4473",
-    "toxic": 0,
+    "toxic": -1,
+    "bogus": -1,
     "diagnostictype": "SMTP",
     "timestamp": 1650119685,
     "diagnosticcode": "host gmail-smtp-in.l.google.com[64.233.187.27] said: This mail has been blocked because the sender is unauthenticated. Gmail requires all senders to authenticate with either SPF or DKIM. Authentication results: DKIM = did not pass SPF [relay3.example.com] with ip: [192.0.2.22] = did not pass For instructions on setting up authentication, go to https://support.google.com/mail/answer/81126#authentication c2-202200202020202020222222cat.127 - gsmtp (in reply to end of DATA command)",
@@ -356,11 +358,11 @@ Sisimai 5.0.0から**Perl 5.26.0以上**が必要になります。
 |------------------------------------------------------|--------------------|---------------------|
 | 動作環境(Perl)                                       | 5.10 -             | **5.26** -          |
 | 元メールファイルを操作可能なコールバック機能         | なし               | あり[^3]            |
-| 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 60                  |
+| 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 61                  |
 | 検出可能なバウンス理由の数                           | 29                 | 34                  |
 | 依存もジュール数(Perlのコアモジュールを除く)         | 2 モジュール       | 2 モジュール        |
-| ソースコードの行数                                   | 10,800 行          | 9,750 行            |
-| テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 340,000 件          |
+| ソースコードの行数                                   | 10,800 行          | 9,550 行            |
+| テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 346,000 件          |
 | 1秒間に解析できるバウンスメール数[^4]                | 750 通             | 750 通              |
 | ライセンス                                           | 2条項BSD           | 2条項BSD            |
 | 開発会社による商用サポート                           | 提供中             | 提供中              |
@@ -403,6 +405,7 @@ Sisimai 5で3個のESPモジュール名(解析エンジン)が変更になり�
 | Zoho (added at v5.5.0)                          | なし                    | `Rhost::Zoho`       |
 | DragonFly Mail Agent (added at v5.1.0)          | なし                    | `Lhost::DragonFly`  |
 | Mimecast (added at v5.5.0)                      | なし                    | `Lhost::Mimecast`   |
+| DeutscheTelekom (added at v5.7.0)               | なし               | `Lhost::DeutscheTelekom` |
 
 Bounce Reasons
 ---------------------------------------------------------------------------------------------------
@@ -454,7 +457,7 @@ Related sites
 
 See also
 ---------------------------------------------------------------------------------------------------
-* [README.md - README.md in English(🇬🇧)](https://github.com/sisimai/p5-sisimai/blob/master/README.md)
+* [README.md - README.md in English(🇬🇧)](https://github.com/sisimai/p5-sisimai/blob/5-stable/README.md)
 * [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
 * [RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
 * [RFC3834 - Recommendations for Automatic Responses to Electronic Mail](https://tools.ietf.org/html/rfc3834)
