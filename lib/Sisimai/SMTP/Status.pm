@@ -921,14 +921,14 @@ C<prefer()> method returns the preferred value selected from the arguments.
     print Sisimai::SMTP::Status->prefer("5.2.1", "5.0.0");      # "5.2.1"
     print Sisimai::SMTP::Status->prefer("4.4.7", "5.1.1", 421); # "4.4.7"
 
-=head2 C<B<is_explicit(I<delivery status code>)
+=head2 C<B<is_explicit(I<delivery status code>)>>
 
 C<is_explicit()> method returns 0 if the delivery status code is empty or is an internal code
 
     print Sisimai::SMTP::Status->is_explicit("5.9.301"); # 0
     print Sisimai::SMTP::Status->is_explicit("5.7.625"); # 1
 
-=head2 C<B<is_ambiguous(I<delivery status code>)
+=head2 C<B<is_ambiguous(I<delivery status code>)>>
 
 C<is_ambiguous()> method returns 1 if the delivery status code is not empty and ends with ".0.0".
 
