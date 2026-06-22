@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
-[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/5-stable/LICENSE)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.42-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.6.0-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.7.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
@@ -67,14 +67,15 @@ email address, in structured data. It is also possible to output in JSON format.
 The key features of Sisimai
 ---------------------------------------------------------------------------------------------------
 * __Decode email bounces to structured data__
-  * Sisimai provides detailed insights into bounce emails by extracting 27 key data points.[^2]
+  * Sisimai provides detailed insights into bounce emails by extracting 28 key data points.[^2]
     * __Essential information__: `timestamp`, `origin`
     * __Sender information__: `addresser`, `senderdomain`, 
     * __Recipient information__: `recipient`, `destination`, `alias`
     * __Delivery information__: `action`, `replycode`, `deliverystatus`, `command`
     * __Bounce details__: `reason`, `diagnosticcode`, `diagnostictype`, `feedbacktype`, `feedbackid`, `hardbounce`
     * __Message details__: `subject`, `messageid`, `listid`,
-    * __Additional information__: `decodedby`, `timezoneoffset`, `lhost`, `rhost`, `token`, `catch`, `toxic`
+    * __Evaluation metrics (User-calculated)__: `toxic`, `bogus`, `catch`
+    * __Additional information__: `decodedby`, `timezoneoffset`, `lhost`, `rhost`, `token`
   * Output formats
     * Perl (Hash, Array)
     * JSON (by using [`JSON`](https://metacpan.org/pod/JSON) module)
@@ -84,7 +85,7 @@ The key features of Sisimai
   * `cpan`, `cpanm`, or `cpm`
   * `git clone & make`
 * __High Precision of Analysis__
-  * Support [60 MTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)
+  * Support [61 MTAs/MDAs/ESPs](https://libsisimai.org/en/engine/)
   * Support Feedback Loop Message(ARF)
   * Can detect [34 bounce reasons](https://libsisimai.org/en/reason/)
 
@@ -113,7 +114,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.6.0.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.7.0.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -140,14 +141,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.6.0 ... OK
-Building and testing Sisimai-v5.6.0 ... Password: <sudo password here>
+Configuring Sisimai-v5.7.0 ... OK
+Building and testing Sisimai-v5.7.0 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.6.0
+Successfully installed Sisimai-v5.7.0
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.6.0
+5.7.0
 ```
 
 Usage
@@ -339,7 +340,8 @@ Output example
     "timezoneoffset": "+0900",
     "replycode": 550,
     "token": "84656774898baa90660be3e12fe0526e108d4473",
-    "toxic": 0,
+    "bogus": -1,
+    "toxic": -1,
     "diagnostictype": "SMTP",
     "timestamp": 1650119685,
     "diagnosticcode": "host gmail-smtp-in.l.google.com[64.233.187.27] said: This mail has been blocked because the sender is unauthenticated. Gmail requires all senders to authenticate with either SPF or DKIM. Authentication results: DKIM = did not pass SPF [relay3.example.com] with ip: [192.0.2.22] = did not pass For instructions on setting up authentication, go to https://support.google.com/mail/answer/81126#authentication c2-202200202020202020222222cat.127 - gsmtp (in reply to end of DATA command)",
@@ -362,11 +364,11 @@ Beginning with v5.0.0, Sisimai requires **Perl 5.26.0 or later.**
 |------------------------------------------------------|--------------------|---------------------|
 | System requirements (Perl)                           | 5.10 -             | **5.26** -          |
 | Callback feature for the original email file         | N/A                | Available[^3]       |
-| The number of MTA/ESP modules                        | 68                 | 60                  |
+| The number of MTA/ESP modules                        | 68                 | 61                  |
 | The number of detectable bounce reasons              | 29                 | 34                  |
 | Dependencies (Except core modules of Perl)           | 2 modules          | 2 modules           |
-| Source lines of code                                 | 10,800 lines       | 9,750 lines         |
-| The number of tests in t/, xt/ directory             | 270,000 tests      | 340,000 tests       | 
+| Source lines of code                                 | 10,800 lines       | 9,550 lines         |
+| The number of tests in t/, xt/ directory             | 270,000 tests      | 346,000 tests       | 
 | The number of bounce emails decoded per second[^4]   | 750 emails         | 750 emails          |
 | License                                              | 2 Clause BSD       | 2 Caluse BSD        |
 | Commercial support                                   | Available          | Available           |
@@ -410,6 +412,7 @@ available at [LIBSISIMAI.ORG/EN/ENGINE](https://libsisimai.org/en/engine/)
 | Zoho (added at v5.5.0)                          | None                    | `Rhost::Zoho`       |
 | DragonFly Mail Agent (added at v5.1.0)          | None                    | `Lhost::DragonFly`  |
 | Mimecast (added at v5.5.0)                      | None                    | `Lhost::Mimecast`   |
+| DeutscheTelekom (added at v5.7.0)               | None               | `Lhost::DeutscheTelekom` |
 
 Bounce Reasons
 ---------------------------------------------------------------------------------------------------
@@ -461,7 +464,7 @@ Related sites
 
 See also
 ---------------------------------------------------------------------------------------------------
-* [README-JA.md - README.md in Japanese(🇯🇵)](https://github.com/sisimai/p5-sisimai/blob/master/README-JA.md)
+* [README-JA.md - README.md in Japanese(🇯🇵)](https://github.com/sisimai/p5-sisimai/blob/5-stable/README-JA.md)
 * [RFC3463 - Enhanced Mail System Status Codes](https://tools.ietf.org/html/rfc3463)
 * [RFC3464 - An Extensible Message Format for Delivery Status Notifications](https://tools.ietf.org/html/rfc3464)
 * [RFC3834 - Recommendations for Automatic Responses to Electronic Mail](https://tools.ietf.org/html/rfc3834)
