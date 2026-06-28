@@ -182,7 +182,7 @@ Reporting-MTA: dns; server-15.bemta-3.messagelabs.com
 Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
 
 ';
-        my $v1 = $Package->levelout($ct, \$mp);
+        my $v1 = $Package->levelout($ct, \$mp, 1);
         isa_ok $v1, 'ARRAY';
         is scalar @$v1, 2;
 
@@ -191,8 +191,8 @@ Arrival-Date: Tue, 23 Dec 2014 20:39:34 +0000
             ok length $e->[0];
             ok length $e->[2];
         }
-        isa_ok $Package->levelout('', 'neko'), 'ARRAY';
-        isa_ok $Package->levelout('neko', ''), 'ARRAY';
+        isa_ok $Package->levelout('', 'neko', 2), 'ARRAY';
+        isa_ok $Package->levelout('neko', '', 2), 'ARRAY';
     }
 
     MAKEFLAT: {
