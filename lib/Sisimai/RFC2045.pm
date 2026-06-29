@@ -214,15 +214,18 @@ sub levelout {
     # Split argv1: multipart/* blocks by a boundary string in argv0
     # @param    [String] argv0  The value of Content-Type header
     # @param    [String] argv1  A pointer to multipart/* message blocks
+    # @param    [Integer] depth Depth of MIME parts
     # @return   [Array]         List of each part of multipart/*
     # @since v5.0.0
     my $class = shift;
     my $argv0 = shift || return []; return [] unless length $argv0;
     my $argv1 = shift || return []; return [] unless length $$argv1;
+    my $depth = shift // 0;         return [] if $depth > 64;
 
     my $boundary01 = __PACKAGE__->boundary($argv0, 0) || return [];
     my $multiparts = [split(/\Q$boundary01\E\n/, $$argv1)];
     my $partstable = [];
+    my $partsdepth = $depth + 1;
 
     # Remove empty or useless preamble and epilogue of multipart/* block
     shift @$multiparts if length $multiparts->[0]  < 8;
@@ -238,7 +241,7 @@ sub levelout {
             my $bodyinside = [split(/\n\n/, $f->[-1], 2)]->[-1];
             next if length $bodyinside < 9 || index($bodyinside, $boundary02) < 0;
 
-            my $v = __PACKAGE__->levelout($f->[0], \$bodyinside);
+            my $v = __PACKAGE__->levelout($f->[0], \$bodyinside, $partsdepth);
             push @$partstable, @$v if scalar @$v;
 
         } else {
@@ -270,7 +273,7 @@ sub makeflat {
     return undef if index(lc $argv0, 'multipart/') < 0 || index(lc $argv0, 'boundary=') < 0;
 
     my $iso2022set = qr/charset=["']?(iso-2022-[-a-z0-9]+)['"]?\b/;
-    my $multiparts = __PACKAGE__->levelout($argv0, $argv1);
+    my $multiparts = __PACKAGE__->levelout($argv0, $argv1, 0);
     my $flattenout = '';
     my $delimiters = ["/delivery-status", "/rfc822", "/feedback-report", "/partial"];
 
@@ -431,7 +434,7 @@ C<boundary()> method returns the boundary string from the value of C<Content-Typ
 
 C<haircut()> method remove unused headers from the C<multipart/* >block.
 
-=head2 C<B<levelout(I<String>, I<\String>)>>
+=head2 C<B<levelout(I<String>, I<\String>), I<Integer)>>
 
 C<levelout> method breaks the C<multipart/*> message block into each part and returns an array reference.
 
