@@ -340,14 +340,14 @@ sub rise {
                 'token'        => __PACKAGE__->maketoken($as->address, $ar->address, $piece->{'timestamp'}),
             };
             $thing->{ $_ }           ||= $piece->{ $_ }    // '' for @ea;
-            $thing->{'bogus'}          = 0;
+            $thing->{'bogus'}          = -1;
             $thing->{'catch'}          = $piece->{'catch'} // undef;
             $thing->{"feedbackid"}     = "";
             $thing->{'hardbounce'}     = int $piece->{'hardbounce'};
             $thing->{'replycode'}    ||= Sisimai::SMTP::Reply->find($piece->{'diagnosticcode'}) || '';
             $thing->{'timestamp'}      = Sisimai::Time->new($piece->{'timestamp'});
             $thing->{'timezoneoffset'} = $piece->{'timezoneoffset'} // '+0000';
-            $thing->{'toxic'}          = 0;
+            $thing->{'toxic'}          = -1;
         }
 
         ALIAS: {
