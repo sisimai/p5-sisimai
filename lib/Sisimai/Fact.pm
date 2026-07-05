@@ -3,6 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 use Digest::SHA;
+use Sisimai::Eb;
 use Sisimai::Message;
 use Sisimai::RFC791;
 use Sisimai::RFC1123;
@@ -78,7 +79,7 @@ sub rise {
         # Create parameters
         next if length $e->{'recipient'} < 5;
         next if ! $argvs->{'delivered'} && index($e->{'status'}, '2.') == 0;
-        next if ! $argvs->{'vacation'}  && $e->{'reason'} eq 'vacation';
+        next if ! $argvs->{'vacation'}  && $e->{'reason'} eq $Sisimai::Eb::ReAWAY;
 
         my $thing = {}; # To be blessed and pushed into the array above at the end of the loop
         my $piece = {
@@ -307,8 +308,15 @@ sub rise {
 
         DIAGNOSTICTYPE: {
             # Set the value of "diagnostictype" if it is empty
-            $piece->{'diagnostictype'} ||= 'X-UNIX' if $piece->{'reason'} eq 'mailererror';
-            $piece->{'diagnostictype'} ||= 'SMTP' unless grep { $piece->{'reason'} eq $_ } ('feedback', 'vacation');
+            my $cv = $piece->{'reason'};
+            if( $cv eq $Sisimai::Eb::ReUNIX ) {
+                # MailerError
+                $piece->{'diagnostictype'} ||= 'X-UNIX';
+
+            } elsif( $cv ne $Sisimai::Eb::ReFEED && $cv ne $Sisimai::Eb::ReAWAY ) {
+                # Feeback or Vacation
+                $piece->{'diagnostictype'} ||= 'SMTP';
+            }
         }
 
         # Check the Subject field of the original message
@@ -376,27 +384,28 @@ sub rise {
             # Decide the reason of the email bounce
             if( $thing->{'reason'} eq '' || exists $retryindex->{ $thing->{'reason'} } ) {
                 # The value of "reason" is empty or is needed to check with other values again
-                my $re = $thing->{'reason'} || 'undefined';
+                my $re = $thing->{'reason'} || $Sisimai::Eb::Re___0;
                 my $cr = "Sisimai::Reason";
                 my $or = Sisimai::LDA->find($thing);    if( $cr->is_explicit($or) ){ $thing->{'reason'} = $or; last }
                    $or = Sisimai::Rhost->find($thing);  if( $cr->is_explicit($or) ){ $thing->{'reason'} = $or; last }
                    $or = Sisimai::Reason->find($thing); if( $cr->is_explicit($or) ){ $thing->{'reason'} = $or; last }
-                $thing->{'reason'} = $thing->{'diagnosticcode'} ? "onhold" : $re;
+                $thing->{'reason'} = $thing->{'diagnosticcode'} ? $Sisimai::Eb::Re___1 : $re;
             }
         }
 
         HARDBOUNCE: {
             # Set the value of "hardbounce", default value of "bouncebounce" is 0
-            if( $thing->{'reason'} eq 'delivered' || $thing->{'reason'} eq 'feedback' || $thing->{'reason'} eq 'vacation' ) {
-                # Delete the value of ReplyCode when the Reason is "feedback" or "vacation"
-                $thing->{'replycode'} = '' unless $thing->{'reason'} eq 'delivered';
-
-            } else {
-                # The reason is not "delivered", or "feedback", or "vacation"
-                my $smtperrors = $piece->{'deliverystatus'}.' '.$piece->{'diagnosticcode'};
-                   $smtperrors = '' if length $smtperrors < 4;
-                $thing->{'hardbounce'} = Sisimai::SMTP::Failure->is_hardbounce($thing->{'reason'}, $smtperrors);
+            last HARDBOUNCE if $thing->{'reason'} eq $Sisimai::Eb::ReSENT;
+            if( $thing->{'reason'} eq $Sisimai::Eb::ReFEED || $thing->{'reason'} eq $Sisimai::Eb::ReAWAY ) {
+                # Do not assign the value of ReplyCode when the reason is Feedback or Vacation
+                $thing->{'replycode'} = '';
+                last HARDBOUNCE;
             }
+
+            # The reason is not "delivered", or "feedback", or "vacation"
+            my $smtperrors = $piece->{'deliverystatus'}.' '.$piece->{'diagnosticcode'};
+               $smtperrors = '' if length $smtperrors < 4;
+            $thing->{'hardbounce'} = Sisimai::SMTP::Failure->is_hardbounce($thing->{'reason'}, $smtperrors);
         }
 
         DELIVERYSTATUS: {
@@ -431,8 +440,8 @@ sub rise {
                     $thing->{'action'} = $ox->[2];
                 }
             }
-            $thing->{'action'}   = 'delivered' if $thing->{'reason'} eq 'delivered';
-            $thing->{'action'} ||= 'delayed'   if $thing->{'reason'} eq 'expired';
+            $thing->{'action'}   = 'delivered' if $thing->{'reason'} eq $Sisimai::Eb::ReSENT;
+            $thing->{'action'} ||= 'delayed'   if $thing->{'reason'} eq $Sisimai::Eb::ReTIME;
             $thing->{'action'} ||= 'failed'    if $cx->[0] eq '4' || $cx->[0] eq '5';
             $thing->{'action'} ||= "";
         }
@@ -448,6 +457,7 @@ sub rise {
         }
         # Feedback-ID: 1.us-west-2.QHuyeCQrGtIIMGKQfVdUhP9hCQR2LglVOrRamBc+Prk=:AmazonSES
         $thing->{'feedbackid'} = $rfc822data->{'feedback-id'} || "";
+        $thing->{'reason'} = lc $thing->{'reason'};
 
         push @$listoffact, bless($thing, __PACKAGE__);
     } # End of for(RISEOF)
