@@ -2,9 +2,10 @@ package Sisimai::Reason::AuthFailure;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 
-sub text  { 'authfailure' }
+sub text  { $Sisimai::Eb::ReAUTH }
 sub description { 'Email rejected due to SPF, DKIM, DMARC failure' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -36,17 +37,17 @@ sub match {
 }
 
 sub true {
-    # The bounce reason is "authfailure" or not
+    # The bounce reason is "AuthFailure" or not
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is authfailure
-    #                                   0: is not authfailure
+    # @return   [Integer]               1: is AuthFailure
+    #                                   0: is not AuthFailure
     # @see http://www.ietf.org/rfc/rfc2822.txt
     # @since v5.0.0
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'authfailure';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'authfailure';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReAUTH;
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq $Sisimai::Eb::ReAUTH;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -57,7 +58,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::AuthFailure - Bounce reason is C<authfailure> or not.
+Sisimai::Reason::AuthFailure - Bounce reason is C<AuthFailure> or not.
 
 =head1 SYNOPSIS
 
@@ -66,7 +67,7 @@ Sisimai::Reason::AuthFailure - Bounce reason is C<authfailure> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::AuthFailure> checks the bounce reason is C<authfailure> or not. This class is
+C<Sisimai::Reason::AuthFailure> checks the bounce reason is C<AuthFailure> or not. This class is
 called only C<Sisimai::Reason> class.
 
 This is the error that an authenticaion failure related to SPF, DKIM, or DMARC was detected on a
@@ -81,9 +82,9 @@ destination mail host.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<authfailure>.
+C<text()> method returns the fixed string C<AuthFailure>.
 
-    print Sisimai::Reason::AuthFailure->text;  # authfailure
+    print Sisimai::Reason::AuthFailure->text;  # AuthFailure
 
 =head2 C<B<match(I<string>)>>
 
@@ -93,7 +94,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<authfailure>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<AuthFailure>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
