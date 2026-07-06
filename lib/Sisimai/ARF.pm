@@ -2,6 +2,7 @@ package Sisimai::ARF;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::Lhost;
 use Sisimai::RFC5322;
 
@@ -219,7 +220,7 @@ sub inquire {
         # Tidy up the error message in e.Diagnosis, Try to detect the bounce reason.
         $j++;
         $e->{"diagnosis"} = Sisimai::String->sweep($e->{"diagnosis"}.$anotherone);
-        $e->{"reason"}    = "feedback";
+        $e->{"reason"}    = $Sisimai::Eb::ReFEED;
         $e->{"rhost"}     = $remotehost;
         $e->{"lhost"}     = $reportedby;
         $e->{"date"}      = $timestamp0;
