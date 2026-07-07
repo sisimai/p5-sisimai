@@ -2,8 +2,9 @@ package Sisimai::Reason::Suppressed;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'suppressed' }
+sub text  { $Sisimai::Eb::ReSTOP }
 sub description { "Email was not delivered due to being listed in the suppression list of MTA" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -24,7 +25,7 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'suppressed';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReSTOP;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -35,7 +36,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::Suppressed - Bounce reason is C<suppressed> or not.
+Sisimai::Reason::Suppressed - Bounce reason is C<Suppressed> or not.
 
 =head1 SYNOPSIS
 
@@ -44,7 +45,7 @@ Sisimai::Reason::Suppressed - Bounce reason is C<suppressed> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::Suppressed> checks the bounce reason is C<suppressed> or not. This class is called
+C<Sisimai::Reason::Suppressed> checks the bounce reason is C<Suppressed> or not. This class is called
 only C<Sisimai::Reason> class.
 
 This is the error that the recipient adddress is listed in the suppression list of the relay server,
@@ -54,9 +55,9 @@ and was not delivered.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<suppressed>.
+C<text()> method returns the fixed string C<Suppressed>.
 
-    print Sisimai::Reason::Suppressed->text;  # suppressed
+    print Sisimai::Reason::Suppressed->text;  # Suppressed
 
 =head2 C<B<match(I<string>)>>
 
@@ -66,7 +67,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<suppressed>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<Suppressed>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
