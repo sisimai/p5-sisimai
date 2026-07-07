@@ -3,6 +3,7 @@ use parent 'Sisimai::Lhost';
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
 # ---------------------------------------------------------------------------------------------
 # "notificationType": "Bounce"
@@ -44,13 +45,13 @@ use warnings;
 # Transient/ContentRejected -- message you sent contains content that the provider doesn't allow
 # Transient/AttachmentRejected the message contained an unacceptable attachment
 state $ReasonPair = {
-    "Suppressed"               => "suppressed",
-    "OnAccountSuppressionList" => "suppressed",
-    "General"                  => "onhold",
-    "MailboxFull"              => "mailboxfull",
-    "MessageTooLarge"          => "emailtoolarge",
-    "ContentRejected"          => "contenterror",
-    "AttachmentRejected"       => "securityerror",
+    "Suppressed"               => $Sisimai::Eb::ReSTOP,
+    "OnAccountSuppressionList" => $Sisimai::Eb::ReSTOP,
+    "General"                  => $Sisimai::Eb::Re___1,
+    "MailboxFull"              => $Sisimai::Eb::ReFULL,
+    "MessageTooLarge"          => $Sisimai::Eb::ReSIZE,
+    "ContentRejected"          => $Sisimai::Eb::ReBODY,
+    "AttachmentRejected"       => $Sisimai::Eb::ReSAFE,
 };
 
 # https://aws.amazon.com/ses/
@@ -159,7 +160,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             $v->{"recipient"}    = $e->{"emailAddress"};
-            $v->{"reason"}       = "feedback";
+            $v->{"reason"}       = $Sisimai::Eb::ReFEED;
             $v->{"feedbacktype"} = $p->{"complaintFeedbackType"};
             $v->{"date"}         = $p->{"timestamp"};
             $v->{"diagnosis"}    = sprintf(qq|{"feedbackid":"%s", "useragent":"%s"}|, $p->{"feedbackId"}, $p->{"userAgent"});
@@ -175,7 +176,7 @@ sub inquire {
                 $v = $dscontents->[-1];
             }
             $v->{"recipient"} = $e;
-            $v->{"reason"}    = "delivered";
+            $v->{"reason"}    = $Sisimai::Eb::ReSENT;
             $v->{"action"}    = "delivered";
             $v->{"date"}      = $p->{"timestamp"};
             $v->{"lhost"}     = $p->{"reportingMTA"};
