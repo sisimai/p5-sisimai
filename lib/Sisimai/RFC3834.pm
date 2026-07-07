@@ -72,6 +72,7 @@ sub inquire {
     }
     return undef unless $match;
 
+    require Sisimai::Eb;
     require Sisimai::Lhost;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS]; my $v = $dscontents->[-1];
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
@@ -124,12 +125,12 @@ sub inquire {
         }
         $v->{'diagnosis'} ||= $mhead->{'subject'};
     }
-    $v->{'reason'} = 'vacation';
+    $v->{'reason'} = $Sisimai::Eb::ReAWAY;
 
     my $cv = lc $v->{'diagnosis'}; for my $e ( @$suspending ) {
         # Check that the auto-replied message indicates the "Suspend" reason or not.
         next unless Sisimai::String->aligned(\$cv, $e);
-        $v->{'reason'} = 'suspend'; last;
+        $v->{'reason'} = $Sisimai::Eb::ReQUIT; last;
     }
 
     $v->{'date'}      = $mhead->{'date'};
