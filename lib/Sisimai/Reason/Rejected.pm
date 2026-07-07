@@ -2,8 +2,9 @@ package Sisimai::Reason::Rejected;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'rejected' }
+sub text  { $Sisimai::Eb::ReFROM }
 sub description { "Email rejected due to a sender's email address (envelope from)" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -79,16 +80,16 @@ sub match {
 sub true {
     # Rejected by the envelope sender address or not
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is rejected
-    #                                   0: is not rejected by the sender
+    # @return   [Integer]               1: is Rejected
+    #                                   0: is not Rejected by the sender
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'rejected';
-    my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || 'undefined';
-    return 1 if $tempreason eq 'rejected';  # Delivery status code points "rejected".
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReFROM;
+    my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || $Sisimai::Eb::Re___0;
+    return 1 if $tempreason eq $Sisimai::Eb::ReFROM;  # Delivery status code points "Rejected".
 
     # Check the value of Diagnosic-Code: header with patterns
     my $issuedcode = lc $argvs->{'diagnosticcode'};
@@ -99,14 +100,14 @@ sub true {
 
     } elsif( $thecommand eq 'DATA' ) {
         # The session was rejected at 'DATA' command
-        if( $tempreason ne 'userunknown' ) {
+        if( $tempreason ne $Sisimai::Eb::ReUSER ) {
             # Except "userunknown"
             return 1 if __PACKAGE__->match($issuedcode);
         }
-    } elsif( $tempreason eq 'onhold' || $tempreason eq 'undefined' ||
-             $tempreason eq 'securityerror' || $tempreason eq 'systemerror' ) {
-        # Try to match with message patterns when the temporary reason is "onhold", "undefined",
-        # "securityerror", or "systemerror"
+    } elsif( $tempreason eq $Sisimai::Eb::Re___1 || $tempreason eq $Sisimai::Eb::Re___0 ||
+             $tempreason eq $Sisimai::Eb::ReSAFE || $tempreason eq $Sisimai::Eb::RePROC ) {
+        # Try to match with message patterns when the temporary reason is "OnHold", "Undefined",
+        # "SecurityError", or "SystemError"
         return 1 if __PACKAGE__->match($issuedcode);
     }
     return 0;
@@ -119,7 +120,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::Rejected - Bounce reason is C<rejected> or not.
+Sisimai::Reason::Rejected - Bounce reason is C<Rejected> or not.
 
 =head1 SYNOPSIS
 
@@ -128,11 +129,11 @@ Sisimai::Reason::Rejected - Bounce reason is C<rejected> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::Rejected> checks the bounce reason is C<rejected> or not. This class is called
+C<Sisimai::Reason::Rejected> checks the bounce reason is C<Rejected> or not. This class is called
 only C<Sisimai::Reason> class.
 
 This is the error that the SMTP connection to the destination server was rejected by the sender's
-email address (envelope from). Sisimai set C<rejected> to the reason of the email bounce if the value
+email address (envelope from). Sisimai set C<Rejected> to the reason of the email bounce if the value
 of C<Status:> field in the  bounce email is C<5.1.8> or the SMTP connection has been rejected due to
 the argument of SMTP C<MAIL> command.
 
@@ -144,9 +145,9 @@ the argument of SMTP C<MAIL> command.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<rejected>.
+C<text()> method returns the fixed string C<Rejected>.
 
-    print Sisimai::Reason::Rejected->text;  # rejected
+    print Sisimai::Reason::Rejected->text;  # Rejected
 
 =head2 C<B<match(I<string>)>>
 
@@ -156,7 +157,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<rejected>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<Rejected>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
