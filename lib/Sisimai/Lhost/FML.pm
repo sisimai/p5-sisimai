@@ -20,15 +20,16 @@ sub inquire {
     return undef unless index($mhead->{'from'}, '-admin@') > 0;
     return undef unless index($mhead->{'message-id'}, '.FML') > 1;
 
+    require Sisimai::Eb;
     state $boundaries = ['Original mail as follows:'];
     state $errortitle = {
-        'rejected' => [
+        $Sisimai::Eb::ReFROM => [
             ' are not member',
             'NOT MEMBER article from ',
             'reject mail ',
             'Spam mail from a spammer is rejected',
         ],
-        'systemerror' => [
+        $Sisimai::Eb::RePROC => [
             'fml system error message',
             'Loop Alert: ',
             'Loop Back Warning: ',
