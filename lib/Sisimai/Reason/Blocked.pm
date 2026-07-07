@@ -2,9 +2,10 @@ package Sisimai::Reason::Blocked;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 
-sub text { 'blocked' }
+sub text { $Sisimai::Eb::ReBLOC }
 sub description { 'Email rejected due to client IP address or a hostname' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -85,15 +86,15 @@ sub match {
 sub true {
     # Rejected due to client IP address or hostname
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is blocked
-    #           [Integer]               0: is not blocked by the client
+    # @return   [Integer]               1: is Blocked
+    #           [Integer]               0: is not Blocked by the client
     # @see      http://www.ietf.org/rfc/rfc2822.txt
     # @since v4.0.0
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'blocked';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'blocked';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReBLOC;
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq $Sisimai::Eb::ReBLOC;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -104,7 +105,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::Blocked - Bounce reason is "blocked" or not.
+Sisimai::Reason::Blocked - Bounce reason is "Blocked" or not.
 
 =head1 SYNOPSIS
 
@@ -113,7 +114,7 @@ Sisimai::Reason::Blocked - Bounce reason is "blocked" or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::Blocked> checks the bounce reason is C<blocked> or not. This class is called
+C<Sisimai::Reason::Blocked> checks the bounce reason is C<Blocked> or not. This class is called
 only C<Sisimai::Reason> class.
 
 This is the error that SMTP connection was rejected due to a client IP address or a hostname, or
@@ -127,9 +128,9 @@ the parameter of C<HELO> or C<EHLO> command. This reason has added in Sisimai 4.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<blocked>.
+C<text()> method returns the fixed string C<Blocked>.
 
-    print Sisimai::Reason::Blocked->text;  # blocked
+    print Sisimai::Reason::Blocked->text;  # Blocked
 
 =head2 C<B<match(I<string>)>>
 
@@ -139,7 +140,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<blocked>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<Blocked>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
