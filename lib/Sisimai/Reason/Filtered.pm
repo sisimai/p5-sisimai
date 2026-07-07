@@ -2,9 +2,10 @@ package Sisimai::Reason::Filtered;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::SMTP::Command;
 
-sub text  { 'filtered' }
+sub text  { $Sisimai::Eb::ReFILT }
 sub description { 'Email rejected due to a header content after SMTP DATA command' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -36,26 +37,26 @@ sub match {
 sub true {
     # Rejected by domain or address filter ?
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is filtered
-    #                                   0: is not filtered
+    # @return   [Integer]               1: is Filtered
+    #                                   0: is not Filtered
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return 0; return 1 if $argvs->{'reason'} eq 'filtered';
+    my $argvs = shift // return 0; return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReFILT;
 
     my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
-    return 0 if $tempreason eq 'suspend';
+    return 0 if $tempreason eq $Sisimai::Eb::ReQUIT;
 
     require Sisimai::Reason::UserUnknown;
     my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $thecommand = $argvs->{'command'} || '';
-    if( $tempreason eq 'filtered' ) {
-        # Delivery status code points "filtered".
+    if( $tempreason eq $Sisimai::Eb::ReFILT ) {
+        # Delivery status code points "Filtered".
         return 1 if Sisimai::Reason::UserUnknown->match($issuedcode);
         return __PACKAGE__->match($issuedcode);
 
     } else {
-        # The value of "reason" isn't "filtered" when the value of "command" is an SMTP command to
+        # The value of "reason" isn't "Filtered" when the value of "command" is an SMTP command to
         # be sent before the SMTP DATA command because all the MTAs read the headers and the entire
         # message body after the DATA command.
         return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->ExceptDATA->@*;
@@ -71,7 +72,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::Filtered - Bounce reason is C<filtered> or not.
+Sisimai::Reason::Filtered - Bounce reason is C<Filtered> or not.
 
 =head1 SYNOPSIS
 
@@ -80,12 +81,12 @@ Sisimai::Reason::Filtered - Bounce reason is C<filtered> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::Filtered> checks the bounce reason is C<filtered> or not. This class is called
+C<Sisimai::Reason::Filtered> checks the bounce reason is C<Filtered> or not. This class is called
 only C<Sisimai::Reason> class.
 
 This is the error that an email has been rejected by a header content after SMTP C<DATA> command.
 In Japanese cellular phones, the error will incur that the sender's email address or the domain is
-rejected by recipient's email configuration. Sisimai will set C<filtered> to the reason of email
+rejected by recipient's email configuration. Sisimai will set C<Filtered> to the reason of email
 bounce if the value of C<Status:> field in the bounce email is C<5.2.0> or C<5.2.1>.
 
 This error reason is almost the same as C<UserUnknown>.
@@ -99,9 +100,9 @@ This error reason is almost the same as C<UserUnknown>.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<filtered>.
+C<text()> method returns the fixed string C<Filtered>.
 
-    print Sisimai::Reason::Filtered->text;  # filtered
+    print Sisimai::Reason::Filtered->text;  # Filtered
 
 =head2 C<B<match(I<string>)>>
 
@@ -111,7 +112,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<filtered>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<Filtered>. The argument must be C<Sisimai::Fact>
 object and this method is called only from Sisimai::Reason class.
 
 =head1 AUTHOR
