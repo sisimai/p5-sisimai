@@ -2,9 +2,10 @@ package Sisimai::Reason::RequirePTR;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 
-sub text { 'requireptr' }
+sub text { $Sisimai::Eb::ReQPTR }
 sub description { 'Email rejected due to missing PTR record or having invalid PTR record' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -49,8 +50,8 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'requireptr';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'requireptr';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReQPTR;
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq $Sisimai::Eb::ReQPTR;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -61,7 +62,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::RequirePTR - Bounce reason is "requireptr" or not.
+Sisimai::Reason::RequirePTR - Bounce reason is "RequirePTR" or not.
 
 =head1 SYNOPSIS
 
@@ -70,7 +71,7 @@ Sisimai::Reason::RequirePTR - Bounce reason is "requireptr" or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::RequirePTR> checks the bounce reason is C<requireptr> or not. This class is called
+C<Sisimai::Reason::RequirePTR> checks the bounce reason is C<RequirePTR> or not. This class is called
 only from C<Sisimai::Reason> class.
 
 This is the error that the SMTP connection was rejected due to missing PTR record or having invalid
@@ -86,9 +87,9 @@ PTR record at the source IP address used for the SMTP connection.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<requireptr>.
+C<text()> method returns the fixed string C<RequirePTR>.
 
-    print Sisimai::Reason::RequirePTR->text;  # "requireptr"
+    print Sisimai::Reason::RequirePTR->text;  # "RequirePTR"
 
 C<match()> method returns C<1> if the argument matched with patterns defined in this class.
 
@@ -96,7 +97,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<requireptr>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<RequirePTR>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
