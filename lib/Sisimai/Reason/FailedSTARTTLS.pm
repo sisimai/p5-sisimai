@@ -2,8 +2,9 @@ package Sisimai::Reason::FailedSTARTTLS;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { "failedstarttls" }
+sub text  { $Sisimai::Eb::ReTTLS }
 sub description { "Email delivery failed due to STARTTLS related problem" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -33,7 +34,7 @@ sub true {
     my $argvs = shift // return 0;
     my $reply = $argvs->{'replycode'} || 0;
 
-    return 1 if $argvs->{"reason"} eq "failedstarttls" || $argvs->{"command"} eq "STARTTLS";
+    return 1 if $argvs->{"reason"} eq $Sisimai::Eb::ReTTLS || $argvs->{"command"} eq "STARTTLS";
     return 1 if $reply == 523 || $reply == 524 || $reply == 538;
     return __PACKAGE__->match(lc $argvs->{"diagnosticcode"});
 }
@@ -62,9 +63,9 @@ so on.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<failedstarttls>.
+C<text()> method returns the fixed string C<FailedSTARTTLS>.
 
-    print Sisimai::Reason::FailedSTARTTLS->text;  # failedstarttls
+    print Sisimai::Reason::FailedSTARTTLS->text;  # FailedSTARTTLS
 
 =head2 C<B<match(I<string>)>>
 
@@ -83,7 +84,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
