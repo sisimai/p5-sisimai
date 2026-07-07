@@ -2,8 +2,9 @@ package Sisimai::Reason::NotCompliantRFC;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'notcompliantrfc' }
+sub text  { $Sisimai::Eb::ReNRFC }
 sub description { "Email rejected due to non-compliance with RFC" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -36,7 +37,7 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'notcompliantrfc';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReNRFC;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -47,7 +48,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::NotCompliantRFC - Bounce reason is C<notcompliantrfc> or not.
+Sisimai::Reason::NotCompliantRFC - Bounce reason is C<NotCompliantRFC> or not.
 
 =head1 SYNOPSIS
 
@@ -56,7 +57,7 @@ Sisimai::Reason::NotCompliantRFC - Bounce reason is C<notcompliantrfc> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::NotCompliantRFC> checks the bounce reason is C<notcompliantrfc> or not.
+C<Sisimai::Reason::NotCompliantRFC> checks the bounce reason is C<NotCompliantRFC> or not.
 This class is called only from C<Sisimai::Reason class>.
 
 This is the error that the email is not compliant RFC 5322 or other email related RFCs. For example,
@@ -71,9 +72,9 @@ there are multiple C<Subject> headers in the email.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<notcompliantrfc>.
+C<text()> method returns the fixed string C<NotCompliantRFC>.
 
-    print Sisimai::Reason::NotCompliantRFC->text;  # notcompliantrfc
+    print Sisimai::Reason::NotCompliantRFC->text;  # NotCompliantRFC
 
 =head2 C<B<match(I<string>)>>
 
@@ -83,7 +84,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<notcompliantrfc>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<NotCompliantRFC>. The argument must be
 C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
