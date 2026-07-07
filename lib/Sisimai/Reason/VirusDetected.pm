@@ -2,9 +2,10 @@ package Sisimai::Reason::VirusDetected;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::SMTP::Command;
 
-sub text  { 'virusdetected' }
+sub text  { $Sisimai::Eb::ReEXEC }
 sub description { 'Email rejected due to a virus scanner on a destination host' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -26,7 +27,7 @@ sub match {
 }
 
 sub true {
-    # The bounce reason is "virusdetected" or not
+    # The bounce reason is "VirusDetected" or not
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: virus detected
     #                                   0: virus was not detected
@@ -35,10 +36,10 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0;
 
-    # The value of "reason" isn't "virusdetected" when the value of "command" is an SMTP command to
+    # The value of "reason" isn't "VirusDetected" when the value of "command" is an SMTP command to
     # be sent before the SMTP DATA command because all the MTAs read the headers and the entire
     # message body after the DATA command.
-    return 1 if $argvs->{'reason'} eq 'virusdetected';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReEXEC;
     return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->ExceptDATA->@*;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
@@ -50,7 +51,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::VirusDetected - Bounce reason is C<virusdetected> or not.
+Sisimai::Reason::VirusDetected - Bounce reason is C<VirusdEtected> or not.
 
 =head1 SYNOPSIS
 
@@ -59,7 +60,7 @@ Sisimai::Reason::VirusDetected - Bounce reason is C<virusdetected> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::VirusDetected> checks the bounce reason is C<virusdetected> or not.
+C<Sisimai::Reason::VirusDetected> checks the bounce reason is C<VirusDetected> or not.
 This class is called only C<Sisimai::Reason> class.
 
 This is an error that any virus or trojan horse detected in the message by the virus scanner program
@@ -75,9 +76,9 @@ at the destination mail server. This reason has been divided from C<securityerro
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<virusdetected>.
+C<text()> method returns the fixed string C<VirusDetected>.
 
-    print Sisimai::Reason::VirusDetected->text;  # virusdetected
+    print Sisimai::Reason::VirusDetected->text;  # VirusDetected
 
 =head2 C<B<match(I<string>)>>
 
@@ -88,7 +89,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<virusdetected>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<VirusDetected>. The argument must be
 C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
