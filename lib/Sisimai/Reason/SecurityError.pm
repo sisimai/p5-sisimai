@@ -2,9 +2,10 @@ package Sisimai::Reason::SecurityError;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 
-sub text  { 'securityerror' }
+sub text  { $Sisimai::Eb::ReSAFE }
 sub description { 'Email rejected due to security violation was detected on a destination host' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -55,7 +56,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::SecurityError - Bounce reason is C<securityerror> or not.
+Sisimai::Reason::SecurityError - Bounce reason is C<SecurityError> or not.
 
 =head1 SYNOPSIS
 
@@ -64,12 +65,12 @@ Sisimai::Reason::SecurityError - Bounce reason is C<securityerror> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::SecurityError> checks the bounce reason is C<securityerror> or not. This class is
+C<Sisimai::Reason::SecurityError> checks the bounce reason is C<SecurityError> or not. This class is
 called only C<Sisimai::Reason> class.
 
 This is the error that the security violation was detected on the destination mail server. Depends
 on the security policy on the server, the sender's email address is camouflaged address.
-Sisimai will set C<securityerror> to the reason of the email bounce if the value of C<Status:> field
+Sisimai will set C<SecurityError> to the reason of the email bounce if the value of C<Status:> field
 in the bounce email is C<5.7.*>.
 
     Action: failed
@@ -82,9 +83,9 @@ in the bounce email is C<5.7.*>.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<securityerror>.
+C<text()> method returns the fixed string C<SecurityError>.
 
-    print Sisimai::Reason::SecurityError->text;  # securityerror
+    print Sisimai::Reason::SecurityError->text;  # SecurityError
 
 =head2 C<B<match(I<string>)>>
 
@@ -94,7 +95,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<securityerror>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<SecurityError>. The argument must be
 C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
