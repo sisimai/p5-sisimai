@@ -21,11 +21,12 @@ sub inquire {
                    $match ||= 1 if defined $mhead->{'x-mailer'} && index($mhead->{'x-mailer'}, '<SMTP32 v') == 0;
     return undef unless $match;
 
+    require Sisimai::Eb;
     state $boundaries = ['Original message follows.'];
     state $startingof = {'error' => ['Body of message generated response:']};
     state $messagesof = {
-        'userunknown' => ['Unknown user', 'Invalid final delivery userid'],
-        'expired'     => ['Delivery failed '],
+        $Sisimai::Eb::ReUSER => ['Unknown user', 'Invalid final delivery userid'],
+        $Sisimai::Eb::ReTIME => ['Delivery failed '],
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
