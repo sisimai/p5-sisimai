@@ -26,6 +26,7 @@ sub inquire {
                    $match ||= 1 if grep { $mhead->{'subject'} eq $_ } @$tryto;
     return undef unless $match;
 
+    require Sisimai::Eb;
     require Sisimai::SMTP::Command;
     state $boundaries = ['Content-type: message/rfc822'];
 
@@ -77,7 +78,7 @@ sub inquire {
 
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
-        $e->{'reason'} = 'userunknown' if index($e->{'diagnosis'}, 'Unable to deliver') > -1;
+        $e->{'reason'} = $Sisimai::Eb::ReUSER if index($e->{'diagnosis'}, 'Unable to deliver') > -1;
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }
