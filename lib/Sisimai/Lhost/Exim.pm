@@ -51,6 +51,7 @@ sub inquire {
                         $thirdparty ||= 1 if index($messageidv, "<mxl~") > -1;
     return undef if $proceedsto < 2 && $thirdparty == 0;
 
+    require Sisimai::Eb;
     require Sisimai::Reason;
     require Sisimai::Address;
     require Sisimai::SMTP::Command;
@@ -100,12 +101,12 @@ sub inquire {
     state $messagesof = {
         # find exim/ -type f -exec grep 'message = US' {} /dev/null \;
         # route.c:1158|  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
-        "userunknown" => ["user not found"],
+        $Sisimai::Eb::ReUSER => ["user not found"],
         # parser.c:666| *errorptr = string_sprintf("%s (expected word or \"<\")", *errorptr);
         # parser.c:701| if(bracket_count++ > 5) FAILED(US"angle-brackets nested too deep");
         # parser.c:738| FAILED(US"domain missing in source-routed address");
         # parser.c:747| : string_sprintf("malformed address: %.32s may not follow %.*s",
-        "syntaxerror" => [
+        $Sisimai::Eb::ReCOMM => [
             "angle-brackets nested too deep",
             'expected word or "<"',
             "domain missing in source-routed address",
@@ -384,11 +385,11 @@ sub inquire {
             # Detect the reason of bounce
             if( $e->{'command'} eq 'HELO' || $e->{'command'} eq 'EHLO' ) {
                 # HELO | Connected to 192.0.2.135 but my name was rejected.
-                $e->{'reason'} = 'blocked';
+                $e->{'reason'} = $Sisimai::Eb::ReBLOC;
 
             } elsif( $e->{'command'} eq 'MAIL' ) {
                 # MAIL | Connected to 192.0.2.135 but sender was rejected.
-                $e->{'reason'} = 'onhold';
+                $e->{'reason'} = $Sisimai::Eb::Re___1;
 
             } else {
                 # Try to match the error message with each message pattern
@@ -398,7 +399,7 @@ sub inquire {
                     $e->{'reason'} = $r;
                     last;
                 }
-                $e->{'reason'} ||= 'expired' if grep { index($e->{'diagnosis'}, $_) > -1 } @$delayedfor;
+                $e->{'reason'} ||= $Sisimai::Eb::ReTIME if grep { index($e->{'diagnosis'}, $_) > -1 } @$delayedfor;
             }
         }
 
