@@ -2,8 +2,9 @@ package Sisimai::Reason::ContentError;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text { 'contenterror' }
+sub text { $Sisimai::Eb::ReBODY }
 sub description { 'Email rejected due to a header format of the email' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -46,9 +47,9 @@ sub true {
     my $argvs = shift // return 0;
 
     require Sisimai::Reason::SpamDetected;
-    return 1 if $argvs->{'reason'} eq 'contenterror';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReBODY;
     return 0 if Sisimai::Reason::SpamDetected->true($argvs);
-    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'contenterror';
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq $Sisimai::Eb::ReBODY;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -59,7 +60,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::ContentError - Bounce reason is C<contenterror> or not.
+Sisimai::Reason::ContentError - Bounce reason is C<ContentError> or not.
 
 =head1 SYNOPSIS
 
@@ -68,11 +69,11 @@ Sisimai::Reason::ContentError - Bounce reason is C<contenterror> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::ContentError> checks the bounce reason is C<contenterror> or not. This class is
+C<Sisimai::Reason::ContentError> checks the bounce reason is C<ContentError> or not. This class is
 called only C<Sisimai::Reason> class.
 
 This is the error that the destination mail server has rejected email due to the header format of
-the email like the following. Sisimai will set C<contenterror> to the reason of the email bounce if
+the email like the following. Sisimai will set C<ContentError> to the reason of the email bounce if
 the value of C<Status:> field in a bounce email is C<5.6.*>.
 
 =over
@@ -94,9 +95,9 @@ the value of C<Status:> field in a bounce email is C<5.6.*>.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<contenterror>.
+C<text()> method returns the fixed string C<ContentError>.
 
-    print Sisimai::Reason::ContentError->text;  # contenterror
+    print Sisimai::Reason::ContentError->text;  # ContentError
 
 =head2 C<B<match(I<string>)>>
 
@@ -106,7 +107,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<contenterror>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<ContentError>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
