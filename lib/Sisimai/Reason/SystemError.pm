@@ -2,9 +2,10 @@ package Sisimai::Reason::SystemError;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 
-sub text  { 'systemerror' }
+sub text  { $Sisimai::Eb::RePROC }
 sub description { 'Email returned due to system error on the remote host' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -78,7 +79,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::SystemError - Bounce reason is C<systemerror> or not.
+Sisimai::Reason::SystemError - Bounce reason is C<SystemError> or not.
 
 =head1 SYNOPSIS
 
@@ -87,7 +88,7 @@ Sisimai::Reason::SystemError - Bounce reason is C<systemerror> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::SystemError> checks the bounce reason is C<systemerror> or not. This class is
+C<Sisimai::Reason::SystemError> checks the bounce reason is C<SystemError> or not. This class is
 called only C<Sisimai::Reason> class. This is the error that the email has bounced due to system
 error on the remote host such as LDAP connection failures or other internal system errors.
 
@@ -99,9 +100,9 @@ error on the remote host such as LDAP connection failures or other internal syst
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<systemerror>.
+C<text()> method returns the fixed string C<SystemError>.
 
-    print Sisimai::Reason::SystemError->text;  # systemerror
+    print Sisimai::Reason::SystemError->text;  # SystemError
 
 =head2 C<B<match(I<string>)>>
 
@@ -111,7 +112,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<systemerror>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<SystemError>. The argument must be
 C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
