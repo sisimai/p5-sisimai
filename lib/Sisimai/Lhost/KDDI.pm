@@ -66,6 +66,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::Eb;
     require Sisimai::SMTP::Command;
     for my $e ( @$dscontents ) {
         $e->{'command'} = Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
@@ -73,12 +74,12 @@ sub inquire {
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by KDDI)
             # Filtered recipient returns message that include 'X-SPASIGN' header
-            $e->{'reason'} = 'filtered';
+            $e->{'reason'} = $Sisimai::Eb::ReFILT;
 
         } else {
             # There is no X-SPASIGN: header in the bounce message
             # set "userunknown" when the remote server rejected after RCPT command.
-            $e->{'reason'} = 'userunknown' if $e->{'command'} eq 'RCPT';
+            $e->{'reason'} = $Sisimai::Eb::ReUSER if $e->{'command'} eq 'RCPT';
         }
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
