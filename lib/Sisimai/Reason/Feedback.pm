@@ -2,8 +2,9 @@ package Sisimai::Reason::Feedback;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'feedback' }
+sub text  { $Sisimai::Eb::ReFEED }
 sub description { 'Email forwarded to the sender as a complaint message from your mailbox provider' }
 sub match { return 0 }
 sub true  { return 0 }
@@ -20,7 +21,7 @@ Sisimai::Reason::Feedback - Email forwarded as a complaint message
 =head1 SYNOPSIS
 
     use Sisimai::Reason::Feedback;
-    print Sisimai::Reason::Feedback->text; # feedback
+    print Sisimai::Reason::Feedback->text; # Feedback
 
 =head1 DESCRIPTION
 
@@ -31,9 +32,9 @@ only from C<Sisimai->reason()> method and C<Sisimai::ARF> class.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<feedback>.
+C<text()> method returns the fixed string C<Feedback>.
 
-    print Sisimai::Reason::Feedback->text;  # feedback
+    print Sisimai::Reason::Feedback->text;  # Feedback
 
 =head2 C<B<match(I<string>)>>
 
@@ -49,7 +50,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016,2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2016,2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
