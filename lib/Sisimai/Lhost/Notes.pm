@@ -20,11 +20,12 @@ sub inquire {
     return undef unless $mhead->{'subject'};
     return undef unless index($mhead->{'subject'}, 'Undeliverable message') == 0;
 
+    require Sisimai::Eb;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['------- Returned Message --------'];
     state $startingof = {'message' => ['------- Failure Reasons ']};
     state $messagesof = {
-        'userunknown' => [
+        $Sisimai::Eb::ReUSER => [
             'User not listed in public Name & Address Book',
             'ディレクトリのリストにありません',
         ],
