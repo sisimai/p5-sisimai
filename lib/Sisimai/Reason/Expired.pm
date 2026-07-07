@@ -2,9 +2,10 @@ package Sisimai::Reason::Expired;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 
-sub text  { 'expired' }
+sub text  { $Sisimai::Eb::ReTIME }
 sub description { 'Delivery time has expired due to a connection failure' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -55,8 +56,8 @@ sub match {
 sub true {
     # Delivery expired due to connection failure or network error
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is expired
-    #                                   0: is not expired
+    # @return   [Integer]               1: is Expired
+    #                                   0: is not Expired
     # @see      http://www.ietf.org/rfc/rfc2822.txt
     return 0;
 }
@@ -68,7 +69,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::Expired - Bounce reason is C<expired> or not.
+Sisimai::Reason::Expired - Bounce reason is C<Expired> or not.
 
 =head1 SYNOPSIS
 
@@ -77,7 +78,7 @@ Sisimai::Reason::Expired - Bounce reason is C<expired> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::Expired> checks the bounce reason is C<expired> or not. This class is called only
+C<Sisimai::Reason::Expired> checks the bounce reason is C<Expired> or not. This class is called only
 C<Sisimai::Reason> class.
 
 This is the error that the delivery time has expired due to a connection failure or a network error
@@ -87,9 +88,9 @@ and the message you sent has been in the queue for long time.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<expired>.
+C<text()> method returns the fixed string C<Expired>.
 
-    print Sisimai::Reason::Expired->text;  # expired
+    print Sisimai::Reason::Expired->text;  # Expired
 
 =head2 C<B<match(I<string>)>>
 
@@ -99,7 +100,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<expired>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<Expired>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
