@@ -66,6 +66,7 @@ sub inquire {
     return undef unless rindex($mhead->{'from'}, '<mailer-daemon@googlemail.com>') > -1;
     return undef unless index($mhead->{'subject'}, 'Delivery Status Notification') > -1;
 
+    require Sisimai::Eb;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['----- Original message -----', '----- Message header follows -----'];
     state $startingof = {
@@ -78,7 +79,7 @@ sub inquire {
         # We recommend contacting the other email provider for further information about the
         # cause of this error. The error that the other server returned was:
         # 500 Remote server does not support TLS (state 6).
-        '6'  => { 'command' => 'MAIL', 'reason' => 'failedstarttls' },
+        '6'  => { 'command' => 'MAIL', 'reason' => $Sisimai::Eb::ReTTLS },
 
         # https://www.google.td/support/forum/p/gmail/thread?tid=08a60ebf5db24f7b&hl=en
         # Technical details of permanent failure:
@@ -86,7 +87,7 @@ sub inquire {
         # We recommend contacting the other email provider for further information about the
         # cause of this error. The error that the other server returned was:
         # 535 SMTP AUTH failed with the remote server. (state 8).
-        '8'  => { 'command' => 'AUTH', 'reason' => 'systemerror' },
+        '8'  => { 'command' => 'AUTH', 'reason' => $Sisimai::Eb::RePROC },
 
         # https://www.google.co.nz/support/forum/p/gmail/thread?tid=45208164dbca9d24&hl=en
         # Technical details of temporary failure:
@@ -94,7 +95,7 @@ sub inquire {
         # We recommend contacting the other email provider for further information about the
         # cause of this error. The error that the other server returned was:
         # 454 454 TLS missing certificate: error:0200100D:system library:fopen:Permission denied (#4.3.0) (state 9).
-        '9'  => { 'command' => 'AUTH', 'reason' => 'failedstarttls' },
+        '9'  => { 'command' => 'AUTH', 'reason' => $Sisimai::Eb::ReTTLS },
 
         # https://www.google.com/support/forum/p/gmail/thread?tid=5cfab8c76ec88638&hl=en
         # Technical details of permanent failure:
@@ -102,14 +103,14 @@ sub inquire {
         # We recommend contacting the other email provider for further information about the
         # cause of this error. The error that the other server returned was:
         # 500 Remote server does not support SMTP Authenticated Relay (state 12).
-        '12' => { 'command' => 'AUTH', 'reason' => 'norelaying' },
+        '12' => { 'command' => 'AUTH', 'reason' => $Sisimai::Eb::RePASS },
 
         # Technical details of permanent failure:
         # Google tried to deliver your message, but it was rejected by the recipient domain.
         # We recommend contacting the other email provider for further information about the
         # cause of this error. The error that the other server returned was:
         # 550 550 5.7.1 <****@gmail.com>... Access denied (state 13).
-        '13' => { 'command' => 'EHLO', 'reason' => 'blocked' },
+        '13' => { 'command' => 'EHLO', 'reason' => $Sisimai::Eb::BLOC },
 
         # Technical details of permanent failure:
         # Google tried to deliver your message, but it was rejected by the recipient domain.
@@ -117,8 +118,7 @@ sub inquire {
         # cause of this error. The error that the other server returned was:
         # 550 550 5.1.1 <******@*********.**>... User Unknown (state 14).
         # 550 550 5.2.2 <*****@****.**>... Mailbox Full (state 14).
-        #
-        '14' => { 'command' => 'RCPT', 'reason' => 'userunknown' },
+        '14' => { 'command' => 'RCPT', 'reason' => $Sisimai::Eb::ReUSER },
 
         # https://www.google.cz/support/forum/p/gmail/thread?tid=7090cbfd111a24f9&hl=en
         # Technical details of permanent failure:
@@ -127,7 +127,7 @@ sub inquire {
         # cause of this error. The error that the other server returned was:
         # 550 550 5.7.1 SPF unauthorized mail is prohibited. (state 15).
         # 554 554 Error: no valid recipients (state 15).
-        '15' => { 'command' => 'DATA', 'reason' => 'filtered' },
+        '15' => { 'command' => 'DATA', 'reason' => $Sisimai::Eb::ReFILT },
 
         # https://www.google.com/support/forum/p/Google%20Apps/thread?tid=0aac163bc9c65d8e&hl=en
         # Technical details of permanent failure:
@@ -136,14 +136,14 @@ sub inquire {
         # cause of this error. The error that the other server returned was:
         # 550 550 <****@***.**> No such user here (state 17).
         # 550 550 #5.1.0 Address rejected ***@***.*** (state 17).
-        '17' => { 'command' => 'DATA', 'reason' => 'filtered' },
+        '17' => { 'command' => 'DATA', 'reason' => $Sisimai::Eb::ReFILT },
 
         # Technical details of permanent failure:
         # Google tried to deliver your message, but it was rejected by the recipient domain.
         # We recommend contacting the other email provider for further information about the
         # cause of this error. The error that the other server returned was:
         # 550 550 Unknown user *****@***.**.*** (state 18).
-        '18' => { 'command' => 'DATA', 'reason' => 'filtered' },
+        '18' => { 'command' => 'DATA', 'reason' => $Sisimai::Eb::ReFILT },
     };
     require Sisimai::Address;
 
