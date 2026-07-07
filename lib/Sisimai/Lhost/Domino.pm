@@ -3,6 +3,7 @@ use parent 'Sisimai::Lhost';
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 use Encode;
 use Encode::Guess; Encode::Guess->add_suspects(Sisimai::String->encodenames->@*);
@@ -27,7 +28,7 @@ sub inquire {
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = {'message' => ['Your message']};
     state $messagesof = {
-        'userunknown' => [
+        $Sisimai::Eb::ReUSER => [
             'not listed in Domino Directory',
             'not listed in public Name & Address Book',
             'no se encuentra en el Directorio de Domino',
