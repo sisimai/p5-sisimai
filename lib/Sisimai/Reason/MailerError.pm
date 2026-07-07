@@ -2,8 +2,9 @@ package Sisimai::Reason::MailerError;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'mailererror' }
+sub text  { $Sisimai::Eb::ReUNIX }
 sub description { 'Email returned due to a mailer program has not exited successfully' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -46,7 +47,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::MailerError - Bounce reason is C<mailererror> or not.
+Sisimai::Reason::MailerError - Bounce reason is C<MailerError> or not.
 
 =head1 SYNOPSIS
 
@@ -55,7 +56,7 @@ Sisimai::Reason::MailerError - Bounce reason is C<mailererror> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::MailerError> checks the bounce reason is C<mailererror> or not. This class is
+C<Sisimai::Reason::MailerError> checks the bounce reason is C<MailerError> or not. This class is
 called only C<Sisimai::Reason> class.
 
 This is the error that the mailer program has not exited successfully or exited unexpectedly on the
@@ -68,9 +69,9 @@ destination mail server.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<mailererror>.
+C<text()> method returns the fixed string C<MailerError>.
 
-    print Sisimai::Reason::MailerError->text;  # mailererror
+    print Sisimai::Reason::MailerError->text;  # MailerError
 
 =head2 C<B<match(I<string>)>>
 
@@ -80,7 +81,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<mailererror>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<MailerError>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
@@ -89,7 +90,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2017,2020,2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2017,2020,2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
