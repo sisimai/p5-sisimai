@@ -2,8 +2,9 @@ package Sisimai::Reason::NoRelaying;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'norelaying' }
+sub text  { $Sisimai::Eb::RePASS }
 sub description { 'Email rejected with error message "Relaying Denied"' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -52,9 +53,9 @@ sub true {
     my $argvs = shift // return 0;
 
     return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
-    return 0 if $argvs->{'reason'} eq 'securityerror'
-             || $argvs->{'reason'} eq 'systemerror'
-             || $argvs->{'reason'} eq 'undefined';
+    return 0 if $argvs->{'reason'} eq $Sisimai::Eb::ReSAFE
+             || $argvs->{'reason'} eq $Sisimai::Eb::RePROC
+             || $argvs->{'reason'} eq $Sisimai::Eb::Re___0;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -65,7 +66,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::NoRelaying - Bounce reason is C<norelaying> or not.
+Sisimai::Reason::NoRelaying - Bounce reason is C<NoRelaying> or not.
 
 =head1 SYNOPSIS
 
@@ -74,7 +75,7 @@ Sisimai::Reason::NoRelaying - Bounce reason is C<norelaying> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::NoRelaying> checks the bounce reason is C<norelaying> or not. This class is called
+C<Sisimai::Reason::NoRelaying> checks the bounce reason is C<NoRelaying> or not. This class is called
 only C<Sisimai::Reason> class. This is the error that the SMTP connection rejected with an error message
 like C<Relaying Denied>.
 
@@ -87,9 +88,9 @@ like C<Relaying Denied>.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<norelaying>.
+C<text()> method returns the fixed string C<NoRelaying>.
 
-    print Sisimai::Reason::NoRelaying->text;  # norelaying
+    print Sisimai::Reason::NoRelaying->text;  # NoRelaying
 
 =head2 C<B<match(I<string>)>>
 
@@ -99,7 +100,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<norelaying>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<NoRelaying>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
