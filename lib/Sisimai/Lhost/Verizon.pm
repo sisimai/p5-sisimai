@@ -21,6 +21,7 @@ sub inquire {
                     $match = 0 if Sisimai::String->aligned(\$mhead->{'from'}, ['sysadmin@', '.vzwpix.com']);
     return undef if $match < 0;
 
+    require Sisimai::Eb;
     state $indicators = __PACKAGE__->INDICATORS;
     my $boundaries = [];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
@@ -36,7 +37,7 @@ sub inquire {
         my $markingsof = {'message' => ['Error: ']};
            $messagesof = {
             # The attempted recipient address does not exist.
-            'userunknown' => ['550 - Requested action not taken: no such user here'],
+            $Sisimai::Eb::ReUSER => ['550 - Requested action not taken: no such user here'],
         };
         $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'}, 1)];
         $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -84,7 +85,7 @@ sub inquire {
     } else {
         # vzwpix.com
         my $startingof = {'message' => ['Message could not be delivered to mobile']};
-           $messagesof = {'userunknown' => ['No valid recipients for this MM']};
+           $messagesof = {$Sisimai::Eb::ReUSER => ['No valid recipients for this MM']};
            $boundaries = [Sisimai::RFC2045->boundary($mhead->{'content-type'})];
            $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
         for my $e ( split("\n", $emailparts->[0]) ) {
@@ -183,7 +184,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
