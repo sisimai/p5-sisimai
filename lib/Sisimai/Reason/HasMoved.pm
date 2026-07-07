@@ -2,8 +2,9 @@ package Sisimai::Reason::HasMoved;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'hasmoved' }
+sub text  { $Sisimai::Eb::ReMOVE }
 sub description { "Email rejected due to user's mailbox has moved and is not forwarded automatically" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -30,7 +31,7 @@ sub true {
     my $argvs = shift // return 0;
 
     require Sisimai::SMTP::Command;
-    return 1 if $argvs->{'reason'} eq 'hasmoved';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReMOVE;
     return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
@@ -42,7 +43,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::HasMoved - Bounce reason is C<hasmoved> or not.
+Sisimai::Reason::HasMoved - Bounce reason is C<HasMoved> or not.
 
 =head1 SYNOPSIS
 
@@ -51,11 +52,11 @@ Sisimai::Reason::HasMoved - Bounce reason is C<hasmoved> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::HasMoved> checks the bounce reason is C<hasmoved> or not. This class is called
+C<Sisimai::Reason::HasMoved> checks the bounce reason is C<HasMoved> or not. This class is called
 only C<Sisimai::Reason> class.
 
 This is the error that the user's mailbox has moved (and is not forwarded automatically). Sisimai
-will set C<hasmoved> to the reason of the email bounce if the value of the C<Status:> field in the
+will set C<HasMoved> to the reason of the email bounce if the value of the C<Status:> field in the
 bounce email is C<5.1.6>.
 
     <kijitora@example.go.jp>: host mx1.example.go.jp[192.0.2.127] said: 550 5.1.6 recipient
@@ -65,9 +66,9 @@ bounce email is C<5.1.6>.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<hasmoved>.
+C<text()> method returns the fixed string C<HasMoved>.
 
-    print Sisimai::Reason::HasMoved->text;  # hasmoved
+    print Sisimai::Reason::HasMoved->text;  # HasMoved
 
 =head2 C<B<match(I<string>)>>
 
@@ -77,7 +78,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<hasmoved>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<HasMoved>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR
