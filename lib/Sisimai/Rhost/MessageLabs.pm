@@ -14,15 +14,16 @@ sub find {
     my $class = shift;
     my $argvs = shift // return ""; return '' unless length $argvs->{'diagnosticcode'};
 
+    require Sisimai::Eb;
     state $messagesof = {
-        "authfailure" => [
+        $Sisimai::Eb::ReAUTH => [
             # - 553 DMARC domain authentication fail
             # - https://knowledge.broadcom.com/external/article/175407
             #   An email has failed delivery and the reason provided in Track and Trace is due
             #   to SPF Record. 553-SPF (Sender Policy Framework) domain authentication fail.
             "domain authentication fail",
         ],
-        "badreputation" => [
+        $Sisimai::Eb::ReFAMA => [
             # - https://knowledge.broadcom.com/external/article/164955
             #   "501 Connection rejected by policy [7.7]" 20805, please visit www.messagelabs.com/support
             #   for more details about this error message.
@@ -33,7 +34,7 @@ sub find {
             #   Symantec Email Security.cloud customer:
             "Connection rejected by policy",
         ],
-        "blocked" => [
+        $Sisimai::Eb::ReBLOC => [
             # - https://knowledge.broadcom.com/external/article/165165
             #   You are sending an email to a domain protected by the Symantec Email Security.Cloud
             #   service and are receiving a non delivery receipt (NDR) stating the email delivery failed.
@@ -64,14 +65,14 @@ sub find {
             "your IP address (ip-addr) has been blocked",
             "your email address (addr) has been blocked",
         ],
-        "contenterror" => [
+        $Sisimai::Eb::ReBODY => [
             # - 553 Stray linefeeds in message (#5.6.2)
             #   This error message happens because we strictly enforce the Internet Message Format
             #   standard RFC 5322 (and its predecessor RFC 2822) which state, "CR and LF MUST
             #   only occur together as CRLF; they MUST NOT appear independently in the body.
             "Stray linefeeds in message",
         ],
-        "failedstarttls" => [
+        $Sisimai::Eb::ReTTLS => [
             # - https://knowledge.broadcom.com/external/article/162152
             #   You are sending to a domain protected by the Symantec Email Security.cloud
             #   service, or you are a customer subscribed to Symantec Email Security.cloud
@@ -82,7 +83,7 @@ sub find {
             #     in the Delivered column and "Boundary Encryption" in the "Service" column.
             "TLS/SSLv3 Connection required",
         ],
-        "norelaying" => [
+        $Sisimai::Eb::RePASS => [
             # - https://knowledge.broadcom.com/external/article/162137
             #   You received a Non-Delivery Report (NDR) for email sent through the Symantec
             #   Email Security.cloud infrastructure, with the message "You are trying to use
@@ -90,7 +91,7 @@ sub find {
             #   to let you [IP, address] do this."
             " as a relay, ",
         ],
-        "notcompliantrfc" => [
+        $Sisimai::Eb::ReNRFC => [
             # - The format of your message did not comply with RFC 2822.
             # - Contact your IT administrator or ISP.
             # - If the problem persists, contact the recipient by other means (e.g. phone).
@@ -100,7 +101,7 @@ sub find {
             "550 Requested action aborted [4]",
             "has detected that this message is not RFC 5322",
         ],
-        "ratelimited" => [
+        $Sisimai::Eb::ReRATE => [
             #  - https://knowledge.broadcom.com/external/article/385809
             #    Email Security Cloud is attempting to deliver the email and recipient MTA is
             #    responding "452 Too many recipients received this hour".
@@ -112,7 +113,7 @@ sub find {
             "Too many recipients received this hour",
             "too many messages",
         ],
-        "rejected" => [
+        $Sisimai::Eb::ReFROM => [
             #  - 550 sender envelope domain not allowed for sender IP address (#5.1.8)
             #    This error occurs when a sender attempts to send an email and any one of the
             #    following are true:
@@ -148,8 +149,8 @@ sub find {
             "your email address has been blacklisted",
             "your domain has been blacklisted",
         ],
-        "securityerror" => ["Please turn on SMTP Authentication in your mail client"],
-        "spamdetected" => [
+        $Sisimai::Eb::ReSAFE => ["Please turn on SMTP Authentication in your mail client"],
+        $Sisimai::Eb::ReSPAM => [
             #  - https://knowledge.broadcom.com/external/article/173867
             #    Legitimate email, either outbound or inbound, is incorrectly flagged as spam
             #    (false positive) by Email Security.cloud. This email may have the following errors:
@@ -158,7 +159,7 @@ sub find {
             "Message Filtered",
             "filtered by Outbound scanning",
         ],
-        "userunknown" => [
+        $Sisimai::Eb::ReUSER => [
             #  - https://knowledge.broadcom.com/external/article/165163
             #    When sending email to a user on the Symantec Email Security.cloud service, the
             #    message is rejected. The sender receives a non-delivery email with a 500 series
@@ -219,7 +220,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
