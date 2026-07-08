@@ -39,7 +39,7 @@ sub inquire {
         $Sisimai::Eb::ReHOST => ['No such domain.'],
         # courier/module.esmtp/esmtpclient.c:531| hard_error(del, ctf,
         # courier/module.esmtp/esmtpclient.c:532|  "This domain's DNS violates RFC 1035.");
-        $Sisiami::Eb::RePROC => ["This domain's DNS violates RFC 1035."],
+        $Sisimai::Eb::RePROC => ["This domain's DNS violates RFC 1035."],
         # courier/module.esmtp/esmtpclient.c:535| soft_error(del, ctf, "DNS lookup failed.");
         $Sisimai::Eb::ReINET => ['DNS lookup failed.'],
     };
