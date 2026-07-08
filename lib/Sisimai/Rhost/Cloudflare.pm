@@ -12,11 +12,12 @@ sub find {
     my $class = shift;
     my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
+    require Sisimai::Eb;
     state $messagesof = {
         # - 554 <YOUR_IP_ADDRESS> found on one or more RBLs (abusixip). Refer to
         #   https://developers.cloudflare.com/email-routing/postmaster/#spam-and-abusive-traffic/
-        "blocked"     => ["found on one or more DNSBLs"],
-        "systemerror" => ["Upstream error"],
+        $Sisimai::Eb::ReBLOC => ["found on one or more DNSBLs"],
+        $Sisimai::Eb::RePROC => ["Upstream error"],
     };
     for my $e ( keys %$messagesof ) {
         # Try to find the error message matches with the given error message string
