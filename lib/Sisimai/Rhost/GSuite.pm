@@ -11,11 +11,12 @@ sub find {
     my $class = shift;
     my $argvs = shift // return ""; return '' unless length $argvs->{'diagnosticcode'};
 
+    require Sisimai::Eb;
     state $messagesof = {
-        "hostunknown"  => [" responded with code NXDOMAIN", "Domain name not found"],
-        "networkerror" => [" had no relevant answers.", "responded with code NXDOMAIN", "Domain name not found"],
-        "notaccept"    => ["Null MX"],
-        "userunknown"  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
+        $Sisimai::Eb::ReHOST => [" responded with code NXDOMAIN", "Domain name not found"],
+        $Sisimai::Eb::ReINET => [" had no relevant answers.", "responded with code NXDOMAIN", "Domain name not found"],
+        $Sisimai::Eb::Re00MX => ["Null MX"],
+        $Sisimai::Eb::ReUSER => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
     };
     my $statuscode = ""; $statuscode = substr($argvs->{'deliverystatus'}, 0, 1) if $argvs->{'deliverystatus'};
     my $esmtpreply = ""; $esmtpreply = substr($argvs->{'replycode'},      0, 1) if $argvs->{'replycode'};
@@ -63,7 +64,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
