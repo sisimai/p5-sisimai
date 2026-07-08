@@ -11,9 +11,10 @@ sub find {
     my $class = shift;
     my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
+    require Sisimai::Eb;
     state $messagesof = {
-        'filtered'    => '550 : user unknown',  # The response was: 550 : User unknown
-        'userunknown' => '>: user unknown',     # The response was: 550 <...>: User unknown
+        $Sisimai::Eb::ReFILT => '550 : user unknown',  # The response was: 550 : User unknown
+        $Sisimai::Eb::ReUSER => '>: user unknown',     # The response was: 550 <...>: User unknown
     };
     my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $reasontext = '';
@@ -58,7 +59,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018,2020,2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2018,2020,2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
