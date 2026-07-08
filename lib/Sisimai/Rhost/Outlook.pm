@@ -11,9 +11,10 @@ sub find {
     my $class = shift;
     my $argvs = shift // return ""; return '' unless length $argvs->{'diagnosticcode'};
 
+    require Sisimai::Eb;
     state $messagesof = {
-        'hostunknown' => ['The mail could not be delivered to the recipient because the domain is not reachable'],
-        'userunknown' => ['Requested action not taken: mailbox unavailable'],
+        $Sisimai::Eb::ReHOST => ['The mail could not be delivered to the recipient because the domain is not reachable'],
+        $Sisimai::Eb::ReUSER => ['Requested action not taken: mailbox unavailable'],
     };
     my $issuedcode = $argvs->{'diagnosticcode'};
     my $reasontext = '';
@@ -58,7 +59,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
