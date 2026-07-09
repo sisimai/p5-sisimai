@@ -198,7 +198,7 @@ to email file as a data source is available.
             print $e->recipient->host;      # "example.jp"
             print $e->deliverystatus;       # "5.1.1"
             print $e->replycode;            # "550"
-            print $e->reason;               # "userunknown"
+            print $e->reason;               # "UserUnknown"
             print $e->origin;               # "/var/spool/bounce/new/1740074341.eml"
             print $e->hardbounce;           # 1
 
@@ -342,7 +342,7 @@ C<match> method receives an error message as a string and returns a reason name 
     use Sisimai;
     my $v = '550 5.1.1 User unknown';
     my $r = Sisimai->match($v);
-    print $r;   # "userunknown"
+    print $r;   # "UserUnknown"
 
 =head2 C<B<version()>>
 
