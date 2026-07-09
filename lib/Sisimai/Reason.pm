@@ -170,7 +170,7 @@ sub anotherone {
         # Check the value of Action: field, first
         if( CORE::index($actiontext, 'delayed') == 0 || CORE::index($actiontext, 'expired') == 0 ) {
             # Action: delayed, expired
-            $reasontext = $Sisimai::EB::ReTIME;
+            $reasontext = $Sisimai::Eb::ReTIME;
 
         } else {
             # Check the value of SMTP command
