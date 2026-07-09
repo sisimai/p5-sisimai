@@ -116,8 +116,8 @@ Sisimai::SMTP::Failure - SMTP Errors related utilities
     use Sisimai::SMTP::Failure;
     print Sisimai::SMTP::Failure->is_temporary('421 SMTP error message');
     print Sisimai::SMTP::Failure->is_permanent('550 SMTP error message');
-    print Sisimai::SMTP::Failure->is_softbounce('mailboxfull', 4.2.2 mailbox full');
-    print Sisimai::SMTP::Failure->is_hardbounce('userunknown', 5.1.1 user not found');
+    print Sisimai::SMTP::Failure->is_softbounce('MailboxFull', 4.2.2 mailbox full');
+    print Sisimai::SMTP::Failure->is_hardbounce('UserUnknown', 5.1.1 user not found');
 
 =head1 DESCRIPTION
 
