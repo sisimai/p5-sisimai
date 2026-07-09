@@ -50,7 +50,7 @@ sub find {
         $Sisimai::Eb::ReNRFC => [
             "MSG-P3",   # The message contains multiple instances of a header field that can only be present once.
         ],
-        $Sisimai::EB::ReRATE => [
+        $Sisimai::Eb::ReRATE => [
             "CON-T1",   # Facebook's mail server currently has too many connections open to allow another one.
             "CON-T2",   # Your mail server currently has too many connections open to Facebook's mail servers.
             "CON-T3",   # Your mail server has opened too many new connections to Facebook's mail servers in a short period of time.
