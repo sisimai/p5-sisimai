@@ -537,7 +537,7 @@ Sisimai::Fact - Decoded data object
     my $args = {'data' => 'entire-email-text-including-all-the-headers'};
     my $fact = Sisimai::Fact->rise($args);
     for my $e ( @$fact ) {
-        print $e->reason;               # userunknown, mailboxfull, and so on.
+        print $e->reason;               # UserUnknown, MailboxFull, and so on.
         print $e->recipient->address;   # (Sisimai::Address) envelope recipient address
         print $e->bonced->ymd           # (Sisimai::Time) Date of bounce
     }
@@ -557,7 +557,7 @@ C<Sisimai::Fact> objects.
     while( my $r = $mail->read ) {
         my $fact = Sisimai::Fact->make('data' => $r);
         for my $e ( @$fact ) {
-            print $e->reason;               # userunknown, mailboxfull, and so on.
+            print $e->reason;               # UserUnknown, MailboxFull, and so on.
             print $e->recipient->address;   # (Sisimai::Address) envelope recipient address
             print $e->timestamp->ymd        # (Sisimai::Time) Date of the email bounce
         }
