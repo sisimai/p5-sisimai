@@ -77,7 +77,7 @@ sub find {
         #   retry. IB605
         # - The message has attempted to mail too many recipients.
         # - Reduce the number of recipients and try again.
-        'IB605' => $Sisimai::EB::ReRATE,
+        'IB605' => $Sisimai::Eb::ReRATE,
 
         # - 421 Connection refused, too many sessions from This IP. Lower the number of concurrent
         #   sessions. IB007

@@ -137,7 +137,7 @@ sub find {
 
         # - 550 5.5.0 Service refuse. Veuillez essayer plus tard. service refused, please try later.
         #   LPN005_510 (in reply to end of DATA command)
-        '510' => $Sisimai::EB::ReBLOC,
+        '510' => $Sisimai::Eb::ReBLOC,
 
         # - DMARC authentication failed, message rejected as defined by your DMARC policy
         #   Please check your SPF/DKIM/DMARC configuration. Please visit MxToolBox DMARC to
