@@ -830,7 +830,7 @@ sub prefer {
     return $codeinmesg if index($statuscode, '.5.5')  > 0;  # "X.5.5" indicates a wrong protocol version
 
     if( $statuscode eq '5.1.1' ) {
-        # "5.1.1" is a code of "userunknown"
+        # "5.1.1" is a code of "UserUnknown"
         return $statuscode if index($codeinmesg, '5.5.') == 0 || $zeroindex1->{'error'} > 0;
         return $codeinmesg;
 
