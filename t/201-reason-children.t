@@ -44,7 +44,7 @@ isa_ok $ss, 'Sisimai::Fact';
 for my $e ( keys %$ReasonChildren ) {
     my $r = 'Sisimai::Reason::'.$e;
     Module::Load::load $r;
-    is $r->text, lc $e, $r.'->text = '.lc($e);
+    is $r->text, $e, $r.'->text = '.$e;
     is $r->true, 0, $r.'->true = 0';
     ok length $r->description, $r.'->description = '.$r->description;
 
@@ -53,10 +53,10 @@ for my $e ( keys %$ReasonChildren ) {
 
     unless( $e =~ /\A(?:Content|Expire|Mailer|Network|Policy|Security|System|User|NoRelay|OnHold)/ ) {
         # Skip a class its true() method always return 0 
-        $cv->{'reason'} = lc $e;
+        $cv->{'reason'} = $e;
         is $r->true($cv), 1;
 
-        $cv->{'reason'} = 'undefined';
+        $cv->{'reason'} = 'Undefined';
         $cv->{'diagnosticcode'} = $ReasonChildren->{ $e }->[0];
         $cv->{'command'} = $e eq 'Rejected' ? 'MAIL' : $ss->command;
         is $r->true($cv), 1, $e.'->true('.$cv->{'diagnosticcode'}.') = 1';
@@ -72,7 +72,7 @@ for my $e ( keys %$ReasonChildren ) {
 for my $e ( 'Delivered', 'Feedback', 'Undefined', 'Vacation', 'SyntaxError' ) {
     my $r = 'Sisimai::Reason::'.$e;
     Module::Load::load $r;
-    is $r->text, lc $e, $r.'->text = '.lc($e);
+    is $r->text, $e, $r.'->text = '.lc($e);
     is $r->true, 0, $r.'->true = 0';
     is $r->match, 0, $r.'->match = 0';
     ok length $r->description, $r.'->description = '.$r->description;
