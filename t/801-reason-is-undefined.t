@@ -20,7 +20,7 @@ MAKETEST: {
         ok $r->addresser->address, '->addresser = '.$r->addresser->address;
         ok $r->recipient->address, '->recipient = '.$r->recipient->address;
         ok $r->deliverystatus, '->deliverystatus = '.$r->deliverystatus;
-        is $r->reason, 'undefined', '->reason = undefined';
+        is $r->reason, 'Undefined', '->reason = Undefined';
 
         my $h = $r->damn;
         isa_ok $h, 'HASH';
