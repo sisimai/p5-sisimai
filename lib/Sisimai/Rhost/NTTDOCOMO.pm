@@ -53,7 +53,7 @@ sub find {
         # - The key name is a bounce reason name
         # - https://github.com/sisimai/go-sisimai/issues/64
         # - After March 12, 2025, if an error message contains "550 Unknown user", the
-        #   bounce reason will be definitively "userunknown". This is because NTT DOCOMO
+        #   bounce reason will be definitively "UserUnknown". This is because NTT DOCOMO
         #   no longer rejects emails via SMTP for domain-specific rejection or specified
         #   reception filters.
         return $e if grep { index($issuedcode, $_) > -1 } $messagesof->{ $e }->@*;
