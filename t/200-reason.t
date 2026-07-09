@@ -162,7 +162,7 @@ MAKETEST: {
             my $r = lc $e;
             my $v = $Package->is_explicit($r);
 
-            if( $r eq "undefined" || $r eq "onhold" ) {
+            if( $r eq "Undefined" || $r eq "OnHold" ) {
                 is $v, 0, sprintf("%s is not a explicit reason", $e);
             } else {
                 is $v, 1, sprintf("%s is a explicit reason", $e);
