@@ -487,7 +487,7 @@ use Sisimai::RFC791;
 #       5.7.11  Encryption required for requested authentication mechanism
 # -------------------------------------------------------------------------------------------------
 use constant StandardCode => {
-    '2.1.5'  => $Sisimai::Eb::ReSent, # Successfully delivered
+    '2.1.5'  => $Sisimai::Eb::ReSENT, # Successfully delivered
     # ---------------------------------------------------------------------------------------------
     '4.1.6'  => $Sisimai::Eb::ReMOVE, # Destination mailbox has moved, No forwarding address
     '4.1.7'  => $Sisimai::Eb::ReFROM, # Bad sender's mailbox address syntax
