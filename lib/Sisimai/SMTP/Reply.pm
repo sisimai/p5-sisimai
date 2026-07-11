@@ -269,7 +269,7 @@ C<find()> method returns the SMTP reply code value.
 
 C<associatedwith()> method returns a list related to the SMTP reply code in the argument
 
-    print Sisimai::SMTP::Reply->associatedwith("556"); # ["RCPT", "", "notaccept"]
+    print Sisimai::SMTP::Reply->associatedwith("556"); # ["RCPT", "", "NotAccept"]
     print Sisimai::SMTP::Reply->associatedwith("421"); # []
 
 =head1 AUTHOR
