@@ -35,7 +35,7 @@ sub inquire {
             'Loop Back Warning: ',
             'WARNING: UNIX FROM Loop',
         ],
-        'securityerror' => ['Security Alert'],
+        $Sisimai::Eb::ReSAFE => ['Security Alert'],
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
