@@ -419,7 +419,7 @@ sub inquire {
         my $re = $e->{'reason'} || '';
         my $cv = "";
 
-        if( Sisimai::SMTP::Failure->is_temporary($cr) || $re eq 'expired' ) {
+        if( Sisimai::SMTP::Failure->is_temporary($cr) || $re eq $Sisimai::Eb::ReTIME ) {
             # Set the pseudo status code as a temporary error
             $cv = Sisimai::SMTP::Status->code($re, 1) if Sisimai::Reason->is_explicit($re);
         }
