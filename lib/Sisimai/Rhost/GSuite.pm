@@ -25,9 +25,9 @@ sub find {
     for my $e ( keys %$messagesof ) {
         # The key is a bounce reason name
         next unless grep { index($argvs->{'diagnosticcode'}, $_) > -1 } $messagesof->{ $e }->@*;
-        next if $e eq "networkerror" && ($statuscode eq "5" || $esmtpreply eq "5");
-        next if $e eq "hostunknown"  && ($statuscode eq "4" || $statuscode eq "");
-        next if $e eq "hostunknown"  && ($esmtpreply eq "4" || $esmtpreply eq "");
+        next if $e eq $Sisimai::Eb::ReINET && ($statuscode eq "5" || $esmtpreply eq "5");
+        next if $e eq $Sisimai::Eb::ReHOST && ($statuscode eq "4" || $statuscode eq "");
+        next if $e eq $Sisimai::Eb::ReHOST && ($esmtpreply eq "4" || $esmtpreply eq "");
         $reasontext = $e; last;
     }
     return $reasontext;
