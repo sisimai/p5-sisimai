@@ -159,8 +159,8 @@ my $moduletest = sub {
                     $ct = sprintf("[%s-%02d] ->action =", $e, $errorindex);
 
                     ok defined $cv, sprintf("%s %s", $ct, $cv);
-                    if( $rr->reason eq 'Feedback' || $rr->reason eq 'Vacation' ) {
-                        # "action" is empty when the value of "reason" is "Feedback" OR "Vacation"
+                    if( $rr->reason eq 'feedback' || $rr->reason eq 'vacation' ) {
+                        # "action" is empty when the value of "reason" is "feedback" OR "vacation"
                         is $cv, '', sprintf("%s %s", $ct, '');
 
                     } else {
@@ -211,12 +211,12 @@ my $moduletest = sub {
                     $cr = qr/\A[245][.]\d[.]\d{1,3}\z/;
                     $ct = sprintf("[%s-%02d] ->deliverystatus =", $e, $errorindex);
 
-                    if( $rr->reason eq 'Feedback' || $rr->reason eq 'Vacation') {
-                        # "deliverystatus" is empty when the value of "reason" is "Feedback"
+                    if( $rr->reason eq 'feedback' || $rr->reason eq 'vacation') {
+                        # "deliverystatus" is empty when the value of "reason" is "feedback"
                         is $cv, '', sprintf("%s %s", $ct, $cr);
 
                     } else {
-                        # Except the value of "reason" is "Feedback"
+                        # Except the value of "reason" is "feedback"
                         ok length $cv, sprintf("%s %s", $ct, $cv);
                         ok $cv =~ $cr, sprintf("%s %s", $ct, $cr);
                     }
@@ -245,12 +245,12 @@ my $moduletest = sub {
                     $cr = qr/\A(?:DNS|LMTP|SMTP|UNKNOWN|X[.]?[45]00|X-[0-9A-Z-]+)/;
                     $ct = sprintf("[%s-%02d] ->diagnostictype =", $e, $errorindex);
 
-                    if( $rr->reason eq 'Feedback' || $rr->reason eq 'Vacation' ) {
-                        # "deliverystatus" is empty when the value of "reason" is "Feedback"
+                    if( $rr->reason eq 'feedback' || $rr->reason eq 'vacation' ) {
+                        # "deliverystatus" is empty when the value of "reason" is "feedback"
                         ok defined $cv, sprintf("%s %s", $ct, $cr);
 
                     } else {
-                        # Except the value of "reason" is "Feedback"
+                        # Except the value of "reason" is "feedback"
                         ok length $cv, sprintf("%s %s", $ct, $cv);
                         like $cv, $cr, sprintf("%s %s", $ct, $cr);
                     }
@@ -273,7 +273,7 @@ my $moduletest = sub {
 
                     ok defined $cv, sprintf("%s %s", $ct, $cv);
 
-                    if( $rr->reason eq 'Feedback' ) {
+                    if( $rr->reason eq 'feedback' ) {
                         # The value of "feedbacktype" is not empty
                         ok length $cv,                        sprintf("%s %s", $ct, $cv);
                         ok $cv =~ $cr,                        sprintf("%s %s", $ct, $cr);
