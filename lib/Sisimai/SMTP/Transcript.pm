@@ -2,6 +2,7 @@ package Sisimai::SMTP::Transcript;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 use Sisimai::SMTP::Reply;
 use Sisimai::SMTP::Status;
@@ -46,7 +47,7 @@ sub rise {
         # An SMTP server response starting with '<<<' is the first
         push @$esmtp, $table->();
         $cx = $esmtp->[-1];
-        $cx->{'command'} = 'CONN';
+        $cx->{'command'} = $Sisimai::Eb::CeCONN;
         $argv0 = substr($argv0, $p2,) if $p2 > -1;
 
     } else {
@@ -70,7 +71,7 @@ sub rise {
             $cx = $esmtp->[-1];
             $cx->{'command'} = uc $thecommand;
 
-            if( $thecommand eq 'MAIL' || $thecommand eq 'RCPT' || $thecommand eq 'XFORWARD' ) {
+            if( $thecommand eq $Sisimai::Eb::CeMAIL || $thecommand eq $Sisimai::Eb::CeRCPT || $thecommand eq $Sisimai::Eb::CeXFWD ) {
                 # MAIL or RCPT
                 if( index($commandarg, 'FROM:') == 0 || index($commandarg, 'TO:') == 0 ) {
                     # >>> MAIL FROM: <neko@example.com> SIZE=65535
