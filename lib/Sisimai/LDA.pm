@@ -71,7 +71,7 @@ sub find {
     my $argvs = shift // return "";
 
     return "" unless length $argvs->{"diagnosticcode"};
-    return "" unless $argvs->{"command"} eq "" || $argvs->{"command"} eq "DATA";
+    return "" unless $argvs->{"command"} eq "" || $argvs->{"command"} eq $Sisimai::Eb::CeDATA;
 
     my $deliversby = "";    # [String] Local Delivery Agent name
     my $reasontext = "";    # [String] Detected bounce reason
