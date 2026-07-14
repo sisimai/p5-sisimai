@@ -28,6 +28,7 @@ sub inquire {
     }
     return undef if $match == 0 || $mhead->{'x-aol-ip'};
 
+    require Sisimai::Eb;
     require Sisimai::RFC1123;
     require Sisimai::SMTP::Reply;
     require Sisimai::SMTP::Status;
@@ -65,15 +66,15 @@ sub inquire {
             $v ||= $dscontents->[-1];
             $p   = $e->{'response'};
 
-            if( $e->{'command'} eq 'EHLO' || $e->{'command'} eq 'HELO' ) {
+            if( $e->{'command'} eq $Sisimai::Eb::CeEHLO || $e->{'command'} eq $Sisimai::Eb::CeHELO ) {
                 # Use the argument of EHLO/HELO command as a value of "lhost"
                 $v->{'lhost'} = $e->{'argument'};
 
-            } elsif( $e->{'command'} eq 'MAIL' ) {
+            } elsif( $e->{'command'} eq $Sisimai::Eb::CeMAIL ) {
                 # Set the argument of "MAIL" command to pseudo To: header of the original message
                 $emailparts->[1] .= sprintf("To: %s\n", $e->{'argument'}) unless length $emailparts->[1];
 
-            } elsif( $e->{'command'} eq 'RCPT' ) {
+            } elsif( $e->{'command'} eq $Sisimai::Eb::CeRCPT ) {
                 # RCPT TO: <...>
                 if( $v->{'recipient'} ) {
                     # There are multiple recipient addresses in the transcript of session
@@ -281,7 +282,7 @@ sub inquire {
         }
         $e->{'diagnosis'} = Sisimai::String->sweep($e->{'diagnosis'});
         $e->{'command'}   = shift @commandset || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
-        $e->{'command'} ||= 'HELO' if index($e->{'diagnosis'}, 'refused to talk to me:') > -1;
+        $e->{'command'} ||= $Sisimai::Eb::CeHELO if index($e->{'diagnosis'}, 'refused to talk to me:') > -1;
         $e->{'spec'}    ||= 'SMTP' if Sisimai::String->aligned(\$e->{'diagnosis'}, ['host ', ' said:']);
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
@@ -324,7 +325,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
