@@ -2,8 +2,9 @@ package Sisimai::Reason::RateLimited;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'ratelimited' }
+sub text  { $Sisimai::Eb::ReRATE }
 sub description { "Rejected due to exceeding a rate limit: sending too fast or too many concurrency connections" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -47,8 +48,8 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'ratelimited';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'ratelimited';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReRATE;
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq $Sisimai::Eb::ReRATE;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -68,7 +69,7 @@ Sisimai::Reason::RateLimited - Bounced due to that too many connections.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::RateLimited> checks the bounce reason is C<ratelimited> or not. This class is
+C<Sisimai::Reason::RateLimited> checks the bounce reason is C<RateLimited> or not. This class is
 called only C<Sisimai::Reason> class.
 
 This is the error that the SMTP connection was rejected temporarily due to too fast or too many
@@ -81,9 +82,9 @@ concurrency connections to the remote server. This reason has added in Sisimai 4
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<ratelimited>.
+C<text()> method returns the fixed string C<RateLimited>.
 
-    print Sisimai::Reason::RateLimited->text;  # ratelimited
+    print Sisimai::Reason::RateLimited->text;  # RateLimited
 
 =head2 C<B<match(I<string>)>>
 
@@ -93,7 +94,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<ratelimited>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<RateLimited>. The argument must be
 C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

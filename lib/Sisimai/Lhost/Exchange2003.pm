@@ -3,6 +3,7 @@ use parent 'Sisimai::Lhost';
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
 sub description { 'Microsoft Exchange Server 2003: https://www.microsoft.com/microsoft-365/exchange/email' }
 sub inquire {
@@ -57,30 +58,22 @@ sub inquire {
         'error'   => ['did not reach the following recipient(s):'],
     };
     state $errorcodes = {
-        'onhold' => [
+        $Sisimai::Eb::ReUSER => ['000C05A6'], # Unknown Recipient,
+        $Sisimai::Eb::ReFILT => ['000C0595'], # Ambiguous Recipient
+        $Sisimai::Eb::ReINET => ['00120270'], # Too Many Hops
+        $Sisimai::Eb::ReSAFE => ['000B0981'], # 502 Server does not support AUTH
+        $Sisimai::Eb::Re___1 => [ # OnHold
             '000B099C', # Host Unknown, Message exceeds size limit, ...
             '000B09AA', # Unable to relay for, Message exceeds size limit,...
             '000B09B6', # Error messages by remote MTA
         ],
-        'userunknown' => [
-            '000C05A6', # Unknown Recipient,
-        ],
-        'systemerror' => [
+        $Sisimai::Eb::RePROC => [ # SystemError
             '00010256', # Too many recipients.
             '000D06B5', # No proxy for recipient (non-smtp mail?)
         ],
-        'networkerror' => [
-            '00120270', # Too Many Hops
-        ],
-        'contenterror' => [
+        $Sisimai::Eb::ReBODY => [ # ContentError
             '00050311', # Conversion to Internet format failed
             '000502CC', # Conversion to Internet format failed
-        ],
-        'securityerror' => [
-            '000B0981', # 502 Server does not support AUTH
-        ],
-        'filtered' => [
-            '000C0595', # Ambiguous Recipient
         ],
     };
 

@@ -5,6 +5,7 @@ sub list {
         Address.pm
         ARF.pm
         DateTime.pm
+        Eb.pm
         Fact.pm
             Fact/JSON.pm
             Fact/YAML.pm

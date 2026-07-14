@@ -18,8 +18,9 @@ sub find {
     return '' unless $argvs->{'deliverystatus'};
     return '' unless Sisimai::SMTP::Status->test($argvs->{'deliverystatus'});
 
+    require Sisimai::Eb;
     state $messagesof = {
-        'authfailure' => [
+        $Sisimai::Eb::ReAUTH => [
             # - Access denied, a message sent over IPv6 [2a01:111:f200:2004::240] must pass either
             #   SPF or DKIM validation, this message is not signed
             # - The sending message sent over IPv6 must pass either SPF or DKIM.
@@ -40,7 +41,7 @@ sub find {
             #   Spf= Fail , Dkim= Pass , DMARC= Pass ...
             ["5.7.515", 0, 0, "doesn't meet the required authentication level"],
         ],
-        'badreputation' => [
+        $Sisimai::Eb::ReFAMA => [
             # Undocumented error messages ---------------------------------------------------------
             # - status=deferred (host outlook-com.olc.protection.outlook.com[192.0.2.255] said:
             #   451 4.7.650 The mail server [192.0.2.5] has been temporarily rate limited due to IP
@@ -48,7 +49,7 @@ sub find {
             #   [***.prod.protection.outlook.com] (in reply to MAIL FROM command))
             ['4.7.650', 0, 0, 'has been temporarily rate limited due to ip reputation'],
         ],
-        'blocked' => [
+        $Sisimai::Eb::ReBLOC => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - Transient network issues or server problems that might eventually correct them-
             #   selves. The sending server will retry delivery of the message, and will generate
@@ -125,7 +126,7 @@ sub find {
             #   Internet service provider since part of their network is on our block list (S3150). 
             ['5.7.1', 0, 0, 'part of their network is on our block list (s3150)'],
         ],
-        'contenterror' => [
+        $Sisimai::Eb::ReBODY => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - The message was determined to be malformed, and was moved to the poison message
             #   queue. For more information, see Types of queues.
@@ -140,7 +141,7 @@ sub find {
             ['5.4.11', 0, 0, 'agent generated message depth exceeded'],
             ['5.5.6',  0, 0, 'invalid message content'],
         ],
-        'emailtoolarge' => [
+        $Sisimai::Eb::ReSIZE => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - The message is too large. Send the message again without any attachments, or confi-
             #   gure a larger message size limit for the recipient. For more information, see Re-
@@ -156,7 +157,7 @@ sub find {
             # Previous versions of Exchange Server ------------------------------------------------
             ['5.3.4', 0, 0, 'message too big for system'],
         ],
-        'expired' => [
+        $Sisimai::Eb::ReTIME => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - Transient network issues that might eventually correct themselves. The Exchange
             #   server periodically tries to connect to the destination server to deliver the mes-
@@ -207,7 +208,7 @@ sub find {
             #   couldn't be delivered to the original sender.
             ['5.4.300', 0, 0, 'message expired'],
         ],
-        'failedstarttls' => [
+        $Sisimai::Eb::ReTTLS => [
             # Exchange Online ---------------------------------------------------------------------
             # - MX hosts of <domain> failed MTA-STS validation The destination MX host is not the
             #   expected host per the domain's STS policy
@@ -266,14 +267,14 @@ sub find {
             ['4.7.325', 0, 0, 'certificate-host-mismatch:'],
             ['5.7.325', 0, 0, 'certificate-host-mismatch:'],
         ],
-        'mailboxfull' => [
+        $Sisimai::Eb::ReFULL => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - The recipient's mailbox has exceeded its storage quota and is no longer able to ac-
             #   cept new messages. For more information about configuring mailbox quotas, see Con-
             #   figure storage quotas for a mailbox.
             ['5.2.2', 0, 0, 'mailbox full'],
         ],
-        'networkerror' => [
+        $Sisimai::Eb::ReINET => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - There's a DNS or network adapter configuration issue on the Exchange server. Verify
             #   the internal and external DNS lookup settings for the Exchange by running this com-
@@ -329,7 +330,7 @@ sub find {
             ['4.4.312', 0, 0, 'dns query failed'],  # [Message=InfoNoRecords]
             ['5.4.312', 0, 0, 'dns query failed'],  # [Message=InfoNoRecords]
         ],
-        'norelaying' => [
+        $Sisimai::Eb::RePASS => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - You have an application server or device that's trying to relay messages through
             #   Exchange. For more information, see Allow anonymous relay on Exchange servers. The
@@ -370,7 +371,7 @@ sub find {
             # Previous versions of Exchange Server ------------------------------------------------
             ['5.4.310', 0, 0, 'does not exist'], # DNS domain * does not exist
         ],
-        'notaccept' => [
+        $Sisimai::Eb::Re00MX => [
             ['4.3.2', 0, 0, 'system not accepting network messages'],
             ['4.4.4', 0, 0, 'hosted tenant which has no mail-enabled subscriptions'],
 
@@ -381,7 +382,7 @@ sub find {
             #   Book Policy Routing Agent and Address book policies in Exchange Server.
             ['5.3.2', 0, 0, 'storedrv.deliver: missing or bad storedriver mdb properties'],
         ],
-        'policyviolation' => [
+        $Sisimai::Eb::ReWONT => [
             # - 5.0.350 is a generic catch-all error code for a wide variety of non-specific errors
             #   lfrom the recipient's email organization. The specific x-dg-ref header is too long
             #   message is related to Rich Text formatted messages. The specific Requested action
@@ -396,7 +397,7 @@ sub find {
             #   Mail flow rule actions in Exchange Server.
             ['5.7.', 900, 999, 'delivery not authorized, message refused'],
         ],
-        'ratelimited' => [
+        $Sisimai::Eb::ReRATE => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - The combined total of recipients on the To, Cc, and Bcc lines of the message ex-
             #   ceeds the total number of recipients allowed in a single message for the organiza-
@@ -468,7 +469,7 @@ sub find {
             # Previous versions of Exchange Server ------------------------------------------------
             ['5.2.122', 0, 0, 'the recipient has exceeded their limit for'],
         ],
-        'rejected' => [
+        $Sisimai::Eb::ReFROM => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - There's a problem with the sender's email address. Verify the sender's email ad-
             #   dress.
@@ -560,7 +561,7 @@ sub find {
             # Previous versions of Exchange Server ------------------------------------------------
             ['5.7.', 501, 503, 'access denied, banned sender'],
         ],
-        'securityerror' => [
+        $Sisimai::Eb::ReSAFE => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - A firewall or other device is blocking the Extended SMTP command that's required
             #   for Exchange Server authentication (X-EXPS). Internal email traffic is flowing
@@ -583,14 +584,14 @@ sub find {
             #   the configuration of the application or device.
             ['5.7.57', 0, 0, 'client was not authenticated to send anonymous mail during mail from'],
         ],
-        'spamdetected' => [
+        $Sisimai::Eb::ReSPAM => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - The message was quarantined by content filtering. To configure exceptions to con-
             #   tent filtering, see Use the Exchange Management Shell to configure recipient and
             #   sender exceptions for content filtering.
             ['5.2.1', 0, 0, 'content filter agent quarantined this message'],
         ],
-        'suspend' => [
+        $Sisimai::Eb::ReQUIT => [
             # Exchange Online ---------------------------------------------------------------------
             # - The recipient address that you're attempting to contact isn't valid.
             # - Verify the recipient's email address, and try again.
@@ -601,7 +602,7 @@ sub find {
             # Previous versions of Exchange Server ------------------------------------------------
             ['5.2.1', 0, 0, 'mailbox cannot be accessed'],
         ],
-        'syntaxerror' => [
+        $Sisimai::Eb::ReCOMM => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - Receive connectors that are used for internal mail flow are missing the required
             #   Exchange Server authentication mechanism. For more information about authentication
@@ -614,7 +615,7 @@ sub find {
             #   be EHLO or HELO.
             ['5.5.2', 0, 0, 'send hello first'],
         ],
-        'systemerror' => [
+        $Sisimai::Eb::RePROC => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - You've configured a custom Receive connector in the Transport (Hub) service on a
             #   Mailbox server that listens on port 25. Typically, custom Receive connectors that
@@ -681,7 +682,7 @@ sub find {
             #   (in reply to MAIL FROM command))
             ['4.7.700', 0, 0, 'pfa agent busy, please try again.'],
         ],
-        'systemfull' => [
+        $Sisimai::Eb::ReDISK => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - Free disk space is low (for example, the disk that holds the queue database doesn't
             #   have the required amount of free space). For more information, see Understanding
@@ -692,7 +693,7 @@ sub find {
             #   machines.
             ['4.3.1', 0, 0, 'insufficient system resources'],
         ],
-        'userunknown' => [
+        $Sisimai::Eb::ReUSER => [
             # Exchange Server 2019 ----------------------------------------------------------------
             # - The recipient's email address is incorrect (the recipient doesn't exist in the des-
             #   tination messaging system). Verify the recipient's email address. You recreated a
@@ -760,51 +761,51 @@ sub find {
     state $errorcodes = {
         #  The mail server IP connecting to Outlook.com server has exceeded the rate limit allowed.
         #  Reason for rate limitation is related to IP/domain reputation.
-        "RP-001" => ["421", "badreputation"],
+        "RP-001" => ["421", $Sisimai::Eb::ReFAMA],
 
         #  The mail server IP connecting to Outlook.com server has exceeded the rate limit allowed
         #  on this connection. Reason for rate limitation is related to IP/domain reputation.
-        "RP-002" => ["421", "badreputation"],
+        "RP-002" => ["421", $Sisimai::Eb::ReFAMA],
 
         #  The mail server IP connecting to Outlook.com server has exceeded the connection limit
         #  allowed. Reason for limitation is related to IP/domain reputation.
-        "RP-003" => ["421", "badreputation"],
+        "RP-003" => ["421", $Sisimai::Eb::ReFAMA],
 
         #  Mail rejected by Outlook.com for policy reasons. Reasons for rejection may be related
         #  to content with spam-like characteristics or IP/domain reputation. 
-        "SC-001" => ["550", "badreputation"],
+        "SC-001" => ["550", $Sisimai::Eb::ReFAMA],
 
         #  Mail rejected by Outlook.com for policy reasons. The mail server IP connecting to
         #  Outlook.com has exhibited namespace mining behavior.
-        "SC-002" => ["550", "policyviolation"],
+        "SC-002" => ["550", $Sisimai::Eb::ReWONT],
 
         #  Mail rejected by Outlook.com for policy reasons. Your IP address appears to be an
         #  open proxy/relay.
-        "SC-003" => ["550", "blocked"],
+        "SC-003" => ["550", $Sisimai::Eb::ReBLOC],
 
         #  Mail rejected by Outlook.com for policy reasons. A block has been placed against your
         #  IP address because we have received complaints concerning mail coming from that IP
         #  address. We recommend enrolling in our Junk Email Reporting Program (JMRP), a free
         #  program intended to help senders remove unwanted recipients from their email list
-        "SC-004" => ["550", "blocked"],
+        "SC-004" => ["550", $Sisimai::Eb::ReBLOC],
 
         #  Mail rejected by Outlook.com for policy reasons. We generally do not accept email
         #  from dynamic IP's as they are not typically used to deliver unauthenticated SMTP email
         #  to an Internet mail server. (Spamhaus)
-        "DY-001" => ["550", "blocked"],
+        "DY-001" => ["550", $Sisimai::Eb::ReBLOC],
 
         #  Mail rejected by Outlook.com for policy reasons. The likely cause is a compromised or
         #  virus infected server/personal computer.
-        "DY-002" => ["550", "virusdetected"],
+        "DY-002" => ["550", $Sisimai::Eb::ReEXEC],
 
         #  Mail rejected by Outlook.com for policy reasons. If you are not an email/network admin
         #  please contact your Email/Internet Service Provider for help. For more information
         #  about this block and to request removal please go to: Spamhaus.
-        "OU-001" => ["550", "blocked"],
+        "OU-001" => ["550", $Sisimai::Eb::ReBLOC],
 
         #  Mail rejected by Outlook.com for policy reasons. Reasons for rejection may be related
         #  to content with spam-like characteristics or IP/domain reputation.
-        "OU-002" => ["550", "badreputation"],
+        "OU-002" => ["550", $Sisimai::Eb::ReFAMA],
     };
 
     my $statuscode = $argvs->{'deliverystatus'};

@@ -14,10 +14,11 @@ sub find {
     return '' unless $argvs->{'diagnosticcode'};
     return '' unless Sisimai::SMTP::Reply->test($argvs->{'replycode'});
 
+    require Sisimai::Eb;
     state $messagesof = {
         # - https://community.mimecast.com/s/article/email-security-cloud-gateway-mimecast-smtp-error-codes
         # - https://mimecastsupport.zendesk.com/hc/en-us/articles/34000709564691-Policies-Mimecast-SMTP-Error-Codes
-        'authfailure' => [
+        $Sisimai::Eb::ReAUTH => [
             # - The inbound message has been rejected because the originated IP address isn't list-
             #   ed in the published SPF records for the sending domain.
             # - Ensure all the IP addresses for your mail servers are listed in your SPF records.
@@ -39,7 +40,7 @@ sub find {
             # - Ensure all the IP addresses for your mail servers are listed in your SPF records.
             [550, 'dmarc sender invalid - envelope rejected'],
         ],
-        'badreputation' => [
+        $Sisimai::Eb::ReFAMA => [
             # - The sending mail server is subjected to Greylisting. This requires the server to
             #   retry the connection, between one minute and 12 hours. Alternatively, the sender's
             #   IP address has a poor reputation.
@@ -54,7 +55,7 @@ sub find {
             #     You can request a review of your source IP ranges by completing our online form.
             [550, 'local ct ip reputation - (reject)'],
         ],
-        'blocked' => [
+        $Sisimai::Eb::ReBLOC => [
             # - Sender address blocked.
             #   A Blocked Senders Policy has blocked the sender's IP address.
             # - The sender's IP address has been blocked by a Blocked Senders Policy.
@@ -78,7 +79,7 @@ sub find {
             #   the associated IP address from the RBL.
             #[550, '< details of RBL >'], NEED AN ACTUAL ERROR MESSAGE STRING
         ],
-        'emailtoolarge' => [
+        $Sisimai::Eb::ReSIZE => [
             # - The email size either exceeds an Email Size Limit policy or is larger than the
             #   Mimecast service limit. The default is 100 MB for the Legacy MTA, and 200 MB for
             #   "the Latest MTA".
@@ -87,7 +88,7 @@ sub find {
             #   sage with a 70 MB attachment, can have an overall size larger than 100 MB).
             [554, 'maximum email size exceeded'],
         ],
-        'expired' => [
+        $Sisimai::Eb::ReTIME => [
             # - Journal messages past the expiration
             # - Attempts are being made to journal mail past the set expiry threshold.
             #   A retry response will replace the failure because the message is marked for retry
@@ -96,7 +97,7 @@ sub find {
             #   Discontinue journaling old messages past the expiry threshold.
             [550, 'journal messages past the expiration'],
         ],
-        'failedstarttls' => [
+        $Sisimai::Eb::ReTTLS => [
             # - SMTP inbound TLS has been enabled but no SSL certificate (or no valid certificate)
             #   has been selected to be used. 
             # - Delete or change the Secure Receipt or Secure Delivery policy enforcing TLS.
@@ -130,7 +131,7 @@ sub find {
             # - Check you DNS has the required umbrella accounts listed as comma-separated values.
             [554, 'configuration is invalid for this certificate'],
         ],
-        'networkerror' => [
+        $Sisimai::Eb::ReINET => [
             # - The recipients' domains have MX records configured incorrectly
             # - Check and remove any MX records that point to hostnames with outbound references.
             #   Only Inbound smart hosts are supported on MX records.
@@ -143,7 +144,7 @@ sub find {
             #   are configured on the mail servers.
             [554, 'mail loop detected'],
         ],
-        'norelaying' => [
+        $Sisimai::Eb::RePASS => [
             # - Both the sender and recipient domains specified in the transmission are external to
             #   Mimecast, and aren't allowed to relay through the Mimecast service and/or the con-
             #   necting IP address isn't recognized as authorized.
@@ -152,12 +153,12 @@ sub find {
             [451, 'open relay not allowed'],
             [451, 'open relay is not allowed'],
         ],
-        'notaccept' => [
+        $Sisimai::Eb::Re00MX => [
             # - The customer account Inbound emails are disabled in the Administration Console.
             # - Contact Mimecast Support if the account's inbound traffic should be allowed.
             [451, 'account inbounds disabled'],
         ],
-        'onhold' => [
+        $Sisimai::Eb::Re___1 => [
             # - The customer account outbound emails are disabled in the Administration Console.
             # - Contact Mimecast Support if the account's outbound traffic should be allowed.
             [451, 'account outbounds disabled'],
@@ -173,7 +174,7 @@ sub find {
             #   Discontinue journaling old messages past the expiry threshold.
             [550, 'journal message past expiration'],
         ],
-        'policyviolation' => [
+        $Sisimai::Eb::ReWONT => [
             # - The message has triggered an Anti-Spoofing policy.
             # - Create an Anti-Spoofing policy to take no action for the sender's address or IP ad-
             #   dress.
@@ -190,7 +191,7 @@ sub find {
             [554, 'host network not allowed'],
             [554, 'host network, not allowed'],
         ],
-        'ratelimited' => [
+        $Sisimai::Eb::ReRATE => [
             # - There are too many concurrent inbound connections for the account. The default is 20.
             # - The IP address is automatically removed from the block list after five minutes.
             #   Continued invalid connections result in the IP being readded to the block list. En-
@@ -215,7 +216,7 @@ sub find {
             # - Send the messages in smaller chunks to recipients.
             [550, 'exceeding outbound thread limit'],
         ],
-        'rejected' => [
+        $Sisimai::Eb::ReFROM => [
             # - The sender's email address or domain has triggered a Blocked Senders Policy or
             #   there's an SPF hard rejection.
             # - Delete or modify the Blocked Senders policy to exclude the sender address.
@@ -233,7 +234,7 @@ sub find {
             [550, 'rejected by header-based blocked senders - block policy for header from'],
             [550, 'envelope rejected - block policy for envelope from address'],
         ],
-        'securityerror' => [
+        $Sisimai::Eb::ReSAFE => [
             # - Messages submitted to SMTP port 587 require authentication. This error indicates
             #   the authentication details provided were incorrect.
             # - Check your authentication details match an internal email address in Mimecast, with
@@ -243,7 +244,7 @@ sub find {
             [550, 'submitter failed to disabled'],
             [550, 'submitter failed to authenticate'],
         ],
-        'spamdetected' => [
+        $Sisimai::Eb::ReSPAM => [
             # - A signature was detected that could either be a virus, or a spam score over the
             #   maximum threshold. The spam score isn't available in the Administration Console. If
             #   you aren't a Mimecast customer but have emails rejected with this error code, con-
@@ -256,7 +257,7 @@ sub find {
             #   Activity and searching for the required email address.
             [554, 'email rejected due to security policies'],
         ],
-        'systemerror' => [
+        $Sisimai::Eb::RePROC => [
             # - The Mimecast server is under maximum load.
             # - No action is required from the end-user. The message will retry 30 times and when
             #   server resources are available, the message is processed.
@@ -279,7 +280,7 @@ sub find {
             # - Contact Mimecast Support.
             [451, 'unable to process an email at this time'],
         ],
-        'userunknown' => [
+        $Sisimai::Eb::ReUSER => [
             # - The email address isn't a valid SMTP address.
             # - The sender must resend the message to a valid internal email address.
             [501, 'invalid address'],
@@ -346,7 +347,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2022-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2022-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

@@ -2,8 +2,9 @@ package Sisimai::Reason::MailboxFull;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'mailboxfull' }
+sub text  { $Sisimai::Eb::ReFULL }
 sub description { "Email rejected due to a recipient's mailbox is full" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -58,11 +59,11 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0; return 0 unless $argvs->{'deliverystatus'};
 
-    # Delivery status code points "mailboxfull".
+    # Delivery status code points "MailboxFull".
     # Status: 4.2.2
     # Diagnostic-Code: SMTP; 450 4.2.2 <***@example.jp>... Mailbox Full
-    return 1 if $argvs->{'reason'} eq 'mailboxfull';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'mailboxfull';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReFULL;
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq $Sisimai::Eb::ReFULL;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -73,7 +74,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::MailboxFull - Bounce reason is C<mailboxfull> or not.
+Sisimai::Reason::MailboxFull - Bounce reason is C<MailboxFull> or not.
 
 =head1 SYNOPSIS
 
@@ -82,10 +83,10 @@ Sisimai::Reason::MailboxFull - Bounce reason is C<mailboxfull> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::MailboxFull> checks the bounce reason is C<mailboxfull> or not. This class is
+C<Sisimai::Reason::MailboxFull> checks the bounce reason is C<MailboxFull> or not. This class is
 called only C<Sisimai::Reason> class.
 
-This is the error that the recipient's mailbox is full. Sisimai will set C<mailboxfull> to the reason
+This is the error that the recipient's mailbox is full. Sisimai will set C<MailboxFull> to the reason
 of the email bounce if the value of C<Status:> field in a bounce email is C<4.2.2> or C<5.2.2>.
 
     Action: failed
@@ -96,9 +97,9 @@ of the email bounce if the value of C<Status:> field in a bounce email is C<4.2.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<mailboxfull>.
+C<text()> method returns the fixed string C<MailboxFull>.
 
-    print Sisimai::Reason::MailboxFull->text;  # mailboxfull
+    print Sisimai::Reason::MailboxFull->text;  # MailboxFull
 
 =head2 C<B<match(I<string>)>>
 
@@ -108,7 +109,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<mailboxfull>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<MailboxFull>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

@@ -11,18 +11,19 @@ sub find {
     my $class = shift;
     my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
+    require Sisimai::Eb;
     state $errorcodes = {
         # https://mail.i.ua/err/$(CODE)
-        '1'  => 'norelaying',  # The use of SMTP as mail gate is forbidden.
-        '2'  => 'userunknown', # User is not found.
-        '3'  => 'suspend',     # Mailbox was not used for more than 3 months
-        '4'  => 'mailboxfull', # Mailbox is full.
-        '5'  => 'ratelimited', # Letter sending limit is exceeded.
-        '6'  => 'norelaying',  # Use SMTP of your provider to send mail.
-        '7'  => 'blocked',     # Wrong value if command HELO/EHLO parameter.
-        '8'  => 'rejected',    # Couldn't check sender address.
-        '9'  => 'blocked',     # IP-address of the sender is blacklisted.
-        '10' => 'filtered',    # Not in the list Mail address management.
+        '1'  => $Sisimai::Eb::RePASS, # The use of SMTP as mail gate is forbidden.
+        '2'  => $Sisimai::Eb::ReUSER, # User is not found.
+        '3'  => $Sisimai::Eb::ReQUIT, # Mailbox was not used for more than 3 months
+        '4'  => $Sisimai::Eb::ReFULL, # Mailbox is full.
+        '5'  => $Sisimai::Eb::ReRATE, # Letter sending limit is exceeded.
+        '6'  => $Sisimai::Eb::RePASS, # Use SMTP of your provider to send mail.
+        '7'  => $Sisimai::Eb::ReBLOC, # Wrong value if command HELO/EHLO parameter.
+        '8'  => $Sisimai::Eb::ReFROM, # Couldn't check sender address.
+        '9'  => $Sisimai::Eb::ReBLOC, # IP-address of the sender is blacklisted.
+        '10' => $Sisimai::Eb::ReFILT, # Not in the list Mail address management.
     };
     my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $codenumber = index($issuedcode, '.i.ua/err/') > 0 ? substr($issuedcode, index($issuedcode, '/err/') + 5, 2) : 0;
@@ -61,7 +62,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2019-2021,2023-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2019-2021,2023-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

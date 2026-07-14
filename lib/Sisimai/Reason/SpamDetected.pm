@@ -2,10 +2,11 @@ package Sisimai::Reason::SpamDetected;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 use Sisimai::SMTP::Command;
 
-sub text  { 'spamdetected' }
+sub text  { $Sisimai::Eb::ReSPAM }
 sub description { 'Email rejected by spam filter running on the remote host' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -85,10 +86,10 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0; return 0 unless $argvs->{'deliverystatus'};
 
-    return 1 if $argvs->{'reason'} eq 'spamdetected';
-    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq 'spamdetected';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReSPAM;
+    return 1 if (Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '') eq $Sisimai::Eb::ReSPAM;
 
-    # The value of "reason" isn't "spamdetected" when the value of "command" is an SMTP command to
+    # The value of "reason" isn't "SpamDetected" when the value of "command" is an SMTP command to
     # be sent before the SMTP DATA command because all the MTAs read the headers and the entire
     # message body after the DATA command.
     return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->ExceptDATA->@*;
@@ -102,7 +103,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::SpamDetected - Bounce reason is C<spamdetected> due to Spam content in the message
+Sisimai::Reason::SpamDetected - Bounce reason is C<SpamDetected> due to Spam content in the message
 or not.
 
 =head1 SYNOPSIS
@@ -112,7 +113,7 @@ or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::SpamDetected> checks the bounce reason is C<spamdetected> due to the spam content
+C<Sisimai::Reason::SpamDetected> checks the bounce reason is C<SpamDetected> due to the spam content
 in the message or not. This class is called only C<Sisimai::Reason> class.
 
 This is the error that the message you sent was rejected by the spam filter which is running on the
@@ -127,9 +128,9 @@ remote host. This reason has added in Sisimai 4.1.25.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<spamdetected>.
+C<text()> method returns the fixed string C<SpamDetected>.
 
-    print Sisimai::Reason::SpamDetected->text;  # spamdetected
+    print Sisimai::Reason::SpamDetected->text;  # SpamDetected
 
 =head2 C<B<match(I<string>)>>
 

@@ -14,9 +14,10 @@ sub find {
     my $class = shift;
     my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
+    require Sisimai::Eb;
     state $messagesof = {
-        "hostunknown" => ["Host or domain name not found"],
-        "notaccept"   => ["type=MX: Malformed or unexpected name server reply"],
+        $Sisimai::Eb::ReHOST => ["Host or domain name not found"],
+        $Sisimai::Eb::Re00MX => ["type=MX: Malformed or unexpected name server reply"],
     };
 
     my $issuedcode = $argvs->{'diagnosticcode'};
@@ -62,7 +63,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

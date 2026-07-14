@@ -2,8 +2,9 @@ package Sisimai::Reason::NetworkError;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'networkerror' }
+sub text  { $Sisimai::Eb::ReINET }
 sub description { 'SMTP connection failed due to DNS look up failure or other network problems' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -64,7 +65,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::NetworkError - Bounce reason is C<networkerror> or not.
+Sisimai::Reason::NetworkError - Bounce reason is C<NetworkError> or not.
 
 =head1 SYNOPSIS
 
@@ -73,7 +74,7 @@ Sisimai::Reason::NetworkError - Bounce reason is C<networkerror> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::NetworkError> checks the bounce reason is C<networkerror> or not. This class is
+C<Sisimai::Reason::NetworkError> checks the bounce reason is C<NetworkError> or not. This class is
 called only C<Sisimai::Reason> class.
 
 This is the error that the SMTP connection failed due to DNS look up failure or other network problems.
@@ -88,9 +89,9 @@ This reason has added in Sisimai 4.1.12.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<networkerror>.
+C<text()> method returns the fixed string C<NetworkError>.
 
-    print Sisimai::Reason::NetworkError->text;  # networkerror
+    print Sisimai::Reason::NetworkError->text;  # NetworkError
 
 =head2 C<B<match(I<string>)>>
 
@@ -100,7 +101,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<networkerror>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<NetworkError>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

@@ -38,6 +38,7 @@ sub inquire {
     # Thanks,
     #
     # Google Groups
+    require Sisimai::Eb;
     state $boundaries = ['----- Original message -----', 'Content-Type: message/rfc822'];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = $dscontents->[-1];
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
@@ -47,7 +48,7 @@ sub inquire {
     my $receivedby = $mhead->{'received'} || [];
     my $recordwide = {
         'rhost'     => Sisimai::RFC5322->received($receivedby->[0])->[1],
-        'reason'    => 'onhold',
+        'reason'    => $Sisimai::Eb::Re___1,
         'diagnosis' => $issuedcode,
     };
 
@@ -56,7 +57,7 @@ sub inquire {
     # * You may need to join the group before receiving permission to post.
     # * This group may not be open to posting.
     my $fewdetails = [$emailparts->[0] =~ /^[ ]?[*][ ]?/gm] || [];
-    $recordwide->{'reason'} = 'rejected' if scalar @$fewdetails == 4;
+    $recordwide->{'reason'} = $Sisimai::Eb::ReFROM if scalar @$fewdetails == 4;
 
     for my $e ( split(',', $mhead->{'x-failed-recipients'}) ) {
         # X-Failed-Recipients: neko@example.jp, nyaan@example.org, ...

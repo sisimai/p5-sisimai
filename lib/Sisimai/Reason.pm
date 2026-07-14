@@ -2,54 +2,61 @@ package Sisimai::Reason;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
 my $ModulePath = __PACKAGE__->path;
 my $GetRetried = __PACKAGE__->retry;
 my $ClassOrder = [
     # 0. true() meethod in the following reasons are called from Reason->find()
-    [qw/MailboxFull EmailTooLarge Suspend HasMoved NoRelaying AuthFailure UserUnknown Filtered RequirePTR
-        NotCompliantRFC BadReputation ContentError Rejected HostUnknown SpamDetected RateLimited Blocked
-        FailedSTARTTLS NotAccept VirusDetected PolicyViolation/
-    ],
-    # 1. match() method in the following reasons are called from Reason->find()
-    [qw/MailboxFull SpamDetected VirusDetected NoRelaying SystemError NetworkError Suspend SystemFull
-        Suppressed MailerError SecurityError PolicyViolation SyntaxError Expired/
-    ],
-    [qw/MailboxFull EmailTooLarge Suspend UserUnknown Filtered Rejected HostUnknown SpamDetected
-        RateLimited Blocked SpamDetected AuthFailure FailedSTARTTLS SecurityError SystemError
-        NetworkError Suspend Expired ContentError HasMoved SystemFull NotAccept MailerError
-        NoRelaying Suppressed SyntaxError OnHold/
-    ],
+    [$Sisimai::Eb::ReFULL, $Sisimai::Eb::ReSIZE, $Sisimai::Eb::ReQUIT, $Sisimai::Eb::ReMOVE, $Sisimai::Eb::RePASS,
+     $Sisimai::Eb::ReAUTH, $Sisimai::Eb::ReUSER, $Sisimai::Eb::ReFILT, $Sisimai::Eb::ReQPTR, $Sisimai::Eb::ReNRFC,
+     $Sisimai::Eb::ReFAMA, $Sisimai::Eb::ReBODY, $Sisimai::Eb::ReFROM, $Sisimai::Eb::ReHOST, $Sisimai::Eb::ReSPAM,
+     $Sisimai::Eb::ReRATE, $Sisimai::Eb::ReBLOC, $Sisimai::Eb::ReTTLS, $Sisimai::Eb::Re00MX, $Sisimai::Eb::ReEXEC,
+     $Sisimai::Eb::ReWONT],
+
+    # 1. match() method in the following reasons are called from Sisimai::Reason->find()
+    [$Sisimai::Eb::ReFULL, $Sisimai::Eb::ReSPAM, $Sisimai::Eb::ReEXEC, $Sisimai::Eb::RePASS, $Sisimai::Eb::RePROC,
+     $Sisimai::Eb::ReINET, $Sisimai::Eb::ReQUIT, $Sisimai::Eb::ReDISK, $Sisimai::Eb::ReSTOP, $Sisimai::Eb::ReUNIX,
+     $Sisimai::Eb::ReSAFE, $Sisimai::Eb::ReWONT, $Sisimai::Eb::ReCOMM, $Sisimai::Eb::ReTIME],
+
+    [$Sisimai::Eb::ReFULL, $Sisimai::Eb::ReSIZE, $Sisimai::Eb::ReQUIT, $Sisimai::Eb::ReUSER, $Sisimai::Eb::ReFILT,
+     $Sisimai::Eb::ReFROM, $Sisimai::Eb::ReHOST, $Sisimai::Eb::ReSPAM, $Sisimai::Eb::ReRATE, $Sisimai::Eb::ReBLOC,
+     $Sisimai::Eb::ReAUTH, $Sisimai::Eb::ReTTLS, $Sisimai::Eb::ReSAFE, $Sisimai::Eb::RePROC, $Sisimai::Eb::ReINET,
+     $Sisimai::Eb::ReTIME, $Sisimai::Eb::ReBODY, $Sisimai::Eb::ReMOVE, $Sisimai::Eb::ReDISK, $Sisimai::Eb::Re00MX,
+     $Sisimai::Eb::ReUNIX, $Sisimai::Eb::RePASS, $Sisimai::Eb::ReSTOP, $Sisimai::Eb::ReCOMM, $Sisimai::Eb::Re___1],
 ];
 
 sub retry {
     # Reason list better to retry detecting an error reason
     # @return   [Hash] Reason list
     return {
-        'undefined' => 1, 'onhold' => 1, 'systemerror' => 1, 'securityerror' => 1, 'expired' => 1,
-        'networkerror' => 1, 'hostunknown' => 1, 'userunknown'=> 1
+        $Sisimai::Eb::Re___0 => 1, $Sisimai::Eb::Re___1 => 1, $Sisimai::Eb::RePROC => 1, $Sisimai::Eb::ReSAFE => 1,
+        $Sisimai::Eb::ReTIME => 1, $Sisimai::Eb::ReINET => 1, $Sisimai::Eb::ReHOST => 1, $Sisimai::Eb::ReUSER => 1,
     };
 }
 
 sub is_explicit {
-    # is_explicit() returns 0 when the argument is empty or is "undefined" or is "onhold"
+    # is_explicit() returns 0 when the argument is empty or is "Undefined" or is "OnHold"
     # @param    string argv1  Reason name
     # @return   bool          false: The reaosn is not explicit
     my $class = shift;
     my $argv1 = shift || return 0;
 
-    return 0 if $argv1 eq "undefined" || $argv1 eq "onhold" || $argv1 eq "";
+    return 0 if $argv1 eq $Sisimai::Eb::Re___0 || $argv1 eq $Sisimai::Eb::Re___1 || $argv1 eq "";
     return 1;
 }
 
 sub index {
     # All the error reason list Sisimai support
     # @return   [Array] Reason list
-    return [qw/
-        AuthFailure BadReputation Blocked ContentError Expired FailedSTARTTLS Filtered HasMoved
-        HostUnknown MailboxFull MailerError EmailTooLarge NetworkError NotAccept NotCompliantRFC
-        OnHold Rejected NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError
-        Suspend RequirePTR SystemError SystemFull RateLimited Suppressed UserUnknown SyntaxError/
+    return [
+        $Sisimai::Eb::ReAUTH, $Sisimai::Eb::ReFAMA, $Sisimai::Eb::ReBLOC, $Sisimai::Eb::ReBODY, $Sisimai::Eb::ReSENT,
+        $Sisimai::Eb::ReSIZE, $Sisimai::Eb::ReTIME, $Sisimai::Eb::ReTTLS, $Sisimai::Eb::ReFEED, $Sisimai::Eb::ReFILT,
+        $Sisimai::Eb::ReMOVE, $Sisimai::Eb::ReHOST, $Sisimai::Eb::ReFULL, $Sisimai::Eb::ReUNIX, $Sisimai::Eb::ReINET,
+        $Sisimai::Eb::RePASS, $Sisimai::Eb::Re00MX, $Sisimai::Eb::ReNRFC, $Sisimai::Eb::Re___1, $Sisimai::Eb::ReWONT,
+        $Sisimai::Eb::ReFROM, $Sisimai::Eb::ReQPTR, $Sisimai::Eb::ReRATE, $Sisimai::Eb::ReSAFE, $Sisimai::Eb::ReSPAM,
+        $Sisimai::Eb::ReSTOP, $Sisimai::Eb::ReQUIT, $Sisimai::Eb::ReCOMM, $Sisimai::Eb::RePROC, $Sisimai::Eb::ReDISK,
+        $Sisimai::Eb::ReUSER, $Sisimai::Eb::ReAWAY, $Sisimai::Eb::ReEXEC,
     ];
 }
 
@@ -73,8 +80,8 @@ sub find {
 
     # Return a reason text already decided except a reason matched with the regular expression of
     # Sisimai::Reason->retry() method.
-    return $argvs->{'reason'} if( (not exists $GetRetried->{ $argvs->{'reason'} }) && $argvs->{'reason'} );
-    return 'delivered'        if substr($argvs->{'deliverystatus'}, 0, 2) eq '2.';
+    return $argvs->{'reason'}   if( (not exists $GetRetried->{ $argvs->{'reason'} }) && $argvs->{'reason'} );
+    return $Sisimai::Eb::ReSENT if substr($argvs->{'deliverystatus'}, 0, 2) eq '2.';
 
     my $reasontext = '';
     my $issuedcode = $argvs->{'diagnosticcode'} || '';
@@ -93,18 +100,18 @@ sub find {
         }
     }
 
-    if( not $reasontext || $reasontext eq 'undefined' ) {
+    if( not $reasontext || $reasontext eq $Sisimai::Eb::Re___0 ) {
         # Bounce reason is not detected yet.
         $reasontext   = __PACKAGE__->anotherone($argvs);
-        $reasontext   = '' if $reasontext eq 'undefined';
-        $reasontext ||= 'expired' if $argvs->{'action'} eq 'delayed';
+        $reasontext   = '' if $reasontext eq $Sisimai::Eb::Re___0;
+        $reasontext ||= $Sisiimai::Eb::ReTIME if $argvs->{'action'} eq 'delayed';
         return $reasontext if $reasontext;
 
         # Try to match with message patterns in Sisimai::Reason::Vacation
         require Sisimai::Reason::Vacation;
-        $reasontext   = 'vacation' if Sisimai::Reason::Vacation->match(lc $issuedcode);
-        $reasontext ||= 'onhold'   if $issuedcode;
-        $reasontext ||= 'undefined';
+        $reasontext   = $Sisimai::Eb::ReAWAY if Sisimai::Reason::Vacation->match(lc $issuedcode);
+        $reasontext ||= $Sisimai::Eb::Re___1 if $issuedcode;
+        $reasontext ||= $Sisimai::Eb::Re___0;
     }
     return $reasontext;
 }
@@ -134,7 +141,7 @@ sub anotherone {
             require $ModulePath->{ $p };
 
             next unless $p->match($issuedcode);
-            $reasontext = lc $e;
+            $reasontext = $e;
             last;
         }
         last if $reasontext;
@@ -143,34 +150,34 @@ sub anotherone {
         my $code2digit = substr($statuscode, 0, 3) || '';
         if( $code2digit eq '5.6' || $code2digit eq '4.6' ) {
             #  X.6.0   Other or undefined media error
-            $reasontext = 'contenterror';
+            $reasontext = $Sisimai::Eb::ReBODY;
 
         } elsif( $code2digit eq '5.7' || $code2digit eq '4.7' ) {
             #  X.7.0   Other or undefined security status
-            $reasontext = 'securityerror';
+            $reasontext = $Sisimai::Eb::ReSAFE;
 
         } elsif( CORE::index($codeformat, 'X-UNIX') == 0 ) {
             # Diagnostic-Code: X-UNIX; ..., X-Postfix, or other X-*
-            $reasontext = 'mailererror';
+            $reasontext = $Sisimai::Eb::ReUNIX;
 
         } else {
             # 50X Syntax Error?
             require Sisimai::Reason::SyntaxError;
-            $reasontext = 'syntaxerror' if Sisimai::Reason::SyntaxError->true($argvs);
+            $reasontext = $Sisimai::Eb::ReCOMM if Sisimai::Reason::SyntaxError->true($argvs);
         }
         last if $reasontext;
 
         # Check the value of Action: field, first
         if( CORE::index($actiontext, 'delayed') == 0 || CORE::index($actiontext, 'expired') == 0 ) {
             # Action: delayed, expired
-            $reasontext = 'expired';
+            $reasontext = $Sisimai::Eb::ReTIME;
 
         } else {
             # Check the value of SMTP command
             my $thecommand = $argvs->{'command'} // '';
             if( $thecommand eq 'EHLO' || $thecommand eq 'HELO' ) {
                 # Rejected at connection or after EHLO|HELO
-                $reasontext = 'blocked';
+                $reasontext = $Sisimai::Eb::ReBLOC;
             }
         }
         last;
@@ -203,13 +210,13 @@ sub match {
 
     if( CORE::index(uc $issuedcode, 'X-UNIX; ') > -1 ) {
         # X-Unix; ...
-        $reasontext = 'mailererror';
+        $reasontext = $Sisimai::Eb::ReUNIX;
 
     } else {
         # Detect the bounce reason from "Status:" code
         require Sisimai::SMTP::Status;
         my $cv = Sisimai::SMTP::Status->find($argv1)   || '';
-        $reasontext = Sisimai::SMTP::Status->name($cv) || 'undefined';
+        $reasontext = Sisimai::SMTP::Status->name($cv) || $Sisimai::Eb::Re___0;
     }
     return $reasontext;
 }

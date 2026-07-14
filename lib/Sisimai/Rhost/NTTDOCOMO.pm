@@ -5,17 +5,18 @@ use warnings;
 
 sub find {
     # Detect bounce reason from NTT docomo
-    # @param    [Sisimai::Fact] argvs   Decoded email object
+    # @param    [Sisimai::Fact] argvs   Decoded email objec
     # @return   [String]                The bounce reason for docomo.ne.jp
     # @since v4.25.15
     my $class = shift;
     my $argvs = shift // return ""; return "" unless $argvs->{'diagnosticcode'};
 
+    require Sisimai::Eb;
     my $messagesof = {
-        'mailboxfull' => ['552 too much mail data'],
-        'ratelimited' => ['552 too many recipients'],
-        'syntaxerror' => ['503 bad sequence of commands', '504 command parameter not implemented'],
-        'userunknown' => ['550 unknown user'],
+        $Sisimai::Eb::ReFULL => ['552 too much mail data'],
+        $Sisimai::Eb::ReRATE => ['552 too many recipients'],
+        $Sisimai::Eb::ReCOMM => ['503 bad sequence of commands', '504 command parameter not implemented'],
+        $Sisimai::Eb::ReUSER => ['550 unknown user'],
     };
     my $statuscode = $argvs->{'deliverystatus'}    || '';
     my $issuedcode = lc $argvs->{'diagnosticcode'} || '';
@@ -44,15 +45,15 @@ sub find {
     # Final-Recipient: RFC822; ***@docomo.ne.jp
     # Action: failed
     # Status: 5.2.0
-    return 'userunknown' if $statuscode eq '5.1.1' || $statuscode eq '5.9.213';
-    return 'filtered'    if $statuscode eq '5.2.0';
+    return $Sisimai::Eb::ReUSER if $statuscode eq '5.1.1' || $statuscode eq '5.9.213';
+    return $Sisimai::Eb::ReFILT if $statuscode eq '5.2.0';
 
     for my $e ( keys %$messagesof ) {
         # The value of "Diagnostic-Code:" field is not empty
         # - The key name is a bounce reason name
         # - https://github.com/sisimai/go-sisimai/issues/64
         # - After March 12, 2025, if an error message contains "550 Unknown user", the
-        #   bounce reason will be definitively "userunknown". This is because NTT DOCOMO
+        #   bounce reason will be definitively "UserUnknown". This is because NTT DOCOMO
         #   no longer rejects emails via SMTP for domain-specific rejection or specified
         #   reception filters.
         return $e if grep { index($issuedcode, $_) > -1 } $messagesof->{ $e }->@*;
@@ -84,8 +85,8 @@ sub find {
         # Status: 5.0.0
         # Remote-MTA: dns; mfsmax.docomo.ne.jp
         # Diagnostic-Code: smtp; 550 Unknown user ***@docomo.ne.jp
-        return 'userunknown' if $thecommand eq 'RCPT';
-        return 'rejected'    if $thecommand eq 'DATA';
+        return $Sisimai::Eb::ReUSER if $thecommand eq 'RCPT';
+        return $Sisimai::Eb::ReFROM if $thecommand eq 'DATA';
     }
 
     # 1. Rejected by other SMTP commands: AUTH, MAIL,

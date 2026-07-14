@@ -32,6 +32,7 @@ sub inquire {
     }
     return undef if $match < 2;
 
+    require Sisimai::Eb;
     require Sisimai::SMTP::Command;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ["--------------------------------------------------", "Content-Type: message/rfc822"];
@@ -110,15 +111,15 @@ sub inquire {
         if( defined $mhead->{'x-spasign'} && $mhead->{'x-spasign'} eq 'NG' ) {
             # Content-Type: text/plain; ..., X-SPASIGN: NG (spamghetti, au by EZweb)
             # Filtered recipient returns message that include 'X-SPASIGN' header
-            $e->{'reason'} = 'filtered';
+            $e->{'reason'} = $Sisimai::Eb::ReFILT;
 
         } else {
             # There is no X-SPASIGN header or the value of the header is not "NG"
-            $e->{'reason'} = 'suspend' if grep { index($e->{'diagnosis'}, $_) > -1 } $unpaiduser->@*;
+            $e->{'reason'} = $Sisimai::Eb::ReQUIT if grep { index($e->{'diagnosis'}, $_) > -1 } $unpaiduser->@*;
         }
         next if $e->{'reason'};
         next if index($e->{'recipient'}, '@ezweb.ne.jp') > 1 || index($e->{'recipient'}, '@au.com') > 1;
-        $e->{"reason"} = "userunknown" if index($e->{"diagnosis"}, "<") == 0;
+        $e->{"reason"} = $Sisimai::Eb::ReUSER if index($e->{"diagnosis"}, "<") == 0;
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};
 }

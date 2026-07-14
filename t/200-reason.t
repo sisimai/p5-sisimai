@@ -126,7 +126,7 @@ MAKETEST: {
         isa_ok $cv, 'HASH';
         ok scalar keys %$cv;
         for my $e ( keys %$cv ) {
-            like $e, qr/\A[a-z]+\z/;
+            like $e, qr/\A[A-Za-z]+\z/;
             is $cv->{ $e }, 1;
         }
     }
@@ -149,20 +149,19 @@ MAKETEST: {
 
             ok $a, 'Diagnostic-Code: '.$a;
             ok $b, 'Detected reason: '.$b;
-            ok grep { $a eq lc $_ } ( keys %$cv );
-            ok grep { $b eq lc $_ } ( keys %$cv );
+            ok grep { $a eq $_ } ( keys %$cv );
+            ok grep { $b eq $_ } ( keys %$cv );
             is $a, $b;
         }
         is(Sisimai::Reason->match(undef), "");
-        is(Sisimai::Reason->match('X-Unix; 77'), 'mailererror');
+        is(Sisimai::Reason->match('X-Unix; 77'), 'MailerError');
     }
 
     EXPLICIT: {
         for my $e ( $Package->index()->@* ) {
-            my $r = lc $e;
-            my $v = $Package->is_explicit($r);
+            my $v = $Package->is_explicit($e);
 
-            if( $r eq "undefined" || $r eq "onhold" ) {
+            if( $e eq "Undefined" || $e eq "OnHold" ) {
                 is $v, 0, sprintf("%s is not a explicit reason", $e);
             } else {
                 is $v, 1, sprintf("%s is a explicit reason", $e);

@@ -2,9 +2,10 @@ package Sisimai::Reason::UserUnknown;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 
-sub text  { 'userunknown' }
+sub text  { $Sisimai::Eb::ReUSER }
 sub description { "Email rejected due to a local part of a recipient's email address does not exist" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -107,7 +108,7 @@ sub match {
 }
 
 sub true {
-    # Whether the address is "userunknown" or not
+    # Whether the address is "UserUnknown" or not
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is unknown user
     #                                   0: is not unknown user.
@@ -117,19 +118,22 @@ sub true {
     my $argvs = shift // return 0;
 
     require Sisimai::SMTP::Command;
-    return 1 if $argvs->{'reason'} eq 'userunknown';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReUSER;
     return 0 if grep { $argvs->{'command'} eq $_ } Sisimai::SMTP::Command->BeforeRCPT->@*;
 
     my $tempreason = Sisimai::SMTP::Status->name($argvs->{'deliverystatus'}) || '';
-    return 0 if $tempreason eq 'suspend';
+    return 0 if $tempreason eq $Sisimai::Eb::ReQUIT;
 
     my $issuedcode = lc $argvs->{'diagnosticcode'};
-    if( $tempreason eq 'userunknown' ) {
+    if( $tempreason eq $Sisimai::Eb::ReUSER ) {
         # *.1.1 = 'Bad destination mailbox address'
         #   Status: 5.1.1
         #   Diagnostic-Code: SMTP; 550 5.1.1 <***@example.jp>:
         #     Recipient address rejected: User unknown in local recipient table
-        state $prematches = [qw|NoRelaying Blocked MailboxFull HasMoved Rejected NotAccept|];
+        state $prematches = [
+            $Sisimai::Eb::RePASS, $Sisimai::Eb::ReBLOC, $Sisimai::Eb::ReFULL,
+            $Sisimai::Eb::ReMOVE, $Sisimai::Eb::ReFROM, $Sisimai::Eb::Re00MX,
+        ];
         state $ModulePath = {
             'Sisimai::Reason::NoRelaying'  => 'Sisimai/Reason/NoRelaying.pm',
             'Sisimai::Reason::Blocked'     => 'Sisimai/Reason/Blocked.pm',
@@ -166,7 +170,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::UserUnknown - Bounce reason is C<userunknown> or not.
+Sisimai::Reason::UserUnknown - Bounce reason is C<UserUnknown> or not.
 
 =head1 SYNOPSIS
 
@@ -175,12 +179,12 @@ Sisimai::Reason::UserUnknown - Bounce reason is C<userunknown> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::UserUnknown> checks the bounce reason is C<userunknown> or not.
+C<Sisimai::Reason::UserUnknown> checks the bounce reason is C<UserUnknown> or not.
 This class is called only C<Sisimai::Reason> class.
 
 This is the error that the local part (left hand side of C<@> sign) of the recipient's email address
 does not exist. In many case, the user has changed the internet service provider, or has quit company,
-or the local part is misspelled. Sisimai will set C<userunknown> to the reason of the email bounce
+or the local part is misspelled. Sisimai will set C<UserUnknown> to the reason of the email bounce
 if the value of C<Status:> field in the bounce email is C<5.1.1>, or the connection was refused at
 SMTP C<RCPT> command, or the contents of C<Diagnostic-Code:> field represents that it is unknown user.
 
@@ -192,9 +196,9 @@ SMTP C<RCPT> command, or the contents of C<Diagnostic-Code:> field represents th
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<userunknown>.
+C<text()> method returns the fixed string C<UserUnknown>.
 
-    print Sisimai::Reason::UserUnknown->text;  # userunknown
+    print Sisimai::Reason::UserUnknown->text;  # UserUnknown
 
 =head2 C<B<match(I<string>)>>
 
@@ -204,7 +208,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<userunknown>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<UserUnknown>. The argument must be
 C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

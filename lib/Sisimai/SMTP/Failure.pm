@@ -2,6 +2,7 @@ package Sisimai::SMTP::Failure;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::SMTP::Reply;
 use Sisimai::SMTP::Status;
 
@@ -51,10 +52,10 @@ sub is_hardbounce {
     my $argv1 = shift || return 0;
     my $argv2 = shift // '';
 
-    return 0 if $argv1 eq "undefined" || $argv1 eq "onhold";
-    return 0 if $argv1 eq "delivered" || $argv1 eq "feedback"    || $argv1 eq "vacation";
-    return 1 if $argv1 eq "hasmoved"  || $argv1 eq "userunknown" || $argv1 eq "hostunknown";
-    return 0 if $argv1 ne "notaccept";
+    return 0 if $argv1 eq $Sisimai::Eb::Re___0 || $argv1 eq $Sisimai::Eb::Re___1;
+    return 0 if $argv1 eq $Sisimai::Eb::ReSENT || $argv1 eq $Sisimai::Eb::ReFEED || $argv1 eq $Sisimai::Eb::ReAWAY;
+    return 1 if $argv1 eq $Sisimai::Eb::ReMOVE || $argv1 eq $Sisimai::Eb::ReUSER || $argv1 eq $Sisimai::Eb::ReHOST;
+    return 0 if $argv1 ne $Sisimai::Eb::Re00MX;
 
     # NotAccept: 5xx => hard bounce, 4xx => soft bounce
     my $hardbounce = 0;
@@ -86,10 +87,10 @@ sub is_softbounce {
     my $argv1 = shift || return 0;
     my $argv2 = shift // '';
 
-    return 0 if $argv1 eq "delivered" || $argv1 eq "feedback"    || $argv1 eq "vacation";
-    return 0 if $argv1 eq "hasmoved"  || $argv1 eq "userunknown" || $argv1 eq "hostunknown";
-    return 1 if $argv1 eq "undefined" || $argv1 eq "onhold";
-    return 1 if $argv1 ne "notaccept";
+    return 0 if $argv1 eq $Sisimai::Eb::ReSENT || $argv1 eq $Sisimai::Eb::ReFEED || $argv1 eq $Sisimai::Eb::ReAWAY;
+    return 0 if $argv1 eq $Sisimai::Eb::ReMOVE || $argv1 eq $Sisimai::Eb::ReUSER || $argv1 eq $Sisimai::Eb::ReHOST;
+    return 1 if $argv1 eq $Sisimai::Eb::Re___0 || $argv1 eq $Sisimai::Eb::Re___1;
+    return 1 if $argv1 ne $Sisimai::Eb::Re00MX;
 
     # NotAccept: 5xx => hard bounce, 4xx => soft bounce
     my $softbounce = 0;
@@ -115,8 +116,8 @@ Sisimai::SMTP::Failure - SMTP Errors related utilities
     use Sisimai::SMTP::Failure;
     print Sisimai::SMTP::Failure->is_temporary('421 SMTP error message');
     print Sisimai::SMTP::Failure->is_permanent('550 SMTP error message');
-    print Sisimai::SMTP::Failure->is_softbounce('mailboxfull', 4.2.2 mailbox full');
-    print Sisimai::SMTP::Failure->is_hardbounce('userunknown', 5.1.1 user not found');
+    print Sisimai::SMTP::Failure->is_softbounce('MailboxFull', 4.2.2 mailbox full');
+    print Sisimai::SMTP::Failure->is_hardbounce('UserUnknown', 5.1.1 user not found');
 
 =head1 DESCRIPTION
 
@@ -160,7 +161,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018,2020-2022,2024 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018,2020-2022,2024,2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

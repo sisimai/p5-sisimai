@@ -2,8 +2,9 @@ package Sisimai::Reason::Delivered;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'delivered' }
+sub text  { $Sisimai::Eb::ReSENT }
 sub description { 'Email delivered successfully' }
 sub match { return 0 }
 sub true  { return 0 }
@@ -20,12 +21,12 @@ Sisimai::Reason::Delivered - Email delivered successfully
 =head1 SYNOPSIS
 
     use Sisimai::Reason::Delivered;
-    print Sisimai::Reason::Delivered->text; # delivered
+    print Sisimai::Reason::Delivered->text; # Delivered
 
 =head1 DESCRIPTION
 
 C<Sisimai::Reason::Delivered> checks the email you sent is delivered successfully or not by matching
-diagnostic messages with message patterns. Sisimai will set C<"delivered"> to the value of C<"reason">
+diagnostic messages with message patterns. Sisimai will set C<Delivered> to the value of C<"reason">
 when C<Status:> field in the bounce message begins with C<2> like following:
 
     Final-Recipient: rfc822; kijitora@neko.nyaan.jp
@@ -39,9 +40,9 @@ This class is called only C<Sisimai->reason()> method. This is B<NOT AN ERROR> r
 
 =head2 C<B<text()>>
 
-C<text()> returns the fixed string C<delivered>.
+C<text()> returns the fixed string C<Delivered>.
 
-    print Sisimai::Reason::Delivered->text;  # delivered
+    print Sisimai::Reason::Delivered->text;  # Delivered
 
 =head2 C<B<match(I<string>)>>
 
@@ -57,7 +58,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2016,2020,2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 

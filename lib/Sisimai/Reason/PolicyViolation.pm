@@ -2,8 +2,9 @@ package Sisimai::Reason::PolicyViolation;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'policyviolation' }
+sub text  { $Sisimai::Eb::ReWONT }
 sub description { 'Email rejected due to policy violation on a destination host' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -35,16 +36,16 @@ sub match {
 }
 
 sub true {
-    # The bounce reason is "policyviolation" or not
+    # The bounce reason is "PolicyViolation" or not
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
-    # @return   [Integer]               1: is policy violation
-    #                                   0: is not policyviolation
+    # @return   [Integer]               1: is PolicyViolation
+    #                                   0: is not PolicyViolation
     # @since v4.22.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'policyviolation';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReWONT;
     return 0 if $argvs->{'command'} ne '' && $argvs->{'command'} ne 'DATA';
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
@@ -56,7 +57,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::PolicyViolation - Bounce reason is C<policyviolation> or not.
+Sisimai::Reason::PolicyViolation - Bounce reason is C<PolicyViolation> or not.
 
 =head1 SYNOPSIS
 
@@ -65,12 +66,12 @@ Sisimai::Reason::PolicyViolation - Bounce reason is C<policyviolation> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::PolicyViolation> checks the bounce reason is C<policyviolation> or not.
+C<Sisimai::Reason::PolicyViolation> checks the bounce reason is C<PolicyViolation> or not.
 This class is called only C<Sisimai::Reason> class.
 
 This is the error that a policy violation was detected on the destination mail host. When the header
 content or the format of the original message violates their security policies, or multiple addresses
-exist in the C<From:> header, Sisimai will set C<policyviolation>.
+exist in the C<From:> header, Sisimai will set C<PolicyViolation>.
 
     Action: failed
     Status: 5.7.0
@@ -82,9 +83,9 @@ exist in the C<From:> header, Sisimai will set C<policyviolation>.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<policyviolation>.
+C<text()> method returns the fixed string C<PolicyViolation>.
 
-    print Sisimai::Reason::PolicyViolation->text;  # policyviolation
+    print Sisimai::Reason::PolicyViolation->text;  # PolicyViolation
 
 =head2 C<B<match(I<string>)>>
 
@@ -94,7 +95,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<policyviolation>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<PolicyViolation>. The argument must be
 <CSisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

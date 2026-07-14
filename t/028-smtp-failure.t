@@ -11,12 +11,12 @@ can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
     my $softbounces = [
-        'blocked', 'contenterror', 'emailtoolarge', 'expired', 'failedstarttls', 'filtered', 'mailboxfull',
-        'mailererror', 'networkerror', 'norelaying', 'rejected', 'securityerror', 'spamdetected',
-        'suppressed', 'suspend', 'systemerror', 'systemfull', 'ratelimited', 'undefined', 'onhold',
+        'Blocked', 'ContentError', 'EmailTooLarge', 'Expired', 'FailedSTARTTLS', 'Filtered', 'MailboxFull',
+        'MailerError', 'NetworkError', 'NoRelaying', 'Rejected', 'SecurityError', 'SpamDetected',
+        'Suppressed', 'Suspend', 'SystemError', 'SystemFull', 'RateLimited', 'Undefined', 'OnHold',
     ];
-    my $hardbounces = ['userunknown', 'hostunknown', 'hasmoved', 'notaccept'];
-    my $isntbounces = ['delivered', 'feedback', 'vacation'];
+    my $hardbounces = ['UserUnknown', 'HostUnknown', 'HasMoved', 'NotAccept'];
+    my $isntbounces = ['Delivered', 'Feedback', 'Vacation'];
 
     my $isnterrors = [
         'smtp; 2.1.5 250 OK',

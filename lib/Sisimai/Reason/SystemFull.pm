@@ -2,8 +2,9 @@ package Sisimai::Reason::SystemFull;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'systemfull' }
+sub text  { $Sisimai::Eb::ReDISK }
 sub description { "Email rejected due to a destination mail server's disk is full" }
 sub match {
     # Try to match that the given text and regular expressions
@@ -38,7 +39,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::SystemFull - Bounce reason is C<systemfull> or not.
+Sisimai::Reason::SystemFull - Bounce reason is C<SystemFull> or not.
 
 =head1 SYNOPSIS
 
@@ -47,20 +48,20 @@ Sisimai::Reason::SystemFull - Bounce reason is C<systemfull> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::SystemFull> checks the bounce reason is C<systemfull> or not. This class is called
+C<Sisimai::Reason::SystemFull> checks the bounce reason is C<SystemFull> or not. This class is called
 only C<Sisimai::Reason> class.
 
 This is the error that the destination mail server's storage (or spool) is full. Sisimai will set
-C<systemfull> to the reason of email bounce if the value of C<Status:> field in a bounce email is
+C<SystemFull> to the reason of email bounce if the value of C<Status:> field in a bounce email is
 C<4.3.1> or C<5.3.1>.
 
 =head1 CLASS METHODS
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<systemfull>.
+C<text()> method returns the fixed string C<SystemFull>.
 
-    print Sisimai::Reason::SystemFull->text;  # systemfull
+    print Sisimai::Reason::SystemFull->text;  # SystemFull
 
 =head2 C<B<match(I<string>)>>
 
@@ -70,7 +71,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<systemfull>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<SystemFull>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

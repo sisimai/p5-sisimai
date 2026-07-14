@@ -2,8 +2,9 @@ package Sisimai::Reason::EmailTooLarge;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'emailtoolarge' }
+sub text  { $Sisimai::Eb::ReSIZE }
 sub description { 'Email rejected due to an email size is too big for a destination mail server' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -40,18 +41,18 @@ sub true {
     # @since v4.0.0
     # @see http://www.ietf.org/rfc/rfc2822.txt
     my $class = shift;
-    my $argvs = shift // return 0; return 1 if $argvs->{'reason'} eq 'emailtoolarge';
+    my $argvs = shift // return 0; return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReSIZE;
 
     my $statuscode = $argvs->{'deliverystatus'} // '';
     my $tempreason = Sisimai::SMTP::Status->name($statuscode) || '';
 
-    # Delivery status code points "emailtoolarge".
+    # Delivery status code points "EmailTooLarge".
     # Status: 5.3.4
     # Diagnostic-Code: SMTP; 552 5.3.4 Error: message file too big
     #
     # Status: 5.2.3
     # Diagnostic-Code: Message length exceeds administrative limit
-    return 1 if $tempreason eq 'emailtoolarge';
+    return 1 if $tempreason eq $Sisimai::Eb::ReSIZE;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
@@ -62,7 +63,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::EmailTooLarge - Bounce reason is C<emailtoolarge> or not.
+Sisimai::Reason::EmailTooLarge - Bounce reason is C<EmailTooLarge> or not.
 
 =head1 SYNOPSIS
 
@@ -71,12 +72,12 @@ Sisimai::Reason::EmailTooLarge - Bounce reason is C<emailtoolarge> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::EmailTooLarge> checks the bounce reason is C<emailtoolarge> or not. This class is
+C<Sisimai::Reason::EmailTooLarge> checks the bounce reason is C<EmailTooLarge> or not. This class is
 called only C<Sisimai::Reason> class.
 
 This is the error that the sent email size is too big for the destination mail server. In many case,
 There are many attachment files with the email, or the file size is too large. Sisimai will set
-C<emailtoolarge> to the reason of the email bounce if the value of C<Status:> field in the bounce
+C<EmailTooLarge> to the reason of the email bounce if the value of C<Status:> field in the bounce
 email is C<5.2.3> or C<5.3.4>.
 
     Action: failed
@@ -86,9 +87,9 @@ email is C<5.2.3> or C<5.3.4>.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<emailtoolarge>.
+C<text()> method returns the fixed string C<EmailTooLarge>.
 
-    print Sisimai::Reason::EmailTooLarge->text;  # emailtoolarge
+    print Sisimai::Reason::EmailTooLarge->text;  # EmailTooLarge
 
 =head2 C<B<match(I<string>)>>
 
@@ -98,7 +99,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<emailtoolarge>. The argument must be
+C<true()> method returns C<1> if the bounce reason is C<EmailTooLarge>. The argument must be
 C<Sisimai::Fact> object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

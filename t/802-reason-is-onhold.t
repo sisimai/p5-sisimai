@@ -24,7 +24,7 @@ MAKETEST: {
         is $r->reason, 'onhold', '->reason = onhold';
 
         ok(Sisimai::Reason::OnHold->true($r)), '->true = 1';
-        $r->{'reason'} = 'undefined';
+        $r->{'reason'} = 'Undefined';
         ok(Sisimai::Reason::OnHold->true($r) == 0), '->true = 0';
 
         my $h = $r->damn;

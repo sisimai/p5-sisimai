@@ -20,6 +20,7 @@ sub inquire {
     return undef unless rindex($mhead->{'from'}, '<mailer-daemon@googlemail.com>') > -1;
     return undef unless index($mhead->{'subject'}, "Delivery Status Notification") > -1;
 
+    require Sisimai::Eb;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ["Content-Type: message/rfc822", "Content-Type: text/rfc822-headers"];
     state $startingof = {
@@ -27,7 +28,7 @@ sub inquire {
         'error'   => ["The response was:", "The response from the remote server was:"],
     };
     state $messagesof = {
-        "userunknown"  => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
+        $Sisimai::Eb::ReUSER => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
     };
 
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];

@@ -3,7 +3,8 @@ use v5.26;
 use strict;
 use warnings;
 
-sub text  { 'suspend' }
+require Sisimai::Eb;
+sub text  { $Sisimai::Eb::ReQUIT }
 sub description { 'Email rejected due to a recipient account is being suspended' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -51,7 +52,7 @@ sub match {
 }
 
 sub true {
-    # The envelope recipient's mailbox is suspended or not
+    # The envelope recipient's mailbox is Suspended or not
     # @param    [Sisimai::Fact] argvs   Object to be detected the reason
     # @return   [Integer]               1: is mailbox suspended
     #                                   0: is not suspended
@@ -60,7 +61,7 @@ sub true {
     my $class = shift;
     my $argvs = shift // return 0;
 
-    return 1 if $argvs->{'reason'} eq 'suspend';
+    return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReQUIT;
     return 1 if length $argvs->{'replycode'} && $argvs->{'replycode'} == 525;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
@@ -72,7 +73,7 @@ __END__
 
 =head1 NAME
 
-Sisimai::Reason::Suspend - Bounce reason is C<suspend> or not.
+Sisimai::Reason::Suspend - Bounce reason is C<Suspend> or not.
 
 =head1 SYNOPSIS
 
@@ -81,7 +82,7 @@ Sisimai::Reason::Suspend - Bounce reason is C<suspend> or not.
 
 =head1 DESCRIPTION
 
-C<Sisimai::Reason::Suspend> checks the bounce reason is C<suspend> or not. This class is called only
+C<Sisimai::Reason::Suspend> checks the bounce reason is C<Suspend> or not. This class is called only
 C<Sisimai::Reason> class. This is the error that the recipient account is being suspended due to
 unpaid, or being inactive, or other reasons.
 
@@ -89,9 +90,9 @@ unpaid, or being inactive, or other reasons.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<suspend>.
+C<text()> method returns the fixed string C<Suspend>.
 
-    print Sisimai::Reason::Suspend->text;  # suspend
+    print Sisimai::Reason::Suspend->text;  # Suspend
 
 =head2 C<B<match(I<string>)>>
 
@@ -101,7 +102,7 @@ C<match()> method returns C<1> if the argument matched with patterns defined in 
 
 =head2 C<B<true(I<Sisimai::Fact>)>>
 
-C<true()> method returns C<1> if the bounce reason is C<suspend>. The argument must be C<Sisimai::Fact>
+C<true()> method returns C<1> if the bounce reason is C<Suspend>. The argument must be C<Sisimai::Fact>
 object and this method is called only from C<Sisimai::Reason> class.
 
 =head1 AUTHOR

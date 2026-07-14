@@ -14,10 +14,10 @@ can_ok $Package, @{ $Methods->{'class'} };
 
 MAKETEST: {
     my $reasonlist = [qw/
-      authfailure badreputation blocked contenterror emailtoolarge expired filtered hasmoved
-      hostunknown mailboxfull mailererror networkerror notaccept onhold ratelimited rejected
-      norelaying spamdetected virusdetected policyviolation securityerror suspend requireptr
-      notcompliantrfc systemerror systemfull userunknown syntaxerror/
+      AuthFailure BadReputation Blocked ContentError EmailTooLarge Expired Filtered HasMoved
+      HostUnknown MailboxFull MailerError NetworkError NotAccept OnHold RateLimited Rejected
+      NoRelaying SpamDetected VirusDetected PolicyViolation SecurityError Suspend RequirePTR
+      NotCompliantRFC SystemError SystemFull UserUnknown SyntaxError/
     ];
     my $statuslist = [ qw/
         2.1.5
@@ -65,7 +65,7 @@ MAKETEST: {
         $v = $Package->code($e);
         like $v, qr/\A5[.]9[.]\d{3}/, 'pseudo status code('.$e.') = '.$v;
 
-        next if $e =~ /userunknown|hostunknown|hasmoved/;
+        next if $e =~ /UserUnknown|HostUnknown|HasMoved/;
         $v = $Package->code($e, 1);
         like $v, qr/\A4[.]9[.]\d+/, 'pseudo status code('.$e.',1) = '.$v;
     }
@@ -73,8 +73,8 @@ MAKETEST: {
     is $Package->name(''), "", '->name() = ""';
     STANRDARD_STATUS_CODE: for my $e ( @$statuslist ) {
         $v = $Package->name($e);
-        if( $v eq 'delivered' ) {
-            is $v, 'delivered', '->name('.$e.') returns delivered';
+        if( $v eq 'Delivered' ) {
+            is $v, 'Delivered', '->name('.$e.') returns Delivered';
 
         } else {
             ok grep({ $v eq $_ } @$reasonlist), '->name('.$e.') returns '.$v;

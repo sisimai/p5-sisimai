@@ -2,8 +2,9 @@ package Sisimai::Reason::Vacation;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 
-sub text  { 'vacation' }
+sub text  { $Sisimai::Eb::ReAWAY }
 sub description { 'Email replied automatically due to a recipient is out of office' }
 sub match {
     # Try to match that the given text and regular expressions
@@ -37,7 +38,7 @@ Sisimai::Reason::Vacation - the recipient is out of the office
 =head1 SYNOPSIS
 
     use Sisimai::Reason::Vacation;
-    print Sisimai::Reason::Vacation->text; # vacation
+    print Sisimai::Reason::Vacation->text; # Vacation
 
 =head1 DESCRIPTION
 
@@ -48,9 +49,9 @@ This class is called only from C<Sisimai->reason()> method.
 
 =head2 C<B<text()>>
 
-C<text()> method returns the fixed string C<vacation>.
+C<text()> method returns the fixed string C<Vacation>.
 
-    print Sisimai::Reason::Vacation->text;  # vacation
+    print Sisimai::Reason::Vacation->text;  # Vacation
 
 =head2 C<B<match(I<string>)>>
 
@@ -66,7 +67,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2016-2018,2020,2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2016-2018,2020,2021,2024-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
