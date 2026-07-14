@@ -383,11 +383,11 @@ sub inquire {
             }
 
             # Detect the reason of bounce
-            if( $e->{'command'} eq 'HELO' || $e->{'command'} eq 'EHLO' ) {
+            if( $e->{'command'} eq $Sisimai::Eb::CeHELO || $e->{'command'} eq $Sisimai::Eb::CeEHLO ) {
                 # HELO | Connected to 192.0.2.135 but my name was rejected.
                 $e->{'reason'} = $Sisimai::Eb::ReBLOC;
 
-            } elsif( $e->{'command'} eq 'MAIL' ) {
+            } elsif( $e->{'command'} eq $Sisimai::Eb::CeMAIL ) {
                 # MAIL | Connected to 192.0.2.135 but sender was rejected.
                 $e->{'reason'} = $Sisimai::Eb::Re___1;
 
