@@ -156,7 +156,7 @@ sub true {
         }
         return 1 unless $matchother;    # Did not match with other message patterns
 
-    } elsif( $argvs->{'command'} eq 'RCPT' ) {
+    } elsif( $argvs->{'command'} eq $Sisimai::Eb::CeRCPT ) {
         # When the SMTP command is not "RCPT", the session rejected by other reason, maybe.
         return 1 if __PACKAGE__->match($issuedcode);
     }

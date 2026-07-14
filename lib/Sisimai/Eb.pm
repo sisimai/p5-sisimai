@@ -43,6 +43,28 @@ our $ReUSER = "UserUnknown";
 our $ReAWAY = "Vacation";
 our $ReEXEC = "VirusDetected";
 
+#       _       ______                                          _ 
+#   ___| |__   / / ___|___  _ __ ___  _ __ ___   __ _ _ __   __| |
+#  / _ \ '_ \ / / |   / _ \| '_ ` _ \| '_ ` _ \ / _` | '_ \ / _` |
+# |  __/ |_) / /| |__| (_) | | | | | | | | | | | (_| | | | | (_| |
+#  \___|_.__/_/  \____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|\__,_|
+our $CeHELO = "HELO";
+our $CeEHLO = "EHLO";
+our $CeMAIL = "MAIL";
+our $CeRCPT = "RCPT";
+our $CeDATA = "DATA";
+our $CeQUIT = "QUIT";
+our $CeRSET = "RSET";
+our $CeNOOP = "NOOP";
+our $CeVRFY = "VRFY";
+our $CeETRN = "ETRN";
+our $CeEXPN = "EXPN";
+our $CeHELP = "HELP";
+our $CeAUTH = "AUTH";
+our $CeTTLS = "STARTTLS";
+our $CeXFWD = "XFORWARD";
+our $CeCONN = "CONN"; # CONN is a pseudo SMTP command used only in Sisimai
+
 1;
 __END__
 

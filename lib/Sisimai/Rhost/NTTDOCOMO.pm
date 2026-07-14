@@ -85,8 +85,8 @@ sub find {
         # Status: 5.0.0
         # Remote-MTA: dns; mfsmax.docomo.ne.jp
         # Diagnostic-Code: smtp; 550 Unknown user ***@docomo.ne.jp
-        return $Sisimai::Eb::ReUSER if $thecommand eq 'RCPT';
-        return $Sisimai::Eb::ReFROM if $thecommand eq 'DATA';
+        return $Sisimai::Eb::ReUSER if $thecommand eq $Sisimai::Eb::CeRCPT;
+        return $Sisimai::Eb::ReFROM if $thecommand eq $Sisimai::Eb::CeDATA;
     }
 
     # 1. Rejected by other SMTP commands: AUTH, MAIL,

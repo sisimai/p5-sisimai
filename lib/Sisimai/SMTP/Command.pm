@@ -2,16 +2,22 @@ package Sisimai::SMTP::Command;
 use v5.26;
 use strict;
 use warnings;
-use constant ExceptDATA => ["CONN", "EHLO", "HELO", "MAIL", "RCPT"];
-use constant BeforeRCPT => ["CONN", "EHLO", "EHLO", "MAIL", "AUTH", "STARTTLS"];
+use Sisimai::Eb;
+use constant ExceptDATA => [$Sisimai::Eb::CeCONN, $Sisimai::Eb::CeEHLO, $Sisimai::Eb::CeHELO,
+                            $Sisimai::Eb::CeMAIL, $Sisimai::Eb::CeRCPT];
+use constant BeforeRCPT => [$Sisimai::Eb::CeCONN, $Sisimai::Eb::CeEHLO, $Sisimai::Eb::CeEHLO,
+                            $Sisimai::Eb::CeMAIL, $Sisimai::Eb::CeAUTH, $Sisimai::Eb::CeTTLS];
 state $Availables = [
-    "HELO", "EHLO", "MAIL", "RCPT", "DATA", "QUIT", "RSET", "NOOP", "VRFY", "ETRN", "EXPN", "HELP",
-    "AUTH", "STARTTLS", "XFORWARD",
-    "CONN", # CONN is a pseudo SMTP command used only in Sisimai
+    $Sisimai::Eb::CeHELO, $Sisimai::Eb::CeEHLO, $Sisimai::Eb::CeMAIL, $Sisimai::Eb::CeRCPT,
+    $Sisimai::Eb::CeDATA, $Sisimai::Eb::CeQUIT, $Sisimai::Eb::CeRSET, $Sisimai::Eb::CeNOOP,
+    $Sisimai::Eb::CeVRFY, $Sisimai::Eb::CeETRN, $Sisimai::Eb::CeEXPN, $Sisimai::Eb::CeHELP,
+    $Sisimai::Eb::CeAUTH, $Sisimai::Eb::CeTTLS, $Sisimai::Eb::CeXFWD,
+    $Sisimai::Eb::CeCONN, # CONN is a pseudo SMTP command used only in Sisimai
 ];
 state $Detectable = [
-    "HELO", "EHLO", "STARTTLS", "AUTH PLAIN", "AUTH LOGIN", "AUTH CRAM-", "AUTH DIGEST-", "MAIL F",
-    "RCPT", "RCPT T", "DATA", "QUIT", "XFORWARD",
+    $Sisimai::Eb::CeHELO, $Sisimai::Eb::CeEHLO, $Sisimai::Eb::CeTTLS, "AUTH PLAIN", "AUTH LOGIN",
+    "AUTH CRAM-", "AUTH DIGEST-", "MAIL F", $Sisimai::Eb::CeRCPT, "RCPT T", $Sisimai::Eb::CeDATA,
+    $Sisimai::Eb::CeQUIT, $Sisimai::Eb::CeXFWD,
 ];
 
 sub test {
@@ -34,7 +40,7 @@ sub find {
     my $argv0 = shift // return ""; return "" unless __PACKAGE__->test($argv0);
 
     my $issuedcode = ' '.lc($argv0).' ';
-    my $commandmap = {'STAR' => 'STARTTLS', 'XFOR' => 'XFORWARD'};
+    my $commandmap = {'STAR' => $Sisimai::Eb::CeTTLS, 'XFOR' => $Sisimai::Eb::CeXFWD};
     my $commandset = [];
 
     for my $e ( @$Detectable ) {

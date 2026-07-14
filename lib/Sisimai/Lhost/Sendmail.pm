@@ -165,6 +165,7 @@ sub inquire {
     }
     return undef unless $recipients;
 
+    require Sisimai::Eb;
     for my $e ( @$dscontents ) {
         # Set default values if each value is empty.
         $e->{ $_ } ||= $permessage->{ $_ } || '' for keys %$permessage;
@@ -184,7 +185,7 @@ sub inquire {
             last;
         }
         $e->{'command'} ||= $thecommand || Sisimai::SMTP::Command->find($e->{'diagnosis'}) || '';
-        $e->{'command'} ||= 'EHLO' if scalar @$esmtpreply;
+        $e->{'command'} ||= $Sisimai::Eb::CeEHLO if scalar @$esmtpreply;
 
         while(1) {
             # Check alternative status code and override it

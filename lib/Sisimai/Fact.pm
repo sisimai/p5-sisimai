@@ -328,7 +328,7 @@ sub rise {
         # - <<< 503-5.5.1 RCPT first. A mail transaction protocol command was issued ...
         # -   RCPT first (in reply to DATA command)
         $piece->{'command'} = '' unless Sisimai::SMTP::Command->test($piece->{'command'});
-        $piece->{'command'} = 'RCPT' if index($piece->{'diagnosticcode'}, 'RCPT first') > -1;
+        $piece->{'command'} = $Sisimai::Eb::CeRCPT if index($piece->{'diagnosticcode'}, 'RCPT first') > -1;
 
         CONSTRUCTOR: {
             # Create email address object

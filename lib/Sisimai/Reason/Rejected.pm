@@ -94,11 +94,11 @@ sub true {
     # Check the value of Diagnosic-Code: header with patterns
     my $issuedcode = lc $argvs->{'diagnosticcode'};
     my $thecommand = $argvs->{'command'} || '';
-    if( $thecommand eq 'MAIL' ) {
+    if( $thecommand eq $Sisimai::Eb::CeMAIL ) {
         # The session was rejected at 'MAIL FROM' command
         return 1 if __PACKAGE__->match($issuedcode);
 
-    } elsif( $thecommand eq 'DATA' ) {
+    } elsif( $thecommand eq $Sisimai::Eb::CeDATA ) {
         # The session was rejected at 'DATA' command
         if( $tempreason ne $Sisimai::Eb::ReUSER ) {
             # Except "userunknown"

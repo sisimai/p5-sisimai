@@ -79,7 +79,7 @@ sub inquire {
         } else {
             # There is no X-SPASIGN: header in the bounce message
             # set "UserUnknown" when the remote server rejected after RCPT command.
-            $e->{'reason'} = $Sisimai::Eb::ReUSER if $e->{'command'} eq 'RCPT';
+            $e->{'reason'} = $Sisimai::Eb::ReUSER if $e->{'command'} eq $Sisimai::Eb::CeRCPT;
         }
     }
     return {"ds" => $dscontents, "rfc822" => $emailparts->[1]};

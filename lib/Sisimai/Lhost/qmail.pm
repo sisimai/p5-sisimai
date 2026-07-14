@@ -74,21 +74,21 @@ sub inquire {
     state $commandset = {
         # Error text regular expressions which defined in qmail-remote.c
         # qmail-remote.c:225|  if (smtpcode() != 220) quit("ZConnected to "," but greeting failed");
-        "CONN" => [" but greeting failed."],
+        $Sisimai::Eb::CeCONN => [" but greeting failed."],
         # qmail-remote.c:231|  if (smtpcode() != 250) quit("ZConnected to "," but my name was rejected");
-        "EHLO" => [" but my name was rejected."],
+        $Sisimai::Eb::CeEHLO => [" but my name was rejected."],
         # qmail-remote.c:238|  if (code >= 500) quit("DConnected to "," but sender was rejected");
         # reason = Rejected
-        "MAIL" => [" but sender was rejected."],
+        $Sisimai::Eb::CeMAIL => [" but sender was rejected."],
         # qmail-remote.c:249|  out("h"); outhost(); out(" does not like recipient.\n");
         # qmail-remote.c:253|  out("s"); outhost(); out(" does not like recipient.\n");
         # reason = UserUnknown
-        "RCPT" => [" does not like recipient."],
+        $Sisimai::Eb::CeRCPT => [" does not like recipient."],
         # qmail-remote.c:265|  if (code >= 500) quit("D"," failed on DATA command");
         # qmail-remote.c:266|  if (code >= 400) quit("Z"," failed on DATA command");
         # qmail-remote.c:271|  if (code >= 500) quit("D"," failed after I sent the message");
         # qmail-remote.c:272|  if (code >= 400) quit("Z"," failed after I sent the message");
-        "DATA" => [" failed on DATA command", " failed after I sent the message"],
+        $Sisimai::Eb::CeDATA => [" failed on DATA command", " failed after I sent the message"],
     };
 
     state $messagesof = {
@@ -161,7 +161,7 @@ sub inquire {
         }
 
         # Detect the reason of bounce
-        if( $e->{"command"} eq "HELO" || $e->{"command"} eq "EHLO" ) {
+        if( $e->{"command"} eq $Sisimai::Eb::CeHELO || $e->{"command"} eq $Sisimai::Eb::CeEHLO ) {
             # HELO | Connected to 192.0.2.135 but my name was rejected.
             $e->{"reason"} = $Sisimai::Eb::ReBLOC;
 
