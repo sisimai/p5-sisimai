@@ -175,7 +175,7 @@ sub anotherone {
         } else {
             # Check the value of SMTP command
             my $thecommand = $argvs->{'command'} // '';
-            if( $thecommand eq 'EHLO' || $thecommand eq 'HELO' ) {
+            if( $thecommand eq $Sisimai::Eb::CeEHLO || $thecommand eq $Sisimai::Eb::CeHELO ) {
                 # Rejected at connection or after EHLO|HELO
                 $reasontext = $Sisimai::Eb::ReBLOC;
             }
