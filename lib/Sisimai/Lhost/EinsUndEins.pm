@@ -20,6 +20,7 @@ sub inquire {
     return undef unless index($mhead->{'from'}, '"Mail Delivery System"') == 0;
     return undef unless $mhead->{'subject'} eq 'Mail delivery failed: returning message to sender';
 
+    require Sisimai::Eb;
     state $indicators = __PACKAGE__->INDICATORS;
     state $boundaries = ['--- The header of the original message is following. ---'];
     state $startingof = {
@@ -95,7 +96,7 @@ sub inquire {
             my $p2 = index($e->{'diagnosis'}, ' reason:');
 
             $e->{'rhost'}   = substr($e->{'diagnosis'}, $p1 + 6, $p2 - $p1 - 6);
-            $e->{'command'} = 'DATA' if index($e->{'diagnosis'}, 'for TEXT command') > -1;
+            $e->{'command'} = $Sisimai::Eb::CeDATA if index($e->{'diagnosis'}, 'for TEXT command') > -1;
             $e->{'spec'}    = 'SMTP' if index($e->{'diagnosis'}, 'SMTP error')       > -1;
             $e->{'status'}  = Sisimai::SMTP::Status->find($e->{'diagnosis'});
         } else {
