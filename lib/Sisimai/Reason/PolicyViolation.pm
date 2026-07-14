@@ -46,7 +46,7 @@ sub true {
     my $argvs = shift // return 0;
 
     return 1 if $argvs->{'reason'} eq $Sisimai::Eb::ReWONT;
-    return 0 if $argvs->{'command'} ne '' && $argvs->{'command'} ne 'DATA';
+    return 0 if $argvs->{'command'} ne '' && $argvs->{'command'} ne $Sisimai::Eb::CeDATA;
     return __PACKAGE__->match(lc $argvs->{'diagnosticcode'});
 }
 
