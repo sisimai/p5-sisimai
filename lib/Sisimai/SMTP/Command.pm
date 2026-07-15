@@ -5,7 +5,7 @@ use warnings;
 use Sisimai::Eb;
 use constant ExceptDATA => [$Sisimai::Eb::CeCONN, $Sisimai::Eb::CeEHLO, $Sisimai::Eb::CeHELO,
                             $Sisimai::Eb::CeMAIL, $Sisimai::Eb::CeRCPT];
-use constant BeforeRCPT => [$Sisimai::Eb::CeCONN, $Sisimai::Eb::CeEHLO, $Sisimai::Eb::CeEHLO,
+use constant BeforeRCPT => [$Sisimai::Eb::CeCONN, $Sisimai::Eb::CeEHLO, $Sisimai::Eb::CeHELO,
                             $Sisimai::Eb::CeMAIL, $Sisimai::Eb::CeAUTH, $Sisimai::Eb::CeTTLS];
 state $Availables = [
     $Sisimai::Eb::CeHELO, $Sisimai::Eb::CeEHLO, $Sisimai::Eb::CeMAIL, $Sisimai::Eb::CeRCPT,
