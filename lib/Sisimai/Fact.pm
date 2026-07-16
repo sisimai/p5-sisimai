@@ -71,9 +71,12 @@ sub rise {
 
     state $retryindex = Sisimai::Reason->retry;
     state $rfc822head = Sisimai::RFC5322::HEADERTABLE;
-    state $actionlist = {'delayed' => 1, 'delivered' => 1, 'expanded' => 1, 'failed' => 1, 'relayed' => 1};
-    my    $rfc822data = $mesg1->{'rfc822'};
-    my    $listoffact = [];
+    state $actionlist = {
+        $Sisimai::Eb::AeSTAY => 1, $Sisimai::Eb::AeSENT => 1, $Sisimai::Eb::AeEXPN => 1,
+        $Sisimai::Eb::AeFAIL => 1, $Sisimai::Eb::AePASS => 1,
+    };
+    my $rfc822data = $mesg1->{'rfc822'};
+    my $listoffact = [];
 
     RISEOF: for my $e ( $mesg1->{'ds'}->@* ) {
         # Create parameters
@@ -440,9 +443,9 @@ sub rise {
                     $thing->{'action'} = $ox->[2];
                 }
             }
-            $thing->{'action'}   = 'delivered' if $thing->{'reason'} eq $Sisimai::Eb::ReSENT;
-            $thing->{'action'} ||= 'delayed'   if $thing->{'reason'} eq $Sisimai::Eb::ReTIME;
-            $thing->{'action'} ||= 'failed'    if $cx->[0] eq '4' || $cx->[0] eq '5';
+            $thing->{'action'}   = $Sisimai::Eb::AeSENT if $thing->{'reason'} eq $Sisimai::Eb::ReSENT;
+            $thing->{'action'} ||= $Sisimai::Eb::AeSTAY if $thing->{'reason'} eq $Sisimai::Eb::ReTIME;
+            $thing->{'action'} ||= $Sisimai::Eb::AeFAIL if $cx->[0] eq '4' || $cx->[0] eq '5';
             $thing->{'action'} ||= "";
         }
 

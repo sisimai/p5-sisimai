@@ -2,6 +2,7 @@ package Sisimai::RFC1894;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Sisimai::String;
 
 use constant FIELDINDEX => [qw|
@@ -113,8 +114,13 @@ sub field {
     my $argv0 = shift || return undef;
 
     state $subtypeset = {"addr" => "RFC822", "cdoe" => "SMTP", "host" => "DNS"};
-    state $actionlist = ["failed", "delayed", "delivered", "relayed", "expanded"];
-    state $correction = {'deliverable' => 'delivered', 'expired' => 'failed', 'failure' => 'failed'};
+    state $actionlist = [$Sisimai::Eb::AeFAIL, $Sisimai::Eb::AeSTAY, $Sisimai::Eb::AeSENT,
+                         $Sisimai::Eb::AePASS, $Sisimai::Eb::AeEXPN];
+    state $correction = {
+        'deliverable' => $Sisimai::Eb::AeSENT,
+        'expired'     => $Sisimai::Eb::AeFAIL,
+        'failure'     => $Sisimai::Eb::AeFAIL,
+    };
     state $fieldgroup = {
         'original-recipient'    => 'addr',
         'final-recipient'       => 'addr',

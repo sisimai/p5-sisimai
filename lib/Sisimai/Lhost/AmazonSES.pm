@@ -177,7 +177,7 @@ sub inquire {
             }
             $v->{"recipient"} = $e;
             $v->{"reason"}    = $Sisimai::Eb::ReSENT;
-            $v->{"action"}    = "delivered";
+            $v->{"action"}    = $Sisimai::Eb::AeSENT;
             $v->{"date"}      = $p->{"timestamp"};
             $v->{"lhost"}     = $p->{"reportingMTA"};
             $v->{"diagnosis"} = $p->{"smtpResponse"};
