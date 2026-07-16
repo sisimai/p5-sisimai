@@ -104,7 +104,7 @@ sub find {
         # Bounce reason is not detected yet.
         $reasontext   = __PACKAGE__->anotherone($argvs);
         $reasontext   = '' if $reasontext eq $Sisimai::Eb::Re___0;
-        $reasontext ||= $Sisiimai::Eb::ReTIME if $argvs->{'action'} eq 'delayed';
+        $reasontext ||= $Sisiimai::Eb::ReTIME if $argvs->{'action'} eq $Sisimai::Eb::AeSTAY;
         return $reasontext if $reasontext;
 
         # Try to match with message patterns in Sisimai::Reason::Vacation
@@ -168,7 +168,7 @@ sub anotherone {
         last if $reasontext;
 
         # Check the value of Action: field, first
-        if( CORE::index($actiontext, 'delayed') == 0 || CORE::index($actiontext, 'expired') == 0 ) {
+        if( CORE::index($actiontext, $Sisimai::Eb::AeSTAY) == 0 || CORE::index($actiontext, 'expired') == 0 ) {
             # Action: delayed, expired
             $reasontext = $Sisimai::Eb::ReTIME;
 
