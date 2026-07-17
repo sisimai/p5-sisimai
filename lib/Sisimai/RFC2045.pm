@@ -434,7 +434,7 @@ C<boundary()> method returns the boundary string from the value of C<Content-Typ
 
 C<haircut()> method remove unused headers from the C<multipart/* >block.
 
-=head2 C<B<levelout(I<String>, I<\String>), I<Integer)>>
+=head2 C<B<levelout(I<String>, I<\String>, I<Integer)>)>>
 
 C<levelout> method breaks the C<multipart/*> message block into each part and returns an array reference.
 

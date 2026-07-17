@@ -4,6 +4,21 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.7.1
+---------------------------------------------------------------------------------------------------
+- release: "Fri, 17 Jul 2026 13:22:22 +0900 (JST)"
+- version: "5.7.1"
+- changes:
+  - **Bug fixes**
+    - Fix duplicated SMTP command `HELO` in `Sisimai::SMTP::Command`.
+  - **Mitigation for potential DoS vectors**
+    - #670 Limit the nesting depth of MIME parts in Sisimai::RFC2045 class.
+  - **Code improvements**
+    - New class `Sisimai::Eb` for keeping constants.
+      - #672 `Sisimai::Eb::Re****` Bounce reason names.
+      - #676 `Sisimai::Eb::Ce****` SMTP commands.
+      - #677 `Sisimai::Eb::Ae****` Action field values.
+
 v5.7.0
 ---------------------------------------------------------------------------------------------------
 - release: "Mon, 22 Jun 2026 16:22:22 +0900 (JST)"
@@ -280,7 +295,7 @@ v5.0.3
 - changes:
   - Declare `use v5.26;` at each file using the postfix dereference #511
     - Replace `use feature ":5.10";` with `use v5.26;`
-    - https://www.cpantesters.org/cpan/report/4a49b2fa-e101-11ee-9c91-c03a6e8775ea (Slaven Rezi�
+    - https://www.cpantesters.org/cpan/report/4a49b2fa-e101-11ee-9c91-c03a6e8775ea (Slaven Rezi)
     - https://www.cpantesters.org/cpan/report/8345bf54-e192-11ee-bcdd-1845aa8c77b5 (David Cantrell)
     - https://www.cpantesters.org/cpan/report/3170e9aa-e526-11ee-98b0-b3c3213a625c (Chris Williams)
     - https://www.cpantesters.org/cpan/report/e51d7d7a-e58e-11ee-922b-530cbea18e0e (Andreas J. König)
@@ -929,10 +944,10 @@ v4.22.4
       - sisimai/rb-Sisimai#105
       - sisimai/rb-Sisimai#107
       - sisimai/rb-Sisimai#108
-    - Replace `$v =~ /\A...\z/` with `$v eq '...'`
-    - Replace `$v =~ /\A.../` with `index($v, '...') == 0`
-    - Replace `$v =~ /.../` with `index($v, '...') > -1`
-    - Replace `$v =~ /.\z/` with `substr($v, -1, 1) eq '.'`
+    - Replace `$v =‾ /¥A...¥z/` with `$v eq '...'`
+    - Replace `$v =‾ /¥A.../` with `index($v, '...') == 0`
+    - Replace `$v =‾ /.../` with `index($v, '...') > -1`
+    - Replace `$v =‾ /.¥z/` with `substr($v, -1, 1) eq '.'`
     - #258 Remove `/i` modifier from each regular expression as possible and call `lc()` function
       before calling `Sisimai::Reason::*->match` method.
     - Import Pull-Request sisimai/rb-Sisimai#111, Loop improvement.
@@ -1103,7 +1118,7 @@ v4.18.1
   - `Sisimai->dump` and `Sisimai->make` methods die when the number of arguments is neither 1 nor 3
   - Implement `Sisimai::String->to_plain()` for converting from HTML message to plain text before
     parsing, issue #8.
-  - Remove `Sisimai::String->to_regexp()` method, use `qr/\Q...\E/` instead.
+  - Remove `Sisimai::String->to_regexp()` method, use `qr/¥Q...¥E/` instead.
 
 v4.18.0 - Improvements for Microsoft Exchange Servers
 ---------------------------------------------------------------------------------------------------
@@ -1185,7 +1200,7 @@ v4.14.2
 - release: "Wed,  3 Feb 2016 12:26:19 +0900 (JST)"
 - version: "4.14.2"
 - changes:
-  - Issue #154 Fix bug: remove CR(`\r`) at the end of string in some properties of `Sisimai::Data`
+  - Issue #154 Fix bug: remove CR(`¥r`) at the end of string in some properties of `Sisimai::Data`
     before calling the constructor. Thanks to M Miyamoto.
   - Issue #151 fix bug that the value of folded `Message-Id:` field could not be found at pull-re-
     quest #157. Thanks to @0xcdcdcdcd.
