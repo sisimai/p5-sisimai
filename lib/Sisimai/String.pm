@@ -85,7 +85,7 @@ sub to_plain {
         my $cv =  lc $plain;
         $plain =~ s|<head>.+</head>||gsim      if index($cv, '</head>')  > -1;
         $plain =~ s|<style.+?>.+</style>||gsim if index($cv, '</style>') > -1;
-        $plain =~ s|<a\s+href\s*=\s*['"](https?://.+?)['"].*?>(.*?)</a>| [$2]($1) |gsim;
+        $plain =~ s|<a\s+href\s*=\s*(['"])(https?://[^'"]+?)\1[^>]*?>(.*?)</a>| [$3]($2) |gsim;
         $plain =~ s|<a\s+href\s*=\s*["']mailto:([^\s]+?)["']>(.*?)</a>| [$2](mailto:$1) |gsim;
 
         $plain =~ s/<[^<@>]+?>\s*/ /g;  # Delete HTML tags except <neko@example.jp>
