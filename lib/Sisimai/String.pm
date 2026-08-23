@@ -82,9 +82,9 @@ sub to_plain {
         # 2. Remove <style>...</style>
         # 3. <a href = 'http://...'>...</a> to " http://... "
         # 4. <a href = 'mailto:...'>...</a> to " Value <mailto:...> "
-        my $cv =  lc $plain;
-        $plain =~ s|<head>.+</head>||gsim      if index($cv, '</head>')  > -1;
-        $plain =~ s|<style.+?>.+</style>||gsim if index($cv, '</style>') > -1;
+        my $cv = lc $plain;
+        $plain =~ s|<head>.+?</head>||gsim      if index($cv, '</head>')  > -1;
+        $plain =~ s|<style.+?>.+?</style>||gsim if index($cv, '</style>') > -1;
         $plain =~ s|<a\s+href\s*=\s*(['"])(https?://[^'"]+?)\1[^>]*?>(.*?)</a>| [$3]($2) |gsim;
         $plain =~ s|<a\s+href\s*=\s*["']mailto:([^\s]+?)["']>(.*?)</a>| [$2](mailto:$1) |gsim;
 
