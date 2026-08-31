@@ -4,7 +4,7 @@
       "azumakuniyuki"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.8, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.25, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "freebsd"
    ],
@@ -58,22 +58,12 @@
       }
    },
    "release_status" : "unstable",
-   "resources" : {
-      "bugtracker" : {
-         "web" : "https://github.com/sisimai/p5-sisimai/issues"
-      },
-      "homepage" : "https://libsisimai.org/",
-      "repository" : {
-         "type" : "git",
-         "url" : "git://github.com/sisimai/p5-sisimai.git",
-         "web" : "https://github.com/sisimai/p5-sisimai"
-      }
-   },
-   "version" : "v4.25.17",
+   "version" : "v4.25.18",
    "x_contributors" : [
       "0xcdcdcdcd <0xcdcdcdcd@gmail.com>",
       "Adrian Yee <adrian@gt.net>",
       "Alexandre Derumier <aderumier@odiso.com>",
+      "Arpit Jain <arpitjain099@gmail.com>",
       "Jon Jensen <jon@endpoint.com>",
       "Jonathan Leroy <jonathan@inikup.com>",
       "Mutsutoshi Yoshimoto <negachov@gmail.com>",
@@ -82,14 +72,14 @@
       "Valentin Henon <vhenon@mindbaz.com>",
       "Xavier <yadd@debian.org>",
       "Xavier Guimard <x.guimard@free.fr>",
-      "azuma, kuniyuki <azumakuniyuki@users.noreply.github.com>",
       "azumakuniyuki <azumakuniyuki+github.com@gmail.com>",
       "azumakuniyuki <azumakuniyuki@gmail.com>",
+      "azumakuniyuki <azumakuniyuki@users.noreply.github.com>",
       "azumakuniyuki <perl.org@azumakuniyuki.org>",
       "batarian71 <36008612+batarian71@users.noreply.github.com>",
       "jcbf <underspell@gmail.com>",
       "root <root@bwt-1.squaremx.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 4.02",
+   "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 1
 }

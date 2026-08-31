@@ -4,6 +4,15 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v4.25.18
+--------------------------------------------------------------------------------
+- release: "Mon, 31 Aug 2026 18:25:22 +0900 (JST)"
+- version: "4.25.18"
+- changes:
+  - Fix ReDoS vulnerability in `Sisimai::String->to_plain` when parsing specific
+    HTML tags (GHSA-9j9h-h4vm-p7g4).
+    Thanks to @arpitjain099 for reporting and testing.
+
 v4.25.17
 --------------------------------------------------------------------------------
 - release: "Wed, 12 Mar 2025 06:07:23 +0900 (JST)"
