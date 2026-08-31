@@ -80,9 +80,11 @@ sub to_plain {
         # 2. Remove <style>...</style>
         # 3. <a href = 'http://...'>...</a> to " http://... "
         # 4. <a href = 'mailto:...'>...</a> to " Value <mailto:...> "
-        s|<head>.+</head>||gsim,
-        s|<style.+?>.+</style>||gsim,
-        s|<a\s+href\s*=\s*['"](https?://.+?)['"].*?>(.*?)</a>| [$2]($1) |gsim,
+        my $cv =  lc $plain;
+        $plain =~ s|<head>.+?</head>||gsim      if index($cv, '</head>')  > -1;
+        $plain =~ s|<style.+?>.+?</style>||gsim if index($cv, '</style>') > -1;
+
+        s|<a\s+href\s*=\s*(['"])(https?://[^'"]+?)\1[^>]*?>(.*?)</a>| [$3]($2) |gsim,
         s|<a\s+href\s*=\s*["']mailto:([^\s]+?)["']>(.*?)</a>| [$2](mailto:$1) |gsim,
         s/<[^<@>]+?>\s*/ /g,    # Delete HTML tags except <neko@example.jp>
         s/&lt;/</g,             # Convert to left angle brackets
