@@ -219,7 +219,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018,2019,2021,2022 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018,2019,2021,2022,2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
