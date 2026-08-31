@@ -58,11 +58,12 @@
       }
    },
    "release_status" : "unstable",
-   "version" : "v5.7.1",
+   "version" : "v5.7.2",
    "x_contributors" : [
       "0xcdcdcdcd <0xcdcdcdcd@gmail.com>",
       "Adrian Yee <adrian@gt.net>",
       "Alexandre Derumier <aderumier@odiso.com>",
+      "Arpit Jain <arpitjain099@gmail.com>",
       "Jon Jensen <jon@endpoint.com>",
       "Jonathan Leroy <jonathan@inikup.com>",
       "Mutsutoshi Yoshimoto <negachov@gmail.com>",
