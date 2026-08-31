@@ -2,7 +2,7 @@ package Sisimai;
 use feature ':5.10';
 use strict;
 use warnings;
-use version; our $VERSION = version->declare('v4.25.17'); our $PATCHLV = 0;
+use version; our $VERSION = version->declare('v4.25.18'); our $PATCHLV = 0;
 
 sub version { return substr($VERSION->stringify, 1).($PATCHLV > 0 ? 'p'.$PATCHLV : '') }
 sub sysname { 'bouncehammer' }
@@ -320,7 +320,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
