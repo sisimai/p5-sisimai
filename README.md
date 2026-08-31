@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.38-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.17-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.18-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 > [!IMPORTANT]
 > **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
@@ -12,9 +12,9 @@
 > branch instead. We have moved away from using both the `main` and `master` branches in our development process.
 
 > [!CAUTION]
-> **Sisimai versions 4.25.14p11 and earlier contain a regular expression vulnerability 
+> **Sisimai versions 4.25.17 and earlier contain some regular expression vulnerabilities
 > [ReDoS: CVE-2022-4891](https://nvd.nist.gov/vuln/detail/CVE-2022-4891).
-> If you are using one of these versions, please upgrade to v4.25.14p12 or later.**
+> If you are using one of these versions, please upgrade to v4.25.18 or later.**
 
 > [!WARNING]
 > Sisimai 5 requires Perl 5.26 or later. Check the version of Perl in your system before installing/upgrading
@@ -27,7 +27,6 @@
 - [Setting Up Sisimai](#setting-up-sisimai)
     - [System requirements](#system-requirements)
     - [Install](#install)
-        - [From CPAN](#from-cpan)
         - [From GitHub](#from-github)
 - [Usage](#usage)
     - [Basic usage](#basic-usage)
@@ -94,18 +93,6 @@ More details about system requirements are available at
 
 Install
 -------------------------------------------------------------------------------
-### From CPAN
-
-```shell
-$ cpanm --sudo Sisimai
---> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.17.tar.gz ... OK
-...
-1 distribution installed
-$ perldoc -l Sisimai
-/usr/local/lib/perl5/site_perl/5.30.0/Sisimai.pm
-```
-
 ### From GitHub
 
 ```shell
@@ -114,7 +101,7 @@ $ git clone https://github.com/sisimai/p5-sisimai.git
 $ cd ./p5-sisimai
 $ make install-from-local
 --> Working on .
-Configuring Sisimai-4.25.17 ... OK
+Configuring Sisimai-4.25.18 ... OK
 1 distribution installed
 ```
 
@@ -321,7 +308,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2025 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================

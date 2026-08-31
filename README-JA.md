@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/master/LICENSE)
 [![Coverage Status](https://img.shields.io/coveralls/sisimai/p5-sisimai.svg)](https://coveralls.io/r/sisimai/p5-sisimai)
 [![Perl](https://img.shields.io/badge/perl-v5.10--v5.34-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v4.25.17-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v4.25.18-blue.svg)](https://metacpan.org/pod/Sisimai)
 
 > [!IMPORTANT]
 > **2024年2月2日の時点でこのリポジトリのデフォルトブランチは[5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
@@ -11,9 +11,9 @@
 > ブランチを見てください。また`main`や`master`ブランチはもうこのリポジトリでは使用していません。
 
 > [!CAUTION]
-> **Sisimai 4.25.14p11およびそれ以前のバージョンには 正規表現に関する脆弱性
+> **Sisimai 4.25.17以前のバージョンには正規表現に関する複数件の脆弱性
 > [ReDoS: CVE-2022-4891](https://jvndb.jvn.jp/ja/contents/2022/JVNDB-2022-005663.html)があります。
-> 該当するバージョンをお使いの場合はv4.25.14p12以降へアップグレードしてください。**
+> 該当するバージョンをお使いの場合はv4.25.18以降へアップグレードしてください。**
 
 > [!WARNING]
 > Sisimai 5はPerl 5.26以上が必要です。インストール/アップグレードを実行する前に`perl -v`コマンドで
@@ -26,7 +26,6 @@
 - [シシマイを使う準備 | Setting Up Sisimai](#setting-up-sisimai)
     - [動作環境 | System requirements](#system-requirements)
     - [インストール | Install](#install)
-        - [CPANから | From CPAN](#from-cpan)
         - [GitHubから | From GitHub](#from-github)
 - [使い方 | Usage](#usage)
     - [基本的な使い方 | Basic usage](#basic-usage)
@@ -93,17 +92,6 @@ System requirements
 
 Install
 -------------------------------------------------------------------------------
-### From CPAN
-```shell
-$ cpanm --sudo Sisimai
---> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-4.25.17.tar.gz ... OK
-...
-1 distribution installed
-$ perldoc -l Sisimai
-/usr/local/lib/perl5/site_perl/5.30.0/Sisimai.pm
-```
-
 ### From GitHub
 ```shell
 $ cd /usr/local/src
@@ -111,7 +99,7 @@ $ git clone https://github.com/sisimai/p5-sisimai.git
 $ cd ./p5-sisimai
 $ sudo make install-from-local
 --> Working on .
-Configuring Sisimai-4.25.17 ... OK
+Configuring Sisimai-4.25.18 ... OK
 1 distribution installed
 ```
 
@@ -313,7 +301,7 @@ Author
 
 Copyright
 ===============================================================================
-Copyright (C) 2014-2025 azumakuniyuki, All Rights Reserved.
+Copyright (C) 2014-2026 azumakuniyuki, All Rights Reserved.
 
 License
 ===============================================================================
