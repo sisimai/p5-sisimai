@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/5-stable/LICENSE)
-[![Perl](https://img.shields.io/badge/perl-v5.26--v5.42-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.7.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![Perl](https://img.shields.io/badge/perl-v5.26--v5.44-blue.svg)](https://www.perl.org)
+[![CPAN](https://img.shields.io/badge/cpan-v5.7.2-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
@@ -11,9 +11,10 @@
 [^1]: 4系を`clone`する場合は`git clone -b 4-stable https://github.com/sisimai/p5-sisimai.git`
 
 > [!CAUTION]
-> **Sisimai 4.25.14p11およびそれ以前のバージョンには 正規表現に関する脆弱性
-> [ReDoS: CVE-2022-4891](https://jvndb.jvn.jp/ja/contents/2022/JVNDB-2022-005663.html)があります。
-> 該当するバージョンをお使いの場合はv4.25.14p12以降へアップグレードしてください。**
+> **Sisimai 4.25.17およびそれ以前の、Sisimai 5.7.1およびそれ以前のバージョンには 正規表現に関する脆弱性
+> [ReDoS: CVE-2022-4891](https://jvndb.jvn.jp/ja/contents/2022/JVNDB-2022-005663.html)と
+> [ReDos: CVE-2026-XXXX/番号の発行待ち]()があります。
+> 該当するバージョンをお使いの場合はv4.25.18またはv5.7.2以降へアップグレードしてください。**
 
 > [!WARNING]
 > Sisimai 5はPerl 5.26以上が必要です。インストール/アップグレードを実行する前に`perl -v`コマンドで
@@ -361,7 +362,7 @@ Sisimai 5.0.0から**Perl 5.26.0以上**が必要になります。
 | 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 61                  |
 | 検出可能なバウンス理由の数                           | 29                 | 34                  |
 | 依存もジュール数(Perlのコアモジュールを除く)         | 2 モジュール       | 2 モジュール        |
-| ソースコードの行数                                   | 10,800 行          | 9,550 行            |
+| ソースコードの行数                                   | 10,800 行          | 9,720 行            |
 | テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 346,000 件          |
 | 1秒間に解析できるバウンスメール数[^4]                | 750 通             | 750 通              |
 | ライセンス                                           | 2条項BSD           | 2条項BSD            |

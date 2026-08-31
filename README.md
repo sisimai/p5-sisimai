@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/5-stable/LICENSE)
-[![Perl](https://img.shields.io/badge/perl-v5.26--v5.42-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.7.1-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![Perl](https://img.shields.io/badge/perl-v5.26--v5.44-blue.svg)](https://www.perl.org)
+[![CPAN](https://img.shields.io/badge/cpan-v5.7.2-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
@@ -12,9 +12,9 @@
 [^1]: Specify `-b 4-stable` when you clone Sisimai 4 for example, `git clone -b 4-stable https://github.com/sisimai/p5-sisimai.git`
 
 > [!CAUTION]
-> **Sisimai versions 4.25.14p11 and earlier contain a regular expression vulnerability 
-> [ReDoS: CVE-2022-4891](https://nvd.nist.gov/vuln/detail/CVE-2022-4891).
-> If you are using one of these versions, please upgrade to v4.25.14p12 or later.**
+> **Sisimai versions 4.25.17 and earlier, as well as 5.7.1 and earlier, contain regular expression vulnerabilities
+> ([ReDoS: CVE-2022-4891](https://nvd.nist.gov/vuln/detail/CVE-2022-4891), ReDoS: CVE Pending).
+> If you are using affected versions, please upgrade to v4.25.18 or v5.7.2 or later.**
 
 > [!WARNING]
 > Sisimai 5 requires Perl 5.26 or later. Check the version of Perl in your system before installing/upgrading
@@ -114,7 +114,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.7.1.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.7.2.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -141,14 +141,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.7.1 ... OK
-Building and testing Sisimai-v5.7.1 ... Password: <sudo password here>
+Configuring Sisimai-v5.7.2 ... OK
+Building and testing Sisimai-v5.7.2 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.7.1
+Successfully installed Sisimai-v5.7.2
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.7.1
+5.7.2
 ```
 
 Usage
@@ -367,7 +367,7 @@ Beginning with v5.0.0, Sisimai requires **Perl 5.26.0 or later.**
 | The number of MTA/ESP modules                        | 68                 | 61                  |
 | The number of detectable bounce reasons              | 29                 | 34                  |
 | Dependencies (Except core modules of Perl)           | 2 modules          | 2 modules           |
-| Source lines of code                                 | 10,800 lines       | 9,550 lines         |
+| Source lines of code                                 | 10,800 lines       | 9,720 lines         |
 | The number of tests in t/, xt/ directory             | 270,000 tests      | 346,000 tests       | 
 | The number of bounce emails decoded per second[^4]   | 750 emails         | 750 emails          |
 | License                                              | 2 Clause BSD       | 2 Caluse BSD        |
