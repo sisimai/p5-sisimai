@@ -66,6 +66,12 @@ MAKE_TEST: {
     ok length $$p;
     like $$p, qr/<body>/, '->to_plain(<body>)';
     like $$p, qr/Nyaan/, '->to_plain("<body>Nyaan</body>")';
+
+    # Unterminated <a href="http://..."> must not cause catastrophic backtracking
+    my $cv = '<a href="http://' x 8000;
+    my $t0 = time;
+    $p = Sisimai::String->to_plain(\$cv, 1);
+    ok time - $t0 < 5, '->to_plain(unterminated <a href>) returns quickly';
 }
 
 done_testing;
