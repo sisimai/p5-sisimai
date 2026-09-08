@@ -35,8 +35,12 @@ REASON_TABLE := AuthFailure BadReputation Blocked ContentError Delivered EmailTo
 				NoRelaying NotAccept NotCompliantRFC OnHold PolicyViolation RequirePTR RateLimited \
 				Rejected SecurityError SpamDetected Suspend SyntaxError SystemError SystemFull \
 				Undefined UserUnknown Vacation VirusDetected
+INVISIBLES   := '[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]|\xEF\xBB\xBF|\xE2\x80[\xAA-\xAE]|\xE2\x81[\xA6-\xA9]|\xE2\x80[\x8B-\x8F]'
 # -------------------------------------------------------------------------------------------------
 .PHONY: clean
+
+check-invisibles:
+	@git --no-pager grep -P -I $(INVISIBLES) '*.pm' && exit 1 || true
 
 private-sample:
 	@test -n "$(E)" || ( echo 'Usage: make -f Developers.mk $@ E=/path/to/email' && exit 1 )
