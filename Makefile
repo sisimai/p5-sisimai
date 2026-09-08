@@ -47,6 +47,7 @@ user-test:
 
 author-test:
 	$(PROVE) xt/
+	$(MAKE) -f Developers.mk check-invisibles
 
 check:
 	find lib -type f -exec grep -E ' $$' {} /dev/null \;
