@@ -4,6 +4,13 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.?.?
+---------------------------------------------------------------------------------------------------
+- release: ""
+- version: ""
+  - #687 Add invisible/control character check to Makefile to prevent Trojan Source attacks.
+  - #689 Add error message patterns for comcast.net.
+
 v5.7.2
 ---------------------------------------------------------------------------------------------------
 - release: "Mon, 31 Aug 2026 18:25:22 +0900 (JST)"
