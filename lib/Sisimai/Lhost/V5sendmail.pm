@@ -42,7 +42,7 @@ sub inquire {
         'message' => ['----- Transcript of session follows -----'],
     };
 
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     return undef unless length $emailparts->[1] > 0;
 
     require Sisimai::RFC1123;
