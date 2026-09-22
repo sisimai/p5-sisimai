@@ -43,10 +43,10 @@ sub inquire {
         $$mbody = sprintf("%s%s%s", substr($$mbody, 0, $p0), $boundaries->[0], substr($$mbody, $p0 + 1,)) if $p0 > 0;
     }
 
-    my $permessage = {};
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS]; my $v = undef;
     my $alternates = Sisimai::Lhost->DELIVERYSTATUS;
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+    my $permessage = {};
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $beforemesg = "";    # (String) String before $startingof->{"message"}
@@ -75,6 +75,7 @@ sub inquire {
         $emailparts = Sisimai::RFC5322->part(\$cv, [$ct], 0);
         last;
     }
+    return undef unless $emailparts;
 
     if( index($emailparts->[0], $startingof->{"message"}->[0]) < 0 ) {
         # There is no "Content-Type: message/delivery-status" line in the message body
