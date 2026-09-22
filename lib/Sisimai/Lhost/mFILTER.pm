@@ -31,8 +31,8 @@ sub inquire {
        $proceedsto ||= 1 if grep { index($$mbody, $_) > 1 } $startingof->{'error'}->@*;
     return undef unless $proceedsto;
 
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $markingset = {'diagnosis' => 0, 'command' => 0};
