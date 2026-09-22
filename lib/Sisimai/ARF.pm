@@ -70,9 +70,9 @@ sub inquire {
         ["this is an email abuse report"],
     ];
 
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS]; my $v = $dscontents->[-1];
     my $reportpart = 0;
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # Points the current cursor position
     my $recipients = 0;     # The number of "Final-Recipient" header
     my $timestamp0 = "";    # The value of "Arrival-Date" or "Received-Date"
