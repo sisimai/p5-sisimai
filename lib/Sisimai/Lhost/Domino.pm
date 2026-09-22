@@ -38,10 +38,10 @@ sub inquire {
     };
 
     require Sisimai::RFC1123;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
-    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $subjecttxt = '';    # (String) The value of Subject:
