@@ -29,8 +29,8 @@ sub inquire {
         "message" => ["Message details:"],
     };
 
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = $dscontents->[-1];
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;                 # Points the current cursor position
     my $recipients = 0;                 # The number of 'Final-Recipient' header
     my $alternates = ["", "", "", ""];  # [Envelope-From, Header-From, Date, Subject]

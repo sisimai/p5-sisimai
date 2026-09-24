@@ -43,7 +43,7 @@ sub inquire {
     };
 
     my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
-    return undef unless length $emailparts->[1] > 0;
+    return undef if ref($emailparts) ne 'ARRAY' || length($emailparts->[1]) == 0;
 
     require Sisimai::RFC1123;
     require Sisimai::SMTP::Command;

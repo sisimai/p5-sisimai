@@ -31,8 +31,8 @@ sub inquire {
         ],
     };
 
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $removedmsg = 'MULTIBYTE CHARACTERS HAVE BEEN REMOVED';

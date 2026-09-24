@@ -29,8 +29,8 @@ sub inquire {
         $Sisimai::Eb::ReTIME => ['Delivery failed '],
     };
 
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
 
     for my $e ( split("\n", $emailparts->[0]) ) {

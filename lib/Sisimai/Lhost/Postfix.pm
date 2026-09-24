@@ -46,9 +46,9 @@ sub inquire {
         ],
     };
 
-    my $permessage = {};    # (Hash) Store values of each Per-Message field
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
+    my $permessage = {};    # (Hash) Store values of each Per-Message field
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
     my $anotherset = {};    # (Hash) Another error information
     my $nomessages = 0;     # (Integer) Delivery report unavailable

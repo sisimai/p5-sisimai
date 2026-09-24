@@ -31,8 +31,8 @@ sub inquire {
         $Sisimai::Eb::ReUSER => ["because the address couldn't be found. Check for typos or unnecessary spaces and try again."],
     };
 
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries);
     my $entiremesg = "";
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;
