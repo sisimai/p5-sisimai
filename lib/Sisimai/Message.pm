@@ -357,6 +357,7 @@ sub sift {
     }
     $$bodystring =~ tr/\r//d;
     $$bodystring =~ s/\t/ /g;
+    return undef unless $$bodystring;
 
     if( ref $hookmethod eq 'CODE' ) {
         # Call hook method
