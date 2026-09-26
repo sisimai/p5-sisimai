@@ -25,7 +25,7 @@ sub inquire {
     state $boundaries = ['Content-Type: message/rfc822'];
     state $startingof = {'message' => ['Your mail sent on:', 'Your mail attempted to be delivered on:']};
 
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries) // return undef; return undef unless $emailparts->[0];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
