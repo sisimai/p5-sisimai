@@ -75,7 +75,7 @@ sub inquire {
     require Sisimai::RFC1123;
     state $indicators = __PACKAGE__->INDICATORS;
 
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries) // return undef; return undef unless $emailparts->[0];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
