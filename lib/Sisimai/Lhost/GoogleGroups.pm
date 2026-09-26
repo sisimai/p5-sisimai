@@ -40,7 +40,7 @@ sub inquire {
     # Google Groups
     require Sisimai::Eb;
     state $boundaries = ['----- Original message -----', 'Content-Type: message/rfc822'];
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries) // return undef; return undef unless $emailparts->[0];
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = $dscontents->[-1];
     my $recipients = 0;
     my @entiremesg = split(/\n\n/, $emailparts->[0], 5); pop @entiremesg;
