@@ -44,7 +44,7 @@ sub inquire {
         "The user(s) account is temporarily limited.",
     ];
 
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries) // return undef; return undef unless $emailparts->[0];
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $readcursor = 0;     # Points the current cursor position
