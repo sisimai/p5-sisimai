@@ -43,7 +43,7 @@ sub inquire {
         $$mbody = sprintf("%s%s%s", substr($$mbody, 0, $p0), $boundaries->[0], substr($$mbody, $p0 + 1,)) if $p0 > 0;
     }
 
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries) // return undef; return undef unless $emailparts->[0];
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS]; my $v = undef;
     my $alternates = Sisimai::Lhost->DELIVERYSTATUS;
     my $permessage = {};
@@ -75,7 +75,7 @@ sub inquire {
         $emailparts = Sisimai::RFC5322->part(\$cv, [$ct], 0);
         last;
     }
-    return undef unless $emailparts;
+    return undef if ref($emailparts) eq '' || $emailparts->[0] eq '';
 
     if( index($emailparts->[0], $startingof->{"message"}->[0]) < 0 ) {
         # There is no "Content-Type: message/delivery-status" line in the message body
