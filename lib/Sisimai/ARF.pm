@@ -70,7 +70,7 @@ sub inquire {
         ["this is an email abuse report"],
     ];
 
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries) // return undef; return undef unless $emailparts->[0];
     my $dscontents = [Sisimai::Lhost->DELIVERYSTATUS]; my $v = $dscontents->[-1];
     my $reportpart = 0;
     my $readcursor = 0;     # Points the current cursor position
