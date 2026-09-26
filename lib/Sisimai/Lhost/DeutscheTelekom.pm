@@ -36,8 +36,10 @@ sub inquire {
     state $indicators = __PACKAGE__->INDICATORS;
     state $startingof = { 'message' => [$bannerDTAG->[1]] };
 
-    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $emailparts = Sisimai::RFC5322->part($mbody, [$bannerDTAG->[3], $bannerDTAG->[2]]);
+    return undef if ref($emailparts) eq '' || $emailparts->[0] eq '';
+
+    my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $messagelog = '';
     my $readcursor = 0;     # (Integer) Points the current cursor position
     my $recipients = 0;     # (Integer) The number of 'Final-Recipient' header
