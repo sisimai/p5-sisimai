@@ -40,7 +40,7 @@ sub inquire {
         'error'   => ['... while talking to '],
     };
 
-    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries); return undef unless $emailparts;
+    my $emailparts = Sisimai::RFC5322->part($mbody, $boundaries) // return undef; return undef unless $emailparts->[0];
     my $fieldtable = Sisimai::RFC1894->FIELDTABLE;
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS]; my $v = undef;
     my $permessage = {};    # (Hash) Store values of each Per-Message field
