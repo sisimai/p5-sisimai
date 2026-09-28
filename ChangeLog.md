@@ -10,6 +10,7 @@ v5.?.?
 - version: ""
   - #687 Add invisible/control character check to Makefile to prevent Trojan Source attacks.
   - #689 Add error message patterns for comcast.net.
+  - #691 Check that the return value of `Sisimai::RFC5322->part` is an empty array or not.
 
 v5.7.2
 ---------------------------------------------------------------------------------------------------
