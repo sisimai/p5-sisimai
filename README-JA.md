@@ -5,6 +5,16 @@
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
+> 現在の[Sisimai](https://libsisimai.org/ja/)には[Perl版](https://github.com/sisimai/p5-sisimai)と
+> [Ruby版](https://github.com/sisimai/rb-sisimai)と[Go版](https://github.com/sisimai/go-sisimai)が
+> あり、どれを使っても同じ結果が得られるように実装されています。開発体制は2025年の夏から解析精度や
+> コードの堅牢さと厳格さを理由に[Go版](https://github.com/sisimai/go-sisimai)を原本としていて、
+> [Perl版](https://github.com/sisimai/p5-sisimai)と[Ruby版](https://github.com/sisimai/rb-sisimai)
+> は移植版という位置づけになっています。よって[Sisimai](https://github.com/sisimai)全体のバグや機能
+> 追加などの開発状況は[Go版のIssues](https://github.com/sisimai/go-sisimai/issues)を参照してください。
+> バグ報告については、それぞれお使いの言語版リポジトリのIssuesに書いてください。
+
+> [!IMPORTANT]
 > **2024年2月2日の時点でこのリポジトリのデフォルトブランチは[5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
 > (Sisimai 5)になりました。** もし古いバージョンを使いたい場合は[4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)[^1]
 > ブランチを見てください。また`main`や`master`ブランチはもうこのリポジトリでは使用していません。

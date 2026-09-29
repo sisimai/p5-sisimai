@@ -5,6 +5,16 @@
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!IMPORTANT]
+> [Sisimai](https://libsisimai.org/) is available in [Perl](https://github.com/sisimai/p5-sisimai),
+> [Ruby](https://github.com/sisimai/rb-sisimai), and [Go](https://github.com/sisimai/go-sisimai),
+> all designed to produce identical decoding results.
+> As of summer 2025, the [Go version](https://github.com/sisimai/go-sisimai) serves as the primary
+> implementation (Single Source of Truth) due to its strictness, code robustness, and high accuracy,
+> while the Perl and Ruby versions are maintained as ports. Bug reports for specific languages should
+> be submitted to their respective repositories. For overall development status and upcoming features,
+> please refer to the [Go version's Issues](https://github.com/sisimai/go-sisimai/issues).
+
+> [!IMPORTANT]
 > **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
 > (Sisimai 5) since 2nd February 2024.**
 > If you want to clone the old version, see the [4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)[^1]
