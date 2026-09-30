@@ -4,6 +4,12 @@
 [![CPAN](https://img.shields.io/badge/cpan-v5.7.2-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
+> [!CAUTION]
+> **Sisimai 4.25.17およびそれ以前の、Sisimai 5.7.1およびそれ以前のバージョンには 正規表現に関する脆弱性
+> [ReDoS: CVE-2022-4891](https://jvndb.jvn.jp/ja/contents/2022/JVNDB-2022-005663.html)と
+> [ReDos: CVE-2026-XXXX/番号の発行待ち]()があります。
+> 該当するバージョンをお使いの場合はv4.25.18またはv5.7.2以降へアップグレードしてください。**
+
 > [!IMPORTANT]
 > 現在の[Sisimai](https://libsisimai.org/ja/)には[Perl版](https://github.com/sisimai/p5-sisimai)と
 > [Ruby版](https://github.com/sisimai/rb-sisimai)と[Go版](https://github.com/sisimai/go-sisimai)が
@@ -19,12 +25,6 @@
 > (Sisimai 5)になりました。** もし古いバージョンを使いたい場合は[4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)[^1]
 > ブランチを見てください。また`main`や`master`ブランチはもうこのリポジトリでは使用していません。
 [^1]: 4系を`clone`する場合は`git clone -b 4-stable https://github.com/sisimai/p5-sisimai.git`
-
-> [!CAUTION]
-> **Sisimai 4.25.17およびそれ以前の、Sisimai 5.7.1およびそれ以前のバージョンには 正規表現に関する脆弱性
-> [ReDoS: CVE-2022-4891](https://jvndb.jvn.jp/ja/contents/2022/JVNDB-2022-005663.html)と
-> [ReDos: CVE-2026-XXXX/番号の発行待ち]()があります。
-> 該当するバージョンをお使いの場合はv4.25.18またはv5.7.2以降へアップグレードしてください。**
 
 > [!WARNING]
 > Sisimai 5はPerl 5.26以上が必要です。インストール/アップグレードを実行する前に`perl -v`コマンドで
