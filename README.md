@@ -4,12 +4,10 @@
 [![CPAN](https://img.shields.io/badge/cpan-v5.7.2-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
-> [!IMPORTANT]
-> **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
-> (Sisimai 5) since 2nd February 2024.**
-> If you want to clone the old version, see the [4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)[^1]
-> branch instead. We have moved away from using both the `main` and `master` branches in our development process.
-[^1]: Specify `-b 4-stable` when you clone Sisimai 4 for example, `git clone -b 4-stable https://github.com/sisimai/p5-sisimai.git`
+> [!CAUTION]
+> **Sisimai versions 4.25.17 and earlier, as well as 5.7.1 and earlier, contain regular expression vulnerabilities
+> ([ReDoS: CVE-2022-4891](https://nvd.nist.gov/vuln/detail/CVE-2022-4891), ReDoS: CVE Pending).
+> If you are using affected versions, please upgrade to v4.25.18 or v5.7.2 or later.**
 
 > [!IMPORTANT]
 > [Sisimai](https://libsisimai.org/) is available in [Perl](https://github.com/sisimai/p5-sisimai),
@@ -21,10 +19,12 @@
 > be submitted to their respective repositories. For overall development status and upcoming features,
 > please refer to the [Go version's Issues](https://github.com/sisimai/go-sisimai/issues).
 
-> [!CAUTION]
-> **Sisimai versions 4.25.17 and earlier, as well as 5.7.1 and earlier, contain regular expression vulnerabilities
-> ([ReDoS: CVE-2022-4891](https://nvd.nist.gov/vuln/detail/CVE-2022-4891), ReDoS: CVE Pending).
-> If you are using affected versions, please upgrade to v4.25.18 or v5.7.2 or later.**
+> [!IMPORTANT]
+> **The default branch of this repository is [5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
+> (Sisimai 5) since 2nd February 2024.**
+> If you want to clone the old version, see the [4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)[^1]
+> branch instead. We have moved away from using both the `main` and `master` branches in our development process.
+[^1]: Specify `-b 4-stable` when you clone Sisimai 4 for example, `git clone -b 4-stable https://github.com/sisimai/p5-sisimai.git`
 
 > [!WARNING]
 > Sisimai 5 requires Perl 5.26 or later. Check the version of Perl in your system before installing/upgrading
