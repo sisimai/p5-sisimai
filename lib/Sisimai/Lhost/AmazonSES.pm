@@ -120,6 +120,7 @@ sub inquire {
     my $dscontents = [__PACKAGE__->DELIVERYSTATUS];
     my $recipients = 0;
     my $whatnotify = substr($jsonobject->{"notificationType"}, 0, 1) || "";
+    my $feedbackid = '';
     my $v          = $dscontents->[-1];
 
     if( $whatnotify eq "B" ) {
@@ -142,6 +143,7 @@ sub inquire {
             $v->{"replycode"} = Sisimai::SMTP::Reply->find($v->{"diagnosis"}, $v->{"status"});
             $v->{"date"}      = $p->{"timestamp"};
             $v->{"lhost"}     = Sisimai::RFC1123->find($p->{"reportingMTA"});
+            $feedbackid          = $p->{"feedbackId"};
             $recipients++;
 
             for my $f ( keys %$ReasonPair ) {
@@ -164,6 +166,7 @@ sub inquire {
             $v->{"feedbacktype"} = $p->{"complaintFeedbackType"};
             $v->{"date"}         = $p->{"timestamp"};
             $v->{"diagnosis"}    = sprintf(qq|{"feedbackid":"%s", "useragent":"%s"}|, $p->{"feedbackId"}, $p->{"userAgent"});
+            $feedbackid          = $p->{"feedbackId"};
             $recipients++;
         }
     } elsif( $whatnotify eq "D" ) {
@@ -200,6 +203,7 @@ sub inquire {
     my $ch = ["date", "subject"];
     my $or = $jsonobject->{'mail'};
 
+    $cv = sprintf("Feedback-ID: %s\n", $feedbackid) if $feedbackid ne '';
     map { $cv .= sprintf("%s: %s\n", $_->{"name"}, $_->{"value"}) } $or->{"headers"}->@*;
     map { $cv .= sprintf("%s: %s\n", ucfirst($_), $or->{"commonHeaders"}->{ $_ }) if exists $or->{"commonHeaders"}->{ $_ } } @$ch;
 
