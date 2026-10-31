@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use IO::Dir;
 use IO::File;
+use Sisimai::Eb;
 use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
@@ -65,12 +66,13 @@ sub read {
             # Read each file in the directory
             next if( $r eq '.' || $r eq '..' );
 
-            my $emailindir =  $self->{'dir'}.'/'.$r;
-               $emailindir =~ y{/}{}s;
+            my $emailindir = $self->{'dir'}.'/'.$r; $emailindir =~ y{/}{}s;
+            my $emailbytes = -s $emailindir // 0;
             $self->{'offset'} += 1;
             next unless -f $emailindir;
-            next unless -s $emailindir;
             next unless -r $emailindir;
+            next unless    $emailbytes;
+            next unless    $emailbytes < $Sisimai::Eb::XeBYTE;
 
             $self->{'path'} = $emailindir;
             $self->{'file'} = $r;
@@ -165,7 +167,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2014-2016,2018-2021,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2014-2016,2018-2021,2024,2025-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
