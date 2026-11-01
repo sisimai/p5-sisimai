@@ -2,6 +2,7 @@ package Sisimai::Mail::Memory;
 use v5.26;
 use strict;
 use warnings;
+use Sisimai::Eb;
 use Class::Accessor::Lite (
     'new' => 0,
     'ro'  => [
@@ -21,13 +22,14 @@ sub new {
     #           [Undef]                 is not a valid email text
     my $class = shift;
     my $argv1 = shift // return undef;
+    my $xbyte = $Sisimai::Eb::XeBYTE * 16;  # 128MB * 16 = 2GB
     my $param = {
         'payload' => [],
         'path'    => '<MEMORY>',
         'size'    => length $$argv1 || 0,
         'offset'  => 0,
     };
-    return undef unless $param->{'size'};
+    return undef if $param->{'size'} < 1 || $param->{'size'} > $xbyte;
 
     if( (substr($$argv1, 0, 5) || '') eq 'From ') {
         # UNIX mbox
@@ -123,7 +125,7 @@ azumakuniyuki
 
 =head1 COPYRIGHT
 
-Copyright (C) 2018-2022,2024,2025 azumakuniyuki, All rights reserved.
+Copyright (C) 2018-2022,2024,2025-2026 azumakuniyuki, All rights reserved.
 
 =head1 LICENSE
 
