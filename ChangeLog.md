@@ -8,12 +8,15 @@ v5.?.?
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
-  - #687 Add invisible/control character check to Makefile to prevent Trojan Source attacks.
-  - #689 Add error message patterns for comcast.net.
-  - #691 Check that the return value of `Sisimai::RFC5322->part` is an empty array or not.
-  - #694 The value of `feedbackId` returned from Amazon SES is set to the `FeedbackID` field.
-  - #695 Update Google SMTP error codes: `454 4.7.0` and `554 5.4.6` as of 15th October 2026.
-  - #696 Limit the max size of each email file in Maildir/.
+  - **Security Fixes & Guardrail Improvements**
+    - #696 #699 Limit each email size in a UNIX mbox, Maildir/, and other input data to 64MB.
+    - #687 Add invisible/control character check to Makefile to prevent Trojan Source attacks.
+    - #691 Check that the return value of `Sisimai::RFC5322->part` is an empty array or not.
+  - **Error Message Pattern Updates**
+    - #689 Add error message patterns for comcast.net.
+    - #695 Update Google SMTP error codes: `454 4.7.0` and `554 5.4.6` as of 15th October 2026.
+  - **Other Tiny Improvements**
+    - #694 The value of `feedbackId` returned from Amazon SES is set to the `FeedbackID` field.
 
 v5.7.2
 ---------------------------------------------------------------------------------------------------
