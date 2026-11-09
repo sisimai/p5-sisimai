@@ -21,6 +21,7 @@ sub rise {
     my $argv0 = shift // return undef; die ' ***error: wrong number of arguments' if scalar @_ % 2;
     my $argv1 = { @_ };
 
+    require Sisimai::Eb;
     require Sisimai::Mail;
     require Sisimai::Fact;
 
@@ -31,6 +32,8 @@ sub rise {
 
     while( my $r = $mail->data->read ) {
         # Read and decode each email file
+        next if length($r) > $Sisimai::Eb::XeBYTE;
+
         my $path = $mail->data->path;
         my $args = {
             'data' => $r, 'hook' => $c___->[0], 'origin' => $path,
