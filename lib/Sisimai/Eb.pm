@@ -3,7 +3,7 @@ use v5.26;
 use strict;
 use warnings;
 
-our $XeBYTE = 128 * 1024 * 1024;    # 128MB: The maximum size of each email file in Maildir/
+our $XeBYTE = 64 * 1024 * 1024; # 64MB: The maximum size of each email file in Maildir/, UNIX mbox.
 
 #       _       ______                            
 #   ___| |__   / /  _ \ ___  __ _ ___  ___  _ __  
