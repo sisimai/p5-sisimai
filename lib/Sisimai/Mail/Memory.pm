@@ -22,7 +22,7 @@ sub new {
     #           [Undef]                 is not a valid email text
     my $class = shift;
     my $argv1 = shift // return undef;
-    my $xbyte = $Sisimai::Eb::XeBYTE * 16;  # 128MB * 16 = 2GB
+    my $xbyte = $Sisimai::Eb::XeBYTE * 32;  # 64MB * 32 = 2GB
     my $param = {
         'payload' => [],
         'path'    => '<MEMORY>',

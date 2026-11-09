@@ -50,6 +50,10 @@ my $Results = {
     '01' => [
         ['5.1.1',   '550', 'userunknown',     1],
     ],
+    '02' => [
+        ['5.1.2',   '550', 'hostunknown',     1],
+        ['5.1.1',   '550', 'userunknown',     1],
+    ],
 };
 
 use_ok $Package;
