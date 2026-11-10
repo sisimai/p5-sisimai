@@ -26,13 +26,20 @@ sub rise {
     require Sisimai::Fact;
 
     my $mail = Sisimai::Mail->new($argv0) || return undef;
-    my $kind = $mail->kind;
     my $c___ = ref $argv1->{'c___'} eq 'ARRAY' ? $argv1->{'c___'} : [undef, undef];
     my $sisi = [];
+    my $maxb = $Sisimai::Eb::XeBYTE; # 64MB * 32 = 2GB
+    my $sumb = 0;
 
     while( my $r = $mail->data->read ) {
         # Read and decode each email file
         next if length($r) > $Sisimai::Eb::XeBYTE;
+
+        if( $mail->kind eq 'stdin' ) {
+            # Check and limit the max size of entire email data read from STDIN: 2GB
+            $sumb += length $r;
+            die ' ***warning: Input email is too large: '.$sumb.' bytes' if $sumb > $maxb;
+        }
 
         my $path = $mail->data->path;
         my $args = {
@@ -44,7 +51,7 @@ sub rise {
         if( $c___->[1] ) {
             # Run the callback function specified with "c___" parameter of Sisimai->rise after reading
             # each email file in Maildir/ every time
-            $args = {'kind' => $kind, 'mail' => \$r, 'path' => $path, 'fact' => $fact};
+            $args = {'kind' => $mail->kind, 'mail' => \$r, 'path' => $path, 'fact' => $fact};
             eval { $c___->[1]->($args) if ref $c___->[1] eq 'CODE' };
             warn sprintf(" ***warning: Something is wrong in the second element of the 'c___': %s", $@) if $@;
         }
