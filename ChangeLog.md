@@ -8,8 +8,11 @@ v5.8.0
 ---------------------------------------------------------------------------------------------------
 - release: ""
 - version: ""
-  - **Security Fixes & Guardrail Improvements**
-    - #696 #699 Limit each email size in a UNIX mbox, Maildir/, and other input data to 64MB.
+  - **LIMIT THE MAXIMUM EMAIL DATA SIZE**
+    - The total size of input data (UNIX mbox, memory, or STDIN) is limited to 2GB.
+    - Each individual email message (in Maildir/, UNIX mbox, memory, or STDIN) is limited to 64MB.
+    - #696 #699
+  - **Security Fixes**
     - #687 Add invisible/control character check to Makefile to prevent Trojan Source attacks.
     - #691 Check that the return value of `Sisimai::RFC5322->part` is an empty array or not.
   - **Error Message Pattern Updates**
