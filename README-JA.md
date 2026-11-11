@@ -1,7 +1,7 @@
 ![](https://libsisimai.org/static/images/logo/sisimai-x01.png)
 [![License](https://img.shields.io/badge/license-BSD%202--Clause-orange.svg)](https://github.com/sisimai/p5-sisimai/blob/5-stable/LICENSE)
 [![Perl](https://img.shields.io/badge/perl-v5.26--v5.44-blue.svg)](https://www.perl.org)
-[![CPAN](https://img.shields.io/badge/cpan-v5.7.2-blue.svg)](https://metacpan.org/pod/Sisimai)
+[![CPAN](https://img.shields.io/badge/cpan-v5.8.0-blue.svg)](https://metacpan.org/pod/Sisimai)
 [![codecov](https://codecov.io/github/sisimai/p5-sisimai/branch/5-stable/graph/badge.svg?token=8kvF4rWPM3)](https://codecov.io/github/sisimai/p5-sisimai)
 
 > [!CAUTION]
@@ -10,7 +10,12 @@
 > [ReDos: CVE-2026-XXXX/番号の発行待ち]()があります。
 > 該当するバージョンをお使いの場合はv4.25.18またはv5.7.2以降へアップグレードしてください。**
 
-> [!IMPORTANT]
+> [!WARNING]
+> メモリ保護とシステムの安定性を確保するため、Sisimai 5.8.0よりUNIX mboxとメモリ(変数からの入力)と
+> STDINから入るメール全体の容量を**2GB**に、Maildir/の各ファイルを含む個々のメールの最大値を**64MB**
+> に、それぞれ制限するようになりました。
+
+> [!NOTE]
 > 現在の[Sisimai](https://libsisimai.org/ja/)には[Perl版](https://github.com/sisimai/p5-sisimai)と
 > [Ruby版](https://github.com/sisimai/rb-sisimai)と[Go版](https://github.com/sisimai/go-sisimai)が
 > あり、どれを使っても同じ結果が得られるように実装されています。開発体制は2025年の夏から解析精度や
@@ -20,13 +25,13 @@
 > 追加などの開発状況は[Go版のIssues](https://github.com/sisimai/go-sisimai/issues)を参照してください。
 > バグ報告については、それぞれお使いの言語版リポジトリのIssuesに書いてください。
 
-> [!IMPORTANT]
+> [!NOTE]
 > **2024年2月2日の時点でこのリポジトリのデフォルトブランチは[5-stable](https://github.com/sisimai/p5-sisimai/tree/5-stable)
 > (Sisimai 5)になりました。** もし古いバージョンを使いたい場合は[4-stable](https://github.com/sisimai/p5-sisimai/tree/4-stable)[^1]
 > ブランチを見てください。また`main`や`master`ブランチはもうこのリポジトリでは使用していません。
 [^1]: 4系を`clone`する場合は`git clone -b 4-stable https://github.com/sisimai/p5-sisimai.git`
 
-> [!WARNING]
+> [!NOTE]
 > Sisimai 5はPerl 5.26以上が必要です。インストール/アップグレードを実行する前に`perl -v`コマンドで
 > システムに入っているPerlのバージョンを確認してください。
 
@@ -121,7 +126,7 @@ Install
 ```shell
 $ cpanm --sudo Sisimai
 --> Working on Sisimai
-Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.7.1.tar.gz ... OK
+Fetching http://www.cpan.org/authors/id/A/AK/AKXLIX/Sisimai-5.8.0.tar.gz ... OK
 ...
 1 distribution installed
 $ perldoc -l Sisimai
@@ -148,14 +153,14 @@ $ cd ./p5-sisimai
 $ make install-from-local
 ./cpanm --sudo . || ( make cpm && ./cpm install --sudo -v . )
 --> Working on .
-Configuring Sisimai-v5.7.1 ... OK
-Building and testing Sisimai-v5.7.1 ... Password: <sudo password here>
+Configuring Sisimai-v5.8.0 ... OK
+Building and testing Sisimai-v5.8.0 ... Password: <sudo password here>
 OK
-Successfully installed Sisimai-v5.7.1
+Successfully installed Sisimai-v5.8.0
 1 distribution installed
 
 $ perl -MSisimai -lE 'print Sisimai->version'
-5.7.1
+5.8.0
 ```
 
 Usage
@@ -372,7 +377,7 @@ Sisimai 5.0.0から**Perl 5.26.0以上**が必要になります。
 | 解析エンジン(MTA/ESPモジュール)の数                  | 68                 | 61                  |
 | 検出可能なバウンス理由の数                           | 29                 | 34                  |
 | 依存もジュール数(Perlのコアモジュールを除く)         | 2 モジュール       | 2 モジュール        |
-| ソースコードの行数                                   | 10,800 行          | 9,720 行            |
+| ソースコードの行数                                   | 10,800 行          | 9,750 行            |
 | テスト件数(t/とxt/ディレクトリ)                      | 270,000 件         | 346,000 件          |
 | 1秒間に解析できるバウンスメール数[^4]                | 750 通             | 750 通              |
 | ライセンス                                           | 2条項BSD           | 2条項BSD            |
