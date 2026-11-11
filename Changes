@@ -4,6 +4,23 @@ RELEASE NOTES for Perl version of Sisimai
 - download: "https://metacpan.org/pod/Sisimai"
 - document: "https://libsisimai.org/"
 
+v5.8.0
+---------------------------------------------------------------------------------------------------
+- release: "Wed, 11 Nov 2026 20:22:22 +0900 (JST)"
+- version: "5.8.0"
+  - **LIMIT THE MAXIMUM EMAIL DATA SIZE FOR MEMORY PROTECTION**
+    - The total size of input data (UNIX mbox, memory, or STDIN) is limited to 2GB.
+    - Each individual email message (in Maildir/, UNIX mbox, memory, or STDIN) is limited to 64MB.
+    - #696 #699
+  - **Security Fixes**
+    - #687 Add invisible/control character check to Makefile to prevent Trojan Source attacks.
+    - #691 Check that the return value of `Sisimai::RFC5322->part` is an empty array or not.
+  - **Error Message Pattern Updates**
+    - #689 Add error message patterns for comcast.net.
+    - #695 Update Google SMTP error codes: `454 4.7.0` and `554 5.4.6` as of 15th October 2026.
+  - **Other Tiny Improvements**
+    - #694 The value of `feedbackId` returned from Amazon SES is set to the `FeedbackID` field.
+
 v5.7.2
 ---------------------------------------------------------------------------------------------------
 - release: "Mon, 31 Aug 2026 18:25:22 +0900 (JST)"
